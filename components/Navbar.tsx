@@ -104,27 +104,15 @@ export default function Navbar({
           />
         </div>
 
-        {/* Collection Schema Action Buttons */}
-        {activeCollectionId && (
-          <div className="flex items-center gap-1.5">
-            <button
-              onClick={onOpenTemplateManager}
-              className="flex items-center gap-1.5 px-2.5 py-1.5 bg-indigo-950/40 border border-indigo-900/60 hover:border-indigo-500 rounded-xl text-xs text-indigo-300 hover:text-white transition shadow-sm"
-              title="Browse & Apply Schema Templates"
-            >
-              <span>📑</span>
-              <span className="hidden sm:inline font-semibold">Templates</span>
-            </button>
-            <button
-              onClick={onOpenFieldManager}
-              className="flex items-center gap-1.5 px-2.5 py-1.5 bg-slate-950 border border-slate-800 hover:border-slate-700 rounded-xl text-xs text-slate-400 hover:text-white transition"
-              title="Customize Active Collection Fields"
-            >
-              <span>⚙️</span>
-              <span className="hidden sm:inline font-medium">Fields</span>
-            </button>
-          </div>
-        )}
+        {/* Global Master Templates Catalog Viewer */}
+        <button
+          onClick={onOpenTemplateManager}
+          className="flex items-center gap-1.5 px-2.5 py-1.5 bg-indigo-950/40 border border-indigo-900/60 hover:border-indigo-500 rounded-xl text-xs text-indigo-300 hover:text-white transition shadow-sm ml-1"
+          title="Browse Item Schema Templates"
+        >
+          <span>📑</span>
+          <span className="hidden sm:inline font-semibold">Templates</span>
+        </button>
       </div>
 
       {/* Top Search Filter with Outlook-Style Scoped Dropdown */}

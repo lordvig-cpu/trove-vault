@@ -53,7 +53,7 @@ export default function ItemDetailView({
             </div>
             <h2 className="text-2xl font-bold text-white mt-2">{item.name}</h2>
             <p className="text-xs text-slate-500 mt-1">
-              Created: {new Date(item.sys_created_at || item.created_at || '').toLocaleString()}
+              Created: {new Date(item.created_at || item.created_at || '').toLocaleString()}
             </p>
           </div>
 
