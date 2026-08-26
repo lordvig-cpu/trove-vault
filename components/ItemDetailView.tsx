@@ -25,7 +25,11 @@ export default function ItemDetailView({
     );
   }
 
-  const attributeEntries = Object.entries(item.attributes || {});
+  const rawAttributes = item.attributes || {};
+  const imageUrl = rawAttributes['image_url'] ? String(rawAttributes['image_url']) : null;
+  
+  // Filter out the image_url from standard attribute pills
+  const attributeEntries = Object.entries(rawAttributes).filter(([key]) => key !== 'image_url');
 
   return (
     <div className="space-y-6">
@@ -49,7 +53,7 @@ export default function ItemDetailView({
             </div>
             <h2 className="text-2xl font-bold text-white mt-2">{item.name}</h2>
             <p className="text-xs text-slate-500 mt-1">
-              Created: {new Date(item.created_at).toLocaleString()}
+              Created: {new Date(item.sys_created_at || item.created_at || '').toLocaleString()}
             </p>
           </div>
 
@@ -76,30 +80,51 @@ export default function ItemDetailView({
         </div>
       </div>
 
-      {/* Dynamic JSONB Custom Attributes Panel */}
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-4">
-        <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-          <h3 className="text-sm font-semibold text-slate-200 uppercase tracking-wider">
-            Custom Attributes (JSONB)
-          </h3>
-          <span className="text-xs text-slate-500">{attributeEntries.length} Defined Fields</span>
+      {/* Main Content Split: Media & Dynamic Attributes */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {/* Photo Box */}
+        <div className="md:col-span-1 bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-xl flex flex-col items-center justify-center">
+          {imageUrl ? (
+            <div className="w-full h-48 rounded-xl overflow-hidden bg-slate-950 border border-slate-800 flex items-center justify-center">
+              <img
+                src={imageUrl}
+                alt={item.name}
+                className="w-full h-full object-cover hover:scale-105 transition duration-300"
+              />
+            </div>
+          ) : (
+            <div className="w-full h-48 rounded-xl border border-dashed border-slate-800 flex flex-col items-center justify-center text-slate-600 text-xs">
+              <span className="text-2xl mb-1">📷</span>
+              <span>No image uploaded</span>
+            </div>
+          )}
         </div>
 
-        {attributeEntries.length === 0 ? (
-          <p className="text-xs text-slate-500 italic">No custom attributes recorded for this item.</p>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            {attributeEntries.map(([key, val]) => (
-              <div
-                key={key}
-                className="bg-slate-950 border border-slate-800/80 rounded-xl p-3.5 flex flex-col justify-between"
-              >
-                <span className="text-[11px] font-mono text-slate-400 uppercase tracking-wider">{key}</span>
-                <span className="text-sm font-semibold text-indigo-300 mt-1">{String(val)}</span>
-              </div>
-            ))}
+        {/* Dynamic Attributes Grid */}
+        <div className="md:col-span-2 bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl space-y-3">
+          <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+            <h3 className="text-xs font-semibold text-slate-300 uppercase tracking-wider">
+              Custom Attributes (JSONB)
+            </h3>
+            <span className="text-xs text-slate-500">{attributeEntries.length} Fields</span>
           </div>
-        )}
+
+          {attributeEntries.length === 0 ? (
+            <p className="text-xs text-slate-500 italic py-4">No custom attributes recorded for this item.</p>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+              {attributeEntries.map(([key, val]) => (
+                <div
+                  key={key}
+                  className="bg-slate-950 border border-slate-800/80 rounded-xl p-3 flex flex-col justify-between"
+                >
+                  <span className="text-[10px] font-mono text-slate-400 uppercase tracking-wider">{key}</span>
+                  <span className="text-xs font-semibold text-indigo-300 mt-1 truncate">{String(val)}</span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Direct Sub-Items Preview */}
@@ -116,7 +141,7 @@ export default function ItemDetailView({
               >
                 <span className="text-slate-300 font-medium">{child.name}</span>
                 <span className="text-[10px] font-mono text-slate-500 bg-slate-900 px-1.5 py-0.5 rounded border border-slate-800">
-                  ID: {child.id}
+                  ID: #{child.id}
                 </span>
               </div>
             ))}
