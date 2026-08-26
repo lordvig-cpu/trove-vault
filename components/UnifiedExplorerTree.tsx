@@ -45,16 +45,16 @@ export default function UnifiedExplorerTree({
 
   return (
     <div className="select-none text-xs font-sans min-w-max">
-      {/* COLLECTION / FOLDER ROW */}
+      {/* COLLECTION / FOLDER ROW (Compact 24px height) */}
       <div
         onClick={() => onSelectCollection(collection.id)}
-        className={`group flex items-center justify-between h-6 px-1.5 rounded cursor-pointer transition whitespace-nowrap ${
+        className={`group flex items-center justify-between h-6 px-1 rounded cursor-pointer transition whitespace-nowrap ${
           isActiveCollection
             ? 'bg-indigo-950/70 text-indigo-100 font-medium'
             : 'text-slate-300 hover:bg-slate-800/40 hover:text-white'
         }`}
       >
-        <div className="flex items-center gap-1 shrink-0 pr-2">
+        <div className="flex items-center gap-1.5 shrink-0 pr-2">
           {/* Chevron */}
           <button
             type="button"
@@ -69,8 +69,8 @@ export default function UnifiedExplorerTree({
             {isOpen ? '▼' : '▶'}
           </button>
 
-          {/* Folder Icon */}
-          <span className="text-xs text-amber-400 shrink-0">
+          {/* 16x16 Folder Icon */}
+          <span className="w-4 h-4 flex items-center justify-center text-xs text-amber-400 shrink-0">
             {isOpen ? '📂' : '📁'}
           </span>
 
@@ -124,10 +124,9 @@ export default function UnifiedExplorerTree({
         </div>
       </div>
 
-      {/* NESTED CHILDREN CONTAINER (Single Linear 12px Step) */}
+      {/* NESTED CHILDREN CONTAINER (Precise 12px linear step) */}
       {isOpen && hasChildren && (
         <div className="border-l border-slate-800/80 space-y-0.5 ml-[7px] pl-[5px]">
-          {/* Sub-Collections */}
           {collection.subCollections?.map((subCol) => (
             <UnifiedExplorerTree
               key={`col-${subCol.id}`}
@@ -145,7 +144,6 @@ export default function UnifiedExplorerTree({
             />
           ))}
 
-          {/* Items */}
           {collection.items?.map((item) => (
             <ItemTreeNode
               key={`item-${item.id}`}
@@ -177,6 +175,16 @@ interface ItemTreeNodeProps {
   onDeleteItem: (item: ItemRecord, collectionId: number) => void;
 }
 
+function getItemTypeIcon(item: ItemRecord): string {
+  const attrs = item.attributes || {};
+  if (attrs.cgc_grade || attrs.publisher || attrs.issue_number) return '📚'; // Comic
+  if (attrs.grading_company || attrs.card_number || attrs.rarity) return '🃏'; // TCG
+  if (attrs.platform || attrs.completeness) return '🎮'; // Video Game
+  if (attrs.designer || attrs.player_count || attrs.play_time) return '🎲'; // Board Game
+  if (attrs.format || attrs.aspect_ratio) return '🎬'; // Movie / Disc
+  return '📄'; // Default document
+}
+
 function ItemTreeNode({
   item,
   collectionId,
@@ -189,21 +197,20 @@ function ItemTreeNode({
   const [isOpen, setIsOpen] = useState(true);
   const isSelected = selectedItemId === item.id;
   const hasSubItems = item.children && item.children.length > 0;
-
-  const imageUrl = item.attributes?.image_url ? String(item.attributes.image_url) : null;
+  const typeIcon = getItemTypeIcon(item);
 
   return (
     <div className="select-none text-xs font-sans min-w-max">
       <div
         onClick={() => onSelectItem(item, collectionId)}
-        className={`group flex items-center justify-between h-6 px-1.5 rounded cursor-pointer transition whitespace-nowrap ${
+        className={`group flex items-center justify-between h-6 px-1 rounded cursor-pointer transition whitespace-nowrap ${
           isSelected
             ? 'bg-indigo-600/30 text-indigo-100 font-medium'
             : 'text-slate-400 hover:bg-slate-800/30 hover:text-slate-200'
         }`}
       >
-        <div className="flex items-center gap-1 shrink-0 pr-2">
-          {/* Sub-item Expand / Collapse */}
+        <div className="flex items-center gap-1.5 shrink-0 pr-2">
+          {/* Sub-item Chevron */}
           <button
             type="button"
             onClick={(e) => {
@@ -217,16 +224,10 @@ function ItemTreeNode({
             {isOpen ? '▼' : '▶'}
           </button>
 
-          {/* Thumbnail / Avatar */}
-          {imageUrl ? (
-            <img
-              src={imageUrl}
-              alt=""
-              className="w-3.5 h-3.5 rounded object-cover border border-slate-700/80 shrink-0"
-            />
-          ) : (
-            <span className="text-[11px] text-slate-500 shrink-0">📄</span>
-          )}
+          {/* 16x16 Type Icon Container */}
+          <span className="w-4 h-4 flex items-center justify-center text-xs leading-none shrink-0 select-none">
+            {typeIcon}
+          </span>
 
           {/* Name */}
           <span className="text-xs tracking-tight">{item.name}</span>
@@ -264,7 +265,7 @@ function ItemTreeNode({
         </div>
       </div>
 
-      {/* RECURSIVE SUB-ITEMS (Single Linear 12px Step with Guide Line) */}
+      {/* RECURSIVE SUB-ITEMS */}
       {isOpen && hasSubItems && (
         <div className="border-l border-slate-800/80 space-y-0.5 ml-[7px] pl-[5px]">
           {item.children!.map((child) => (
