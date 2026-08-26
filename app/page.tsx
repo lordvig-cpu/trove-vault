@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { supabase } from '@/lib/supabase';
 import Navbar from '@/components/Navbar';
 import TreeNode, { ItemRecord } from '@/components/TreeNode';
@@ -30,9 +30,48 @@ function buildItemHierarchy(items: ItemRecord[], parentId: number | null = null)
     }));
 }
 
+// Check if an item matches by name or JSONB attribute values
+function itemMatchesQuery(item: ItemRecord, query: string): boolean {
+  if (!query) return true;
+  const q = query.toLowerCase();
+
+  if (item.name.toLowerCase().includes(q)) return true;
+
+  if (item.attributes) {
+    for (const [key, value] of Object.entries(item.attributes)) {
+      if (key.toLowerCase().includes(q)) return true;
+      if (String(value).toLowerCase().includes(q)) return true;
+    }
+  }
+
+  return false;
+}
+
+// Filter tree preserving parent paths if a child matches
+function filterHierarchy(nodes: ItemRecord[], query: string): ItemRecord[] {
+  if (!query.trim()) return nodes;
+
+  const filtered: ItemRecord[] = [];
+
+  for (const node of nodes) {
+    const matchingChildren = filterHierarchy(node.children || [], query);
+    const selfMatches = itemMatchesQuery(node, query);
+
+    if (selfMatches || matchingChildren.length > 0) {
+      filtered.push({
+        ...node,
+        children: matchingChildren,
+      });
+    }
+  }
+
+  return filtered;
+}
+
 export default function Home() {
   const [collection, setCollection] = useState<HierarchicalCollection | null>(null);
   const [selectedItem, setSelectedItem] = useState<ItemRecord | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -69,7 +108,6 @@ export default function Home() {
         items: nestedItems,
       });
 
-      // Maintain selection or select first available item
       const activeId = targetSelectId !== undefined ? targetSelectId : selectedItem?.id;
       if (activeId) {
         const found = (rawItems as ItemRecord[]).find((i) => i.id === activeId);
@@ -96,9 +134,15 @@ export default function Home() {
     fetchCollectionData();
   }, []);
 
+  // Filtered hierarchy based on active search
+  const visibleItems = useMemo(() => {
+    if (!collection) return [];
+    return filterHierarchy(collection.items, searchQuery);
+  }, [collection, searchQuery]);
+
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col">
-      <Navbar />
+      <Navbar searchQuery={searchQuery} onSearchChange={setSearchQuery} />
 
       <div className="flex-1 flex overflow-hidden">
         {/* LEFT SIDEBAR */}
@@ -135,9 +179,45 @@ export default function Home() {
             </div>
           )}
 
-          {collection && (
+          {/* Active Filter Indicator Badge */}
+          {searchQuery && (
+            <div className="flex items-center justify-between text-xs bg-indigo-950/60 border border-indigo-800/70 rounded-xl px-3 py-2 text-indigo-200 shadow-sm shadow-indigo-950/50">
+              <div className="flex items-center gap-2 min-w-0">
+                {/* Funnel Filter SVG */}
+                <svg
+                  className="w-3.5 h-3.5 text-indigo-400 shrink-0"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M3.75 4.5a.75.75 0 0 1 .75-.75h15a.75.75 0 0 1 .75.75v2.25a.75.75 0 0 1-.22.53l-5.78 5.78v6.19a.75.75 0 0 1-.3.6l-3 2.25a.75.75 0 0 1-1.2-.6v-8.44L3.97 7.28A.75.75 0 0 1 3.75 6.75V4.5Z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+                <span className="truncate">
+                  Filtering for: <strong className="text-white">"{searchQuery}"</strong>
+                </span>
+              </div>
+              <button
+                onClick={() => setSearchQuery('')}
+                className="text-[11px] font-medium text-indigo-400 hover:text-white shrink-0 ml-2 px-1.5 py-0.5 rounded hover:bg-indigo-900/60 transition"
+              >
+                Clear
+              </button>
+            </div>
+          )}
+
+          {collection && visibleItems.length === 0 && !loading && (
+            <div className="text-xs text-slate-500 text-center py-6">
+              No items match your search.
+            </div>
+          )}
+
+          {collection && visibleItems.length > 0 && (
             <div className="flex flex-col gap-1.5">
-              {collection.items.map((item) => (
+              {visibleItems.map((item) => (
                 <TreeNode
                   key={item.id}
                   item={item}
