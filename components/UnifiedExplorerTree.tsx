@@ -44,11 +44,11 @@ export default function UnifiedExplorerTree({
     (collection.items && collection.items.length > 0);
 
   return (
-    <div className="select-none text-xs font-sans min-w-max">
-      {/* COLLECTION / FOLDER ROW (Compact 24px height) */}
+    <div className="select-none text-[13px] font-sans min-w-max">
+      {/* COLLECTION / FOLDER ROW (28px row height with 13.5px font) */}
       <div
         onClick={() => onSelectCollection(collection.id)}
-        className={`group flex items-center justify-between h-6 px-1 rounded cursor-pointer transition whitespace-nowrap ${
+        className={`group flex items-center justify-between h-7 px-1.5 rounded-md cursor-pointer transition whitespace-nowrap ${
           isActiveCollection
             ? 'bg-indigo-950/70 text-indigo-100 font-medium'
             : 'text-slate-300 hover:bg-slate-800/40 hover:text-white'
@@ -62,7 +62,7 @@ export default function UnifiedExplorerTree({
               e.stopPropagation();
               setIsOpen(!isOpen);
             }}
-            className={`w-3.5 h-3.5 flex items-center justify-center text-[8px] text-slate-500 hover:text-slate-200 transition shrink-0 ${
+            className={`w-4 h-4 flex items-center justify-center text-[9px] text-slate-500 hover:text-slate-200 transition shrink-0 ${
               !hasChildren ? 'opacity-0 cursor-default' : ''
             }`}
           >
@@ -70,15 +70,15 @@ export default function UnifiedExplorerTree({
           </button>
 
           {/* 16x16 Folder Icon */}
-          <span className="w-4 h-4 flex items-center justify-center text-xs text-amber-400 shrink-0">
+          <span className="w-4 h-4 flex items-center justify-center text-sm text-amber-400 shrink-0">
             {isOpen ? '📂' : '📁'}
           </span>
 
           {/* Collection Name */}
-          <span className="text-xs tracking-tight">{collection.name}</span>
+          <span className="text-[13px] tracking-tight font-medium">{collection.name}</span>
 
           {isActiveCollection && (
-            <span className="text-[8px] font-mono text-emerald-400 bg-emerald-950/80 border border-emerald-800/60 px-1 py-0 rounded shrink-0 ml-1">
+            <span className="text-[9px] font-mono text-emerald-400 bg-emerald-950/80 border border-emerald-800/60 px-1.5 py-0.5 rounded shrink-0 ml-1">
               active
             </span>
           )}
@@ -92,7 +92,7 @@ export default function UnifiedExplorerTree({
           <button
             type="button"
             onClick={() => onAddSubCollection(collection.id)}
-            className="p-0.5 text-slate-400 hover:text-amber-300 rounded hover:bg-slate-800 text-[10px]"
+            className="p-1 text-slate-400 hover:text-amber-300 rounded hover:bg-slate-800 text-xs"
             title="New Sub-Folder"
           >
             +📁
@@ -100,7 +100,7 @@ export default function UnifiedExplorerTree({
           <button
             type="button"
             onClick={() => onAddSubItem(collection.id, null)}
-            className="p-0.5 text-slate-400 hover:text-indigo-300 rounded hover:bg-slate-800 text-[10px]"
+            className="p-1 text-slate-400 hover:text-indigo-300 rounded hover:bg-slate-800 text-xs"
             title="New Item"
           >
             +📄
@@ -108,7 +108,7 @@ export default function UnifiedExplorerTree({
           <button
             type="button"
             onClick={() => onEditCollection(collection)}
-            className="p-0.5 text-slate-400 hover:text-slate-200 rounded hover:bg-slate-800 text-[10px]"
+            className="p-1 text-slate-400 hover:text-slate-200 rounded hover:bg-slate-800 text-xs"
             title="Edit Folder"
           >
             ✏️
@@ -116,7 +116,7 @@ export default function UnifiedExplorerTree({
           <button
             type="button"
             onClick={() => onDeleteCollection(collection)}
-            className="p-0.5 text-rose-400 hover:text-rose-300 rounded hover:bg-rose-950/50 text-[10px]"
+            className="p-1 text-rose-400 hover:text-rose-300 rounded hover:bg-rose-950/50 text-xs"
             title="Delete Folder"
           >
             🗑️
@@ -124,9 +124,9 @@ export default function UnifiedExplorerTree({
         </div>
       </div>
 
-      {/* NESTED CHILDREN CONTAINER (Precise 12px linear step) */}
+      {/* NESTED CHILDREN CONTAINER */}
       {isOpen && hasChildren && (
-        <div className="border-l border-slate-800/80 space-y-0.5 ml-[7px] pl-[5px]">
+        <div className="border-l border-slate-800/80 space-y-0.5 ml-2 pl-1.5 my-0.5">
           {collection.subCollections?.map((subCol) => (
             <UnifiedExplorerTree
               key={`col-${subCol.id}`}
@@ -177,12 +177,12 @@ interface ItemTreeNodeProps {
 
 function getItemTypeIcon(item: ItemRecord): string {
   const attrs = item.attributes || {};
-  if (attrs.cgc_grade || attrs.publisher || attrs.issue_number) return '📚'; // Comic
-  if (attrs.grading_company || attrs.card_number || attrs.rarity) return '🃏'; // TCG
-  if (attrs.platform || attrs.completeness) return '🎮'; // Video Game
-  if (attrs.designer || attrs.player_count || attrs.play_time) return '🎲'; // Board Game
-  if (attrs.format || attrs.aspect_ratio) return '🎬'; // Movie / Disc
-  return '📄'; // Default document
+  if (attrs.cgc_grade || attrs.publisher || attrs.issue_number) return '📚';
+  if (attrs.grading_company || attrs.card_number || attrs.rarity) return '🃏';
+  if (attrs.platform || attrs.completeness) return '🎮';
+  if (attrs.designer || attrs.player_count || attrs.play_time) return '🎲';
+  if (attrs.format || attrs.aspect_ratio) return '🎬';
+  return '📄';
 }
 
 function ItemTreeNode({
@@ -200,10 +200,10 @@ function ItemTreeNode({
   const typeIcon = getItemTypeIcon(item);
 
   return (
-    <div className="select-none text-xs font-sans min-w-max">
+    <div className="select-none text-[13px] font-sans min-w-max">
       <div
         onClick={() => onSelectItem(item, collectionId)}
-        className={`group flex items-center justify-between h-6 px-1 rounded cursor-pointer transition whitespace-nowrap ${
+        className={`group flex items-center justify-between h-7 px-1.5 rounded-md cursor-pointer transition whitespace-nowrap ${
           isSelected
             ? 'bg-indigo-600/30 text-indigo-100 font-medium'
             : 'text-slate-400 hover:bg-slate-800/30 hover:text-slate-200'
@@ -217,7 +217,7 @@ function ItemTreeNode({
               e.stopPropagation();
               setIsOpen(!isOpen);
             }}
-            className={`w-3.5 h-3.5 flex items-center justify-center text-[8px] text-slate-500 hover:text-slate-200 transition shrink-0 ${
+            className={`w-4 h-4 flex items-center justify-center text-[9px] text-slate-500 hover:text-slate-200 transition shrink-0 ${
               !hasSubItems ? 'opacity-0 cursor-default' : ''
             }`}
           >
@@ -225,12 +225,12 @@ function ItemTreeNode({
           </button>
 
           {/* 16x16 Type Icon Container */}
-          <span className="w-4 h-4 flex items-center justify-center text-xs leading-none shrink-0 select-none">
+          <span className="w-4 h-4 flex items-center justify-center text-[13px] leading-none shrink-0 select-none">
             {typeIcon}
           </span>
 
-          {/* Name */}
-          <span className="text-xs tracking-tight">{item.name}</span>
+          {/* Item Name */}
+          <span className="text-[13px] tracking-tight">{item.name}</span>
         </div>
 
         {/* Action Triggers */}
@@ -241,7 +241,7 @@ function ItemTreeNode({
           <button
             type="button"
             onClick={() => onAddSubItem(collectionId, item.id)}
-            className="p-0.5 text-slate-500 hover:text-indigo-300 rounded hover:bg-slate-800 text-[10px]"
+            className="p-1 text-slate-500 hover:text-indigo-300 rounded hover:bg-slate-800 text-xs"
             title="Add Child Sub-Item"
           >
             +↳
@@ -249,7 +249,7 @@ function ItemTreeNode({
           <button
             type="button"
             onClick={() => onEditItem(item, collectionId)}
-            className="p-0.5 text-slate-500 hover:text-slate-200 rounded hover:bg-slate-800 text-[10px]"
+            className="p-1 text-slate-500 hover:text-slate-200 rounded hover:bg-slate-800 text-xs"
             title="Edit Item"
           >
             ✏️
@@ -257,7 +257,7 @@ function ItemTreeNode({
           <button
             type="button"
             onClick={() => onDeleteItem(item, collectionId)}
-            className="p-0.5 text-rose-400 hover:text-rose-300 rounded hover:bg-rose-950/50 text-[10px]"
+            className="p-1 text-rose-400 hover:text-rose-300 rounded hover:bg-rose-950/50 text-xs"
             title="Delete Item"
           >
             🗑️
@@ -267,7 +267,7 @@ function ItemTreeNode({
 
       {/* RECURSIVE SUB-ITEMS */}
       {isOpen && hasSubItems && (
-        <div className="border-l border-slate-800/80 space-y-0.5 ml-[7px] pl-[5px]">
+        <div className="border-l border-slate-800/80 space-y-0.5 ml-2 pl-1.5 my-0.5">
           {item.children!.map((child) => (
             <ItemTreeNode
               key={`item-${child.id}`}

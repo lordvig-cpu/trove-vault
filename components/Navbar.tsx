@@ -1,7 +1,9 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
-import CollectionDropdown, { CollectionRecord } from './CollectionDropdown';
+import { ReactNode } from 'react';
+import { CollectionRecord } from './CollectionDropdown';
+import CollectionDropdown from './CollectionDropdown';
+import { PinOutlineIcon } from './icons/PinIcons';
 
 export type SearchScope = 'current' | 'all';
 
@@ -17,9 +19,14 @@ interface NavbarProps {
   onCollectionsUpdated: () => void;
   isDropdownOpen: boolean;
   setIsDropdownOpen: (open: boolean) => void;
-  onRequestDeleteCollection: (col: CollectionRecord) => void;
-  onOpenFieldManager: () => void;
+  onRequestDeleteCollection: (collection: CollectionRecord) => void;
+  onOpenFieldManager?: () => void;
   onOpenTemplateManager: () => void;
+  isSidebarOpen: boolean;
+  isPinned: boolean;
+  onToggleSidebar: () => void;
+  onTogglePin: () => void;
+  explorerContent: ReactNode;
 }
 
 export default function Navbar({
@@ -35,167 +42,185 @@ export default function Navbar({
   isDropdownOpen,
   setIsDropdownOpen,
   onRequestDeleteCollection,
-  onOpenFieldManager,
   onOpenTemplateManager,
+  isSidebarOpen,
+  isPinned,
+  onToggleSidebar,
+  onTogglePin,
+  explorerContent,
 }: NavbarProps) {
-  const [isScopeMenuOpen, setIsScopeMenuOpen] = useState(false);
-  const scopeMenuRef = useRef<HTMLDivElement>(null);
-
-  // Close scope picker on click outside
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (scopeMenuRef.current && !scopeMenuRef.current.contains(event.target as Node)) {
-        setIsScopeMenuOpen(false);
-      }
-    }
-    if (isScopeMenuOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
-    }
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [isScopeMenuOpen]);
-
   return (
-    <header className="h-14 border-b border-slate-800 bg-slate-900/60 backdrop-blur-md px-6 flex items-center justify-between sticky top-0 z-40">
-      {/* Brand & Collection Selector */}
-      <div className="flex items-center gap-3">
-        <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-indigo-600 to-indigo-400 flex items-center justify-center font-bold text-white shadow-lg shadow-indigo-500/20 text-sm">
-            UC
+    <header className="h-14 border-b border-slate-800 bg-slate-900/90 backdrop-blur flex items-center justify-between shrink-0 z-40">
+      {/* LEFT SECTION */}
+      <div className="flex items-center h-full">
+        {/* BRAND & DOCKED TAB AREA (Smooth width & border transition) */}
+        <div
+          className={`flex items-center justify-between h-full px-4 transition-all duration-300 ease-in-out ${
+            isPinned
+              ? 'w-84 border-r border-slate-800 shrink-0'
+              : 'w-auto border-r-0 border-transparent gap-3 shrink-0'
+          }`}
+        >
+          {/* Brand Logo & Name */}
+          <div className="flex items-center gap-2 shrink-0">
+            <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center font-bold text-white text-sm shadow-md shadow-indigo-500/20 shrink-0">
+              UC
+            </div>
+            <div>
+              <span className="font-bold text-sm tracking-tight text-white block">
+                UNIVERSAL COLLECTIONS
+              </span>
+              <span className="text-[10px] font-mono text-slate-400 block -mt-1">
+                v0.1.0
+              </span>
+            </div>
           </div>
-          <div>
-            <h1 className="text-xs font-bold tracking-wide uppercase text-slate-100">
-              Universal Collections
-            </h1>
-            <p className="text-[10px] text-slate-500 font-mono">v0.1.0 • Supabase Live</p>
-          </div>
+
+          {/* ServiceNow Active Underlined Tab */}
+          {isPinned && (
+            <div className="relative h-full flex items-center px-2 mr-1 animate-fadeIn">
+              <span className="text-xs font-semibold text-white tracking-wide select-none">
+                Explorer
+              </span>
+              <div className="absolute bottom-0 left-0 right-0 h-[2.5px] bg-indigo-500 rounded-t-full shadow-sm shadow-indigo-500/50" />
+            </div>
+          )}
         </div>
 
-        {/* Anchored Collection Dropdown */}
-        <div className="relative ml-2">
-          <button
-            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-            className={`flex items-center gap-2 bg-slate-950/80 border px-3 py-1.5 rounded-xl transition text-xs group ${
-              isDropdownOpen
-                ? 'border-indigo-500 bg-slate-900 shadow-md shadow-indigo-950/50'
-                : 'border-slate-800 hover:border-indigo-500/50'
-            }`}
-          >
-            <span className="text-indigo-400">🗂️</span>
-            <span className="font-semibold text-slate-200 group-hover:text-white truncate max-w-[140px]">
-              {activeCollectionName}
-            </span>
-            <span
-              className={`text-[10px] text-slate-500 group-hover:text-slate-300 transition duration-150 ${
-                isDropdownOpen ? 'rotate-180 text-indigo-400' : ''
-              }`}
-            >
-              ▾
-            </span>
-          </button>
+        {/* TOP LEVEL NAVIGATION BUTTONS */}
+        <div className="flex items-center gap-3 px-4 h-full">
+          {/* UNPINNED EXPLORER BUTTON & POPOVER */}
+          {!isPinned && (
+            <div className="relative">
+              <button
+                type="button"
+                onClick={onToggleSidebar}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all duration-200 cursor-pointer ${
+                  isSidebarOpen
+                    ? 'bg-indigo-950/80 border-indigo-700 text-indigo-200 shadow-sm'
+                    : 'bg-slate-800/80 border-slate-700 text-slate-300 hover:bg-slate-800 hover:text-white'
+                }`}
+                title="Open Explorer Tree"
+              >
+                <span>🌲</span>
+                <span>Explorer</span>
+                <span className="text-[10px] text-slate-400">▾</span>
+              </button>
 
+              {isSidebarOpen && (
+                <>
+                  {/* INVISIBLE CLICK-OUTSIDE DISMISS AREA */}
+                  <div
+                    className="fixed inset-0 top-14 z-40"
+                    onClick={onToggleSidebar}
+                  />
+
+                  {/* HIGH-DEPTH ELEVATED DROPDOWN CARD */}
+                  <div className="absolute left-0 mt-2 w-88 max-h-[75vh] bg-slate-900/95 border border-slate-700/80 rounded-xl shadow-[0_20px_50px_rgba(0,0,0,0.85)] ring-1 ring-white/10 z-50 p-3 flex flex-col gap-2 backdrop-blur-xl animate-in fade-in zoom-in-95 duration-150">
+                    <div className="flex items-center justify-between border-b border-slate-800 pb-2 shrink-0">
+                      <span className="text-xs font-bold uppercase tracking-wider text-slate-300">
+                        🌲 Explorer
+                      </span>
+
+                      <div className="flex items-center gap-1">
+                        <button
+                          type="button"
+                          onClick={onTogglePin}
+                          className="group p-1 rounded text-slate-400 hover:text-white hover:bg-slate-800 transition cursor-pointer"
+                          title="Pin Explorer to Sidebar"
+                        >
+                          <PinOutlineIcon className="w-3.5 h-3.5" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={onToggleSidebar}
+                          className="p-1 text-slate-400 hover:text-white rounded hover:bg-slate-800 text-xs cursor-pointer"
+                          title="Close"
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="overflow-auto max-h-[60vh] py-1">
+                      {explorerContent}
+                    </div>
+                  </div>
+                </>
+              )}
+
+            </div>
+          )}
+
+          {/* Collection Selector Popover */}
           <CollectionDropdown
-            isOpen={isDropdownOpen}
-            onClose={() => setIsDropdownOpen(false)}
             collections={collections}
             activeCollectionId={activeCollectionId}
             onSelectCollection={onSelectCollection}
             onCollectionsUpdated={onCollectionsUpdated}
-            onRequestDeleteCollection={onRequestDeleteCollection}
+            isOpen={isDropdownOpen}
+            setIsOpen={setIsDropdownOpen}
+            onRequestDelete={onRequestDeleteCollection}
           />
-        </div>
 
-        {/* Global Master Templates Catalog Viewer */}
-        <button
-          onClick={onOpenTemplateManager}
-          className="flex items-center gap-1.5 px-2.5 py-1.5 bg-indigo-950/40 border border-indigo-900/60 hover:border-indigo-500 rounded-xl text-xs text-indigo-300 hover:text-white transition shadow-sm ml-1"
-          title="Browse Item Schema Templates"
-        >
-          <span>📑</span>
-          <span className="hidden sm:inline font-semibold">Templates</span>
-        </button>
+          {/* Master Templates Button */}
+          <button
+            type="button"
+            onClick={onOpenTemplateManager}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800/80 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-700 transition cursor-pointer"
+          >
+            <span>📑</span>
+            <span>Templates</span>
+          </button>
+        </div>
       </div>
 
-      {/* Top Search Filter with Outlook-Style Scoped Dropdown */}
-      <div className="w-[450px] relative">
-        <div className="flex items-center bg-slate-950/80 border border-slate-800 focus-within:border-indigo-500 rounded-full pl-1.5 pr-3 py-1 transition shadow-inner">
-          {/* Scope Tag Selector */}
-          <div className="relative shrink-0" ref={scopeMenuRef}>
+      {/* RIGHT SECTION: SEARCH BAR + DB STATUS + PROFILE */}
+      <div className="flex items-center gap-3 pr-4">
+        <div className="relative flex items-center w-80">
+          <select
+            value={searchScope}
+            onChange={(e) => onSearchScopeChange(e.target.value as SearchScope)}
+            className="bg-slate-800/90 text-slate-300 text-xs font-medium py-1.5 pl-2 pr-6 border border-slate-700 rounded-l-lg focus:outline-none focus:border-indigo-500 cursor-pointer"
+          >
+            <option value="current">📁 This Folder</option>
+            <option value="all">🌐 All Folders</option>
+          </select>
+
+          <input
+            type="text"
+            placeholder={
+              searchScope === 'current'
+                ? `Search ${activeCollectionName}...`
+                : 'Search all collections...'
+            }
+            value={searchQuery}
+            onChange={(e) => onSearchChange(e.target.value)}
+            className="w-full bg-slate-900 border-y border-r border-slate-700 text-xs rounded-r-lg px-3 py-1.5 text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500"
+          />
+
+          {searchQuery && (
             <button
               type="button"
-              onClick={() => setIsScopeMenuOpen(!isScopeMenuOpen)}
-              className="flex items-center gap-1 bg-slate-900 hover:bg-slate-800 border border-slate-700/80 text-indigo-300 px-2.5 py-1 rounded-full text-[11px] font-medium transition cursor-pointer select-none"
+              onClick={() => onSearchChange('')}
+              className="absolute right-2.5 text-slate-500 hover:text-white text-xs font-bold cursor-pointer"
             >
-              <span>{searchScope === 'current' ? '📁 This Collection' : '🌐 All Collections'}</span>
-              <span className="text-[9px] text-slate-400">▾</span>
+              ✕
             </button>
-
-            {/* Scope Selection Popover */}
-            {isScopeMenuOpen && (
-              <div className="absolute top-8 left-0 w-44 bg-slate-900 border border-slate-800 rounded-xl shadow-2xl p-1 z-50 animate-in fade-in zoom-in-95 duration-100">
-                <button
-                  type="button"
-                  onClick={() => {
-                    onSearchScopeChange('current');
-                    setIsScopeMenuOpen(false);
-                  }}
-                  className={`w-full text-left px-3 py-1.5 text-xs rounded-lg transition flex items-center justify-between ${
-                    searchScope === 'current'
-                      ? 'bg-indigo-950/70 text-indigo-200 font-semibold'
-                      : 'text-slate-300 hover:bg-slate-800'
-                  }`}
-                >
-                  <span>📁 This Collection</span>
-                  {searchScope === 'current' && <span className="text-[10px]">✓</span>}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    onSearchScopeChange('all');
-                    setIsScopeMenuOpen(false);
-                  }}
-                  className={`w-full text-left px-3 py-1.5 text-xs rounded-lg transition flex items-center justify-between ${
-                    searchScope === 'all'
-                      ? 'bg-indigo-950/70 text-indigo-200 font-semibold'
-                      : 'text-slate-300 hover:bg-slate-800'
-                  }`}
-                >
-                  <span>🌐 All Collections</span>
-                  {searchScope === 'all' && <span className="text-[10px]">✓</span>}
-                </button>
-              </div>
-            )}
-          </div>
-
-          {/* Search Input */}
-          <div className="relative flex-1 flex items-center ml-2">
-            <span className="text-xs text-slate-500 mr-2">🔍</span>
-            <input
-              type="text"
-              placeholder={
-                searchScope === 'current'
-                  ? 'Search in this collection...'
-                  : 'Universal search across all collections...'
-              }
-              value={searchQuery}
-              onChange={(e) => onSearchChange(e.target.value)}
-              className="w-full bg-transparent text-xs text-white placeholder-slate-500 focus:outline-none"
-            />
-            {searchQuery && (
-              <button
-                onClick={() => onSearchChange('')}
-                className="text-xs text-slate-500 hover:text-white p-1"
-              >
-                ✕
-              </button>
-            )}
-          </div>
+          )}
         </div>
-      </div>
 
-      {/* Right User Indicator */}
-      <div className="flex items-center gap-2">
-        <span className="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-        <span className="text-xs font-medium text-slate-400">Database Connected</span>
+        <div className="flex items-center gap-1.5 px-2.5 py-1 bg-slate-800/60 border border-slate-700/80 rounded-lg text-[11px] font-medium text-emerald-400">
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+          <span className="text-slate-300 hidden sm:inline">Supabase</span> Live
+        </div>
+
+        <div
+          className="w-8 h-8 rounded-full bg-indigo-950 border border-indigo-700/80 flex items-center justify-center text-xs font-bold text-indigo-300 shadow-inner cursor-pointer hover:border-indigo-500 transition"
+          title="User Profile / Account"
+        >
+          👤
+        </div>
       </div>
     </header>
   );

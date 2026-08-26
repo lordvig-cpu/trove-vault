@@ -28,26 +28,27 @@ body {
 /* Custom Dark Scrollbars across the App */
 * {
   scrollbar-width: thin;
-  scrollbar-color: #334155 transparent;
+  scrollbar-color: #64748b rgba(15, 23, 42, 0.4);
 }
 
 /* Chrome, Edge, Safari WebKit Scrollbars */
 ::-webkit-scrollbar {
-  width: 5px;
-  height: 5px;
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: transparent;
+  background: rgba(15, 23, 42, 0.3);
+  border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #334155;
+  background: #64748b;
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #475569;
+  background: #94a3b8;
 }
 
 ::-webkit-scrollbar-corner {
