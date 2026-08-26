@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useMemo } from 'react';
 import { supabase } from '@/lib/supabase';
-import Navbar from '@/components/Navbar';
+import Navbar, { SearchScope } from '@/components/Navbar';
 import TreeNode, { ItemRecord } from '@/components/TreeNode';
 import ItemDetailView from '@/components/ItemDetailView';
 import CreateItemModal from '@/components/CreateItemModal';
@@ -15,6 +15,10 @@ import { CollectionRecord } from '@/components/CollectionDropdown';
 
 interface HierarchicalCollection extends CollectionRecord {
   items: ItemRecord[];
+}
+
+interface UniversalSearchResultItem extends ItemRecord {
+  collection_name?: string;
 }
 
 function buildItemHierarchy(items: ItemRecord[], parentId: number | null = null): ItemRecord[] {
@@ -67,7 +71,13 @@ export default function Home() {
   const [activeCollectionId, setActiveCollectionId] = useState<number | null>(null);
   const [currentCollection, setCurrentCollection] = useState<HierarchicalCollection | null>(null);
   const [selectedItem, setSelectedItem] = useState<ItemRecord | null>(null);
+
+  // Search state & scope
   const [searchQuery, setSearchQuery] = useState('');
+  const [searchScope, setSearchScope] = useState<SearchScope>('current');
+  const [universalResults, setUniversalResults] = useState<UniversalSearchResultItem[]>([]);
+  const [isSearchingUniversal, setIsSearchingUniversal] = useState(false);
+
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -170,20 +180,66 @@ export default function Home() {
     }
   }
 
+  // Cross-Collection Global Search Query
+  useEffect(() => {
+    async function runUniversalSearch() {
+      if (searchScope !== 'all' || !searchQuery.trim()) {
+        setUniversalResults([]);
+        return;
+      }
+
+      try {
+        setIsSearchingUniversal(true);
+        const { data, error: queryErr } = await supabase
+          .from('items')
+          .select('*, collections(name)')
+          .order('id', { ascending: true });
+
+        if (queryErr) throw queryErr;
+
+        const allItems = (data || []).map((item: any) => ({
+          ...item,
+          collection_name: item.collections?.name || 'Unknown Collection',
+        }));
+
+        const matching = allItems.filter((it: ItemRecord) => itemMatchesQuery(it, searchQuery));
+        setUniversalResults(matching);
+      } catch (err: any) {
+        console.error('Universal search error:', err);
+      } finally {
+        setIsSearchingUniversal(false);
+      }
+    }
+
+    runUniversalSearch();
+  }, [searchQuery, searchScope]);
+
   useEffect(() => {
     fetchCollectionsList();
   }, []);
 
-  const visibleItems = useMemo(() => {
+  const visibleCurrentItems = useMemo(() => {
     if (!currentCollection) return [];
     return filterHierarchy(currentCollection.items, searchQuery);
   }, [currentCollection, searchQuery]);
+
+  // Jump directly to an item found via universal search
+  const handleSelectUniversalResult = (item: UniversalSearchResultItem) => {
+    if (item.collection_id !== activeCollectionId) {
+      setActiveCollectionId(item.collection_id);
+      fetchActiveCollectionData(item.collection_id, item.id);
+    } else {
+      setSelectedItem(item);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col">
       <Navbar
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
+        searchScope={searchScope}
+        onSearchScopeChange={setSearchScope}
         activeCollectionName={currentCollection ? currentCollection.name : 'Select Collection'}
         collections={allCollections}
         activeCollectionId={activeCollectionId}
@@ -201,13 +257,13 @@ export default function Home() {
 
       <div className="flex-1 flex overflow-hidden">
         {/* LEFT SIDEBAR */}
-        <aside className="w-80 border-r border-slate-800 bg-slate-900/40 p-4 flex flex-col gap-4 overflow-y-auto">
+        <aside className="w-84 border-r border-slate-800 bg-slate-900/40 p-4 flex flex-col gap-4 overflow-y-auto">
           <div>
             <div className="flex items-center justify-between">
               <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
-                Explorer
+                {searchScope === 'all' && searchQuery ? 'Universal Search Results' : 'Explorer'}
               </span>
-              {currentCollection && (
+              {currentCollection && searchScope === 'current' && (
                 <button
                   onClick={() => {
                     setModalParentId(null);
@@ -219,17 +275,18 @@ export default function Home() {
                 </button>
               )}
             </div>
-            <h2 className="text-sm font-bold text-white mt-1">
-              {currentCollection ? currentCollection.name : 'No Collection Selected'}
+            <h2 className="text-sm font-bold text-white mt-1 truncate">
+              {searchScope === 'all' && searchQuery
+                ? `Matches across all collections (${universalResults.length})`
+                : currentCollection
+                ? currentCollection.name
+                : 'No Collection Selected'}
             </h2>
-            {currentCollection?.description && (
-              <p className="text-xs text-slate-400 mt-0.5">{currentCollection.description}</p>
-            )}
           </div>
 
           {loading && (
             <div className="text-xs text-amber-400 p-3 bg-slate-900 border border-slate-800 rounded-lg animate-pulse">
-              ⏳ Syncing hierarchy...
+              ⏳ Syncing data...
             </div>
           )}
 
@@ -239,24 +296,16 @@ export default function Home() {
             </div>
           )}
 
-          {/* Active Filter Indicator */}
+          {/* Active Filter Scope Badge */}
           {searchQuery && (
             <div className="flex items-center justify-between text-xs bg-indigo-950/60 border border-indigo-800/70 rounded-xl px-3 py-2 text-indigo-200 shadow-sm shadow-indigo-950/50">
               <div className="flex items-center gap-2 min-w-0">
-                <svg
-                  className="w-3.5 h-3.5 text-indigo-400 shrink-0"
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="currentColor"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M3.75 4.5a.75.75 0 0 1 .75-.75h15a.75.75 0 0 1 .75.75v2.25a.75.75 0 0 1-.22.53l-5.78 5.78v6.19a.75.75 0 0 1-.3.6l-3 2.25a.75.75 0 0 1-1.2-.6v-8.44L3.97 7.28A.75.75 0 0 1 3.75 6.75V4.5Z"
-                    clipRule="evenodd"
-                  />
-                </svg>
+                <span className="text-indigo-400 shrink-0">
+                  {searchScope === 'current' ? '📁' : '🌐'}
+                </span>
                 <span className="truncate">
-                  Filtering for: <strong className="text-white">"{searchQuery}"</strong>
+                  {searchScope === 'current' ? 'In collection: ' : 'All collections: '}
+                  <strong className="text-white">"{searchQuery}"</strong>
                 </span>
               </div>
               <button
@@ -268,24 +317,68 @@ export default function Home() {
             </div>
           )}
 
-          {currentCollection && visibleItems.length === 0 && !loading && (
-            <div className="text-xs text-slate-500 text-center py-6">
-              {searchQuery ? 'No items match your search.' : 'No items yet. Create your first item above!'}
+          {/* UNIVERSAL SEARCH RESULTS VIEW */}
+          {searchScope === 'all' && searchQuery ? (
+            <div className="space-y-2">
+              {isSearchingUniversal ? (
+                <div className="text-xs text-slate-500 text-center py-6 animate-pulse">
+                  Searching all collections...
+                </div>
+              ) : universalResults.length === 0 ? (
+                <div className="text-xs text-slate-500 text-center py-6">
+                  No matches found across any collection.
+                </div>
+              ) : (
+                universalResults.map((item) => {
+                  const isSelected = selectedItem?.id === item.id;
+                  return (
+                    <div
+                      key={item.id}
+                      onClick={() => handleSelectUniversalResult(item)}
+                      className={`p-3 rounded-xl border transition cursor-pointer flex flex-col gap-1 ${
+                        isSelected
+                          ? 'bg-indigo-950/70 border-indigo-700 shadow-md'
+                          : 'bg-slate-950/60 border-slate-800/80 hover:border-slate-700'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-bold text-white truncate">{item.name}</span>
+                        <span className="text-[10px] font-mono text-indigo-400 bg-indigo-950/70 border border-indigo-800/60 px-1.5 py-0.2 rounded">
+                          #{item.id}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between text-[10px] text-slate-400 mt-1">
+                        <span className="truncate">🗂️ {item.collection_name}</span>
+                        {item.parent_id && <span>↳ Sub-Item</span>}
+                      </div>
+                    </div>
+                  );
+                })
+              )}
             </div>
-          )}
+          ) : (
+            /* STANDARD SINGLE-COLLECTION TREE VIEW */
+            <>
+              {currentCollection && visibleCurrentItems.length === 0 && !loading && (
+                <div className="text-xs text-slate-500 text-center py-6">
+                  {searchQuery ? 'No items match your search.' : 'No items yet. Create your first item above!'}
+                </div>
+              )}
 
-          {currentCollection && visibleItems.length > 0 && (
-            <div className="flex flex-col gap-1.5">
-              {visibleItems.map((item) => (
-                <TreeNode
-                  key={item.id}
-                  item={item}
-                  level={0}
-                  selectedItemId={selectedItem?.id || null}
-                  onSelectItem={(clickedItem) => setSelectedItem(clickedItem)}
-                />
-              ))}
-            </div>
+              {currentCollection && visibleCurrentItems.length > 0 && (
+                <div className="flex flex-col gap-1.5">
+                  {visibleCurrentItems.map((item) => (
+                    <TreeNode
+                      key={item.id}
+                      item={item}
+                      level={0}
+                      selectedItemId={selectedItem?.id || null}
+                      onSelectItem={(clickedItem) => setSelectedItem(clickedItem)}
+                    />
+                  ))}
+                </div>
+              )}
+            </>
           )}
         </aside>
 

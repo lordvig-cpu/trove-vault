@@ -1,10 +1,15 @@
 'use client';
 
+import { useState, useRef, useEffect } from 'react';
 import CollectionDropdown, { CollectionRecord } from './CollectionDropdown';
+
+export type SearchScope = 'current' | 'all';
 
 interface NavbarProps {
   searchQuery: string;
   onSearchChange: (query: string) => void;
+  searchScope: SearchScope;
+  onSearchScopeChange: (scope: SearchScope) => void;
   activeCollectionName: string;
   collections: CollectionRecord[];
   activeCollectionId: number | null;
@@ -20,6 +25,8 @@ interface NavbarProps {
 export default function Navbar({
   searchQuery,
   onSearchChange,
+  searchScope,
+  onSearchScopeChange,
   activeCollectionName,
   collections,
   activeCollectionId,
@@ -31,6 +38,22 @@ export default function Navbar({
   onOpenFieldManager,
   onOpenTemplateManager,
 }: NavbarProps) {
+  const [isScopeMenuOpen, setIsScopeMenuOpen] = useState(false);
+  const scopeMenuRef = useRef<HTMLDivElement>(null);
+
+  // Close scope picker on click outside
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (scopeMenuRef.current && !scopeMenuRef.current.contains(event.target as Node)) {
+        setIsScopeMenuOpen(false);
+      }
+    }
+    if (isScopeMenuOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [isScopeMenuOpen]);
+
   return (
     <header className="h-14 border-b border-slate-800 bg-slate-900/60 backdrop-blur-md px-6 flex items-center justify-between sticky top-0 z-40">
       {/* Brand & Collection Selector */}
@@ -104,27 +127,84 @@ export default function Navbar({
         )}
       </div>
 
-      {/* Top Search Filter */}
-      <div className="w-96 relative">
-        <span className="absolute left-3 top-2.5 text-xs text-slate-500">🔍</span>
-        <input
-          type="text"
-          placeholder="Search items by name or attributes..."
-          value={searchQuery}
-          onChange={(e) => onSearchChange(e.target.value)}
-          className="w-full bg-slate-950/80 border border-slate-800 rounded-full pl-8 pr-8 py-1.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition"
-        />
-        {searchQuery && (
-          <button
-            onClick={() => onSearchChange('')}
-            className="absolute right-3 top-2 text-xs text-slate-500 hover:text-white"
-          >
-            ✕
-          </button>
-        )}
+      {/* Top Search Filter with Outlook-Style Scoped Dropdown */}
+      <div className="w-[450px] relative">
+        <div className="flex items-center bg-slate-950/80 border border-slate-800 focus-within:border-indigo-500 rounded-full pl-1.5 pr-3 py-1 transition shadow-inner">
+          {/* Scope Tag Selector */}
+          <div className="relative shrink-0" ref={scopeMenuRef}>
+            <button
+              type="button"
+              onClick={() => setIsScopeMenuOpen(!isScopeMenuOpen)}
+              className="flex items-center gap-1 bg-slate-900 hover:bg-slate-800 border border-slate-700/80 text-indigo-300 px-2.5 py-1 rounded-full text-[11px] font-medium transition cursor-pointer select-none"
+            >
+              <span>{searchScope === 'current' ? '📁 This Collection' : '🌐 All Collections'}</span>
+              <span className="text-[9px] text-slate-400">▾</span>
+            </button>
+
+            {/* Scope Selection Popover */}
+            {isScopeMenuOpen && (
+              <div className="absolute top-8 left-0 w-44 bg-slate-900 border border-slate-800 rounded-xl shadow-2xl p-1 z-50 animate-in fade-in zoom-in-95 duration-100">
+                <button
+                  type="button"
+                  onClick={() => {
+                    onSearchScopeChange('current');
+                    setIsScopeMenuOpen(false);
+                  }}
+                  className={`w-full text-left px-3 py-1.5 text-xs rounded-lg transition flex items-center justify-between ${
+                    searchScope === 'current'
+                      ? 'bg-indigo-950/70 text-indigo-200 font-semibold'
+                      : 'text-slate-300 hover:bg-slate-800'
+                  }`}
+                >
+                  <span>📁 This Collection</span>
+                  {searchScope === 'current' && <span className="text-[10px]">✓</span>}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    onSearchScopeChange('all');
+                    setIsScopeMenuOpen(false);
+                  }}
+                  className={`w-full text-left px-3 py-1.5 text-xs rounded-lg transition flex items-center justify-between ${
+                    searchScope === 'all'
+                      ? 'bg-indigo-950/70 text-indigo-200 font-semibold'
+                      : 'text-slate-300 hover:bg-slate-800'
+                  }`}
+                >
+                  <span>🌐 All Collections</span>
+                  {searchScope === 'all' && <span className="text-[10px]">✓</span>}
+                </button>
+              </div>
+            )}
+          </div>
+
+          {/* Search Input */}
+          <div className="relative flex-1 flex items-center ml-2">
+            <span className="text-xs text-slate-500 mr-2">🔍</span>
+            <input
+              type="text"
+              placeholder={
+                searchScope === 'current'
+                  ? 'Search in this collection...'
+                  : 'Universal search across all collections...'
+              }
+              value={searchQuery}
+              onChange={(e) => onSearchChange(e.target.value)}
+              className="w-full bg-transparent text-xs text-white placeholder-slate-500 focus:outline-none"
+            />
+            {searchQuery && (
+              <button
+                onClick={() => onSearchChange('')}
+                className="text-xs text-slate-500 hover:text-white p-1"
+              >
+                ✕
+              </button>
+            )}
+          </div>
+        </div>
       </div>
 
-      {/* Right Indicator */}
+      {/* Right User Indicator */}
       <div className="flex items-center gap-2">
         <span className="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
         <span className="text-xs font-medium text-slate-400">Database Connected</span>
