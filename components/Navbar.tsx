@@ -13,6 +13,8 @@ interface NavbarProps {
   isDropdownOpen: boolean;
   setIsDropdownOpen: (open: boolean) => void;
   onRequestDeleteCollection: (col: CollectionRecord) => void;
+  onOpenFieldManager: () => void;
+  onOpenTemplateManager: () => void;
 }
 
 export default function Navbar({
@@ -26,12 +28,14 @@ export default function Navbar({
   isDropdownOpen,
   setIsDropdownOpen,
   onRequestDeleteCollection,
+  onOpenFieldManager,
+  onOpenTemplateManager,
 }: NavbarProps) {
   return (
     <header className="h-14 border-b border-slate-800 bg-slate-900/60 backdrop-blur-md px-6 flex items-center justify-between sticky top-0 z-40">
-      {/* Brand Logo & Anchored Collection Selector */}
-      <div className="flex items-center gap-4">
-        <div className="flex items-center gap-3">
+      {/* Brand & Collection Selector */}
+      <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2.5">
           <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-indigo-600 to-indigo-400 flex items-center justify-center font-bold text-white shadow-lg shadow-indigo-500/20 text-sm">
             UC
           </div>
@@ -43,8 +47,8 @@ export default function Navbar({
           </div>
         </div>
 
-        {/* Anchored Relative Container */}
-        <div className="relative">
+        {/* Anchored Collection Dropdown */}
+        <div className="relative ml-2">
           <button
             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
             className={`flex items-center gap-2 bg-slate-950/80 border px-3 py-1.5 rounded-xl transition text-xs group ${
@@ -66,7 +70,6 @@ export default function Navbar({
             </span>
           </button>
 
-          {/* Floating Dropdown Popover */}
           <CollectionDropdown
             isOpen={isDropdownOpen}
             onClose={() => setIsDropdownOpen(false)}
@@ -77,6 +80,28 @@ export default function Navbar({
             onRequestDeleteCollection={onRequestDeleteCollection}
           />
         </div>
+
+        {/* Collection Schema Action Buttons */}
+        {activeCollectionId && (
+          <div className="flex items-center gap-1.5">
+            <button
+              onClick={onOpenTemplateManager}
+              className="flex items-center gap-1.5 px-2.5 py-1.5 bg-indigo-950/40 border border-indigo-900/60 hover:border-indigo-500 rounded-xl text-xs text-indigo-300 hover:text-white transition shadow-sm"
+              title="Browse & Apply Schema Templates"
+            >
+              <span>📑</span>
+              <span className="hidden sm:inline font-semibold">Templates</span>
+            </button>
+            <button
+              onClick={onOpenFieldManager}
+              className="flex items-center gap-1.5 px-2.5 py-1.5 bg-slate-950 border border-slate-800 hover:border-slate-700 rounded-xl text-xs text-slate-400 hover:text-white transition"
+              title="Customize Active Collection Fields"
+            >
+              <span>⚙️</span>
+              <span className="hidden sm:inline font-medium">Fields</span>
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Top Search Filter */}
@@ -99,7 +124,7 @@ export default function Navbar({
         )}
       </div>
 
-      {/* Right User Indicator */}
+      {/* Right Indicator */}
       <div className="flex items-center gap-2">
         <span className="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
         <span className="text-xs font-medium text-slate-400">Database Connected</span>

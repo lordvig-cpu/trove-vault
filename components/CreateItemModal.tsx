@@ -1,9 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { supabase } from '@/lib/supabase';
 import { uploadItemImage } from '@/lib/storage';
 import { ItemRecord } from './TreeNode';
+import { FieldDefinition } from './FieldManagerModal';
+import { CollectionTemplate } from './TemplateManagerModal';
 
 interface CreateItemModalProps {
   isOpen: boolean;
@@ -24,13 +26,94 @@ export default function CreateItemModal({
 }: CreateItemModalProps) {
   const [name, setName] = useState('');
   const [parentId, setParentId] = useState<number | null>(initialParentId);
-  const [attributes, setAttributes] = useState<{ key: string; value: string }[]>([
-    { key: '', value: '' },
-  ]);
+  const [availableTemplates, setAvailableTemplates] = useState<CollectionTemplate[]>([]);
+  const [selectedTemplateId, setSelectedTemplateId] = useState<number | null>(null);
+
+  // Dynamic values & ad-hoc custom fields
+  const [activeTemplateFields, setActiveTemplateFields] = useState<FieldDefinition[]>([]);
+  const [dynamicValues, setDynamicValues] = useState<Record<string, any>>({});
+  const [adHocAttributes, setAdHocAttributes] = useState<{ key: string; value: string }[]>([]);
+
+  // Media & state
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Fetch all templates and their field definitions
+  useEffect(() => {
+    async function loadTemplatesAndFields() {
+      if (!isOpen) return;
+
+      const { data: tmpls } = await supabase
+        .from('collection_templates')
+        .select('*')
+        .order('is_system_preset', { ascending: false });
+
+      const { data: flds } = await supabase
+        .from('template_fields')
+        .select('*')
+        .order('display_order', { ascending: true });
+
+      const fullTemplates: CollectionTemplate[] = (tmpls || []).map((t) => ({
+        ...t,
+        fields: (flds || []).filter((f) => f.template_id === t.id),
+      }));
+
+      setAvailableTemplates(fullTemplates);
+
+      // Default to the first template if none selected
+      if (fullTemplates.length > 0 && selectedTemplateId === null) {
+        applyTemplateFields(fullTemplates[0]);
+      }
+    }
+
+    loadTemplatesAndFields();
+  }, [isOpen]);
+
+  // Isolate dynamic values strictly to the selected template
+  const applyTemplateFields = (template: CollectionTemplate) => {
+    setSelectedTemplateId(template.id);
+    const fields = template.fields || [];
+    setActiveTemplateFields(fields);
+
+    const initialValues: Record<string, any> = {};
+    for (const f of fields) {
+      if (f.field_type === 'boolean') initialValues[f.name] = false;
+      else if (f.field_type === 'select' && f.options && f.options.length > 0)
+        initialValues[f.name] = f.options[0];
+      else initialValues[f.name] = '';
+    }
+    setDynamicValues(initialValues);
+  };
+
+  const handleTemplateSelect = (tmplId: number | 'blank') => {
+    if (tmplId === 'blank') {
+      setSelectedTemplateId(null);
+      setActiveTemplateFields([]);
+      setDynamicValues({});
+      return;
+    }
+
+    const match = availableTemplates.find((t) => t.id === Number(tmplId));
+    if (match) applyTemplateFields(match);
+  };
+
+  // Live Diff calculation
+  const diffSummary = useMemo(() => {
+    const added: string[] = [];
+    const merged: string[] = [];
+
+    for (const f of activeTemplateFields) {
+      if (dynamicValues[f.name] !== undefined && dynamicValues[f.name] !== '') {
+        merged.push(f.label);
+      } else {
+        added.push(f.label);
+      }
+    }
+
+    return { added, merged };
+  }, [activeTemplateFields, dynamicValues]);
 
   if (!isOpen) return null;
 
@@ -48,18 +131,18 @@ export default function CreateItemModal({
     setPreviewUrl(null);
   };
 
-  const handleAddAttributeRow = () => {
-    setAttributes([...attributes, { key: '', value: '' }]);
+  const handleAddAdHocRow = () => {
+    setAdHocAttributes([...adHocAttributes, { key: '', value: '' }]);
   };
 
-  const handleAttributeChange = (index: number, field: 'key' | 'value', text: string) => {
-    const updated = [...attributes];
+  const handleAdHocChange = (index: number, field: 'key' | 'value', text: string) => {
+    const updated = [...adHocAttributes];
     updated[index][field] = text;
-    setAttributes(updated);
+    setAdHocAttributes(updated);
   };
 
-  const handleRemoveAttributeRow = (index: number) => {
-    setAttributes(attributes.filter((_, i) => i !== index));
+  const handleRemoveAdHocRow = (index: number) => {
+    setAdHocAttributes(adHocAttributes.filter((_, i) => i !== index));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -75,12 +158,23 @@ export default function CreateItemModal({
         imageUrl = await uploadItemImage(selectedFile);
       }
 
-      const jsonAttributes: Record<string, string> = {};
+      // 1. Only include active template fields that have values
+      const jsonAttributes: Record<string, any> = {};
+
+      for (const field of activeTemplateFields) {
+        const val = dynamicValues[field.name];
+        if (val !== undefined && val !== '') {
+          jsonAttributes[field.name] = val;
+        }
+      }
+
+      // 2. Attach image URL if present
       if (imageUrl) {
         jsonAttributes['image_url'] = imageUrl;
       }
 
-      for (const attr of attributes) {
+      // 3. Attach ad-hoc custom fields
+      for (const attr of adHocAttributes) {
         if (attr.key.trim()) {
           jsonAttributes[attr.key.trim()] = attr.value.trim();
         }
@@ -99,7 +193,7 @@ export default function CreateItemModal({
 
       // Reset
       setName('');
-      setAttributes([{ key: '', value: '' }]);
+      setAdHocAttributes([]);
       setSelectedFile(null);
       setPreviewUrl(null);
       onItemCreated();
@@ -157,13 +251,61 @@ export default function CreateItemModal({
             </div>
           )}
 
+          {/* Item Template Picker */}
+          <div className="bg-indigo-950/40 border border-indigo-900/60 rounded-xl p-3.5 space-y-2">
+            <div className="flex items-center justify-between">
+              <label className="text-xs font-bold text-indigo-300 flex items-center gap-1.5">
+                <span>📑</span>
+                <span>Item Schema Template</span>
+              </label>
+              <span className="text-[10px] text-slate-400 font-mono">
+                {activeTemplateFields.length} Template Fields
+              </span>
+            </div>
+
+            <select
+              value={selectedTemplateId || 'blank'}
+              onChange={(e) => handleTemplateSelect(e.target.value as any)}
+              className="w-full bg-slate-900 border border-slate-800 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-indigo-500"
+            >
+              {availableTemplates.map((tmpl) => (
+                <option key={tmpl.id} value={tmpl.id}>
+                  {tmpl.icon} {tmpl.name} ({tmpl.fields?.length || 0} fields)
+                </option>
+              ))}
+              <option value="blank">➕ Blank / Custom (No Template)</option>
+            </select>
+
+            {/* Schema Diff Visualizer */}
+            {activeTemplateFields.length > 0 && (
+              <div className="pt-1 text-[11px] space-y-1">
+                {diffSummary.merged.length > 0 && (
+                  <div className="flex items-center gap-1.5 text-sky-300">
+                    <span className="font-mono text-[10px] bg-sky-950/80 border border-sky-800/80 px-1 py-0.2 rounded">
+                      🔵 FILLED ({diffSummary.merged.length})
+                    </span>
+                    <span className="truncate">{diffSummary.merged.join(', ')}</span>
+                  </div>
+                )}
+                {diffSummary.added.length > 0 && (
+                  <div className="flex items-center gap-1.5 text-emerald-300">
+                    <span className="font-mono text-[10px] bg-emerald-950/80 border border-emerald-800/80 px-1 py-0.2 rounded">
+                      🟢 AVAILABLE ({diffSummary.added.length})
+                    </span>
+                    <span className="truncate">{diffSummary.added.join(', ')}</span>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+
           {/* Item Name */}
           <div className="space-y-1">
             <label className="text-xs font-semibold text-slate-300">Item Name *</label>
             <input
               type="text"
               required
-              placeholder="e.g. Nemesis Core Box, Charizard 1st Edition..."
+              placeholder="e.g. The Amazing Spider-Man #300..."
               value={name}
               onChange={(e) => setName(e.target.value)}
               className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500 transition"
@@ -223,45 +365,131 @@ export default function CreateItemModal({
             )}
           </div>
 
-          {/* JSONB Custom Attributes */}
-          <div className="space-y-2 pt-1">
+          {/* Template Input Fields */}
+          {activeTemplateFields.length > 0 && (
+            <div className="space-y-3 pt-2 border-t border-slate-800">
+              <span className="text-xs font-bold text-indigo-300 uppercase tracking-wider block">
+                Template Properties
+              </span>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {activeTemplateFields.map((field) => (
+                  <div key={field.id} className="space-y-1">
+                    <label className="text-[11px] font-semibold text-slate-300">
+                      {field.label} {field.is_required && <span className="text-rose-400">*</span>}
+                    </label>
+
+                    {field.field_type === 'text' && (
+                      <input
+                        type="text"
+                        required={field.is_required}
+                        value={dynamicValues[field.name] || ''}
+                        onChange={(e) =>
+                          setDynamicValues({ ...dynamicValues, [field.name]: e.target.value })
+                        }
+                        className="w-full bg-slate-950 border border-slate-800 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-indigo-500"
+                      />
+                    )}
+
+                    {field.field_type === 'number' && (
+                      <input
+                        type="number"
+                        required={field.is_required}
+                        value={dynamicValues[field.name] || ''}
+                        onChange={(e) =>
+                          setDynamicValues({
+                            ...dynamicValues,
+                            [field.name]: e.target.value === '' ? '' : Number(e.target.value),
+                          })
+                        }
+                        className="w-full bg-slate-950 border border-slate-800 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-indigo-500"
+                      />
+                    )}
+
+                    {field.field_type === 'select' && (
+                      <select
+                        value={dynamicValues[field.name] || ''}
+                        onChange={(e) =>
+                          setDynamicValues({ ...dynamicValues, [field.name]: e.target.value })
+                        }
+                        className="w-full bg-slate-950 border border-slate-800 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-indigo-500"
+                      >
+                        {(field.options || []).map((opt) => (
+                          <option key={opt} value={opt}>
+                            {opt}
+                          </option>
+                        ))}
+                      </select>
+                    )}
+
+                    {field.field_type === 'boolean' && (
+                      <label className="flex items-center gap-2 pt-1 text-xs text-slate-300 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={Boolean(dynamicValues[field.name])}
+                          onChange={(e) =>
+                            setDynamicValues({ ...dynamicValues, [field.name]: e.target.checked })
+                          }
+                          className="rounded border-slate-800 bg-slate-950 text-indigo-600 focus:ring-0 w-4 h-4"
+                        />
+                        <span>Yes / True</span>
+                      </label>
+                    )}
+
+                    {field.field_type === 'date' && (
+                      <input
+                        type="date"
+                        required={field.is_required}
+                        value={dynamicValues[field.name] || ''}
+                        onChange={(e) =>
+                          setDynamicValues({ ...dynamicValues, [field.name]: e.target.value })
+                        }
+                        className="w-full bg-slate-950 border border-slate-800 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-indigo-500"
+                      />
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Ad-Hoc Freeform Fields */}
+          <div className="space-y-2 pt-2 border-t border-slate-800">
             <div className="flex items-center justify-between">
-              <label className="text-xs font-semibold text-slate-300">Custom Attributes (JSONB)</label>
+              <label className="text-xs font-semibold text-slate-400">Additional Custom Fields</label>
               <button
                 type="button"
-                onClick={handleAddAttributeRow}
+                onClick={handleAddAdHocRow}
                 className="text-[11px] font-medium text-indigo-400 hover:text-indigo-300"
               >
-                + Add Field
+                + Add Custom Field
               </button>
             </div>
 
-            <div className="space-y-2 max-h-36 overflow-y-auto pr-1">
-              {attributes.map((attr, idx) => (
+            <div className="space-y-2 max-h-28 overflow-y-auto pr-1">
+              {adHocAttributes.map((attr, idx) => (
                 <div key={idx} className="flex gap-2 items-center">
                   <input
                     type="text"
-                    placeholder="Key (e.g. rarity)"
+                    placeholder="Key (e.g. signature)"
                     value={attr.key}
-                    onChange={(e) => handleAttributeChange(idx, 'key', e.target.value)}
-                    className="flex-1 bg-slate-950 border border-slate-800 rounded-lg px-2.5 py-1.5 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500 transition"
+                    onChange={(e) => handleAdHocChange(idx, 'key', e.target.value)}
+                    className="flex-1 bg-slate-950 border border-slate-800 rounded-lg px-2.5 py-1.5 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500"
                   />
                   <input
                     type="text"
-                    placeholder="Value (e.g. Mint)"
+                    placeholder="Value (e.g. Stan Lee)"
                     value={attr.value}
-                    onChange={(e) => handleAttributeChange(idx, 'value', e.target.value)}
-                    className="flex-1 bg-slate-950 border border-slate-800 rounded-lg px-2.5 py-1.5 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500 transition"
+                    onChange={(e) => handleAdHocChange(idx, 'value', e.target.value)}
+                    className="flex-1 bg-slate-950 border border-slate-800 rounded-lg px-2.5 py-1.5 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500"
                   />
-                  {attributes.length > 1 && (
-                    <button
-                      type="button"
-                      onClick={() => handleRemoveAttributeRow(idx)}
-                      className="text-slate-500 hover:text-rose-400 text-xs px-1"
-                    >
-                      ✕
-                    </button>
-                  )}
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveAdHocRow(idx)}
+                    className="text-slate-500 hover:text-rose-400 text-xs px-1"
+                  >
+                    ✕
+                  </button>
                 </div>
               ))}
             </div>
@@ -281,7 +509,7 @@ export default function CreateItemModal({
               disabled={loading}
               className="px-4 py-1.5 text-xs font-medium text-white bg-indigo-600 hover:bg-indigo-500 rounded-lg transition shadow-md shadow-indigo-600/30 disabled:opacity-50"
             >
-              {loading ? 'Uploading & Creating...' : 'Create Item'}
+              {loading ? 'Creating...' : 'Create Item'}
             </button>
           </div>
         </form>

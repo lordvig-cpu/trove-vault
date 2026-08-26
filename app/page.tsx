@@ -9,6 +9,8 @@ import CreateItemModal from '@/components/CreateItemModal';
 import EditItemModal from '@/components/EditItemModal';
 import DeleteItemModal from '@/components/DeleteItemModal';
 import DeleteCollectionModal from '@/components/DeleteCollectionModal';
+import FieldManagerModal from '@/components/FieldManagerModal';
+import TemplateManagerModal from '@/components/TemplateManagerModal';
 import { CollectionRecord } from '@/components/CollectionDropdown';
 
 interface HierarchicalCollection extends CollectionRecord {
@@ -71,13 +73,14 @@ export default function Home() {
 
   // Popovers & Modals
   const [isColDropdownOpen, setIsColDropdownOpen] = useState(false);
+  const [isFieldManagerOpen, setIsFieldManagerOpen] = useState(false);
+  const [isTemplateManagerOpen, setIsTemplateManagerOpen] = useState(false);
   const [collectionToDelete, setCollectionToDelete] = useState<CollectionRecord | null>(null);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [modalParentId, setModalParentId] = useState<number | null>(null);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
 
-  // Fetch all collections and resolve the next valid active ID
   async function fetchCollectionsList(preferredId?: number | null) {
     try {
       setError(null);
@@ -92,17 +95,13 @@ export default function Home() {
       setAllCollections(collections);
 
       if (collections.length > 0) {
-        // Check if preferredId or current activeCollectionId still exists in the database
         const targetId = preferredId !== undefined ? preferredId : activeCollectionId;
         const exists = collections.some((c) => c.id === targetId);
-        
-        // If it still exists, keep it; otherwise cleanly default to the first available collection
         const nextValidId = exists && targetId ? targetId : collections[0].id;
-        
+
         setActiveCollectionId(nextValidId);
         fetchActiveCollectionData(nextValidId);
       } else {
-        // No collections left in the database
         setActiveCollectionId(null);
         setCurrentCollection(null);
         setSelectedItem(null);
@@ -115,7 +114,6 @@ export default function Home() {
     }
   }
 
-  // Fetch items for the active collection
   async function fetchActiveCollectionData(collectionId: number, targetSelectId?: number | null) {
     try {
       setLoading(true);
@@ -130,7 +128,6 @@ export default function Home() {
       if (colError) throw colError;
 
       if (!collectionData) {
-        // Collection does not exist anymore
         setCurrentCollection(null);
         setSelectedItem(null);
         return;
@@ -198,6 +195,8 @@ export default function Home() {
         isDropdownOpen={isColDropdownOpen}
         setIsDropdownOpen={setIsColDropdownOpen}
         onRequestDeleteCollection={(col) => setCollectionToDelete(col)}
+        onOpenFieldManager={() => setIsFieldManagerOpen(true)}
+        onOpenTemplateManager={() => setIsTemplateManagerOpen(true)}
       />
 
       <div className="flex-1 flex overflow-hidden">
@@ -305,6 +304,28 @@ export default function Home() {
           </div>
         </main>
       </div>
+
+      {/* Master Template Manager Modal */}
+      {currentCollection && (
+        <TemplateManagerModal
+          isOpen={isTemplateManagerOpen}
+          onClose={() => setIsTemplateManagerOpen(false)}
+          collectionId={currentCollection.id}
+          collectionName={currentCollection.name}
+          onTemplateApplied={() => {}}
+        />
+      )}
+
+      {/* Field Schema Manager Modal */}
+      {currentCollection && (
+        <FieldManagerModal
+          isOpen={isFieldManagerOpen}
+          onClose={() => setIsFieldManagerOpen(false)}
+          collectionId={currentCollection.id}
+          collectionName={currentCollection.name}
+          onFieldsUpdated={() => {}}
+        />
+      )}
 
       {/* Delete Collection Modal */}
       <DeleteCollectionModal
