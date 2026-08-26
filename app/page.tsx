@@ -8,14 +8,8 @@ import ItemDetailView from '@/components/ItemDetailView';
 import CreateItemModal from '@/components/CreateItemModal';
 import EditItemModal from '@/components/EditItemModal';
 import DeleteItemModal from '@/components/DeleteItemModal';
-
-interface CollectionRecord {
-  id: number;
-  name: string;
-  description: string | null;
-  sys_created_at?: string;
-  created_at?: string;
-}
+import DeleteCollectionModal from '@/components/DeleteCollectionModal';
+import { CollectionRecord } from '@/components/CollectionDropdown';
 
 interface HierarchicalCollection extends CollectionRecord {
   items: ItemRecord[];
@@ -30,7 +24,6 @@ function buildItemHierarchy(items: ItemRecord[], parentId: number | null = null)
     }));
 }
 
-// Check if an item matches by name or JSONB attribute values
 function itemMatchesQuery(item: ItemRecord, query: string): boolean {
   if (!query) return true;
   const q = query.toLowerCase();
@@ -47,7 +40,6 @@ function itemMatchesQuery(item: ItemRecord, query: string): boolean {
   return false;
 }
 
-// Filter tree preserving parent paths if a child matches
 function filterHierarchy(nodes: ItemRecord[], query: string): ItemRecord[] {
   if (!query.trim()) return nodes;
 
@@ -69,41 +61,92 @@ function filterHierarchy(nodes: ItemRecord[], query: string): ItemRecord[] {
 }
 
 export default function Home() {
-  const [collection, setCollection] = useState<HierarchicalCollection | null>(null);
+  const [allCollections, setAllCollections] = useState<CollectionRecord[]>([]);
+  const [activeCollectionId, setActiveCollectionId] = useState<number | null>(null);
+  const [currentCollection, setCurrentCollection] = useState<HierarchicalCollection | null>(null);
   const [selectedItem, setSelectedItem] = useState<ItemRecord | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Modals
+  // Popovers & Modals
+  const [isColDropdownOpen, setIsColDropdownOpen] = useState(false);
+  const [collectionToDelete, setCollectionToDelete] = useState<CollectionRecord | null>(null);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [modalParentId, setModalParentId] = useState<number | null>(null);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
 
-  async function fetchCollectionData(targetSelectId?: number | null) {
+  // Fetch all collections and resolve the next valid active ID
+  async function fetchCollectionsList(preferredId?: number | null) {
+    try {
+      setError(null);
+      const { data, error: colListError } = await supabase
+        .from('collections')
+        .select('*')
+        .order('id', { ascending: true });
+
+      if (colListError) throw colListError;
+
+      const collections = data || [];
+      setAllCollections(collections);
+
+      if (collections.length > 0) {
+        // Check if preferredId or current activeCollectionId still exists in the database
+        const targetId = preferredId !== undefined ? preferredId : activeCollectionId;
+        const exists = collections.some((c) => c.id === targetId);
+        
+        // If it still exists, keep it; otherwise cleanly default to the first available collection
+        const nextValidId = exists && targetId ? targetId : collections[0].id;
+        
+        setActiveCollectionId(nextValidId);
+        fetchActiveCollectionData(nextValidId);
+      } else {
+        // No collections left in the database
+        setActiveCollectionId(null);
+        setCurrentCollection(null);
+        setSelectedItem(null);
+        setLoading(false);
+      }
+    } catch (err: any) {
+      console.error('Failed to load collections list:', err);
+      setError(err?.message || 'Failed to load collections');
+      setLoading(false);
+    }
+  }
+
+  // Fetch items for the active collection
+  async function fetchActiveCollectionData(collectionId: number, targetSelectId?: number | null) {
     try {
       setLoading(true);
+      setError(null);
 
       const { data: collectionData, error: colError } = await supabase
         .from('collections')
         .select('*')
-        .eq('id', 1)
-        .single();
+        .eq('id', collectionId)
+        .maybeSingle();
 
       if (colError) throw colError;
+
+      if (!collectionData) {
+        // Collection does not exist anymore
+        setCurrentCollection(null);
+        setSelectedItem(null);
+        return;
+      }
 
       const { data: rawItems, error: itError } = await supabase
         .from('items')
         .select('*')
-        .eq('collection_id', 1)
+        .eq('collection_id', collectionId)
         .order('id', { ascending: true });
 
       if (itError) throw itError;
 
       const nestedItems = buildItemHierarchy(rawItems as ItemRecord[]);
 
-      setCollection({
+      setCurrentCollection({
         ...collectionData,
         items: nestedItems,
       });
@@ -123,7 +166,7 @@ export default function Home() {
         setSelectedItem(nestedItems.length > 0 ? nestedItems[0] : null);
       }
     } catch (err: any) {
-      console.error('Failed to load collection:', err);
+      console.error('Failed to load collection data:', err);
       setError(err?.message || 'Query error');
     } finally {
       setLoading(false);
@@ -131,18 +174,31 @@ export default function Home() {
   }
 
   useEffect(() => {
-    fetchCollectionData();
+    fetchCollectionsList();
   }, []);
 
-  // Filtered hierarchy based on active search
   const visibleItems = useMemo(() => {
-    if (!collection) return [];
-    return filterHierarchy(collection.items, searchQuery);
-  }, [collection, searchQuery]);
+    if (!currentCollection) return [];
+    return filterHierarchy(currentCollection.items, searchQuery);
+  }, [currentCollection, searchQuery]);
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col">
-      <Navbar searchQuery={searchQuery} onSearchChange={setSearchQuery} />
+      <Navbar
+        searchQuery={searchQuery}
+        onSearchChange={setSearchQuery}
+        activeCollectionName={currentCollection ? currentCollection.name : 'Select Collection'}
+        collections={allCollections}
+        activeCollectionId={activeCollectionId}
+        onSelectCollection={(newId) => {
+          setActiveCollectionId(newId);
+          fetchActiveCollectionData(newId);
+        }}
+        onCollectionsUpdated={() => fetchCollectionsList()}
+        isDropdownOpen={isColDropdownOpen}
+        setIsDropdownOpen={setIsColDropdownOpen}
+        onRequestDeleteCollection={(col) => setCollectionToDelete(col)}
+      />
 
       <div className="flex-1 flex overflow-hidden">
         {/* LEFT SIDEBAR */}
@@ -152,19 +208,24 @@ export default function Home() {
               <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
                 Explorer
               </span>
-              <button
-                onClick={() => {
-                  setModalParentId(null);
-                  setIsCreateOpen(true);
-                }}
-                className="text-[11px] font-semibold text-indigo-400 hover:text-indigo-300"
-              >
-                + New Item
-              </button>
+              {currentCollection && (
+                <button
+                  onClick={() => {
+                    setModalParentId(null);
+                    setIsCreateOpen(true);
+                  }}
+                  className="text-[11px] font-semibold text-indigo-400 hover:text-indigo-300"
+                >
+                  + New Item
+                </button>
+              )}
             </div>
             <h2 className="text-sm font-bold text-white mt-1">
-              {collection ? collection.name : 'Loading...'}
+              {currentCollection ? currentCollection.name : 'No Collection Selected'}
             </h2>
+            {currentCollection?.description && (
+              <p className="text-xs text-slate-400 mt-0.5">{currentCollection.description}</p>
+            )}
           </div>
 
           {loading && (
@@ -179,11 +240,10 @@ export default function Home() {
             </div>
           )}
 
-          {/* Active Filter Indicator Badge */}
+          {/* Active Filter Indicator */}
           {searchQuery && (
             <div className="flex items-center justify-between text-xs bg-indigo-950/60 border border-indigo-800/70 rounded-xl px-3 py-2 text-indigo-200 shadow-sm shadow-indigo-950/50">
               <div className="flex items-center gap-2 min-w-0">
-                {/* Funnel Filter SVG */}
                 <svg
                   className="w-3.5 h-3.5 text-indigo-400 shrink-0"
                   xmlns="http://www.w3.org/2000/svg"
@@ -209,13 +269,13 @@ export default function Home() {
             </div>
           )}
 
-          {collection && visibleItems.length === 0 && !loading && (
+          {currentCollection && visibleItems.length === 0 && !loading && (
             <div className="text-xs text-slate-500 text-center py-6">
-              No items match your search.
+              {searchQuery ? 'No items match your search.' : 'No items yet. Create your first item above!'}
             </div>
           )}
 
-          {collection && visibleItems.length > 0 && (
+          {currentCollection && visibleItems.length > 0 && (
             <div className="flex flex-col gap-1.5">
               {visibleItems.map((item) => (
                 <TreeNode
@@ -246,29 +306,43 @@ export default function Home() {
         </main>
       </div>
 
-      {/* Creation Modal */}
-      <CreateItemModal
-        isOpen={isCreateOpen}
-        onClose={() => setIsCreateOpen(false)}
-        onItemCreated={() => fetchCollectionData()}
-        collectionId={1}
-        availableParents={collection?.items || []}
-        initialParentId={modalParentId}
+      {/* Delete Collection Modal */}
+      <DeleteCollectionModal
+        isOpen={Boolean(collectionToDelete)}
+        onClose={() => setCollectionToDelete(null)}
+        onCollectionDeleted={() => fetchCollectionsList(null)}
+        collection={collectionToDelete}
       />
+
+      {/* Creation Modal */}
+      {currentCollection && (
+        <CreateItemModal
+          isOpen={isCreateOpen}
+          onClose={() => setIsCreateOpen(false)}
+          onItemCreated={() => fetchActiveCollectionData(currentCollection.id)}
+          collectionId={currentCollection.id}
+          availableParents={currentCollection.items || []}
+          initialParentId={modalParentId}
+        />
+      )}
 
       {/* Edit Modal */}
       <EditItemModal
         isOpen={isEditOpen}
         onClose={() => setIsEditOpen(false)}
-        onItemUpdated={() => fetchCollectionData(selectedItem?.id)}
+        onItemUpdated={() =>
+          currentCollection && fetchActiveCollectionData(currentCollection.id, selectedItem?.id)
+        }
         item={selectedItem}
       />
 
-      {/* Delete Modal */}
+      {/* Delete Item Modal */}
       <DeleteItemModal
         isOpen={isDeleteOpen}
         onClose={() => setIsDeleteOpen(false)}
-        onItemDeleted={() => fetchCollectionData(null)}
+        onItemDeleted={() =>
+          currentCollection && fetchActiveCollectionData(currentCollection.id, null)
+        }
         item={selectedItem}
       />
     </div>
