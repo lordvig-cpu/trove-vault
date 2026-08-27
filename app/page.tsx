@@ -14,7 +14,6 @@ import { CollectionRecord } from '@/components/CollectionDropdown';
 import { ItemRecord } from '@/components/TreeNode';
 import { PinFilledIcon } from '@/components/icons/PinIcons';
 
-
 export interface UniversalSearchResultItem extends ItemRecord {
   collection_name?: string;
 }
@@ -167,7 +166,6 @@ export default function Home() {
   const handleTogglePin = () => {
     const nextPinned = !isPinned;
     setIsPinned(nextPinned);
-    // Keep dropdown open when unpinning so it transitions directly to the popover
     setIsSidebarOpen(true);
     localStorage.setItem('uc_sidebar_pinned', JSON.stringify(nextPinned));
   };
@@ -176,7 +174,6 @@ export default function Home() {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchScope, setSearchScope] = useState<SearchScope>('current');
   const [universalResults, setUniversalResults] = useState<UniversalSearchResultItem[]>([]);
-  const [isSearchingUniversal, setIsSearchingUniversal] = useState(false);
 
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -245,7 +242,6 @@ export default function Home() {
 
   useEffect(() => {
     if (searchScope === 'all' && searchQuery.trim()) {
-      setIsSearchingUniversal(true);
       const matches: UniversalSearchResultItem[] = allItems
         .filter((it) => itemMatchesQuery(it, searchQuery))
         .map((it) => ({
@@ -254,7 +250,6 @@ export default function Home() {
             allCollections.find((c) => c.id === it.collection_id)?.name || 'Collection',
         }));
       setUniversalResults(matches);
-      setIsSearchingUniversal(false);
     } else {
       setUniversalResults([]);
     }
@@ -306,13 +301,12 @@ export default function Home() {
     setIsDeleteOpen(true);
   };
 
-  // Reusable Tree Component Render
   const renderExplorerTree = () => (
     <div className="min-w-fit">
       {searchScope === 'all' && searchQuery ? (
         <div className="space-y-1.5">
           {universalResults.length === 0 ? (
-            <div className="text-xs text-slate-500 text-center py-6">
+            <div className="text-xs text-content-muted text-center py-6">
               No matches found across any collection.
             </div>
           ) : (
@@ -322,19 +316,19 @@ export default function Home() {
                 onClick={() => handleTreeSelectItem(item, item.collection_id)}
                 className={`p-2 rounded-lg border transition cursor-pointer flex flex-col gap-0.5 ${
                   selectedItem?.id === item.id
-                    ? 'bg-indigo-950/70 border-indigo-700 shadow-md'
-                    : 'bg-slate-950/60 border-slate-800 hover:border-slate-700'
+                    ? 'bg-accent-primary/20 border-accent-primary shadow-md'
+                    : 'bg-surface border-border-subtle hover:border-border-strong'
                 }`}
               >
                 <div className="flex items-center justify-between gap-2">
-                  <span className="text-xs font-semibold text-white whitespace-nowrap">
+                  <span className="text-xs font-semibold text-content-primary whitespace-nowrap">
                     {item.name}
                   </span>
-                  <span className="text-[10px] font-mono text-indigo-400 shrink-0">
+                  <span className="text-[10px] font-mono text-accent-secondary shrink-0">
                     #{item.id}
                   </span>
                 </div>
-                <span className="text-[10px] text-slate-400 truncate">
+                <span className="text-[10px] text-content-muted truncate">
                   🗂️ {item.collection_name}
                 </span>
               </div>
@@ -344,7 +338,7 @@ export default function Home() {
       ) : (
         <div className="space-y-0.5">
           {unifiedForest.length === 0 && !loading ? (
-            <div className="text-xs text-slate-500 text-center py-6">
+            <div className="text-xs text-content-muted text-center py-6">
               {searchQuery
                 ? `No matches in ${activeCollection?.name || 'this folder'}.`
                 : 'No collections created yet.'}
@@ -376,7 +370,7 @@ export default function Home() {
   );
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col overflow-hidden">
+    <div className="min-h-screen bg-canvas text-content-primary flex flex-col overflow-hidden">
       <Navbar
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
@@ -402,20 +396,20 @@ export default function Home() {
       />
 
       <div className="flex-1 flex overflow-hidden relative">
-        {/* PINNED PERSISTENT SIDEBAR (Smooth slide and width transition) */}
+        {/* PINNED PERSISTENT SIDEBAR */}
         <aside
-          className={`h-full border-slate-800 bg-slate-900/40 flex flex-col gap-2.5 overflow-x-auto overflow-y-auto shrink-0 transition-all duration-300 ease-in-out ${
+          className={`h-full border-border-subtle bg-surface/50 flex flex-col gap-2.5 overflow-x-auto overflow-y-auto shrink-0 transition-all duration-300 ease-in-out ${
             isPinned
               ? 'w-84 border-r p-3 opacity-100'
               : 'w-0 border-r-0 p-0 opacity-0 pointer-events-none'
           }`}
         >
-          <div className="flex items-center justify-between border-b border-slate-800 pb-2 shrink-0 min-w-72">
+          <div className="flex items-center justify-between border-b border-border-subtle pb-2 shrink-0 min-w-72">
             <div>
-              <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
+              <span className="text-[11px] font-bold text-content-muted uppercase tracking-wider block">
                 Explorer
               </span>
-              <span className="text-[10px] text-slate-500 font-mono">
+              <span className="text-[10px] text-content-muted font-mono">
                 {allCollections.length} Folders • {allItems.length} Items
               </span>
             </div>
@@ -424,16 +418,15 @@ export default function Home() {
               {activeCollectionId && (
                 <button
                   onClick={() => handleAddSubItem(activeCollectionId, null)}
-                  className="text-[11px] font-semibold text-indigo-400 hover:text-indigo-300 shrink-0"
+                  className="text-[11px] font-semibold text-accent-secondary hover:text-accent-primary shrink-0"
                 >
                   + New Item
                 </button>
               )}
-              {/* Unpin Button */}
               <button
                 type="button"
                 onClick={handleTogglePin}
-                className="group p-1 rounded text-slate-400 hover:text-white hover:bg-slate-800 transition cursor-pointer"
+                className="group p-1 rounded text-content-muted hover:text-content-primary hover:bg-surface-hover transition cursor-pointer"
                 title="Unpin Sidebar (Open in Dropdown)"
               >
                 <PinFilledIcon className="w-3.5 h-3.5" />
@@ -442,7 +435,7 @@ export default function Home() {
           </div>
 
           {loading && (
-            <div className="text-xs text-amber-400 p-2.5 bg-slate-900 border border-slate-800 rounded-lg animate-pulse shrink-0 min-w-72">
+            <div className="text-xs text-amber-400 p-2.5 bg-surface border border-border-subtle rounded-lg animate-pulse shrink-0 min-w-72">
               ⏳ Syncing hierarchy...
             </div>
           )}
@@ -453,7 +446,6 @@ export default function Home() {
             </div>
           )}
 
-          {/* Tree Component */}
           <div className="flex-1 pb-4 min-w-72">
             {renderExplorerTree()}
           </div>
@@ -461,7 +453,7 @@ export default function Home() {
 
         {/* MAIN CANVAS DETAIL VIEW */}
         <main
-          className={`flex-1 p-8 overflow-y-auto bg-slate-950 transition-all duration-300 ease-in-out ${
+          className={`flex-1 p-8 overflow-y-auto bg-canvas transition-all duration-300 ease-in-out ${
             !isPinned && isSidebarOpen
               ? 'filter blur-[3.5px] brightness-[0.60] pointer-events-none select-none'
               : 'filter-none brightness-100'
@@ -487,10 +479,9 @@ export default function Home() {
               }}
             />
           </div>
-        </main>        
-      </div>        
+        </main>
+      </div>
 
-      {/* Global Templates Viewer */}
       {activeCollection && (
         <TemplateManagerModal
           isOpen={isTemplateManagerOpen}
@@ -501,7 +492,6 @@ export default function Home() {
         />
       )}
 
-      {/* Delete Collection Modal */}
       <DeleteCollectionModal
         isOpen={Boolean(collectionToDelete)}
         onClose={() => setCollectionToDelete(null)}
@@ -509,7 +499,6 @@ export default function Home() {
         collection={collectionToDelete}
       />
 
-      {/* Create Item Modal */}
       {targetCollectionIdForCreate && (
         <CreateItemModal
           isOpen={isCreateOpen}
@@ -526,7 +515,6 @@ export default function Home() {
         />
       )}
 
-      {/* Edit Item Modal */}
       <EditItemModal
         isOpen={isEditOpen}
         onClose={() => {
@@ -537,7 +525,6 @@ export default function Home() {
         item={itemToEdit || selectedItem}
       />
 
-      {/* Delete Item Modal */}
       <DeleteItemModal
         isOpen={isDeleteOpen}
         onClose={() => {

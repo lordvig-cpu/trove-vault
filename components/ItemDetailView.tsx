@@ -4,9 +4,9 @@ import { ItemRecord } from './TreeNode';
 
 interface ItemDetailViewProps {
   item: ItemRecord | null;
-  onAddSubItem: (parentItem: ItemRecord) => void;
-  onEditItem: (item: ItemRecord) => void;
-  onDeleteItem: (item: ItemRecord) => void;
+  onAddSubItem: (parent: ItemRecord) => void;
+  onEditItem: () => void;
+  onDeleteItem: () => void;
 }
 
 export default function ItemDetailView({
@@ -17,109 +17,119 @@ export default function ItemDetailView({
 }: ItemDetailViewProps) {
   if (!item) {
     return (
-      <div className="h-full flex flex-col items-center justify-center text-center p-8 text-slate-500 border border-dashed border-slate-800 rounded-2xl">
-        <span className="text-3xl mb-2">📂</span>
-        <p className="text-sm font-medium">Select an item from the hierarchy tree</p>
-        <p className="text-xs text-slate-600 mt-1">Click on any item in the left sidebar to view its properties.</p>
+      <div className="h-full flex flex-col items-center justify-center text-center p-8 border border-dashed border-border-subtle rounded-2xl bg-surface/30">
+        <span className="text-4xl mb-3">🔍</span>
+        <h3 className="text-base font-semibold text-content-primary">No Item Selected</h3>
+        <p className="text-xs text-content-muted mt-1 max-w-sm">
+          Select an item from the Explorer tree or create a new one to view its attributes, hierarchy, and metadata.
+        </p>
       </div>
     );
   }
 
-  const rawAttributes = item.attributes || {};
-  const imageUrl = rawAttributes['image_url'] ? String(rawAttributes['image_url']) : null;
+  const attributes = item.attributes || {};
+  const attributeEntries = Object.entries(attributes);
   
-  // Filter out the image_url from standard attribute pills
-  const attributeEntries = Object.entries(rawAttributes).filter(([key]) => key !== 'image_url');
+  // Safe resolution of image url whether stored at root or in JSONB attributes
+  const imageUrl = (item as any).image_url || attributes.image_url || attributes.photo_url;
 
   return (
     <div className="space-y-6">
-      {/* Item Header Card */}
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-4">
-        <div className="flex items-start justify-between">
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-mono text-indigo-400 bg-indigo-950/70 border border-indigo-800/60 px-2 py-0.5 rounded">
-                ITEM #{item.id}
+      {/* HEADER CARD */}
+      <div className="p-6 bg-surface border border-border-subtle rounded-2xl shadow-xl flex items-start justify-between gap-4">
+        <div className="space-y-1.5">
+          <div className="flex items-center gap-2">
+            <span className="px-2 py-0.5 rounded text-[11px] font-mono font-medium bg-accent-primary/15 text-accent-secondary border border-accent-primary/30">
+              ITEM #{item.id}
+            </span>
+            {item.parent_id ? (
+              <span className="px-2 py-0.5 rounded text-[11px] font-mono text-content-muted bg-surface-hover border border-border-subtle">
+                Parent ID: {item.parent_id}
               </span>
-              {item.parent_id ? (
-                <span className="text-xs font-mono text-slate-400 bg-slate-800 px-2 py-0.5 rounded border border-slate-700">
-                  Parent ID: {item.parent_id}
-                </span>
-              ) : (
-                <span className="text-xs font-mono text-emerald-400 bg-emerald-950/60 px-2 py-0.5 rounded border border-emerald-800/60">
-                  Root Item
-                </span>
-              )}
-            </div>
-            <h2 className="text-2xl font-bold text-white mt-2">{item.name}</h2>
-            <p className="text-xs text-slate-500 mt-1">
-              Created: {new Date(item.created_at || item.created_at || '').toLocaleString()}
+            ) : (
+              <span className="px-2 py-0.5 rounded text-[11px] font-mono text-emerald-400 bg-emerald-950/60 border border-emerald-800/60">
+                Root Item
+              </span>
+            )}
+          </div>
+          <h1 className="text-2xl font-bold text-content-primary tracking-tight">{item.name}</h1>
+          {item.created_at && (
+            <p className="text-xs text-content-muted">
+              Created: {new Date(item.created_at).toLocaleString()}
             </p>
-          </div>
+          )}
+        </div>
 
-          <div className="flex gap-2">
-            <button
-              onClick={() => onEditItem(item)}
-              className="px-3 py-1.5 text-xs font-medium text-slate-300 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg transition"
-            >
-              ✏️ Edit
-            </button>
-            <button
-              onClick={() => onAddSubItem(item)}
-              className="px-3 py-1.5 text-xs font-medium text-indigo-200 bg-indigo-600 hover:bg-indigo-500 rounded-lg transition shadow-md shadow-indigo-600/20"
-            >
-              + Add Sub-Item
-            </button>
-            <button
-              onClick={() => onDeleteItem(item)}
-              className="px-3 py-1.5 text-xs font-medium text-rose-400 hover:text-white bg-rose-950/40 hover:bg-rose-600 border border-rose-800/60 rounded-lg transition"
-            >
-              🗑️ Delete
-            </button>
-          </div>
+        {/* Action Controls */}
+        <div className="flex items-center gap-2 shrink-0">
+          <button
+            type="button"
+            onClick={onEditItem}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-surface-hover hover:bg-surface-hover/80 text-content-secondary hover:text-content-primary border border-border-subtle transition cursor-pointer"
+          >
+            <span>✏️</span> Edit
+          </button>
+          <button
+            type="button"
+            onClick={() => onAddSubItem(item)}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-accent-primary hover:bg-accent-primary-hover text-white shadow-md shadow-accent-primary/20 transition cursor-pointer"
+          >
+            <span>+</span> Add Sub-Item
+          </button>
+          <button
+            type="button"
+            onClick={onDeleteItem}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-rose-950/40 hover:bg-rose-900/60 text-rose-300 border border-rose-800/60 transition cursor-pointer"
+          >
+            <span>🗑️</span> Delete
+          </button>
         </div>
       </div>
 
-      {/* Main Content Split: Media & Dynamic Attributes */}
+      {/* GRID: IMAGE & ATTRIBUTES */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {/* Photo Box */}
-        <div className="md:col-span-1 bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-xl flex flex-col items-center justify-center">
+        {/* Image Preview Card */}
+        <div className="md:col-span-1 p-5 bg-surface border border-border-subtle rounded-2xl flex flex-col items-center justify-center text-center min-h-[200px]">
           {imageUrl ? (
-            <div className="w-full h-48 rounded-xl overflow-hidden bg-slate-950 border border-slate-800 flex items-center justify-center">
-              <img
-                src={imageUrl}
-                alt={item.name}
-                className="w-full h-full object-cover hover:scale-105 transition duration-300"
-              />
-            </div>
+            <img
+              src={imageUrl}
+              alt={item.name}
+              className="max-h-56 w-auto rounded-lg object-contain border border-border-subtle shadow-md"
+            />
           ) : (
-            <div className="w-full h-48 rounded-xl border border-dashed border-slate-800 flex flex-col items-center justify-center text-slate-600 text-xs">
-              <span className="text-2xl mb-1">📷</span>
-              <span>No image uploaded</span>
+            <div className="flex flex-col items-center justify-center text-content-muted gap-2 border border-dashed border-border-subtle/80 rounded-xl w-full h-full p-6">
+              <span className="text-3xl opacity-40">📷</span>
+              <span className="text-xs">No image uploaded</span>
             </div>
           )}
         </div>
 
-        {/* Dynamic Attributes Grid */}
-        <div className="md:col-span-2 bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl space-y-3">
-          <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-            <h3 className="text-xs font-semibold text-slate-300 uppercase tracking-wider">
+        {/* Attributes Card */}
+        <div className="md:col-span-2 p-5 bg-surface border border-border-subtle rounded-2xl space-y-4">
+          <div className="flex items-center justify-between border-b border-border-subtle pb-2.5">
+            <h2 className="text-xs font-bold uppercase tracking-wider text-content-muted">
               Custom Attributes (JSONB)
-            </h3>
-            <span className="text-xs text-slate-500">{attributeEntries.length} Fields</span>
+            </h2>
+            <span className="text-xs font-mono text-content-muted">
+              {attributeEntries.length} {attributeEntries.length === 1 ? 'Field' : 'Fields'}
+            </span>
           </div>
 
           {attributeEntries.length === 0 ? (
-            <p className="text-xs text-slate-500 italic py-4">No custom attributes recorded for this item.</p>
+            <p className="text-xs text-content-muted italic py-4">No custom fields assigned to this item.</p>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-              {attributeEntries.map(([key, val]) => (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {attributeEntries.map(([key, value]) => (
                 <div
                   key={key}
-                  className="bg-slate-950 border border-slate-800/80 rounded-xl p-3 flex flex-col justify-between"
+                  className="p-3 bg-canvas/60 border border-border-subtle/80 rounded-xl flex flex-col gap-0.5"
                 >
-                  <span className="text-[10px] font-mono text-slate-400 uppercase tracking-wider">{key}</span>
-                  <span className="text-xs font-semibold text-indigo-300 mt-1 truncate">{String(val)}</span>
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-content-muted">
+                    {key.replace(/_/g, ' ')}
+                  </span>
+                  <span className="text-xs font-semibold text-accent-secondary break-words">
+                    {String(value)}
+                  </span>
                 </div>
               ))}
             </div>
@@ -127,22 +137,23 @@ export default function ItemDetailView({
         </div>
       </div>
 
-      {/* Direct Sub-Items Preview */}
+      {/* SUB-ITEMS LIST CARD */}
       {item.children && item.children.length > 0 && (
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-3">
-          <h3 className="text-sm font-semibold text-slate-200 uppercase tracking-wider border-b border-slate-800 pb-3">
+        <div className="p-5 bg-surface border border-border-subtle rounded-2xl space-y-3">
+          <h2 className="text-xs font-bold uppercase tracking-wider text-content-muted border-b border-border-subtle pb-2">
             Direct Sub-Items ({item.children.length})
-          </h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5">
             {item.children.map((child) => (
               <div
                 key={child.id}
-                className="bg-slate-950 border border-slate-800/60 p-3 rounded-xl flex items-center justify-between text-xs"
+                className="p-3 bg-canvas/60 border border-border-subtle/80 rounded-xl flex items-center justify-between"
               >
-                <span className="text-slate-300 font-medium">{child.name}</span>
-                <span className="text-[10px] font-mono text-slate-500 bg-slate-900 px-1.5 py-0.5 rounded border border-slate-800">
-                  ID: #{child.id}
-                </span>
+                <div className="flex items-center gap-2 min-w-0">
+                  <span className="text-xs">📄</span>
+                  <span className="text-xs font-medium text-content-primary truncate">{child.name}</span>
+                </div>
+                <span className="text-[10px] font-mono text-content-muted shrink-0">#{child.id}</span>
               </div>
             ))}
           </div>

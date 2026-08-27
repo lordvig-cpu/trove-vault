@@ -40,7 +40,6 @@ export default function CollectionDropdown({
 
   const activeCollection = collections.find((c) => c.id === activeCollectionId);
 
-  // Group collections into tree hierarchy for display in the popover
   function buildCollectionTree(
     items: CollectionRecord[],
     parentId: number | null = null
@@ -114,8 +113,8 @@ export default function CollectionDropdown({
             }}
             className={`group flex items-center justify-between py-1.5 px-2 rounded-lg cursor-pointer transition ${
               isActive
-                ? 'bg-indigo-950/70 border border-indigo-800/80 text-white font-semibold'
-                : 'text-slate-300 hover:bg-slate-800/60 hover:text-white'
+                ? 'bg-accent-primary/20 border border-accent-primary/50 text-content-primary font-semibold'
+                : 'text-content-secondary hover:bg-surface-hover hover:text-content-primary'
             }`}
             style={{ paddingLeft: `${level * 14 + 8}px` }}
           >
@@ -124,19 +123,18 @@ export default function CollectionDropdown({
               <div className="flex flex-col min-w-0">
                 <span className="truncate text-xs">{col.name}</span>
                 {col.description && (
-                  <span className="truncate text-[10px] text-slate-400 font-normal">
+                  <span className="truncate text-[10px] text-content-muted font-normal">
                     {col.description}
                   </span>
                 )}
               </div>
               {isActive && (
-                <span className="text-[9px] font-mono text-emerald-400 bg-emerald-950/60 border border-emerald-800/60 px-1 py-0.2 rounded shrink-0 ml-1">
+                <span className="text-[9px] font-mono text-emerald-400 bg-emerald-950/80 border border-emerald-800/60 px-1 py-0.2 rounded shrink-0 ml-1">
                   Active
                 </span>
               )}
             </div>
 
-            {/* Quick action buttons */}
             <div
               className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition shrink-0"
               onClick={(e) => e.stopPropagation()}
@@ -144,7 +142,7 @@ export default function CollectionDropdown({
               <button
                 type="button"
                 onClick={() => handleStartCreate(col.id)}
-                className="p-1 text-slate-400 hover:text-amber-300 rounded hover:bg-slate-800 text-[10px]"
+                className="p-1 text-content-muted hover:text-amber-300 rounded hover:bg-surface-hover text-[10px]"
                 title="Add Sub-Folder"
               >
                 +📁
@@ -156,7 +154,7 @@ export default function CollectionDropdown({
                     onRequestDelete(col);
                     setIsOpen(false);
                   }}
-                  className="p-1 text-slate-400 hover:text-rose-400 rounded hover:bg-slate-800 text-[10px]"
+                  className="p-1 text-content-muted hover:text-rose-400 rounded hover:bg-surface-hover text-[10px]"
                   title="Delete Folder"
                 >
                   🗑️
@@ -166,7 +164,7 @@ export default function CollectionDropdown({
           </div>
 
           {hasChildren && (
-            <div className="border-l border-slate-800/60 ml-3.5 pl-0.5 space-y-0.5 mt-0.5">
+            <div className="border-l border-border-subtle ml-3.5 pl-0.5 space-y-0.5 mt-0.5">
               {renderTreeNodes(col.children!, level + 1)}
             </div>
           )}
@@ -177,60 +175,55 @@ export default function CollectionDropdown({
 
   return (
     <div className="relative">
-      {/* TRIGGER BUTTON */}
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800/90 hover:bg-slate-800 text-white border border-slate-700 transition cursor-pointer"
+        className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold bg-surface-hover/80 hover:bg-surface-hover text-content-primary border border-border-subtle transition cursor-pointer"
       >
         <span className="text-amber-400">📁</span>
         <span className="truncate max-w-[140px]">
           {activeCollection ? activeCollection.name : 'Select Collection'}
         </span>
-        <span className="text-[10px] text-slate-400">▾</span>
+        <span className="text-[10px] text-content-muted">▾</span>
       </button>
 
-      {/* DROPDOWN POPOVER */}
       {isOpen && (
         <>
-          {/* DEEPER CANVAS DIMMING (70%) + FROSTED BLUR */}
           <div
-            className="fixed inset-0 top-14 bg-black/70 backdrop-blur-md z-40 transition-all duration-200"
+            className="fixed inset-0 top-14 z-40"
             onClick={() => {
               setIsOpen(false);
               setIsCreating(false);
             }}
           />
 
-          {/* FROSTED GLASS CARD */}
-          <div className="absolute left-0 mt-2 w-80 bg-slate-900/80 border border-slate-700/80 rounded-xl shadow-2xl shadow-black z-50 p-3 flex flex-col gap-3 backdrop-blur-xl">
-            <div className="flex items-center justify-between border-b border-slate-800/80 pb-2">
-              <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
+          <div className="absolute left-0 mt-2 w-80 bg-surface-popover border border-border-strong rounded-xl shadow-[0_20px_50px_rgba(0,0,0,0.85)] ring-1 ring-white/10 z-50 p-3 flex flex-col gap-3 backdrop-blur-xl">
+            <div className="flex items-center justify-between border-b border-border-subtle pb-2">
+              <span className="text-xs font-bold uppercase tracking-wider text-content-muted">
                 Collections & Folders
               </span>
               <button
                 type="button"
                 onClick={() => handleStartCreate(null)}
-                className="text-[11px] font-semibold text-indigo-400 hover:text-indigo-300 cursor-pointer"
+                className="text-[11px] font-semibold text-accent-secondary hover:text-accent-primary cursor-pointer"
               >
                 + New Root Collection
               </button>
             </div>
 
-            {/* CREATE INLINE FORM */}
             {isCreating && (
               <form
                 onSubmit={handleCreateCollection}
-                className="p-2.5 bg-slate-950/80 border border-indigo-900/60 rounded-lg flex flex-col gap-2"
+                className="p-2.5 bg-surface border border-accent-primary/40 rounded-lg flex flex-col gap-2"
               >
                 <div className="flex items-center justify-between">
-                  <span className="text-[11px] font-bold text-indigo-300">
+                  <span className="text-[11px] font-bold text-accent-secondary">
                     {parentCollectionId ? '➕ New Sub-Folder' : '➕ New Root Collection'}
                   </span>
                   <button
                     type="button"
                     onClick={() => setIsCreating(false)}
-                    className="text-slate-400 hover:text-white text-xs"
+                    className="text-content-muted hover:text-content-primary text-xs"
                   >
                     ✕
                   </button>
@@ -243,7 +236,7 @@ export default function CollectionDropdown({
                   onChange={(e) => setNewColName(e.target.value)}
                   autoFocus
                   required
-                  className="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-xs text-white focus:outline-none focus:border-indigo-500"
+                  className="w-full bg-canvas border border-border-subtle rounded px-2 py-1 text-xs text-content-primary focus:outline-none focus:border-accent-primary"
                 />
 
                 <input
@@ -251,7 +244,7 @@ export default function CollectionDropdown({
                   placeholder="Description (optional)..."
                   value={newColDesc}
                   onChange={(e) => setNewColDesc(e.target.value)}
-                  className="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-[11px] text-slate-300 focus:outline-none focus:border-indigo-500"
+                  className="w-full bg-canvas border border-border-subtle rounded px-2 py-1 text-[11px] text-content-secondary focus:outline-none focus:border-accent-primary"
                 />
 
                 {error && <span className="text-[10px] text-rose-400">{error}</span>}
@@ -260,14 +253,14 @@ export default function CollectionDropdown({
                   <button
                     type="button"
                     onClick={() => setIsCreating(false)}
-                    className="px-2 py-1 text-[11px] text-slate-400 hover:text-white"
+                    className="px-2 py-1 text-[11px] text-content-muted hover:text-content-primary"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
                     disabled={isSaving || !newColName.trim()}
-                    className="px-2.5 py-1 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white rounded text-[11px] font-semibold"
+                    className="px-2.5 py-1 bg-accent-primary hover:bg-accent-primary-hover disabled:opacity-50 text-white rounded text-[11px] font-semibold"
                   >
                     {isSaving ? 'Creating...' : 'Create'}
                   </button>
@@ -275,10 +268,9 @@ export default function CollectionDropdown({
               </form>
             )}
 
-            {/* TREE LIST OF COLLECTIONS */}
             <div className="max-h-64 overflow-y-auto space-y-1">
               {collections.length === 0 ? (
-                <div className="text-xs text-slate-500 text-center py-4">
+                <div className="text-xs text-content-muted text-center py-4">
                   No collections yet. Click "+ New Root Collection" above.
                 </div>
               ) : (

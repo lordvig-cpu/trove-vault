@@ -1,54 +1,140 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* PALETTE: CLEAN AND ENERGETIC (Luminous / Brightened Dark) */
+:root,
+[data-theme='clean-energetic'] {
+  --bg-canvas: #121b33;                   /* Lifted vibrant indigo canvas */
+  --bg-surface: #1e2c52;                  /* Noticeably brighter card & panel surface */
+  --bg-surface-hover: #293d6e;            /* Distinct hover highlights */
+  --bg-popover: rgba(30, 44, 82, 0.95);   /* Frosted periwinkle card */
+  
+  --border-subtle: #334a7d;               /* Crisp visible dividers */
+  --border-strong: #5680E9;               /* Highlight borders & edges */
+
+  --accent-primary: #5680E9;              /* #5680E9 Royal Azure (Buttons & active tabs) */
+  --accent-primary-hover: #436fdc;        /* Deeper Azure Hover */
+  --accent-secondary: #84CEEB;            /* #84CEEB Bright Sky Blue (Active texts & badges) */
+  --accent-glow: rgba(86, 128, 233, 0.35);/* Rich Azure Glow */
+
+  --text-primary: #ffffff;                /* Crisp white titles */
+  --text-secondary: #C1C8E4;              /* #C1C8E4 Soft Lavender-Periwinkle body text */
+  --text-muted: #95a7d1;                  /* High-legibility subtitles */
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+/* PALETTE 2: SOLAR FLARE (Coral & Electric Marigold) */
+[data-theme='solar-flare'] {
+  --bg-canvas: #0b0f19;
+  --bg-surface: #161d2e;
+  --bg-surface-hover: #222b42;
+  --bg-popover: rgba(22, 29, 46, 0.92);
+  --border-subtle: #29344f;
+  --border-strong: #44547d;
+  --accent-primary: #ff5447;
+  --accent-primary-hover: #e83e31;
+  --accent-secondary: #ffb703;
+  --accent-glow: rgba(255, 84, 71, 0.25);
+  --text-primary: #ffffff;
+  --text-secondary: #d6e0ea;
+  --text-muted: #8998ad;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* PALETTE 3: TERRACOTTA DUNES (Terracotta & Sandy Orange) */
+[data-theme='terracotta'] {
+  --bg-canvas: #121214;
+  --bg-surface: #1c1b1f;
+  --bg-surface-hover: #29282e;
+  --bg-popover: rgba(28, 27, 31, 0.92);
+  --border-subtle: #33313b;
+  --border-strong: #4d4a59;
+  --accent-primary: #e06d53;
+  --accent-primary-hover: #cb593f;
+  --accent-secondary: #f4a261;
+  --accent-glow: rgba(224, 109, 83, 0.25);
+  --text-primary: #faf8f5;
+  --text-secondary: #d4cfc7;
+  --text-muted: #948f86;
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* PALETTE 4: BLOOD ORANGE & PEACH */
+[data-theme='blood-orange'] {
+  --bg-canvas: #0f111a;
+  --bg-surface: #1a1d2e;
+  --bg-surface-hover: #262a42;
+  --bg-popover: rgba(26, 29, 46, 0.92);
+  --border-subtle: #2d324d;
+  --border-strong: #484e75;
+  --accent-primary: #ff4d4d;
+  --accent-primary-hover: #e63939;
+  --accent-secondary: #ffab76;
+  --accent-glow: rgba(255, 77, 77, 0.25);
+  --text-primary: #ffffff;
+  --text-secondary: #d5d9ec;
+  --text-muted: #8e95b8;
 }
 
-/* Custom Dark Scrollbars across the App */
+/* PALETTE 5: RETRO HORIZON (Neon Coral & Sunset Orange) */
+[data-theme='retro-horizon'] {
+  --bg-canvas: #090e17;
+  --bg-surface: #131c2e;
+  --bg-surface-hover: #1e2b45;
+  --bg-popover: rgba(19, 28, 46, 0.92);
+  --border-subtle: #243452;
+  --border-strong: #3f5580;
+  --accent-primary: #ff6584;
+  --accent-primary-hover: #e84c6e;
+  --accent-secondary: #ff884b;
+  --accent-glow: rgba(255, 101, 132, 0.25);
+  --text-primary: #ffffff;
+  --text-secondary: #ced8eb;
+  --text-muted: #7f91b3;
+}
+
+/* ==========================================================================
+   TAILWIND V4 THEME TOKEN MAPPING
+   ========================================================================== */
+@theme {
+  --color-canvas: var(--bg-canvas);
+  --color-surface: var(--bg-surface);
+  --color-surface-hover: var(--bg-surface-hover);
+  --color-surface-popover: var(--bg-popover);
+
+  --color-border-subtle: var(--border-subtle);
+  --color-border-strong: var(--border-strong);
+
+  --color-accent-primary: var(--accent-primary);
+  --color-accent-primary-hover: var(--accent-primary-hover);
+  --color-accent-secondary: var(--accent-secondary);
+  --color-accent-glow: var(--accent-glow);
+
+  --color-content-primary: var(--text-primary);
+  --color-content-secondary: var(--text-secondary);
+  --color-content-muted: var(--text-muted);
+}
+
+/* ==========================================================================
+   GLOBAL SCROLLBAR STYLES
+   ========================================================================== */
 * {
   scrollbar-width: thin;
-  scrollbar-color: #64748b rgba(15, 23, 42, 0.4);
+  scrollbar-color: var(--border-strong) var(--bg-canvas);
 }
 
-/* Chrome, Edge, Safari WebKit Scrollbars */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(15, 23, 42, 0.3);
-  border-radius: 9999px;
+  background: var(--bg-canvas);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #64748b;
+  background: var(--border-strong);
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: var(--accent-secondary);
 }
 
 ::-webkit-scrollbar-corner {

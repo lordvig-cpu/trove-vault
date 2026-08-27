@@ -45,13 +45,13 @@ export default function UnifiedExplorerTree({
 
   return (
     <div className="select-none text-[13px] font-sans min-w-max">
-      {/* COLLECTION / FOLDER ROW (28px row height with 13.5px font) */}
+      {/* COLLECTION / FOLDER ROW */}
       <div
         onClick={() => onSelectCollection(collection.id)}
         className={`group flex items-center justify-between h-7 px-1.5 rounded-md cursor-pointer transition whitespace-nowrap ${
           isActiveCollection
-            ? 'bg-indigo-950/70 text-indigo-100 font-medium'
-            : 'text-slate-300 hover:bg-slate-800/40 hover:text-white'
+            ? 'bg-accent-primary/15 text-accent-secondary font-medium'
+            : 'text-content-secondary hover:bg-surface-hover/60 hover:text-content-primary'
         }`}
       >
         <div className="flex items-center gap-1.5 shrink-0 pr-2">
@@ -62,14 +62,14 @@ export default function UnifiedExplorerTree({
               e.stopPropagation();
               setIsOpen(!isOpen);
             }}
-            className={`w-4 h-4 flex items-center justify-center text-[9px] text-slate-500 hover:text-slate-200 transition shrink-0 ${
+            className={`w-4 h-4 flex items-center justify-center text-[9px] text-content-muted hover:text-content-primary transition shrink-0 ${
               !hasChildren ? 'opacity-0 cursor-default' : ''
             }`}
           >
             {isOpen ? '▼' : '▶'}
           </button>
 
-          {/* 16x16 Folder Icon */}
+          {/* Folder Icon */}
           <span className="w-4 h-4 flex items-center justify-center text-sm text-amber-400 shrink-0">
             {isOpen ? '📂' : '📁'}
           </span>
@@ -92,7 +92,7 @@ export default function UnifiedExplorerTree({
           <button
             type="button"
             onClick={() => onAddSubCollection(collection.id)}
-            className="p-1 text-slate-400 hover:text-amber-300 rounded hover:bg-slate-800 text-xs"
+            className="p-1 text-content-muted hover:text-amber-300 rounded hover:bg-surface-hover text-xs"
             title="New Sub-Folder"
           >
             +📁
@@ -100,7 +100,7 @@ export default function UnifiedExplorerTree({
           <button
             type="button"
             onClick={() => onAddSubItem(collection.id, null)}
-            className="p-1 text-slate-400 hover:text-indigo-300 rounded hover:bg-slate-800 text-xs"
+            className="p-1 text-content-muted hover:text-accent-secondary rounded hover:bg-surface-hover text-xs"
             title="New Item"
           >
             +📄
@@ -108,7 +108,7 @@ export default function UnifiedExplorerTree({
           <button
             type="button"
             onClick={() => onEditCollection(collection)}
-            className="p-1 text-slate-400 hover:text-slate-200 rounded hover:bg-slate-800 text-xs"
+            className="p-1 text-content-muted hover:text-content-primary rounded hover:bg-surface-hover text-xs"
             title="Edit Folder"
           >
             ✏️
@@ -126,7 +126,7 @@ export default function UnifiedExplorerTree({
 
       {/* NESTED CHILDREN CONTAINER */}
       {isOpen && hasChildren && (
-        <div className="border-l border-slate-800/80 space-y-0.5 ml-2 pl-1.5 my-0.5">
+        <div className="border-l border-border-subtle space-y-0.5 ml-2 pl-1.5 my-0.5">
           {collection.subCollections?.map((subCol) => (
             <UnifiedExplorerTree
               key={`col-${subCol.id}`}
@@ -205,8 +205,8 @@ function ItemTreeNode({
         onClick={() => onSelectItem(item, collectionId)}
         className={`group flex items-center justify-between h-7 px-1.5 rounded-md cursor-pointer transition whitespace-nowrap ${
           isSelected
-            ? 'bg-indigo-600/30 text-indigo-100 font-medium'
-            : 'text-slate-400 hover:bg-slate-800/30 hover:text-slate-200'
+            ? 'bg-accent-primary/25 text-content-primary font-medium border border-accent-primary/40'
+            : 'text-content-muted hover:bg-surface-hover/60 hover:text-content-secondary'
         }`}
       >
         <div className="flex items-center gap-1.5 shrink-0 pr-2">
@@ -217,14 +217,14 @@ function ItemTreeNode({
               e.stopPropagation();
               setIsOpen(!isOpen);
             }}
-            className={`w-4 h-4 flex items-center justify-center text-[9px] text-slate-500 hover:text-slate-200 transition shrink-0 ${
+            className={`w-4 h-4 flex items-center justify-center text-[9px] text-content-muted hover:text-content-primary transition shrink-0 ${
               !hasSubItems ? 'opacity-0 cursor-default' : ''
             }`}
           >
             {isOpen ? '▼' : '▶'}
           </button>
 
-          {/* 16x16 Type Icon Container */}
+          {/* Type Icon Container */}
           <span className="w-4 h-4 flex items-center justify-center text-[13px] leading-none shrink-0 select-none">
             {typeIcon}
           </span>
@@ -241,7 +241,7 @@ function ItemTreeNode({
           <button
             type="button"
             onClick={() => onAddSubItem(collectionId, item.id)}
-            className="p-1 text-slate-500 hover:text-indigo-300 rounded hover:bg-slate-800 text-xs"
+            className="p-1 text-content-muted hover:text-accent-secondary rounded hover:bg-surface-hover text-xs"
             title="Add Child Sub-Item"
           >
             +↳
@@ -249,7 +249,7 @@ function ItemTreeNode({
           <button
             type="button"
             onClick={() => onEditItem(item, collectionId)}
-            className="p-1 text-slate-500 hover:text-slate-200 rounded hover:bg-slate-800 text-xs"
+            className="p-1 text-content-muted hover:text-content-primary rounded hover:bg-surface-hover text-xs"
             title="Edit Item"
           >
             ✏️
@@ -267,7 +267,7 @@ function ItemTreeNode({
 
       {/* RECURSIVE SUB-ITEMS */}
       {isOpen && hasSubItems && (
-        <div className="border-l border-slate-800/80 space-y-0.5 ml-2 pl-1.5 my-0.5">
+        <div className="border-l border-border-subtle space-y-0.5 ml-2 pl-1.5 my-0.5">
           {item.children!.map((child) => (
             <ItemTreeNode
               key={`item-${child.id}`}

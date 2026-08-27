@@ -1,11 +1,23 @@
 'use client';
 
-import { ReactNode } from 'react';
+import { ReactNode, useState, useEffect } from 'react';
 import { CollectionRecord } from './CollectionDropdown';
 import CollectionDropdown from './CollectionDropdown';
 import { PinOutlineIcon } from './icons/PinIcons';
 
 export type SearchScope = 'current' | 'all';
+
+export type ThemePreset = 'clean-energetic';
+
+interface ThemeOption {
+  id: ThemePreset;
+  label: string;
+  dotColor: string;
+}
+
+const THEME_OPTIONS: { id: ThemePreset; label: string; dotColor: string }[] = [
+  { id: 'clean-energetic', label: 'Clean & Energetic', dotColor: '#5680E9' },
+];
 
 interface NavbarProps {
   searchQuery: string;
@@ -49,47 +61,60 @@ export default function Navbar({
   onTogglePin,
   explorerContent,
 }: NavbarProps) {
+  // Live theme selection state
+  const [currentTheme, setCurrentTheme] = useState<ThemePreset>('clean-energetic');
+  const [isThemeMenuOpen, setIsThemeMenuOpen] = useState(false);
+  
+  useEffect(() => {
+    setCurrentTheme('clean-energetic');
+    document.documentElement.setAttribute('data-theme', 'clean-energetic');
+  }, []);
+  
+  const handleSelectTheme = (themeId: ThemePreset) => {
+    setCurrentTheme(themeId);
+    document.documentElement.setAttribute('data-theme', themeId);
+    localStorage.setItem('uc_theme_preset', themeId);
+    setIsThemeMenuOpen(false);
+  };
+
   return (
-    <header className="h-14 border-b border-slate-800 bg-slate-900/90 backdrop-blur flex items-center justify-between shrink-0 z-40">
+    <header className="h-14 border-b border-border-subtle bg-surface/90 backdrop-blur flex items-center justify-between shrink-0 z-40">
       {/* LEFT SECTION */}
       <div className="flex items-center h-full">
-        {/* BRAND & DOCKED TAB AREA (Smooth width & border transition) */}
+        {/* BRAND & DOCKED TAB AREA */}
         <div
           className={`flex items-center justify-between h-full px-4 transition-all duration-300 ease-in-out ${
             isPinned
-              ? 'w-84 border-r border-slate-800 shrink-0'
+              ? 'w-84 border-r border-border-subtle shrink-0'
               : 'w-auto border-r-0 border-transparent gap-3 shrink-0'
           }`}
         >
-          {/* Brand Logo & Name */}
           <div className="flex items-center gap-2 shrink-0">
-            <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center font-bold text-white text-sm shadow-md shadow-indigo-500/20 shrink-0">
+            <div className="w-8 h-8 rounded-lg bg-accent-primary flex items-center justify-center font-bold text-white text-sm shadow-md shadow-accent-primary/20 shrink-0">
               UC
             </div>
             <div>
-              <span className="font-bold text-sm tracking-tight text-white block">
+              <span className="font-bold text-sm tracking-tight text-content-primary block">
                 UNIVERSAL COLLECTIONS
               </span>
-              <span className="text-[10px] font-mono text-slate-400 block -mt-1">
+              <span className="text-[10px] font-mono text-content-muted block -mt-1">
                 v0.1.0
               </span>
             </div>
           </div>
 
-          {/* ServiceNow Active Underlined Tab */}
           {isPinned && (
-            <div className="relative h-full flex items-center px-2 mr-1 animate-fadeIn">
-              <span className="text-xs font-semibold text-white tracking-wide select-none">
+            <div className="relative h-full flex items-center px-2 mr-1">
+              <span className="text-xs font-semibold text-content-primary tracking-wide select-none">
                 Explorer
               </span>
-              <div className="absolute bottom-0 left-0 right-0 h-[2.5px] bg-indigo-500 rounded-t-full shadow-sm shadow-indigo-500/50" />
+              <div className="absolute bottom-0 left-0 right-0 h-[2.5px] bg-accent-primary rounded-t-full shadow-sm shadow-accent-primary/50" />
             </div>
           )}
         </div>
 
         {/* TOP LEVEL NAVIGATION BUTTONS */}
         <div className="flex items-center gap-3 px-4 h-full">
-          {/* UNPINNED EXPLORER BUTTON & POPOVER */}
           {!isPinned && (
             <div className="relative">
               <button
@@ -97,28 +122,25 @@ export default function Navbar({
                 onClick={onToggleSidebar}
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all duration-200 cursor-pointer ${
                   isSidebarOpen
-                    ? 'bg-indigo-950/80 border-indigo-700 text-indigo-200 shadow-sm'
-                    : 'bg-slate-800/80 border-slate-700 text-slate-300 hover:bg-slate-800 hover:text-white'
+                    ? 'bg-accent-primary/15 border-accent-primary text-accent-secondary shadow-sm'
+                    : 'bg-surface-hover/80 border-border-subtle text-content-secondary hover:bg-surface-hover hover:text-content-primary'
                 }`}
                 title="Open Explorer Tree"
               >
                 <span>🌲</span>
                 <span>Explorer</span>
-                <span className="text-[10px] text-slate-400">▾</span>
+                <span className="text-[10px] text-content-muted">▾</span>
               </button>
 
               {isSidebarOpen && (
                 <>
-                  {/* INVISIBLE CLICK-OUTSIDE DISMISS AREA */}
                   <div
                     className="fixed inset-0 top-14 z-40"
                     onClick={onToggleSidebar}
                   />
-
-                  {/* HIGH-DEPTH ELEVATED DROPDOWN CARD */}
-                  <div className="absolute left-0 mt-2 w-88 max-h-[75vh] bg-slate-900/95 border border-slate-700/80 rounded-xl shadow-[0_20px_50px_rgba(0,0,0,0.85)] ring-1 ring-white/10 z-50 p-3 flex flex-col gap-2 backdrop-blur-xl animate-in fade-in zoom-in-95 duration-150">
-                    <div className="flex items-center justify-between border-b border-slate-800 pb-2 shrink-0">
-                      <span className="text-xs font-bold uppercase tracking-wider text-slate-300">
+                  <div className="absolute left-0 mt-2 w-88 max-h-[75vh] bg-surface-popover border border-border-strong rounded-xl shadow-[0_20px_50px_rgba(0,0,0,0.85)] ring-1 ring-white/10 z-50 p-3 flex flex-col gap-2 backdrop-blur-xl animate-in fade-in zoom-in-95 duration-150">
+                    <div className="flex items-center justify-between border-b border-border-subtle pb-2 shrink-0">
+                      <span className="text-xs font-bold uppercase tracking-wider text-content-muted">
                         🌲 Explorer
                       </span>
 
@@ -126,7 +148,7 @@ export default function Navbar({
                         <button
                           type="button"
                           onClick={onTogglePin}
-                          className="group p-1 rounded text-slate-400 hover:text-white hover:bg-slate-800 transition cursor-pointer"
+                          className="group p-1 rounded text-content-muted hover:text-content-primary hover:bg-surface-hover transition cursor-pointer"
                           title="Pin Explorer to Sidebar"
                         >
                           <PinOutlineIcon className="w-3.5 h-3.5" />
@@ -134,7 +156,7 @@ export default function Navbar({
                         <button
                           type="button"
                           onClick={onToggleSidebar}
-                          className="p-1 text-slate-400 hover:text-white rounded hover:bg-slate-800 text-xs cursor-pointer"
+                          className="p-1 text-content-muted hover:text-content-primary rounded hover:bg-surface-hover text-xs cursor-pointer"
                           title="Close"
                         >
                           ✕
@@ -148,7 +170,6 @@ export default function Navbar({
                   </div>
                 </>
               )}
-
             </div>
           )}
 
@@ -167,11 +188,62 @@ export default function Navbar({
           <button
             type="button"
             onClick={onOpenTemplateManager}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800/80 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-700 transition cursor-pointer"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-surface-hover/80 hover:bg-surface-hover text-content-secondary hover:text-content-primary border border-border-subtle transition cursor-pointer"
           >
             <span>📑</span>
             <span>Templates</span>
           </button>
+
+          {/* LIVE THEMES SELECTOR DROPDOWN */}
+          <div className="relative">
+            <button
+              type="button"
+              onClick={() => setIsThemeMenuOpen(!isThemeMenuOpen)}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-surface-hover/80 hover:bg-surface-hover text-content-secondary hover:text-content-primary border border-border-subtle transition cursor-pointer"
+              title="Change Color Theme"
+            >
+              <span>🎨</span>
+              <span>Themes</span>
+              <span className="text-[10px] text-content-muted">▾</span>
+            </button>
+
+            {isThemeMenuOpen && (
+              <>
+                <div
+                  className="fixed inset-0 z-40"
+                  onClick={() => setIsThemeMenuOpen(false)}
+                />
+                <div className="absolute left-0 mt-2 w-52 bg-surface-popover border border-border-strong rounded-xl shadow-2xl z-50 p-2 flex flex-col gap-1 backdrop-blur-xl animate-in fade-in zoom-in-95 duration-150">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-content-muted px-2 py-1 border-b border-border-subtle">
+                    Color Themes
+                  </span>
+                  {THEME_OPTIONS.map((t) => (
+                    <button
+                      key={t.id}
+                      type="button"
+                      onClick={() => handleSelectTheme(t.id)}
+                      className={`flex items-center justify-between w-full px-2.5 py-1.5 rounded-lg text-xs font-medium text-left transition cursor-pointer ${
+                        currentTheme === t.id
+                          ? 'bg-accent-primary/20 text-content-primary font-semibold border border-accent-primary/40'
+                          : 'text-content-secondary hover:bg-surface-hover hover:text-content-primary'
+                      }`}
+                    >
+                      <div className="flex items-center gap-2">
+                        <span
+                          className="w-3 h-3 rounded-full shrink-0 shadow-xs"
+                          style={{ backgroundColor: t.dotColor }}
+                        />
+                        <span>{t.label}</span>
+                      </div>
+                      {currentTheme === t.id && (
+                        <span className="text-[11px] text-accent-secondary">✓</span>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              </>
+            )}
+          </div>
         </div>
       </div>
 
@@ -181,7 +253,7 @@ export default function Navbar({
           <select
             value={searchScope}
             onChange={(e) => onSearchScopeChange(e.target.value as SearchScope)}
-            className="bg-slate-800/90 text-slate-300 text-xs font-medium py-1.5 pl-2 pr-6 border border-slate-700 rounded-l-lg focus:outline-none focus:border-indigo-500 cursor-pointer"
+            className="bg-surface text-content-secondary text-xs font-medium py-1.5 pl-2 pr-6 border border-border-subtle rounded-l-lg focus:outline-none focus:border-accent-primary cursor-pointer"
           >
             <option value="current">📁 This Folder</option>
             <option value="all">🌐 All Folders</option>
@@ -196,27 +268,27 @@ export default function Navbar({
             }
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
-            className="w-full bg-slate-900 border-y border-r border-slate-700 text-xs rounded-r-lg px-3 py-1.5 text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500"
+            className="w-full bg-canvas border-y border-r border-border-subtle text-xs rounded-r-lg px-3 py-1.5 text-content-primary placeholder-content-muted focus:outline-none focus:border-accent-primary"
           />
 
           {searchQuery && (
             <button
               type="button"
               onClick={() => onSearchChange('')}
-              className="absolute right-2.5 text-slate-500 hover:text-white text-xs font-bold cursor-pointer"
+              className="absolute right-2.5 text-content-muted hover:text-content-primary text-xs font-bold cursor-pointer"
             >
               ✕
             </button>
           )}
         </div>
 
-        <div className="flex items-center gap-1.5 px-2.5 py-1 bg-slate-800/60 border border-slate-700/80 rounded-lg text-[11px] font-medium text-emerald-400">
+        <div className="flex items-center gap-1.5 px-2.5 py-1 bg-surface border border-border-subtle rounded-lg text-[11px] font-medium text-emerald-400">
           <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-          <span className="text-slate-300 hidden sm:inline">Supabase</span> Live
+          <span className="text-content-secondary hidden sm:inline">Supabase</span> Live
         </div>
 
         <div
-          className="w-8 h-8 rounded-full bg-indigo-950 border border-indigo-700/80 flex items-center justify-center text-xs font-bold text-indigo-300 shadow-inner cursor-pointer hover:border-indigo-500 transition"
+          className="w-8 h-8 rounded-full bg-accent-primary/20 border border-accent-primary/60 flex items-center justify-center text-xs font-bold text-accent-secondary shadow-inner cursor-pointer hover:border-accent-primary transition"
           title="User Profile / Account"
         >
           👤
