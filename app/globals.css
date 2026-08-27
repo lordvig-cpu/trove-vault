@@ -1,31 +1,31 @@
 @import "tailwindcss";
 
 /* PALETTE: CLEAN AND ENERGETIC (Luminous / Brightened Dark) */
-/* --bg-canvas: 
+/* --bg-canvas: #121b33;
 /*     Deepest background behind everything (main canvas area, app wrapper).
-/* --bg-surface:   
+/* --bg-surface: #1e2c52;  
 /*     Solid card surfaces, pinned left sidebar background, top navbar header, modal containers.
-/* --bg-surface-hover: 
+/* --bg-surface-hover: #293d6e;
 /*     Hover highlight state on unselected rows, dropdown buttons, unselected tree nodes.
-/* --bg-popover: 
+/* --bg-popover: rgba(30, 44, 82, 0.75);
 /*     Frosted floating popover menus (the Explorer dropdown card, Collections dropdown card).
-/* --border-subtle: 
+/* --border-subtle: #334a7d;
 /*     Hairline dividers, card outlines, header bottom-borders, vertical tree branch lines.
-/* --border-strong: 
+/* --border-strong: #5680E9;
 /*     High-contrast boundaries, focused input field rings, outer borders on popover modals.
-/* --accent-primary: 
+/* --accent-primary: #5680E9;
 /*     Main brand badge ("UC"), primary buttons (+ Add Sub-Item), active tab indicator underline.
-/* --accent-primary-hover: 
+/* --accent-primary-hover: #436fdc;
 /*     Hover/active pressed state on primary buttons.
-/* --accent-secondary: 
+/* --accent-secondary: #f5a524;
 /*     Bright accent labels, selected tree item text, attribute values, custom scrollbar thumb hover.
-/* --accent-glow: 
+/* --accent-glow: rgba(86, 128, 233, 0.35);
 /*     Soft glow tints behind active selections, badge rings, and focused elements.
-/* --text-primary: 
+/* --text-primary: #ffffff;
 /*     Main item headings, modal titles, active bold button text (high-contrast white).
-/* --text-secondary: 
+/* --text-secondary: #C1C8E4;
 /*     Standard body copy, tree item names, dropdown menu item labels.
-/* --text-muted: 
+/* --text-muted: #95a7d1;
 /*     Subtitles, field count counters, metadata labels (e.g. timestamps, IDs, inactive icons).
 */
 /* ==========================================================================
@@ -146,4 +146,55 @@
 
 ::-webkit-scrollbar-corner {
   background: transparent;
+}
+
+/* ==========================================================================
+   STUDIO GRID CANVAS & DISPLAY CARDS (Design System Tokens)
+   ========================================================================== */
+.studio-grid-canvas {
+  background-color: #0c1017;
+  background-image: 
+    /* 1. Sharp Top-Left Key Spotlight */
+    radial-gradient(ellipse 800px 500px at 10% 15%, rgba(42, 60, 90, 0.45) 0%, transparent 80%),
+    /* 2. Soft Ambient Center Fill */
+    radial-gradient(ellipse 1000px 700px at 50% 40%, rgba(22, 33, 54, 0.35) 0%, transparent 100%),
+    /* 3. Deep Edge Vignette */
+    radial-gradient(circle at 50% 50%, transparent 60%, rgba(5, 7, 11, 0.85) 100%),
+    /* 4. Fine Blueprint Grid Lines */
+    linear-gradient(to right, rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+  background-size: 100% 100%, 100% 100%, 100% 100%, 54px 54px, 54px 54px;
+  background-attachment: fixed;
+}
+
+/* Primary Elevated Display Card */
+.display-card {
+  background: rgba(17, 27, 46, 0.75);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(59, 130, 246, 0.18);
+  box-shadow: 
+    0 10px 30px -5px rgba(0, 0, 0, 0.60),
+    0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+  transition: all 0.2s ease-in-out;
+}
+
+.display-card:hover {
+  border-color: rgba(59, 130, 246, 0.35);
+  box-shadow: 
+    0 14px 36px -4px rgba(0, 0, 0, 0.75),
+    0 0 12px rgba(59, 130, 246, 0.15),
+    0 0 0 1px rgba(255, 255, 255, 0.08) inset;
+}
+
+/* Secondary Nested Attribute Field */
+.display-card-subtle {
+  background: rgba(12, 19, 32, 0.60);
+  border: 1px solid rgba(59, 130, 246, 0.12);
+  border-radius: 0.5rem;
+  transition: border-color 0.15s ease;
+}
+
+.display-card-subtle:hover {
+  border-color: rgba(59, 130, 246, 0.25);
 }

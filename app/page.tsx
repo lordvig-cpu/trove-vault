@@ -370,7 +370,7 @@ export default function Home() {
   );
 
   return (
-    <div className="min-h-screen bg-canvas text-content-primary flex flex-col overflow-hidden">
+    <div className="min-h-screen bg-canvas text-content-primary flex flex-col overflow-hidden studio-grid-canvas">
       <Navbar
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
@@ -451,14 +451,16 @@ export default function Home() {
           </div>
         </aside>
 
-        {/* MAIN CANVAS DETAIL VIEW */}
+        {/* MAIN CANVAS DETAIL VIEW
         <main
-          className={`flex-1 p-8 overflow-y-auto bg-canvas transition-all duration-300 ease-in-out ${
-            !isPinned && isSidebarOpen
-              ? 'filter blur-[3.5px] brightness-[0.60] pointer-events-none select-none'
-              : 'filter-none brightness-100'
-          }`}
-        >
+          className={`flex-1 p-8 overflow-y-auto bg-canvas transition-all duration-300 ease-in-out ${ */}
+          <main
+            className={`flex-1 overflow-y-auto p-6 transition-all duration-300 ease-in-out ${
+              !isPinned && isSidebarOpen
+                ? 'filter blur-[3.5px] brightness-[0.60] pointer-events-none select-none'
+                : 'filter-none brightness-100'
+            }`}
+          >
           <div className="max-w-5xl mx-auto">
             <ItemDetailView
               item={selectedItem}
