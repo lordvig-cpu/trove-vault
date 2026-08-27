@@ -100,12 +100,16 @@ export default function Navbar({
           }`}
         >
 
-          <div className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-accent-secondary shadow-sm shadow-accent-secondary/50 animate-pulse" />
-            <span className="font-black tracking-wider text-base text-content-primary uppercase">
-              TROVE<span className="text-accent-secondary">VAULT</span>
-            </span>
-            <span className="text-[10px] px-1.5 py-0.5 rounded bg-surface border border-border-subtle text-content-muted font-mono">
+          <div className="flex items-start gap-1.5">
+            {/* Transparent Logo Image */}
+            <img 
+              src="/images/nav_bar_website_logo.png" 
+              alt="TroveVault" 
+              className="h-5 w-auto object-contain select-none"
+            />
+            
+            {/* Plain Borderless Version Text Aligned to Baseline */}
+            <span className="text-[10px] text-content-muted/70 font-mono leading-none pt-1.0 select-none">
               v0.1.0
             </span>
           </div>
