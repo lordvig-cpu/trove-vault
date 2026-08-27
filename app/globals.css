@@ -3,21 +3,44 @@
 /* PALETTE: CLEAN AND ENERGETIC (Luminous / Brightened Dark) */
 :root,
 [data-theme='clean-energetic'] {
+
+  /* Deepest background behind everything (main canvas area, app wrapper).*/
   --bg-canvas: #121b33;                   /* Lifted vibrant indigo canvas */
+
+  /* Solid card surfaces, pinned left sidebar background, top navbar header, modal containers. */
   --bg-surface: #1e2c52;                  /* Noticeably brighter card & panel surface */
+
+  /* Hover highlight state on unselected rows, dropdown buttons, unselected tree nodes. */
   --bg-surface-hover: #293d6e;            /* Distinct hover highlights */
-  --bg-popover: rgba(30, 44, 82, 0.95);   /* Frosted periwinkle card */
-  
+
+  /* Frosted floating popover menus (the Explorer dropdown card, Collections dropdown card). */
+  --bg-popover: rgba(30, 44, 82, 0.75);   /* Increased transparency (75% opacity) */
+
+  /* Hairline dividers, card outlines, header bottom-borders, vertical tree branch lines. */
   --border-subtle: #334a7d;               /* Crisp visible dividers */
+
+  /* High-contrast boundaries, focused input field rings, outer borders on popover modals. */
   --border-strong: #5680E9;               /* Highlight borders & edges */
 
+  /* Main brand badge ("UC"), primary buttons (+ Add Sub-Item), active tab indicator underline. */
   --accent-primary: #5680E9;              /* #5680E9 Royal Azure (Buttons & active tabs) */
+
+  /* Hover/active pressed state on primary buttons. */
   --accent-primary-hover: #436fdc;        /* Deeper Azure Hover */
+
+  /* Bright accent labels, selected tree item text, attribute values, custom scrollbar thumb hover. */
   --accent-secondary: #84CEEB;            /* #84CEEB Bright Sky Blue (Active texts & badges) */
+
+  /* Soft glow tints behind active selections, badge rings, and focused elements. */
   --accent-glow: rgba(86, 128, 233, 0.35);/* Rich Azure Glow */
 
+  /* Main item headings, modal titles, active bold button text (high-contrast white). */
   --text-primary: #ffffff;                /* Crisp white titles */
+
+  /* Standard body copy, tree item names, dropdown menu item labels. */
   --text-secondary: #C1C8E4;              /* #C1C8E4 Soft Lavender-Periwinkle body text */
+
+  /* Subtitles, field count counters, metadata labels (e.g. timestamps, IDs, inactive icons). */
   --text-muted: #95a7d1;                  /* High-legibility subtitles */
 }
 
