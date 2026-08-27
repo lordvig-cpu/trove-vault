@@ -7,7 +7,7 @@ import { PinOutlineIcon } from './icons/PinIcons';
 
 export type SearchScope = 'current' | 'all';
 
-export type ThemePreset = 'clean-energetic';
+export type ThemePreset = 'clean-energetic' | 'theme-test-dark' | 'theme-test-light';
 
 interface ThemeOption {
   id: ThemePreset;
@@ -16,7 +16,9 @@ interface ThemeOption {
 }
 
 const THEME_OPTIONS: { id: ThemePreset; label: string; dotColor: string }[] = [
-  { id: 'clean-energetic', label: 'Clean & Energetic', dotColor: '#5680E9' },
+  { id: 'clean-energetic', label: 'Clean & Energetic (Default)', dotColor: '#5680E9' },
+  { id: 'theme-test-dark', label: 'Test Dark Theme', dotColor: '#ffaa00' },
+  { id: 'theme-test-light', label: 'Test Light Theme', dotColor: '#d0e4ec' },
 ];
 
 interface NavbarProps {
@@ -66,10 +68,18 @@ export default function Navbar({
   const [isThemeMenuOpen, setIsThemeMenuOpen] = useState(false);
   
   useEffect(() => {
-    setCurrentTheme('clean-energetic');
-    document.documentElement.setAttribute('data-theme', 'clean-energetic');
+    const saved = localStorage.getItem('uc_theme_preset') as ThemePreset | null;
+    const validThemes: ThemePreset[] = ['clean-energetic', 'theme-test-dark', 'theme-test-light'];
+
+    if (saved && validThemes.includes(saved)) {
+      setCurrentTheme(saved);
+      document.documentElement.setAttribute('data-theme', saved);
+    } else {
+      setCurrentTheme('clean-energetic');
+      document.documentElement.setAttribute('data-theme', 'clean-energetic');
+    }
   }, []);
-  
+
   const handleSelectTheme = (themeId: ThemePreset) => {
     setCurrentTheme(themeId);
     document.documentElement.setAttribute('data-theme', themeId);

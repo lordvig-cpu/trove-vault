@@ -1,115 +1,99 @@
 @import "tailwindcss";
 
 /* PALETTE: CLEAN AND ENERGETIC (Luminous / Brightened Dark) */
+/* --bg-canvas: 
+/*     Deepest background behind everything (main canvas area, app wrapper).
+/* --bg-surface:   
+/*     Solid card surfaces, pinned left sidebar background, top navbar header, modal containers.
+/* --bg-surface-hover: 
+/*     Hover highlight state on unselected rows, dropdown buttons, unselected tree nodes.
+/* --bg-popover: 
+/*     Frosted floating popover menus (the Explorer dropdown card, Collections dropdown card).
+/* --border-subtle: 
+/*     Hairline dividers, card outlines, header bottom-borders, vertical tree branch lines.
+/* --border-strong: 
+/*     High-contrast boundaries, focused input field rings, outer borders on popover modals.
+/* --accent-primary: 
+/*     Main brand badge ("UC"), primary buttons (+ Add Sub-Item), active tab indicator underline.
+/* --accent-primary-hover: 
+/*     Hover/active pressed state on primary buttons.
+/* --accent-secondary: 
+/*     Bright accent labels, selected tree item text, attribute values, custom scrollbar thumb hover.
+/* --accent-glow: 
+/*     Soft glow tints behind active selections, badge rings, and focused elements.
+/* --text-primary: 
+/*     Main item headings, modal titles, active bold button text (high-contrast white).
+/* --text-secondary: 
+/*     Standard body copy, tree item names, dropdown menu item labels.
+/* --text-muted: 
+/*     Subtitles, field count counters, metadata labels (e.g. timestamps, IDs, inactive icons).
+*/
+/* ==========================================================================
+   THEME 1: CLEAN AND ENERGETIC (Default Dark)
+   ========================================================================== */
 :root,
 [data-theme='clean-energetic'] {
+  --bg-canvas: #121b33;
+  --bg-surface: #1e2c52;
+  --bg-surface-hover: #293d6e;
+  --bg-popover: rgba(30, 44, 82, 0.75);
+  
+  --border-subtle: #334a7d;
+  --border-strong: #5680E9;
 
-  /* Deepest background behind everything (main canvas area, app wrapper).*/
-  --bg-canvas: #121b33;                   /* Lifted vibrant indigo canvas */
+  --accent-primary: #5680E9;
+  --accent-primary-hover: #436fdc;
+  /* --accent-secondary: #84CEEB; */
+  --accent-secondary: #f5a524;
+  --accent-glow: rgba(86, 128, 233, 0.35);
 
-  /* Solid card surfaces, pinned left sidebar background, top navbar header, modal containers. */
-  --bg-surface: #1e2c52;                  /* Noticeably brighter card & panel surface */
-
-  /* Hover highlight state on unselected rows, dropdown buttons, unselected tree nodes. */
-  --bg-surface-hover: #293d6e;            /* Distinct hover highlights */
-
-  /* Frosted floating popover menus (the Explorer dropdown card, Collections dropdown card). */
-  --bg-popover: rgba(30, 44, 82, 0.75);   /* Increased transparency (75% opacity) */
-
-  /* Hairline dividers, card outlines, header bottom-borders, vertical tree branch lines. */
-  --border-subtle: #334a7d;               /* Crisp visible dividers */
-
-  /* High-contrast boundaries, focused input field rings, outer borders on popover modals. */
-  --border-strong: #5680E9;               /* Highlight borders & edges */
-
-  /* Main brand badge ("UC"), primary buttons (+ Add Sub-Item), active tab indicator underline. */
-  --accent-primary: #5680E9;              /* #5680E9 Royal Azure (Buttons & active tabs) */
-
-  /* Hover/active pressed state on primary buttons. */
-  --accent-primary-hover: #436fdc;        /* Deeper Azure Hover */
-
-  /* Bright accent labels, selected tree item text, attribute values, custom scrollbar thumb hover. */
-  --accent-secondary: #84CEEB;            /* #84CEEB Bright Sky Blue (Active texts & badges) */
-
-  /* Soft glow tints behind active selections, badge rings, and focused elements. */
-  --accent-glow: rgba(86, 128, 233, 0.35);/* Rich Azure Glow */
-
-  /* Main item headings, modal titles, active bold button text (high-contrast white). */
-  --text-primary: #ffffff;                /* Crisp white titles */
-
-  /* Standard body copy, tree item names, dropdown menu item labels. */
-  --text-secondary: #C1C8E4;              /* #C1C8E4 Soft Lavender-Periwinkle body text */
-
-  /* Subtitles, field count counters, metadata labels (e.g. timestamps, IDs, inactive icons). */
-  --text-muted: #95a7d1;                  /* High-legibility subtitles */
-}
-
-/* PALETTE 2: SOLAR FLARE (Coral & Electric Marigold) */
-[data-theme='solar-flare'] {
-  --bg-canvas: #0b0f19;
-  --bg-surface: #161d2e;
-  --bg-surface-hover: #222b42;
-  --bg-popover: rgba(22, 29, 46, 0.92);
-  --border-subtle: #29344f;
-  --border-strong: #44547d;
-  --accent-primary: #ff5447;
-  --accent-primary-hover: #e83e31;
-  --accent-secondary: #ffb703;
-  --accent-glow: rgba(255, 84, 71, 0.25);
   --text-primary: #ffffff;
-  --text-secondary: #d6e0ea;
-  --text-muted: #8998ad;
+  --text-secondary: #C1C8E4;
+  --text-muted: #95a7d1;
 }
 
-/* PALETTE 3: TERRACOTTA DUNES (Terracotta & Sandy Orange) */
-[data-theme='terracotta'] {
-  --bg-canvas: #121214;
-  --bg-surface: #1c1b1f;
-  --bg-surface-hover: #29282e;
-  --bg-popover: rgba(28, 27, 31, 0.92);
-  --border-subtle: #33313b;
-  --border-strong: #4d4a59;
-  --accent-primary: #e06d53;
-  --accent-primary-hover: #cb593f;
-  --accent-secondary: #f4a261;
-  --accent-glow: rgba(224, 109, 83, 0.25);
-  --text-primary: #faf8f5;
-  --text-secondary: #d4cfc7;
-  --text-muted: #948f86;
+/* ==========================================================================
+   THEME 2: ORBITAL (Deep Space Glassmorphism & Electric Cyan / Violet)
+   ========================================================================== */
+[data-theme='theme-test-dark'] {
+  --bg-canvas: #040814;                   /* Deep Void Obsidian Canvas */
+  --bg-surface: rgba(8, 18, 38, 0.72);    /* Translucent Deep Space Surface */
+  --bg-surface-hover: rgba(16, 36, 75, 0.85); /* Hover Glow Surface */
+  --bg-popover: rgba(6, 14, 32, 0.78);    /* Frosted Orbital Popover */
+  
+  --border-subtle: rgba(30, 60, 115, 0.55);/* Subtle Nebula Wireframe */
+  --border-strong: #00d2ff;               /* Neon Electric Cyan Edge & Focus */
+
+  --accent-primary: #1976d2;              /* Deep Space Blue Primary Action */
+  --accent-primary-hover: #1565c0;        /* Orbital Blue Hover */
+  --accent-secondary: #f5a524;            /* --amber: Amber Gold Highlights & Active Underlines */
+  --accent-glow: rgba(0, 210, 255, 0.40); /* Electric Cyan Radial Glow */
+
+  --text-primary: #ffffff;                /* Crisp Pure White Titles */
+  --text-secondary: #8ec5fc;              /* Luminous Ice-Blue Tree & Body Text */
+  --text-muted: #8360c3;                  /* Nebula Violet / Lavender Metadata & Subtitles */
 }
 
-/* PALETTE 4: BLOOD ORANGE & PEACH */
-[data-theme='blood-orange'] {
-  --bg-canvas: #0f111a;
-  --bg-surface: #1a1d2e;
-  --bg-surface-hover: #262a42;
-  --bg-popover: rgba(26, 29, 46, 0.92);
-  --border-subtle: #2d324d;
-  --border-strong: #484e75;
-  --accent-primary: #ff4d4d;
-  --accent-primary-hover: #e63939;
-  --accent-secondary: #ffab76;
-  --accent-glow: rgba(255, 77, 77, 0.25);
-  --text-primary: #ffffff;
-  --text-secondary: #d5d9ec;
-  --text-muted: #8e95b8;
-}
+/* ==========================================================================
+   THEME 2: NIGHTFALL BLUE & AMBER (Archivum Mockup Spec)
+   ========================================================================== */
+[data-theme='theme-test-light'] {
+  --bg-canvas: #0b1220;                   /* --bg: Deep Nightfall Blue */
+  --bg-surface: #111b2e;                  /* --panel: Elevated Dark Navy Surface */
+  --bg-surface-hover: #1e3a5f;            /* --blue-dim: Highlight Row/Item Hover */
+  --bg-popover: rgba(17, 27, 46, 0.85);   /* Frosted Navy Popover Menu */
+  
+  --border-subtle: #1c2940;               /* --border: Fine Dividing Lines */
+  --border-strong: #3b82f6;               /* --blue: Electric Blue Focus & Active Borders */
 
-/* PALETTE 5: RETRO HORIZON (Neon Coral & Sunset Orange) */
-[data-theme='retro-horizon'] {
-  --bg-canvas: #090e17;
-  --bg-surface: #131c2e;
-  --bg-surface-hover: #1e2b45;
-  --bg-popover: rgba(19, 28, 46, 0.92);
-  --border-subtle: #243452;
-  --border-strong: #3f5580;
-  --accent-primary: #ff6584;
-  --accent-primary-hover: #e84c6e;
-  --accent-secondary: #ff884b;
-  --accent-glow: rgba(255, 101, 132, 0.25);
-  --text-primary: #ffffff;
-  --text-secondary: #ced8eb;
-  --text-muted: #7f91b3;
+  --accent-primary: #3b82f6;              /* --blue: Electric Blue Primary Action Buttons */
+  --accent-primary-hover: #2563eb;        /* Deep Blue Hover */
+  --accent-secondary: #f5a524;            /* --amber: Amber Gold Highlights & Active Underlines */
+  --accent-glow: rgba(59, 130, 246, 0.30);/* Blue Glow */
+
+  --text-primary: #f4f6fb;                /* --white: Crisp Off-White Titles */
+  --text-secondary: #c3ccdc;              /* High-Contrast Light Slate Body & Tree Text */
+  --text-muted: #8a97ad;                  /* --text-dim: Muted Metadata & Subtitles */
 }
 
 /* ==========================================================================

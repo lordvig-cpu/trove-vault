@@ -62,6 +62,7 @@ export default function ItemDetailView({
 
         {/* Action Controls */}
         <div className="flex items-center gap-2 shrink-0">
+          {/* EDIT BUTTON */}
           <button
             type="button"
             onClick={onEditItem}
@@ -69,17 +70,21 @@ export default function ItemDetailView({
           >
             <span>✏️</span> Edit
           </button>
+
+          {/* ADD SUB-ITEM BUTTON (Balanced warm tone with clean high-contrast dark text) */}
           <button
             type="button"
             onClick={() => onAddSubItem(item)}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-accent-primary hover:bg-accent-primary-hover text-white shadow-md shadow-accent-primary/20 transition cursor-pointer"
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg bg-accent-primary hover:bg-accent-primary-hover text-slate-950 shadow-sm shadow-accent-primary/25 transition cursor-pointer"
           >
             <span>+</span> Add Sub-Item
           </button>
+
+          {/* DELETE BUTTON (Lighter rose outline for clear visibility without being heavy) */}
           <button
             type="button"
             onClick={onDeleteItem}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-rose-950/40 hover:bg-rose-900/60 text-rose-300 border border-rose-800/60 transition cursor-pointer"
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 hover:text-rose-200 border border-rose-500/30 transition cursor-pointer"
           >
             <span>🗑️</span> Delete
           </button>
