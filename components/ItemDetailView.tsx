@@ -17,7 +17,7 @@ export default function ItemDetailView({
 }: ItemDetailViewProps) {
   if (!item) {
     return (
-      <div className="h-full flex flex-col items-center justify-center text-center p-8 border border-dashed border-border-subtle rounded-2xl bg-surface/30">
+      <div className="h-full flex flex-col items-center justify-center text-center p-8 display-card rounded-xl">
         <span className="text-4xl mb-3">🔍</span>
         <h3 className="text-base font-semibold text-content-primary">No Item Selected</h3>
         <p className="text-xs text-content-muted mt-1 max-w-sm">
@@ -36,7 +36,7 @@ export default function ItemDetailView({
   return (
     <div className="space-y-6">
       {/* HEADER CARD */}
-      <div className="p-6 bg-surface border border-border-subtle rounded-2xl shadow-xl flex items-start justify-between gap-4">
+      <div className="p-5 display-card rounded-xl shadow-xl flex items-start justify-between gap-4">
         <div className="space-y-1.5">
           <div className="flex items-center gap-2">
             <span className="px-2 py-0.5 rounded text-[11px] font-mono font-medium bg-accent-primary/15 text-accent-secondary border border-accent-primary/30">
@@ -94,7 +94,7 @@ export default function ItemDetailView({
       {/* GRID: IMAGE & ATTRIBUTES */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Image Preview Card */}
-        <div className="md:col-span-1 p-5 bg-surface border border-border-subtle rounded-2xl flex flex-col items-center justify-center text-center min-h-[200px]">
+        <div className="md:col-span-1 p-5 display-card rounded-xl flex flex-col items-center justify-center text-center min-h-[200px]">
           {imageUrl ? (
             <img
               src={imageUrl}
@@ -110,7 +110,7 @@ export default function ItemDetailView({
         </div>
 
         {/* Attributes Card */}
-        <div className="md:col-span-2 p-5 bg-surface border border-border-subtle rounded-2xl space-y-4">
+        <div className="md:col-span-2 p-5 display-card rounded-xl space-y-4">
           <div className="flex items-center justify-between border-b border-border-subtle pb-2.5">
             <h2 className="text-xs font-bold uppercase tracking-wider text-content-muted">
               Custom Attributes (JSONB)
@@ -127,7 +127,7 @@ export default function ItemDetailView({
               {attributeEntries.map(([key, value]) => (
                 <div
                   key={key}
-                  className="p-3 bg-canvas/60 border border-border-subtle/80 rounded-xl flex flex-col gap-0.5"
+                  className="p-3 display-card-subtle bg-canvas/60 border border-border-subtle/80 rounded-xl flex flex-col gap-0.5"
                 >
                   <span className="text-[10px] font-bold uppercase tracking-wider text-content-muted">
                     {key.replace(/_/g, ' ')}
@@ -144,7 +144,7 @@ export default function ItemDetailView({
 
       {/* SUB-ITEMS LIST CARD */}
       {item.children && item.children.length > 0 && (
-        <div className="p-5 bg-surface border border-border-subtle rounded-2xl space-y-3">
+        <div className="p-5 display-card rounded-xl space-y-3">
           <h2 className="text-xs font-bold uppercase tracking-wider text-content-muted border-b border-border-subtle pb-2">
             Direct Sub-Items ({item.children.length})
           </h2>

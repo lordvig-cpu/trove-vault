@@ -99,18 +99,15 @@ export default function Navbar({
               : 'w-auto border-r-0 border-transparent gap-3 shrink-0'
           }`}
         >
-          <div className="flex items-center gap-2 shrink-0">
-            <div className="w-8 h-8 rounded-lg bg-accent-primary flex items-center justify-center font-bold text-white text-sm shadow-md shadow-accent-primary/20 shrink-0">
-              UC
-            </div>
-            <div>
-              <span className="font-bold text-sm tracking-tight text-content-primary block">
-                UNIVERSAL COLLECTIONS
-              </span>
-              <span className="text-[10px] font-mono text-content-muted block -mt-1">
-                v0.1.0
-              </span>
-            </div>
+
+          <div className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-accent-secondary shadow-sm shadow-accent-secondary/50 animate-pulse" />
+            <span className="font-black tracking-wider text-base text-content-primary uppercase">
+              TROVE<span className="text-accent-secondary">VAULT</span>
+            </span>
+            <span className="text-[10px] px-1.5 py-0.5 rounded bg-surface border border-border-subtle text-content-muted font-mono">
+              v0.1.0
+            </span>
           </div>
 
           {isPinned && (

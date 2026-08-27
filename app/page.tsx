@@ -370,35 +370,51 @@ export default function Home() {
   );
 
   return (
-    <div className="min-h-screen bg-canvas text-content-primary flex flex-col overflow-hidden studio-grid-canvas">
-      <Navbar
-        searchQuery={searchQuery}
-        onSearchChange={setSearchQuery}
-        searchScope={searchScope}
-        onSearchScopeChange={setSearchScope}
-        activeCollectionName={activeCollection ? activeCollection.name : 'Select Collection'}
-        collections={allCollections}
-        activeCollectionId={activeCollectionId}
-        onSelectCollection={(newId) => {
-          setActiveCollectionId(newId);
-          if (!isPinned) setIsSidebarOpen(false);
-        }}
-        onCollectionsUpdated={() => fetchAllData()}
-        isDropdownOpen={isColDropdownOpen}
-        setIsDropdownOpen={setIsColDropdownOpen}
-        onRequestDeleteCollection={(col) => setCollectionToDelete(col)}
-        onOpenTemplateManager={() => setIsTemplateManagerOpen(true)}
-        isSidebarOpen={isSidebarOpen}
-        isPinned={isPinned}
-        onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
-        onTogglePin={handleTogglePin}
-        explorerContent={renderExplorerTree()}
-      />
+    <div className="min-h-screen bg-canvas text-content-primary flex flex-col overflow-hidden studio-grid-canvas relative">
+      
+      {/* 200% Scaled Centered Watermark Logo (Single, Crisp, Positioned Behind UI) */}
+      <div 
+        className="pointer-events-none fixed inset-0 flex items-center justify-center z-0 select-none overflow-hidden"
+        aria-hidden="true"
+      >
+        <img 
+          src="/images/web_background_trove_vault_logo.png" 
+          alt="" 
+          className="w-[1250px] max-w-none object-contain filter brightness-60 drop-shadow-2xl opacity-25"
+        />
+      </div>
 
-      <div className="flex-1 flex overflow-hidden relative">
+      {/* Top Navbar */}
+      <div className="relative z-20">
+        <Navbar
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
+          searchScope={searchScope}
+          onSearchScopeChange={setSearchScope}
+          activeCollectionName={activeCollection ? activeCollection.name : 'Select Collection'}
+          collections={allCollections}
+          activeCollectionId={activeCollectionId}
+          onSelectCollection={(newId) => {
+            setActiveCollectionId(newId);
+            if (!isPinned) setIsSidebarOpen(false);
+          }}
+          onCollectionsUpdated={() => fetchAllData()}
+          isDropdownOpen={isColDropdownOpen}
+          setIsDropdownOpen={setIsColDropdownOpen}
+          onRequestDeleteCollection={(col) => setCollectionToDelete(col)}
+          onOpenTemplateManager={() => setIsTemplateManagerOpen(true)}
+          isSidebarOpen={isSidebarOpen}
+          isPinned={isPinned}
+          onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
+          onTogglePin={handleTogglePin}
+          explorerContent={renderExplorerTree()}
+        />
+      </div>
+
+      <div className="flex-1 flex overflow-hidden relative z-10">
         {/* PINNED PERSISTENT SIDEBAR */}
         <aside
-          className={`h-full border-border-subtle bg-surface/50 flex flex-col gap-2.5 overflow-x-auto overflow-y-auto shrink-0 transition-all duration-300 ease-in-out ${
+          className={`h-full border-border-subtle bg-surface/90 backdrop-blur-md flex flex-col gap-2.5 overflow-x-auto overflow-y-auto shrink-0 transition-all duration-300 ease-in-out ${
             isPinned
               ? 'w-84 border-r p-3 opacity-100'
               : 'w-0 border-r-0 p-0 opacity-0 pointer-events-none'
@@ -451,16 +467,14 @@ export default function Home() {
           </div>
         </aside>
 
-        {/* MAIN CANVAS DETAIL VIEW
+        {/* MAIN CANVAS DETAIL VIEW */}
         <main
-          className={`flex-1 p-8 overflow-y-auto bg-canvas transition-all duration-300 ease-in-out ${ */}
-          <main
-            className={`flex-1 overflow-y-auto p-6 transition-all duration-300 ease-in-out ${
-              !isPinned && isSidebarOpen
-                ? 'filter blur-[3.5px] brightness-[0.60] pointer-events-none select-none'
-                : 'filter-none brightness-100'
-            }`}
-          >
+          className={`flex-1 overflow-y-auto p-6 transition-all duration-300 ease-in-out relative z-10 ${
+            !isPinned && isSidebarOpen
+              ? 'filter blur-[3.5px] brightness-[0.60] pointer-events-none select-none'
+              : 'filter-none brightness-100'
+          }`}
+        >
           <div className="max-w-5xl mx-auto">
             <ItemDetailView
               item={selectedItem}
@@ -543,4 +557,5 @@ export default function Home() {
       />
     </div>
   );
+
 }

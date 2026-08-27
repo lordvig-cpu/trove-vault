@@ -53,25 +53,25 @@
 }
 
 /* ==========================================================================
-   THEME 2: ORBITAL (Deep Space Glassmorphism & Electric Cyan / Violet)
+   THEME 2: TROVEVAULT NIGHTFALL BLUE & AMBER
    ========================================================================== */
 [data-theme='theme-test-dark'] {
-  --bg-canvas: #040814;                   /* Deep Void Obsidian Canvas */
-  --bg-surface: rgba(8, 18, 38, 0.72);    /* Translucent Deep Space Surface */
-  --bg-surface-hover: rgba(16, 36, 75, 0.85); /* Hover Glow Surface */
-  --bg-popover: rgba(6, 14, 32, 0.78);    /* Frosted Orbital Popover */
+  --bg-canvas: #0b1220;                   /* Deep Nightfall Blue Canvas */
+  --bg-surface: #111b2e;                  /* Solid Opaque Navy Card Surface */
+  --bg-surface-hover: #1e3a5f;            /* Elevated Slate Blue Hover */
+  --bg-popover: #0d1626;                  /* Solid Frosted Popover / Dropdown Menu */
   
-  --border-subtle: rgba(30, 60, 115, 0.55);/* Subtle Nebula Wireframe */
-  --border-strong: #00d2ff;               /* Neon Electric Cyan Edge & Focus */
+  --border-subtle: #1c2940;               /* Crisp Navy Borders */
+  --border-strong: #3b82f6;               /* Vibrant Blue Focus & Highlight Edges */
 
-  --accent-primary: #1976d2;              /* Deep Space Blue Primary Action */
-  --accent-primary-hover: #1565c0;        /* Orbital Blue Hover */
-  --accent-secondary: #f5a524;            /* --amber: Amber Gold Highlights & Active Underlines */
-  --accent-glow: rgba(0, 210, 255, 0.40); /* Electric Cyan Radial Glow */
+  --accent-primary: #3b82f6;              /* Action Blue Buttons */
+  --accent-primary-hover: #2563eb;        /* Deep Action Blue Hover */
+  --accent-secondary: #e77428;            /* Warm Amber Gold (TroveVault Accent) */
+  --accent-glow: rgba(231, 116, 40, 0.35);/* Amber Glow */
 
-  --text-primary: #ffffff;                /* Crisp Pure White Titles */
-  --text-secondary: #8ec5fc;              /* Luminous Ice-Blue Tree & Body Text */
-  --text-muted: #8360c3;                  /* Nebula Violet / Lavender Metadata & Subtitles */
+  --text-primary: #ffffff;                /* Pure White Headings & Titles */
+  --text-secondary: #c3ccdc;              /* High-Contrast Silver-Slate Body Text */
+  --text-muted: #8a97ad;                  /* Muted Metadata & Subtitles */
 }
 
 /* ==========================================================================
@@ -149,52 +149,35 @@
 }
 
 /* ==========================================================================
-   STUDIO GRID CANVAS & DISPLAY CARDS (Design System Tokens)
+   STUDIO GRID CANVAS
    ========================================================================== */
 .studio-grid-canvas {
   background-color: #0c1017;
   background-image: 
-    /* 1. Sharp Top-Left Key Spotlight */
-    radial-gradient(ellipse 800px 500px at 10% 15%, rgba(42, 60, 90, 0.45) 0%, transparent 80%),
-    /* 2. Soft Ambient Center Fill */
-    radial-gradient(ellipse 1000px 700px at 50% 40%, rgba(22, 33, 54, 0.35) 0%, transparent 100%),
-    /* 3. Deep Edge Vignette */
-    radial-gradient(circle at 50% 50%, transparent 60%, rgba(5, 7, 11, 0.85) 100%),
-    /* 4. Fine Blueprint Grid Lines */
+    /* 1. Top-Left Key Spotlight */
+    radial-gradient(ellipse 900px 600px at 15% 20%, rgba(42, 60, 90, 0.45) 0%, transparent 80%),
+    /* 2. Deep Edge Vignette */
+    radial-gradient(circle at 50% 50%, transparent 50%, rgba(5, 7, 11, 0.90) 100%),
+    /* 3. Blueprint Grid Lines */
     linear-gradient(to right, rgba(255, 255, 255, 0.04) 1px, transparent 1px),
     linear-gradient(to bottom, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
-  background-size: 100% 100%, 100% 100%, 100% 100%, 54px 54px, 54px 54px;
+  background-size: 100% 100%, 100% 100%, 54px 54px, 54px 54px;
   background-attachment: fixed;
 }
 
-/* Primary Elevated Display Card */
+/* 100% Solid Opaque Display Cards */
 .display-card {
-  background: rgba(17, 27, 46, 0.75);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(59, 130, 246, 0.18);
+  position: relative;
+  z-index: 10;
+  background-color: #111b2e !important;   /* Solid, blocks background logo 100% */
+  border: 1px solid rgba(59, 130, 246, 0.25);
   box-shadow: 
-    0 10px 30px -5px rgba(0, 0, 0, 0.60),
+    0 14px 34px -4px rgba(0, 0, 0, 0.75),
     0 0 0 1px rgba(255, 255, 255, 0.05) inset;
-  transition: all 0.2s ease-in-out;
 }
 
-.display-card:hover {
-  border-color: rgba(59, 130, 246, 0.35);
-  box-shadow: 
-    0 14px 36px -4px rgba(0, 0, 0, 0.75),
-    0 0 12px rgba(59, 130, 246, 0.15),
-    0 0 0 1px rgba(255, 255, 255, 0.08) inset;
-}
-
-/* Secondary Nested Attribute Field */
 .display-card-subtle {
-  background: rgba(12, 19, 32, 0.60);
-  border: 1px solid rgba(59, 130, 246, 0.12);
+  background-color: #0d1626 !important;   /* Solid nested attribute cells */
+  border: 1px solid rgba(59, 130, 246, 0.15);
   border-radius: 0.5rem;
-  transition: border-color 0.15s ease;
-}
-
-.display-card-subtle:hover {
-  border-color: rgba(59, 130, 246, 0.25);
 }
