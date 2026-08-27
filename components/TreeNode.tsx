@@ -20,6 +20,13 @@ interface TreeNodeProps {
   onSelectItem: (item: ItemRecord) => void;
 }
 
+// Calculate dynamic padding so deep levels (e.g. 5 to 20) don't push text off-screen
+const getIndentPadding = (depth: number) => {
+  if (depth <= 3) return depth * 12;            // 0px, 12px, 24px, 36px
+  if (depth <= 6) return 36 + (depth - 3) * 8;  // 44px, 52px, 60px
+  return Math.min(60 + (depth - 6) * 4, 90);    // Capped maximum indent at 90px
+};
+
 export default function TreeNode({
   item,
   level = 0,
@@ -29,64 +36,70 @@ export default function TreeNode({
   const hasChildren = Boolean(item.children && item.children.length > 0);
   const [isExpanded, setIsExpanded] = useState<boolean>(true);
   const isSelected = selectedItemId === item.id;
+  const indent = getIndentPadding(level);
 
   return (
-    <div className="flex flex-col select-none">
+    <div className="flex flex-col select-none w-full min-w-0">
       {/* Node Row */}
       <div
         onClick={() => {
-          console.log('Selected item:', item);
           onSelectItem(item);
         }}
-        className={`group flex items-center gap-2.5 p-2 rounded-lg cursor-pointer transition-all duration-150 border text-xs ${
+        style={{ paddingLeft: `${indent + 6}px` }}
+        className={`group flex items-center justify-between gap-1.5 py-1.5 pr-2 rounded-lg cursor-pointer transition-all duration-150 border text-xs min-w-0 w-full ${
           isSelected
-            ? 'bg-indigo-600/30 border-indigo-500 text-white font-semibold shadow-sm'
+            ? 'bg-accent-primary/20 border-accent-primary text-white font-semibold shadow-sm'
             : level === 0
-            ? 'bg-slate-800/60 border-slate-700/60 text-slate-300 hover:bg-slate-800 hover:text-white'
-            : 'bg-slate-800/30 border-slate-800 text-slate-400 hover:bg-slate-800/60 hover:text-slate-200'
+            ? 'bg-surface/80 border-border-subtle text-content-primary hover:bg-surface-hover hover:border-border-strong'
+            : 'bg-transparent border-transparent text-content-secondary hover:bg-surface-hover hover:text-content-primary'
         }`}
-        style={{ marginLeft: `${level * 18}px` }}
       >
-        {/* Expand / Collapse Toggle */}
-        {hasChildren ? (
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation(); // Prevents triggering row selection when just toggling expand/collapse
-              setIsExpanded(!isExpanded);
-            }}
-            className="w-5 h-5 flex items-center justify-center rounded text-slate-400 hover:text-white hover:bg-slate-700 transition"
-          >
-            <span
-              className={`transform transition-transform text-[10px] inline-block ${
-                isExpanded ? 'rotate-90' : 'rotate-0'
-              }`}
+        {/* Leading Toggle / Icon + Truncated Label */}
+        <div className="flex items-center gap-1.5 min-w-0 flex-1">
+          {/* Expand / Collapse Toggle */}
+          {hasChildren ? (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation(); // Prevents triggering row selection when toggling
+                setIsExpanded(!isExpanded);
+              }}
+              className="w-4 h-4 flex items-center justify-center shrink-0 rounded text-content-muted hover:text-content-primary hover:bg-surface-hover transition cursor-pointer"
             >
-              ▶
+              <span
+                className={`transform transition-transform text-[9px] inline-block ${
+                  isExpanded ? 'rotate-90' : 'rotate-0'
+                }`}
+              >
+                ▶
+              </span>
+            </button>
+          ) : (
+            <span className="w-4 h-4 flex items-center justify-center shrink-0 text-content-muted/60 text-[9px]">
+              •
             </span>
-          </button>
-        ) : (
-          <span className="w-5 h-5 flex items-center justify-center text-slate-600 text-[10px]">
-            •
-          </span>
-        )}
+          )}
 
-        {/* Item Label */}
-        <span className={`truncate ${isSelected ? 'text-indigo-200' : ''}`}>
-          {item.name}
-        </span>
+          {/* Item Label with Native Tooltip */}
+          <span 
+            title={item.name}
+            className={`truncate block ${isSelected ? 'text-accent-secondary font-medium' : ''}`}
+          >
+            {item.name}
+          </span>
+        </div>
 
         {/* Sub-item Count Badge */}
         {hasChildren && (
-          <span className="ml-auto text-[10px] bg-slate-900 text-slate-400 px-1.5 py-0.5 rounded border border-slate-800">
-            {item.children!.length} sub
+          <span className="shrink-0 text-[10px] font-mono bg-canvas/80 text-content-muted px-1.5 py-0.2 rounded border border-border-subtle">
+            {item.children!.length}
           </span>
         )}
       </div>
 
       {/* Recursive Nested Sub-items */}
       {hasChildren && isExpanded && (
-        <div className="flex flex-col gap-1 mt-1 border-l border-slate-800 ml-3.5 pl-1">
+        <div className="flex flex-col gap-0.5 mt-0.5 w-full min-w-0">
           {item.children!.map((child) => (
             <TreeNode
               key={child.id}
