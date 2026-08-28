@@ -1,5 +1,21 @@
 @import "tailwindcss";
 
+html {
+  zoom: 1.1;
+  width: 100%;
+  height: 100%;
+}
+
+body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+/* PALETTE: CLEAN AND ENERGETIC (Luminous / Brightened Dark) */
+/* ... remainder of your file stays unchanged ... */
 /* PALETTE: CLEAN AND ENERGETIC (Luminous / Brightened Dark) */
 /* --bg-canvas: #121b33;
 /*     Deepest background behind everything (main canvas area, app wrapper).
