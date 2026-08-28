@@ -195,6 +195,7 @@ export default function Home() {
               : 'filter-none brightness-100'
           }`}
         >
+          
           {/* TOP CANVAS SHADOW STRIP (Only covers main workspace) */}
           <div 
             className="pointer-events-none sticky -top-6 -mt-6 -mx-6 h-12 bg-gradient-to-b from-black/85 via-black/40 to-transparent z-20" 
