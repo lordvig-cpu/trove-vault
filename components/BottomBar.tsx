@@ -16,7 +16,7 @@ export default function BottomBar({
   onToggleRightPanel,
 }: BottomBarProps) {
   return (
-    <footer className="h-9 border-t border-border-subtle bg-surface/95 backdrop-blur-md shadow-[0_-1px_0_0_var(--bg-surface-hover),0_-2px_0_0_var(--accent-primary),0_-10px_50px_10px_rgba(0,0,0,0.95),0_-8px_20px_2px_rgba(0,0,0,0.85)] flex items-center justify-between px-4 text-xs select-none shrink-0 z-40 relative">
+    <footer className="h-9 border-t border-border-subtle bg-surface/95 backdrop-blur-md shadow-[0_-1px_0_0_var(--bg-surface-hover),0_-2px_0_0_var(--accent-primary)] flex items-center justify-between px-4 text-xs select-none shrink-0 z-40 relative">
     
       {/* Left Status Area */}
       <div className="flex items-center gap-3">

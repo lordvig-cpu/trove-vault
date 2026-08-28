@@ -195,6 +195,12 @@ export default function Home() {
               : 'filter-none brightness-100'
           }`}
         >
+          {/* TOP CANVAS SHADOW STRIP (Only covers main workspace) */}
+          <div 
+            className="pointer-events-none sticky -top-6 -mt-6 -mx-6 h-12 bg-gradient-to-b from-black/85 via-black/40 to-transparent z-20" 
+            aria-hidden="true" 
+          />
+
           <div className="max-w-5xl mx-auto">
             <ItemDetailView
               item={selectedItem}
@@ -213,6 +219,12 @@ export default function Home() {
               }}
             />
           </div>
+
+          {/* BOTTOM CANVAS SHADOW STRIP (Only covers main workspace) */}
+          <div 
+            className="pointer-events-none sticky -bottom-6 -mb-6 -mx-6 h-10 bg-gradient-to-t from-black/85 via-black/40 to-transparent z-20" 
+            aria-hidden="true" 
+          />
         </main>
 
         <RightSidePanel
