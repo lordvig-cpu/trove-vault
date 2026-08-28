@@ -69,25 +69,25 @@ body {
 }
 
 /* ==========================================================================
-   THEME 2: TROVEVAULT NIGHTFALL BLUE & AMBER
+   THEME 2: TROVEVAULT ABYSS TEAL & AMBER
    ========================================================================== */
 [data-theme='theme-test-dark'] {
-  --bg-canvas: #0b1220;                   /* Deep Nightfall Blue Canvas */
-  --bg-surface: #111b2e;                  /* Solid Opaque Navy Card Surface */
-  --bg-surface-hover: #1e3a5f;            /* Elevated Slate Blue Hover */
-  --bg-popover: #0d1626;                  /* Solid Frosted Popover / Dropdown Menu */
+  --bg-canvas: #010b14;                   /* Deep Sea Navy / Teal-Black Canvas */
+  --bg-surface: #041628;                  /* Rich Dark Teal-Slate Card Surface */
+  --bg-surface-hover: #0a3555;            /* Mid-tone Teal Hover */
+  --bg-popover: #02101f;                  /* Solid Frosted Deep Teal Popover/Dropdown */
   
-  --border-subtle: #1c2940;               /* Crisp Navy Borders */
-  --border-strong: #3b82f6;               /* Vibrant Blue Focus & Highlight Edges */
+  --border-subtle: rgba(0, 190, 230, 0.15); /* Faint ambient glowing aqua edge */
+  --border-strong: rgba(0, 190, 230, 0.55); /* Vibrant Aqua Focus & Highlight Edges */
 
-  --accent-primary: #3b82f6;              /* Action Blue Buttons */
-  --accent-primary-hover: #2563eb;        /* Deep Action Blue Hover */
-  --accent-secondary: #e77428;            /* Warm Amber Gold (TroveVault Accent) */
-  --accent-glow: rgba(231, 116, 40, 0.35);/* Amber Glow */
+  --accent-primary: #074873;              /* Action Teal-Blue Buttons (from navbar gradient) */
+  --accent-primary-hover: #0082d2;        /* Bright Aqua Hover */
+  --accent-secondary: #f5a524;            /* Warm Amber Gold (TroveVault Brand Accent) */
+  --accent-glow: rgba(0, 190, 230, 0.35); /* Aqua Glow */
 
   --text-primary: #ffffff;                /* Pure White Headings & Titles */
-  --text-secondary: #c3ccdc;              /* High-Contrast Silver-Slate Body Text */
-  --text-muted: #8a97ad;                  /* Muted Metadata & Subtitles */
+  --text-secondary: #c3d8e6;              /* High-Contrast Icy-Slate Body Text */
+  --text-muted: #6e8fae;                  /* Muted Slate-Teal Metadata & Subtitles */
 }
 
 /* ==========================================================================

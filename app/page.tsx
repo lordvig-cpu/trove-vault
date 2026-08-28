@@ -50,6 +50,7 @@ export default function Home() {
   } = useCollections();
 
   // Layout & Dock States
+  const [isLogoHovered, setIsLogoHovered] = useState<boolean>(false);
   const [isRightPanelOpen, setIsRightPanelOpen] = useState<boolean>(false);
   const [isPinned, setIsPinned] = useState<boolean>(true);
   const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(false);
@@ -124,17 +125,37 @@ export default function Home() {
 
   return (
     <div className="h-full w-full bg-canvas text-content-primary flex flex-col overflow-hidden studio-grid-canvas relative">
-      {/* Background Watermark */}
+
+      {/* 1. INVISIBLE LOGO HOVER TRIGGER ZONE (Top Left) */}
       <div 
-        className="pointer-events-none fixed inset-0 flex items-center justify-center z-0 select-none overflow-hidden" 
+        className="absolute top-0 left-0 w-64 h-16 z-[100]" 
+        onMouseEnter={() => setIsLogoHovered(true)}
+        onMouseLeave={() => setIsLogoHovered(false)}
+        aria-hidden="true"
+      />
+
+      {/* 2. DYNAMIC BACKGROUND WATERMARK */}
+      <div 
+        className={`pointer-events-none fixed inset-0 flex items-center justify-center select-none overflow-hidden transition-all duration-700 ease-in-out ${
+          isLogoHovered ? 'opacity-100 z-50' : 'opacity-25 z-0'
+        }`} 
         aria-hidden="true"
       >
         <img 
           src="/images/web_background_trove_vault_logo.png" 
           alt="" 
-          className="w-[1250px] max-w-none object-contain filter brightness-60 drop-shadow-2xl opacity-25" 
+          className={`w-[1250px] max-w-none object-contain drop-shadow-2xl transition-all duration-700 ease-out ${
+            isLogoHovered ? 'filter-none scale-105' : 'filter brightness-60 scale-100'
+          }`} 
         />
-      </div>      
+      </div>
+
+      {/* 3. MAIN APPLICATION UI WRAPPER (Fades out when hovered) */}
+      <div 
+        className={`flex flex-col h-full w-full transition-opacity duration-500 ease-in-out ${
+          isLogoHovered ? 'opacity-0 pointer-events-none' : 'opacity-100'
+        }`}
+      >
 
       {/* Top Navbar */}
       <div className="shrink-0 relative z-40">
@@ -241,6 +262,7 @@ export default function Home() {
           onToggleRightPanel={() => setIsRightPanelOpen(!isRightPanelOpen)}
         />
       </div>
+    </div>
       
       {/* Modal Container */}
       {activeModal?.type === 'template_manager' && (
