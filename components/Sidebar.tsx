@@ -32,7 +32,7 @@ export default function Sidebar({
     <aside
       className={`absolute left-0 top-0 h-full border-border-subtle bg-surface/95 backdrop-blur-md flex flex-col gap-2.5 overflow-x-hidden overflow-y-auto shrink-0 transition-all duration-300 ease-in-out z-30 ${
         isPinned
-          ? 'w-76 max-w-76 border-r p-3 opacity-100 shadow-2xl translate-x-0'
+          ? 'w-76 max-w-76 border-r p-3 opacity-100 shadow-[12px_0_30px_-4px_rgba(0,0,0,0.65)] translate-x-0'
           : 'w-76 max-w-76 -translate-x-full border-r-0 p-0 opacity-0 pointer-events-none'
       }`}
     >
