@@ -134,7 +134,7 @@ export default function Home() {
           alt="" 
           className="w-[1250px] max-w-none object-contain filter brightness-60 drop-shadow-2xl opacity-25" 
         />
-      </div>
+      </div>      
 
       {/* Top Navbar */}
       <div className="shrink-0 relative z-40">
@@ -173,6 +173,7 @@ export default function Home() {
 
       {/* Mid-Section */}
       <div className="flex-1 min-h-0 flex overflow-hidden relative z-10">
+
         <Sidebar
           isPinned={isPinned}
           onTogglePin={handleTogglePin}
@@ -195,12 +196,12 @@ export default function Home() {
               : 'filter-none brightness-100'
           }`}
         >
-          
-          {/* TOP CANVAS SHADOW STRIP (Only covers main workspace) */}
+
+        {/* Top Viewport Vignette (Pins to top of scrolling viewport, indented past sidebars) */}
           <div 
-            className="pointer-events-none sticky -top-6 -mt-6 -mx-6 h-12 bg-gradient-to-b from-black/85 via-black/40 to-transparent z-20" 
+            className="pointer-events-none sticky -top-6 -mt-6 -ml-6 -mr-6 h-10 bg-gradient-to-b from-black/85 to-transparent z-30 mb-4" 
             aria-hidden="true" 
-          />
+          />  
 
           <div className="max-w-5xl mx-auto">
             <ItemDetailView
@@ -221,11 +222,12 @@ export default function Home() {
             />
           </div>
 
-          {/* BOTTOM CANVAS SHADOW STRIP (Only covers main workspace) */}
+          {/* Bottom Viewport Vignette (Pins to bottom of scrolling viewport) */}
           <div 
-            className="pointer-events-none sticky -bottom-6 -mb-6 -mx-6 h-10 bg-gradient-to-t from-black/85 via-black/40 to-transparent z-20" 
+            className="pointer-events-none sticky -bottom-6 -mb-6 -ml-6 -mr-6 h-10 bg-gradient-to-t from-black/85 to-transparent z-30 mt-4" 
             aria-hidden="true" 
           />
+
         </main>
 
         <RightSidePanel
