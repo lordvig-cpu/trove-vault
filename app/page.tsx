@@ -173,7 +173,6 @@ export default function Home() {
 
       {/* Mid-Section */}
       <div className="flex-1 min-h-0 flex overflow-hidden relative z-10">
-
         <Sidebar
           isPinned={isPinned}
           onTogglePin={handleTogglePin}
@@ -189,46 +188,42 @@ export default function Home() {
           {explorerTreeElement}
         </Sidebar>
 
-        <main
-          className={`flex-1 min-h-0 overflow-y-auto p-6 transition-all duration-300 ease-in-out relative z-10 ${
-            !isPinned && isSidebarOpen
-              ? 'filter blur-[3.5px] brightness-[0.60] pointer-events-none select-none'
-              : 'filter-none brightness-100'
-          }`}
-        >
+        {/* WORKSPACE COLUMN WRAPPER - Traps the shadows permanently to the edges */}
+        <div className="flex-1 min-h-0 relative flex flex-col z-10">
+          
+          {/* Absolute Top Vignette (Anchored to wrapper top) */}
+          <div className="pointer-events-none absolute top-0 left-0 right-0 h-10 bg-gradient-to-b from-black/85 to-transparent z-30" aria-hidden="true" />
+          
+          <main
+            className={`flex-1 min-h-0 overflow-y-auto p-6 transition-all duration-300 ease-in-out ${
+              !isPinned && isSidebarOpen
+                ? 'filter blur-[3.5px] brightness-[0.60] pointer-events-none select-none'
+                : 'filter-none brightness-100'
+            }`}
+          >
+            <div className="max-w-5xl mx-auto">
+              <ItemDetailView
+                item={selectedItem}
+                onAddSubItem={(parent) => {
+                  if (activeCollectionId) handleAddSubItem(activeCollectionId, parent.id);
+                }}
+                onEditItem={() => {
+                  if (selectedItem && activeCollectionId) {
+                    handleTriggerEditItem(selectedItem, activeCollectionId);
+                  }
+                }}
+                onDeleteItem={() => {
+                  if (selectedItem && activeCollectionId) {
+                    handleTriggerDeleteItem(selectedItem, activeCollectionId);
+                  }
+                }}
+              />
+            </div>
+          </main>
 
-        {/* Top Viewport Vignette (Pins to top of scrolling viewport, indented past sidebars) */}
-          <div 
-            className="pointer-events-none sticky -top-6 -mt-6 -ml-6 -mr-6 h-10 bg-gradient-to-b from-black/85 to-transparent z-30 mb-4" 
-            aria-hidden="true" 
-          />  
-
-          <div className="max-w-5xl mx-auto">
-            <ItemDetailView
-              item={selectedItem}
-              onAddSubItem={(parent) => {
-                if (activeCollectionId) handleAddSubItem(activeCollectionId, parent.id);
-              }}
-              onEditItem={() => {
-                if (selectedItem && activeCollectionId) {
-                  handleTriggerEditItem(selectedItem, activeCollectionId);
-                }
-              }}
-              onDeleteItem={() => {
-                if (selectedItem && activeCollectionId) {
-                  handleTriggerDeleteItem(selectedItem, activeCollectionId);
-                }
-              }}
-            />
-          </div>
-
-          {/* Bottom Viewport Vignette (Pins to bottom of scrolling viewport) */}
-          <div 
-            className="pointer-events-none sticky -bottom-6 -mb-6 -ml-6 -mr-6 h-10 bg-gradient-to-t from-black/85 to-transparent z-30 mt-4" 
-            aria-hidden="true" 
-          />
-
-        </main>
+          {/* Absolute Bottom Vignette (Anchored to wrapper bottom) */}
+          <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-10 bg-gradient-to-t from-black/85 to-transparent z-30" aria-hidden="true" />
+        </div>
 
         <RightSidePanel
           isOpen={isRightPanelOpen}
