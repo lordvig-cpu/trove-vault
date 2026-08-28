@@ -30,10 +30,10 @@ export default function Sidebar({
 }: SidebarProps) {
   return (
     <aside
-      className={`h-full border-border-subtle bg-surface/90 backdrop-blur-md flex flex-col gap-2.5 overflow-x-hidden overflow-y-auto shrink-0 transition-all duration-300 ease-in-out ${
+      className={`absolute left-0 top-0 h-full border-border-subtle bg-surface/95 backdrop-blur-md flex flex-col gap-2.5 overflow-x-hidden overflow-y-auto shrink-0 transition-all duration-300 ease-in-out z-30 ${
         isPinned
-          ? 'w-84 max-w-84 border-r p-3 opacity-100'
-          : 'w-0 border-r-0 p-0 opacity-0 pointer-events-none'
+          ? 'w-76 max-w-76 border-r p-3 opacity-100 shadow-2xl translate-x-0'
+          : 'w-76 max-w-76 -translate-x-full border-r-0 p-0 opacity-0 pointer-events-none'
       }`}
     >
       {/* Header */}
