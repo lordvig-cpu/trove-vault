@@ -88,7 +88,8 @@ export default function Navbar({
   };
 
   return (
-    <header className="h-14 border-b border-border-subtle bg-surface/90 backdrop-blur flex items-center justify-between shrink-0 z-40">
+    <header className="h-14 border-b border-border-subtle bg-surface/90 backdrop-blur-md shadow-[0_1px_0_0_var(--bg-surface-hover),0_2px_0_0_var(--accent-primary),0_10px_50px_10px_rgba(0,0,0,0.95),0_8px_20px_2px_rgba(0,0,0,0.85)] flex items-center justify-between shrink-0 z-40 relative">
+
       {/* LEFT SECTION */}
       <div className="flex items-center h-full">
         {/* BRAND & DOCKED TAB AREA */}
@@ -304,7 +305,7 @@ export default function Navbar({
         >
           👤
         </div>
-      </div>
+      </div>      
     </header>
   );
 }

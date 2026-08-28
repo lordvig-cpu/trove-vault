@@ -137,7 +137,7 @@ export default function Home() {
       </div>
 
       {/* Top Navbar */}
-      <div className="shrink-0 relative z-40 shadow-[0_12px_28px_-4px_rgba(0,0,0,0.60)]">
+      <div className="shrink-0 relative z-40">
         <Navbar
           searchQuery={searchQuery}
           onSearchChange={setSearchQuery}
@@ -223,7 +223,7 @@ export default function Home() {
       </div>
 
       {/* LOCKED BOTTOM BAR */}
-      <div className="shrink-0 relative z-40 shadow-[0_-12px_28px_-4px_rgba(0,0,0,0.60)]">
+      <div className="shrink-0 relative z-40">
         <BottomBar 
           activeCollectionName={activeCollection?.name}
           totalItemsCount={allItems.length}
