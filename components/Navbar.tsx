@@ -150,20 +150,25 @@ export default function Navbar({
           <div className="flex items-center gap-3 px-4 h-full">
             {!isPinned && (
               <div className="relative">
+                {/* EXPLORER TOGGLE BUTTON */}
                 <button
                   type="button"
-                  onClick={onToggleSidebar}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all duration-200 cursor-pointer ${
-                    isSidebarOpen
-                      ? 'bg-accent-primary/15 border-accent-primary text-accent-secondary shadow-sm'
-                      : 'bg-surface-hover/80 border-border-subtle text-content-secondary hover:bg-surface-hover hover:text-content-primary'
+                  onClick={() => {
+                    if (isPinned) {
+                      onTogglePin();
+                    } else {
+                      onToggleSidebar();
+                    }
+                  }}
+                  className={`px-4 py-1.5 rounded-lg transition-all duration-200 font-sans font-black tracking-wide text-base cursor-pointer decoration-2 decoration-[#f5a524] underline-offset-4 ${
+                    isSidebarOpen || isPinned
+                      ? 'bg-surface border border-border-strong text-[#f5a524] underline shadow-[0_0_12px_rgba(0,190,230,0.2)]'
+                      : 'bg-transparent border border-transparent text-white hover:underline'
                   }`}
-                  title="Open Explorer Tree"
                 >
-                  <span>🌲</span>
-                  <span>Explorer</span>
-                  <span className="text-[10px] text-content-muted">▾</span>
+                  Explorer
                 </button>
+                
 
                 {isSidebarOpen && (
                   <>
