@@ -52,7 +52,7 @@ export default function Home() {
   // Layout & Dock States
   const [isLogoHovered, setIsLogoHovered] = useState<boolean>(false);
   const [isRightPanelOpen, setIsRightPanelOpen] = useState<boolean>(false);
-  const [isPinned, setIsPinned] = useState<boolean>(true);
+  const [isPinned, setIsPinned] = useState<boolean>(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(false);
   const [isColDropdownOpen, setIsColDropdownOpen] = useState<boolean>(false);
   const [activeModal, setActiveModal] = useState<ActiveModal>(null);
