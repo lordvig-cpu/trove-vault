@@ -66,7 +66,7 @@ export default function Navbar({
   // Live theme selection state
   const [currentTheme, setCurrentTheme] = useState<ThemePreset>('clean-energetic');
   const [isThemeMenuOpen, setIsThemeMenuOpen] = useState(false);
-  
+
   useEffect(() => {
     const saved = localStorage.getItem('uc_theme_preset') as ThemePreset | null;
     const validThemes: ThemePreset[] = ['clean-energetic', 'theme-test-dark', 'theme-test-light'];
@@ -92,44 +92,43 @@ export default function Navbar({
       {/* SVG Noise Filter Definition for the brushed texture */}
       <svg className="hidden" aria-hidden="true">
         <filter id="troveNavTexture">
-          <feTurbulence 
-            type="fractalNoise" 
-            baseFrequency="0.04 1.8" 
-            numOctaves="5" 
-            stitchTiles="stitch" 
-            result="noise" 
+          <feTurbulence
+            type="fractalNoise"
+            baseFrequency="0.04 1.8"
+            numOctaves="5"
+            stitchTiles="stitch"
+            result="noise"
           />
-          <feColorMatrix 
-            type="matrix" 
-            values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 0.85 0" 
-            in="noise" 
-            result="coloredNoise" 
+          <feColorMatrix
+            type="matrix"
+            values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 0.85 0"
+            in="noise"
+            result="coloredNoise"
           />
           <feBlend mode="overlay" in="SourceGraphic" in2="coloredNoise" />
         </filter>
       </svg>
 
-      <header className="trove-navbar h-14 flex items-center justify-between shrink-0 z-40">
+      <header className="trove-navbar h-14 flex items-center justify-between shrink-0 relative z-[200]">
 
         {/* LEFT SECTION */}
         <div className="flex items-center h-full">
           {/* BRAND & DOCKED TAB AREA */}
           <div
-            className={`flex items-center justify-between h-full px-4 transition-all duration-300 ease-in-out ${
-              isPinned
+            className={`flex items-center justify-between h-full px-4 transition-all duration-300 ease-in-out ${isPinned
                 ? 'w-84 border-r border-border-subtle shrink-0'
                 : 'w-auto border-r-0 border-transparent gap-3 shrink-0'
-            }`}
+              }`}
           >
 
             <div className="flex items-start gap-1.5">
               {/* Transparent Logo Image */}
-              <img 
-                src="/images/nav_bar_website_logo.png" 
-                alt="TroveVault" 
+              <img
+                src="/images/nav_bar_website_logo.png"
+                alt="TroveVault"
                 className="h-5 w-auto object-contain select-none"
               />
-              
+
               {/* Plain Borderless Version Text Aligned to Baseline */}
               <span className="text-[10px] text-content-muted/70 font-mono leading-none pt-1.0 select-none">
                 v0.1.0
@@ -160,15 +159,25 @@ export default function Navbar({
                       onToggleSidebar();
                     }
                   }}
-                  className={`px-4 py-1.5 rounded-lg transition-all duration-200 font-sans font-black tracking-wide text-base cursor-pointer decoration-2 decoration-[#f5a524] underline-offset-4 ${
-                    isSidebarOpen || isPinned
-                      ? 'bg-surface border border-border-strong text-[#f5a524] underline shadow-[0_0_12px_rgba(0,190,230,0.2)]'
-                      : 'bg-transparent border border-transparent text-white hover:underline'
+                  className={`px-4 py-1.5 transition-all duration-200 font-sans font-black tracking-wide text-base cursor-pointer decoration-2 decoration-[#e77428] underline-offset-4 relative ${
+                    !isPinned && isSidebarOpen
+                      ? 'bg-surface border border-border-strong border-b-transparent rounded-t-lg rounded-b-none text-[#e77428] underline shadow-[0_-4px_12px_rgba(0,190,230,0.15)] z-[60]'
+                      : isPinned
+                      ? 'bg-surface border border-border-strong rounded-lg text-[#e77428] underline shadow-[0_0_12px_rgba(0,190,230,0.2)] z-50'
+                      : 'bg-transparent border border-transparent rounded-lg text-white hover:underline z-50'
                   }`}
                 >
                   Explorer
+
+                  {/* Seamless Tab Extension - Connects through the mt-2 gap directly to the dropdown */}
+                  {!isPinned && isSidebarOpen && (
+                    <div 
+                      className="absolute top-[calc(100%-1px)] -left-[1px] -right-[1px] h-4 bg-surface border-l border-r border-border-strong pointer-events-none" 
+                      aria-hidden="true" 
+                    />
+                  )}
+                  
                 </button>
-                
 
                 {isSidebarOpen && (
                   <>
@@ -260,11 +269,10 @@ export default function Navbar({
                         key={t.id}
                         type="button"
                         onClick={() => handleSelectTheme(t.id)}
-                        className={`flex items-center justify-between w-full px-2.5 py-1.5 rounded-lg text-xs font-medium text-left transition cursor-pointer ${
-                          currentTheme === t.id
+                        className={`flex items-center justify-between w-full px-2.5 py-1.5 rounded-lg text-xs font-medium text-left transition cursor-pointer ${currentTheme === t.id
                             ? 'bg-accent-primary/20 text-content-primary font-semibold border border-accent-primary/40'
                             : 'text-content-secondary hover:bg-surface-hover hover:text-content-primary'
-                        }`}
+                          }`}
                       >
                         <div className="flex items-center gap-2">
                           <span
@@ -331,7 +339,7 @@ export default function Navbar({
           >
             👤
           </div>
-        </div>      
+        </div>
       </header>
     </>
   );

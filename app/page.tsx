@@ -128,7 +128,7 @@ export default function Home() {
 
       {/* 1. INVISIBLE LOGO HOVER TRIGGER ZONE (Top Left) */}
       <div 
-        className="absolute top-0 left-0 w-64 h-16 z-[100]" 
+        className="absolute top-0 left-0 w-36 h-10 z-[100]" 
         onMouseEnter={() => setIsLogoHovered(true)}
         onMouseLeave={() => setIsLogoHovered(false)}
         aria-hidden="true"
