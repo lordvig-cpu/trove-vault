@@ -26,7 +26,7 @@ export default function RightSidePanel({
         <button
           type="button"
           onClick={onOpen}
-          className="absolute right-0 top-2.5 z-30 h-7 px-2 rounded-l-md bg-surface/90 hover:bg-surface-hover border-y border-l border-border-subtle hover:border-border-strong text-content-muted hover:text-accent-secondary shadow-lg backdrop-blur-md transition-all cursor-pointer flex items-center justify-center group"
+          className="absolute right-0 top-2.5 z-30 h-7 px-2 rounded-l-md bg-surface/90 hover:bg-surface-hover border-y border-l border-border-subtle hover:border-border-strong text-content-muted hover:text-white shadow-lg backdrop-blur-md transition-all cursor-pointer flex items-center justify-center group"
           title="Open Side Panel"
         >
           <svg 
@@ -67,11 +67,11 @@ export default function RightSidePanel({
         <button
           type="button"
           onClick={onClose}
-          className="absolute top-2.5 right-2.5 z-30 h-7 w-7 rounded-md text-content-muted hover:text-content-primary hover:bg-surface-hover border border-transparent hover:border-border-subtle transition cursor-pointer flex items-center justify-center group"
+          className="absolute top-2.5 right-2.5 z-30 h-7 w-7 rounded-md text-content-muted hover:text-white hover:bg-surface-hover border border-transparent hover:border-border-subtle transition cursor-pointer flex items-center justify-center group"
           title="Collapse Panel"
         >
           <svg 
-            className="w-3.5 h-3.5 transform group-hover:translate-x-0.5 transition-transform" 
+            className="w-3.5 h-3.5 text-content-muted group-hover:text-white transform group-hover:translate-x-0.5 transition-all" 
             viewBox="0 0 24 24" 
             fill="none" 
             stroke="currentColor" 

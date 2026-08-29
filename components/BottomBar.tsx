@@ -43,10 +43,10 @@ export default function BottomBar({
   };
 
   return (
-    <footer className="trove-bottombar h-9 flex items-center justify-between px-4 text-xs select-none shrink-0 z-40">
+    <footer className="trove-bottombar h-14 flex items-center justify-between px-4 text-xs select-none shrink-0 z-40">
       
       {/* LEFT: STATUS & ACTIVE COLLECTION */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-3 relative z-10">
         <div className="flex items-center gap-2">
           <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
           <span className="text-[11px] font-mono text-content-muted">
@@ -65,7 +65,7 @@ export default function BottomBar({
       </div>
 
       {/* CENTER: ANIMATIONS TOGGLE */}
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 relative z-10">
         <label className="flex items-center gap-1.5 cursor-pointer text-content-muted hover:text-content-primary transition-colors">
           <input 
             type="checkbox" 
@@ -78,7 +78,7 @@ export default function BottomBar({
       </div>
 
       {/* RIGHT: METRICS, PANEL TOGGLE, & THEME TOGGLE */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-3 relative z-10">
         <span className="text-[11px] font-mono text-content-muted">
           Items: <span className="text-content-primary font-semibold">{totalItemsCount}</span>
         </span>
@@ -138,7 +138,6 @@ export default function BottomBar({
             <path d="M12 2.25a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75zM7.5 12a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM18.894 6.166a.75.75 0 00-1.06-1.06l-1.591 1.59a.75.75 0 101.06 1.061l1.591-1.59zM21.75 12a.75.75 0 01-.75.75h-2.25a.75.75 0 010-1.5H21a.75.75 0 01.75.75zM17.834 18.894a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 10-1.061 1.06l1.59 1.591zM12 18a.75.75 0 01.75.75V21a.75.75 0 01-1.5 0v-2.25A.75.75 0 0112 18zM7.758 17.303a.75.75 0 00-1.061-1.06l-1.591 1.59a.75.75 0 001.06 1.061l1.591-1.59zM6 12a.75.75 0 01-.75.75H3a.75.75 0 010-1.5h2.25A.75.75 0 016 12zM6.697 7.757a.75.75 0 001.06-1.06l-1.59-1.592a.75.75 0 00-1.061 1.061l1.59 1.591z" />
           </svg>
         </button>
-
       </div>
     </footer>
   );

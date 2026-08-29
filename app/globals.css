@@ -108,26 +108,29 @@ body {
   overflow: visible;
 
   background:
+    /* 1. Ultra-Wide Overhead Ambient Dome */
     radial-gradient(
-      ellipse 85% 180% at 50% -50%,
-      var(--accent-glow) 0%,
-      var(--accent-primary) 28%,
-      var(--bg-surface) 55%,
-      transparent 75%
+      ellipse 190% 240% at 50% -90%,
+      rgba(0, 190, 230, 0.40) 0%,
+      rgba(0, 120, 185, 0.22) 35%,
+      rgba(7, 72, 115, 0.10) 65%,
+      transparent 85%
     ),
+    /* 2. Soft Edge Vignette (Darkens the far edges) */
     linear-gradient(
       90deg,
-      var(--bg-canvas) 0%,
-      var(--bg-surface) 20%,
-      transparent 42%,
-      transparent 58%,
-      var(--bg-surface) 80%,
-      var(--bg-canvas) 100%
+      rgba(3, 10, 26, 0.85) 0%,
+      rgba(0, 22, 50, 0.25) 18%,
+      transparent 40%,
+      transparent 60%,
+      rgba(0, 22, 50, 0.25) 82%,
+      rgba(3, 10, 26, 0.85) 100%
     ),
+    /* 3. Base Vertical Gradient Backing */
     linear-gradient(
       180deg,
       var(--accent-primary-hover) 0%,
-      var(--accent-primary) 25%,
+      var(--accent-primary) 22%,
       var(--bg-surface) 52%,
       var(--bg-popover) 78%,
       var(--bg-canvas) 100%
@@ -147,11 +150,12 @@ body {
   pointer-events: none;
   z-index: -1;
 
+  /* Soft diffused overhead sheen */
   background:
     radial-gradient(
-      ellipse 50% 130% at 50% -20%,
-      var(--accent-glow),
-      var(--accent-primary) 45%,
+      ellipse 140% 160% at 50% -60%,
+      rgba(0, 210, 255, 0.18) 0%,
+      rgba(0, 130, 210, 0.08) 50%,
       transparent 75%
     );
 
@@ -178,39 +182,42 @@ body {
 .trove-bottombar {
   position: relative;
   isolation: isolate;
-  overflow: visible;
+  overflow: hidden;
 
   background:
+    /* 1. Ultra-Wide Inverted Ambient Dome (Emanating up from bottom edge) */
     radial-gradient(
-      ellipse 85% 180% at 50% 150%,
-      var(--accent-glow) 0%,
-      var(--accent-primary) 28%,
-      var(--bg-surface) 55%,
-      transparent 75%
+      ellipse 190% 200% at 50% 190%,
+      rgba(0, 190, 230, 0.35) 0%,
+      rgba(0, 120, 185, 0.18) 35%,
+      rgba(7, 72, 115, 0.08) 65%,
+      transparent 85%
     ),
+    /* 2. Soft Edge Vignette (Matches navbar side drop-offs) */
     linear-gradient(
-      270deg,
-      var(--bg-canvas) 0%,
-      var(--bg-surface) 20%,
-      transparent 42%,
-      transparent 58%,
-      var(--bg-surface) 80%,
-      var(--bg-canvas) 100%
+      90deg,
+      rgba(3, 10, 26, 0.85) 0%,
+      rgba(0, 22, 50, 0.25) 18%,
+      transparent 40%,
+      transparent 60%,
+      rgba(0, 22, 50, 0.25) 82%,
+      rgba(3, 10, 26, 0.85) 100%
     ),
+    /* 3. Base Inverted Vertical Gradient Backing */
     linear-gradient(
       0deg,
       var(--accent-primary-hover) 0%,
-      var(--accent-primary) 25%,
-      var(--bg-surface) 52%,
-      var(--bg-popover) 78%,
+      var(--accent-primary) 18%,
+      var(--bg-surface) 50%,
+      var(--bg-popover) 75%,
       var(--bg-canvas) 100%
     );
 
   border-top: 1px solid var(--border-strong);
 
   box-shadow:
-    inset 0 -1px 0 var(--border-subtle),
-    inset 0 1px 0 var(--accent-primary);
+    inset 0 1px 0 var(--accent-primary),
+    inset 0 -1px 0 var(--border-subtle);
 }
 
 .trove-bottombar::before {
@@ -222,9 +229,9 @@ body {
 
   background:
     radial-gradient(
-      ellipse 50% 130% at 50% 120%,
-      var(--accent-glow),
-      var(--accent-primary) 45%,
+      ellipse 140% 140% at 50% 160%,
+      rgba(0, 210, 255, 0.15) 0%,
+      rgba(0, 130, 210, 0.06) 50%,
       transparent 75%
     );
 
@@ -241,6 +248,6 @@ body {
   background: var(--text-primary);
   filter: url("#troveNavTexture");
 
-  opacity: 0.14;
+  opacity: 0.10;
   mix-blend-mode: overlay;
 }
