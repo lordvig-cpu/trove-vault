@@ -6,18 +6,6 @@ import CollectionDropdown from './CollectionDropdown';
 import { PinOutlineIcon } from './icons/PinIcons';
 
 export type SearchScope = 'current' | 'all';
-export type ThemePreset = 'theme-default-dark' | 'theme-default-light';
-
-interface ThemeOption {
-  id: ThemePreset;
-  label: string;
-  dotColor: string;
-}
-
-const THEME_OPTIONS: ThemeOption[] = [
-  { id: 'theme-default-dark', label: 'Amber Tide', dotColor: '#ffaa00' },
-  { id: 'theme-default-light', label: 'Sunlit Tide', dotColor: '#006f91' },
-];
 
 interface NavbarProps {
   searchQuery: string;
@@ -65,28 +53,6 @@ export default function Navbar({
 }: NavbarProps) {
   const transitionClass = animationsEnabled ? 'transition-all duration-700 ease-in-out' : 'transition-none';
   const opacityTransition = animationsEnabled ? 'transition-opacity duration-700 ease-in-out' : 'transition-none';
-  const [currentTheme, setCurrentTheme] = useState<ThemePreset>('theme-default-dark');
-  const [isThemeMenuOpen, setIsThemeMenuOpen] = useState(false);
-
-  useEffect(() => {
-    const saved = localStorage.getItem('uc_theme_preset') as ThemePreset | null;
-    const validThemes: ThemePreset[] = ['theme-default-dark', 'theme-default-light'];
-
-    if (saved && validThemes.includes(saved)) {
-      setCurrentTheme(saved);
-      document.documentElement.setAttribute('data-theme', saved);
-    } else {
-      setCurrentTheme('theme-default-dark');
-      document.documentElement.setAttribute('data-theme', 'theme-default-dark');
-    }
-  }, []);
-
-  const handleSelectTheme = (themeId: ThemePreset) => {
-    setCurrentTheme(themeId);
-    document.documentElement.setAttribute('data-theme', themeId);
-    localStorage.setItem('uc_theme_preset', themeId);
-    setIsThemeMenuOpen(false);
-  };
 
   const [renderMenu, setRenderMenu] = useState(isSidebarOpen);
   const [isClosing, setIsClosing] = useState(false);
@@ -96,7 +62,6 @@ export default function Navbar({
       setRenderMenu(true);
       setIsClosing(false);
     } else if (renderMenu) {
-      // If closing because it was pinned, keep renderMenu alive for 700ms without applying unmountFade
       if (isPinned) {
         const timer = setTimeout(() => {
           setRenderMenu(false);
@@ -104,7 +69,6 @@ export default function Navbar({
         return () => clearTimeout(timer);
       }
 
-      // Normal close (X or clicking Explorer) -> run 500ms fade-out
       if (animationsEnabled) {
         setIsClosing(true);
         const timer = setTimeout(() => {
@@ -132,21 +96,23 @@ export default function Navbar({
 
         {/* LEFT SECTION */}
         <div className="flex items-center h-full">
-          {/* BRAND & EXPLORER TAB - Locked to exactly w-76 to perfectly align with the Sidebar's right border */}
+          {/* BRAND & EXPLORER TAB */}
           <div className="flex items-center justify-between h-full w-76 shrink-0 relative">
 
             {/* SHADOW ERASER MASK */}
-            <div
-              className={`absolute top-full left-0 right-[10px] h-3 bg-surface z-10 pointer-events-none ${opacityTransition} ${isPinned ? 'opacity-100 delay-[350ms]' : 'opacity-0 delay-0'
-                }`}
-              aria-hidden="true"
+            <div 
+              className={`absolute top-full left-0 right-[10px] h-3 bg-surface z-10 pointer-events-none ${opacityTransition} ${
+                isPinned ? 'opacity-100 delay-[350ms]' : 'opacity-0 delay-0'
+              }`} 
+              aria-hidden="true" 
             />
 
             {/* RESTORED BLUE BORDER LINE */}
-            <div
-              className={`absolute top-full left-0 w-full h-[1px] bg-[rgba(81,155,255,0.85)] z-20 pointer-events-none ${opacityTransition} ${isPinned ? 'opacity-100 delay-[350ms]' : 'opacity-0 delay-0'
-                }`}
-              aria-hidden="true"
+            <div 
+              className={`absolute top-full left-0 w-full h-[1px] bg-[rgba(81,155,255,0.85)] z-20 pointer-events-none ${opacityTransition} ${
+                isPinned ? 'opacity-100 delay-[350ms]' : 'opacity-0 delay-0'
+              }`}
+              aria-hidden="true" 
             />
 
             {/* BRAND AREA */}
@@ -161,7 +127,7 @@ export default function Navbar({
               </span>
             </div>
 
-            {/* EXPLORER TOGGLE BUTTON (Right-aligned against the w-76 boundary) */}
+            {/* EXPLORER TOGGLE BUTTON */}
             <div className="relative z-30">
               <button
                 type="button"
@@ -190,7 +156,7 @@ export default function Navbar({
                   />
                 </span>
 
-                {/* Seamless Tab Extension - Permanently mounted, toggles opacity */}
+                {/* Seamless Tab Extension */}
                 <div
                   className={`absolute top-[calc(100%-1px)] -left-[1px] -right-[1px] h-3 bg-surface border-l pointer-events-none transition-opacity ease-out ${
                     animationsEnabled ? 'duration-500' : 'duration-0'
@@ -222,23 +188,27 @@ export default function Navbar({
                       animation: unmountFade 500ms ease-out forwards;
                     }
                   `}</style>
-
+                  
                   {/* Floating Menu Overlay */}
-                  <div
-                    className={`fixed inset-0 top-14 z-40 ${animationsEnabled
-                        ? (isClosing && !isPinned ? 'animate-unmount-fade' : 'animate-mount-fade transition-opacity duration-700 ease-in-out')
+                  <div 
+                    className={`fixed inset-0 top-14 z-40 ${
+                      animationsEnabled 
+                        ? (isClosing && !isPinned ? 'animate-unmount-fade' : 'animate-mount-fade transition-opacity duration-700 ease-in-out') 
                         : 'transition-none'
-                      } ${isPinned ? 'opacity-0 pointer-events-none' : 'opacity-100'
-                      }`}
-                    onClick={onToggleSidebar}
+                    } ${
+                      isPinned ? 'opacity-0 pointer-events-none' : 'opacity-100'
+                    }`} 
+                    onClick={onToggleSidebar} 
                   />
-
+                  
                   {/* Floating Menu Container */}
-                  <div className={`absolute left-0 mt-[11px] w-88 max-h-[75vh] bg-surface border border-border-strong rounded-xl rounded-tl-none shadow-[0_20px_50px_rgba(0,0,0,0.85)] ring-1 ring-white/10 z-50 p-3 flex flex-col gap-2 backdrop-blur-xl transform ${animationsEnabled && !isPinned
-                      ? (isClosing ? 'animate-unmount-fade' : 'animate-mount-fade')
+                  <div className={`absolute left-0 mt-[11px] w-88 max-h-[75vh] bg-surface border border-border-strong rounded-xl rounded-tl-none shadow-[0_20px_50px_rgba(0,0,0,0.85)] ring-1 ring-white/10 z-50 p-3 flex flex-col gap-2 backdrop-blur-xl transform ${
+                    animationsEnabled && !isPinned
+                      ? (isClosing ? 'animate-unmount-fade' : 'animate-mount-fade') 
                       : ''
-                    } ${transitionClass} ${isPinned ? 'opacity-0 -translate-x-46 pointer-events-none' : 'opacity-100 translate-x-0'
-                    }`}>
+                  } ${transitionClass} ${
+                    isPinned ? 'opacity-0 -translate-x-46 pointer-events-none' : 'opacity-100 translate-x-0'
+                  }`}>
                     <div className="flex items-center justify-between border-b border-border-subtle pb-2 shrink-0">
                       <span className="text-xs font-bold uppercase tracking-wider text-content-muted">
                         🌲 Explorer
@@ -294,47 +264,6 @@ export default function Navbar({
               <span>📑</span>
               <span>Templates</span>
             </button>
-
-            <div className="relative">
-              <button
-                type="button"
-                onClick={() => setIsThemeMenuOpen(!isThemeMenuOpen)}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-surface-hover/80 hover:bg-surface-hover text-content-secondary hover:text-content-primary border border-border-subtle transition cursor-pointer"
-                title="Change Color Theme"
-              >
-                <span>🎨</span>
-                <span>Themes</span>
-                <span className="text-[10px] text-content-muted">▾</span>
-              </button>
-
-              {isThemeMenuOpen && (
-                <>
-                  <div className="fixed inset-0 z-40" onClick={() => setIsThemeMenuOpen(false)} />
-                  <div className="absolute left-0 mt-2 w-52 bg-surface-popover border border-border-strong rounded-xl shadow-2xl z-50 p-2 flex flex-col gap-1 backdrop-blur-xl animate-in fade-in zoom-in-95 duration-150">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-content-muted px-2 py-1 border-b border-border-subtle">
-                      Color Themes
-                    </span>
-                    {THEME_OPTIONS.map((t) => (
-                      <button
-                        key={t.id}
-                        type="button"
-                        onClick={() => handleSelectTheme(t.id)}
-                        className={`flex items-center justify-between w-full px-2.5 py-1.5 rounded-lg text-xs font-medium text-left transition cursor-pointer ${currentTheme === t.id
-                          ? 'bg-accent-primary/20 text-content-primary font-semibold border border-accent-primary/40'
-                          : 'text-content-secondary hover:bg-surface-hover hover:text-content-primary'
-                          }`}
-                      >
-                        <div className="flex items-center gap-2">
-                          <span className="w-3 h-3 rounded-full shrink-0 shadow-xs" style={{ backgroundColor: t.dotColor }} />
-                          <span>{t.label}</span>
-                        </div>
-                        {currentTheme === t.id && <span className="text-[11px] text-accent-secondary">✓</span>}
-                      </button>
-                    ))}
-                  </div>
-                </>
-              )}
-            </div>
           </div>
         </div>
 

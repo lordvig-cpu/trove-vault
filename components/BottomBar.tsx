@@ -1,6 +1,8 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+
+export type ThemePreset = 'theme-default-dark' | 'theme-default-light';
 
 interface BottomBarProps {
   activeCollectionName?: string;
@@ -19,15 +21,36 @@ export default function BottomBar({
   isRightPanelOpen,
   onToggleRightPanel,
 }: BottomBarProps) {
+  const [theme, setTheme] = useState<ThemePreset>('theme-default-dark');
+
+  // Load saved theme or fall back to default dark on initial mount
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('uc_theme_preset') as ThemePreset | null;
+    if (savedTheme === 'theme-default-dark' || savedTheme === 'theme-default-light') {
+      setTheme(savedTheme);
+      document.documentElement.setAttribute('data-theme', savedTheme);
+    } else {
+      setTheme('theme-default-dark');
+      document.documentElement.setAttribute('data-theme', 'theme-default-dark');
+    }
+  }, []);
+
+  const toggleTheme = () => {
+    const nextTheme: ThemePreset = theme === 'theme-default-dark' ? 'theme-default-light' : 'theme-default-dark';
+    setTheme(nextTheme);
+    document.documentElement.setAttribute('data-theme', nextTheme);
+    localStorage.setItem('uc_theme_preset', nextTheme);
+  };
+
   return (
     <footer className="trove-bottombar h-9 flex items-center justify-between px-4 text-xs select-none shrink-0 z-40">
-    
-      {/* Left Status Area */}
+      
+      {/* LEFT: STATUS & ACTIVE COLLECTION */}
       <div className="flex items-center gap-3">
         <div className="flex items-center gap-2">
           <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
           <span className="text-[11px] font-mono text-content-muted">
-            Status: <span className="text-content-primary">Ready</span>
+            Status: <span className="text-content-primary font-medium">Ready</span>
           </span>
         </div>
 
@@ -41,12 +64,20 @@ export default function BottomBar({
         )}
       </div>
 
-      {/* Center Utility Placeholder */}
-      <div className="hidden md:flex items-center gap-2 text-xs text-content-muted">
-        {/* Breadcrumb / quick action placeholder */}
+      {/* CENTER: ANIMATIONS TOGGLE */}
+      <div className="flex items-center gap-2">
+        <label className="flex items-center gap-1.5 cursor-pointer text-content-muted hover:text-content-primary transition-colors">
+          <input 
+            type="checkbox" 
+            checked={animationsEnabled} 
+            onChange={(e) => setAnimationsEnabled(e.target.checked)}
+            className="w-3.5 h-3.5 rounded border-border-subtle bg-surface text-accent-secondary focus:ring-0 cursor-pointer"
+          />
+          <span className="text-[11px] font-mono">Animations</span>
+        </label>
       </div>
 
-      {/* Right Metrics & Panel Toggle */}
+      {/* RIGHT: METRICS, PANEL TOGGLE, & THEME TOGGLE */}
       <div className="flex items-center gap-3">
         <span className="text-[11px] font-mono text-content-muted">
           Items: <span className="text-content-primary font-semibold">{totalItemsCount}</span>
@@ -65,7 +96,6 @@ export default function BottomBar({
               : 'bg-surface hover:bg-surface-hover border-border-subtle text-content-muted hover:text-content-primary'
           }`}
         >
-          {/* Dock Icon */}
           <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <rect x="3" y="3" width="18" height="18" rx="2" />
             <line x1="15" y1="3" x2="15" y2="21" />
@@ -73,15 +103,42 @@ export default function BottomBar({
           </svg>
         </button>
 
-        <label className="flex items-center gap-2 text-xs text-content-muted cursor-pointer">
-          <input 
-            type="checkbox" 
-            checked={animationsEnabled} 
-            onChange={(e) => setAnimationsEnabled(e.target.checked)}
-            className="rounded border-border-subtle bg-surface text-accent-secondary focus:ring-0 cursor-pointer"
-          />
-          Animations
-        </label>
+        {/* 500ms Animated Sun/Moon Theme Toggle */}
+        <button
+          type="button"
+          onClick={toggleTheme}
+          className="group relative p-1.5 rounded-lg border border-border-subtle bg-surface hover:bg-surface-hover text-content-muted hover:text-content-primary transition cursor-pointer overflow-hidden flex items-center justify-center w-7 h-7"
+          title={theme === 'theme-default-dark' ? 'Switch to Sunlit Tide (Light Mode)' : 'Switch to Amber Tide (Dark Mode)'}
+        >
+          {/* Slender Crescent Moon Icon (Dark Mode Active) */}
+          <svg
+            className={`w-[17px] h-[17px] text-accent-secondary group-hover:text-content-primary absolute transform transition-all duration-500 ease-out ${
+              theme === 'theme-default-dark'
+                ? 'rotate-0 opacity-100 scale-100'
+                : '-rotate-90 opacity-0 scale-50 pointer-events-none'
+            }`}
+            viewBox="0 0 72 72"
+            fill="currentColor"
+          >
+            <g transform="rotate(-45 36 36)">
+              <path d="M7.3634,42.4095c4.5525,6.1703,11.874,10.1726,20.1303,10.1726c13.8071,0,25-11.1929,25-25 c0-8.5226-4.2646-16.0492-10.7763-20.5621c13.0383,2.8385,22.7812,14.4426,22.7812,28.3317c0,16.0163-12.9837,29-29,29 C21.9109,64.3517,10.5097,55.0229,7.3634,42.4095z" />
+            </g>
+          </svg>
+
+          {/* Sun Icon (Light Mode Active) */}
+          <svg
+            className={`w-3.5 h-3.5 text-amber-500 group-hover:text-content-primary absolute transform transition-all duration-500 ease-out ${
+              theme === 'theme-default-light'
+                ? 'rotate-0 opacity-100 scale-100'
+                : 'rotate-90 opacity-0 scale-50 pointer-events-none'
+            }`}
+            fill="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path d="M12 2.25a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75zM7.5 12a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM18.894 6.166a.75.75 0 00-1.06-1.06l-1.591 1.59a.75.75 0 101.06 1.061l1.591-1.59zM21.75 12a.75.75 0 01-.75.75h-2.25a.75.75 0 010-1.5H21a.75.75 0 01.75.75zM17.834 18.894a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 10-1.061 1.06l1.59 1.591zM12 18a.75.75 0 01.75.75V21a.75.75 0 01-1.5 0v-2.25A.75.75 0 0112 18zM7.758 17.303a.75.75 0 00-1.061-1.06l-1.591 1.59a.75.75 0 001.06 1.061l1.591-1.59zM6 12a.75.75 0 01-.75.75H3a.75.75 0 010-1.5h2.25A.75.75 0 016 12zM6.697 7.757a.75.75 0 001.06-1.06l-1.59-1.592a.75.75 0 00-1.061 1.061l1.59 1.591z" />
+          </svg>
+        </button>
+
       </div>
     </footer>
   );
