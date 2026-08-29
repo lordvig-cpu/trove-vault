@@ -113,14 +113,8 @@ export default function Navbar({
 
         {/* LEFT SECTION */}
         <div className="flex items-center h-full">
-          {/* BRAND & DOCKED TAB AREA */}
-          <div
-            className={`flex items-center justify-between h-full px-4 transition-all duration-300 ease-in-out ${isPinned
-                ? 'w-84 border-r border-border-subtle shrink-0'
-                : 'w-auto border-r-0 border-transparent gap-3 shrink-0'
-              }`}
-          >
-
+          {/* BRAND AREA (Now completely static width, no shifting) */}
+          <div className="flex items-center h-full px-4 gap-3 shrink-0">
             <div className="flex items-start gap-1.5">
               {/* Transparent Logo Image */}
               <img
@@ -134,92 +128,81 @@ export default function Navbar({
                 v0.1.0
               </span>
             </div>
-
-            {isPinned && (
-              <div className="relative h-full flex items-center px-2 mr-1">
-                <span className="text-xs font-semibold text-content-primary tracking-wide select-none">
-                  Explorer
-                </span>
-                <div className="absolute bottom-0 left-0 right-0 h-[2.5px] bg-accent-primary rounded-t-full shadow-sm shadow-accent-primary/50" />
-              </div>
-            )}
           </div>
 
           {/* TOP LEVEL NAVIGATION BUTTONS */}
           <div className="flex items-center gap-3 px-4 h-full">
-            {!isPinned && (
-              <div className="relative">
-                {/* EXPLORER TOGGLE BUTTON */}
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (isPinned) {
-                      onTogglePin();
-                    } else {
-                      onToggleSidebar();
-                    }
-                  }}
-                  className={`px-4 py-1.5 transition-all duration-200 font-sans font-black tracking-wide text-base cursor-pointer decoration-2 decoration-[#e77428] underline-offset-4 relative ${
-                    !isPinned && isSidebarOpen
-                      ? 'bg-surface border border-border-strong border-b-transparent rounded-t-lg rounded-b-none text-[#e77428] underline shadow-[0_-4px_12px_rgba(0,190,230,0.15)] z-[60]'
-                      : isPinned
-                      ? 'bg-surface border border-border-strong rounded-lg text-[#e77428] underline shadow-[0_0_12px_rgba(0,190,230,0.2)] z-50'
-                      : 'bg-transparent border border-transparent rounded-lg text-white hover:underline z-50'
-                  }`}
-                >
-                  Explorer
+            <div className="relative">
 
-                  {/* Seamless Tab Extension */}
-                  {!isPinned && isSidebarOpen && (
-                    <div 
-                      className="absolute top-[calc(100%-1px)] -left-[1px] -right-[1px] h-3 bg-surface border-l border-r border-border-strong pointer-events-none" 
-                      aria-hidden="true" 
-                    />
-                  )}
+              {/* EXPLORER TOGGLE BUTTON (Always visible now) */}
+              <button
+                type="button"
+                onClick={() => {
+                  if (isPinned) {
+                    onTogglePin(); // Unpins back to floating mode
+                  } else {
+                    onToggleSidebar();
+                  }
+                }}
+                className={`px-4 py-1.5 transition-all duration-200 font-sans font-black tracking-wide text-base cursor-pointer decoration-2 decoration-[#e77428] underline-offset-4 relative ${
+                  !isPinned && isSidebarOpen
+                    ? 'bg-surface border border-border-strong border-b-transparent rounded-t-lg rounded-b-none text-white shadow-[0_-4px_12px_rgba(0,190,230,0.15)] z-[60]'
+                    : isPinned
+                    ? 'bg-surface border border-border-strong border-b-transparent rounded-t-lg rounded-b-none text-white underline shadow-[0_-4px_12px_rgba(0,190,230,0.15)] z-[60]'
+                    : 'bg-transparent border border-transparent rounded-lg text-white hover:underline z-50'
+                }`}
+              >
+                Explorer
 
-                  
-                </button>
+                {/* Seamless Tab Extension - Now shows for BOTH floating and pinned states */}
+                {(isPinned || isSidebarOpen) && (
+                  <div 
+                    className="absolute top-[calc(100%-1px)] -left-[1px] -right-[1px] h-3 bg-surface border-l border-r border-border-strong pointer-events-none" 
+                    aria-hidden="true" 
+                  />
+                )}
+              </button>
 
-                {isSidebarOpen && (
-                  <>
-                    <div
-                      className="fixed inset-0 top-14 z-40"
-                      onClick={onToggleSidebar}
-                    />
-                    <div className="absolute left-0 mt-2 w-88 max-h-[75vh] bg-surface-popover border border-border-strong rounded-xl rounded-tl-none shadow-[0_20px_50px_rgba(0,0,0,0.85)] ring-1 ring-white/10 z-50 p-3 flex flex-col gap-2 backdrop-blur-xl animate-in fade-in zoom-in-95 duration-150">
-                      <div className="flex items-center justify-between border-b border-border-subtle pb-2 shrink-0">
-                        <span className="text-xs font-bold uppercase tracking-wider text-content-muted">
-                          🌲 Explorer
-                        </span>
+              {/* Floating Menu - Only shows when NOT pinned */}
+              {!isPinned && isSidebarOpen && (
+                <>
+                  <div
+                    className="fixed inset-0 top-14 z-40"
+                    onClick={onToggleSidebar}
+                  />
+                  <div className="absolute left-0 mt-2 w-88 max-h-[75vh] bg-surface-popover border border-border-strong rounded-xl rounded-tl-none shadow-[0_20px_50px_rgba(0,0,0,0.85)] ring-1 ring-white/10 z-50 p-3 flex flex-col gap-2 backdrop-blur-xl animate-in fade-in zoom-in-95 duration-150">
+                    <div className="flex items-center justify-between border-b border-border-subtle pb-2 shrink-0">
+                      <span className="text-xs font-bold uppercase tracking-wider text-content-muted">
+                        🌲 Explorer
+                      </span>
 
-                        <div className="flex items-center gap-1">
-                          <button
-                            type="button"
-                            onClick={onTogglePin}
-                            className="group p-1 rounded text-content-muted hover:text-content-primary hover:bg-surface-hover transition cursor-pointer"
-                            title="Pin Explorer to Sidebar"
-                          >
-                            <PinOutlineIcon className="w-3.5 h-3.5" />
-                          </button>
-                          <button
-                            type="button"
-                            onClick={onToggleSidebar}
-                            className="p-1 text-content-muted hover:text-content-primary rounded hover:bg-surface-hover text-xs cursor-pointer"
-                            title="Close"
-                          >
-                            ✕
-                          </button>
-                        </div>
-                      </div>
-
-                      <div className="overflow-auto max-h-[60vh] py-1">
-                        {explorerContent}
+                      <div className="flex items-center gap-1">
+                        <button
+                          type="button"
+                          onClick={onTogglePin}
+                          className="group p-1 rounded text-content-muted hover:text-content-primary hover:bg-surface-hover transition cursor-pointer"
+                          title="Pin Explorer to Sidebar"
+                        >
+                          <PinOutlineIcon className="w-3.5 h-3.5" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={onToggleSidebar}
+                          className="p-1 text-content-muted hover:text-content-primary rounded hover:bg-surface-hover text-xs cursor-pointer"
+                          title="Close"
+                        >
+                          ✕
+                        </button>
                       </div>
                     </div>
-                  </>
-                )}
-              </div>
-            )}
+
+                    <div className="overflow-auto max-h-[60vh] py-1">
+                      {explorerContent}
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
 
             {/* Collection Selector Popover */}
             <CollectionDropdown
