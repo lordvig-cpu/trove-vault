@@ -15,6 +15,7 @@ interface SidebarProps {
   loading: boolean;
   error: string | null;
   children: React.ReactNode;
+  animationsEnabled: boolean;
 }
 
 export default function Sidebar({
@@ -26,14 +27,19 @@ export default function Sidebar({
   onAddNewItem,
   loading,
   error,
+  animationsEnabled,
   children,
 }: SidebarProps) {
+  // Dynamic transition class based on toggle
+  const transitionClass = animationsEnabled ? 'transition-all duration-700 ease-in-out' : 'transition-none';
+
   return (
     <aside
-      className={`absolute left-0 top-[1px] bottom-0 bg-surface flex flex-col gap-2.5 overflow-x-hidden overflow-y-auto shrink-0 transition-all duration-700 ease-in-out z-50 ${isPinned
+      className={`absolute left-0 top-[1px] bottom-0 bg-surface flex flex-col gap-2.5 overflow-x-hidden overflow-y-auto shrink-0 ${transitionClass} z-50 ${
+        isPinned
           ? 'w-76 max-w-76 border-r border-[rgba(81,155,255,0.85)] p-3 opacity-100 shadow-[14px_0_35px_-4px_rgba(0,0,0,0.85)] translate-x-0'
           : 'w-76 max-w-76 translate-x-46 border-r-0 p-3 opacity-0 pointer-events-none'
-        }`}
+      }`}
     >
       {/* Header */}
       <div className="flex items-center justify-between border-b border-border-subtle pb-2 shrink-0">

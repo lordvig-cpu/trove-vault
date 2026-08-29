@@ -59,17 +59,6 @@ export default function Home() {
   const [animationsEnabled, setAnimationsEnabled] = useState(true);
   const animClass = animationsEnabled ? 'transition-all duration-[750ms] ease-in-out' : 'transition-none';
 
-  useEffect(() => {
-    const saved = localStorage.getItem('uc_sidebar_pinned');
-    if (saved !== null) {
-      try {
-        setIsPinned(JSON.parse(saved));
-      } catch {
-        // Keep default
-      }
-    }
-  }, []);
-
   const handleTogglePin = () => {
     const nextPinned = !isPinned;
     setIsPinned(nextPinned);
@@ -191,6 +180,7 @@ export default function Home() {
           onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
           onTogglePin={handleTogglePin}
           explorerContent={explorerTreeElement}
+          animationsEnabled={animationsEnabled}
         />
       </div>
 
@@ -207,6 +197,7 @@ export default function Home() {
           }}
           loading={loading}
           error={error}
+          animationsEnabled={animationsEnabled}
         >
           {explorerTreeElement}
         </Sidebar>
