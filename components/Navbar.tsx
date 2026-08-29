@@ -6,7 +6,7 @@ import CollectionDropdown from './CollectionDropdown';
 import { PinOutlineIcon } from './icons/PinIcons';
 
 export type SearchScope = 'current' | 'all';
-export type ThemePreset = 'clean-energetic' | 'theme-test-dark' | 'theme-test-light';
+export type ThemePreset = 'theme-default-dark' | 'theme-default-light';
 
 interface ThemeOption {
   id: ThemePreset;
@@ -15,9 +15,8 @@ interface ThemeOption {
 }
 
 const THEME_OPTIONS: ThemeOption[] = [
-  { id: 'clean-energetic', label: 'Clean & Energetic (Default)', dotColor: '#5680E9' },
-  { id: 'theme-test-dark', label: 'Test Dark Theme', dotColor: '#ffaa00' },
-  { id: 'theme-test-light', label: 'Test Light Theme', dotColor: '#d0e4ec' },
+  { id: 'theme-default-dark', label: 'Amber Tide', dotColor: '#ffaa00' },
+  { id: 'theme-default-light', label: 'Sunlit Tide', dotColor: '#006f91' },
 ];
 
 interface NavbarProps {
@@ -66,19 +65,19 @@ export default function Navbar({
 }: NavbarProps) {
   const transitionClass = animationsEnabled ? 'transition-all duration-700 ease-in-out' : 'transition-none';
   const opacityTransition = animationsEnabled ? 'transition-opacity duration-700 ease-in-out' : 'transition-none';
-  const [currentTheme, setCurrentTheme] = useState<ThemePreset>('clean-energetic');
+  const [currentTheme, setCurrentTheme] = useState<ThemePreset>('theme-default-dark');
   const [isThemeMenuOpen, setIsThemeMenuOpen] = useState(false);
 
   useEffect(() => {
     const saved = localStorage.getItem('uc_theme_preset') as ThemePreset | null;
-    const validThemes: ThemePreset[] = ['clean-energetic', 'theme-test-dark', 'theme-test-light'];
+    const validThemes: ThemePreset[] = ['theme-default-dark', 'theme-default-light'];
 
     if (saved && validThemes.includes(saved)) {
       setCurrentTheme(saved);
       document.documentElement.setAttribute('data-theme', saved);
     } else {
-      setCurrentTheme('clean-energetic');
-      document.documentElement.setAttribute('data-theme', 'clean-energetic');
+      setCurrentTheme('theme-default-dark');
+      document.documentElement.setAttribute('data-theme', 'theme-default-dark');
     }
   }, []);
 
@@ -171,7 +170,7 @@ export default function Navbar({
                     onToggleSidebar();
                   }
                 }}
-                className={`px-4 py-1.5 font-sans font-black tracking-wide text-base relative group transition-all ease-out ${
+                className={`px-4 py-1.5 font-sans font-black tracking-wide text-sm relative group transition-all ease-out ${
                   animationsEnabled ? 'duration-500' : 'duration-0'
                 } ${isPinned ? 'cursor-default' : 'cursor-pointer'} ${
                   isPinned || (renderMenu && !isClosing)
@@ -235,7 +234,7 @@ export default function Navbar({
                   />
 
                   {/* Floating Menu Container */}
-                  <div className={`absolute left-0 mt-[9px] w-88 max-h-[75vh] bg-surface border border-border-strong rounded-xl rounded-tl-none shadow-[0_20px_50px_rgba(0,0,0,0.85)] ring-1 ring-white/10 z-50 p-3 flex flex-col gap-2 backdrop-blur-xl transform ${animationsEnabled && !isPinned
+                  <div className={`absolute left-0 mt-[11px] w-88 max-h-[75vh] bg-surface border border-border-strong rounded-xl rounded-tl-none shadow-[0_20px_50px_rgba(0,0,0,0.85)] ring-1 ring-white/10 z-50 p-3 flex flex-col gap-2 backdrop-blur-xl transform ${animationsEnabled && !isPinned
                       ? (isClosing ? 'animate-unmount-fade' : 'animate-mount-fade')
                       : ''
                     } ${transitionClass} ${isPinned ? 'opacity-0 -translate-x-46 pointer-events-none' : 'opacity-100 translate-x-0'

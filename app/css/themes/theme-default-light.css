@@ -1,0 +1,23 @@
+/* ==========================================================================
+   THEME: DEFAULT LIGHT (SUNLIT TIDE)
+   ========================================================================== */
+[data-theme='theme-default-light'] {
+  --bg-canvas: #eef8fb;                   /* Soft Aqua Mist Page Background */
+  --bg-surface: #ffffff;                  /* Crisp White Card / Panel Surface */
+  --bg-surface-hover: #dff5f8;            /* Pale Aqua Hover / Selected Surface */
+  --bg-popover: #f7fcfd;                  /* Frosted Ice Popover / Dropdown */
+
+  --border-subtle: rgba(0, 151, 180, 0.16); /* Soft Aqua Structural Borders */
+  --border-strong: rgba(0, 166, 199, 0.58); /* Vibrant Aqua Focus / Highlight Edge */
+
+  --accent-primary: #0788a8;              /* Primary Aqua Action Color */
+  --accent-primary-hover: #006f91;        /* Deeper Aqua Hover */
+  --accent-secondary: #c97b08;            /* Warm Amber - Darkened for Light BG */
+  --accent-glow: rgba(0, 177, 204, 0.20); /* Soft Aqua Glow */
+
+  --text-primary: #102733;                /* Deep Blue-Charcoal Headings */
+  --text-secondary: #3f6170;              /* Cool Slate Body Text */
+  --text-muted: #7894a1;                  /* Muted Aqua-Slate Metadata */
+
+  --studio-spotlight: rgba(0, 150, 180, 0.50); /* Soft light theme spotlight */
+}

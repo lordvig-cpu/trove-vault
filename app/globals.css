@@ -1,4 +1,6 @@
 @import "tailwindcss";
+@import "./css/themes/theme-default-dark.css";
+@import "./css/themes/theme-default-light.css";
 
 html {
   zoom: 1.1;
@@ -12,104 +14,6 @@ body {
   margin: 0;
   padding: 0;
   overflow: hidden;
-}
-
-/* PALETTE: CLEAN AND ENERGETIC (Luminous / Brightened Dark) */
-/* ... remainder of your file stays unchanged ... */
-/* PALETTE: CLEAN AND ENERGETIC (Luminous / Brightened Dark) */
-/* --bg-canvas: #121b33;
-/*     Deepest background behind everything (main canvas area, app wrapper).
-/* --bg-surface: #1e2c52;  
-/*     Solid card surfaces, pinned left sidebar background, top navbar header, modal containers.
-/* --bg-surface-hover: #293d6e;
-/*     Hover highlight state on unselected rows, dropdown buttons, unselected tree nodes.
-/* --bg-popover: rgba(30, 44, 82, 0.75);
-/*     Frosted floating popover menus (the Explorer dropdown card, Collections dropdown card).
-/* --border-subtle: #334a7d;
-/*     Hairline dividers, card outlines, header bottom-borders, vertical tree branch lines.
-/* --border-strong: #5680E9;
-/*     High-contrast boundaries, focused input field rings, outer borders on popover modals.
-/* --accent-primary: #5680E9;
-/*     Main brand badge ("UC"), primary buttons (+ Add Sub-Item), active tab indicator underline.
-/* --accent-primary-hover: #436fdc;
-/*     Hover/active pressed state on primary buttons.
-/* --accent-secondary: #f5a524;
-/*     Bright accent labels, selected tree item text, attribute values, custom scrollbar thumb hover.
-/* --accent-glow: rgba(86, 128, 233, 0.35);
-/*     Soft glow tints behind active selections, badge rings, and focused elements.
-/* --text-primary: #ffffff;
-/*     Main item headings, modal titles, active bold button text (high-contrast white).
-/* --text-secondary: #C1C8E4;
-/*     Standard body copy, tree item names, dropdown menu item labels.
-/* --text-muted: #95a7d1;
-/*     Subtitles, field count counters, metadata labels (e.g. timestamps, IDs, inactive icons).
-*/
-/* ==========================================================================
-   THEME 1: CLEAN AND ENERGETIC (Default Dark)
-   ========================================================================== */
-:root,
-[data-theme='clean-energetic'] {
-  --bg-canvas: #121b33;
-  --bg-surface: #1e2c52;
-  --bg-surface-hover: #293d6e;
-  --bg-popover: rgba(30, 44, 82, 0.75);
-  
-  --border-subtle: #334a7d;
-  --border-strong: #5680E9;
-
-  --accent-primary: #5680E9;
-  --accent-primary-hover: #436fdc;
-  /* --accent-secondary: #84CEEB; */
-  --accent-secondary: #f5a524;
-  --accent-glow: rgba(86, 128, 233, 0.35);
-
-  --text-primary: #ffffff;
-  --text-secondary: #C1C8E4;
-  --text-muted: #95a7d1;
-}
-
-/* ==========================================================================
-   THEME 2: TROVEVAULT ABYSS TEAL & AMBER
-   ========================================================================== */
-[data-theme='theme-test-dark'] {
-  --bg-canvas: #010b14;                   /* Deep Sea Navy / Teal-Black Canvas */
-  --bg-surface: #041628;                  /* Rich Dark Teal-Slate Card Surface */
-  --bg-surface-hover: #0a3555;            /* Mid-tone Teal Hover */
-  --bg-popover: #02101f;                  /* Solid Frosted Deep Teal Popover/Dropdown */
-  
-  --border-subtle: rgba(0, 190, 230, 0.15); /* Faint ambient glowing aqua edge */
-  --border-strong: rgba(0, 190, 230, 0.55); /* Vibrant Aqua Focus & Highlight Edges */
-
-  --accent-primary: #074873;              /* Action Teal-Blue Buttons (from navbar gradient) */
-  --accent-primary-hover: #0082d2;        /* Bright Aqua Hover */
-  --accent-secondary: #f5a524;            /* Warm Amber Gold (TroveVault Brand Accent) */
-  --accent-glow: rgba(0, 190, 230, 0.35); /* Aqua Glow */
-
-  --text-primary: #ffffff;                /* Pure White Headings & Titles */
-  --text-secondary: #c3d8e6;              /* High-Contrast Icy-Slate Body Text */
-  --text-muted: #6e8fae;                  /* Muted Slate-Teal Metadata & Subtitles */
-}
-
-/* ==========================================================================
-   THEME 2: NIGHTFALL BLUE & AMBER (Archivum Mockup Spec)
-   ========================================================================== */
-[data-theme='theme-test-light'] {
-  --bg-canvas: #0b1220;                   /* --bg: Deep Nightfall Blue */
-  --bg-surface: #111b2e;                  /* --panel: Elevated Dark Navy Surface */
-  --bg-surface-hover: #1e3a5f;            /* --blue-dim: Highlight Row/Item Hover */
-  --bg-popover: rgba(17, 27, 46, 0.85);   /* Frosted Navy Popover Menu */
-  
-  --border-subtle: #1c2940;               /* --border: Fine Dividing Lines */
-  --border-strong: #3b82f6;               /* --blue: Electric Blue Focus & Active Borders */
-
-  --accent-primary: #3b82f6;              /* --blue: Electric Blue Primary Action Buttons */
-  --accent-primary-hover: #2563eb;        /* Deep Blue Hover */
-  --accent-secondary: #f5a524;            /* --amber: Amber Gold Highlights & Active Underlines */
-  --accent-glow: rgba(59, 130, 246, 0.30);/* Blue Glow */
-
-  --text-primary: #f4f6fb;                /* --white: Crisp Off-White Titles */
-  --text-secondary: #c3ccdc;              /* High-Contrast Light Slate Body & Tree Text */
-  --text-muted: #8a97ad;                  /* --text-dim: Muted Metadata & Subtitles */
 }
 
 /* ==========================================================================
@@ -141,25 +45,20 @@ body {
   scrollbar-width: thin;
   scrollbar-color: var(--border-strong) var(--bg-canvas);
 }
-
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
-
 ::-webkit-scrollbar-track {
   background: var(--bg-canvas);
 }
-
 ::-webkit-scrollbar-thumb {
   background: var(--border-strong);
   border-radius: 9999px;
 }
-
 ::-webkit-scrollbar-thumb:hover {
   background: var(--accent-secondary);
 }
-
 ::-webkit-scrollbar-corner {
   background: transparent;
 }
@@ -168,16 +67,18 @@ body {
    STUDIO GRID CANVAS
    ========================================================================== */
 .studio-grid-canvas {
-  background-color: #0c1017;
+  background-color: var(--bg-canvas);
   background-image: 
     /* 1. Top-Left Key Spotlight */
-    radial-gradient(ellipse 900px 600px at 15% 20%, rgba(42, 60, 90, 0.45) 0%, transparent 80%),
-    /* 2. Deep Edge Vignette */
-    radial-gradient(circle at 50% 50%, transparent 50%, rgba(5, 7, 11, 0.90) 100%),
-    /* 3. Blueprint Grid Lines */
-    linear-gradient(to right, rgba(255, 255, 255, 0.04) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
-  background-size: 100% 100%, 100% 100%, 54px 54px, 54px 54px;
+    radial-gradient(ellipse 900px 600px at 15% 20%, var(--studio-spotlight) 0%, transparent 80%),
+    /* 2. Bottom-Right Fill Spotlight */
+    radial-gradient(ellipse 800px 500px at 85% 85%, var(--studio-spotlight) 0%, transparent 85%),
+    /* 3. Deep Edge Vignette */
+    radial-gradient(circle at 50% 50%, transparent 50%, var(--bg-popover) 100%),
+    /* 4. Blueprint Grid Lines */
+    linear-gradient(to right, var(--border-subtle) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--border-subtle) 1px, transparent 1px);
+  background-size: 100% 100%, 100% 100%, 100% 100%, 54px 54px, 54px 54px;
   background-attachment: fixed;
 }
 
@@ -185,161 +86,161 @@ body {
 .display-card {
   position: relative;
   z-index: 10;
-  background-color: #111b2e !important;   /* Solid, blocks background logo 100% */
-  border: 1px solid rgba(59, 130, 246, 0.25);
+  background-color: var(--bg-surface) !important;
+  border: 1px solid var(--border-strong);
   box-shadow: 
     0 14px 34px -4px rgba(0, 0, 0, 0.75),
-    0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+    0 0 0 1px var(--border-subtle) inset;
 }
 
 .display-card-subtle {
-  background-color: #0d1626 !important;   /* Solid nested attribute cells */
-  border: 1px solid rgba(59, 130, 246, 0.15);
+  background-color: var(--bg-canvas) !important;
+  border: 1px solid var(--border-subtle);
   border-radius: 0.5rem;
 }
 
 /* ==========================================================================
-   TROVEVAULT NAVBAR HEADER (Teal Studio Finish)
+   TROVEVAULT NAVBAR HEADER
    ========================================================================== */
 .trove-navbar {
-    position: relative;
-    isolation: isolate;
-    overflow: visible;
+  position: relative;
+  isolation: isolate;
+  overflow: visible;
 
-    background:
-        radial-gradient(
-            ellipse 85% 180% at 50% -50%,
-            rgba(0, 190, 230, 0.55) 0%,
-            rgba(0, 120, 185, 0.35) 28%,
-            rgba(0, 65, 115, 0.15) 55%,
-            transparent 75%
-        ),
-        linear-gradient(
-            90deg,
-            rgba(3, 10, 26, 0.95) 0%,
-            rgba(0, 22, 50, 0.45) 20%,
-            transparent 42%,
-            transparent 58%,
-            rgba(0, 22, 50, 0.45) 80%,
-            rgba(3, 10, 26, 0.95) 100%
-        ),
-        linear-gradient(
-            180deg,
-            #0a5c8c 0%,
-            #074873 25%,
-            #053357 52%,
-            #041e38 78%,
-            #030f24 100%
-        );
+  background:
+    radial-gradient(
+      ellipse 85% 180% at 50% -50%,
+      var(--accent-glow) 0%,
+      var(--accent-primary) 28%,
+      var(--bg-surface) 55%,
+      transparent 75%
+    ),
+    linear-gradient(
+      90deg,
+      var(--bg-canvas) 0%,
+      var(--bg-surface) 20%,
+      transparent 42%,
+      transparent 58%,
+      var(--bg-surface) 80%,
+      var(--bg-canvas) 100%
+    ),
+    linear-gradient(
+      180deg,
+      var(--accent-primary-hover) 0%,
+      var(--accent-primary) 25%,
+      var(--bg-surface) 52%,
+      var(--bg-popover) 78%,
+      var(--bg-canvas) 100%
+    );
 
-    border-bottom: 1px solid rgba(81, 155, 255, 0.85);
+  border-bottom: 1px solid var(--border-strong);
 
-    box-shadow:
-        inset 0 1px 0 rgba(130, 215, 255, 0.25),
-        inset 0 -1px 0 rgba(15, 85, 210, 0.75);
+  box-shadow:
+    inset 0 1px 0 var(--border-subtle),
+    inset 0 -1px 0 var(--accent-primary);
 }
 
 .trove-navbar::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    z-index: -1;
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
 
-    background:
-        radial-gradient(
-            ellipse 50% 130% at 50% -20%,
-            rgba(0, 210, 255, 0.25),
-            rgba(0, 130, 210, 0.12) 45%,
-            transparent 75%
-        );
+  background:
+    radial-gradient(
+      ellipse 50% 130% at 50% -20%,
+      var(--accent-glow),
+      var(--accent-primary) 45%,
+      transparent 75%
+    );
 
-    mix-blend-mode: screen;
+  mix-blend-mode: screen;
 }
 
 .trove-navbar::after {
-    content: "";
-    position: absolute;
-    inset: 0; /* Locked tightly to bounds */
-    pointer-events: none;
-    z-index: -1;
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
 
-    background: rgba(255, 255, 255, 0.35);
-    filter: url("#troveNavTexture");
+  background: var(--text-primary);
+  filter: url("#troveNavTexture");
 
-    opacity: 0.14;
-    mix-blend-mode: overlay;
+  opacity: 0.14;
+  mix-blend-mode: overlay;
 }
 
 /* ==========================================================================
-   TROVEVAULT BOTTOM BAR (Teal Studio Finish)
+   TROVEVAULT BOTTOM BAR
    ========================================================================== */
 .trove-bottombar {
-    position: relative;
-    isolation: isolate;
-    overflow: visible;
+  position: relative;
+  isolation: isolate;
+  overflow: visible;
 
-    background:
-        radial-gradient(
-            ellipse 85% 180% at 50% 150%,
-            rgba(0, 190, 230, 0.45) 0%,
-            rgba(0, 120, 185, 0.28) 28%,
-            rgba(0, 65, 115, 0.12) 55%,
-            transparent 75%
-        ),
-        linear-gradient(
-            270deg,
-            rgba(3, 10, 26, 0.95) 0%,
-            rgba(0, 22, 50, 0.45) 20%,
-            transparent 42%,
-            transparent 58%,
-            rgba(0, 22, 50, 0.45) 80%,
-            rgba(3, 10, 26, 0.95) 100%
-        ),
-        linear-gradient(
-            0deg,
-            #0a5c8c 0%,
-            #074873 25%,
-            #053357 52%,
-            #041e38 78%,
-            #030f24 100%
-        );
+  background:
+    radial-gradient(
+      ellipse 85% 180% at 50% 150%,
+      var(--accent-glow) 0%,
+      var(--accent-primary) 28%,
+      var(--bg-surface) 55%,
+      transparent 75%
+    ),
+    linear-gradient(
+      270deg,
+      var(--bg-canvas) 0%,
+      var(--bg-surface) 20%,
+      transparent 42%,
+      transparent 58%,
+      var(--bg-surface) 80%,
+      var(--bg-canvas) 100%
+    ),
+    linear-gradient(
+      0deg,
+      var(--accent-primary-hover) 0%,
+      var(--accent-primary) 25%,
+      var(--bg-surface) 52%,
+      var(--bg-popover) 78%,
+      var(--bg-canvas) 100%
+    );
 
-    border-top: 1px solid rgba(81, 155, 255, 0.85);
+  border-top: 1px solid var(--border-strong);
 
-    box-shadow:
-        inset 0 -1px 0 rgba(130, 215, 255, 0.25),
-        inset 0 1px 0 rgba(15, 85, 210, 0.75);
+  box-shadow:
+    inset 0 -1px 0 var(--border-subtle),
+    inset 0 1px 0 var(--accent-primary);
 }
 
 .trove-bottombar::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    z-index: -1;
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
 
-    background:
-        radial-gradient(
-            ellipse 50% 130% at 50% 120%,
-            rgba(0, 210, 255, 0.20),
-            rgba(0, 130, 210, 0.10) 45%,
-            transparent 75%
-        );
+  background:
+    radial-gradient(
+      ellipse 50% 130% at 50% 120%,
+      var(--accent-glow),
+      var(--accent-primary) 45%,
+      transparent 75%
+    );
 
-    mix-blend-mode: screen;
+  mix-blend-mode: screen;
 }
 
 .trove-bottombar::after {
-    content: "";
-    position: absolute;
-    inset: 0; /* Locked tightly to bounds */
-    pointer-events: none;
-    z-index: -1;
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
 
-    background: rgba(255, 255, 255, 0.35);
-    filter: url("#troveNavTexture");
+  background: var(--text-primary);
+  filter: url("#troveNavTexture");
 
-    opacity: 0.14;
-    mix-blend-mode: overlay;
+  opacity: 0.14;
+  mix-blend-mode: overlay;
 }
