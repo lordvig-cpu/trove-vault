@@ -169,13 +169,14 @@ export default function Navbar({
                 >
                   Explorer
 
-                  {/* Seamless Tab Extension - Connects through the mt-2 gap directly to the dropdown */}
+                  {/* Seamless Tab Extension */}
                   {!isPinned && isSidebarOpen && (
                     <div 
-                      className="absolute top-[calc(100%-1px)] -left-[1px] -right-[1px] h-4 bg-surface border-l border-r border-border-strong pointer-events-none" 
+                      className="absolute top-[calc(100%-1px)] -left-[1px] -right-[1px] h-3 bg-surface border-l border-r border-border-strong pointer-events-none" 
                       aria-hidden="true" 
                     />
                   )}
+
                   
                 </button>
 
@@ -185,7 +186,7 @@ export default function Navbar({
                       className="fixed inset-0 top-14 z-40"
                       onClick={onToggleSidebar}
                     />
-                    <div className="absolute left-0 mt-2 w-88 max-h-[75vh] bg-surface-popover border border-border-strong rounded-xl shadow-[0_20px_50px_rgba(0,0,0,0.85)] ring-1 ring-white/10 z-50 p-3 flex flex-col gap-2 backdrop-blur-xl animate-in fade-in zoom-in-95 duration-150">
+                    <div className="absolute left-0 mt-2 w-88 max-h-[75vh] bg-surface-popover border border-border-strong rounded-xl rounded-tl-none shadow-[0_20px_50px_rgba(0,0,0,0.85)] ring-1 ring-white/10 z-50 p-3 flex flex-col gap-2 backdrop-blur-xl animate-in fade-in zoom-in-95 duration-150">
                       <div className="flex items-center justify-between border-b border-border-subtle pb-2 shrink-0">
                         <span className="text-xs font-bold uppercase tracking-wider text-content-muted">
                           🌲 Explorer
