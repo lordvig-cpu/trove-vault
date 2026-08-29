@@ -101,21 +101,19 @@ export default function Navbar({
         <div className="flex items-center h-full">
           {/* BRAND & EXPLORER TAB - Locked to exactly w-76 to perfectly align with the Sidebar's right border */}
           <div className="flex items-center justify-between h-full w-76 shrink-0 relative">
-            
-            {/* SHADOW ERASER MASK - Stretched to right-[10px] and animated to sync with the sidebar slide */}
-            <div 
-              className={`absolute top-full left-0 right-[10px] h-3 bg-surface z-10 pointer-events-none transition-opacity duration-300 ease-in-out ${
-                isPinned ? 'opacity-100 delay-[150ms]' : 'opacity-0 delay-0'
-              }`} 
-              aria-hidden="true" 
+
+            {/* SHADOW ERASER MASK */}
+            <div
+              className={`absolute top-full left-0 right-[10px] h-3 bg-surface z-10 pointer-events-none transition-opacity duration-700 ease-in-out ${isPinned ? 'opacity-100 delay-[350ms]' : 'opacity-0 delay-0'
+                }`}
+              aria-hidden="true"
             />
 
-            {/* RESTORED BLUE BORDER LINE - Renders above the mask to bridge the gap continuously */}
-            <div 
-              className={`absolute top-full left-0 w-full h-[1px] bg-[rgba(81,155,255,0.85)] z-20 pointer-events-none transition-opacity duration-300 ease-in-out ${
-                isPinned ? 'opacity-100 delay-[150ms]' : 'opacity-0 delay-0'
-              }`}
-              aria-hidden="true" 
+            {/* RESTORED BLUE BORDER LINE */}
+            <div
+              className={`absolute top-full left-0 w-full h-[1px] bg-[rgba(81,155,255,0.85)] z-20 pointer-events-none transition-opacity duration-700 ease-in-out ${isPinned ? 'opacity-100 delay-[350ms]' : 'opacity-0 delay-0'
+                }`}
+              aria-hidden="true"
             />
 
             {/* BRAND AREA */}
@@ -135,38 +133,49 @@ export default function Navbar({
               <button
                 type="button"
                 onClick={() => {
-                  if (isPinned) {
-                    onTogglePin();
-                  } else {
+                  if (!isPinned) {
                     onToggleSidebar();
                   }
                 }}
-                className={`px-4 py-1.5 transition-all duration-200 font-sans font-black tracking-wide text-base cursor-pointer decoration-2 decoration-[#e77428] underline-offset-4 relative ${
-                  !isPinned && isSidebarOpen
+                className={`px-4 py-1.5 transition-all duration-200 font-sans font-black tracking-wide text-base ${isPinned ? 'cursor-default' : 'cursor-pointer'
+                  } relative group ${!isPinned && isSidebarOpen
                     ? 'bg-surface border border-border-strong border-b-transparent rounded-t-lg rounded-b-none text-white shadow-[0_-4px_12px_rgba(0,190,230,0.15)] z-[60]'
                     : isPinned
-                    ? 'bg-surface border border-border-strong border-b-transparent rounded-t-lg rounded-b-none text-white underline shadow-[0_-4px_12px_rgba(0,190,230,0.15)] z-[60]'
-                    : 'bg-transparent border border-transparent rounded-lg text-white hover:underline z-50'
-                }`}
+                      ? 'bg-surface border border-border-strong border-b-transparent rounded-t-lg rounded-b-none text-white shadow-[0_-4px_12px_rgba(0,190,230,0.15)] z-[60]'
+                      : 'bg-transparent border border-transparent rounded-lg text-white z-50'
+                  }`}
               >
-                Explorer
+                <span className="relative inline-block">
+                  Explorer
+                  <div
+                    className={`absolute -bottom-1 -left-[1px] -right-[1px] h-[2px] bg-[#e77428] pointer-events-none transition-opacity duration-200 ${(isPinned || isSidebarOpen) ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
+                      }`}
+                    aria-hidden="true"
+                  />
+                </span>
 
                 {/* Seamless Tab Extension */}
                 {(isPinned || isSidebarOpen) && (
-                  <div 
-                    className={`absolute top-[calc(100%-1px)] -left-[1px] -right-[1px] h-3 bg-surface border-l border-border-strong pointer-events-none ${
-                      isPinned ? 'border-r border-[rgba(81,155,255,0.85)]' : 'border-r border-border-strong'
-                    }`}
-                    aria-hidden="true" 
+                  <div
+                    className={`absolute top-[calc(100%-1px)] -left-[1px] -right-[1px] h-3 bg-surface border-l border-border-strong pointer-events-none ${isPinned ? 'border-r border-[rgba(81,155,255,0.85)]' : 'border-r border-border-strong'
+                      }`}
+                    aria-hidden="true"
                   />
                 )}
               </button>
 
-              {/* Floating Menu - Only shows when NOT pinned */}
-              {!isPinned && isSidebarOpen && (
+              {/* Floating Menu - Transitions out with a partial slide when pinned */}
+              {isSidebarOpen && (
                 <>
-                  <div className="fixed inset-0 top-14 z-40" onClick={onToggleSidebar} />
-                  <div className="absolute left-0 mt-[9px] w-88 max-h-[75vh] bg-surface border border-border-strong rounded-xl rounded-tl-none shadow-[0_20px_50px_rgba(0,0,0,0.85)] ring-1 ring-white/10 z-50 p-3 flex flex-col gap-2 backdrop-blur-xl animate-in fade-in zoom-in-95 duration-150">
+                  <div 
+                    className={`fixed inset-0 top-14 z-40 transition-opacity duration-700 ease-in-out ${
+                      isPinned ? 'opacity-0 pointer-events-none' : 'opacity-100'
+                    }`} 
+                    onClick={onToggleSidebar} 
+                  />
+                  <div className={`absolute left-0 mt-[9px] w-88 max-h-[75vh] bg-surface border border-border-strong rounded-xl rounded-tl-none shadow-[0_20px_50px_rgba(0,0,0,0.85)] ring-1 ring-white/10 z-50 p-3 flex flex-col gap-2 backdrop-blur-xl transition-all duration-700 ease-in-out ${
+                    isPinned ? 'opacity-0 -translate-x-46 pointer-events-none' : 'opacity-100 translate-x-0'
+                  }`}>
                     <div className="flex items-center justify-between border-b border-border-subtle pb-2 shrink-0">
                       <span className="text-xs font-bold uppercase tracking-wider text-content-muted">
                         🌲 Explorer
@@ -198,6 +207,8 @@ export default function Navbar({
                   </div>
                 </>
               )}
+
+
             </div>
           </div>
 
@@ -246,11 +257,10 @@ export default function Navbar({
                         key={t.id}
                         type="button"
                         onClick={() => handleSelectTheme(t.id)}
-                        className={`flex items-center justify-between w-full px-2.5 py-1.5 rounded-lg text-xs font-medium text-left transition cursor-pointer ${
-                          currentTheme === t.id
-                            ? 'bg-accent-primary/20 text-content-primary font-semibold border border-accent-primary/40'
-                            : 'text-content-secondary hover:bg-surface-hover hover:text-content-primary'
-                        }`}
+                        className={`flex items-center justify-between w-full px-2.5 py-1.5 rounded-lg text-xs font-medium text-left transition cursor-pointer ${currentTheme === t.id
+                          ? 'bg-accent-primary/20 text-content-primary font-semibold border border-accent-primary/40'
+                          : 'text-content-secondary hover:bg-surface-hover hover:text-content-primary'
+                          }`}
                       >
                         <div className="flex items-center gap-2">
                           <span className="w-3 h-3 rounded-full shrink-0 shadow-xs" style={{ backgroundColor: t.dotColor }} />

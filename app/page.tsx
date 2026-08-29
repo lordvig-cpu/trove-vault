@@ -56,6 +56,8 @@ export default function Home() {
   const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(false);
   const [isColDropdownOpen, setIsColDropdownOpen] = useState<boolean>(false);
   const [activeModal, setActiveModal] = useState<ActiveModal>(null);
+  const [animationsEnabled, setAnimationsEnabled] = useState(true);
+  const animClass = animationsEnabled ? 'transition-all duration-[750ms] ease-in-out' : 'transition-none';
 
   useEffect(() => {
     const saved = localStorage.getItem('uc_sidebar_pinned');
@@ -260,6 +262,8 @@ export default function Home() {
           totalItemsCount={allItems.length}
           isRightPanelOpen={isRightPanelOpen}
           onToggleRightPanel={() => setIsRightPanelOpen(!isRightPanelOpen)}
+          animationsEnabled={animationsEnabled}
+          setAnimationsEnabled={setAnimationsEnabled}
         />
       </div>
     </div>

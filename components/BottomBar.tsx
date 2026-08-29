@@ -7,9 +7,13 @@ interface BottomBarProps {
   totalItemsCount?: number;
   isRightPanelOpen: boolean;
   onToggleRightPanel: () => void;
+  animationsEnabled: boolean;
+  setAnimationsEnabled: (enabled: boolean) => void;
 }
 
 export default function BottomBar({
+  animationsEnabled,
+  setAnimationsEnabled,
   activeCollectionName,
   totalItemsCount = 0,
   isRightPanelOpen,
@@ -68,6 +72,16 @@ export default function BottomBar({
             <path d="M18 9l-3 3 3 3" />
           </svg>
         </button>
+
+        <label className="flex items-center gap-2 text-xs text-content-muted cursor-pointer">
+          <input 
+            type="checkbox" 
+            checked={animationsEnabled} 
+            onChange={(e) => setAnimationsEnabled(e.target.checked)}
+            className="rounded border-border-subtle bg-surface text-accent-secondary focus:ring-0 cursor-pointer"
+          />
+          Animations
+        </label>
       </div>
     </footer>
   );
