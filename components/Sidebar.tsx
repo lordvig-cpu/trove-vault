@@ -30,9 +30,9 @@ export default function Sidebar({
 }: SidebarProps) {
   return (
     <aside
-      className={`absolute left-0 top-0 h-full border-border-subtle bg-surface flex flex-col gap-2.5 overflow-x-hidden overflow-y-auto shrink-0 transition-all duration-300 ease-in-out z-50 ${
+      className={`absolute left-0 top-0 bottom-0 bg-surface flex flex-col gap-2.5 overflow-x-hidden overflow-y-auto shrink-0 transition-all duration-300 ease-in-out z-50 ${
         isPinned
-          ? 'w-76 max-w-76 border-r p-3 opacity-100 shadow-[14px_0_35px_-4px_rgba(0,0,0,0.85)] translate-x-0'
+          ? 'w-76 max-w-76 border-r border-[rgba(81,155,255,0.85)] p-3 opacity-100 shadow-[14px_0_35px_-4px_rgba(0,0,0,0.85)] translate-x-0'
           : 'w-76 max-w-76 -translate-x-full border-r-0 p-0 opacity-0 pointer-events-none'
       }`}
     >
@@ -85,5 +85,5 @@ export default function Sidebar({
         {children}
       </div>
     </aside>
- );
+  );
 }

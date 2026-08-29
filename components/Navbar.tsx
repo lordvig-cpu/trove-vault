@@ -6,7 +6,6 @@ import CollectionDropdown from './CollectionDropdown';
 import { PinOutlineIcon } from './icons/PinIcons';
 
 export type SearchScope = 'current' | 'all';
-
 export type ThemePreset = 'clean-energetic' | 'theme-test-dark' | 'theme-test-light';
 
 interface ThemeOption {
@@ -15,7 +14,7 @@ interface ThemeOption {
   dotColor: string;
 }
 
-const THEME_OPTIONS: { id: ThemePreset; label: string; dotColor: string }[] = [
+const THEME_OPTIONS: ThemeOption[] = [
   { id: 'clean-energetic', label: 'Clean & Energetic (Default)', dotColor: '#5680E9' },
   { id: 'theme-test-dark', label: 'Test Dark Theme', dotColor: '#ffaa00' },
   { id: 'theme-test-light', label: 'Test Light Theme', dotColor: '#d0e4ec' },
@@ -63,7 +62,6 @@ export default function Navbar({
   onTogglePin,
   explorerContent,
 }: NavbarProps) {
-  // Live theme selection state
   const [currentTheme, setCurrentTheme] = useState<ThemePreset>('clean-energetic');
   const [isThemeMenuOpen, setIsThemeMenuOpen] = useState(false);
 
@@ -89,22 +87,10 @@ export default function Navbar({
 
   return (
     <>
-      {/* SVG Noise Filter Definition for the brushed texture */}
       <svg className="hidden" aria-hidden="true">
         <filter id="troveNavTexture">
-          <feTurbulence
-            type="fractalNoise"
-            baseFrequency="0.04 1.8"
-            numOctaves="5"
-            stitchTiles="stitch"
-            result="noise"
-          />
-          <feColorMatrix
-            type="matrix"
-            values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 0.85 0"
-            in="noise"
-            result="coloredNoise"
-          />
+          <feTurbulence type="fractalNoise" baseFrequency="0.04 1.8" numOctaves="5" stitchTiles="stitch" result="noise" />
+          <feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 0.85 0" in="noise" result="coloredNoise" />
           <feBlend mode="overlay" in="SourceGraphic" in2="coloredNoise" />
         </filter>
       </svg>
@@ -113,33 +99,36 @@ export default function Navbar({
 
         {/* LEFT SECTION */}
         <div className="flex items-center h-full">
-          {/* BRAND AREA (Now completely static width, no shifting) */}
-          <div className="flex items-center h-full px-4 gap-3 shrink-0">
-            <div className="flex items-start gap-1.5">
-              {/* Transparent Logo Image */}
+          {/* BRAND & EXPLORER TAB - Locked to exactly w-76 to perfectly align with the Sidebar's right border */}
+          <div className="flex items-center justify-between h-full w-76 shrink-0 relative">
+            
+            {/* SHADOW ERASER MASK - Stretched to right-[10px] and animated to sync with the sidebar slide */}
+            <div 
+              className={`absolute top-full left-0 right-[10px] h-3 bg-surface z-10 pointer-events-none transition-opacity duration-300 ease-in-out ${
+                isPinned ? 'opacity-100 delay-[150ms]' : 'opacity-0 delay-0'
+              }`} 
+              aria-hidden="true" 
+            />
+
+            {/* BRAND AREA */}
+            <div className="flex items-start gap-1.5 pl-4 relative z-20">
               <img
                 src="/images/nav_bar_website_logo.png"
                 alt="TroveVault"
                 className="h-5 w-auto object-contain select-none"
               />
-
-              {/* Plain Borderless Version Text Aligned to Baseline */}
               <span className="text-[10px] text-content-muted/70 font-mono leading-none pt-1.0 select-none">
                 v0.1.0
               </span>
             </div>
-          </div>
 
-          {/* TOP LEVEL NAVIGATION BUTTONS */}
-          <div className="flex items-center gap-3 px-4 h-full">
-            <div className="relative">
-
-              {/* EXPLORER TOGGLE BUTTON (Always visible now) */}
+            {/* EXPLORER TOGGLE BUTTON (Right-aligned against the w-76 boundary) */}
+            <div className="relative z-30">
               <button
                 type="button"
                 onClick={() => {
                   if (isPinned) {
-                    onTogglePin(); // Unpins back to floating mode
+                    onTogglePin();
                   } else {
                     onToggleSidebar();
                   }
@@ -154,10 +143,12 @@ export default function Navbar({
               >
                 Explorer
 
-                {/* Seamless Tab Extension - Now shows for BOTH floating and pinned states */}
+                {/* Seamless Tab Extension */}
                 {(isPinned || isSidebarOpen) && (
                   <div 
-                    className="absolute top-[calc(100%-1px)] -left-[1px] -right-[1px] h-3 bg-surface border-l border-r border-border-strong pointer-events-none" 
+                    className={`absolute top-[calc(100%-1px)] -left-[1px] -right-[1px] h-3 bg-surface border-l border-border-strong pointer-events-none ${
+                      isPinned ? 'border-r border-[rgba(81,155,255,0.85)]' : 'border-r border-border-strong'
+                    }`}
                     aria-hidden="true" 
                   />
                 )}
@@ -166,11 +157,8 @@ export default function Navbar({
               {/* Floating Menu - Only shows when NOT pinned */}
               {!isPinned && isSidebarOpen && (
                 <>
-                  <div
-                    className="fixed inset-0 top-14 z-40"
-                    onClick={onToggleSidebar}
-                  />
-                  <div className="absolute left-0 mt-2 w-88 max-h-[75vh] bg-surface-popover border border-border-strong rounded-xl rounded-tl-none shadow-[0_20px_50px_rgba(0,0,0,0.85)] ring-1 ring-white/10 z-50 p-3 flex flex-col gap-2 backdrop-blur-xl animate-in fade-in zoom-in-95 duration-150">
+                  <div className="fixed inset-0 top-14 z-40" onClick={onToggleSidebar} />
+                  <div className="absolute left-0 mt-2 w-88 max-h-[75vh] bg-surface border border-border-strong rounded-xl rounded-tl-none shadow-[0_20px_50px_rgba(0,0,0,0.85)] ring-1 ring-white/10 z-50 p-3 flex flex-col gap-2 backdrop-blur-xl animate-in fade-in zoom-in-95 duration-150">
                     <div className="flex items-center justify-between border-b border-border-subtle pb-2 shrink-0">
                       <span className="text-xs font-bold uppercase tracking-wider text-content-muted">
                         🌲 Explorer
@@ -203,8 +191,10 @@ export default function Navbar({
                 </>
               )}
             </div>
+          </div>
 
-            {/* Collection Selector Popover */}
+          {/* OTHER NAVIGATION BUTTONS */}
+          <div className="flex items-center gap-3 px-4 h-full">
             <CollectionDropdown
               collections={collections}
               activeCollectionId={activeCollectionId}
@@ -215,7 +205,6 @@ export default function Navbar({
               onRequestDelete={onRequestDeleteCollection}
             />
 
-            {/* Master Templates Button */}
             <button
               type="button"
               onClick={onOpenTemplateManager}
@@ -225,7 +214,6 @@ export default function Navbar({
               <span>Templates</span>
             </button>
 
-            {/* LIVE THEMES SELECTOR DROPDOWN */}
             <div className="relative">
               <button
                 type="button"
@@ -240,10 +228,7 @@ export default function Navbar({
 
               {isThemeMenuOpen && (
                 <>
-                  <div
-                    className="fixed inset-0 z-40"
-                    onClick={() => setIsThemeMenuOpen(false)}
-                  />
+                  <div className="fixed inset-0 z-40" onClick={() => setIsThemeMenuOpen(false)} />
                   <div className="absolute left-0 mt-2 w-52 bg-surface-popover border border-border-strong rounded-xl shadow-2xl z-50 p-2 flex flex-col gap-1 backdrop-blur-xl animate-in fade-in zoom-in-95 duration-150">
                     <span className="text-[10px] font-bold uppercase tracking-wider text-content-muted px-2 py-1 border-b border-border-subtle">
                       Color Themes
@@ -253,21 +238,17 @@ export default function Navbar({
                         key={t.id}
                         type="button"
                         onClick={() => handleSelectTheme(t.id)}
-                        className={`flex items-center justify-between w-full px-2.5 py-1.5 rounded-lg text-xs font-medium text-left transition cursor-pointer ${currentTheme === t.id
+                        className={`flex items-center justify-between w-full px-2.5 py-1.5 rounded-lg text-xs font-medium text-left transition cursor-pointer ${
+                          currentTheme === t.id
                             ? 'bg-accent-primary/20 text-content-primary font-semibold border border-accent-primary/40'
                             : 'text-content-secondary hover:bg-surface-hover hover:text-content-primary'
-                          }`}
+                        }`}
                       >
                         <div className="flex items-center gap-2">
-                          <span
-                            className="w-3 h-3 rounded-full shrink-0 shadow-xs"
-                            style={{ backgroundColor: t.dotColor }}
-                          />
+                          <span className="w-3 h-3 rounded-full shrink-0 shadow-xs" style={{ backgroundColor: t.dotColor }} />
                           <span>{t.label}</span>
                         </div>
-                        {currentTheme === t.id && (
-                          <span className="text-[11px] text-accent-secondary">✓</span>
-                        )}
+                        {currentTheme === t.id && <span className="text-[11px] text-accent-secondary">✓</span>}
                       </button>
                     ))}
                   </div>
@@ -291,11 +272,7 @@ export default function Navbar({
 
             <input
               type="text"
-              placeholder={
-                searchScope === 'current'
-                  ? `Search ${activeCollectionName}...`
-                  : 'Search all collections...'
-              }
+              placeholder={searchScope === 'current' ? `Search ${activeCollectionName}...` : 'Search all collections...'}
               value={searchQuery}
               onChange={(e) => onSearchChange(e.target.value)}
               className="w-full bg-canvas border-y border-r border-border-subtle text-xs rounded-r-lg px-3 py-1.5 text-content-primary placeholder-content-muted focus:outline-none focus:border-accent-primary"
