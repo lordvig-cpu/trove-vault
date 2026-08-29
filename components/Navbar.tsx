@@ -110,6 +110,14 @@ export default function Navbar({
               aria-hidden="true" 
             />
 
+            {/* RESTORED BLUE BORDER LINE - Renders above the mask to bridge the gap continuously */}
+            <div 
+              className={`absolute top-full left-0 w-full h-[1px] bg-[rgba(81,155,255,0.85)] z-20 pointer-events-none transition-opacity duration-300 ease-in-out ${
+                isPinned ? 'opacity-100 delay-[150ms]' : 'opacity-0 delay-0'
+              }`}
+              aria-hidden="true" 
+            />
+
             {/* BRAND AREA */}
             <div className="flex items-start gap-1.5 pl-4 relative z-20">
               <img
@@ -158,7 +166,7 @@ export default function Navbar({
               {!isPinned && isSidebarOpen && (
                 <>
                   <div className="fixed inset-0 top-14 z-40" onClick={onToggleSidebar} />
-                  <div className="absolute left-0 mt-2 w-88 max-h-[75vh] bg-surface border border-border-strong rounded-xl rounded-tl-none shadow-[0_20px_50px_rgba(0,0,0,0.85)] ring-1 ring-white/10 z-50 p-3 flex flex-col gap-2 backdrop-blur-xl animate-in fade-in zoom-in-95 duration-150">
+                  <div className="absolute left-0 mt-[9px] w-88 max-h-[75vh] bg-surface border border-border-strong rounded-xl rounded-tl-none shadow-[0_20px_50px_rgba(0,0,0,0.85)] ring-1 ring-white/10 z-50 p-3 flex flex-col gap-2 backdrop-blur-xl animate-in fade-in zoom-in-95 duration-150">
                     <div className="flex items-center justify-between border-b border-border-subtle pb-2 shrink-0">
                       <span className="text-xs font-bold uppercase tracking-wider text-content-muted">
                         🌲 Explorer
