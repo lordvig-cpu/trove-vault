@@ -1,23 +1,51 @@
 /* ==========================================================================
    THEME: DEFAULT LIGHT (SUNLIT TIDE)
-   ========================================================================== */
+   ---------------------------------- 
+   NOTE: Do NOT add :root here, or it will override default dark mode.   
+   ======================================================================= */
 [data-theme='theme-default-light'] {
-  --bg-canvas: #eef8fb;                   /* Soft Aqua Mist Page Background */
-  --bg-surface: #ffffff;                  /* Crisp White Card / Panel Surface */
-  --bg-surface-hover: #dff5f8;            /* Pale Aqua Hover / Selected Surface */
-  --bg-popover: #f7fcfd;                  /* Frosted Ice Popover / Dropdown */
 
-  --border-subtle: rgba(0, 151, 180, 0.16); /* Soft Aqua Structural Borders */
-  --border-strong: rgba(0, 166, 199, 0.58); /* Vibrant Aqua Focus / Highlight Edge */
+    /* ======================================================================
+       WORKSPACE & CANVAS BACKGROUNDS
+       ------------------------------
+       Applied to the main center viewport floor and workspace backdrop.
+       ====================================================================== */
+    --bg-canvas: rgba(239, 247, 249, 1.00);
+    --studio-spotlight: rgba(72, 188, 207, 0.16);
 
-  --accent-primary: #0788a8;              /* Primary Aqua Action Color */
-  --accent-primary-hover: #006f91;        /* Deeper Aqua Hover */
-  --accent-secondary: #c97b08;            /* Warm Amber - Darkened for Light BG */
-  --accent-glow: rgba(0, 177, 204, 0.20); /* Soft Aqua Glow */
+    /* ======================================================================
+       SURFACE & ELEVATION CONTAINERS
+       ------------------------------
+       Applied to sidebars, docked panels, attribute cards, and dropdown overlays.
+       ====================================================================== */
+    --bg-surface: rgba(255, 255, 255, 1.00);
+    --bg-surface-hover: rgba(225, 244, 247, 1.00);
+    --bg-popover: rgba(247, 252, 253, 1.00);
 
-  --text-primary: #102733;                /* Deep Blue-Charcoal Headings */
-  --text-secondary: #3f6170;              /* Cool Slate Body Text */
-  --text-muted: #7894a1;                  /* Muted Aqua-Slate Metadata */
+    /* ======================================================================
+       BORDERS & HUD OUTLINES
+       ------------------------------
+       Applied to panel seams, dividers, inputs, and glowing active outlines.
+       ====================================================================== */
+    --border-subtle: rgba(0, 130, 160, 0.18);
+    --border-strong: rgba(0, 145, 175, 0.62);
 
-  --studio-spotlight: rgba(0, 150, 180, 0.50); /* Soft light theme spotlight */
+    /* ======================================================================
+       BRAND & INTERACTIVE ACCENTS
+       ------------------------------
+       Applied to action buttons, focus rings, brand tokens, and HUD glows.
+       ====================================================================== */
+    --accent-primary: rgba(7, 119, 151, 1.00);
+    --accent-primary-hover: rgba(0, 92, 124, 1.00);
+    --accent-secondary: rgba(194, 112, 0, 1.00);
+    --accent-glow: rgba(0, 164, 195, 0.18);
+
+    /* ======================================================================
+       TYPOGRAPHY & CONTENT HIERARCHY
+       ------------------------------
+       Applied to primary headings, body copy, and secondary/mono metadata.
+       ====================================================================== */
+    --text-primary: rgba(16, 39, 51, 1.00);
+    --text-secondary: rgba(57, 85, 99, 1.00);
+    --text-muted: rgba(109, 137, 150, 1.00);
 }
