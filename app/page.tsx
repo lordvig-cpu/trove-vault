@@ -205,9 +205,8 @@ export default function Home() {
         {/* WORKSPACE COLUMN WRAPPER - Traps the shadows permanently to the edges */}
         <div className="flex-1 min-h-0 relative flex flex-col z-10">
           
-          {/* Absolute Top Vignette (Anchored to wrapper top) */}
-          <div className="pointer-events-none absolute top-0 left-0 right-0 h-10 bg-gradient-to-b from-black/85 to-transparent z-30" aria-hidden="true" />
-          
+          {/* Main Content - Upper Shadow */}
+          <div className="pointer-events-none absolute top-0 left-0 right-[15px] h-10 bg-gradient-to-b from-black/85 to-transparent z-30" aria-hidden="true" />          
           <main
             className={`flex-1 min-h-0 overflow-y-auto p-6 transition-all duration-300 ease-in-out ${
               !isPinned && isSidebarOpen
@@ -235,14 +234,15 @@ export default function Home() {
             </div>
           </main>
 
-          {/* Absolute Bottom Vignette (Anchored to wrapper bottom) */}
-          <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-10 bg-gradient-to-t from-black/85 to-transparent z-30" aria-hidden="true" />
+          {/* Main Content - Lower Shadow */}
+          <div className="pointer-events-none absolute bottom-0 left-0 right-[15px] h-10 bg-gradient-to-t from-black/85 to-transparent z-30" aria-hidden="true" />
         </div>
 
         <RightSidePanel
           isOpen={isRightPanelOpen}
           onOpen={() => setIsRightPanelOpen(true)}
           onClose={() => setIsRightPanelOpen(false)}
+          animationsEnabled={animationsEnabled}
         />
       </div>
 

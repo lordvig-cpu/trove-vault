@@ -1,95 +1,91 @@
 'use client';
 
-import React from 'react';
+import React, { ReactNode } from 'react';
 
-interface RightSidePanelProps {
+interface RightPanelProps {
   isOpen: boolean;
-  onOpen: () => void;
+  onOpen?: () => void;
   onClose: () => void;
   title?: string;
-  subtitle?: string;
-  children?: React.ReactNode;
+  children?: ReactNode;
+  animationsEnabled?: boolean; // Added animations prop
 }
 
-export default function RightSidePanel({
+export default function RightPanel({
   isOpen,
   onOpen,
   onClose,
-  title = 'Side Panel',
-  subtitle = 'Utility & Actions',
+  title = "Details",
   children,
-}: RightSidePanelProps) {
+  animationsEnabled = true, // Default to true if not provided
+}: RightPanelProps) {
+  // Respect the global animations toggle
+  const transitionClass = animationsEnabled 
+    ? 'transition-all duration-700 ease-in-out' 
+    : 'transition-none';
+
   return (
     <>
-      {/* FLOATING EXPAND TAB ON RIGHT EDGE (When Closed) */}
-      {!isOpen && (
-        <button
-          type="button"
-          onClick={onOpen}
-          className="absolute right-0 top-2.5 z-30 h-7 px-2 rounded-l-md bg-surface/90 hover:bg-surface-hover border-y border-l border-border-subtle hover:border-border-strong text-content-muted hover:text-white shadow-lg backdrop-blur-md transition-all cursor-pointer flex items-center justify-center group"
-          title="Open Side Panel"
+      {/* 1. FLOATING EXPAND TAB (Slides right and fades out when panel opens) */}
+      <button
+        type="button"
+        onClick={onOpen}
+        className={`absolute right-0 top-5 z-30 h-7 px-2 rounded-l-md bg-surface/90 hover:bg-surface-hover border-y border-l border-border-subtle hover:border-border-strong text-content-muted hover:text-content-primary shadow-lg backdrop-blur-md cursor-pointer flex items-center justify-center group ${transitionClass} ${
+          isOpen ? 'translate-x-full opacity-0 pointer-events-none' : 'translate-x-0 opacity-100'
+        }`}
+        title="Open Side Panel"
+      >
+        <svg 
+          className="w-3.5 h-3.5 transform group-hover:-translate-x-0.5 transition-transform" 
+          viewBox="0 0 24 24" 
+          fill="none" 
+          stroke="currentColor" 
+          strokeWidth="2.5" 
+          strokeLinecap="round" 
+          strokeLinejoin="round"
         >
-          <svg 
-            className="w-3.5 h-3.5 transform group-hover:-translate-x-0.5 transition-transform" 
-            viewBox="0 0 24 24" 
-            fill="none" 
-            stroke="currentColor" 
-            strokeWidth="2.5" 
-            strokeLinecap="round" 
-            strokeLinejoin="round"
-          >
-            <polyline points="15 18 9 12 15 6" />
-          </svg>
-        </button>
-      )}
+          <polyline points="15 18 9 12 15 6" />
+        </svg>
+      </button>
 
-      {/* RIGHT DOCKED PANEL */}
+      {/* 2. DOCKED RIGHT PANEL (Slides in from the right when opened) */}
       <aside
-        className={`absolute right-0 top-0 h-full border-border-subtle bg-surface/95 backdrop-blur-md flex flex-col overflow-x-hidden overflow-y-auto shrink-0 transition-all duration-300 ease-in-out z-30 ${
-          isOpen
-            ? 'w-76 max-w-76 border-l p-3 opacity-100 shadow-[-12px_0_30px_-10px_rgba(0,0,0,0.75)] translate-x-0'
-            : 'w-76 max-w-76 translate-x-full border-l-0 p-0 opacity-0 pointer-events-none'
+        className={`absolute top-2 bottom-2 right-[10px] w-[340px] max-w-[calc(100vw-30px)] bg-surface border border-border-strong rounded-xl shadow-[-20px_20px_50px_rgba(0,0,0,0.85)] ring-1 ring-white/10 backdrop-blur-xl z-40 flex flex-col overflow-hidden ${transitionClass} ${
+          isOpen ? 'translate-x-0 opacity-100' : 'translate-x-[110%] opacity-0 pointer-events-none'
         }`}
       >
-        {/* Header Row */}
-        <div className="flex items-start justify-between border-b border-border-subtle pb-2.5 shrink-0 pr-8">
-          <div>
-            <span className="text-[11px] font-bold text-content-muted uppercase tracking-wider block">
-              {title}
-            </span>
-            <span className="text-[10px] text-content-muted font-mono">
-              {subtitle}
-            </span>
-          </div>
+        {/* Panel Header */}
+        <div className="flex items-center justify-between px-4 py-3 border-b border-border-subtle shrink-0">
+          <span className="text-xs font-bold uppercase tracking-wider text-content-muted">
+            {title}
+          </span>
+
+          {/* Collapse Button */}
+          <button
+            type="button"
+            onClick={onClose}
+            className="h-7 w-7 rounded-md text-content-muted hover:text-content-primary hover:bg-surface-hover border border-transparent hover:border-border-subtle transition cursor-pointer flex items-center justify-center group"
+            title="Collapse Panel"
+          >
+            <svg 
+              className="w-3.5 h-3.5 text-content-muted group-hover:text-content-primary transform group-hover:translate-x-0.5 transition-all" 
+              viewBox="0 0 24 24" 
+              fill="none" 
+              stroke="currentColor" 
+              strokeWidth="2.5" 
+              strokeLinecap="round" 
+              strokeLinejoin="round"
+            >
+              <polyline points="9 18 15 12 9 6" />
+            </svg>
+          </button>
         </div>
 
-        {/* Collapse Button */}
-        <button
-          type="button"
-          onClick={onClose}
-          className="absolute top-2.5 right-2.5 z-30 h-7 w-7 rounded-md text-content-muted hover:text-white hover:bg-surface-hover border border-transparent hover:border-border-subtle transition cursor-pointer flex items-center justify-center group"
-          title="Collapse Panel"
-        >
-          <svg 
-            className="w-3.5 h-3.5 text-content-muted group-hover:text-white transform group-hover:translate-x-0.5 transition-all" 
-            viewBox="0 0 24 24" 
-            fill="none" 
-            stroke="currentColor" 
-            strokeWidth="2.5" 
-            strokeLinecap="round" 
-            strokeLinejoin="round"
-          >
-            <polyline points="9 18 15 12 9 6" />
-          </svg>
-        </button>
-
-        {/* Panel Scrollable Content Body */}
-        <div className="flex-1 py-3 text-xs text-content-muted">
-          {children || (
-            <div className="border border-dashed border-border-subtle/80 rounded-xl p-4 text-center">
-              Panel ready for activity logs, quick attributes, or history.
-            </div>
-          )}
+        {/* Panel Body with Left-Rail Scrollbar */}
+        <div className="flex-1 overflow-y-auto overflow-x-hidden trove-panel-scroll pl-1 pr-3 py-3">
+          <div className="space-y-4">
+            {children}
+          </div>
         </div>
       </aside>
     </>
