@@ -8,7 +8,7 @@ interface RightPanelProps {
   onClose: () => void;
   title?: string;
   children?: ReactNode;
-  animationsEnabled?: boolean; // Added animations prop
+  animationsEnabled?: boolean;
 }
 
 export default function RightPanel({
@@ -17,9 +17,8 @@ export default function RightPanel({
   onClose,
   title = "Details",
   children,
-  animationsEnabled = true, // Default to true if not provided
+  animationsEnabled = true,
 }: RightPanelProps) {
-  // Respect the global animations toggle
   const transitionClass = animationsEnabled 
     ? 'transition-all duration-700 ease-in-out' 
     : 'transition-none';
@@ -48,9 +47,9 @@ export default function RightPanel({
         </svg>
       </button>
 
-      {/* 2. DOCKED RIGHT PANEL (Slides in from the right when opened) */}
+      {/* 2. DOCKED RIGHT PANEL */}
       <aside
-        className={`absolute top-2 bottom-2 right-[10px] w-[340px] max-w-[calc(100vw-30px)] bg-surface border border-border-strong rounded-xl shadow-[-20px_20px_50px_rgba(0,0,0,0.85)] ring-1 ring-white/10 backdrop-blur-xl z-40 flex flex-col overflow-hidden ${transitionClass} ${
+        className={`absolute top-2 bottom-2 right-[10px] w-[340px] max-w-[calc(100vw-30px)] bg-surface border border-border-strong rounded-l-xl rounded-r-none shadow-[-20px_20px_50px_rgba(0,0,0,0.85)] ring-1 ring-white/10 backdrop-blur-xl z-40 flex flex-col overflow-hidden ${transitionClass} ${
           isOpen ? 'translate-x-0 opacity-100' : 'translate-x-[110%] opacity-0 pointer-events-none'
         }`}
       >
@@ -81,10 +80,26 @@ export default function RightPanel({
           </button>
         </div>
 
-        {/* Panel Body with Left-Rail Scrollbar */}
-        <div className="flex-1 overflow-y-auto overflow-x-hidden trove-panel-scroll pl-1 pr-3 py-3">
-          <div className="space-y-4">
-            {children}
+        {/* Panel Body with Guaranteed Left-Rail Scrollbar */}
+        <div 
+          className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden trove-panel-scroll pl-3 pr-2 py-3"
+          style={{ direction: 'rtl' }}
+        >
+          <div 
+            className="space-y-4 text-content-primary"
+            style={{ direction: 'ltr' }}
+          >
+            {children ? (
+              children
+            ) : (
+              <>
+                {Array.from({ length: 80 }).map((_, i) => (
+                  <div key={i} className="text-xs font-mono">
+                    Test Row #{i + 1}
+                  </div>
+                ))}
+              </>
+            )}
           </div>
         </div>
       </aside>

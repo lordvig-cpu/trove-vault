@@ -205,16 +205,19 @@ export default function Home() {
         {/* WORKSPACE COLUMN WRAPPER - Traps the shadows permanently to the edges */}
         <div className="flex-1 min-h-0 relative flex flex-col z-10">
           
-          {/* Main Content - Upper Shadow */}
-          <div className="pointer-events-none absolute top-0 left-0 right-[15px] h-10 bg-gradient-to-b from-black/85 to-transparent z-30" aria-hidden="true" />          
+          {/* Main Content */}
           <main
-            className={`flex-1 min-h-0 overflow-y-auto p-6 transition-all duration-300 ease-in-out ${
+            className={`flex-1 flex flex-col min-h-0 overflow-y-auto relative main_content_scroll transition-all duration-300 ease-in-out ${
               !isPinned && isSidebarOpen
                 ? 'filter blur-[3.5px] brightness-[0.60] pointer-events-none select-none'
                 : 'filter-none brightness-100'
             }`}
           >
-            <div className="max-w-5xl mx-auto">
+            {/* Main Content - Upper Shadow (Sticky to stay at top, -mb-10 to let content slide under) */}
+            <div className="sticky top-0 left-0 right-0 h-10 bg-gradient-to-b from-black/85 to-transparent z-30 pointer-events-none shrink-0 -mb-10" aria-hidden="true" />   
+
+            {/* INNER WRAPPER: Moved p-6 here so the sticky shadows above/below can reach the edges */}
+            <div className="max-w-5xl mx-auto p-6 w-full flex-1 pt-10 pb-10">
               <ItemDetailView
                 item={selectedItem}
                 onAddSubItem={(parent) => {
@@ -232,10 +235,10 @@ export default function Home() {
                 }}
               />
             </div>
-          </main>
 
-          {/* Main Content - Lower Shadow */}
-          <div className="pointer-events-none absolute bottom-0 left-0 right-[15px] h-10 bg-gradient-to-t from-black/85 to-transparent z-30" aria-hidden="true" />
+            {/* Main Content - Lower Shadow (Sticky to stay at bottom, -mt-10 to let content slide under) */}
+            <div className="sticky bottom-0 left-0 right-0 h-10 bg-gradient-to-t from-black/85 to-transparent z-30 pointer-events-none shrink-0 -mt-10" aria-hidden="true" />
+          </main>
         </div>
 
         <RightSidePanel
