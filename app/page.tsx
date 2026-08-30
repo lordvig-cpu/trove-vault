@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import Navbar from '@/components/Navbar';
 import BottomBar from '@/components/BottomBar';
 import ItemDetailView from '@/components/ItemDetailView';
@@ -57,7 +57,24 @@ export default function Home() {
   const [isColDropdownOpen, setIsColDropdownOpen] = useState<boolean>(false);
   const [activeModal, setActiveModal] = useState<ActiveModal>(null);
   const [animationsEnabled, setAnimationsEnabled] = useState(true);
-  const animClass = animationsEnabled ? 'transition-all duration-[750ms] ease-in-out' : 'transition-none';
+  
+  // Video reference for smooth playback & rewinding
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+
+  useEffect(() => {
+    if (isLogoHovered) {
+      if (videoRef.current) {
+        videoRef.current.currentTime = 0;
+        videoRef.current.play().catch(() => {
+          // Fallback if browser autoplay policies interfere
+        });
+      }
+    } else {
+      if (videoRef.current) {
+        videoRef.current.pause();
+      }
+    }
+  }, [isLogoHovered]);
 
   const handleTogglePin = () => {
     const nextPinned = !isPinned;
@@ -119,149 +136,158 @@ export default function Home() {
 
       {/* 1. INVISIBLE LOGO HOVER TRIGGER ZONE (Top Left) */}
       <div 
-        className="absolute top-0 left-0 w-36 h-10 z-[100]" 
+        className="absolute top-0 left-0 w-36 h-10 z-[100] cursor-pointer" 
         onMouseEnter={() => setIsLogoHovered(true)}
         onMouseLeave={() => setIsLogoHovered(false)}
         aria-hidden="true"
       />
 
-      {/* 2. DYNAMIC BACKGROUND WATERMARK */}
+      {/* 2. DYNAMIC BACKGROUND LAYER (Fixed Image + Hover Video) */}
       <div 
-        className={`pointer-events-none fixed inset-0 flex items-center justify-center select-none overflow-hidden transition-all duration-700 ease-in-out ${
-          isLogoHovered ? 'opacity-100 z-50' : 'opacity-25 z-0'
-        }`} 
+        className="pointer-events-none fixed inset-0 flex items-center justify-center select-none overflow-hidden z-0" 
         aria-hidden="true"
       >
+        {/* Fixed Watermark Image (Visible normally at 25% opacity) */}
         <img 
           src="/images/web_background_trove_vault_logo.png" 
           alt="" 
           className={`w-[1250px] max-w-none object-contain drop-shadow-2xl transition-all duration-700 ease-out ${
-            isLogoHovered ? 'filter-none scale-105' : 'filter brightness-60 scale-100'
+            isLogoHovered ? 'opacity-0 scale-105' : 'opacity-25 filter brightness-60 scale-100'
           }`} 
         />
-      </div>
 
-      {/* 3. MAIN APPLICATION UI WRAPPER (Fades out when hovered) */}
-      <div 
-        className={`flex flex-col h-full w-full transition-opacity duration-500 ease-in-out ${
-          isLogoHovered ? 'opacity-0 pointer-events-none' : 'opacity-100'
-        }`}
-      >
-
-      {/* Top Navbar */}
-      <div className="shrink-0 relative z-40">
-        <Navbar
-          searchQuery={searchQuery}
-          onSearchChange={setSearchQuery}
-          searchScope={searchScope}
-          onSearchScopeChange={setSearchScope}
-          activeCollectionName={activeCollection ? activeCollection.name : 'Select Collection'}
-          collections={allCollections}
-          activeCollectionId={activeCollectionId}
-          onSelectCollection={(newId) => {
-            setActiveCollectionId(newId);
-            if (!isPinned) setIsSidebarOpen(false);
-          }}
-          onCollectionsUpdated={() => fetchAllData()}
-          isDropdownOpen={isColDropdownOpen}
-          setIsDropdownOpen={setIsColDropdownOpen}
-          onRequestDeleteCollection={(col) => setActiveModal({ type: 'delete_collection', collection: col })}
-          onOpenTemplateManager={() => {
-            if (activeCollection) {
-              setActiveModal({
-                type: 'template_manager',
-                collectionId: activeCollection.id,
-                collectionName: activeCollection.name,
-              });
-            }
-          }}
-          isSidebarOpen={isSidebarOpen}
-          isPinned={isPinned}
-          onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
-          onTogglePin={handleTogglePin}
-          explorerContent={explorerTreeElement}
-          animationsEnabled={animationsEnabled}
+        {/* Hover Video Animation (Fades in over the watermark on logo hover) */}
+        <video
+          ref={videoRef}
+          src="/videos/old_web_logo_animation.mp4"
+          muted
+          playsInline
+          className={`absolute w-[1250px] h-full object-contain drop-shadow-2xl transition-all duration-700 ease-in-out ${
+            isLogoHovered ? 'opacity-100 scale-100' : 'opacity-0 scale-95'
+          }`}
         />
       </div>
 
-      {/* Mid-Section */}
-      <div className="flex-1 min-h-0 flex overflow-hidden relative z-10">
-        <Sidebar
-          isPinned={isPinned}
-          onTogglePin={handleTogglePin}
-          allCollectionsCount={allCollections.length}
-          allItemsCount={allItems.length}
-          activeCollectionId={activeCollectionId}
-          onAddNewItem={() => {
-            if (activeCollectionId) handleAddSubItem(activeCollectionId, null);
-          }}
-          loading={loading}
-          error={error}
-          animationsEnabled={animationsEnabled}
-        >
-          {explorerTreeElement}
-        </Sidebar>
+      {/* 3. MAIN APPLICATION UI WRAPPER */}
+      <div className="flex flex-col h-full w-full">
 
-        {/* WORKSPACE COLUMN WRAPPER - Traps the shadows permanently to the edges */}
-        <div className="flex-1 min-h-0 relative flex flex-col z-10">
-          
-          {/* Main Content */}
-          <main
-            className={`flex-1 flex flex-col min-h-0 overflow-y-auto relative main_content_scroll transition-all duration-300 ease-in-out ${
-              !isPinned && isSidebarOpen
-                ? 'filter blur-[3.5px] brightness-[0.60] pointer-events-none select-none'
-                : 'filter-none brightness-100'
-            }`}
-          >
-            {/* Main Content - Upper Shadow (Sticky to stay at top, -mb-10 to let content slide under) */}
-            <div className="sticky top-0 left-0 right-0 h-10 bg-gradient-to-b from-black/85 to-transparent z-30 pointer-events-none shrink-0 -mb-10" aria-hidden="true" />   
-
-            {/* INNER WRAPPER: Moved p-6 here so the sticky shadows above/below can reach the edges */}
-            <div className="max-w-5xl mx-auto p-6 w-full flex-1 pt-10 pb-10">
-              <ItemDetailView
-                item={selectedItem}
-                onAddSubItem={(parent) => {
-                  if (activeCollectionId) handleAddSubItem(activeCollectionId, parent.id);
-                }}
-                onEditItem={() => {
-                  if (selectedItem && activeCollectionId) {
-                    handleTriggerEditItem(selectedItem, activeCollectionId);
-                  }
-                }}
-                onDeleteItem={() => {
-                  if (selectedItem && activeCollectionId) {
-                    handleTriggerDeleteItem(selectedItem, activeCollectionId);
-                  }
-                }}
-              />
-            </div>
-
-            {/* Main Content - Lower Shadow (Sticky to stay at bottom, -mt-10 to let content slide under) */}
-            <div className="sticky bottom-0 left-0 right-0 h-10 bg-gradient-to-t from-black/85 to-transparent z-30 pointer-events-none shrink-0 -mt-10" aria-hidden="true" />
-          </main>
+        {/* Top Navbar (Always Visible) */}
+        <div className="shrink-0 relative z-40">
+          <Navbar
+            searchQuery={searchQuery}
+            onSearchChange={setSearchQuery}
+            searchScope={searchScope}
+            onSearchScopeChange={setSearchScope}
+            activeCollectionName={activeCollection ? activeCollection.name : 'Select Collection'}
+            collections={allCollections}
+            activeCollectionId={activeCollectionId}
+            onSelectCollection={(newId) => {
+              setActiveCollectionId(newId);
+              if (!isPinned) setIsSidebarOpen(false);
+            }}
+            onCollectionsUpdated={() => fetchAllData()}
+            isDropdownOpen={isColDropdownOpen}
+            setIsDropdownOpen={setIsColDropdownOpen}
+            onRequestDeleteCollection={(col) => setActiveModal({ type: 'delete_collection', collection: col })}
+            onOpenTemplateManager={() => {
+              if (activeCollection) {
+                setActiveModal({
+                  type: 'template_manager',
+                  collectionId: activeCollection.id,
+                  collectionName: activeCollection.name,
+                });
+              }
+            }}
+            isSidebarOpen={isSidebarOpen}
+            isPinned={isPinned}
+            onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
+            onTogglePin={handleTogglePin}
+            explorerContent={explorerTreeElement}
+            animationsEnabled={animationsEnabled}
+          />
         </div>
 
-        <RightSidePanel
-          isOpen={isRightPanelOpen}
-          onOpen={() => setIsRightPanelOpen(true)}
-          onClose={() => setIsRightPanelOpen(false)}
-          animationsEnabled={animationsEnabled}
-        />
-      </div>
+        {/* Mid-Section (Fades out when logo is hovered, revealing the background video) */}
+        <div 
+          className={`flex-1 min-h-0 flex overflow-hidden relative z-10 transition-opacity duration-500 ease-in-out ${
+            isLogoHovered ? 'opacity-0 pointer-events-none' : 'opacity-100'
+          }`}
+        >
+          <Sidebar
+            isPinned={isPinned}
+            onTogglePin={handleTogglePin}
+            allCollectionsCount={allCollections.length}
+            allItemsCount={allItems.length}
+            activeCollectionId={activeCollectionId}
+            onAddNewItem={() => {
+              if (activeCollectionId) handleAddSubItem(activeCollectionId, null);
+            }}
+            loading={loading}
+            error={error}
+            animationsEnabled={animationsEnabled}
+          >
+            {explorerTreeElement}
+          </Sidebar>
 
-      {/* LOCKED BOTTOM BAR */}
-      <div className="shrink-0 relative z-40">
-        <BottomBar 
-          activeCollectionName={activeCollection?.name}
-          totalItemsCount={allItems.length}
-          isRightPanelOpen={isRightPanelOpen}
-          onToggleRightPanel={() => setIsRightPanelOpen(!isRightPanelOpen)}
-          animationsEnabled={animationsEnabled}
-          setAnimationsEnabled={setAnimationsEnabled}
-        />
+          {/* WORKSPACE COLUMN WRAPPER */}
+          <div className="flex-1 min-h-0 relative flex flex-col z-10">
+            {/* Main Content */}
+            <main
+              className={`flex-1 flex flex-col min-h-0 overflow-y-auto relative main_content_scroll transition-all duration-300 ease-in-out ${
+                !isPinned && isSidebarOpen
+                  ? 'filter blur-[3.5px] brightness-[0.60] pointer-events-none select-none'
+                  : 'filter-none brightness-100'
+              }`}
+            >
+              {/* Sticky Upper Shadow */}
+              <div className="sticky top-0 left-0 right-0 h-10 bg-gradient-to-b from-black/85 to-transparent z-30 pointer-events-none shrink-0 -mb-10" aria-hidden="true" />   
+
+              {/* Main Content Area */}
+              <div className="max-w-5xl mx-auto p-6 w-full flex-1 pt-10 pb-10">
+                <ItemDetailView
+                  item={selectedItem}
+                  onAddSubItem={(parent) => {
+                    if (activeCollectionId) handleAddSubItem(activeCollectionId, parent.id);
+                  }}
+                  onEditItem={() => {
+                    if (selectedItem && activeCollectionId) {
+                      handleTriggerEditItem(selectedItem, activeCollectionId);
+                    }
+                  }}
+                  onDeleteItem={() => {
+                    if (selectedItem && activeCollectionId) {
+                      handleTriggerDeleteItem(selectedItem, activeCollectionId);
+                    }
+                  }}
+                />
+              </div>
+
+              {/* Sticky Lower Shadow */}
+              <div className="sticky bottom-0 left-0 right-0 h-10 bg-gradient-to-t from-black/85 to-transparent z-30 pointer-events-none shrink-0 -mt-10" aria-hidden="true" />
+            </main>
+          </div>
+
+          <RightSidePanel
+            isOpen={isRightPanelOpen}
+            onOpen={() => setIsRightPanelOpen(true)}
+            onClose={() => setIsRightPanelOpen(false)}
+            animationsEnabled={animationsEnabled}
+          />
+        </div>
+
+        {/* LOCKED BOTTOM BAR (Always Visible) */}
+        <div className="shrink-0 relative z-40">
+          <BottomBar 
+            activeCollectionName={activeCollection?.name}
+            totalItemsCount={allItems.length}
+            isRightPanelOpen={isRightPanelOpen}
+            onToggleRightPanel={() => setIsRightPanelOpen(!isRightPanelOpen)}
+            animationsEnabled={animationsEnabled}
+            setAnimationsEnabled={setAnimationsEnabled}
+          />
+        </div>
       </div>
-    </div>
-      
+        
       {/* Modal Container */}
       {activeModal?.type === 'template_manager' && (
         <TemplateManagerModal

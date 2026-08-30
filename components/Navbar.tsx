@@ -116,7 +116,9 @@ export default function Navbar({
             />
 
             {/* BRAND AREA */}
-            <div className="flex items-start gap-1.5 pl-4 relative z-20">
+            <div className="flex items-start gap-1.5 pl-4 relative z-20"
+            >
+              
               <img
                 src="/images/nav_bar_website_logo.png"
                 alt="TroveVault"
