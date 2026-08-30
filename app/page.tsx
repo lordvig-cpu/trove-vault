@@ -147,22 +147,22 @@ export default function Home() {
         className="pointer-events-none fixed inset-0 flex items-center justify-center select-none overflow-hidden z-0" 
         aria-hidden="true"
       >
-        {/* Fixed Watermark Image (Visible normally at 25% opacity) */}
+        {/* Fixed Watermark Image */}
         <img 
           src="/images/web_background_trove_vault_logo.png" 
           alt="" 
-          className={`w-[1250px] max-w-none object-contain drop-shadow-2xl transition-all duration-700 ease-out ${
+          className={`w-[1250px] max-w-none h-auto object-contain drop-shadow-2xl transition-all duration-700 ease-out ${
             isLogoHovered ? 'opacity-0 scale-105' : 'opacity-25 filter brightness-60 scale-100'
           }`} 
         />
 
-        {/* Hover Video Animation (Fades in over the watermark on logo hover) */}
+        {/* Full-Height Hover Video Animation */}
         <video
           ref={videoRef}
           src="/videos/old_web_logo_animation.mp4"
           muted
           playsInline
-          className={`absolute w-[1250px] h-full object-contain drop-shadow-2xl transition-all duration-700 ease-in-out ${
+          className={`absolute inset-0 w-full h-full object-contain drop-shadow-2xl transition-all duration-700 ease-in-out ${
             isLogoHovered ? 'opacity-100 scale-100' : 'opacity-0 scale-95'
           }`}
         />
@@ -231,6 +231,7 @@ export default function Home() {
 
           {/* WORKSPACE COLUMN WRAPPER */}
           <div className="flex-1 min-h-0 relative flex flex-col z-10">
+            
             {/* Main Content */}
             <main
               className={`flex-1 flex flex-col min-h-0 overflow-y-auto relative main_content_scroll transition-all duration-300 ease-in-out ${
@@ -239,31 +240,37 @@ export default function Home() {
                   : 'filter-none brightness-100'
               }`}
             >
-              {/* Sticky Upper Shadow */}
-              <div className="sticky top-0 left-0 right-0 h-10 bg-gradient-to-b from-black/85 to-transparent z-30 pointer-events-none shrink-0 -mb-10" aria-hidden="true" />   
+              {/* Sticky Upper Shadow (only active if an item is selected) */}
+              {selectedItem && (
+                <div className="sticky top-0 left-0 right-0 h-10 bg-gradient-to-b from-black/85 to-transparent z-30 pointer-events-none shrink-0 -mb-10" aria-hidden="true" />
+              )}
 
               {/* Main Content Area */}
               <div className="max-w-5xl mx-auto p-6 w-full flex-1 pt-10 pb-10">
-                <ItemDetailView
-                  item={selectedItem}
-                  onAddSubItem={(parent) => {
-                    if (activeCollectionId) handleAddSubItem(activeCollectionId, parent.id);
-                  }}
-                  onEditItem={() => {
-                    if (selectedItem && activeCollectionId) {
-                      handleTriggerEditItem(selectedItem, activeCollectionId);
-                    }
-                  }}
-                  onDeleteItem={() => {
-                    if (selectedItem && activeCollectionId) {
-                      handleTriggerDeleteItem(selectedItem, activeCollectionId);
-                    }
-                  }}
-                />
+                {selectedItem ? (
+                  <ItemDetailView
+                    item={selectedItem}
+                    onAddSubItem={(parent) => {
+                      if (activeCollectionId) handleAddSubItem(activeCollectionId, parent.id);
+                    }}
+                    onEditItem={() => {
+                      if (selectedItem && activeCollectionId) {
+                        handleTriggerEditItem(selectedItem, activeCollectionId);
+                      }
+                    }}
+                    onDeleteItem={() => {
+                      if (selectedItem && activeCollectionId) {
+                        handleTriggerDeleteItem(selectedItem, activeCollectionId);
+                      }
+                    }}
+                  />
+                ) : null}
               </div>
 
-              {/* Sticky Lower Shadow */}
-              <div className="sticky bottom-0 left-0 right-0 h-10 bg-gradient-to-t from-black/85 to-transparent z-30 pointer-events-none shrink-0 -mt-10" aria-hidden="true" />
+              {/* Sticky Lower Shadow (only active if an item is selected) */}
+              {selectedItem && (
+                <div className="sticky bottom-0 left-0 right-0 h-10 bg-gradient-to-t from-black/85 to-transparent z-30 pointer-events-none shrink-0 -mt-10" aria-hidden="true" />
+              )}
             </main>
           </div>
 
