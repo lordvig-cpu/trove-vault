@@ -116,17 +116,12 @@ export default function Navbar({
             />
 
             {/* BRAND AREA */}
-            <div className="flex items-start gap-1.5 pl-4 relative z-20"
-            >
-              
+            <div className="flex items-center gap-2 pl-4 relative z-20">
               <img
                 src="/images/nav_bar_website_logo.png"
                 alt="TroveVault"
-                className="h-5 w-auto object-contain select-none"
+                className="h-8 w-auto object-contain select-none"
               />
-              <span className="text-[10px] text-content-muted/70 font-mono leading-none pt-1.0 select-none">
-                v0.1.0
-              </span>
             </div>
 
             {/* EXPLORER TOGGLE BUTTON */}
