@@ -29,7 +29,7 @@ export default function RightPanel({
       <button
         type="button"
         onClick={onOpen}
-        className={`absolute right-0 top-5 z-30 h-7 px-2 rounded-l-md bg-surface/90 hover:bg-surface-hover border-y border-l border-border-subtle hover:border-border-strong text-content-muted hover:text-content-primary shadow-lg backdrop-blur-md cursor-pointer flex items-center justify-center group ${transitionClass} ${
+        className={`absolute right-0 top-5 z-30 h-7 px-2 rounded-l-md bg-surface/80 hover:bg-surface-hover border-y border-l border-border-subtle hover:border-border-strong text-content-muted hover:text-content-primary shadow-lg backdrop-blur-md cursor-pointer flex items-center justify-center group ${transitionClass} ${
           isOpen ? 'translate-x-full opacity-0 pointer-events-none' : 'translate-x-0 opacity-100'
         }`}
         title="Open Side Panel"
@@ -49,7 +49,7 @@ export default function RightPanel({
 
       {/* 2. DOCKED RIGHT PANEL */}
       <aside
-        className={`absolute top-2 bottom-2 right-[10px] w-[340px] max-w-[calc(100vw-30px)] bg-surface border border-border-strong rounded-l-xl rounded-r-none shadow-[-20px_20px_50px_rgba(0,0,0,0.85)] ring-1 ring-white/10 backdrop-blur-xl z-40 flex flex-col overflow-hidden ${transitionClass} ${
+        className={`absolute top-2 bottom-2 right-[10px] w-[340px] max-w-[calc(100vw-30px)] bg-surface/80 border border-border-strong rounded-l-xl rounded-r-none shadow-[-20px_20px_50px_rgba(0,0,0,0.85)] z-40 flex flex-col overflow-hidden ${transitionClass} ${
           isOpen ? 'translate-x-0 opacity-100' : 'translate-x-[110%] opacity-0 pointer-events-none'
         }`}
       >

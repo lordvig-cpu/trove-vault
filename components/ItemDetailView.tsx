@@ -17,7 +17,7 @@ export default function ItemDetailView({
 }: ItemDetailViewProps) {
   if (!item) {
     return (
-      <div className="h-full flex flex-col items-center justify-center text-center p-8 bg-surface/85 backdrop-blur-md rounded-xl border border-border-subtle shadow-xl">
+      <div className="h-full flex flex-col items-center justify-center text-center p-8 bg-surface/80 rounded-xl border border-border-subtle shadow-xl">
         <span className="text-4xl mb-3">🔍</span>
         <h3 className="text-base font-semibold text-content-primary">No Item Selected</h3>
         <p className="text-xs text-content-muted mt-1 max-w-sm">
@@ -36,7 +36,7 @@ export default function ItemDetailView({
   return (
     <div className="space-y-6">
       {/* HEADER CARD */}
-      <div className="bg-surface/85 backdrop-blur-md rounded-xl border border-border-subtle shadow-xl p-5 flex items-start justify-between gap-4">
+      <div className="bg-surface/80 rounded-xl border border-border-subtle shadow-xl p-5 flex items-start justify-between gap-4">
         <div className="space-y-1.5">
           <div className="flex items-center gap-2">
             <span className="px-2 py-0.5 rounded text-[11px] font-mono font-medium bg-accent-primary/15 text-accent-secondary border border-accent-primary/30">
@@ -94,7 +94,7 @@ export default function ItemDetailView({
       {/* GRID: IMAGE & ATTRIBUTES */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Image Preview Card */}
-        <div className="md:col-span-1 bg-canvas/60 backdrop-blur-sm rounded-xl border border-border-subtle p-5 flex flex-col items-center justify-center text-center min-h-[200px]">
+        <div className="md:col-span-1 bg-surface/80 rounded-xl border border-border-subtle p-5 flex flex-col items-center justify-center text-center min-h-[200px] shadow-xl">
           {imageUrl ? (
             <img
               src={imageUrl}
@@ -110,7 +110,7 @@ export default function ItemDetailView({
         </div>
 
         {/* Attributes Card */}
-        <div className="md:col-span-2 bg-surface/85 backdrop-blur-md rounded-xl border border-border-subtle shadow-xl p-5 space-y-4 flex flex-col">
+        <div className="md:col-span-2 bg-surface/80 rounded-xl border border-border-subtle shadow-xl p-5 space-y-4 flex flex-col">
           <div className="flex items-center justify-between border-b border-border-subtle pb-2.5">
             <h2 className="text-xs font-bold uppercase tracking-wider text-content-muted">
               Custom Attributes (JSONB)
@@ -127,7 +127,7 @@ export default function ItemDetailView({
               {attributeEntries.map(([key, value]) => (
                 <div
                   key={key}
-                  className="bg-canvas/60 rounded-lg border border-border-subtle p-3 hover:border-border-strong hover:bg-surface transition-colors flex flex-col gap-0.5"
+                  className="bg-canvas/50 rounded-lg border border-border-subtle/70 p-3 hover:border-border-strong hover:bg-surface/70 transition-colors flex flex-col gap-0.5"
                 >
                   <span className="text-[10px] font-bold uppercase tracking-wider text-content-muted">
                     {key.replace(/_/g, ' ')}
@@ -144,7 +144,7 @@ export default function ItemDetailView({
 
       {/* SUB-ITEMS LIST CARD */}
       {item.children && item.children.length > 0 && (
-        <div className="bg-surface/85 backdrop-blur-md rounded-xl border border-border-subtle shadow-xl p-5 space-y-3">
+        <div className="bg-surface/80 rounded-xl border border-border-subtle shadow-xl p-5 space-y-3">
           <h2 className="text-xs font-bold uppercase tracking-wider text-content-muted border-b border-border-subtle pb-2">
             Direct Sub-Items ({item.children.length})
           </h2>
@@ -152,7 +152,7 @@ export default function ItemDetailView({
             {item.children.map((child) => (
               <div
                 key={child.id}
-                className="bg-canvas/60 rounded-lg border border-border-subtle p-3 hover:border-border-strong hover:bg-surface transition-colors flex items-center justify-between"
+                className="bg-canvas/50 rounded-lg border border-border-subtle/70 p-3 hover:border-border-strong hover:bg-surface/70 transition-colors flex items-center justify-between"
               >
                 <div className="flex items-center gap-2 min-w-0">
                   <span className="text-xs">📄</span>

@@ -11,6 +11,9 @@ interface BottomBarProps {
   onToggleRightPanel: () => void;
   animationsEnabled: boolean;
   setAnimationsEnabled: (enabled: boolean) => void;
+  isAudioEnabled: boolean;
+  setIsAudioEnabled: (enabled: boolean) => void;
+
 }
 
 export default function BottomBar({
@@ -20,6 +23,8 @@ export default function BottomBar({
   totalItemsCount = 0,
   isRightPanelOpen,
   onToggleRightPanel,
+  isAudioEnabled,
+  setIsAudioEnabled
 }: BottomBarProps) {
   const [theme, setTheme] = useState<ThemePreset>('theme-default-dark');
 
@@ -74,6 +79,19 @@ export default function BottomBar({
             className="w-3.5 h-3.5 rounded border-border-subtle bg-surface text-accent-secondary focus:ring-0 cursor-pointer"
           />
           <span className="text-[11px] font-mono">Animations</span>
+        </label>
+      </div>
+
+      {/* AUDIO TOGGLE SWITCH */}
+      <div className="flex items-center gap-1.5 text-xs text-content-muted cursor-pointer select-none">
+        <label className="flex items-center gap-1.5 cursor-pointer text-content-muted hover:text-content-primary transition-colors">
+          <input
+            type="checkbox"
+            checked={isAudioEnabled}
+            onChange={(e) => setIsAudioEnabled(e.target.checked)}
+            className="w-3.5 h-3.5 rounded border-border-subtle bg-surface text-accent-secondary focus:ring-0 cursor-pointer"
+          />
+          <span className="font-mono text-[11px]">Sound FX</span>
         </label>
       </div>
 

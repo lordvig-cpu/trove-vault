@@ -3,8 +3,10 @@
    ========================================================================== */
 :root,
 [data-theme='theme-default-dark'] {
-  --bg-canvas: #010b14;                   /* Deep Sea Navy / Teal-Black Canvas */
-  --bg-surface: #041628;                  /* Rich Dark Teal-Slate Card Surface */
+  --bg-canvas: #0d1117;                   /* Deep matte charcoal base */
+  
+/*  --bg-surface: #041628;                  /* Rich Dark Teal-Slate Card Surface */
+  --bg-surface: rgba(4, 22, 40, 0.85); /* Rich Dark Teal-Slate Card Surface with Transparency */
   --bg-surface-hover: #0a3555;            /* Mid-tone Teal Hover */
   --bg-popover: #02101f;                  /* Solid Frosted Deep Teal Popover/Dropdown */
   

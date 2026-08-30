@@ -199,7 +199,7 @@ export default function Navbar({
                   />
                   
                   {/* Floating Menu Container */}
-                  <div className={`absolute left-0 mt-[11px] w-88 max-h-[75vh] bg-surface border border-border-strong rounded-xl rounded-tl-none shadow-[0_20px_50px_rgba(0,0,0,0.85)] ring-1 ring-white/10 z-50 p-3 flex flex-col gap-2 backdrop-blur-xl transform ${
+                  <div className={`absolute left-0 mt-[11px] w-88 max-h-[75vh] bg-surface/80 border border-border-strong rounded-xl rounded-tl-none shadow-[0_20px_50px_rgba(0,0,0,0.85)] ring-1 ring-white/10 z-50 p-3 flex flex-col gap-2 backdrop-blur-xl transform ${
                     animationsEnabled && !isPinned
                       ? (isClosing ? 'animate-unmount-fade' : 'animate-mount-fade') 
                       : ''

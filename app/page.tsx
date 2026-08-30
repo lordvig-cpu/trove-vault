@@ -57,6 +57,7 @@ export default function Home() {
   const [isColDropdownOpen, setIsColDropdownOpen] = useState<boolean>(false);
   const [activeModal, setActiveModal] = useState<ActiveModal>(null);
   const [animationsEnabled, setAnimationsEnabled] = useState(true);
+  const [isAudioEnabled, setIsAudioEnabled] = useState(false);
   
   // Video reference for smooth playback & rewinding
   const videoRef = useRef<HTMLVideoElement | null>(null);
@@ -149,18 +150,18 @@ export default function Home() {
       >
         {/* Fixed Watermark Image */}
         <img 
-          src="/images/web_background_trove_vault_logo.png" 
-          alt="" 
-          className={`w-[1250px] max-w-none h-auto object-contain drop-shadow-2xl transition-all duration-700 ease-out ${
-            isLogoHovered ? 'opacity-0 scale-105' : 'opacity-25 filter brightness-60 scale-100'
-          }`} 
-        />
+  src="/images/web_background_trove_vault_logo.png" 
+  alt="" 
+  className={`w-[1250px] max-w-none h-auto object-contain drop-shadow-2xl transition-all duration-700 ease-out ${
+    isLogoHovered ? 'opacity-0 scale-105' : 'opacity-15 filter brightness-75 scale-100'
+  }`} 
+/>
 
         {/* Full-Height Hover Video Animation */}
         <video
           ref={videoRef}
           src="/videos/old_web_logo_animation.mp4"
-          muted
+          muted={!isAudioEnabled}
           playsInline
           className={`absolute inset-0 w-full h-full object-contain drop-shadow-2xl transition-all duration-700 ease-in-out ${
             isLogoHovered ? 'opacity-100 scale-100' : 'opacity-0 scale-95'
@@ -291,6 +292,8 @@ export default function Home() {
             onToggleRightPanel={() => setIsRightPanelOpen(!isRightPanelOpen)}
             animationsEnabled={animationsEnabled}
             setAnimationsEnabled={setAnimationsEnabled}
+            isAudioEnabled={isAudioEnabled} 
+            setIsAudioEnabled={setIsAudioEnabled}
           />
         </div>
       </div>
