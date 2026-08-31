@@ -30,12 +30,12 @@ export function PinFilledIcon({ className = 'w-4 h-4' }: PinIconProps) {
       viewBox="0 0 24 24"
       width="18"
       height="18"
-      fill="currentColor" /* FIXED: Starts completely solid */
+      fill="currentColor"
       stroke="currentColor"
       strokeWidth="1.8"
       strokeLinecap="round"
       strokeLinejoin="round"
-      className={`transition-all duration-300 ease-out group-hover:fill-transparent group-hover:stroke-white group-hover:-rotate-45 ${className}`} /* FIXED: Clears fill and rotates upright */
+      className={`transition-all duration-300 ease-out group-hover:fill-transparent group-hover:stroke-content-muted group-hover:-rotate-45 ${className}`} /* FIXED: Clears fill and rotates upright */
     >
       <path d="M8 3H16L15 8L18 11V13H13V19L12 22L11 19V13H6V11L9 8L8 3Z"
         transform="rotate(45 12 12)" />

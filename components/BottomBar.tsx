@@ -69,29 +69,10 @@ export default function BottomBar({
         )}
       </div>
 
-      {/* CENTER: ANIMATIONS TOGGLE */}
-      <div className="flex items-center gap-2 relative z-10">
-        <label className="flex items-center gap-1.5 cursor-pointer text-content-muted hover:text-content-primary transition-colors">
-          <input 
-            type="checkbox" 
-            checked={animationsEnabled} 
-            onChange={(e) => setAnimationsEnabled(e.target.checked)}
-            className="w-3.5 h-3.5 rounded border-border-subtle bg-surface text-accent-secondary focus:ring-0 cursor-pointer"
-          />
-          <span className="text-[11px] font-mono">Animations</span>
-        </label>
-      </div>
-
-      {/* AUDIO TOGGLE SWITCH */}
+      {/* MIDDLE */}
       <div className="flex items-center gap-1.5 text-xs text-content-muted cursor-pointer select-none">
         <label className="flex items-center gap-1.5 cursor-pointer text-content-muted hover:text-content-primary transition-colors">
-          <input
-            type="checkbox"
-            checked={isAudioEnabled}
-            onChange={(e) => setIsAudioEnabled(e.target.checked)}
-            className="w-3.5 h-3.5 rounded border-border-subtle bg-surface text-accent-secondary focus:ring-0 cursor-pointer"
-          />
-          <span className="font-mono text-[11px]">Sound FX</span>
+          MIDDLE CONTENT
         </label>
       </div>
 
@@ -100,6 +81,88 @@ export default function BottomBar({
         <span className="text-[11px] font-mono text-content-muted">
           Items: <span className="text-content-primary font-semibold">{totalItemsCount}</span>
         </span>
+
+        <span className="text-border-subtle">|</span>
+
+        {/* Animated Animations Toggle Button */}
+        <button
+          type="button"
+          onClick={() => setAnimationsEnabled(!animationsEnabled)}
+          className="group relative p-1.5 rounded-lg border border-transparent bg-transparent hover:bg-surface-hover hover:border-border-subtle transition cursor-pointer overflow-hidden flex items-center justify-center w-7 h-7"
+          title={animationsEnabled ? 'Disable UI Animations' : 'Enable UI Animations'}
+        >
+          {/* Active: Square Stop Sign (Animations ON - Click to Stop) */}
+          <svg
+            className={`w-3.5 h-3.5 text-white absolute transform transition-all duration-500 ease-out ${
+              animationsEnabled
+                ? 'rotate-0 opacity-100 scale-100'
+                : '-rotate-90 opacity-0 scale-50 pointer-events-none'
+            }`}
+            fill="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <rect x="5" y="5" width="14" height="14" rx="2" />
+          </svg>
+
+          {/* Inactive: Forward Triangle Play Sign (Animations OFF - Click to Play) */}
+          <svg
+            className={`w-3.5 h-3.5 text-white absolute transform transition-all duration-500 ease-out ${
+              !animationsEnabled
+                ? 'rotate-0 opacity-100 scale-100'
+                : 'rotate-90 opacity-0 scale-50 pointer-events-none'
+            }`}
+            fill="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <polygon points="6,4 20,12 6,20" />
+          </svg>
+        </button>
+
+        {/* Animated Audio Toggle Button */}
+        <button
+          type="button"
+          onClick={() => setIsAudioEnabled(!isAudioEnabled)}
+          className="group relative p-1.5 rounded-lg border border-transparent bg-transparent hover:bg-surface-hover hover:border-border-subtle transition cursor-pointer overflow-hidden flex items-center justify-center w-7 h-7"
+          title={isAudioEnabled ? 'Mute Sound FX' : 'Enable Sound FX'}
+        >
+          {/* Active: Speaker with Waves (Audio ON) */}
+          <svg
+            className={`w-3.5 h-3.5 text-white absolute transform transition-all duration-500 ease-out ${
+              isAudioEnabled
+                ? 'rotate-0 opacity-100 scale-100'
+                : '-rotate-90 opacity-0 scale-50 pointer-events-none'
+            }`}
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.8"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            viewBox="0 0 24 24"
+          >
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+            <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
+            <path d="M19.07 4.93a10 10 0 0 1 0 14.14" />
+          </svg>
+
+          {/* Inactive: Speaker Muted with Slash (Audio OFF) */}
+          <svg
+            className={`w-3.5 h-3.5 text-white absolute transform transition-all duration-500 ease-out ${
+              !isAudioEnabled
+                ? 'rotate-0 opacity-100 scale-100'
+                : 'rotate-90 opacity-0 scale-50 pointer-events-none'
+            }`}
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.8"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            viewBox="0 0 24 24"
+          >
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+            <line x1="23" y1="9" x2="17" y2="15" />
+            <line x1="17" y1="9" x2="23" y2="15" />
+          </svg>
+        </button>
 
         <span className="text-border-subtle">|</span>
 
