@@ -3,7 +3,7 @@
 import React from 'react';
 import { CollectionRecord } from './CollectionDropdown';
 import { ItemRecord } from './TreeNode';
-import { PinFilledIcon } from '@/components/icons/PinIcons';
+import { PinOutlineIcon, PinFilledIcon } from '@/components/icons/PinIcons';
 
 interface SidebarProps {
   isPinned: boolean;
@@ -35,11 +35,10 @@ export default function Sidebar({
 
   return (
     <aside
-      className={`absolute left-0 top-[1px] bottom-0 bg-surface/80 flex flex-col gap-2.5 overflow-x-hidden overflow-y-auto shrink-0 ${transitionClass} z-50 ${
-        isPinned
+      className={`absolute left-0 top-[1px] bottom-0 bg-surface/80 flex flex-col gap-2.5 overflow-x-hidden overflow-y-auto shrink-0 ${transitionClass} z-50 ${isPinned
           ? 'w-76 max-w-76 border-r border-[rgba(81,155,255,0.85)] p-3 opacity-100 shadow-[14px_0_35px_-4px_rgba(0,0,0,0.85)] translate-x-0'
           : 'w-76 max-w-76 translate-x-46 border-r-0 p-3 opacity-0 pointer-events-none'
-      }`}
+        }`}
     >
       {/* Header */}
       <div className="flex items-center justify-between border-b border-border-subtle pb-2 shrink-0">
@@ -62,13 +61,14 @@ export default function Sidebar({
               + New Item
             </button>
           )}
+          {/* PIN / UNPIN BUTTON */}
           <button
             type="button"
             onClick={onTogglePin}
-            className="group p-1 rounded text-content-muted hover:text-content-primary hover:bg-surface-hover transition cursor-pointer"
-            title="Unpin Sidebar"
+            className="group p-1.5 rounded-lg border border-transparent hover:border-border-subtle hover:bg-surface-hover transition cursor-pointer flex items-center justify-center shrink-0"
+            title={isPinned ? 'Unpin Sidebar' : 'Pin Sidebar'}
           >
-            <PinFilledIcon className="w-3.5 h-3.5" />
+            <PinFilledIcon className="w-3.5 h-3.5 text-content-primary" />
           </button>
         </div>
       </div>

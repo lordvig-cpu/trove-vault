@@ -103,21 +103,27 @@ export default function BottomBar({
 
         <span className="text-border-subtle">|</span>
 
-        {/* Right Dock Panel Toggle Icon */}
+       {/* Right Dock Panel Toggle Icon */}
         <button
           type="button"
           onClick={onToggleRightPanel}
           title={isRightPanelOpen ? 'Close Side Panel' : 'Open Side Panel'}
           className={`p-1.5 rounded-lg border transition cursor-pointer flex items-center justify-center ${
             isRightPanelOpen
-              ? 'bg-accent-primary/20 border-accent-primary text-accent-secondary'
+              ? 'bg-surface-hover border-border-subtle text-content-primary'
               : 'bg-surface hover:bg-surface-hover border-border-subtle text-content-muted hover:text-content-primary'
           }`}
         >
           <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <rect x="3" y="3" width="18" height="18" rx="2" />
             <line x1="15" y1="3" x2="15" y2="21" />
-            <path d="M18 9l-3 3 3 3" />
+            
+            {/* Filled Solid Arrow (Reverses direction cleanly) */}
+            <polygon
+              points={isRightPanelOpen ? '16,9 20,12 16,15' : '19,9 15,12 19,15'}
+              fill="currentColor"
+              stroke="none"
+            />
           </svg>
         </button>
 

@@ -3,7 +3,7 @@
 import { ReactNode, useState, useEffect } from 'react';
 import { CollectionRecord } from './CollectionDropdown';
 import CollectionDropdown from './CollectionDropdown';
-import { PinOutlineIcon } from './icons/PinIcons';
+import { PinOutlineIcon, PinFilledIcon } from '@/components/icons/PinIcons';
 
 export type SearchScope = 'current' | 'all';
 
@@ -100,19 +100,17 @@ export default function Navbar({
           <div className="flex items-center justify-between h-full w-76 shrink-0 relative">
 
             {/* SHADOW ERASER MASK */}
-            <div 
-              className={`absolute top-full left-0 right-[10px] h-3 bg-surface z-10 pointer-events-none ${opacityTransition} ${
-                isPinned ? 'opacity-100 delay-[350ms]' : 'opacity-0 delay-0'
-              }`} 
-              aria-hidden="true" 
+            <div
+              className={`absolute top-full left-0 right-[10px] h-3 bg-surface z-10 pointer-events-none ${opacityTransition} ${isPinned ? 'opacity-100 delay-[350ms]' : 'opacity-0 delay-0'
+                }`}
+              aria-hidden="true"
             />
 
             {/* RESTORED BLUE BORDER LINE */}
-            <div 
-              className={`absolute top-full left-0 w-full h-[1px] bg-[rgba(81,155,255,0.85)] z-20 pointer-events-none ${opacityTransition} ${
-                isPinned ? 'opacity-100 delay-[350ms]' : 'opacity-0 delay-0'
-              }`}
-              aria-hidden="true" 
+            <div
+              className={`absolute top-full left-0 w-full h-[1px] bg-[rgba(81,155,255,0.85)] z-20 pointer-events-none ${opacityTransition} ${isPinned ? 'opacity-100 delay-[350ms]' : 'opacity-0 delay-0'
+                }`}
+              aria-hidden="true"
             />
 
             {/* BRAND AREA */}
@@ -133,35 +131,28 @@ export default function Navbar({
                     onToggleSidebar();
                   }
                 }}
-                className={`px-4 py-1.5 font-sans font-black tracking-wide text-sm relative group transition-all ease-out ${
-                  animationsEnabled ? 'duration-500' : 'duration-0'
-                } ${isPinned ? 'cursor-default' : 'cursor-pointer'} ${
-                  isPinned || (renderMenu && !isClosing)
+                className={`px-4 py-1.5 font-sans font-black tracking-wide text-sm relative group transition-all ease-out ${animationsEnabled ? 'duration-500' : 'duration-0'
+                  } ${isPinned ? 'cursor-default' : 'cursor-pointer'} ${isPinned || (renderMenu && !isClosing)
                     ? 'bg-surface border border-border-strong border-b-transparent rounded-t-lg rounded-b-none text-white shadow-[0_-4px_12px_rgba(0,190,230,0.15)] z-[60]'
                     : 'bg-transparent border border-transparent rounded-lg text-white z-50'
-                }`}
+                  }`}
               >
                 <span className="relative inline-block">
                   Explorer
                   <div
-                    className={`absolute -bottom-1 -left-[1px] -right-[1px] h-[2px] bg-[#e77428] pointer-events-none transition-opacity ease-out ${
-                      animationsEnabled ? 'duration-500' : 'duration-0'
-                    } ${
-                      isPinned || (renderMenu && !isClosing) ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
-                    }`}
+                    className={`absolute -bottom-1 -left-[1px] -right-[1px] h-[2px] bg-[#e77428] pointer-events-none transition-opacity ease-out ${animationsEnabled ? 'duration-500' : 'duration-0'
+                      } ${isPinned || (renderMenu && !isClosing) ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
+                      }`}
                     aria-hidden="true"
                   />
                 </span>
 
                 {/* Seamless Tab Extension */}
                 <div
-                  className={`absolute top-[calc(100%-1px)] -left-[1px] -right-[1px] h-3 bg-surface border-l pointer-events-none transition-opacity ease-out ${
-                    animationsEnabled ? 'duration-500' : 'duration-0'
-                  } ${
-                    isPinned ? 'border-r border-[rgba(81,155,255,0.85)] border-border-strong' : 'border-r border-border-strong'
-                  } ${
-                    isPinned || (renderMenu && !isClosing) ? 'opacity-100' : 'opacity-0'
-                  }`}
+                  className={`absolute top-[calc(100%-1px)] -left-[1px] -right-[1px] h-3 bg-surface border-l pointer-events-none transition-opacity ease-out ${animationsEnabled ? 'duration-500' : 'duration-0'
+                    } ${isPinned ? 'border-r border-[rgba(81,155,255,0.85)] border-border-strong' : 'border-r border-border-strong'
+                    } ${isPinned || (renderMenu && !isClosing) ? 'opacity-100' : 'opacity-0'
+                    }`}
                   aria-hidden="true"
                 />
               </button>
@@ -185,45 +176,44 @@ export default function Navbar({
                       animation: unmountFade 500ms ease-out forwards;
                     }
                   `}</style>
-                  
+
                   {/* Floating Menu Overlay */}
-                  <div 
-                    className={`fixed inset-0 top-14 z-40 ${
-                      animationsEnabled 
-                        ? (isClosing && !isPinned ? 'animate-unmount-fade' : 'animate-mount-fade transition-opacity duration-700 ease-in-out') 
-                        : 'transition-none'
-                    } ${
-                      isPinned ? 'opacity-0 pointer-events-none' : 'opacity-100'
-                    }`} 
-                    onClick={onToggleSidebar} 
+                  <div
+                    className={`fixed inset-0 top-14 z-40 ${animationsEnabled
+                      ? (isClosing && !isPinned ? 'animate-unmount-fade' : 'animate-mount-fade transition-opacity duration-700 ease-in-out')
+                      : 'transition-none'
+                      } ${isPinned ? 'opacity-0 pointer-events-none' : 'opacity-100'
+                      }`}
+                    onClick={onToggleSidebar}
                   />
-                  
+
                   {/* Floating Menu Container */}
-                  <div className={`absolute left-0 mt-[11px] w-88 max-h-[75vh] bg-surface/80 border border-border-strong rounded-xl rounded-tl-none shadow-[0_20px_50px_rgba(0,0,0,0.85)] ring-1 ring-white/10 z-50 p-3 flex flex-col gap-2 backdrop-blur-xl transform ${
-                    animationsEnabled && !isPinned
-                      ? (isClosing ? 'animate-unmount-fade' : 'animate-mount-fade') 
-                      : ''
-                  } ${transitionClass} ${
-                    isPinned ? 'opacity-0 -translate-x-46 pointer-events-none' : 'opacity-100 translate-x-0'
-                  }`}>
+                  <div className={`absolute left-0 mt-[11px] w-88 max-h-[75vh] bg-surface/80 border border-border-strong rounded-xl rounded-tl-none shadow-[0_20px_50px_rgba(0,0,0,0.85)] z-50 p-3 flex flex-col gap-2 transform ${animationsEnabled && !isPinned
+                    ? (isClosing ? 'animate-unmount-fade' : 'animate-mount-fade')
+                    : ''
+                    } ${transitionClass} ${isPinned ? 'opacity-0 -translate-x-46 pointer-events-none' : 'opacity-100 translate-x-0'
+                    }`}>
                     <div className="flex items-center justify-between border-b border-border-subtle pb-2 shrink-0">
                       <span className="text-xs font-bold uppercase tracking-wider text-content-muted">
                         🌲 Explorer
                       </span>
 
                       <div className="flex items-center gap-1">
+                        {/* PIN TO SIDEBAR BUTTON */}
                         <button
                           type="button"
                           onClick={onTogglePin}
-                          className="group p-1 rounded text-content-muted hover:text-content-primary hover:bg-surface-hover transition cursor-pointer"
+                          className="group p-1.5 rounded-lg border border-transparent hover:border-border-subtle hover:bg-surface-hover transition cursor-pointer flex items-center justify-center shrink-0"
                           title="Pin Explorer to Sidebar"
                         >
-                          <PinOutlineIcon className="w-3.5 h-3.5" />
+                          <PinOutlineIcon className="w-3.5 h-3.5 text-content-muted" />
                         </button>
+
+                        {/* CLOSE BUTTON */}
                         <button
                           type="button"
                           onClick={onToggleSidebar}
-                          className="p-1 text-content-muted hover:text-content-primary rounded hover:bg-surface-hover text-xs cursor-pointer"
+                          className="p-1.5 text-content-muted hover:text-content-primary rounded-lg border border-transparent hover:border-border-subtle hover:bg-surface-hover transition text-xs cursor-pointer flex items-center justify-center w-7 h-7"
                           title="Close"
                         >
                           ✕
