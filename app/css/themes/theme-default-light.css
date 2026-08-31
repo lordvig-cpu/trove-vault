@@ -1,51 +1,97 @@
-/* ==========================================================================
+/* ===================================================================
    THEME: DEFAULT LIGHT (SUNLIT TIDE)
-   ---------------------------------- 
-   NOTE: Do NOT add :root here, or it will override default dark mode.   
-   ======================================================================= */
+   
+   NOTE: Do NOT add :root here, or it will override default dark mode.
+   =================================================================== */
+
 [data-theme='theme-default-light'] {
 
-    /* ======================================================================
-       WORKSPACE & CANVAS BACKGROUNDS
-       ------------------------------
-       Applied to the main center viewport floor and workspace backdrop.
-       ====================================================================== */
-    --bg-canvas: rgba(239, 247, 249, 1.00);
-    --studio-spotlight: rgba(72, 188, 207, 0.16);
+    /* ==============================================================
+    WORKSPACE & CANVAS BACKGROUNDS
+    Applied to the main center viewport floor and workspace backdrop.
 
-    /* ======================================================================
-       SURFACE & ELEVATION CONTAINERS
-       ------------------------------
-       Applied to sidebars, docked panels, attribute cards, and dropdown overlays.
-       ====================================================================== */
+    --bg-canvas {--color-canvas}
+        ~ base viewport background
+    ----------------------------------------------------------------- */
+    --bg-canvas: rgba(13, 17, 23, 1.00);
+
+    /* --- Studio Grid Canvas Layers & Textures --- */
+    --studio-grid-bg-color: rgba(11, 12, 14, 1.00);
+
+    /* Top Left Glow */
+    --studio-grid-glow-1-core: rgba(180, 185, 195, 0.14);
+    --studio-grid-glow-1-edge: rgba(120, 125, 135, 0.05);
+    
+    /* Bottom Right Glow */
+    --studio-grid-glow-2-core: rgba(160, 165, 175, 0.12);
+    --studio-grid-glow-2-edge: rgba(100, 105, 115, 0.04);
+    
+    /* Vignette & Grid Lines */
+    --studio-grid-vignette-edge: rgba(0, 0, 0, 0.5);
+    --studio-grid-line-color: rgba(255, 255, 255, 0.04);
+    --studio-grid-cell-size: 32px;
+    /* ============================================================== */
+
+
+    /* =======================================================================================
+    SURFACE & ELEVATION CONTAINERS
+    Applied to sidebars, docked panels, attribute cards, and dropdown overlays.
+    
+    --bg-surface {--color-surface}
+        ~ foundational background for side panels, floating containers and card sections
+    --bg-surface-hover {--color-surface-hover}
+        ~ handles the interactive transition state on hover
+    --bg-popover {--color-surface-popover}
+        ~ designated for floating structural overlays, such as dropdown menus, tooltips, modal 
+          dialog content windows, and floating select lists that need to sit visually distinct 
+          above the standard base surface panels and sidebars.
+    ------------------------------------------------------------------------------------------ */
     --bg-surface: rgba(255, 255, 255, 1.00);
     --bg-surface-hover: rgba(225, 244, 247, 1.00);
     --bg-popover: rgba(247, 252, 253, 1.00);
+    /* ======================================================================================= */
+    
 
-    /* ======================================================================
-       BORDERS & HUD OUTLINES
-       ------------------------------
-       Applied to panel seams, dividers, inputs, and glowing active outlines.
-       ====================================================================== */
+    /* ====================================================================================
+    BORDERS & HUD OUTLINES
+    Applied to panel seams, dividers, inputs, and glowing active outlines.
+    
+    --border-subtle {--color-border-subtle}
+        ~ provides that soft, low-contrast edge outlining standard cards and 
+          panels so they blend cleanly into the background
+    --border-strong {--color-border-strong}
+        ~ provides a much more prominent, high-visibility accent border used to explicitly 
+          draw the user's eye to active boundaries, dividers, or focused elements.
+    --------------------------------------------------------------------------------------- */
     --border-subtle: rgba(0, 130, 160, 0.18);
     --border-strong: rgba(0, 145, 175, 0.62);
+    /* ==================================================================================== */
+
 
     /* ======================================================================
-       BRAND & INTERACTIVE ACCENTS
-       ------------------------------
-       Applied to action buttons, focus rings, brand tokens, and HUD glows.
-       ====================================================================== */
+    BRAND & INTERACTIVE ACCENTS
+    Applied to action buttons, focus rings, brand tokens, and HUD glows.
+
+    --accent-primary {--color-accent-primary}
+    --accent-primary-hover {--accent-primary-hover}
+    --accent-secondary {--color-accent-secondary}
+    ------------------------------------------------------------------------- */
     --accent-primary: rgba(7, 119, 151, 1.00);
     --accent-primary-hover: rgba(0, 92, 124, 1.00);
     --accent-secondary: rgba(194, 112, 0, 1.00);
-    --accent-glow: rgba(0, 164, 195, 0.18);
+    /* ====================================================================== */
+
 
     /* ======================================================================
-       TYPOGRAPHY & CONTENT HIERARCHY
-       ------------------------------
-       Applied to primary headings, body copy, and secondary/mono metadata.
-       ====================================================================== */
+    TYPOGRAPHY & CONTENT HIERARCHY
+    Applied to primary headings, body copy, and secondary/mono metadata.
+
+    --text-primary {--color-content-primary}
+    --text-secondary {--color-content-secondary}
+    --text-muted {--color-content-muted}
+    ------------------------------------------------------------------------- */
     --text-primary: rgba(16, 39, 51, 1.00);
     --text-secondary: rgba(57, 85, 99, 1.00);
     --text-muted: rgba(109, 137, 150, 1.00);
+    /* ====================================================================== */
 }

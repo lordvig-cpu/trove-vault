@@ -31,7 +31,7 @@ body {
   --color-accent-primary: var(--accent-primary);
   --color-accent-primary-hover: var(--accent-primary-hover);
   --color-accent-secondary: var(--accent-secondary);
-  --color-accent-glow: var(--accent-glow);
+/*  --color-accent-glow: var(--accent-glow); -- unused */
 
   --color-content-primary: var(--text-primary);
   --color-content-secondary: var(--text-secondary);
@@ -96,23 +96,23 @@ body {
   background: var(--accent-secondary) !important;
 }
 
-/* ==========================================================================
-   STUDIO GRID CANVAS BACKGROUND (Zero-Saturation Monochrome Edition)
-   ========================================================================== */
+/* =============================
+   STUDIO GRID CANVAS BACKGROUND 
+   ========================== */
 .studio-grid-canvas {
-  background-color: #0b0c0e;
+  background-color: var(--studio-grid-bg-color);
   background-image: 
-    radial-gradient(ellipse 70% 60% at 10% 25%, rgba(180, 185, 195, 0.14) 0%, rgba(120, 125, 135, 0.05) 50%, transparent 80%),
-    radial-gradient(ellipse 65% 55% at 90% 75%, rgba(160, 165, 175, 0.12) 0%, rgba(100, 105, 115, 0.04) 50%, transparent 80%),
-    radial-gradient(ellipse 85% 70% at 50% 50%, transparent 40%, rgba(0, 0, 0, 0.5) 100%),
-    linear-gradient(to right, rgba(255, 255, 255, 0.04) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+    radial-gradient(ellipse 70% 60% at 10% 25%, var(--studio-grid-glow-1-core) 0%, var(--studio-grid-glow-1-edge) 50%, transparent 80%),
+    radial-gradient(ellipse 65% 55% at 90% 75%, var(--studio-grid-glow-2-core) 0%, var(--studio-grid-glow-2-edge) 50%, transparent 80%),
+    radial-gradient(ellipse 85% 70% at 50% 50%, transparent 40%, var(--studio-grid-vignette-edge) 100%),
+    linear-gradient(to right, var(--studio-grid-line-color) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--studio-grid-line-color) 1px, transparent 1px);
   background-size: 
     100% 100%,
     100% 100%,
     100% 100%,
-    32px 32px,
-    32px 32px;
+    var(--studio-grid-cell-size) var(--studio-grid-cell-size),
+    var(--studio-grid-cell-size) var(--studio-grid-cell-size);
 }
 
 .display-card {
