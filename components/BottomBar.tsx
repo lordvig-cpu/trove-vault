@@ -48,7 +48,7 @@ export default function BottomBar({
   };
 
   return (
-    <footer className="trove-bottombar h-14 flex items-center justify-between px-4 text-xs select-none shrink-0 z-40">
+    <footer className="bottom-menu-bar h-14 flex items-center justify-between px-4 text-xs select-none shrink-0 z-40">
       
       {/* LEFT: STATUS & ACTIVE COLLECTION */}
       <div className="flex items-center gap-3 relative z-10">

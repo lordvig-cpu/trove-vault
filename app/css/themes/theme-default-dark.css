@@ -48,6 +48,9 @@
     --bg-surface: rgba(4, 22, 40, 1.00);
     --bg-surface-hover: rgba(10, 53, 85, 1.00);
     --bg-popover: rgba(2, 16, 31, 1.00);
+
+    /* Card Elevation & Shadows */
+    --display-card-box-shadow: 0 14px 34px -4px rgba(0, 0, 0, 0.75), 0 0 0 1px var(--border-subtle) inset;
     /* ======================================================================================= */
 
 
@@ -93,4 +96,38 @@
     --text-secondary: rgba(195, 216, 230, 1.00);
     --text-muted: rgba(110, 143, 174, 1.00);
     /* ====================================================================== */
+
+    /* ====================================================================
+    TOP NAVIGATION HEADER (TOP-MENU-BAR)
+    Applied to the primary top navigation container and its glowing layers.
+    ======================================================================= */
+
+    /* Structural & Lighting Color Tokens */
+    --top-menu-glow-center: rgba(0, 190, 230, 0.40);
+    --top-menu-glow-mid: rgba(0, 120, 185, 0.22);
+    --top-menu-glow-deep: rgba(7, 72, 115, 0.10);
+    
+    --top-menu-edge-dark: rgba(3, 10, 26, 0.85);
+    --top-menu-edge-fade: rgba(0, 22, 50, 0.25);
+    
+    --top-menu-pseudo-bright: rgba(0, 210, 255, 0.18);
+    --top-menu-pseudo-subtle: rgba(0, 130, 210, 0.08);    
+    /* ===================================================================== */
+
+    /* =====================================================================
+    BOTTOM NAVIGATION BAR (BOTTOM-MENU-BAR)
+    Applied to the primary bottom navigation container and its upward glow.
+    ======================================================================== */
+
+    /* Structural & Lighting Color Tokens */
+    --bottom-menu-glow-center: rgba(0, 190, 230, 0.35);
+    --bottom-menu-glow-mid: rgba(0, 120, 185, 0.18);
+    --bottom-menu-glow-deep: rgba(7, 72, 115, 0.08);
+  
+    --bottom-menu-edge-dark: rgba(3, 10, 26, 0.85);
+    --bottom-menu-edge-fade: rgba(0, 22, 50, 0.25);
+  
+    --bottom-menu-pseudo-bright: rgba(0, 210, 255, 0.15);
+    --bottom-menu-pseudo-subtle: rgba(0, 130, 210, 0.06);
+
 }

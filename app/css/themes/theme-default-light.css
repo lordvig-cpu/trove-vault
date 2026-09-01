@@ -13,22 +13,22 @@
     --bg-canvas {--color-canvas}
         ~ base viewport background
     ----------------------------------------------------------------- */
-    --bg-canvas: rgba(13, 17, 23, 1.00);
+    --bg-canvas: rgba(239, 247, 249, 1.00);
 
     /* --- Studio Grid Canvas Layers & Textures --- */
-    --studio-grid-bg-color: rgba(11, 12, 14, 1.00);
+    --studio-grid-bg-color: rgba(244, 249, 250, 1.00);
 
     /* Top Left Glow */
-    --studio-grid-glow-1-core: rgba(180, 185, 195, 0.14);
-    --studio-grid-glow-1-edge: rgba(120, 125, 135, 0.05);
+    --studio-grid-glow-1-core: rgba(70, 185, 205, 0.16);
+    --studio-grid-glow-1-edge: rgba(70, 170, 195, 0.045);
     
     /* Bottom Right Glow */
-    --studio-grid-glow-2-core: rgba(160, 165, 175, 0.12);
-    --studio-grid-glow-2-edge: rgba(100, 105, 115, 0.04);
+    --studio-grid-glow-2-core: rgba(100, 145, 165, 0.10);
+    --studio-grid-glow-2-edge: (90, 130, 150, 0.035);
     
     /* Vignette & Grid Lines */
-    --studio-grid-vignette-edge: rgba(0, 0, 0, 0.5);
-    --studio-grid-line-color: rgba(255, 255, 255, 0.04);
+    --studio-grid-vignette-edge: rgba(35, 65, 75, 0.08);
+    --studio-grid-line-color: rgba(20, 65, 80, 0.055);
     --studio-grid-cell-size: 32px;
     /* ============================================================== */
 
@@ -49,6 +49,9 @@
     --bg-surface: rgba(255, 255, 255, 1.00);
     --bg-surface-hover: rgba(225, 244, 247, 1.00);
     --bg-popover: rgba(247, 252, 253, 1.00);
+
+    /* Card Elevation & Shadows */
+    --display-card-box-shadow: 0 14px 34px -4px rgba(0, 0, 0, 0.75), 0 0 0 1px var(--border-subtle) inset;
     /* ======================================================================================= */
     
 
@@ -94,4 +97,37 @@
     --text-secondary: rgba(57, 85, 99, 1.00);
     --text-muted: rgba(109, 137, 150, 1.00);
     /* ====================================================================== */
+
+    /* =====================================================================
+     TOP NAVIGATION HEADER (TOP-MENU-BAR)
+     Applied to the primary top navigation container and its glowing layers.
+     ======================================================================= */
+
+    /* Structural & Lighting Color Tokens */
+    --top-menu-glow-center: rgba(0, 180, 205, 0.26);
+    --top-menu-glow-mid: rgba(0, 125, 165, 0.16);
+    --top-menu-glow-deep: rgba(15, 95, 125, 0.08);
+
+    --top-menu-edge-dark: rgba(3, 24, 38, 0.92);
+    --top-menu-edge-fade: rgba(5, 48, 68, 0.42);
+
+    --top-menu-pseudo-bright: rgba(70, 215, 230, 0.12);
+    --top-menu-pseudo-subtle: rgba(20, 145, 175, 0.06);   
+    /* ===================================================================== */
+
+    /* =====================================================================
+    BOTTOM NAVIGATION BAR (BOTTOM-MENU-BAR)
+    Applied to the primary bottom navigation container and its upward glow.
+    ======================================================================== */
+
+    /* Structural & Lighting Color Tokens */
+    --bottom-menu-glow-center: rgba(0, 175, 200, 0.22);
+    --bottom-menu-glow-mid: rgba(0, 115, 155, 0.13);
+    --bottom-menu-glow-deep: rgba(15, 85, 115, 0.06);
+
+    --bottom-menu-edge-dark: rgba(3, 24, 38, 0.92);
+    --bottom-menu-edge-fade: rgba(5, 48, 68, 0.38);
+
+    --bottom-menu-pseudo-bright: rgba(70, 215, 230, 0.10);
+    --bottom-menu-pseudo-subtle: rgba(20, 145, 175, 0.05);
 }

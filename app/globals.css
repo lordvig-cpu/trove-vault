@@ -120,9 +120,7 @@ body {
   z-index: 10;
   background-color: var(--bg-surface) !important;
   border: 1px solid var(--border-strong);
-  box-shadow:
-    0 14px 34px -4px rgba(0, 0, 0, 0.75),
-    0 0 0 1px var(--border-subtle) inset;
+  box-shadow: var(--display-card-box-shadow);
 }
 
 .display-card-subtle {
@@ -131,26 +129,26 @@ body {
   border-radius: 0.5rem;
 }
 
-/* ==========================================================================
-   TROVEVAULT NAVBAR HEADER
-   ========================================================================== */
-.trove-navbar {
+/* =============================
+   TOP NAVIGATION HEADER
+   ========================== */
+.top-menu-bar {
   position: relative;
   isolation: isolate;
   overflow: visible;
   background:
     radial-gradient(ellipse 190% 240% at 50% -90%,
-      rgba(0, 190, 230, 0.40) 0%,
-      rgba(0, 120, 185, 0.22) 35%,
-      rgba(7, 72, 115, 0.10) 65%,
+      var(--top-menu-glow-center) 0%,
+      var(--top-menu-glow-mid) 35%,
+      var(--top-menu-glow-deep) 65%,
       transparent 85%),
     linear-gradient(90deg,
-      rgba(3, 10, 26, 0.85) 0%,
-      rgba(0, 22, 50, 0.25) 18%,
+      var(--top-menu-edge-dark) 0%,
+      var(--top-menu-edge-fade) 18%,
       transparent 40%,
       transparent 60%,
-      rgba(0, 22, 50, 0.25) 82%,
-      rgba(3, 10, 26, 0.85) 100%),
+      var(--top-menu-edge-fade) 82%,
+      var(--top-menu-edge-dark) 100%),
     linear-gradient(180deg,
       var(--accent-primary-hover) 0%,
       var(--accent-primary) 22%,
@@ -163,7 +161,7 @@ body {
     inset 0 -1px 0 var(--accent-primary);
 }
 
-.trove-navbar::before {
+.top-menu-bar::before {
   content: "";
   position: absolute;
   inset: 0;
@@ -171,13 +169,13 @@ body {
   z-index: -1;
   background:
     radial-gradient(ellipse 140% 160% at 50% -60%,
-      rgba(0, 210, 255, 0.18) 0%,
-      rgba(0, 130, 210, 0.08) 50%,
+      var(--top-menu-pseudo-bright) 0%,
+      var(--top-menu-pseudo-subtle) 50%,
       transparent 75%);
   mix-blend-mode: screen;
 }
 
-.trove-navbar::after {
+.top-menu-bar::after {
   content: "";
   position: absolute;
   inset: 0;
@@ -189,26 +187,26 @@ body {
   mix-blend-mode: overlay;
 }
 
-/* ==========================================================================
-   TROVEVAULT BOTTOM BAR
-   ========================================================================== */
-.trove-bottombar {
+/* =============================
+   BOTTOM MENU BAR
+   ========================== */
+.bottom-menu-bar {
   position: relative;
   isolation: isolate;
   overflow: hidden;
   background:
     radial-gradient(ellipse 190% 200% at 50% 190%,
-      rgba(0, 190, 230, 0.35) 0%,
-      rgba(0, 120, 185, 0.18) 35%,
-      rgba(7, 72, 115, 0.08) 65%,
+      var(--bottom-menu-glow-center) 0%,
+      var(--bottom-menu-glow-mid) 35%,
+      var(--bottom-menu-glow-deep) 65%,
       transparent 85%),
     linear-gradient(90deg,
-      rgba(3, 10, 26, 0.85) 0%,
-      rgba(0, 22, 50, 0.25) 18%,
+      var(--bottom-menu-edge-dark) 0%,
+      var(--bottom-menu-edge-fade) 18%,
       transparent 40%,
       transparent 60%,
-      rgba(0, 22, 50, 0.25) 82%,
-      rgba(3, 10, 26, 0.85) 100%),
+      var(--bottom-menu-edge-fade) 82%,
+      var(--bottom-menu-edge-dark) 100%),
     linear-gradient(0deg,
       var(--accent-primary-hover) 0%,
       var(--accent-primary) 18%,
@@ -221,7 +219,7 @@ body {
     inset 0 -1px 0 var(--border-subtle);
 }
 
-.trove-bottombar::before {
+.bottom-menu-bar::before {
   content: "";
   position: absolute;
   inset: 0;
@@ -229,13 +227,13 @@ body {
   z-index: -1;
   background:
     radial-gradient(ellipse 140% 140% at 50% 160%,
-      rgba(0, 210, 255, 0.15) 0%,
-      rgba(0, 130, 210, 0.06) 50%,
+      var(--bottom-menu-pseudo-bright) 0%,
+      var(--bottom-menu-pseudo-subtle) 50%,
       transparent 75%);
   mix-blend-mode: screen;
 }
 
-.trove-bottombar::after {
+.bottom-menu-bar::after {
   content: "";
   position: absolute;
   inset: 0;

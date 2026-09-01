@@ -92,7 +92,7 @@ export default function Navbar({
         </filter>
       </svg>
 
-      <header className="trove-navbar h-14 flex items-center justify-between shrink-0 relative z-[200]">
+      <header className="top-menu-bar h-14 flex items-center justify-between shrink-0 relative z-[200]">
 
         {/* LEFT SECTION */}
         <div className="flex items-center h-full">

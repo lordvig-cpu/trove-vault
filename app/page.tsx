@@ -57,7 +57,7 @@ export default function Home() {
   const [isColDropdownOpen, setIsColDropdownOpen] = useState<boolean>(false);
   const [activeModal, setActiveModal] = useState<ActiveModal>(null);
   const [animationsEnabled, setAnimationsEnabled] = useState(true);
-  const [isAudioEnabled, setIsAudioEnabled] = useState(false);
+  const [isAudioEnabled, setIsAudioEnabled] = useState(true);
   
   // Video reference for smooth playback & rewinding
   const videoRef = useRef<HTMLVideoElement | null>(null);
