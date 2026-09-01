@@ -132,23 +132,23 @@ body {
 /* =============================
    TOP NAVIGATION HEADER
    ========================== */
-.top-menu-bar {
+.navigation-header {
   position: relative;
   isolation: isolate;
   overflow: visible;
   background:
     radial-gradient(ellipse 190% 240% at 50% -90%,
-      var(--top-menu-glow-center) 0%,
-      var(--top-menu-glow-mid) 35%,
-      var(--top-menu-glow-deep) 65%,
+      var(--nav-header-glow-center) 0%,
+      var(--nav-header-glow-mid) 35%,
+      var(--nav-header-glow-deep) 65%,
       transparent 85%),
     linear-gradient(90deg,
-      var(--top-menu-edge-dark) 0%,
-      var(--top-menu-edge-fade) 18%,
+      var(--nav-header-edge-dark) 0%,
+      var(--nav-header-edge-fade) 18%,
       transparent 40%,
       transparent 60%,
-      var(--top-menu-edge-fade) 82%,
-      var(--top-menu-edge-dark) 100%),
+      var(--nav-header-edge-fade) 82%,
+      var(--nav-header-edge-dark) 100%),
     linear-gradient(180deg,
       var(--accent-primary-hover) 0%,
       var(--accent-primary) 22%,
@@ -161,7 +161,7 @@ body {
     inset 0 -1px 0 var(--accent-primary);
 }
 
-.top-menu-bar::before {
+.navigation-header::before {
   content: "";
   position: absolute;
   inset: 0;
@@ -169,13 +169,13 @@ body {
   z-index: -1;
   background:
     radial-gradient(ellipse 140% 160% at 50% -60%,
-      var(--top-menu-pseudo-bright) 0%,
-      var(--top-menu-pseudo-subtle) 50%,
+      var(--nav-header-pseudo-bright) 0%,
+      var(--nav-header-pseudo-subtle) 50%,
       transparent 75%);
   mix-blend-mode: screen;
 }
 
-.top-menu-bar::after {
+.navigation-header::after {
   content: "";
   position: absolute;
   inset: 0;
@@ -190,7 +190,7 @@ body {
 /* =============================
    BOTTOM MENU BAR
    ========================== */
-.bottom-menu-bar {
+.navigation-footer {
   position: relative;
   isolation: isolate;
   overflow: hidden;
@@ -219,7 +219,7 @@ body {
     inset 0 -1px 0 var(--border-subtle);
 }
 
-.bottom-menu-bar::before {
+.navigation-footer::before {
   content: "";
   position: absolute;
   inset: 0;
@@ -233,7 +233,7 @@ body {
   mix-blend-mode: screen;
 }
 
-.bottom-menu-bar::after {
+.navigation-footer::after {
   content: "";
   position: absolute;
   inset: 0;

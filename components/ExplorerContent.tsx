@@ -5,7 +5,7 @@ import UnifiedExplorerTree, { UnifiedCollectionNode } from './UnifiedExplorerTre
 import { CollectionRecord } from './CollectionDropdown';
 import { ItemRecord } from './TreeNode';
 import { UniversalSearchResultItem } from '@/app/page';
-import { SearchScope } from './Navbar';
+import { SearchScope } from './NavigationHeader';
 
 interface ExplorerContentProps {
   searchScope: SearchScope;
@@ -17,7 +17,7 @@ interface ExplorerContentProps {
   selectedItemId: number | null;
   loading: boolean;
   isPinned?: boolean;
-  setIsSidebarOpen?: (open: boolean) => void;
+  setIsLeftSidePanelOpen?: (open: boolean) => void;
   onSelectCollection: (id: number) => void;
   onSelectItem: (item: ItemRecord, collectionId: number) => void;
   onAddSubItem: (collectionId: number, parentItemId?: number | null) => void;
@@ -37,7 +37,7 @@ export default function ExplorerContent({
   selectedItemId,
   loading,
   isPinned = true,
-  setIsSidebarOpen,
+  setIsLeftSidePanelOpen,
   onSelectCollection,
   onSelectItem,
   onAddSubItem,
@@ -99,8 +99,8 @@ export default function ExplorerContent({
             selectedItemId={selectedItemId}
             onSelectCollection={(colId) => {
               onSelectCollection(colId);
-              if (!isPinned && setIsSidebarOpen) {
-                setIsSidebarOpen(false);
+              if (!isPinned && setIsLeftSidePanelOpen) {
+                setIsLeftSidePanelOpen(false);
               }
             }}
             onSelectItem={onSelectItem}

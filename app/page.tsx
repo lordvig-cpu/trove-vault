@@ -1,11 +1,11 @@
 'use client';
 
 import { useEffect, useState, useRef } from 'react';
-import Navbar from '@/components/Navbar';
-import BottomBar from '@/components/BottomBar';
+import NavigationHeader from '@/components/NavigationHeader';
+import NavigationFooter from '@/components/NavigationFooter';
 import ItemDetailView from '@/components/ItemDetailView';
 import RightSidePanel from '@/components/RightSidePanel';
-import Sidebar from '@/components/Sidebar';
+import LeftSidePanel from '@/components/LeftSidePanel';
 import ExplorerContent from '@/components/ExplorerContent';
 import CreateItemModal from '@/components/CreateItemModal';
 import EditItemModal from '@/components/EditItemModal';
@@ -53,7 +53,7 @@ export default function Home() {
   const [isLogoHovered, setIsLogoHovered] = useState<boolean>(false);
   const [isRightPanelOpen, setIsRightPanelOpen] = useState<boolean>(false);
   const [isPinned, setIsPinned] = useState<boolean>(false);
-  const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(false);
+  const [isLeftSidePanelOpen, setIsLeftSidePanelOpen] = useState<boolean>(false);
   const [isColDropdownOpen, setIsColDropdownOpen] = useState<boolean>(false);
   const [activeModal, setActiveModal] = useState<ActiveModal>(null);
   const [animationsEnabled, setAnimationsEnabled] = useState(true);
@@ -80,14 +80,14 @@ export default function Home() {
   const handleTogglePin = () => {
     const nextPinned = !isPinned;
     setIsPinned(nextPinned);
-    setIsSidebarOpen(true);
-    localStorage.setItem('uc_sidebar_pinned', JSON.stringify(nextPinned));
+    setIsLeftSidePanelOpen(true);
+    localStorage.setItem('uc_leftsidepanel_pinned', JSON.stringify(nextPinned));
   };
 
   const handleTreeSelectItem = (item: ItemRecord, collectionId: number) => {
     selectItemWithChildren(item, collectionId);
     if (!isPinned) {
-      setIsSidebarOpen(false);
+      setIsLeftSidePanelOpen(false);
     }
   };
 
@@ -116,10 +116,10 @@ export default function Home() {
       selectedItemId={selectedItem?.id || null}
       loading={loading}
       isPinned={isPinned}
-      setIsSidebarOpen={setIsSidebarOpen}
+      setIsLeftSidePanelOpen={setIsLeftSidePanelOpen}
       onSelectCollection={(colId) => {
         setActiveCollectionId(colId);
-        if (!isPinned) setIsSidebarOpen(false);
+        if (!isPinned) setIsLeftSidePanelOpen(false);
       }}
       onSelectItem={handleTreeSelectItem}
       onAddSubItem={handleAddSubItem}
@@ -160,7 +160,7 @@ export default function Home() {
         {/* Full-Height Hover Video Animation */}
         <video
           ref={videoRef}
-          src="/videos/old_web_logo_animation.mp4"
+          src="/videos/website_intro_video.mp4"
           muted={!isAudioEnabled}
           playsInline
           className={`absolute inset-0 w-full h-full object-contain drop-shadow-2xl transition-all duration-700 ease-in-out ${
@@ -172,9 +172,9 @@ export default function Home() {
       {/* 3. MAIN APPLICATION UI WRAPPER */}
       <div className="flex flex-col h-full w-full">
 
-        {/* Top Navbar (Always Visible) */}
+        {/* Top NavigationHeader (Always Visible) */}
         <div className="shrink-0 relative z-40">
-          <Navbar
+          <NavigationHeader
             searchQuery={searchQuery}
             onSearchChange={setSearchQuery}
             searchScope={searchScope}
@@ -184,7 +184,7 @@ export default function Home() {
             activeCollectionId={activeCollectionId}
             onSelectCollection={(newId) => {
               setActiveCollectionId(newId);
-              if (!isPinned) setIsSidebarOpen(false);
+              if (!isPinned) setIsLeftSidePanelOpen(false);
             }}
             onCollectionsUpdated={() => fetchAllData()}
             isDropdownOpen={isColDropdownOpen}
@@ -199,9 +199,9 @@ export default function Home() {
                 });
               }
             }}
-            isSidebarOpen={isSidebarOpen}
+            isLeftSidePanelOpen={isLeftSidePanelOpen}
             isPinned={isPinned}
-            onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
+            onToggleLeftSidePanel={() => setIsLeftSidePanelOpen(!isLeftSidePanelOpen)}
             onTogglePin={handleTogglePin}
             explorerContent={explorerTreeElement}
             animationsEnabled={animationsEnabled}
@@ -214,7 +214,7 @@ export default function Home() {
             isLogoHovered ? 'opacity-0 pointer-events-none' : 'opacity-100'
           }`}
         >
-          <Sidebar
+          <LeftSidePanel
             isPinned={isPinned}
             onTogglePin={handleTogglePin}
             allCollectionsCount={allCollections.length}
@@ -228,7 +228,7 @@ export default function Home() {
             animationsEnabled={animationsEnabled}
           >
             {explorerTreeElement}
-          </Sidebar>
+          </LeftSidePanel>
 
           {/* WORKSPACE COLUMN WRAPPER */}
           <div className="flex-1 min-h-0 relative flex flex-col z-10">
@@ -236,7 +236,7 @@ export default function Home() {
             {/* Main Content */}
             <main
               className={`flex-1 flex flex-col min-h-0 overflow-y-auto relative main_content_scroll transition-all duration-300 ease-in-out ${
-                !isPinned && isSidebarOpen
+                !isPinned && isLeftSidePanelOpen
                   ? 'filter blur-[3.5px] brightness-[0.60] pointer-events-none select-none'
                   : 'filter-none brightness-100'
               }`}
@@ -285,7 +285,7 @@ export default function Home() {
 
         {/* LOCKED BOTTOM BAR (Always Visible) */}
         <div className="shrink-0 relative z-40">
-          <BottomBar 
+          <NavigationFooter 
             activeCollectionName={activeCollection?.name}
             totalItemsCount={allItems.length}
             isRightPanelOpen={isRightPanelOpen}

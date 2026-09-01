@@ -1,7 +1,7 @@
 import { CollectionRecord } from '@/components/CollectionDropdown';
 import { ItemRecord } from '@/components/TreeNode';
 import { UnifiedCollectionNode } from '@/components/UnifiedExplorerTree';
-import { SearchScope } from '@/components/Navbar';
+import { SearchScope } from '@/components/NavigationHeader';
 
 export function itemMatchesQuery(item: ItemRecord, query: string): boolean {
   if (!query.trim()) return true;

@@ -34,7 +34,7 @@
 
     /* =======================================================================================
     SURFACE & ELEVATION CONTAINERS
-    Applied to sidebars, docked panels, attribute cards, and dropdown overlays.
+    Applied to leftsidepanels, docked panels, attribute cards, and dropdown overlays.
     
     --bg-surface {--color-surface}
         ~ foundational background for side panels, floating containers and card sections
@@ -43,7 +43,7 @@
     --bg-popover {--color-surface-popover}
         ~ designated for floating structural overlays, such as dropdown menus, tooltips, modal 
           dialog content windows, and floating select lists that need to sit visually distinct 
-          above the standard base surface panels and sidebars.
+          above the standard base surface panels and leftsidepanels.
     ------------------------------------------------------------------------------------------ */
     --bg-surface: rgba(4, 22, 40, 1.00);
     --bg-surface-hover: rgba(10, 53, 85, 1.00);
@@ -98,24 +98,36 @@
     /* ====================================================================== */
 
     /* ====================================================================
-    TOP NAVIGATION HEADER (TOP-MENU-BAR)
+    NAVIGATION HEADER
     Applied to the primary top navigation container and its glowing layers.
     ======================================================================= */
 
     /* Structural & Lighting Color Tokens */
-    --top-menu-glow-center: rgba(0, 190, 230, 0.40);
-    --top-menu-glow-mid: rgba(0, 120, 185, 0.22);
-    --top-menu-glow-deep: rgba(7, 72, 115, 0.10);
+    --nav-header-glow-center: rgba(0, 190, 230, 0.40);
+    --nav-header-glow-mid: rgba(0, 120, 185, 0.22);
+    --nav-header-glow-deep: rgba(7, 72, 115, 0.10);
     
-    --top-menu-edge-dark: rgba(3, 10, 26, 0.85);
-    --top-menu-edge-fade: rgba(0, 22, 50, 0.25);
+    --nav-header-edge-dark: rgba(3, 10, 26, 0.85);
+    --nav-header-edge-fade: rgba(0, 22, 50, 0.25);
     
-    --top-menu-pseudo-bright: rgba(0, 210, 255, 0.18);
-    --top-menu-pseudo-subtle: rgba(0, 130, 210, 0.08);    
+    --nav-header-pseudo-bright: rgba(0, 210, 255, 0.18);
+    --nav-header-pseudo-subtle: rgba(0, 130, 210, 0.08);    
+
+    /* Applied to pinned indicator accent lines and bottom borders. */
+    --nav-header-accent-line: rgba(81, 155, 255, 0.85);
+
+    /* Applied to active/pinned navigation tabs and folder dropdown headers. */
+    --nav-header-toggle-active-shadow: 0 -4px 12px rgba(0, 190, 230, 0.15);
+
+    /* Applied to active/hover underline accents on navigation labels. */
+    --nav-header-indicator: rgba(231, 116, 40, 1.00);
+
+    /* Applied to dropdown floating menus and container overlays. */
+    --nav-header-floating-shadow: 0 20px 50px rgba(0, 0, 0, 0.85);
     /* ===================================================================== */
 
     /* =====================================================================
-    BOTTOM NAVIGATION BAR (BOTTOM-MENU-BAR)
+    NAVIGATION FOOTER
     Applied to the primary bottom navigation container and its upward glow.
     ======================================================================== */
 

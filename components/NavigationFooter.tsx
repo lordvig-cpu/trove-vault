@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 
 export type ThemePreset = 'theme-default-dark' | 'theme-default-light';
 
-interface BottomBarProps {
+interface NavigationFooterProps {
   activeCollectionName?: string;
   totalItemsCount?: number;
   isRightPanelOpen: boolean;
@@ -16,7 +16,7 @@ interface BottomBarProps {
 
 }
 
-export default function BottomBar({
+export default function NavigationFooter({
   animationsEnabled,
   setAnimationsEnabled,
   activeCollectionName,
@@ -25,7 +25,7 @@ export default function BottomBar({
   onToggleRightPanel,
   isAudioEnabled,
   setIsAudioEnabled
-}: BottomBarProps) {
+}: NavigationFooterProps) {
   const [theme, setTheme] = useState<ThemePreset>('theme-default-dark');
 
   // Load saved theme or fall back to default dark on initial mount
@@ -48,7 +48,7 @@ export default function BottomBar({
   };
 
   return (
-    <footer className="bottom-menu-bar h-14 flex items-center justify-between px-4 text-xs select-none shrink-0 z-40">
+    <footer className="navigation-footer h-14 flex items-center justify-between px-4 text-xs select-none shrink-0 z-40">
       
       {/* LEFT: STATUS & ACTIVE COLLECTION */}
       <div className="flex items-center gap-3 relative z-10">

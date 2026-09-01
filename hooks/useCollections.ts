@@ -4,7 +4,7 @@ import { useState, useEffect, useMemo, useCallback } from 'react';
 import { supabase } from '@/lib/supabase';
 import { CollectionRecord } from '@/components/CollectionDropdown';
 import { ItemRecord } from '@/components/TreeNode';
-import { SearchScope } from '@/components/Navbar';
+import { SearchScope } from '@/components/NavigationHeader';
 import {
   itemMatchesQuery,
   buildItemHierarchy,

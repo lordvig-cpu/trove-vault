@@ -5,7 +5,7 @@ import { CollectionRecord } from './CollectionDropdown';
 import { ItemRecord } from './TreeNode';
 import { PinOutlineIcon, PinFilledIcon } from '@/components/icons/PinIcons';
 
-interface SidebarProps {
+interface LeftSidePanelProps {
   isPinned: boolean;
   onTogglePin: () => void;
   allCollectionsCount: number;
@@ -18,7 +18,7 @@ interface SidebarProps {
   animationsEnabled: boolean;
 }
 
-export default function Sidebar({
+export default function LeftSidePanel({
   isPinned,
   onTogglePin,
   allCollectionsCount,
@@ -29,7 +29,7 @@ export default function Sidebar({
   error,
   animationsEnabled,
   children,
-}: SidebarProps) {
+}: LeftSidePanelProps) {
   // Dynamic transition class based on toggle
   const transitionClass = animationsEnabled ? 'transition-all duration-700 ease-in-out' : 'transition-none';
 
@@ -66,7 +66,7 @@ export default function Sidebar({
             type="button"
             onClick={onTogglePin}
             className="group p-1.5 rounded-lg border border-transparent hover:border-border-subtle hover:bg-surface-hover transition cursor-pointer flex items-center justify-center shrink-0"
-            title={isPinned ? 'Unpin Sidebar' : 'Pin Sidebar'}
+            title={isPinned ? 'Unpin LeftSidePanel' : 'Pin LeftSidePanel'}
           >
             <PinFilledIcon className="w-3.5 h-3.5 text-content-primary" />
           </button>
