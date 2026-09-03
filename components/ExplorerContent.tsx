@@ -48,7 +48,7 @@ export default function ExplorerContent({
 }: ExplorerContentProps) {
   if (searchScope === 'all' && searchQuery) {
     return (
-      <div className="space-y-1.5 min-w-fit">
+      <div className="space-y-1.5 w-full min-w-0">
         {universalResults.length === 0 ? (
           <div className="text-xs text-content-muted text-center py-6">
             No matches found across any collection.
@@ -83,7 +83,7 @@ export default function ExplorerContent({
   }
 
   return (
-    <div className="space-y-0.5 min-w-fit">
+    <div className="space-y-0.5 w-full min-w-0">
       {unifiedForest.length === 0 && !loading ? (
         <div className="text-xs text-content-muted text-center py-6">
           {searchQuery

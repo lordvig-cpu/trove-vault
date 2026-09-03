@@ -44,95 +44,120 @@ export default function UnifiedExplorerTree({
     (collection.items && collection.items.length > 0);
 
   return (
-    <div className="select-none text-[13px] font-sans w-full min-w-0">
+    <div className="select-none text-[13px] font-sans w-full min-w-0 flex flex-col">
       {/* COLLECTION / FOLDER ROW */}
       <div
         onClick={() => onSelectCollection(collection.id)}
         title={`Folder: ${collection.name}`}
-        className={`group flex items-center justify-between h-7 px-1.5 rounded-md cursor-pointer transition w-full min-w-0 ${
+        className={`group flex items-center h-7 px-1.5 gap-1.5 rounded-md cursor-pointer transition w-full min-w-0 ${
           isActiveCollection
             ? 'bg-accent-primary/15 text-accent-secondary font-medium'
             : 'text-content-secondary hover:bg-surface-hover/60 hover:text-content-primary'
         }`}
       >
-        <div className="flex items-center gap-1.5 min-w-0 flex-1 pr-1">
-          {/* Chevron */}
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              setIsOpen(!isOpen);
-            }}
-            className={`w-4 h-4 flex items-center justify-center text-[9px] text-content-muted hover:text-content-primary transition shrink-0 ${
-              !hasChildren ? 'opacity-0 cursor-default' : ''
-            }`}
-          >
-            {isOpen ? '▼' : '▶'}
-          </button>
+        {/* Chevron */}
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            setIsOpen(!isOpen);
+          }}
+          className={`w-4 h-4 flex items-center justify-center text-[9px] text-content-muted hover:text-content-primary transition shrink-0 ${
+            !hasChildren ? 'opacity-0 cursor-default' : ''
+          }`}
+        >
+          {isOpen ? '▼' : '▶'}
+        </button>
 
-          {/* Folder Icon */}
-          <span className="w-4 h-4 flex items-center justify-center text-sm text-amber-400 shrink-0 select-none">
-            {isOpen ? '📂' : '📁'}
+        {/* Folder Icon */}
+        <span className="w-4 h-4 flex items-center justify-center text-sm text-amber-400 shrink-0 select-none">
+          {isOpen ? '📂' : '📁'}
+        </span>
+
+        {/* Truncated Collection Name */}
+        <span 
+          title={`Folder: ${collection.name}`}
+          className="text-[13px] tracking-tight font-medium truncate shrink min-w-0"
+        >
+          {collection.name}
+        </span>
+
+        {isActiveCollection && (
+          <span className="text-[9px] font-mono text-emerald-400 bg-emerald-950/80 border border-emerald-800/60 px-1.5 py-0.5 rounded shrink-0">
+            active
           </span>
+        )}
 
-          {/* Truncated Collection Name */}
-          <span 
-            title={`Folder: ${collection.name}`}
-            className="text-[13px] tracking-tight font-medium truncate block flex-1 min-w-0"
-          >
-            {collection.name}
-          </span>
-
-          {isActiveCollection && (
-            <span className="text-[9px] font-mono text-emerald-400 bg-emerald-950/80 border border-emerald-800/60 px-1.5 py-0.5 rounded shrink-0 ml-1">
-              active
-            </span>
-          )}
-        </div>
-
-        {/* Hover Action Triggers */}
+        {/* Hover Action Menu */}
         <div
-          className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition shrink-0"
+          className="relative group/menu opacity-0 group-hover:opacity-100 transition shrink-0 ml-0.5"
           onClick={(e) => e.stopPropagation()}
         >
-          <button
-            type="button"
-            onClick={() => onAddSubCollection(collection.id)}
-            className="p-1 text-content-muted hover:text-amber-300 rounded hover:bg-surface-hover text-xs cursor-pointer"
-            title="New Sub-Folder"
-          >
-            +📁
-          </button>
-          <button
-            type="button"
-            onClick={() => onAddSubItem(collection.id, null)}
-            className="p-1 text-content-muted hover:text-accent-secondary rounded hover:bg-surface-hover text-xs cursor-pointer"
-            title="New Item"
-          >
-            +📄
-          </button>
-          <button
-            type="button"
-            onClick={() => onEditCollection(collection)}
-            className="p-1 text-content-muted hover:text-content-primary rounded hover:bg-surface-hover text-xs cursor-pointer"
-            title="Edit Folder"
-          >
-            ✏️
-          </button>
-          <button
-            type="button"
-            onClick={() => onDeleteCollection(collection)}
-            className="p-1 text-rose-400 hover:text-rose-300 rounded hover:bg-rose-950/50 text-xs cursor-pointer"
-            title="Delete Folder"
-          >
-            🗑️
-          </button>
+          {/* Gear Trigger Button */}
+          <div className="w-[22px] h-[22px] flex items-center justify-center rounded border border-transparent group-hover/menu:bg-slate-800/60 group-hover/menu:border-border-subtle transition-colors cursor-default">
+            <svg
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+              aria-hidden="true"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.7"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="w-[15px] h-[15px] text-content-muted group-hover/menu:text-white transition-all duration-300 ease-out group-hover/menu:rotate-90"
+            >
+              <path
+                fillRule="evenodd"
+                clipRule="evenodd"
+                className="fill-transparent group-hover/menu:fill-current transition-colors duration-300"
+                d="M12 8.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7Zm7.4 5a7.7 7.7 0 0 0 .1-1.5 7.7 7.7 0 0 0-.1-1.5l2-1.5-2-3.5-2.4 1a8.7 8.7 0 0 0-2.6-1.5L14 2h-4l-.4 3a8.7 8.7 0 0 0-2.6 1.5l-2.4-1-2 3.5 2 1.5a7.7 7.7 0 0 0-.1 1.5c0 .5 0 1 .1 1.5l-2 1.5 2 3.5 2.4-1a8.7 8.7 0 0 0 2.6 1.5l.4 3h4l.4-3a8.7 8.7 0 0 0 2.6-1.5l2.4 1 2-3.5-2-1.5Z"
+              />
+            </svg>
+          </div>
+          
+          {/* Hover Bridge & Popup Container */}
+          <div className="absolute right-0 bottom-full pb-1 opacity-0 invisible group-hover/menu:opacity-100 group-hover/menu:visible transition-all duration-300 ease-out z-50">
+            <div className="explorer-action-popup">
+              <button
+                type="button"
+                onClick={() => onAddSubCollection(collection.id)}
+                className="explorer-action-btn explorer-action-btn-accent"
+                title="New Sub-Folder"
+              >
+                +📁
+              </button>
+              <button
+                type="button"
+                onClick={() => onAddSubItem(collection.id, null)}
+                className="explorer-action-btn explorer-action-btn-accent"
+                title="New Item"
+              >
+                +📄
+              </button>
+              <button
+                type="button"
+                onClick={() => onEditCollection(collection)}
+                className="explorer-action-btn"
+                title="Edit Folder"
+              >
+                ✏️
+              </button>
+              <button
+                type="button"
+                onClick={() => onDeleteCollection(collection)}
+                className="explorer-action-btn-danger"
+                title="Delete Folder"
+              >
+                🗑️
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 
       {/* NESTED CHILDREN CONTAINER */}
       {isOpen && hasChildren && (
-        <div className="border-l border-border-subtle space-y-0.5 ml-2 pl-1.5 my-0.5 w-[calc(100%-8px)] min-w-0">
+        <div className="border-l border-border-subtle space-y-0.5 ml-2 pl-1.5 my-0.5 flex flex-col min-w-0">
           {collection.subCollections?.map((subCol) => (
             <UnifiedExplorerTree
               key={`col-${subCol.id}`}
@@ -206,80 +231,106 @@ function ItemTreeNode({
   const typeIcon = getItemTypeIcon(item);
 
   return (
-    <div className="select-none text-[13px] font-sans w-full min-w-0">
+    <div className="select-none text-[13px] font-sans w-full min-w-0 flex flex-col">
       <div
         onClick={() => onSelectItem(item, collectionId)}
         title={item.name}
-        className={`group flex items-center justify-between h-7 px-1.5 rounded-md cursor-pointer transition w-full min-w-0 ${
+        className={`group flex items-center h-7 px-1.5 gap-1.5 rounded-md cursor-pointer transition w-full min-w-0 ${
           isSelected
             ? 'bg-accent-primary/25 text-content-primary font-medium border border-accent-primary/40'
             : 'text-content-muted hover:bg-surface-hover/60 hover:text-content-secondary'
         }`}
       >
-        <div className="flex items-center gap-1.5 min-w-0 flex-1 pr-1">
-          {/* Sub-item Chevron */}
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              setIsOpen(!isOpen);
-            }}
-            className={`w-4 h-4 flex items-center justify-center text-[9px] text-content-muted hover:text-content-primary transition shrink-0 ${
-              !hasSubItems ? 'opacity-0 cursor-default' : ''
-            }`}
-          >
-            {isOpen ? '▼' : '▶'}
-          </button>
+        {/* Sub-item Chevron */}
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            setIsOpen(!isOpen);
+          }}
+          className={`w-4 h-4 flex items-center justify-center text-[9px] text-content-muted hover:text-content-primary transition shrink-0 ${
+            !hasSubItems ? 'opacity-0 cursor-default' : ''
+          }`}
+        >
+          {isOpen ? '▼' : '▶'}
+        </button>
 
-          {/* Type Icon */}
-          <span className="w-4 h-4 flex items-center justify-center text-[13px] leading-none shrink-0 select-none">
-            {typeIcon}
-          </span>
+        {/* Type Icon */}
+        <span className="w-4 h-4 flex items-center justify-center text-[13px] leading-none shrink-0 select-none">
+          {typeIcon}
+        </span>
 
-          {/* Truncated Item Name */}
-          <span 
-            title={item.name}
-            className={`text-[13px] tracking-tight truncate block flex-1 min-w-0 ${isSelected ? 'text-accent-secondary font-medium' : ''}`}
-          >
-            {item.name}
-          </span>
-        </div>
+        {/* Truncated Item Name */}
+        <span 
+          title={item.name}
+          className={`text-[13px] tracking-tight truncate shrink min-w-0 ${isSelected ? 'text-accent-secondary font-medium' : ''}`}
+        >
+          {item.name}
+        </span>
 
-        {/* Action Triggers */}
+        {/* Hover Action Menu */}
         <div
-          className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition shrink-0"
+          className="relative group/menu opacity-0 group-hover:opacity-100 transition shrink-0 ml-0.5"
           onClick={(e) => e.stopPropagation()}
         >
-          <button
-            type="button"
-            onClick={() => onAddSubItem(collectionId, item.id)}
-            className="p-1 text-content-muted hover:text-accent-secondary rounded hover:bg-surface-hover text-xs cursor-pointer"
-            title="Add Child Sub-Item"
-          >
-            +↳
-          </button>
-          <button
-            type="button"
-            onClick={() => onEditItem(item, collectionId)}
-            className="p-1 text-content-muted hover:text-content-primary rounded hover:bg-surface-hover text-xs cursor-pointer"
-            title="Edit Item"
-          >
-            ✏️
-          </button>
-          <button
-            type="button"
-            onClick={() => onDeleteItem(item, collectionId)}
-            className="p-1 text-rose-400 hover:text-rose-300 rounded hover:bg-rose-950/50 text-xs cursor-pointer"
-            title="Delete Item"
-          >
-            🗑️
-          </button>
+          {/* Gear Trigger Button */}
+          <div className="w-[22px] h-[22px] flex items-center justify-center rounded border border-transparent group-hover/menu:bg-slate-800/60 group-hover/menu:border-border-subtle transition-colors cursor-default">
+            <svg
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+              aria-hidden="true"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.7"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="w-[15px] h-[15px] text-content-muted group-hover/menu:text-white transition-all duration-300 ease-out group-hover/menu:rotate-90"
+            >
+              <path
+                fillRule="evenodd"
+                clipRule="evenodd"
+                className="fill-transparent group-hover/menu:fill-current transition-colors duration-300"
+                d="M12 8.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7Zm7.4 5a7.7 7.7 0 0 0 .1-1.5 7.7 7.7 0 0 0-.1-1.5l2-1.5-2-3.5-2.4 1a8.7 8.7 0 0 0-2.6-1.5L14 2h-4l-.4 3a8.7 8.7 0 0 0-2.6 1.5l-2.4-1-2 3.5 2 1.5a7.7 7.7 0 0 0-.1 1.5c0 .5 0 1 .1 1.5l-2 1.5 2 3.5 2.4-1a8.7 8.7 0 0 0 2.6 1.5l.4 3h4l.4-3a8.7 8.7 0 0 0 2.6-1.5l2.4 1 2-3.5-2-1.5Z"
+              />
+            </svg>
+          </div>
+          
+          {/* Hover Bridge & Popup Container */}
+          <div className="absolute right-0 bottom-full pb-1 opacity-0 invisible group-hover/menu:opacity-100 group-hover/menu:visible transition-all duration-300 ease-out z-50">
+            <div className="explorer-action-popup">
+              {/* buttons */}
+              <button
+                type="button"
+                onClick={() => onAddSubItem(collectionId, item.id)}
+                className="explorer-action-btn explorer-action-btn-accent"
+                title="Add Child Sub-Item"
+              >
+                +↳
+              </button>
+              <button
+                type="button"
+                onClick={() => onEditItem(item, collectionId)}
+                className="explorer-action-btn explorer-action-btn-accent"
+                title="Edit Item"
+              >
+                ✏️
+              </button>
+              <button
+                type="button"
+                onClick={() => onDeleteItem(item, collectionId)}
+                className="explorer-action-btn-danger"
+                title="Delete Item"
+              >
+                🗑️
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 
       {/* RECURSIVE SUB-ITEMS */}
       {isOpen && hasSubItems && (
-        <div className="border-l border-border-subtle space-y-0.5 ml-2 pl-1.5 my-0.5 w-[calc(100%-8px)] min-w-0">
+        <div className="border-l border-border-subtle space-y-0.5 ml-2 pl-1.5 my-0.5 flex flex-col min-w-0">
           {item.children!.map((child) => (
             <ItemTreeNode
               key={`item-${child.id}`}

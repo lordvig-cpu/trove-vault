@@ -222,6 +222,7 @@ export default function NavigationHeader({
                     </div>
 
                     <div className="overflow-auto max-h-[60vh] py-1">
+                      <br />
                       {explorerContent}
                     </div>
                   </div>

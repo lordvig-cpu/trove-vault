@@ -165,4 +165,67 @@
     ================================================================================================ */
     --sticky-upper-shadow-gradient: linear-gradient(to bottom, rgba(0, 0, 0, 0.85), transparent);
     --sticky-lower-shadow-gradient: linear-gradient(to top, rgba(0, 0, 0, 0.85), transparent);
+
+    /* ======================================================================
+    STATUS & DESTRUCTIVE TOKENS
+    Applied to warning badges, destructive actions, and delete buttons.
+    ------------------------------------------------------------------------- */
+    --status-danger: rgba(244, 63, 94, 1.00);
+    --status-danger-hover: rgba(251, 113, 133, 1.00);
+    --status-danger-surface: rgba(76, 5, 25, 0.45);
+    /* ====================================================================== */
+
+    /* Action Popup Styles */
+    /* Used when hovering over an item in the explorer tree to show the action buttons for that item. */
+    .explorer-action-popup {
+    background-color: rgba(231, 116, 40, 1.00);
+/*    var(--bg-popover); */
+    border: 1px solid var(--border-subtle);
+    border-radius: 0.375rem; /* rounded-md */
+    box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.5), 0 8px 10px -6px rgb(0 0 0 / 0.5); /* shadow-2xl */
+    padding: 0.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.125rem;
+    white-space: nowrap;
+    }
+
+    .explorer-action-btn {
+    padding: 0.375rem;
+    color: var(--text-muted);
+    border-radius: 0.25rem;
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: all 150ms ease;
+    white-space: nowrap;
+    background: transparent;
+    border: none;
+    }
+
+    .explorer-action-btn:hover {
+    background-color: var(--bg-surface-hover);
+    color: var(--text-primary);
+    }
+
+    .explorer-action-btn-accent:hover {
+    background-color: var(--bg-surface-hover);
+    color: var(--accent-secondary);
+    }
+
+    .explorer-action-btn-danger {
+    padding: 0.375rem;
+    color: var(--status-danger);
+    border-radius: 0.25rem;
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: all 150ms ease;
+    white-space: nowrap;
+    background: transparent;
+    border: none;
+    }
+
+    .explorer-action-btn-danger:hover {
+    color: var(--status-danger-hover);
+    background-color: var(--status-danger-surface);
+    }
 }
