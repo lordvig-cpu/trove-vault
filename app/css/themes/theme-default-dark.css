@@ -29,6 +29,15 @@
     --studio-grid-vignette-edge: rgba(0, 0, 0, 0.5);
     --studio-grid-line-color: rgba(255, 255, 255, 0.04);
     --studio-grid-cell-size: 32px;
+
+    /* WATERMARK BACKGROUND LOGO */
+    --watermark-logo-opacity-default: 0.15;
+    --watermark-logo-brightness: 0.75;
+    --watermark-logo-drop-shadow: 0 25px 25px rgb(0 0 0 / 0.15);
+
+    /* VIDEO */
+    --bg-video-drop-shadow: 0 25px 25px rgb(0 0 0 / 0.25);
+    --bg-video-opacity-active: 1;
     /* ============================================================== */
 
 
@@ -142,4 +151,18 @@
     --bottom-menu-pseudo-bright: rgba(0, 210, 255, 0.15);
     --bottom-menu-pseudo-subtle: rgba(0, 130, 210, 0.06);
 
+    /* =======================================================================
+    MAIN CONTENT OVERLAY TOKENS
+    Applied to the primary content backdrop when background panels are active.
+    ========================================================================== */
+      --main-content-blur: 3.5px;
+      --main-content-brightness-dim: 0.60;
+      --main-content-brightness-default: 1;    
+
+    /* =============================================================================================
+    STICKY SHADOW TOKENS
+    Applied to scrolling content container shadows and fade overlays.
+    ================================================================================================ */
+    --sticky-upper-shadow-gradient: linear-gradient(to bottom, rgba(0, 0, 0, 0.85), transparent);
+    --sticky-lower-shadow-gradient: linear-gradient(to top, rgba(0, 0, 0, 0.85), transparent);
 }

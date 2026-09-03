@@ -150,12 +150,12 @@ export default function Home() {
       >
         {/* Fixed Watermark Image */}
         <img 
-  src="/images/web_background_trove_vault_logo.png" 
-  alt="" 
-  className={`w-[1250px] max-w-none h-auto object-contain drop-shadow-2xl transition-all duration-700 ease-out ${
-    isLogoHovered ? 'opacity-0 scale-105' : 'opacity-15 filter brightness-75 scale-100'
-  }`} 
-/>
+          src="/images/web_background_trove_vault_logo.png" 
+          alt="" 
+          className={`w-[1250px] max-w-none h-auto object-contain drop-shadow-[var(--watermark-logo-drop-shadow)] transition-all duration-700 ease-out ${
+            isLogoHovered ? 'opacity-0 scale-105' : 'opacity-[var(--watermark-logo-opacity-default)] filter brightness-[var(--watermark-logo-brightness)] scale-100'
+          }`} 
+        />
 
         {/* Full-Height Hover Video Animation */}
         <video
@@ -163,8 +163,8 @@ export default function Home() {
           src="/videos/website_intro_video.mp4"
           muted={!isAudioEnabled}
           playsInline
-          className={`absolute inset-0 w-full h-full object-contain drop-shadow-2xl transition-all duration-700 ease-in-out ${
-            isLogoHovered ? 'opacity-100 scale-100' : 'opacity-0 scale-95'
+          className={`absolute inset-0 w-full h-full object-contain drop-shadow-[var(--bg-video-drop-shadow)] transition-all duration-700 ease-in-out ${
+            isLogoHovered ? 'opacity-[var(--bg-video-opacity-active)] scale-100' : 'opacity-0 scale-95'
           }`}
         />
       </div>
@@ -237,13 +237,17 @@ export default function Home() {
             <main
               className={`flex-1 flex flex-col min-h-0 overflow-y-auto relative main_content_scroll transition-all duration-300 ease-in-out ${
                 !isPinned && isLeftSidePanelOpen
-                  ? 'filter blur-[3.5px] brightness-[0.60] pointer-events-none select-none'
-                  : 'filter-none brightness-100'
+                  ? 'filter blur-[var(--main-content-blur)] brightness-[var(--main-content-brightness-dim)] pointer-events-none select-none'
+                  : 'filter-none brightness-[var(--main-content-brightness-default)]'
               }`}
             >
               {/* Sticky Upper Shadow (only active if an item is selected) */}
               {selectedItem && (
-                <div className="sticky top-0 left-0 right-0 h-10 bg-gradient-to-b from-black/85 to-transparent z-30 pointer-events-none shrink-0 -mb-10" aria-hidden="true" />
+                <div 
+                  className="sticky top-0 left-0 right-0 h-10 z-30 pointer-events-none shrink-0 -mb-10" 
+                  style={{ background: 'var(--sticky-upper-shadow-gradient)' }}
+                  aria-hidden="true" 
+                />
               )}
 
               {/* Main Content Area */}
@@ -270,7 +274,11 @@ export default function Home() {
 
               {/* Sticky Lower Shadow (only active if an item is selected) */}
               {selectedItem && (
-                <div className="sticky bottom-0 left-0 right-0 h-10 bg-gradient-to-t from-black/85 to-transparent z-30 pointer-events-none shrink-0 -mt-10" aria-hidden="true" />
+                <div 
+                  className="sticky bottom-0 left-0 right-0 h-10 z-30 pointer-events-none shrink-0 -mt-10" 
+                  style={{ background: 'var(--sticky-lower-shadow-gradient)' }}
+                  aria-hidden="true" 
+                />
               )}
             </main>
           </div>

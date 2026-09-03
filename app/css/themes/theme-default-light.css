@@ -30,6 +30,15 @@
     --studio-grid-vignette-edge: rgba(35, 65, 75, 0.08);
     --studio-grid-line-color: rgba(20, 65, 80, 0.055);
     --studio-grid-cell-size: 32px;
+
+    /* WATERMARK BACKGROUND LOGO */
+    --watermark-logo-opacity-default: 0.15;
+    --watermark-logo-brightness: 0.75;
+    --watermark-logo-drop-shadow: 0 25px 25px rgb(0 0 0 / 0.15);
+
+        /* VIDEO */
+    --bg-video-drop-shadow: 0 25px 25px rgb(0 0 0 / 0.25);
+    --bg-video-opacity-active: 1;
     /* ============================================================== */
 
 
@@ -106,25 +115,27 @@
     /* Structural & Lighting Color Tokens */
     --nav-header-glow-center: rgba(0, 180, 205, 0.26);
     --nav-header-glow-mid: rgba(0, 125, 165, 0.16);
-    --nav-header-glow-deep: rgba(15, 95, 125, 0.08);
+    --nav-header-glow-deep: rgba(12, 88, 118, 0.08);
 
-    --nav-header-edge-dark: rgba(3, 24, 38, 0.92);
-    --nav-header-edge-fade: rgba(5, 48, 68, 0.42);
+    --nav-header-edge-dark: rgba(3, 24, 38, 0.94);
+    --nav-header-edge-fade: rgba(5, 48, 68, 0.40);
 
     --nav-header-pseudo-bright: rgba(70, 215, 230, 0.12);
-    --nav-header-pseudo-subtle: rgba(20, 145, 175, 0.06);   
+    --nav-header-pseudo-subtle: rgba(20, 145, 175, 0.06);
 
     /* Applied to pinned indicator accent lines and bottom borders. */
-    --nav-header-accent-line: rgba(81, 155, 255, 0.85);
+    --nav-header-accent-line: rgba(74, 184, 220, 0.72);
 
     /* Applied to active/pinned navigation tabs and folder dropdown headers. */
-    --nav-header-toggle-active-shadow: 0 -4px 12px rgba(0, 190, 230, 0.15);
+    --nav-header-toggle-active-shadow: 0 -4px 12px rgba(0, 180, 205, 0.10);
 
     /* Applied to active/hover underline accents on navigation labels. */
     --nav-header-indicator: rgba(231, 116, 40, 1.00);
 
     /* Applied to dropdown floating menus and container overlays. */
-    --nav-header-floating-shadow: 0 20px 50px rgba(0, 0, 0, 0.85);
+    --nav-header-floating-shadow:
+  0 16px 36px rgba(6, 28, 42, 0.28),
+  0 4px 12px rgba(6, 28, 42, 0.14);
     /* ===================================================================== */
 
     /* =====================================================================
@@ -142,4 +153,21 @@
 
     --bottom-menu-pseudo-bright: rgba(70, 215, 230, 0.10);
     --bottom-menu-pseudo-subtle: rgba(20, 145, 175, 0.05);
+
+    /* =======================================================================
+    MAIN CONTENT OVERLAY TOKENS
+    Applied to the primary content backdrop when background panels are active.
+    ========================================================================== */
+      --main-content-blur: 3.5px;
+      --main-content-brightness-dim: 0.60;
+      --main-content-brightness-default: 1;    
+
+    /* =============================================================================================
+    STICKY SHADOW TOKENS
+    Applied to scrolling content container shadows and fade overlays.
+    ================================================================================================ */
+    --sticky-upper-shadow-gradient: linear-gradient(to bottom, rgba(0, 0, 0, 0.85), transparent);
+    --sticky-lower-shadow-gradient: linear-gradient(to top, rgba(0, 0, 0, 0.85), transparent);
+
+
 }

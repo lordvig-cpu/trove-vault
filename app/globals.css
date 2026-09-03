@@ -182,14 +182,14 @@ body {
   pointer-events: none;
   z-index: -1;
   background: var(--text-primary);
-  filter: url("#troveNavTexture");
+  filter: url("#navigationBarTexture");
   opacity: 0.14;
   mix-blend-mode: overlay;
 }
 
-/* =============================
-   BOTTOM MENU BAR
-   ========================== */
+/* ========================
+   BOTTOM NAVIGATION FOOTER
+   ======================== */
 .navigation-footer {
   position: relative;
   isolation: isolate;
@@ -240,7 +240,7 @@ body {
   pointer-events: none;
   z-index: -1;
   background: var(--text-primary);
-  filter: url("#troveNavTexture");
+  filter: url("#navigationBarTexture");
   opacity: 0.10;
   mix-blend-mode: overlay;
 }

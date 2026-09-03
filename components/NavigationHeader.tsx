@@ -85,7 +85,7 @@ export default function NavigationHeader({
   return (
     <>
       <svg className="hidden" aria-hidden="true">
-        <filter id="troveNavTexture">
+        <filter id="navigationBarTexture">
           <feTurbulence type="fractalNoise" baseFrequency="0.04 1.8" numOctaves="5" stitchTiles="stitch" result="noise" />
           <feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 0.85 0" in="noise" result="coloredNoise" />
           <feBlend mode="overlay" in="SourceGraphic" in2="coloredNoise" />
