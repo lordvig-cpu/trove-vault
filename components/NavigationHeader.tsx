@@ -1,9 +1,9 @@
 'use client';
 
 import { ReactNode, useState, useEffect } from 'react';
-import { CollectionRecord } from './CollectionDropdown';
-import CollectionDropdown from './CollectionDropdown';
-import { PinOutlineIcon, PinFilledIcon } from '@/components/icons/PinIcons';
+import { CollectionRecord } from '@/types/collection';
+import CollectionDropdown from '@/components/CollectionDropdown';
+import { PinOutlineIcon } from '@/components/icons/PinIcons';
 
 export type SearchScope = 'current' | 'all';
 
@@ -82,6 +82,8 @@ export default function NavigationHeader({
     }
   }, [isLeftSidePanelOpen, renderMenu, animationsEnabled, isPinned]);
 
+  const isTabActive = isPinned || (renderMenu && !isClosing);
+
   return (
     <>
       <svg className="hidden" aria-hidden="true">
@@ -101,15 +103,17 @@ export default function NavigationHeader({
 
             {/* SHADOW ERASER MASK */}
             <div
-              className={`absolute top-full left-0 right-[10px] h-3 bg-surface z-10 pointer-events-none ${opacityTransition} ${isPinned ? 'opacity-100 delay-[350ms]' : 'opacity-0 delay-0'
-                }`}
+              className={`absolute top-full left-0 right-[10px] h-3 bg-surface z-10 pointer-events-none ${opacityTransition} ${
+                isPinned ? 'opacity-100 delay-[350ms]' : 'opacity-0 delay-0'
+              }`}
               aria-hidden="true"
             />
 
-            {/* RESTORED BLUE BORDER LINE */}
+            {/* RESTORED ACCENT BORDER LINE */}
             <div
-              className={`absolute top-full left-0 w-full h-[1px] bg-[var(--nav-header-accent-line)] z-20 pointer-events-none ${opacityTransition} ${isPinned ? 'opacity-100 delay-[350ms]' : 'opacity-0 delay-0'
-                }`}
+              className={`absolute top-full left-0 w-full h-[1px] bg-[var(--nav-header-accent-line)] z-20 pointer-events-none ${opacityTransition} ${
+                isPinned ? 'opacity-100 delay-[350ms]' : 'opacity-0 delay-0'
+              }`}
               aria-hidden="true"
             />
 
@@ -131,28 +135,31 @@ export default function NavigationHeader({
                     onToggleLeftSidePanel();
                   }
                 }}
-                className={`px-4 py-1.5 font-sans font-black tracking-wide text-sm relative group transition-all ease-out ${animationsEnabled ? 'duration-500' : 'duration-0'
-                  } ${isPinned ? 'cursor-default' : 'cursor-pointer'} ${isPinned || (renderMenu && !isClosing)
-                    ? 'bg-surface border border-border-strong border-b-transparent rounded-t-lg rounded-b-none text-white shadow-[var(--nav-header-toggle-active-shadow)] z-[60]'
-                    : 'bg-transparent border border-transparent rounded-lg text-white z-50'
-                  }`}
+                className={`px-4 py-1.5 font-sans font-black tracking-wide text-sm relative group transition-all ease-out ${
+                  animationsEnabled ? 'duration-500' : 'duration-0'
+                } ${isPinned ? 'cursor-default' : 'cursor-pointer'} ${
+                  isTabActive ? 'nav-tab-active' : 'nav-tab-inactive'
+                }`}
               >
                 <span className="relative inline-block">
                   Explorer
                   <div
-                    className={`absolute -bottom-1 -left-[1px] -right-[1px] h-[2px] bg-[var(--nav-header-indicator)] pointer-events-none transition-opacity ease-out ${animationsEnabled ? 'duration-500' : 'duration-0'
-                      } ${isPinned || (renderMenu && !isClosing) ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
-                      }`}
+                    className={`nav-tab-indicator transition-opacity ease-out ${
+                      animationsEnabled ? 'duration-500' : 'duration-0'
+                    } ${isTabActive ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}
                     aria-hidden="true"
                   />
                 </span>
 
                 {/* Seamless Tab Extension */}
                 <div
-                  className={`absolute top-[calc(100%-1px)] -left-[1px] -right-[1px] h-3 bg-surface border-l pointer-events-none transition-opacity ease-out ${animationsEnabled ? 'duration-500' : 'duration-0'
-                    } ${isPinned ? 'border-r border-[var(--nav-header-accent-line)] border-border-strong' : 'border-r border-border-strong'
-                    } ${isPinned || (renderMenu && !isClosing) ? 'opacity-100' : 'opacity-0'
-                    }`}
+                  className={`nav-tab-extension transition-opacity ease-out ${
+                    animationsEnabled ? 'duration-500' : 'duration-0'
+                  } ${
+                    isPinned
+                      ? 'border-r border-[var(--nav-header-accent-line)] border-border-strong'
+                      : 'border-r border-border-strong'
+                  } ${isTabActive ? 'opacity-100' : 'opacity-0'}`}
                   aria-hidden="true"
                 />
               </button>
@@ -160,46 +167,33 @@ export default function NavigationHeader({
               {/* Floating Menu */}
               {renderMenu && (
                 <>
-                  <style>{`
-                    @keyframes mountFade {
-                      0% { opacity: 0; }
-                      100% { opacity: 1; }
-                    }
-                    @keyframes unmountFade {
-                      0% { opacity: 1; }
-                      100% { opacity: 0; }
-                    }
-                    .animate-mount-fade {
-                      animation: mountFade 500ms ease-out;
-                    }
-                    .animate-unmount-fade {
-                      animation: unmountFade 500ms ease-out forwards;
-                    }
-                  `}</style>
-
                   {/* Floating Menu Overlay */}
                   <div
-                    className={`fixed inset-0 top-14 z-40 ${animationsEnabled
-                      ? (isClosing && !isPinned ? 'animate-unmount-fade' : 'animate-mount-fade transition-opacity duration-700 ease-in-out')
-                      : 'transition-none'
-                      } ${isPinned ? 'opacity-0 pointer-events-none' : 'opacity-100'
-                      }`}
+                    className={`fixed inset-0 top-14 z-40 ${
+                      animationsEnabled
+                        ? (isClosing && !isPinned ? 'animate-unmount-fade' : 'animate-mount-fade transition-opacity duration-700 ease-in-out')
+                        : 'transition-none'
+                    } ${isPinned ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
                     onClick={onToggleLeftSidePanel}
                   />
 
                   {/* Floating Menu Container */}
-                  <div className={`absolute left-0 mt-[11px] w-88 max-h-[75vh] bg-surface/80 border border-border-strong rounded-xl rounded-tl-none shadow-[var(--nav-header-floating-shadow)] z-50 p-3 flex flex-col gap-2 transform ${animationsEnabled && !isPinned
-                    ? (isClosing ? 'animate-unmount-fade' : 'animate-mount-fade')
-                    : ''
-                    } ${transitionClass} ${isPinned ? 'opacity-0 -translate-x-46 pointer-events-none' : 'opacity-100 translate-x-0'
-                    }`}>
+                  <div
+                    className={`nav-flyout-menu transform ${
+                      animationsEnabled && !isPinned
+                        ? (isClosing ? 'animate-unmount-fade' : 'animate-mount-fade')
+                        : ''
+                    } ${transitionClass} ${
+                      isPinned ? 'opacity-0 -translate-x-46 pointer-events-none' : 'opacity-100 translate-x-0'
+                    }`}
+                  >
                     <div className="flex items-center justify-between border-b border-border-subtle pb-2 shrink-0">
                       <span className="text-xs font-bold uppercase tracking-wider text-content-muted">
                         🌲 Explorer
                       </span>
 
                       <div className="flex items-center gap-1">
-                        {/* PIN TO LEFTSIDEPANEL BUTTON */}
+                        {/* PIN BUTTON */}
                         <button
                           type="button"
                           onClick={onTogglePin}
@@ -261,7 +255,7 @@ export default function NavigationHeader({
             <select
               value={searchScope}
               onChange={(e) => onSearchScopeChange(e.target.value as SearchScope)}
-              className="bg-surface text-content-secondary text-xs font-medium py-1.5 pl-2 pr-6 border border-border-subtle rounded-l-lg focus:outline-none focus:border-accent-primary cursor-pointer"
+              className="nav-search-select"
             >
               <option value="current">📁 This Folder</option>
               <option value="all">🌐 All Folders</option>
@@ -272,7 +266,7 @@ export default function NavigationHeader({
               placeholder={searchScope === 'current' ? `Search ${activeCollectionName}...` : 'Search all collections...'}
               value={searchQuery}
               onChange={(e) => onSearchChange(e.target.value)}
-              className="w-full bg-canvas border-y border-r border-border-subtle text-xs rounded-r-lg px-3 py-1.5 text-content-primary placeholder-content-muted focus:outline-none focus:border-accent-primary"
+              className="nav-search-input"
             />
 
             {searchQuery && (
@@ -286,13 +280,13 @@ export default function NavigationHeader({
             )}
           </div>
 
-          <div className="flex items-center gap-1.5 px-2.5 py-1 bg-surface border border-border-subtle rounded-lg text-[11px] font-medium text-emerald-400">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+          <div className="nav-live-badge">
+            <span className="nav-live-dot animate-pulse" />
             <span className="text-content-secondary hidden sm:inline">Supabase</span> Live
           </div>
 
           <div
-            className="w-8 h-8 rounded-full bg-accent-primary/20 border border-accent-primary/60 flex items-center justify-center text-xs font-bold text-accent-secondary shadow-inner cursor-pointer hover:border-accent-primary transition"
+            className="nav-profile-badge"
             title="User Profile / Account"
           >
             👤

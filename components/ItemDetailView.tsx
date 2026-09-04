@@ -1,6 +1,6 @@
 'use client';
 
-import { ItemRecord } from './TreeNode';
+import { ItemRecord } from '@/types/item';
 
 interface ItemDetailViewProps {
   item: ItemRecord | null;
@@ -17,7 +17,7 @@ export default function ItemDetailView({
 }: ItemDetailViewProps) {
   if (!item) {
     return (
-      <div className="h-full flex flex-col items-center justify-center text-center p-8 bg-surface/80 rounded-xl border border-border-subtle shadow-xl">
+      <div className="h-full flex flex-col items-center justify-center text-center p-8 content-card">
         <span className="text-4xl mb-3">🔍</span>
         <h3 className="text-base font-semibold text-content-primary">No Item Selected</h3>
         <p className="text-xs text-content-muted mt-1 max-w-sm">
@@ -29,14 +29,12 @@ export default function ItemDetailView({
 
   const attributes = item.attributes || {};
   const attributeEntries = Object.entries(attributes);
-  
-  // Safe resolution of image url whether stored at root or in JSONB attributes
   const imageUrl = (item as any).image_url || attributes.image_url || attributes.photo_url;
 
   return (
     <div className="space-y-6">
       {/* HEADER CARD */}
-      <div className="bg-surface/80 rounded-xl border border-border-subtle shadow-xl p-5 flex items-start justify-between gap-4">
+      <div className="content-card p-5 flex items-start justify-between gap-4">
         <div className="space-y-1.5">
           <div className="flex items-center gap-2">
             <span className="px-2 py-0.5 rounded text-[11px] font-mono font-medium bg-accent-primary/15 text-accent-secondary border border-accent-primary/30">
@@ -47,7 +45,7 @@ export default function ItemDetailView({
                 Parent ID: {item.parent_id}
               </span>
             ) : (
-              <span className="px-2 py-0.5 rounded text-[11px] font-mono text-emerald-400 bg-emerald-950/60 border border-emerald-800/60">
+              <span className="badge-root-item">
                 Root Item
               </span>
             )}
@@ -62,7 +60,6 @@ export default function ItemDetailView({
 
         {/* Action Controls */}
         <div className="flex items-center gap-2 shrink-0">
-          {/* EDIT BUTTON */}
           <button
             type="button"
             onClick={onEditItem}
@@ -71,20 +68,18 @@ export default function ItemDetailView({
             <span>✏️</span> Edit
           </button>
 
-          {/* ADD SUB-ITEM BUTTON */}
           <button
             type="button"
             onClick={() => onAddSubItem(item)}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg bg-accent-primary hover:bg-accent-primary-hover text-slate-950 shadow-sm shadow-accent-primary/25 transition cursor-pointer"
+            className="content-btn-primary"
           >
             <span>+</span> Add Sub-Item
           </button>
 
-          {/* DELETE BUTTON */}
           <button
             type="button"
             onClick={onDeleteItem}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 hover:text-rose-200 border border-rose-500/30 transition cursor-pointer"
+            className="content-btn-danger"
           >
             <span>🗑️</span> Delete
           </button>
@@ -94,7 +89,7 @@ export default function ItemDetailView({
       {/* GRID: IMAGE & ATTRIBUTES */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Image Preview Card */}
-        <div className="md:col-span-1 bg-surface/80 rounded-xl border border-border-subtle p-5 flex flex-col items-center justify-center text-center min-h-[200px] shadow-xl">
+        <div className="md:col-span-1 content-card p-5 flex flex-col items-center justify-center text-center min-h-[200px]">
           {imageUrl ? (
             <img
               src={imageUrl}
@@ -110,7 +105,7 @@ export default function ItemDetailView({
         </div>
 
         {/* Attributes Card */}
-        <div className="md:col-span-2 bg-surface/80 rounded-xl border border-border-subtle shadow-xl p-5 space-y-4 flex flex-col">
+        <div className="md:col-span-2 content-card p-5 space-y-4 flex flex-col">
           <div className="flex items-center justify-between border-b border-border-subtle pb-2.5">
             <h2 className="text-xs font-bold uppercase tracking-wider text-content-muted">
               Custom Attributes (JSONB)
@@ -125,10 +120,7 @@ export default function ItemDetailView({
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {attributeEntries.map(([key, value]) => (
-                <div
-                  key={key}
-                  className="bg-canvas/50 rounded-lg border border-border-subtle/70 p-3 hover:border-border-strong hover:bg-surface/70 transition-colors flex flex-col gap-0.5"
-                >
+                <div key={key} className="content-pill flex flex-col gap-0.5">
                   <span className="text-[10px] font-bold uppercase tracking-wider text-content-muted">
                     {key.replace(/_/g, ' ')}
                   </span>
@@ -144,16 +136,13 @@ export default function ItemDetailView({
 
       {/* SUB-ITEMS LIST CARD */}
       {item.children && item.children.length > 0 && (
-        <div className="bg-surface/80 rounded-xl border border-border-subtle shadow-xl p-5 space-y-3">
+        <div className="content-card p-5 space-y-3">
           <h2 className="text-xs font-bold uppercase tracking-wider text-content-muted border-b border-border-subtle pb-2">
             Direct Sub-Items ({item.children.length})
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5">
             {item.children.map((child) => (
-              <div
-                key={child.id}
-                className="bg-canvas/50 rounded-lg border border-border-subtle/70 p-3 hover:border-border-strong hover:bg-surface/70 transition-colors flex items-center justify-between"
-              >
+              <div key={child.id} className="content-pill flex items-center justify-between">
                 <div className="flex items-center gap-2 min-w-0">
                   <span className="text-xs">📄</span>
                   <span className="text-xs font-medium text-content-primary truncate">{child.name}</span>

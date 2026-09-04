@@ -2,16 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
-import { FieldDefinition } from './FieldManagerModal';
-
-export interface CollectionTemplate {
-  id: number;
-  name: string;
-  description: string | null;
-  icon: string;
-  is_system_preset: boolean;
-  fields?: FieldDefinition[];
-}
+import { FieldDefinition } from '@/types/field';
+import { CollectionTemplate } from '@/types/template';
 
 interface TemplateManagerModalProps {
   isOpen: boolean;
@@ -44,7 +36,6 @@ export default function TemplateManagerModal({
       setLoading(true);
       setError(null);
 
-      // Fetch all templates
       const { data: tmpls, error: tmplError } = await supabase
         .from('collection_templates')
         .select('*')
@@ -53,7 +44,6 @@ export default function TemplateManagerModal({
 
       if (tmplError) throw tmplError;
 
-      // Fetch all template fields
       const { data: flds, error: fldError } = await supabase
         .from('template_fields')
         .select('*')
@@ -90,7 +80,6 @@ export default function TemplateManagerModal({
 
   const selectedTemplate = templates.find((t) => t.id === selectedTemplateId) || null;
 
-  // Apply template to active collection (Copy on Apply)
   const handleApplyTemplate = async (mode: 'replace' | 'append') => {
     if (!selectedTemplate || !selectedTemplate.fields) return;
 
@@ -100,7 +89,6 @@ export default function TemplateManagerModal({
 
     try {
       if (mode === 'replace') {
-        // Remove existing fields from the active collection
         const { error: delError } = await supabase
           .from('collection_fields')
           .delete()
@@ -109,7 +97,6 @@ export default function TemplateManagerModal({
         if (delError) throw delError;
       }
 
-      // Clone fields into collection_fields table
       const fieldsToInsert = selectedTemplate.fields.map((f, idx) => ({
         collection_id: collectionId,
         name: f.name,
@@ -138,7 +125,6 @@ export default function TemplateManagerModal({
     }
   };
 
-  // Save the current collection schema as a new Master Template
   const handleSaveCurrentAsTemplate = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newTemplateName.trim()) return;
@@ -147,7 +133,6 @@ export default function TemplateManagerModal({
     setError(null);
 
     try {
-      // 1. Fetch current collection's fields
       const { data: currentFields, error: fieldFetchErr } = await supabase
         .from('collection_fields')
         .select('*')
@@ -160,7 +145,6 @@ export default function TemplateManagerModal({
         throw new Error('This collection has no custom fields to save into a template.');
       }
 
-      // 2. Create collection_templates record
       const { data: createdTemplate, error: tmplCreateErr } = await supabase
         .from('collection_templates')
         .insert({
@@ -174,7 +158,6 @@ export default function TemplateManagerModal({
 
       if (tmplCreateErr) throw tmplCreateErr;
 
-      // 3. Create template_fields records
       const templateFieldsToInsert = currentFields.map((f, idx) => ({
         template_id: createdTemplate.id,
         name: f.name,
@@ -205,51 +188,47 @@ export default function TemplateManagerModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4">
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-3xl overflow-hidden shadow-2xl max-h-[90vh] flex flex-col animate-in fade-in zoom-in-95 duration-150">
+    <div className="field-modal-backdrop">
+      <div className="field-modal-dialog !max-w-3xl">
         {/* Header */}
-        <div className="p-5 border-b border-slate-800 flex items-center justify-between shrink-0 bg-slate-950/40">
+        <div className="field-modal-header">
           <div>
             <div className="flex items-center gap-2">
               <span className="text-xl">📑</span>
-              <h2 className="text-base font-bold text-white">Collection Schema Templates</h2>
+              <h2 className="text-base font-bold text-content-primary">Collection Schema Templates</h2>
             </div>
-            <p className="text-xs text-slate-400 mt-0.5">
-              Select a pre-built template or apply saved schemas to <strong className="text-indigo-300">{collectionName}</strong>
+            <p className="text-xs text-content-muted mt-0.5">
+              Select a pre-built template or apply saved schemas to <strong className="text-accent-secondary">{collectionName}</strong>
             </p>
           </div>
           <button
             onClick={onClose}
-            className="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800 transition"
+            className="text-content-muted hover:text-content-primary p-1 rounded-lg hover:bg-surface-hover transition cursor-pointer"
           >
             ✕
           </button>
         </div>
 
         {/* Content Body */}
-        <div className="p-6 overflow-y-auto space-y-5 flex-1">
-          {error && (
-            <div className="p-3 bg-rose-950/60 border border-rose-800 text-rose-300 text-xs rounded-lg">
-              {error}
-            </div>
-          )}
+        <div className="p-6 overflow-y-auto space-y-5 flex-1 main-content-scroll">
+          {error && <div className="tmpl-alert-error">{error}</div>}
 
           {successMsg && (
-            <div className="p-3 bg-emerald-950/60 border border-emerald-800 text-emerald-300 text-xs rounded-lg flex items-center justify-between">
+            <div className="tmpl-alert-success">
               <span>{successMsg}</span>
-              <button onClick={() => setSuccessMsg(null)} className="text-emerald-400 hover:text-white">✕</button>
+              <button onClick={() => setSuccessMsg(null)} className="hover:text-white cursor-pointer">✕</button>
             </div>
           )}
 
-          {/* Save Current Collection Schema as Custom Template Drawer */}
+          {/* Save Custom Schema Form */}
           {showSaveAsCustom ? (
-            <form onSubmit={handleSaveCurrentAsTemplate} className="bg-slate-950 border border-indigo-900/60 rounded-xl p-4 space-y-3">
+            <form onSubmit={handleSaveCurrentAsTemplate} className="field-modal-form">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-indigo-300">Save Collection Schema as Reusable Template</span>
+                <span className="text-xs font-bold text-accent-secondary">Save Collection Schema as Reusable Template</span>
                 <button
                   type="button"
                   onClick={() => setShowSaveAsCustom(false)}
-                  className="text-xs text-slate-500 hover:text-slate-300"
+                  className="text-xs text-content-muted hover:text-content-primary cursor-pointer"
                 >
                   Cancel
                 </button>
@@ -257,23 +236,23 @@ export default function TemplateManagerModal({
 
               <div className="grid grid-cols-4 gap-3">
                 <div className="col-span-3 space-y-1">
-                  <label className="text-[11px] font-semibold text-slate-300">Template Name *</label>
+                  <label className="text-[11px] font-semibold text-content-secondary">Template Name *</label>
                   <input
                     type="text"
                     required
                     placeholder="e.g. My Custom Miniature Game Template"
                     value={newTemplateName}
                     onChange={(e) => setNewTemplateName(e.target.value)}
-                    className="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-indigo-500"
+                    className="field-modal-input"
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-[11px] font-semibold text-slate-300">Emoji Icon</label>
+                  <label className="text-[11px] font-semibold text-content-secondary">Emoji Icon</label>
                   <input
                     type="text"
                     value={newTemplateIcon}
                     onChange={(e) => setNewTemplateIcon(e.target.value)}
-                    className="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-1.5 text-xs text-white text-center focus:outline-none focus:border-indigo-500"
+                    className="field-modal-input text-center"
                   />
                 </div>
               </div>
@@ -282,14 +261,14 @@ export default function TemplateManagerModal({
                 <button
                   type="button"
                   onClick={() => setShowSaveAsCustom(false)}
-                  className="px-3 py-1.5 text-xs text-slate-400 hover:text-white"
+                  className="px-3 py-1.5 text-xs text-content-muted hover:text-content-primary cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={savingCustom}
-                  className="px-4 py-1.5 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-500 rounded-lg transition shadow-md shadow-indigo-600/20 disabled:opacity-50"
+                  className="content-btn-primary"
                 >
                   {savingCustom ? 'Saving...' : 'Save Template'}
                 </button>
@@ -300,7 +279,7 @@ export default function TemplateManagerModal({
               <button
                 type="button"
                 onClick={() => setShowSaveAsCustom(true)}
-                className="text-xs font-semibold text-indigo-400 hover:text-indigo-300 flex items-center gap-1.5 bg-indigo-950/40 border border-indigo-900/50 px-3 py-1.5 rounded-xl transition"
+                className="text-xs font-semibold text-accent-secondary hover:text-accent-primary flex items-center gap-1.5 bg-surface-hover/60 border border-border-subtle px-3 py-1.5 rounded-xl transition cursor-pointer"
               >
                 <span>💾</span>
                 <span>Save Current Schema as New Template</span>
@@ -311,13 +290,13 @@ export default function TemplateManagerModal({
           {/* Master Templates Browser */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {/* Left Templates List */}
-            <div className="md:col-span-1 space-y-2 max-h-80 overflow-y-auto pr-1">
-              <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block mb-2">
+            <div className="md:col-span-1 space-y-2 max-h-80 overflow-y-auto pr-1 main-content-scroll">
+              <span className="text-[11px] font-bold text-content-muted uppercase tracking-wider block mb-2">
                 Available Templates
               </span>
 
               {loading ? (
-                <div className="p-4 text-xs text-slate-500 text-center animate-pulse">Loading templates...</div>
+                <div className="p-4 text-xs text-content-muted text-center animate-pulse">Loading templates...</div>
               ) : (
                 templates.map((tmpl) => {
                   const isSelected = tmpl.id === selectedTemplateId;
@@ -325,20 +304,14 @@ export default function TemplateManagerModal({
                     <div
                       key={tmpl.id}
                       onClick={() => setSelectedTemplateId(tmpl.id)}
-                      className={`p-3 rounded-xl border transition cursor-pointer flex items-center gap-3 ${
-                        isSelected
-                          ? 'bg-indigo-950/60 border-indigo-700 shadow-md shadow-indigo-950/50'
-                          : 'bg-slate-950/60 border-slate-800/80 hover:border-slate-700'
-                      }`}
+                      className={`tmpl-card ${isSelected ? 'tmpl-card-selected' : ''}`}
                     >
                       <span className="text-xl shrink-0">{tmpl.icon}</span>
                       <div className="min-w-0 flex-1">
-                        <div className="flex items-center gap-1.5">
-                          <span className={`text-xs font-semibold truncate ${isSelected ? 'text-white font-bold' : 'text-slate-200'}`}>
-                            {tmpl.name}
-                          </span>
-                        </div>
-                        <span className="text-[10px] text-slate-500 block truncate">
+                        <span className={`text-xs font-semibold truncate block ${isSelected ? 'text-content-primary font-bold' : 'text-content-secondary'}`}>
+                          {tmpl.name}
+                        </span>
+                        <span className="text-[10px] text-content-muted block truncate">
                           {tmpl.is_system_preset ? 'System Preset' : 'Custom Template'} • {tmpl.fields?.length || 0} Fields
                         </span>
                       </div>
@@ -348,44 +321,44 @@ export default function TemplateManagerModal({
               )}
             </div>
 
-            {/* Right Template Schema Inspection & Apply Panel */}
-            <div className="md:col-span-2 bg-slate-950 border border-slate-800 rounded-xl p-4 flex flex-col justify-between">
+            {/* Right Inspection & Apply Panel */}
+            <div className="md:col-span-2 field-modal-form justify-between">
               {selectedTemplate ? (
                 <div className="space-y-4">
-                  <div className="flex items-start justify-between border-b border-slate-800/80 pb-3">
+                  <div className="flex items-start justify-between border-b border-border-subtle pb-3">
                     <div>
                       <div className="flex items-center gap-2">
                         <span className="text-xl">{selectedTemplate.icon}</span>
-                        <h3 className="text-sm font-bold text-white">{selectedTemplate.name}</h3>
+                        <h3 className="text-sm font-bold text-content-primary">{selectedTemplate.name}</h3>
                       </div>
                       {selectedTemplate.description && (
-                        <p className="text-xs text-slate-400 mt-1">{selectedTemplate.description}</p>
+                        <p className="text-xs text-content-muted mt-1">{selectedTemplate.description}</p>
                       )}
                     </div>
-                    <span className="text-[10px] font-mono text-indigo-400 bg-indigo-950/70 border border-indigo-800/60 px-2 py-0.5 rounded shrink-0">
+                    <span className="tmpl-badge-count">
                       {selectedTemplate.fields?.length || 0} Fields
                     </span>
                   </div>
 
                   {/* Field Specs Preview */}
-                  <div className="space-y-1.5 max-h-52 overflow-y-auto pr-1">
+                  <div className="space-y-1.5 max-h-52 overflow-y-auto pr-1 main-content-scroll">
                     {(selectedTemplate.fields || []).map((f) => (
                       <div
                         key={f.id}
-                        className="bg-slate-900 border border-slate-800 rounded-lg p-2.5 flex items-center justify-between text-xs"
+                        className="bg-canvas/50 border border-border-subtle rounded-lg p-2.5 flex items-center justify-between text-xs"
                       >
                         <div className="flex items-center gap-2">
-                          <span className="text-slate-200 font-medium">{f.label}</span>
-                          <span className="text-[10px] font-mono text-slate-500 bg-slate-950 px-1.5 py-0.5 rounded border border-slate-800">
+                          <span className="text-content-primary font-medium">{f.label}</span>
+                          <span className="text-[10px] font-mono text-content-muted bg-surface px-1.5 py-0.5 rounded border border-border-subtle">
                             {f.name}
                           </span>
                         </div>
                         <div className="flex items-center gap-2">
-                          <span className="text-[10px] font-mono text-indigo-300 bg-indigo-950/60 border border-indigo-800/60 px-1.5 py-0.5 rounded">
+                          <span className="text-[10px] font-mono text-accent-secondary bg-surface px-1.5 py-0.5 rounded border border-border-subtle">
                             {f.field_type}
                           </span>
                           {f.is_required && (
-                            <span className="text-[10px] text-rose-400 font-semibold bg-rose-950/40 border border-rose-800/60 px-1.5 py-0.5 rounded">
+                            <span className="field-modal-badge-required">
                               Req
                             </span>
                           )}
@@ -395,14 +368,14 @@ export default function TemplateManagerModal({
                   </div>
 
                   {/* Apply Actions */}
-                  <div className="pt-3 border-t border-slate-800 flex items-center justify-between">
-                    <span className="text-[11px] text-slate-500">Apply fields to active collection:</span>
+                  <div className="pt-3 border-t border-border-subtle flex items-center justify-between">
+                    <span className="text-[11px] text-content-muted">Apply fields to active collection:</span>
                     <div className="flex gap-2">
                       <button
                         type="button"
                         onClick={() => handleApplyTemplate('replace')}
                         disabled={applying}
-                        className="px-3 py-1.5 text-xs font-semibold text-rose-300 bg-rose-950/50 hover:bg-rose-900/60 border border-rose-800/60 rounded-lg transition disabled:opacity-50"
+                        className="content-btn-danger"
                         title="Replaces active collection fields with this template"
                       >
                         {applying ? 'Applying...' : 'Replace Schema'}
@@ -411,7 +384,7 @@ export default function TemplateManagerModal({
                         type="button"
                         onClick={() => handleApplyTemplate('append')}
                         disabled={applying}
-                        className="px-3.5 py-1.5 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-500 rounded-lg transition shadow-md shadow-indigo-600/30 disabled:opacity-50"
+                        className="content-btn-primary"
                         title="Appends this template fields to existing collection fields"
                       >
                         {applying ? 'Applying...' : 'Apply / Merge'}
@@ -420,7 +393,7 @@ export default function TemplateManagerModal({
                   </div>
                 </div>
               ) : (
-                <div className="h-full flex items-center justify-center text-xs text-slate-500">
+                <div className="h-full flex items-center justify-center text-xs text-content-muted">
                   Select a template on the left to preview its schema definition.
                 </div>
               )}
@@ -429,11 +402,11 @@ export default function TemplateManagerModal({
         </div>
 
         {/* Footer */}
-        <div className="p-4 bg-slate-950/50 border-t border-slate-800 flex justify-end shrink-0">
+        <div className="field-modal-footer">
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-1.5 text-xs font-medium text-slate-300 bg-slate-800 hover:bg-slate-700 rounded-lg transition"
+            className="px-4 py-1.5 text-xs font-medium text-content-secondary bg-surface-hover hover:bg-surface-hover/80 rounded-lg transition cursor-pointer"
           >
             Close
           </button>

@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
-import { CollectionRecord } from './CollectionDropdown';
-import { ItemRecord } from './TreeNode';
+import { CollectionRecord } from '@/types/collection';
+import { ItemRecord } from '@/types/item';
 
 interface DeleteCollectionModalProps {
   isOpen: boolean;

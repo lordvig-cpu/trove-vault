@@ -1,0 +1,107 @@
+/* ==========================================================================
+   COLLECTION DROPDOWN COMPONENT STYLES
+   ========================================================================== */
+
+/* Main Trigger Button */
+.col-dropdown-trigger {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.375rem 0.75rem;
+  border-radius: 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background-color: var(--col-dropdown-btn-bg);
+  color: var(--text-primary);
+  border: 1px solid var(--col-dropdown-btn-border);
+  transition: all 150ms ease;
+  cursor: pointer;
+}
+
+.col-dropdown-trigger:hover {
+  background-color: var(--col-dropdown-btn-hover-bg);
+}
+
+/* Floating Menu Panel */
+.col-dropdown-panel {
+  position: absolute;
+  left: 0;
+  margin-top: 0.5rem;
+  width: 20rem; /* w-80 */
+  background-color: var(--col-dropdown-panel-bg);
+  border: 1px solid var(--col-dropdown-panel-border);
+  border-radius: 0.75rem;
+  box-shadow: var(--col-dropdown-panel-shadow);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.1), var(--col-dropdown-panel-shadow);
+  backdrop-filter: blur(24px);
+  z-index: 50;
+  padding: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+/* Folder Rows */
+.col-dropdown-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 0.375rem;
+  padding-bottom: 0.375rem;
+  padding-right: 0.5rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all 150ms ease;
+}
+
+.col-dropdown-item-active {
+  background-color: var(--col-dropdown-item-active-bg);
+  border-color: var(--col-dropdown-item-active-border);
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.col-dropdown-item-inactive {
+  color: var(--text-secondary);
+}
+
+.col-dropdown-item-inactive:hover {
+  background-color: var(--card-surface-hover);
+  color: var(--text-primary);
+}
+
+/* Active Badge */
+.col-dropdown-active-badge {
+  font-size: 9px;
+  font-family: monospace;
+  color: var(--content-badge-root-text);
+  background-color: var(--content-badge-root-bg);
+  border: 1px solid var(--content-badge-root-border);
+  padding: 0.05rem 0.25rem;
+  border-radius: 0.25rem;
+  flex-shrink: 0;
+  margin-left: 0.25rem;
+}
+
+/* Sub-Item / Child Lines */
+.col-dropdown-branch {
+  border-left: 1px solid var(--panel-border-subtle);
+  margin-left: 0.875rem;
+  padding-left: 0.125rem;
+  margin-top: 0.125rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+/* Inline Create Form */
+.col-dropdown-form {
+  padding: 0.625rem;
+  background-color: var(--col-dropdown-form-bg);
+  border: 1px solid var(--col-dropdown-form-border);
+  border-radius: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}

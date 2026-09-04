@@ -2,8 +2,8 @@
 
 import React from 'react';
 import UnifiedExplorerTree, { UnifiedCollectionNode } from './UnifiedExplorerTree';
-import { CollectionRecord } from './CollectionDropdown';
-import { ItemRecord } from './TreeNode';
+import { CollectionRecord } from '@/types/collection';
+import { ItemRecord } from '@/types/item';
 import { UniversalSearchResultItem } from '@/app/page';
 import { SearchScope } from './NavigationHeader';
 
@@ -58,10 +58,8 @@ export default function ExplorerContent({
             <div
               key={item.id}
               onClick={() => onSelectItem(item, item.collection_id)}
-              className={`p-2 rounded-lg border transition cursor-pointer flex flex-col gap-0.5 ${
-                selectedItemId === item.id
-                  ? 'bg-accent-primary/20 border-accent-primary shadow-md'
-                  : 'bg-surface border-border-subtle hover:border-border-strong'
+              className={`search-result-card ${
+                selectedItemId === item.id ? 'search-result-card-selected' : ''
               }`}
             >
               <div className="flex items-center justify-between gap-2">

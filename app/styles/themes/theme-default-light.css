@@ -1,0 +1,212 @@
+/* ==========================================================================
+   THEME: DEFAULT LIGHT (TBD)
+   Pure Token Registry: ONLY CSS variables belong in this file.
+   Organized 1-to-1 with component stylesheets in styles/components/
+   ========================================================================== */
+
+[data-theme='theme-default-light'] {
+
+    /* ======================================================================
+       0. CORE BRAND, FOUNDATIONS & SHARED PALETTE
+       Global variables consumed across multiple component sections.
+    ------------------------------------------------------------------------- */
+    /* Primary Brand Accents */
+    --brand-primary: rgba(7, 72, 115, 1.00);
+    --brand-primary-hover: rgba(0, 130, 210, 1.00);
+    --brand-secondary-amber: rgba(245, 165, 36, 1.00);
+
+    /* Typography Hierarchy */
+    --text-primary: rgba(255, 255, 255, 1.00);
+    --text-secondary: rgba(195, 216, 230, 1.00);
+    --text-muted: rgba(110, 143, 174, 1.00);
+
+    /* Shared Physical Surfaces & Borders */
+    --panel-surface-bg: rgba(4, 22, 40, 0.80);
+    --card-surface-hover: rgba(10, 53, 85, 1.00);
+    --popover-surface-bg: rgba(2, 16, 31, 1.00);
+    --panel-border-subtle: rgba(0, 190, 230, 0.15);
+    --panel-border-strong: rgba(0, 190, 230, 0.55);
+
+
+    /* ======================================================================
+       1. NAVIGATION HEADER (styles/components/navigationHeader.css)
+       Tokens governing the top navigation bar, glows, tabs, flyout & badges.
+    ------------------------------------------------------------------------- */
+    /* Radial & Gradient Lighting Atmosphere */
+    --nav-header-glow-core: rgba(0, 190, 230, 0.40);
+    --nav-header-glow-mid: rgba(0, 120, 185, 0.22);
+    --nav-header-glow-deep: rgba(7, 72, 115, 0.10);
+    --nav-header-edge-dark: rgba(3, 10, 26, 0.85);
+    --nav-header-edge-fade: rgba(0, 22, 50, 0.25);
+    --nav-header-accent-bright: rgba(0, 210, 255, 0.18);
+    --nav-header-accent-subtle: rgba(0, 130, 210, 0.08);
+
+    /* Tab Controls & Indicator Lines */
+    --nav-header-accent-line: rgba(81, 155, 255, 0.85);
+    --nav-header-tab-indicator: rgba(231, 116, 40, 1.00);
+    --nav-header-tab-bg-active: var(--panel-surface-bg);
+    --nav-header-tab-border: var(--panel-border-strong);
+    --nav-header-tab-shadow: 0 -4px 12px rgba(0, 190, 230, 0.15);
+
+    /* Floating Flyout Menu */
+    --nav-header-flyout-bg: rgba(4, 22, 40, 0.85);
+    --nav-header-flyout-border: var(--panel-border-strong);
+    --nav-header-flyout-shadow: 0 20px 50px rgba(0, 0, 0, 0.85);
+
+    /* Search Bar & Controls */
+    --nav-header-search-bg: var(--canvas-bg-primary);
+    --nav-header-search-border: var(--panel-border-subtle);
+    --nav-header-search-focus: var(--brand-primary);
+
+    /* Status Indicator & Profile Avatar */
+    --nav-header-status-dot: rgba(52, 211, 153, 1.00);
+    --nav-header-status-text: rgba(52, 211, 153, 1.00);
+    --nav-header-profile-bg: rgba(7, 72, 115, 0.20);
+    --nav-header-profile-border: rgba(7, 72, 115, 0.60);
+    --nav-header-profile-border-hover: var(--brand-primary);
+    --nav-header-profile-text: var(--brand-secondary-amber);
+
+
+    /* ======================================================================
+       2. NAVIGATION FOOTER (styles/components/navigationFooter.css)
+       Tokens governing the bottom navigation bar, status, icons & toggles.
+    ------------------------------------------------------------------------- */
+    /* Upward Radial & Gradient Atmosphere */
+    --nav-footer-glow-core: rgba(0, 190, 230, 0.35);
+    --nav-footer-glow-mid: rgba(0, 120, 185, 0.18);
+    --nav-footer-glow-deep: rgba(7, 72, 115, 0.08);
+    --nav-footer-edge-dark: rgba(3, 10, 26, 0.85);
+    --nav-footer-edge-fade: rgba(0, 22, 50, 0.25);
+    --nav-footer-accent-bright: rgba(0, 210, 255, 0.15);
+    --nav-footer-accent-subtle: rgba(0, 130, 210, 0.06);
+
+    /* Base Surfaces & Dividers */
+    --nav-footer-bg-surface: var(--panel-surface-bg);
+    --nav-footer-border-subtle: var(--panel-border-subtle);
+    --nav-footer-border-strong: var(--panel-border-strong);
+
+    /* Status Indicator Dot */
+    --nav-footer-status-dot: rgba(52, 211, 153, 1.00);
+    --nav-footer-status-text: var(--text-primary);
+
+    /* Control Buttons & Mode Toggles */
+    --nav-footer-btn-bg: transparent;
+    --nav-footer-btn-border: transparent;
+    --nav-footer-btn-hover-bg: var(--card-surface-hover);
+    --nav-footer-btn-hover-border: var(--panel-border-subtle);
+    --nav-footer-btn-text: var(--text-primary);
+
+    /* Theme Toggle Accent Icons */
+    --nav-footer-moon-color: var(--brand-secondary-amber);
+    --nav-footer-sun-color: rgba(245, 158, 11, 1.00);
+
+
+    /* ======================================================================
+       3. MAIN CONTENT (styles/components/mainContent.css)
+       Tokens governing the studio canvas, grid geometry, cards, watermark & items.
+    ------------------------------------------------------------------------- */
+    /* Base Viewport Canvas Floor */
+    --canvas-bg-primary: rgba(13, 17, 23, 1.00);
+
+    /* Studio Grid Canvas Layers & Textures */
+    --studio-grid-bg: rgba(255, 255, 255, 1.00);
+    --studio-grid-glow-top-left-core: rgba(180, 185, 195, 0.14);
+    --studio-grid-glow-top-left-edge: rgba(120, 125, 135, 0.05);
+    --studio-grid-glow-bottom-right-core: rgba(160, 165, 175, 0.12);
+    --studio-grid-glow-bottom-right-edge: rgba(100, 105, 115, 0.04);
+    --studio-grid-vignette: rgba(0, 0, 0, 0.5);
+    --studio-grid-line: rgba(255, 255, 255, 0.04);
+    --studio-grid-cell-size: 32px;
+
+    /* Background Watermark & Hover Video */
+    --watermark-logo-opacity: 0.15;
+    --watermark-logo-brightness: 0.75;
+    --watermark-logo-shadow: 0 25px 25px rgb(0 0 0 / 0.15);
+    --video-bg-shadow: 0 25px 25px rgb(0 0 0 / 0.25);
+    --video-bg-opacity: 1.00;
+
+    /* Viewport Overlay & Sticky Scroll Fades */
+    --content-overlay-blur: 3.5px;
+    --content-overlay-brightness-dim: 0.60;
+    --content-overlay-brightness-default: 1.00;
+    --sticky-shadow-upper: linear-gradient(to bottom, rgba(0, 0, 0, 0.85), transparent);
+    --sticky-shadow-lower: linear-gradient(to top, rgba(0, 0, 0, 0.85), transparent);
+
+    /* ItemDetailView Display Cards */
+    --content-card-bg: rgba(4, 22, 40, 0.80);
+    --content-card-border: var(--panel-border-subtle);
+    --content-card-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.5), 0 8px 10px -6px rgb(0 0 0 / 0.5);
+
+    /* Attribute & Nested Item Pills */
+    --content-pill-bg: rgba(13, 17, 23, 0.50);
+    --content-pill-border: rgba(0, 190, 230, 0.12);
+    --content-pill-hover-bg: rgba(10, 53, 85, 0.70);
+    --content-pill-hover-border: var(--panel-border-strong);
+
+    /* Badges & Content Actions */
+    --content-badge-root-bg: rgba(6, 78, 59, 0.60);
+    --content-badge-root-border: rgba(6, 95, 70, 0.60);
+    --content-badge-root-text: rgba(52, 211, 153, 1.00);
+    --content-btn-primary-bg: var(--brand-primary);
+    --content-btn-primary-hover: var(--brand-primary-hover);
+    --content-btn-primary-text: #ffffff;
+    --content-btn-danger-bg: rgba(244, 63, 94, 0.10);
+    --content-btn-danger-hover: rgba(244, 63, 94, 0.20);
+    --content-btn-danger-border: rgba(244, 63, 94, 0.30);
+    --content-btn-danger-text: rgba(253, 164, 175, 1.00);
+
+
+    /* ======================================================================
+       4. LEFT SIDE PANEL (styles/components/leftSidePanel.css)
+       Tokens governing the aside panel, pinned states, tree rows & gear popup.
+    ------------------------------------------------------------------------- */
+    /* Aside Container & Docking */
+    --panel-border-accent: rgba(81, 155, 255, 0.85);
+    --panel-pinned-shadow: 14px 0 35px -4px rgba(0, 0, 0, 0.85);
+
+    /* Feedback & Sync Notice Banners */
+    --panel-notice-loading-bg: rgba(4, 22, 40, 1.00);
+    --panel-notice-loading-text: rgba(245, 165, 36, 1.00);
+    --panel-notice-loading-border: rgba(0, 190, 230, 0.15);
+    --panel-notice-error-bg: rgba(76, 5, 25, 0.60);
+    --panel-notice-error-text: rgba(254, 205, 211, 1.00);
+    --panel-notice-error-border: rgba(159, 18, 57, 1.00);
+
+    /* Tree Node & Row Active States */
+    --explorer-item-hover-bg: rgba(10, 53, 85, 1.00);
+    --explorer-item-active-bg: rgba(7, 72, 115, 0.25);
+    --explorer-item-active-border: rgba(7, 72, 115, 0.40);
+
+    /* Hover Action Popup (Gear / Action Menu) */
+    --explorer-menu-bg: var(--popover-surface-bg);
+    --explorer-menu-border: rgba(0, 190, 230, 0.25);
+    --explorer-menu-btn-text: rgba(110, 143, 174, 1.00);
+    --explorer-menu-btn-hover-bg: rgba(10, 53, 85, 1.00);
+    --explorer-menu-btn-hover-text: rgba(255, 255, 255, 1.00);
+    --explorer-menu-btn-accent-hover: rgba(245, 165, 36, 1.00);
+
+    /* Action Popup Destructive States */
+    --explorer-menu-danger-text: rgba(244, 63, 94, 1.00);
+    --explorer-menu-danger-hover-bg: rgba(76, 5, 25, 0.45);
+    --explorer-menu-danger-hover-text: rgba(251, 113, 133, 1.00);
+
+
+    /* ======================================================================
+       5. RIGHT SIDE PANEL (styles/components/rightSidePanel.css)
+       Tokens governing the right docking drawer, floating tab & scroll rails.
+    ------------------------------------------------------------------------- */
+    /* Main Drawer Chassis */
+    --right-panel-bg: var(--panel-surface-bg);
+    --right-panel-border: var(--panel-border-strong);
+    --right-panel-shadow: -20px 20px 50px rgba(0, 0, 0, 0.85);
+
+    /* Expand Floating Tab (Closed State) */
+    --right-panel-tab-bg: var(--panel-surface-bg);
+    --right-panel-tab-hover-bg: var(--card-surface-hover);
+    --right-panel-tab-border: var(--panel-border-subtle);
+    --right-panel-tab-hover-border: var(--panel-border-strong);
+
+    /* Header & Action Controls */
+    --right-panel-header-border: var(--panel-border-subtle);
+    --right-panel-btn-hover-bg: var(--card-surface-hover);
+}

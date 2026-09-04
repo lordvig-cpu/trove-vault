@@ -3,7 +3,7 @@
 import { useEffect, useState, useRef } from 'react';
 import NavigationHeader from '@/components/NavigationHeader';
 import NavigationFooter from '@/components/NavigationFooter';
-import ItemDetailView from '@/components/ItemDetailView';
+import MainContent from '@/components/MainContent';
 import RightSidePanel from '@/components/RightSidePanel';
 import LeftSidePanel from '@/components/LeftSidePanel';
 import ExplorerContent from '@/components/ExplorerContent';
@@ -12,8 +12,8 @@ import EditItemModal from '@/components/EditItemModal';
 import DeleteItemModal from '@/components/DeleteItemModal';
 import DeleteCollectionModal from '@/components/DeleteCollectionModal';
 import TemplateManagerModal from '@/components/TemplateManagerModal';
-import { CollectionRecord } from '@/components/CollectionDropdown';
-import { ItemRecord } from '@/components/TreeNode';
+import { CollectionRecord } from '@/types/collection';
+import { ItemRecord } from '@/types/item';
 import { useCollections } from '@/hooks/useCollections';
 
 export interface UniversalSearchResultItem extends ItemRecord {
@@ -59,16 +59,13 @@ export default function Home() {
   const [animationsEnabled, setAnimationsEnabled] = useState(true);
   const [isAudioEnabled, setIsAudioEnabled] = useState(true);
   
-  // Video reference for smooth playback & rewinding
   const videoRef = useRef<HTMLVideoElement | null>(null);
 
   useEffect(() => {
     if (isLogoHovered) {
       if (videoRef.current) {
         videoRef.current.currentTime = 0;
-        videoRef.current.play().catch(() => {
-          // Fallback if browser autoplay policies interfere
-        });
+        videoRef.current.play().catch(() => {});
       }
     } else {
       if (videoRef.current) {
@@ -135,7 +132,7 @@ export default function Home() {
   return (
     <div className="h-full w-full bg-canvas text-content-primary flex flex-col overflow-hidden studio-grid-canvas relative">
 
-      {/* 1. INVISIBLE LOGO HOVER TRIGGER ZONE (Top Left) */}
+      {/* 1. LOGO HOVER TRIGGER ZONE */}
       <div 
         className="absolute top-0 left-0 w-36 h-10 z-[100] cursor-pointer" 
         onMouseEnter={() => setIsLogoHovered(true)}
@@ -143,36 +140,30 @@ export default function Home() {
         aria-hidden="true"
       />
 
-      {/* 2. DYNAMIC BACKGROUND LAYER (Fixed Image + Hover Video) */}
+      {/* 2. DYNAMIC BACKGROUND LAYER */}
       <div 
         className="pointer-events-none fixed inset-0 flex items-center justify-center select-none overflow-hidden z-0" 
         aria-hidden="true"
       >
-        {/* Fixed Watermark Image */}
         <img 
           src="/images/web_background_trove_vault_logo.png" 
           alt="" 
-          className={`w-[1250px] max-w-none h-auto object-contain drop-shadow-[var(--watermark-logo-drop-shadow)] transition-all duration-700 ease-out ${
-            isLogoHovered ? 'opacity-0 scale-105' : 'opacity-[var(--watermark-logo-opacity-default)] filter brightness-[var(--watermark-logo-brightness)] scale-100'
-          }`} 
+          className={`watermark-logo-image ${isLogoHovered ? 'watermark-logo-image-hidden' : ''}`} 
         />
 
-        {/* Full-Height Hover Video Animation */}
         <video
           ref={videoRef}
           src="/videos/website_intro_video.mp4"
           muted={!isAudioEnabled}
           playsInline
-          className={`absolute inset-0 w-full h-full object-contain drop-shadow-[var(--bg-video-drop-shadow)] transition-all duration-700 ease-in-out ${
-            isLogoHovered ? 'opacity-[var(--bg-video-opacity-active)] scale-100' : 'opacity-0 scale-95'
-          }`}
+          className={`watermark-video-player ${isLogoHovered ? 'watermark-video-active' : 'watermark-video-inactive'}`}
         />
       </div>
 
-      {/* 3. MAIN APPLICATION UI WRAPPER */}
+      {/* 3. APPLICATION SHELL */}
       <div className="flex flex-col h-full w-full">
 
-        {/* Top NavigationHeader (Always Visible) */}
+        {/* Top Navigation */}
         <div className="shrink-0 relative z-40">
           <NavigationHeader
             searchQuery={searchQuery}
@@ -208,7 +199,7 @@ export default function Home() {
           />
         </div>
 
-        {/* Mid-Section (Fades out when logo is hovered, revealing the background video) */}
+        {/* Center Workspace */}
         <div 
           className={`flex-1 min-h-0 flex overflow-hidden relative z-10 transition-opacity duration-500 ease-in-out ${
             isLogoHovered ? 'opacity-0 pointer-events-none' : 'opacity-100'
@@ -230,58 +221,15 @@ export default function Home() {
             {explorerTreeElement}
           </LeftSidePanel>
 
-          {/* WORKSPACE COLUMN WRAPPER */}
-          <div className="flex-1 min-h-0 relative flex flex-col z-10">
-            
-            {/* Main Content */}
-            <main
-              className={`flex-1 flex flex-col min-h-0 overflow-y-auto relative main_content_scroll transition-all duration-300 ease-in-out ${
-                !isPinned && isLeftSidePanelOpen
-                  ? 'filter blur-[var(--main-content-blur)] brightness-[var(--main-content-brightness-dim)] pointer-events-none select-none'
-                  : 'filter-none brightness-[var(--main-content-brightness-default)]'
-              }`}
-            >
-              {/* Sticky Upper Shadow (only active if an item is selected) */}
-              {selectedItem && (
-                <div 
-                  className="sticky top-0 left-0 right-0 h-10 z-30 pointer-events-none shrink-0 -mb-10" 
-                  style={{ background: 'var(--sticky-upper-shadow-gradient)' }}
-                  aria-hidden="true" 
-                />
-              )}
-
-              {/* Main Content Area */}
-              <div className="max-w-5xl mx-auto p-6 w-full flex-1 pt-10 pb-10">
-                {selectedItem ? (
-                  <ItemDetailView
-                    item={selectedItem}
-                    onAddSubItem={(parent) => {
-                      if (activeCollectionId) handleAddSubItem(activeCollectionId, parent.id);
-                    }}
-                    onEditItem={() => {
-                      if (selectedItem && activeCollectionId) {
-                        handleTriggerEditItem(selectedItem, activeCollectionId);
-                      }
-                    }}
-                    onDeleteItem={() => {
-                      if (selectedItem && activeCollectionId) {
-                        handleTriggerDeleteItem(selectedItem, activeCollectionId);
-                      }
-                    }}
-                  />
-                ) : null}
-              </div>
-
-              {/* Sticky Lower Shadow (only active if an item is selected) */}
-              {selectedItem && (
-                <div 
-                  className="sticky bottom-0 left-0 right-0 h-10 z-30 pointer-events-none shrink-0 -mt-10" 
-                  style={{ background: 'var(--sticky-lower-shadow-gradient)' }}
-                  aria-hidden="true" 
-                />
-              )}
-            </main>
-          </div>
+          {/* Modular Main Content Area */}
+          <MainContent
+            selectedItem={selectedItem}
+            activeCollectionId={activeCollectionId}
+            isBlurred={!isPinned && isLeftSidePanelOpen}
+            onAddSubItem={handleAddSubItem}
+            onEditItem={handleTriggerEditItem}
+            onDeleteItem={handleTriggerDeleteItem}
+          />
 
           <RightSidePanel
             isOpen={isRightPanelOpen}
@@ -291,7 +239,7 @@ export default function Home() {
           />
         </div>
 
-        {/* LOCKED BOTTOM BAR (Always Visible) */}
+        {/* Bottom Navigation */}
         <div className="shrink-0 relative z-40">
           <NavigationFooter 
             activeCollectionName={activeCollection?.name}
@@ -306,7 +254,7 @@ export default function Home() {
         </div>
       </div>
         
-      {/* Modal Container */}
+      {/* Modals Container */}
       {activeModal?.type === 'template_manager' && (
         <TemplateManagerModal
           isOpen={true}

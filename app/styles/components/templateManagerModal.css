@@ -1,0 +1,59 @@
+/* ==========================================================================
+   TEMPLATE MANAGER MODAL STYLES
+   ========================================================================== */
+
+/* Template Card Items in Browser */
+.tmpl-card {
+  padding: 0.75rem;
+  border-radius: 0.75rem;
+  border: 1px solid var(--tmpl-item-border);
+  background-color: var(--tmpl-item-bg);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  transition: all 150ms ease;
+}
+
+.tmpl-card:hover {
+  border-color: var(--tmpl-item-hover-border);
+}
+
+.tmpl-card-selected {
+  background-color: var(--tmpl-item-selected-bg);
+  border-color: var(--tmpl-item-selected-border);
+  box-shadow: var(--tmpl-item-selected-shadow);
+}
+
+/* Badge Count */
+.tmpl-badge-count {
+  font-size: 10px;
+  font-family: monospace;
+  color: var(--tmpl-badge-count-text);
+  background-color: var(--tmpl-badge-count-bg);
+  border: 1px solid var(--tmpl-badge-count-border);
+  padding: 0.125rem 0.5rem;
+  border-radius: 0.25rem;
+}
+
+/* Alert Notification Bars */
+.tmpl-alert-success {
+  padding: 0.75rem;
+  background-color: var(--tmpl-alert-success-bg);
+  border: 1px solid var(--tmpl-alert-success-border);
+  color: var(--tmpl-alert-success-text);
+  font-size: 0.75rem;
+  border-radius: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.tmpl-alert-error {
+  padding: 0.75rem;
+  background-color: var(--tmpl-alert-error-bg);
+  border: 1px solid var(--tmpl-alert-error-border);
+  color: var(--tmpl-alert-error-text);
+  font-size: 0.75rem;
+  border-radius: 0.5rem;
+}

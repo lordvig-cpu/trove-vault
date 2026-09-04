@@ -1,5 +1,5 @@
-import { CollectionRecord } from '@/components/CollectionDropdown';
-import { ItemRecord } from '@/components/TreeNode';
+import { CollectionRecord } from '@/types/collection';
+import { ItemRecord } from '@/types/item';
 import { UnifiedCollectionNode } from '@/components/UnifiedExplorerTree';
 import { SearchScope } from '@/components/NavigationHeader';
 

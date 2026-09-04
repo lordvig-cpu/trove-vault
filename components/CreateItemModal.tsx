@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { supabase } from '@/lib/supabase';
 import { uploadItemImage } from '@/lib/storage';
-import { ItemRecord } from './TreeNode';
+import { ItemRecord } from '@/types/item';
 import { FieldDefinition } from './FieldManagerModal';
 import { CollectionTemplate } from './TemplateManagerModal';
 

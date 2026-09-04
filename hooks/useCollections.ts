@@ -2,8 +2,8 @@
 
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { supabase } from '@/lib/supabase';
-import { CollectionRecord } from '@/components/CollectionDropdown';
-import { ItemRecord } from '@/components/TreeNode';
+import { CollectionRecord } from '@/types/collection';
+import { ItemRecord } from '@/types/item';
 import { SearchScope } from '@/components/NavigationHeader';
 import {
   itemMatchesQuery,

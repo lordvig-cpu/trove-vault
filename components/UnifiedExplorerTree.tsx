@@ -1,8 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { CollectionRecord } from './CollectionDropdown';
-import { ItemRecord } from './TreeNode';
+import { CollectionRecord } from '@/types/collection';
+import { ItemRecord } from '@/types/item';
 
 export interface UnifiedCollectionNode extends CollectionRecord {
   items: ItemRecord[];
@@ -310,7 +310,7 @@ function ItemTreeNode({
               <button
                 type="button"
                 onClick={() => onEditItem(item, collectionId)}
-                className="explorer-action-btn explorer-action-btn-accent"
+                className="explorer-action-btn"
                 title="Edit Item"
               >
                 ✏️

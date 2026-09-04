@@ -2,15 +2,7 @@
 
 import { useState } from 'react';
 import { supabase } from '@/lib/supabase';
-
-export interface CollectionRecord {
-  id: number;
-  name: string;
-  description?: string | null;
-  parent_id?: number | null;
-  created_at?: string;
-  children?: CollectionRecord[];
-}
+import { CollectionRecord } from '@/types/collection';
 
 export interface CollectionDropdownProps {
   collections: CollectionRecord[];
@@ -111,10 +103,8 @@ export default function CollectionDropdown({
               onSelectCollection(col.id);
               setIsOpen(false);
             }}
-            className={`group flex items-center justify-between py-1.5 px-2 rounded-lg cursor-pointer transition ${
-              isActive
-                ? 'bg-accent-primary/20 border border-accent-primary/50 text-content-primary font-semibold'
-                : 'text-content-secondary hover:bg-surface-hover hover:text-content-primary'
+            className={`group col-dropdown-item ${
+              isActive ? 'col-dropdown-item-active' : 'col-dropdown-item-inactive'
             }`}
             style={{ paddingLeft: `${level * 14 + 8}px` }}
           >
@@ -129,7 +119,7 @@ export default function CollectionDropdown({
                 )}
               </div>
               {isActive && (
-                <span className="text-[9px] font-mono text-emerald-400 bg-emerald-950/80 border border-emerald-800/60 px-1 py-0.2 rounded shrink-0 ml-1">
+                <span className="col-dropdown-active-badge">
                   Active
                 </span>
               )}
@@ -164,7 +154,7 @@ export default function CollectionDropdown({
           </div>
 
           {hasChildren && (
-            <div className="border-l border-border-subtle ml-3.5 pl-0.5 space-y-0.5 mt-0.5">
+            <div className="col-dropdown-branch">
               {renderTreeNodes(col.children!, level + 1)}
             </div>
           )}
@@ -178,7 +168,7 @@ export default function CollectionDropdown({
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold bg-surface-hover/80 hover:bg-surface-hover text-content-primary border border-border-subtle transition cursor-pointer"
+        className="col-dropdown-trigger"
       >
         <span className="text-amber-400">📁</span>
         <span className="truncate max-w-[140px]">
@@ -197,7 +187,7 @@ export default function CollectionDropdown({
             }}
           />
 
-          <div className="absolute left-0 mt-2 w-80 bg-surface-popover border border-border-strong rounded-xl shadow-[0_20px_50px_rgba(0,0,0,0.85)] ring-1 ring-white/10 z-50 p-3 flex flex-col gap-3 backdrop-blur-xl">
+          <div className="col-dropdown-panel">
             <div className="flex items-center justify-between border-b border-border-subtle pb-2">
               <span className="text-xs font-bold uppercase tracking-wider text-content-muted">
                 Collections & Folders
@@ -212,10 +202,7 @@ export default function CollectionDropdown({
             </div>
 
             {isCreating && (
-              <form
-                onSubmit={handleCreateCollection}
-                className="p-2.5 bg-surface border border-accent-primary/40 rounded-lg flex flex-col gap-2"
-              >
+              <form onSubmit={handleCreateCollection} className="col-dropdown-form">
                 <div className="flex items-center justify-between">
                   <span className="text-[11px] font-bold text-accent-secondary">
                     {parentCollectionId ? '➕ New Sub-Folder' : '➕ New Root Collection'}

@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { supabase } from '@/lib/supabase';
-import { ItemRecord } from './TreeNode';
+import { ItemRecord } from '@/types/item';
 
 interface DeleteItemModalProps {
   isOpen: boolean;

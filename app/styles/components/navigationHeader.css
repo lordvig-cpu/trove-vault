@@ -1,0 +1,218 @@
+/* ==========================================================================
+   TOP NAVIGATION HEADER STYLES
+   ========================================================================== */
+
+.navigation-header {
+  position: relative;
+  isolation: isolate;
+  overflow: visible;
+  background:
+    radial-gradient(ellipse 190% 240% at 50% -90%,
+      var(--nav-header-glow-core) 0%,
+      var(--nav-header-glow-mid) 35%,
+      var(--nav-header-glow-deep) 65%,
+      transparent 85%),
+    linear-gradient(90deg,
+      var(--nav-header-edge-dark) 0%,
+      var(--nav-header-edge-fade) 18%,
+      transparent 40%,
+      transparent 60%,
+      var(--nav-header-edge-fade) 82%,
+      var(--nav-header-edge-dark) 100%),
+    linear-gradient(180deg,
+      var(--brand-primary-hover) 0%,
+      var(--brand-primary) 22%,
+      var(--panel-surface-bg) 52%,
+      var(--popover-surface-bg) 78%,
+      var(--canvas-bg-primary) 100%);
+  border-bottom: 1px solid var(--panel-border-strong);
+  box-shadow:
+    inset 0 1px 0 var(--panel-border-subtle),
+    inset 0 -1px 0 var(--brand-primary);
+}
+
+.navigation-header::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+  background:
+    radial-gradient(ellipse 140% 160% at 50% -60%,
+      var(--nav-header-accent-bright) 0%,
+      var(--nav-header-accent-subtle) 50%,
+      transparent 75%);
+  mix-blend-mode: screen;
+}
+
+.navigation-header::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+  background: var(--text-primary);
+  filter: url("#navigationBarTexture");
+  opacity: 0.14;
+  mix-blend-mode: overlay;
+}
+
+/* Tab Button & Extension Seams */
+.nav-tab-active {
+  background-color: var(--nav-header-tab-bg-active);
+  border: 1px solid var(--nav-header-tab-border);
+  border-bottom-color: transparent;
+  border-top-left-radius: 0.5rem;
+  border-top-right-radius: 0.5rem;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  color: var(--text-primary);
+  box-shadow: var(--nav-header-tab-shadow);
+  z-index: 60;
+}
+
+.nav-tab-inactive {
+  background-color: transparent;
+  border: 1px solid transparent;
+  border-radius: 0.5rem;
+  color: var(--text-primary);
+  z-index: 50;
+}
+
+.nav-tab-indicator {
+  position: absolute;
+  bottom: -4px;
+  left: -1px;
+  right: -1px;
+  height: 2px;
+  background-color: var(--nav-header-tab-indicator);
+  pointer-events: none;
+}
+
+.nav-tab-extension {
+  position: absolute;
+  top: calc(100% - 1px);
+  left: -1px;
+  right: -1px;
+  height: 0.75rem;
+  background-color: var(--nav-header-tab-bg-active);
+  border-left: 1px solid var(--nav-header-tab-border);
+  pointer-events: none;
+}
+
+/* Floating Flyout Menu */
+.nav-flyout-menu {
+  position: absolute;
+  left: 0;
+  margin-top: 11px;
+  width: 22rem; /* w-88 */
+  max-height: 75vh;
+  background-color: var(--nav-header-flyout-bg);
+  border: 1px solid var(--nav-header-flyout-border);
+  border-radius: 0.75rem;
+  border-top-left-radius: 0;
+  box-shadow: var(--nav-header-flyout-shadow);
+  z-index: 50;
+  padding: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+/* Mount / Unmount Animations */
+@keyframes navMountFade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes navUnmountFade {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+.animate-mount-fade {
+  animation: navMountFade 500ms ease-out;
+}
+
+.animate-unmount-fade {
+  animation: navUnmountFade 500ms ease-out forwards;
+}
+
+/* Search Bar & Scope Select */
+.nav-search-select {
+  background-color: var(--panel-surface-bg);
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 0.375rem 1.5rem 0.375rem 0.5rem;
+  border: 1px solid var(--nav-header-search-border);
+  border-top-left-radius: 0.5rem;
+  border-bottom-left-radius: 0.5rem;
+  cursor: pointer;
+}
+
+.nav-search-select:focus {
+  outline: none;
+  border-color: var(--nav-header-search-focus);
+}
+
+.nav-search-input {
+  width: 100%;
+  background-color: var(--nav-header-search-bg);
+  border-top: 1px solid var(--nav-header-search-border);
+  border-bottom: 1px solid var(--nav-header-search-border);
+  border-right: 1px solid var(--nav-header-search-border);
+  border-left: none;
+  font-size: 0.75rem;
+  border-top-right-radius: 0.5rem;
+  border-bottom-right-radius: 0.5rem;
+  padding: 0.375rem 0.75rem;
+  color: var(--text-primary);
+}
+
+.nav-search-input:focus {
+  outline: none;
+  border-color: var(--nav-header-search-focus);
+}
+
+/* Live Indicator & Profile Avatar */
+.nav-live-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.25rem 0.625rem;
+  background-color: var(--panel-surface-bg);
+  border: 1px solid var(--panel-border-subtle);
+  border-radius: 0.5rem;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--nav-header-status-text);
+}
+
+.nav-live-dot {
+  width: 0.375rem;
+  height: 0.375rem;
+  border-radius: 9999px;
+  background-color: var(--nav-header-status-dot);
+}
+
+.nav-profile-badge {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 9999px;
+  background-color: var(--nav-header-profile-bg);
+  border: 1px solid var(--nav-header-profile-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--nav-header-profile-text);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  transition: border-color 150ms ease;
+}
+
+.nav-profile-badge:hover {
+  border-color: var(--nav-header-profile-border-hover);
+}
