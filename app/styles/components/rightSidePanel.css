@@ -83,26 +83,3 @@
   background-color: var(--right-panel-btn-hover-bg);
   border-color: var(--right-panel-header-border);
 }
-
-/* Left-Rail Scrollbar Implementation */
-.trove-panel-scroll {
-  scrollbar-width: thin;
-  scrollbar-color: var(--panel-border-strong) var(--canvas-bg-primary);
-}
-
-.trove-panel-scroll::-webkit-scrollbar {
-  width: 6px;
-}
-
-.trove-panel-scroll::-webkit-scrollbar-track {
-  background: var(--canvas-bg-primary);
-}
-
-.trove-panel-scroll::-webkit-scrollbar-thumb {
-  background: var(--panel-border-strong);
-  border-radius: 9999px;
-}
-
-.trove-panel-scroll::-webkit-scrollbar-thumb:hover {
-  background: var(--brand-secondary-amber);
-}

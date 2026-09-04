@@ -1,5 +1,5 @@
 /* ==========================================================================
-   THEME: DEFAULT LIGHT (TBD)
+   THEME: DEFAULT LIGHT (AMBER TIDE - DAYBREAK)
    Pure Token Registry: ONLY CSS variables belong in this file.
    Organized 1-to-1 with component stylesheets in styles/components/
    ========================================================================== */
@@ -11,74 +11,88 @@
        Global variables consumed across multiple component sections.
     ------------------------------------------------------------------------- */
     /* Primary Brand Accents */
-    --brand-primary: rgba(7, 72, 115, 1.00);
-    --brand-primary-hover: rgba(0, 130, 210, 1.00);
-    --brand-secondary-amber: rgba(245, 165, 36, 1.00);
+    --brand-primary: rgba(2, 132, 199, 1.00);          /* Sky-600 */
+    --brand-primary-hover: rgba(3, 105, 161, 1.00);    /* Sky-700 */
+    --brand-secondary-amber: rgba(217, 119, 6, 1.00);  /* Amber-600 */
 
     /* Typography Hierarchy */
-    --text-primary: rgba(255, 255, 255, 1.00);
-    --text-secondary: rgba(195, 216, 230, 1.00);
-    --text-muted: rgba(110, 143, 174, 1.00);
+    --text-primary: rgba(15, 23, 42, 1.00);            /* Slate-900 */
+    --text-secondary: rgba(51, 65, 85, 1.00);          /* Slate-700 */
+    --text-muted: rgba(100, 116, 139, 1.00);           /* Slate-500 */
 
     /* Shared Physical Surfaces & Borders */
-    --panel-surface-bg: rgba(4, 22, 40, 0.80);
-    --card-surface-hover: rgba(10, 53, 85, 1.00);
-    --popover-surface-bg: rgba(2, 16, 31, 1.00);
-    --panel-border-subtle: rgba(0, 190, 230, 0.15);
-    --panel-border-strong: rgba(0, 190, 230, 0.55);
+    --panel-surface-bg: rgba(255, 255, 255, 0.55);     /* High transparency frosted glass */
+    --card-surface-hover: rgba(255, 255, 255, 0.85);
+    --popover-surface-bg: rgba(255, 255, 255, 0.98);
+    --panel-border-subtle: rgba(15, 23, 42, 0.08);
+    --panel-border-strong: rgba(2, 132, 199, 0.35);
 
 
     /* ======================================================================
-       1. NAVIGATION HEADER (styles/components/navigationHeader.css)
-       Tokens governing the top navigation bar, glows, tabs, flyout & badges.
+       1. NAVIGATION HEADER & DROPDOWN
+       Mapped to: 
+       - styles/components/navigationHeader.css
+       - styles/components/collectionDropDown.css
     ------------------------------------------------------------------------- */
     /* Radial & Gradient Lighting Atmosphere */
-    --nav-header-glow-core: rgba(0, 190, 230, 0.40);
-    --nav-header-glow-mid: rgba(0, 120, 185, 0.22);
-    --nav-header-glow-deep: rgba(7, 72, 115, 0.10);
-    --nav-header-edge-dark: rgba(3, 10, 26, 0.85);
-    --nav-header-edge-fade: rgba(0, 22, 50, 0.25);
-    --nav-header-accent-bright: rgba(0, 210, 255, 0.18);
-    --nav-header-accent-subtle: rgba(0, 130, 210, 0.08);
+    --nav-header-glow-core: rgba(2, 132, 199, 0.16);
+    --nav-header-glow-mid: rgba(14, 165, 233, 0.10);
+    --nav-header-glow-deep: rgba(186, 230, 253, 0.25);
+    --nav-header-edge-dark: rgba(255, 255, 255, 0.65);
+    --nav-header-edge-fade: rgba(255, 255, 255, 0.60);
+    --nav-header-accent-bright: rgba(2, 132, 199, 0.12);
+    --nav-header-accent-subtle: rgba(2, 132, 199, 0.04);
 
     /* Tab Controls & Indicator Lines */
-    --nav-header-accent-line: rgba(81, 155, 255, 0.85);
-    --nav-header-tab-indicator: rgba(231, 116, 40, 1.00);
+    --nav-header-accent-line: rgba(2, 132, 199, 0.65);
+    --nav-header-tab-indicator: rgba(217, 119, 6, 1.00);
     --nav-header-tab-bg-active: var(--panel-surface-bg);
     --nav-header-tab-border: var(--panel-border-strong);
-    --nav-header-tab-shadow: 0 -4px 12px rgba(0, 190, 230, 0.15);
+    --nav-header-tab-shadow: 0 -4px 12px rgba(2, 132, 199, 0.10);
 
     /* Floating Flyout Menu */
-    --nav-header-flyout-bg: rgba(4, 22, 40, 0.85);
+    --nav-header-flyout-bg: rgba(255, 255, 255, 0.95);
     --nav-header-flyout-border: var(--panel-border-strong);
-    --nav-header-flyout-shadow: 0 20px 50px rgba(0, 0, 0, 0.85);
+    --nav-header-flyout-shadow: 0 16px 40px -8px rgba(15, 23, 42, 0.18);
 
     /* Search Bar & Controls */
-    --nav-header-search-bg: var(--canvas-bg-primary);
+    --nav-header-search-bg: rgba(255, 255, 255, 0.90);
     --nav-header-search-border: var(--panel-border-subtle);
     --nav-header-search-focus: var(--brand-primary);
 
     /* Status Indicator & Profile Avatar */
-    --nav-header-status-dot: rgba(52, 211, 153, 1.00);
-    --nav-header-status-text: rgba(52, 211, 153, 1.00);
-    --nav-header-profile-bg: rgba(7, 72, 115, 0.20);
-    --nav-header-profile-border: rgba(7, 72, 115, 0.60);
+    --nav-header-status-dot: rgba(16, 185, 129, 1.00); /* Emerald-500 */
+    --nav-header-status-text: rgba(5, 150, 105, 1.00); /* Emerald-600 */
+    --nav-header-profile-bg: rgba(2, 132, 199, 0.08);
+    --nav-header-profile-border: rgba(2, 132, 199, 0.25);
     --nav-header-profile-border-hover: var(--brand-primary);
     --nav-header-profile-text: var(--brand-secondary-amber);
 
+    /* Collection Dropdown Specific Tokens */
+    --col-dropdown-btn-bg: rgba(241, 245, 249, 0.85);
+    --col-dropdown-btn-hover-bg: rgba(226, 232, 240, 1.00);
+    --col-dropdown-btn-border: var(--panel-border-subtle);
+    --col-dropdown-panel-bg: var(--popover-surface-bg);
+    --col-dropdown-panel-border: var(--panel-border-strong);
+    --col-dropdown-panel-shadow: 0 16px 40px -8px rgba(15, 23, 42, 0.16);
+    --col-dropdown-item-active-bg: rgba(2, 132, 199, 0.10);
+    --col-dropdown-item-active-border: rgba(2, 132, 199, 0.35);
+    --col-dropdown-form-bg: rgba(241, 245, 249, 0.70);
+    --col-dropdown-form-border: var(--panel-border-subtle);
+
 
     /* ======================================================================
-       2. NAVIGATION FOOTER (styles/components/navigationFooter.css)
-       Tokens governing the bottom navigation bar, status, icons & toggles.
+       2. NAVIGATION FOOTER
+       Mapped to: styles/components/navigationFooter.css
     ------------------------------------------------------------------------- */
     /* Upward Radial & Gradient Atmosphere */
-    --nav-footer-glow-core: rgba(0, 190, 230, 0.35);
-    --nav-footer-glow-mid: rgba(0, 120, 185, 0.18);
-    --nav-footer-glow-deep: rgba(7, 72, 115, 0.08);
-    --nav-footer-edge-dark: rgba(3, 10, 26, 0.85);
-    --nav-footer-edge-fade: rgba(0, 22, 50, 0.25);
-    --nav-footer-accent-bright: rgba(0, 210, 255, 0.15);
-    --nav-footer-accent-subtle: rgba(0, 130, 210, 0.06);
+    --nav-footer-glow-core: rgba(2, 132, 199, 0.14);
+    --nav-footer-glow-mid: rgba(14, 165, 233, 0.08);
+    --nav-footer-glow-deep: rgba(186, 230, 253, 0.20);
+    --nav-footer-edge-dark: rgba(255, 255, 255, 0.65);
+    --nav-footer-edge-fade: rgba(255, 255, 255, 0.60);
+    --nav-footer-accent-bright: rgba(2, 132, 199, 0.10);
+    --nav-footer-accent-subtle: rgba(2, 132, 199, 0.03);
 
     /* Base Surfaces & Dividers */
     --nav-footer-bg-surface: var(--panel-surface-bg);
@@ -86,7 +100,7 @@
     --nav-footer-border-strong: var(--panel-border-strong);
 
     /* Status Indicator Dot */
-    --nav-footer-status-dot: rgba(52, 211, 153, 1.00);
+    --nav-footer-status-dot: rgba(16, 185, 129, 1.00);
     --nav-footer-status-text: var(--text-primary);
 
     /* Control Buttons & Mode Toggles */
@@ -97,108 +111,113 @@
     --nav-footer-btn-text: var(--text-primary);
 
     /* Theme Toggle Accent Icons */
-    --nav-footer-moon-color: var(--brand-secondary-amber);
-    --nav-footer-sun-color: rgba(245, 158, 11, 1.00);
+    --nav-footer-moon-color: rgba(71, 85, 105, 1.00);  /* Slate-600 */
+    --nav-footer-sun-color: rgba(217, 119, 6, 1.00);    /* Amber-600 */
 
 
     /* ======================================================================
-       3. MAIN CONTENT (styles/components/mainContent.css)
-       Tokens governing the studio canvas, grid geometry, cards, watermark & items.
+       3. MAIN CONTENT & STUDIO CANVAS
+       Mapped to: styles/components/mainContent.css
     ------------------------------------------------------------------------- */
     /* Base Viewport Canvas Floor */
-    --canvas-bg-primary: rgba(13, 17, 23, 1.00);
+    --canvas-bg-primary: rgba(226, 232, 240, 1.00);    /* Slate-200 */
 
     /* Studio Grid Canvas Layers & Textures */
-    --studio-grid-bg: rgba(255, 255, 255, 1.00);
-    --studio-grid-glow-top-left-core: rgba(180, 185, 195, 0.14);
-    --studio-grid-glow-top-left-edge: rgba(120, 125, 135, 0.05);
-    --studio-grid-glow-bottom-right-core: rgba(160, 165, 175, 0.12);
-    --studio-grid-glow-bottom-right-edge: rgba(100, 105, 115, 0.04);
-    --studio-grid-vignette: rgba(0, 0, 0, 0.5);
-    --studio-grid-line: rgba(255, 255, 255, 0.04);
+    --studio-grid-bg: rgba(226, 232, 240, 1.00);       /* Slate-200 */
+    --studio-grid-glow-top-left-core: rgba(255, 255, 255, 0.90);
+    --studio-grid-glow-top-left-edge: rgba(255, 255, 255, 0.40);
+    --studio-grid-glow-bottom-right-core: rgba(217, 119, 6, 0.15); 
+    --studio-grid-glow-bottom-right-edge: rgba(217, 119, 6, 0.05);
+    --studio-grid-vignette: rgba(15, 23, 42, 0.05);
+    --studio-grid-line: rgba(15, 23, 42, 0.04);
     --studio-grid-cell-size: 32px;
 
     /* Background Watermark & Hover Video */
-    --watermark-logo-opacity: 0.15;
-    --watermark-logo-brightness: 0.75;
-    --watermark-logo-shadow: 0 25px 25px rgb(0 0 0 / 0.15);
-    --video-bg-shadow: 0 25px 25px rgb(0 0 0 / 0.25);
-    --video-bg-opacity: 1.00;
+    --watermark-logo-opacity: 0.10;
+    --watermark-logo-brightness: 0.95;
+    --watermark-logo-shadow: 0 20px 25px rgba(15, 23, 42, 0.06);
+    --video-bg-shadow: 0 20px 25px rgba(15, 23, 42, 0.10);
+    --video-bg-opacity: 0.95;
 
     /* Viewport Overlay & Sticky Scroll Fades */
     --content-overlay-blur: 3.5px;
-    --content-overlay-brightness-dim: 0.60;
+    --content-overlay-brightness-dim: 0.90;
     --content-overlay-brightness-default: 1.00;
-    --sticky-shadow-upper: linear-gradient(to bottom, rgba(0, 0, 0, 0.85), transparent);
-    --sticky-shadow-lower: linear-gradient(to top, rgba(0, 0, 0, 0.85), transparent);
+    --sticky-shadow-upper: linear-gradient(to bottom, rgba(241, 245, 249, 0.95), transparent);
+    --sticky-shadow-lower: linear-gradient(to top, rgba(241, 245, 249, 0.95), transparent);
 
     /* ItemDetailView Display Cards */
-    --content-card-bg: rgba(4, 22, 40, 0.80);
-    --content-card-border: var(--panel-border-subtle);
-    --content-card-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.5), 0 8px 10px -6px rgb(0 0 0 / 0.5);
+    --content-card-bg: rgba(255, 255, 255, 0.60);
+    --content-card-border: rgba(255, 255, 255, 0.80);  /* White highlight border for glass */
+    --content-card-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.08), 0 0 0 1px rgba(255,255,255,0.5) inset;
 
     /* Attribute & Nested Item Pills */
-    --content-pill-bg: rgba(13, 17, 23, 0.50);
-    --content-pill-border: rgba(0, 190, 230, 0.12);
-    --content-pill-hover-bg: rgba(10, 53, 85, 0.70);
+    --content-pill-bg: rgba(241, 245, 249, 0.85);
+    --content-pill-border: rgba(15, 23, 42, 0.08);
+    --content-pill-hover-bg: rgba(224, 242, 254, 0.80);
     --content-pill-hover-border: var(--panel-border-strong);
 
     /* Badges & Content Actions */
-    --content-badge-root-bg: rgba(6, 78, 59, 0.60);
-    --content-badge-root-border: rgba(6, 95, 70, 0.60);
-    --content-badge-root-text: rgba(52, 211, 153, 1.00);
+    --content-badge-root-bg: rgba(209, 250, 229, 0.85);  /* Emerald-100 */
+    --content-badge-root-border: rgba(52, 211, 153, 0.60);
+    --content-badge-root-text: rgba(4, 120, 87, 1.00);   /* Emerald-700 */
     --content-btn-primary-bg: var(--brand-primary);
     --content-btn-primary-hover: var(--brand-primary-hover);
     --content-btn-primary-text: #ffffff;
-    --content-btn-danger-bg: rgba(244, 63, 94, 0.10);
-    --content-btn-danger-hover: rgba(244, 63, 94, 0.20);
-    --content-btn-danger-border: rgba(244, 63, 94, 0.30);
-    --content-btn-danger-text: rgba(253, 164, 175, 1.00);
+    --content-btn-danger-bg: rgba(254, 226, 226, 0.80);  /* Rose-100 */
+    --content-btn-danger-hover: rgba(254, 202, 202, 1.00);
+    --content-btn-danger-border: rgba(248, 113, 113, 0.50);
+    --content-btn-danger-text: rgba(190, 18, 60, 1.00);  /* Rose-700 */
 
 
     /* ======================================================================
-       4. LEFT SIDE PANEL (styles/components/leftSidePanel.css)
-       Tokens governing the aside panel, pinned states, tree rows & gear popup.
+       4. LEFT SIDE PANEL & EXPLORER TREE
+       Mapped to: styles/components/leftSidePanel.css
     ------------------------------------------------------------------------- */
     /* Aside Container & Docking */
-    --panel-border-accent: rgba(81, 155, 255, 0.85);
-    --panel-pinned-shadow: 14px 0 35px -4px rgba(0, 0, 0, 0.85);
+    --panel-border-accent: rgba(2, 132, 199, 0.40);
+    --panel-pinned-shadow: 10px 0 25px -4px rgba(15, 23, 42, 0.08);
 
     /* Feedback & Sync Notice Banners */
-    --panel-notice-loading-bg: rgba(4, 22, 40, 1.00);
-    --panel-notice-loading-text: rgba(245, 165, 36, 1.00);
-    --panel-notice-loading-border: rgba(0, 190, 230, 0.15);
-    --panel-notice-error-bg: rgba(76, 5, 25, 0.60);
-    --panel-notice-error-text: rgba(254, 205, 211, 1.00);
-    --panel-notice-error-border: rgba(159, 18, 57, 1.00);
+    --panel-notice-loading-bg: rgba(254, 243, 199, 0.85);
+    --panel-notice-loading-text: rgba(180, 83, 9, 1.00);
+    --panel-notice-loading-border: rgba(245, 158, 11, 0.35);
+    --panel-notice-error-bg: rgba(254, 226, 226, 0.85);
+    --panel-notice-error-text: rgba(185, 28, 28, 1.00);
+    --panel-notice-error-border: rgba(239, 68, 68, 0.35);
 
     /* Tree Node & Row Active States */
-    --explorer-item-hover-bg: rgba(10, 53, 85, 1.00);
-    --explorer-item-active-bg: rgba(7, 72, 115, 0.25);
-    --explorer-item-active-border: rgba(7, 72, 115, 0.40);
+    --explorer-item-hover-bg: rgba(226, 232, 240, 0.65);
+    --explorer-item-active-bg: rgba(224, 242, 254, 0.70);
+    --explorer-item-active-border: rgba(2, 132, 199, 0.30);
 
     /* Hover Action Popup (Gear / Action Menu) */
     --explorer-menu-bg: var(--popover-surface-bg);
-    --explorer-menu-border: rgba(0, 190, 230, 0.25);
-    --explorer-menu-btn-text: rgba(110, 143, 174, 1.00);
-    --explorer-menu-btn-hover-bg: rgba(10, 53, 85, 1.00);
-    --explorer-menu-btn-hover-text: rgba(255, 255, 255, 1.00);
-    --explorer-menu-btn-accent-hover: rgba(245, 165, 36, 1.00);
+    --explorer-menu-border: rgba(15, 23, 42, 0.12);
+    --explorer-menu-btn-text: rgba(71, 85, 105, 1.00);
+    --explorer-menu-btn-hover-bg: rgba(241, 245, 249, 1.00);
+    --explorer-menu-btn-hover-text: rgba(15, 23, 42, 1.00);
+    --explorer-menu-btn-accent-hover: rgba(217, 119, 6, 1.00);
 
     /* Action Popup Destructive States */
-    --explorer-menu-danger-text: rgba(244, 63, 94, 1.00);
-    --explorer-menu-danger-hover-bg: rgba(76, 5, 25, 0.45);
-    --explorer-menu-danger-hover-text: rgba(251, 113, 133, 1.00);
+    --explorer-menu-danger-text: rgba(225, 29, 72, 1.00);
+    --explorer-menu-danger-hover-bg: rgba(254, 226, 226, 0.90);
+    --explorer-menu-danger-hover-text: rgba(159, 18, 57, 1.00);
+
+    /* Sticky Tree Header Tokens */
+    --explorer-sticky-folder-bg: rgba(255, 255, 255, 0.65);
+    --explorer-sticky-folder-border: rgba(15, 23, 42, 0.06);
+    --explorer-sticky-shadow: 0 4px 10px -2px rgba(15, 23, 42, 0.05);
 
 
     /* ======================================================================
-       5. RIGHT SIDE PANEL (styles/components/rightSidePanel.css)
-       Tokens governing the right docking drawer, floating tab & scroll rails.
+       5. RIGHT SIDE PANEL
+       Mapped to: styles/components/rightSidePanel.css
     ------------------------------------------------------------------------- */
     /* Main Drawer Chassis */
     --right-panel-bg: var(--panel-surface-bg);
     --right-panel-border: var(--panel-border-strong);
-    --right-panel-shadow: -20px 20px 50px rgba(0, 0, 0, 0.85);
+    --right-panel-shadow: -10px 10px 30px -4px rgba(15, 23, 42, 0.08);
 
     /* Expand Floating Tab (Closed State) */
     --right-panel-tab-bg: var(--panel-surface-bg);
@@ -209,4 +228,63 @@
     /* Header & Action Controls */
     --right-panel-header-border: var(--panel-border-subtle);
     --right-panel-btn-hover-bg: var(--card-surface-hover);
+
+
+    /* ======================================================================
+       6. MODALS & OVERLAYS
+       Mapped to: 
+       - styles/components/fieldManagerModal.css
+       - styles/components/templateManagerModal.css
+    ------------------------------------------------------------------------- */
+    --modal-overlay-bg: rgba(15, 23, 42, 0.40);         /* Subtle daylight scrim */
+    --modal-dialog-bg: rgba(255, 255, 255, 0.98);
+    --modal-dialog-border: var(--panel-border-subtle);
+    --modal-dialog-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.18);
+
+    --modal-header-bg: rgba(248, 250, 252, 0.85);
+    --modal-header-border: var(--panel-border-subtle);
+    --modal-footer-bg: rgba(248, 250, 252, 0.85);
+    --modal-footer-border: var(--panel-border-subtle);
+
+    /* Form Panels & Inputs */
+    --modal-form-bg: rgba(241, 245, 249, 0.70);
+    --modal-form-border: var(--panel-border-subtle);
+    --modal-input-bg: rgba(255, 255, 255, 1.00);
+    --modal-input-border: rgba(15, 23, 42, 0.12);
+    --modal-input-focus-border: var(--brand-primary);
+
+    /* Field Preview Rows */
+    --modal-row-bg: rgba(255, 255, 255, 0.90);
+    --modal-row-border: var(--panel-border-subtle);
+    --modal-row-hover-border: var(--panel-border-strong);
+
+    /* Field Type & Required Badges */
+    --modal-badge-key-bg: rgba(224, 242, 254, 0.80);
+    --modal-badge-key-border: rgba(2, 132, 199, 0.30);
+    --modal-badge-key-text: var(--brand-primary);
+
+    --modal-badge-req-bg: rgba(254, 226, 226, 0.80);
+    --modal-badge-req-border: rgba(239, 68, 68, 0.40);
+    --modal-badge-req-text: rgba(185, 28, 28, 1.00);
+
+    /* Template Manager Specific Tokens */
+    --tmpl-item-bg: rgba(255, 255, 255, 0.85);
+    --tmpl-item-border: var(--panel-border-subtle);
+    --tmpl-item-hover-border: var(--panel-border-strong);
+
+    --tmpl-item-selected-bg: rgba(224, 242, 254, 0.60);
+    --tmpl-item-selected-border: var(--brand-primary);
+    --tmpl-item-selected-shadow: 0 4px 12px rgba(2, 132, 199, 0.12);
+
+    --tmpl-badge-count-bg: rgba(224, 242, 254, 0.80);
+    --tmpl-badge-count-border: rgba(2, 132, 199, 0.25);
+    --tmpl-badge-count-text: var(--brand-primary);
+
+    --tmpl-alert-success-bg: rgba(209, 250, 229, 0.85);
+    --tmpl-alert-success-border: rgba(52, 211, 153, 0.60);
+    --tmpl-alert-success-text: rgba(4, 120, 87, 1.00);
+
+    --tmpl-alert-error-bg: rgba(254, 226, 226, 0.85);
+    --tmpl-alert-error-border: rgba(239, 68, 68, 0.40);
+    --tmpl-alert-error-text: rgba(185, 28, 28, 1.00);
 }

@@ -255,7 +255,7 @@ export default function CollectionDropdown({
               </form>
             )}
 
-            <div className="max-h-64 overflow-y-auto space-y-1">
+            <div className="max-h-64 overflow-y-auto space-y-1 col-dropdown-scroll pr-1">
               {collections.length === 0 ? (
                 <div className="text-xs text-content-muted text-center py-4">
                   No collections yet. Click "+ New Root Collection" above.

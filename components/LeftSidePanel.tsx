@@ -83,7 +83,7 @@ export default function LeftSidePanel({
       )}
 
       {/* Explorer Tree Body: Dedicated Scroll Container */}
-      <div className="explorer-tree-scroll-container px-2 pb-6 main-content-scroll">
+      <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden px-2 pb-6 min-w-0 left-panel-scroll">
         {children}
       </div>
     </aside>

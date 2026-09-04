@@ -54,11 +54,11 @@ body {
 }
 
 /* ==========================================================================
-   GLOBAL SCROLLBAR STYLES
+   UNIVERSAL APP SCROLLBARS (Matches Light/Dark Theme Tokens)
    ========================================================================== */
 * {
   scrollbar-width: thin;
-  scrollbar-color: var(--panel-border-strong) var(--canvas-bg-primary);
+  scrollbar-color: var(--panel-border-strong) transparent;
 }
 
 ::-webkit-scrollbar {
@@ -67,18 +67,14 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--canvas-bg-primary);
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--panel-border-strong);
-  border-radius: 9999px;
+  background-color: var(--panel-border-strong);
+  border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--brand-secondary-amber);
-}
-
-::-webkit-scrollbar-corner {
-  background: transparent;
+  background-color: var(--brand-primary-hover);
 }
