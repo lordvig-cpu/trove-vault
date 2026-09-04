@@ -37,7 +37,7 @@ export default function LeftSidePanel({
       }`}
     >
       {/* Header */}
-      <div className="left-side-panel-header">
+      <div className="left-side-panel-header shrink-0">
         <div>
           <span className="text-[11px] font-bold text-content-muted uppercase tracking-wider block">
             Explorer
@@ -71,7 +71,7 @@ export default function LeftSidePanel({
       </div>
 
       {loading && (
-        <div className="left-side-panel-notice-loading animate-pulse">
+        <div className="left-side-panel-notice-loading animate-pulse shrink-0">
           ⏳ Syncing hierarchy...
         </div>
       )}
@@ -82,8 +82,8 @@ export default function LeftSidePanel({
         </div>
       )}
 
-      {/* Explorer Tree Body */}
-      <div className="flex-1 pb-4 min-w-0">
+      {/* Explorer Tree Body: Dedicated Scroll Container */}
+      <div className="explorer-tree-scroll-container px-2 pb-6 main-content-scroll">
         {children}
       </div>
     </aside>

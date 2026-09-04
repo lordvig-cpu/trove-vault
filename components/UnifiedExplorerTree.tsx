@@ -13,6 +13,7 @@ interface UnifiedExplorerTreeProps {
   collection: UnifiedCollectionNode;
   activeCollectionId: number | null;
   selectedItemId: number | null;
+  depth?: number; // <--- Add depth prop to track the level of nesting
   onSelectCollection: (id: number) => void;
   onSelectItem: (item: ItemRecord, collectionId: number) => void;
   onAddSubCollection: (parentCollectionId: number) => void;
@@ -27,6 +28,7 @@ export default function UnifiedExplorerTree({
   collection,
   activeCollectionId,
   selectedItemId,
+  depth = 0, // <--- Default depth to 0
   onSelectCollection,
   onSelectItem,
   onAddSubCollection,
@@ -43,13 +45,21 @@ export default function UnifiedExplorerTree({
     (collection.subCollections && collection.subCollections.length > 0) ||
     (collection.items && collection.items.length > 0);
 
+  // Each row is h-7 (28px) high. Subfolders stack right below their parents:
+  const stickyTop = depth * 28;
+  const stickyZIndex = 20 - depth; // Ensure parents layer predictably over or under
+
   return (
     <div className="select-none text-[13px] font-sans w-full min-w-0 flex flex-col">
-      {/* COLLECTION / FOLDER ROW */}
+      {/* COLLECTION / FOLDER ROW (STICKY) */}
       <div
         onClick={() => onSelectCollection(collection.id)}
         title={`Folder: ${collection.name}`}
-        className={`group flex items-center h-7 px-1.5 gap-1.5 rounded-md cursor-pointer transition w-full min-w-0 ${
+        style={{
+          top: `${stickyTop}px`,
+          zIndex: stickyZIndex,
+        }}
+        className={`group flex items-center h-7 px-1.5 gap-1.5 rounded-md cursor-pointer transition w-full min-w-0 explorer-folder-sticky-header ${
           isActiveCollection
             ? 'bg-accent-primary/15 text-accent-secondary font-medium'
             : 'text-content-secondary hover:bg-surface-hover/60 hover:text-content-primary'
@@ -116,7 +126,7 @@ export default function UnifiedExplorerTree({
           </div>
           
           {/* Hover Bridge & Popup Container */}
-          <div className="absolute right-0 bottom-full pb-1 opacity-0 invisible group-hover/menu:opacity-100 group-hover/menu:visible transition-all duration-300 ease-out z-50">
+          <div className="absolute right-0 top-full pt-1 opacity-0 invisible group-hover/menu:opacity-100 group-hover/menu:visible transition-all duration-300 ease-out z-50">
             <div className="explorer-action-popup">
               <button
                 type="button"
@@ -164,6 +174,7 @@ export default function UnifiedExplorerTree({
               collection={subCol}
               activeCollectionId={activeCollectionId}
               selectedItemId={selectedItemId}
+              depth={depth + 1} // <--- Increment depth for nested subfolders
               onSelectCollection={onSelectCollection}
               onSelectItem={onSelectItem}
               onAddSubCollection={onAddSubCollection}
@@ -296,7 +307,7 @@ function ItemTreeNode({
           </div>
           
           {/* Hover Bridge & Popup Container */}
-          <div className="absolute right-0 bottom-full pb-1 opacity-0 invisible group-hover/menu:opacity-100 group-hover/menu:visible transition-all duration-300 ease-out z-50">
+          <div className="absolute right-0 top-full pt-1 opacity-0 invisible group-hover/menu:opacity-100 group-hover/menu:visible transition-all duration-300 ease-out z-50">
             <div className="explorer-action-popup">
               {/* buttons */}
               <button

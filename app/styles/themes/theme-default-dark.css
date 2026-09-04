@@ -205,6 +205,11 @@
     --explorer-menu-danger-hover-bg: rgba(76, 5, 25, 0.45);
     --explorer-menu-danger-hover-text: rgba(251, 113, 133, 1.00);
 
+    /* Sticky Tree Header Tokens */
+    --explorer-sticky-folder-bg: rgba(4, 22, 40, 0.95);
+    --explorer-sticky-folder-border: var(--panel-border-subtle);
+    --explorer-sticky-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.65);
+
 
     /* ======================================================================
        5. RIGHT SIDE PANEL
