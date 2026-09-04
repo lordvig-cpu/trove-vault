@@ -62,7 +62,7 @@ export default function LeftSidePanel({
           <button
             type="button"
             onClick={onTogglePin}
-            className="left-side-panel-pin-btn"
+            className="left-side-panel-pin-btn group"
             title={isPinned ? 'Unpin LeftSidePanel' : 'Pin LeftSidePanel'}
           >
             <PinFilledIcon className="w-3.5 h-3.5 text-content-primary" />

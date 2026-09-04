@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { CollectionRecord } from '@/types/collection';
 import { ItemRecord } from '@/types/item';
+import { GearIcon } from '@/components/icons/ActionIcons';
 
 export interface UnifiedCollectionNode extends CollectionRecord {
   items: ItemRecord[];
@@ -13,7 +14,7 @@ interface UnifiedExplorerTreeProps {
   collection: UnifiedCollectionNode;
   activeCollectionId: number | null;
   selectedItemId: number | null;
-  depth?: number; // <--- Add depth prop to track the level of nesting
+  depth?: number;
   onSelectCollection: (id: number) => void;
   onSelectItem: (item: ItemRecord, collectionId: number) => void;
   onAddSubCollection: (parentCollectionId: number) => void;
@@ -28,7 +29,7 @@ export default function UnifiedExplorerTree({
   collection,
   activeCollectionId,
   selectedItemId,
-  depth = 0, // <--- Default depth to 0
+  depth = 0,
   onSelectCollection,
   onSelectItem,
   onAddSubCollection,
@@ -45,9 +46,8 @@ export default function UnifiedExplorerTree({
     (collection.subCollections && collection.subCollections.length > 0) ||
     (collection.items && collection.items.length > 0);
 
-  // Each row is h-7 (28px) high. Subfolders stack right below their parents:
   const stickyTop = depth * 28;
-  const stickyZIndex = 20 - depth; // Ensure parents layer predictably over or under
+  const stickyZIndex = 20 - depth;
 
   return (
     <div className="select-none text-[13px] font-sans w-full min-w-0 flex flex-col">
@@ -59,13 +59,12 @@ export default function UnifiedExplorerTree({
           top: `${stickyTop}px`,
           zIndex: stickyZIndex,
         }}
-        className={`group flex items-center h-7 px-1.5 gap-1.5 rounded-md cursor-pointer transition w-full min-w-0 explorer-folder-sticky-header ${
+        className={`group flex items-center h-7 px-1.5 gap-1.5 cursor-pointer transition w-full min-w-0 explorer-folder-sticky-header ${
           isActiveCollection
             ? 'bg-accent-primary/15 text-accent-secondary font-medium'
             : 'text-content-secondary hover:bg-surface-hover/60 hover:text-content-primary'
         }`}
       >
-        {/* Chevron */}
         <button
           type="button"
           onClick={(e) => {
@@ -79,12 +78,10 @@ export default function UnifiedExplorerTree({
           {isOpen ? '▼' : '▶'}
         </button>
 
-        {/* Folder Icon */}
         <span className="w-4 h-4 flex items-center justify-center text-sm text-amber-400 shrink-0 select-none">
           {isOpen ? '📂' : '📁'}
         </span>
 
-        {/* Truncated Collection Name */}
         <span 
           title={`Folder: ${collection.name}`}
           className="text-[13px] tracking-tight font-medium truncate shrink min-w-0"
@@ -103,29 +100,10 @@ export default function UnifiedExplorerTree({
           className="relative group/menu opacity-0 group-hover:opacity-100 transition shrink-0 ml-0.5"
           onClick={(e) => e.stopPropagation()}
         >
-          {/* Gear Trigger Button */}
           <div className="w-[22px] h-[22px] flex items-center justify-center rounded border border-transparent group-hover/menu:bg-slate-800/60 group-hover/menu:border-border-subtle transition-colors cursor-default">
-            <svg
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-              aria-hidden="true"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.7"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="w-[15px] h-[15px] text-content-muted group-hover/menu:text-white transition-all duration-300 ease-out group-hover/menu:rotate-90"
-            >
-              <path
-                fillRule="evenodd"
-                clipRule="evenodd"
-                className="fill-transparent group-hover/menu:fill-current transition-colors duration-300"
-                d="M12 8.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7Zm7.4 5a7.7 7.7 0 0 0 .1-1.5 7.7 7.7 0 0 0-.1-1.5l2-1.5-2-3.5-2.4 1a8.7 8.7 0 0 0-2.6-1.5L14 2h-4l-.4 3a8.7 8.7 0 0 0-2.6 1.5l-2.4-1-2 3.5 2 1.5a7.7 7.7 0 0 0-.1 1.5c0 .5 0 1 .1 1.5l-2 1.5 2 3.5 2.4-1a8.7 8.7 0 0 0 2.6 1.5l.4 3h4l.4-3a8.7 8.7 0 0 0 2.6-1.5l2.4 1 2-3.5-2-1.5Z"
-              />
-            </svg>
+            <GearIcon className="w-[15px] h-[15px] text-content-muted group-hover/menu:text-white transition-all duration-300 ease-out group-hover/menu:rotate-90" />
           </div>
           
-          {/* Hover Bridge & Popup Container */}
           <div className="absolute right-0 top-full pt-1 opacity-0 invisible group-hover/menu:opacity-100 group-hover/menu:visible transition-all duration-300 ease-out z-50">
             <div className="explorer-action-popup">
               <button
@@ -174,7 +152,7 @@ export default function UnifiedExplorerTree({
               collection={subCol}
               activeCollectionId={activeCollectionId}
               selectedItemId={selectedItemId}
-              depth={depth + 1} // <--- Increment depth for nested subfolders
+              depth={depth + 1}
               onSelectCollection={onSelectCollection}
               onSelectItem={onSelectItem}
               onAddSubCollection={onAddSubCollection}
@@ -252,7 +230,6 @@ function ItemTreeNode({
             : 'text-content-muted hover:bg-surface-hover/60 hover:text-content-secondary'
         }`}
       >
-        {/* Sub-item Chevron */}
         <button
           type="button"
           onClick={(e) => {
@@ -266,12 +243,10 @@ function ItemTreeNode({
           {isOpen ? '▼' : '▶'}
         </button>
 
-        {/* Type Icon */}
         <span className="w-4 h-4 flex items-center justify-center text-[13px] leading-none shrink-0 select-none">
           {typeIcon}
         </span>
 
-        {/* Truncated Item Name */}
         <span 
           title={item.name}
           className={`text-[13px] tracking-tight truncate shrink min-w-0 ${isSelected ? 'text-accent-secondary font-medium' : ''}`}
@@ -284,32 +259,12 @@ function ItemTreeNode({
           className="relative group/menu opacity-0 group-hover:opacity-100 transition shrink-0 ml-0.5"
           onClick={(e) => e.stopPropagation()}
         >
-          {/* Gear Trigger Button */}
           <div className="w-[22px] h-[22px] flex items-center justify-center rounded border border-transparent group-hover/menu:bg-slate-800/60 group-hover/menu:border-border-subtle transition-colors cursor-default">
-            <svg
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-              aria-hidden="true"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.7"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="w-[15px] h-[15px] text-content-muted group-hover/menu:text-white transition-all duration-300 ease-out group-hover/menu:rotate-90"
-            >
-              <path
-                fillRule="evenodd"
-                clipRule="evenodd"
-                className="fill-transparent group-hover/menu:fill-current transition-colors duration-300"
-                d="M12 8.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7Zm7.4 5a7.7 7.7 0 0 0 .1-1.5 7.7 7.7 0 0 0-.1-1.5l2-1.5-2-3.5-2.4 1a8.7 8.7 0 0 0-2.6-1.5L14 2h-4l-.4 3a8.7 8.7 0 0 0-2.6 1.5l-2.4-1-2 3.5 2 1.5a7.7 7.7 0 0 0-.1 1.5c0 .5 0 1 .1 1.5l-2 1.5 2 3.5 2.4-1a8.7 8.7 0 0 0 2.6 1.5l.4 3h4l.4-3a8.7 8.7 0 0 0 2.6-1.5l2.4 1 2-3.5-2-1.5Z"
-              />
-            </svg>
+            <GearIcon className="w-[15px] h-[15px] text-content-muted group-hover/menu:text-white transition-all duration-300 ease-out group-hover/menu:rotate-90" />
           </div>
           
-          {/* Hover Bridge & Popup Container */}
           <div className="absolute right-0 top-full pt-1 opacity-0 invisible group-hover/menu:opacity-100 group-hover/menu:visible transition-all duration-300 ease-out z-50">
             <div className="explorer-action-popup">
-              {/* buttons */}
               <button
                 type="button"
                 onClick={() => onAddSubItem(collectionId, item.id)}

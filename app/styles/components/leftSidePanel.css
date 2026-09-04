@@ -179,11 +179,12 @@
 .explorer-folder-sticky-header {
   position: sticky;
   top: 0;
-  z-index: 20;
   background-color: var(--explorer-sticky-folder-bg);
   backdrop-filter: blur(12px);
-  /* Use a pseudo background extension to prevent upper peek-through */
-  box-shadow: 0 -8px 0 0 var(--explorer-sticky-folder-bg), 0 4px 8px -2px rgba(0, 0, 0, 0.4);
+  /* Uses an inset border line so stacking context never clips it */
+  box-shadow: inset 0 -1px 0 0 var(--explorer-sticky-folder-border),
+              0 -8px 0 0 var(--explorer-sticky-folder-bg),
+              var(--explorer-sticky-shadow);
 }
 
 /* Optional subtle border/shadow when pinned */

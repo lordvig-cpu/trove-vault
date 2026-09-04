@@ -1,6 +1,7 @@
 'use client';
 
 import React, { ReactNode } from 'react';
+import { ChevronLeftIcon, ChevronRightIcon } from '@/components/icons/SystemIcons';
 
 interface RightPanelProps {
   isOpen: boolean;
@@ -34,17 +35,7 @@ export default function RightPanel({
         }`}
         title="Open Side Panel"
       >
-        <svg 
-          className="w-3.5 h-3.5 transform group-hover:-translate-x-0.5 transition-transform" 
-          viewBox="0 0 24 24" 
-          fill="none" 
-          stroke="currentColor" 
-          strokeWidth="2.5" 
-          strokeLinecap="round" 
-          strokeLinejoin="round"
-        >
-          <polyline points="15 18 9 12 15 6" />
-        </svg>
+        <ChevronLeftIcon className="w-3.5 h-3.5 transform group-hover:-translate-x-0.5 transition-transform" />
       </button>
 
       {/* 2. DOCKED RIGHT PANEL */}
@@ -66,23 +57,13 @@ export default function RightPanel({
             className="right-side-panel-btn group"
             title="Collapse Panel"
           >
-            <svg 
-              className="w-3.5 h-3.5 text-content-muted group-hover:text-content-primary transform group-hover:translate-x-0.5 transition-all" 
-              viewBox="0 0 24 24" 
-              fill="none" 
-              stroke="currentColor" 
-              strokeWidth="2.5" 
-              strokeLinecap="round" 
-              strokeLinejoin="round"
-            >
-              <polyline points="9 18 15 12 9 6" />
-            </svg>
+            <ChevronRightIcon className="w-3.5 h-3.5 text-content-muted group-hover:text-content-primary transform group-hover:translate-x-0.5 transition-all" />
           </button>
         </div>
 
         {/* Panel Body with Left-Rail Scrollbar */}
         <div 
-          className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden trove-panel-scroll pl-3 pr-2 py-3"
+          className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden pl-3 pr-2 py-3"
           style={{ direction: 'rtl' }}
         >
           <div 

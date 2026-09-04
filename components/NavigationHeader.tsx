@@ -4,6 +4,7 @@ import { ReactNode, useState, useEffect } from 'react';
 import { CollectionRecord } from '@/types/collection';
 import CollectionDropdown from '@/components/CollectionDropdown';
 import { PinOutlineIcon } from '@/components/icons/PinIcons';
+import { NavigationBarTextureFilter } from '@/components/icons/SystemIcons';
 
 export type SearchScope = 'current' | 'all';
 
@@ -86,13 +87,7 @@ export default function NavigationHeader({
 
   return (
     <>
-      <svg className="hidden" aria-hidden="true">
-        <filter id="navigationBarTexture">
-          <feTurbulence type="fractalNoise" baseFrequency="0.04 1.8" numOctaves="5" stitchTiles="stitch" result="noise" />
-          <feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 0.85 0" in="noise" result="coloredNoise" />
-          <feBlend mode="overlay" in="SourceGraphic" in2="coloredNoise" />
-        </filter>
-      </svg>
+      <NavigationBarTextureFilter />
 
       <header className="navigation-header h-14 flex items-center justify-between shrink-0 relative z-[200]">
 
