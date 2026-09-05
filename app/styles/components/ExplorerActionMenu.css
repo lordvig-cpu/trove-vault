@@ -13,11 +13,11 @@
   position: relative;
 }
 
-/* Hover catchment bridge */
+/* Expand top and bottom reach so even when the menu shifts up or down, the bridge spans back to the gear icon */
 .bridge {
   position: absolute;
-  top: -0.75rem;
-  bottom: -0.75rem;
+  top: -2.5rem;    /* Generous top margin */
+  bottom: -2.5rem; /* Generous bottom margin */
   pointer-events: auto;
   z-index: 1;
 }

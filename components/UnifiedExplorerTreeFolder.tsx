@@ -62,9 +62,21 @@ export default function UnifiedExplorerTreeFolder({
   const handleGearMouseEnter = (e: React.MouseEvent<HTMLDivElement>) => {
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
     const rect = e.currentTarget.getBoundingClientRect();
+
+    const menuHeight = 215; // Approximate height of the menu with padding
+    const bottomNavReserve = 64; // Height of bottom status bar + padding
+    const maxAllowedTop = window.innerHeight - menuHeight - bottomNavReserve;
+    
+    // Default top aligns slightly above the gear icon
+    let calculatedTop = Math.round(rect.top - 4);
+
+    // If opening downwards would clip under the bottom bar, clamp it upwards
+    if (calculatedTop > maxAllowedTop) {
+      calculatedTop = Math.max(16, maxAllowedTop);
+    }
     
     setMenuCoords({ 
-      top: Math.round(rect.top - 4), 
+      top: calculatedTop, 
       left: Math.round(rect.right + 6) 
     });
     
