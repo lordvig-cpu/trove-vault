@@ -140,45 +140,45 @@ export default function UnifiedExplorerTreeItem({
         <button
           type="button"
           onClick={() => { onAddSubItem(collectionId, item.id); setIsMenuOpen(false); }}
-          className="flex items-center gap-2.5 px-3 py-1.5 hover:bg-[var(--card-surface-hover)] text-left transition-colors w-full rounded"
+          className="group/action flex items-center gap-2.5 px-3 py-1.5 hover:bg-amber-500/15 text-left transition-all duration-150 w-full rounded"
         >
           <span className="w-5 shrink-0 flex items-center justify-center">
-            <AddSubItemIcon className="w-3.5 h-3.5 text-content-primary" />
+            <AddSubItemIcon className="w-3.5 h-3.5 text-amber-200/90 group-hover/action:text-amber-100 group-hover/action:scale-105 transition-transform" />
           </span>
           <div className="flex flex-col leading-tight min-w-0">
-            <span className="text-xs font-medium text-content-primary">Add Sub-Item</span>
-            <span className="text-[9px] text-content-muted">Create a nested record</span>
+            <span className="text-xs font-medium text-amber-100 group-hover/action:text-white">Add Sub-Item</span>
+            <span className="text-[9px] text-amber-300/60 group-hover/action:text-amber-300/80">Create a nested record</span>
           </div>
         </button>
 
         <button
           type="button"
           onClick={() => { onEditItem(item, collectionId); setIsMenuOpen(false); }}
-          className="flex items-center gap-2.5 px-3 py-1.5 hover:bg-[var(--card-surface-hover)] text-left transition-colors w-full rounded"
+          className="group/action flex items-center gap-2.5 px-3 py-1.5 hover:bg-amber-500/15 text-left transition-all duration-150 w-full rounded"
         >
-          <span className="w-5 shrink-0 flex items-center justify-center text-sm leading-none">
+          <span className="w-5 shrink-0 flex items-center justify-center text-sm leading-none group-hover/action:scale-105 transition-transform">
             ✏️
           </span>
           <div className="flex flex-col leading-tight min-w-0">
-            <span className="text-xs font-medium text-content-primary">Edit Item</span>
-            <span className="text-[9px] text-content-muted">Update attributes</span>
+            <span className="text-xs font-medium text-amber-100 group-hover/action:text-white">Edit Item</span>
+            <span className="text-[9px] text-amber-300/60 group-hover/action:text-amber-300/80">Update attributes</span>
           </div>
         </button>
 
         <button
           type="button"
           onClick={() => { onDeleteItem(item, collectionId); setIsMenuOpen(false); }}
-          className="flex items-center gap-2.5 px-3 py-1.5 hover:bg-rose-500/10 text-left transition-colors group/btn border-t border-[var(--panel-border-subtle)] mt-1 pt-2 w-full rounded"
+          className="group/action flex items-center gap-2.5 px-3 py-1.5 hover:bg-rose-500/15 text-left transition-all duration-150 group/btn border-t border-amber-500/20 mt-1 pt-2 w-full rounded"
         >
-          <span className="w-5 shrink-0 flex items-center justify-center text-sm leading-none">
+          <span className="w-5 shrink-0 flex items-center justify-center text-sm leading-none group-hover/action:scale-105 transition-transform">
             🗑️
           </span>
           <div className="flex flex-col leading-tight min-w-0">
-            <span className="text-xs font-medium text-rose-500 group-hover/btn:text-rose-400">Delete Item</span>
-            <span className="text-[9px] text-rose-500/70">Permanently remove</span>
+            <span className="text-xs font-medium text-rose-400 group-hover/btn:text-rose-300">Delete Item</span>
+            <span className="text-[9px] text-rose-400/70 group-hover/btn:text-rose-300/80">Permanently remove</span>
           </div>
         </button>
-      </ExplorerActionMenu>
+      </ExplorerActionMenu>      
 
       {isOpen && hasSubItems && (
         <div className="border-l border-border-subtle space-y-0.5 ml-2 pl-1.5 my-0.5 flex flex-col min-w-0">

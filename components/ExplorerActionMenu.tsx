@@ -36,7 +36,6 @@ export default function ExplorerActionMenu({
 
   if (!isOpen || !mounted || typeof document === 'undefined') return null;
 
-  // Offset pinned menu further right so the panel border cleanly clears the inner text/icons
   const adjustedLeft = isPinned ? left + 10 : left;
 
   return createPortal(
@@ -50,11 +49,12 @@ export default function ExplorerActionMenu({
         margin: 0,
         zIndex: isPinned ? 30 : 70,
       }}
-      className={`w-56 bg-[var(--popover-surface-bg)] border border-[var(--panel-border-strong)] shadow-[var(--popover-elevation-shadow)] rounded-lg flex flex-col py-1 backdrop-blur-xl pointer-events-auto relative ${
+      /* bg-amber-950/45 brings out translucent glass vibrancy; backdrop-blur-md prevents over-frosting */
+      className={`w-56 bg-amber-950/45 border border-amber-500/40 shadow-[0_8px_32px_0_rgba(245,158,11,0.2)] rounded-lg flex flex-col py-1 backdrop-blur-md pointer-events-auto relative ${
         animationsEnabled ? 'animate-explorer-menu-in' : ''
       }`}
     >
-      {/* Catchment Hover Bridge: wider when pinned to span the extra offset */}
+      {/* Catchment Hover Bridge */}
       <div
         className={`absolute -top-3 -bottom-3 pointer-events-auto ${
           isPinned ? '-left-12 w-12' : '-left-8 w-8'
@@ -65,14 +65,15 @@ export default function ExplorerActionMenu({
 
       {/* Inner Content Wrapper */}
       <div className="relative z-10 flex flex-col pl-5 pr-1">
-        <div className="px-2.5 py-1.5 border-b border-[var(--panel-border-subtle)] mb-1 flex items-center justify-between bg-[var(--card-surface-hover)]/30 rounded-md">
-          <span className="text-[10px] font-bold text-content-muted uppercase tracking-wider">
+        {/* Header: px-3 aligns the text with the button rows below */}
+        <div className="px-4 py-1.5 border-b border-amber-500/25 mb-1 flex items-center justify-between bg-amber-500/10 rounded-md">
+          <span className="text-[10px] font-bold text-amber-400 uppercase tracking-wider">
             {title}
           </span>
-          <span className="text-[10px]">{titleIcon}</span>
+          <span className="text-[10px] text-amber-300">{titleIcon}</span>
         </div>
 
-        <div className="flex flex-col">
+        <div className="flex flex-col text-amber-100">
           {children}
         </div>
       </div>
