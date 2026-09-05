@@ -47,7 +47,7 @@ export default function NavigationFooter({
   };
 
   return (
-    <footer className="navigation-footer h-14 flex items-center justify-between px-4 text-xs select-none shrink-0 z-40">
+    <footer className="navigation-footer h-14 flex items-center justify-between px-4 text-xs select-none shrink-0 z-[60]">
       
       {/* LEFT: STATUS & ACTIVE COLLECTION */}
       <div className="flex items-center gap-3 relative z-10">

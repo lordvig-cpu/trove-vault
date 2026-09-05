@@ -17,7 +17,7 @@
    GLOBAL VIEWPORT & RESET
    ========================================================================== */
 html {
-  zoom: 1.1;
+  zoom: 1.0;
   width: 100%;
   height: 100%;
 }
@@ -31,6 +31,21 @@ body {
   background-color: var(--canvas-bg-primary);
   color: var(--text-primary);
 }
+
+/* =========================================================================================
+   | GLOBAL Z-INDEX HIERARCHY (Tiers in Multiples of 10)                                   |
+   =========================================================================================
+   | Tier / Layer   | Target Elements                   | Description                      |
+   |----------------|-----------------------------------|-----------------------------------
+   | z-[200]+       | Global Modals, DevTools           | Highest overlay plane            |
+   | z-60 to z-100  | Top Nav Bar, Flyouts, App Header  | Floats above panels              |
+   | z-50           | Left / Right Side Panels (aside)  | Pinned & unpinned side panels    |
+   | z-40           | Sticky Tree Headers, Hover Lift   | Active tree row elevation        |
+   | z-30           | ExplorerActionMenu (Portal)       | Behind panel, above canvas       |
+   | z-20           | Main Content Canvas (<main>)      | Active workspace / content cards |
+   | z-10           | Canvas Overlays / Blackout Masks  | Dimming and focus scrims         |
+   | z-0            | Canvas Grid, Watermark, Video     | Lowest background plane          |
+   ========================================================================================= */
 
 /* ==========================================================================
    TAILWIND V4 THEME TOKEN MAPPING
@@ -77,4 +92,22 @@ body {
 
 ::-webkit-scrollbar-thumb:hover {
   background-color: var(--brand-primary-hover);
+}
+
+/* ==========================================================================
+   EXPLORER ACTION MENU PORTAL SLIDE & FADE
+   ========================================================================== */
+@keyframes explorerMenuSlideIn {
+  0% {
+    opacity: 0;
+    transform: translateX(-300px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-explorer-menu-in {
+  animation: explorerMenuSlideIn 800ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }

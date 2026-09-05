@@ -24,7 +24,7 @@
   border-right: 1px solid var(--panel-border-accent);
   box-shadow: var(--panel-pinned-shadow);
   opacity: 1;
-  transform: translateX(0);
+  transform: none; /* MUST BE NONE so position:fixed is freed to document.body */
 }
 
 .left-side-panel-unpinned {

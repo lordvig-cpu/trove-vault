@@ -164,7 +164,7 @@ export default function Home() {
       <div className="flex flex-col h-full w-full">
 
         {/* Top Navigation */}
-        <div className="shrink-0 relative z-40">
+        <div className="shrink-0 relative z-60">
           <NavigationHeader
             searchQuery={searchQuery}
             onSearchChange={setSearchQuery}
@@ -201,7 +201,7 @@ export default function Home() {
 
         {/* Center Workspace */}
         <div 
-          className={`flex-1 min-h-0 flex overflow-hidden relative z-10 transition-opacity duration-500 ease-in-out ${
+          className={`flex-1 min-h-0 flex overflow-hidden relative transition-opacity duration-500 ease-in-out ${
             isLogoHovered ? 'opacity-0 pointer-events-none' : 'opacity-100'
           }`}
         >
@@ -240,7 +240,7 @@ export default function Home() {
         </div>
 
         {/* Bottom Navigation */}
-        <div className="shrink-0 relative z-40">
+        <div className="shrink-0 relative z-60">
           <NavigationFooter 
             activeCollectionName={activeCollection?.name}
             totalItemsCount={allItems.length}

@@ -22,7 +22,7 @@ export default function MainContent({
   onDeleteItem,
 }: MainContentProps) {
   return (
-    <div className="flex-1 min-h-0 relative flex flex-col z-10">
+    <div className="flex-1 min-h-0 relative flex flex-col z-20">
       <main
         className={`flex-1 flex flex-col min-h-0 overflow-y-auto relative main-content-scroll transition-all duration-300 ease-in-out ${
           isBlurred

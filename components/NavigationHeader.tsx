@@ -162,24 +162,25 @@ export default function NavigationHeader({
               {/* Floating Menu */}
               {renderMenu && (
                 <>
-                  {/* Floating Menu Overlay */}
+                  {/* Floating Menu Overlay (z-[60]) */}
                   <div
-                    className={`fixed inset-0 top-14 z-40 ${
+                    className={`fixed inset-0 top-14 z-[60] ${
                       animationsEnabled
                         ? (isClosing && !isPinned ? 'animate-unmount-fade' : 'animate-mount-fade transition-opacity duration-700 ease-in-out')
                         : 'transition-none'
-                    } ${isPinned ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
+                    } ${isPinned ? 'opacity-0 pointer-events-none' : 'opacity-100 pointer-events-auto'}`}
                     onClick={onToggleLeftSidePanel}
                   />
 
-                  {/* Floating Menu Container */}
+                  {/* Floating Menu Container (Forced to zIndex: 70) */}
                   <div
+                    style={{ zIndex: 70 }}
                     className={`nav-flyout-menu transform ${
                       animationsEnabled && !isPinned
                         ? (isClosing ? 'animate-unmount-fade' : 'animate-mount-fade')
                         : ''
                     } ${transitionClass} ${
-                      isPinned ? 'opacity-0 -translate-x-46 pointer-events-none' : 'opacity-100 translate-x-0'
+                      isPinned ? 'opacity-0 -translate-x-46 pointer-events-none' : 'opacity-100 translate-x-0 pointer-events-auto'
                     }`}
                   >
                     <div className="flex items-center justify-between border-b border-border-subtle pb-2 shrink-0">
