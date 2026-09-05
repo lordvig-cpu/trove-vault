@@ -140,10 +140,12 @@ export default function UnifiedExplorerTreeItem({
         <button
           type="button"
           onClick={() => { onAddSubItem(collectionId, item.id); setIsMenuOpen(false); }}
-          className="flex items-center gap-3 px-3 py-1.5 hover:bg-[var(--card-surface-hover)] text-left transition-colors"
+          className="flex items-center gap-2.5 px-3 py-1.5 hover:bg-[var(--card-surface-hover)] text-left transition-colors w-full rounded"
         >
-          <AddSubItemIcon className="w-3.5 h-3.5 text-content-primary shrink-0" />
-          <div className="flex flex-col leading-tight">
+          <span className="w-5 shrink-0 flex items-center justify-center">
+            <AddSubItemIcon className="w-3.5 h-3.5 text-content-primary" />
+          </span>
+          <div className="flex flex-col leading-tight min-w-0">
             <span className="text-xs font-medium text-content-primary">Add Sub-Item</span>
             <span className="text-[9px] text-content-muted">Create a nested record</span>
           </div>
@@ -152,10 +154,12 @@ export default function UnifiedExplorerTreeItem({
         <button
           type="button"
           onClick={() => { onEditItem(item, collectionId); setIsMenuOpen(false); }}
-          className="flex items-center gap-3 px-3 py-1.5 hover:bg-[var(--card-surface-hover)] text-left transition-colors"
+          className="flex items-center gap-2.5 px-3 py-1.5 hover:bg-[var(--card-surface-hover)] text-left transition-colors w-full rounded"
         >
-          <span className="text-sm shrink-0">✏️</span>
-          <div className="flex flex-col leading-tight">
+          <span className="w-5 shrink-0 flex items-center justify-center text-sm leading-none">
+            ✏️
+          </span>
+          <div className="flex flex-col leading-tight min-w-0">
             <span className="text-xs font-medium text-content-primary">Edit Item</span>
             <span className="text-[9px] text-content-muted">Update attributes</span>
           </div>
@@ -164,10 +168,12 @@ export default function UnifiedExplorerTreeItem({
         <button
           type="button"
           onClick={() => { onDeleteItem(item, collectionId); setIsMenuOpen(false); }}
-          className="flex items-center gap-3 px-3 py-1.5 hover:bg-rose-500/10 text-left transition-colors group/btn border-t border-[var(--panel-border-subtle)] mt-1 pt-2"
+          className="flex items-center gap-2.5 px-3 py-1.5 hover:bg-rose-500/10 text-left transition-colors group/btn border-t border-[var(--panel-border-subtle)] mt-1 pt-2 w-full rounded"
         >
-          <span className="text-sm shrink-0">🗑️</span>
-          <div className="flex flex-col leading-tight">
+          <span className="w-5 shrink-0 flex items-center justify-center text-sm leading-none">
+            🗑️
+          </span>
+          <div className="flex flex-col leading-tight min-w-0">
             <span className="text-xs font-medium text-rose-500 group-hover/btn:text-rose-400">Delete Item</span>
             <span className="text-[9px] text-rose-500/70">Permanently remove</span>
           </div>

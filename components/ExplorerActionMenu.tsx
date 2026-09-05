@@ -25,45 +25,57 @@ export default function ExplorerActionMenu({
   title,
   titleIcon,
   animationsEnabled = true,
-  isPinned = true, // Default to true for safety
+  isPinned = true,
   children,
 }: ExplorerActionMenuProps) {
   const [mounted, setMounted] = useState(false);
 
-  useEffect(() => setMounted(true), []);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   if (!isOpen || !mounted || typeof document === 'undefined') return null;
+
+  // Offset pinned menu further right so the panel border cleanly clears the inner text/icons
+  const adjustedLeft = isPinned ? left + 10 : left;
 
   return createPortal(
     <div
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
-      style={{ 
+      style={{
         position: 'fixed',
-        top: `${top}px`, 
-        left: `${left}px`,
+        top: `${top}px`,
+        left: `${adjustedLeft}px`,
         margin: 0,
-        // Pinned: z-30 (tucks behind LeftSidePanel z-50)
-        // Unpinned: z-[70] (tucks behind Flyout Panel z-[80], but floats above Backdrop Overlay z-[60])
-        zIndex: isPinned ? 30 : 70 
+        zIndex: isPinned ? 30 : 70,
       }}
-      className={`w-48 bg-[var(--popover-surface-bg)] border border-[var(--panel-border-strong)] shadow-[var(--popover-elevation-shadow)] rounded-lg flex flex-col py-1 backdrop-blur-xl pointer-events-auto relative ${
+      className={`w-56 bg-[var(--popover-surface-bg)] border border-[var(--panel-border-strong)] shadow-[var(--popover-elevation-shadow)] rounded-lg flex flex-col py-1 backdrop-blur-xl pointer-events-auto relative ${
         animationsEnabled ? 'animate-explorer-menu-in' : ''
       }`}
     >
-      {/* Expanded Hover Catchment Bridge:
-          Extends 32px leftward and 12px vertically beyond the bounds to eliminate any deadzone */}
-      <div 
-        className="absolute -left-8 -top-3 -bottom-3 w-8 pointer-events-auto" 
+      {/* Catchment Hover Bridge: wider when pinned to span the extra offset */}
+      <div
+        className={`absolute -top-3 -bottom-3 pointer-events-auto ${
+          isPinned ? '-left-12 w-12' : '-left-8 w-8'
+        }`}
         style={{ zIndex: 1 }}
-        aria-hidden="true" 
+        aria-hidden="true"
       />
 
-      <div className="px-3 py-1.5 border-b border-[var(--panel-border-subtle)] mb-1 flex items-center justify-between bg-[var(--card-surface-hover)]/30">
-        <span className="text-[10px] font-bold text-content-muted uppercase tracking-wider">{title}</span>
-        <span className="text-[10px]">{titleIcon}</span>
+      {/* Inner Content Wrapper */}
+      <div className="relative z-10 flex flex-col pl-5 pr-1">
+        <div className="px-2.5 py-1.5 border-b border-[var(--panel-border-subtle)] mb-1 flex items-center justify-between bg-[var(--card-surface-hover)]/30 rounded-md">
+          <span className="text-[10px] font-bold text-content-muted uppercase tracking-wider">
+            {title}
+          </span>
+          <span className="text-[10px]">{titleIcon}</span>
+        </div>
+
+        <div className="flex flex-col">
+          {children}
+        </div>
       </div>
-      {children}
     </div>,
     document.body
   );
