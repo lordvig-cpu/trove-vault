@@ -1,0 +1,76 @@
+.menuShell {
+  width: 14rem; /* w-56 (224px) */
+  background-color: rgba(69, 26, 3, 0.45); /* bg-amber-950/45 */
+  border: 1px solid rgba(245, 158, 11, 0.4); /* border-amber-500/40 */
+  box-shadow: 0 8px 32px 0 rgba(245, 158, 11, 0.2);
+  border-radius: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
+  backdrop-filter: blur(12px);
+  pointer-events: auto;
+  position: relative;
+}
+
+/* Hover catchment bridge */
+.bridge {
+  position: absolute;
+  top: -0.75rem;
+  bottom: -0.75rem;
+  pointer-events: auto;
+  z-index: 1;
+}
+
+.bridgePinned {
+  left: -3rem;  /* -left-12 */
+  width: 3rem;  /* w-12 */
+}
+
+.bridgeUnpinned {
+  left: -2rem;  /* -left-8 */
+  width: 2rem;  /* w-8 */
+}
+
+/* Inner content clearance */
+.innerContent {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  padding-left: 1.25rem; /* pl-5 */
+  padding-right: 0.25rem; /* pr-1 */
+}
+
+/* Header bar */
+.headerPill {
+  padding-left: 1rem; /* px-4 */
+  padding-right: 1rem;
+  padding-top: 0.375rem;
+  padding-bottom: 0.375rem;
+  border-bottom: 1px solid rgba(245, 158, 11, 0.25);
+  margin-bottom: 0.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: rgba(245, 158, 11, 0.1);
+  border-radius: 0.375rem;
+}
+
+.headerTitle {
+  font-size: 10px;
+  font-weight: 700;
+  color: #fbbf24; /* text-amber-400 */
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.headerIcon {
+  font-size: 10px;
+  color: #fcd34d; /* text-amber-300 */
+}
+
+.childrenContainer {
+  display: flex;
+  flex-direction: column;
+}

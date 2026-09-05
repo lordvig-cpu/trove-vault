@@ -161,7 +161,7 @@ export default function UnifiedExplorerTreeFolder({
         <button
           type="button"
           onClick={() => { onAddSubCollection(collection.id); setIsMenuOpen(false); }}
-          className="flex items-center gap-3 px-3 py-1.5 hover:bg-[var(--card-surface-hover)] text-left transition-colors"
+          className="flex items-center gap-3 px-3 py-1.5 hover:bg-amber-500/15 text-left transition-colors"
         >
           <span className="text-sm shrink-0">📁</span>
           <div className="flex flex-col leading-tight">
@@ -173,7 +173,7 @@ export default function UnifiedExplorerTreeFolder({
         <button
           type="button"
           onClick={() => { onAddSubItem(collection.id, null); setIsMenuOpen(false); }}
-          className="flex items-center gap-3 px-3 py-1.5 hover:bg-[var(--card-surface-hover)] text-left transition-colors"
+          className="flex items-center gap-3 px-3 py-1.5 hover:bg-amber-500/15 text-left transition-colors"
         >
           <span className="text-sm shrink-0">📄</span>
           <div className="flex flex-col leading-tight">
@@ -185,7 +185,7 @@ export default function UnifiedExplorerTreeFolder({
         <button
           type="button"
           onClick={() => { onEditCollection(collection); setIsMenuOpen(false); }}
-          className="flex items-center gap-3 px-3 py-1.5 hover:bg-[var(--card-surface-hover)] text-left transition-colors"
+          className="flex items-center gap-3 px-3 py-1.5 hover:bg-amber-500/15 text-left transition-colors"
         >
           <span className="text-sm shrink-0">✏️</span>
           <div className="flex flex-col leading-tight">
@@ -194,15 +194,20 @@ export default function UnifiedExplorerTreeFolder({
           </div>
         </button>
 
+        {/* Standalone divider line with equal vertical spacing */}
+        <div className="border-t border-amber-500/20 my-1 mx-1" />
+
         <button
           type="button"
           onClick={() => { onDeleteCollection(collection); setIsMenuOpen(false); }}
-          className="flex items-center gap-3 px-3 py-1.5 hover:bg-rose-500/10 text-left transition-colors group/btn border-t border-[var(--panel-border-subtle)] mt-1 pt-2"
+          className="group/action flex items-center gap-2.5 px-3 py-1.5 hover:bg-rose-500/15 text-left transition-all duration-150 group/btn w-full rounded"
         >
-          <span className="text-sm shrink-0">🗑️</span>
-          <div className="flex flex-col leading-tight">
-            <span className="text-xs font-medium text-rose-500 group-hover/btn:text-rose-400">Delete Folder</span>
-            <span className="text-[9px] text-rose-500/70">Permanently remove</span>
+          <span className="w-5 shrink-0 flex items-center justify-center text-sm leading-none group-hover/action:scale-105 transition-transform">
+            🗑️
+          </span>
+          <div className="flex flex-col leading-tight min-w-0">
+            <span className="text-xs font-medium text-rose-400 group-hover/btn:text-rose-300">Delete Collection</span>
+            <span className="text-[9px] text-rose-400/70 group-hover/btn:text-rose-300/80">Permanently remove</span>
           </div>
         </button>
       </ExplorerActionMenu>

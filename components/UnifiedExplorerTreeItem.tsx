@@ -165,10 +165,13 @@ export default function UnifiedExplorerTreeItem({
           </div>
         </button>
 
+        {/* Standalone divider line with equal vertical spacing */}
+        <div className="border-t border-amber-500/20 my-1 mx-1" />
+
         <button
           type="button"
           onClick={() => { onDeleteItem(item, collectionId); setIsMenuOpen(false); }}
-          className="group/action flex items-center gap-2.5 px-3 py-1.5 hover:bg-rose-500/15 text-left transition-all duration-150 group/btn border-t border-amber-500/20 mt-1 pt-2 w-full rounded"
+          className="group/action flex items-center gap-2.5 px-3 py-1.5 hover:bg-rose-500/15 text-left transition-all duration-150 group/btn w-full rounded"
         >
           <span className="w-5 shrink-0 flex items-center justify-center text-sm leading-none group-hover/action:scale-105 transition-transform">
             🗑️
