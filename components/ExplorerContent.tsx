@@ -95,7 +95,7 @@ export default function ExplorerContent({
             collection={colNode}
             activeCollectionId={activeCollectionId}
             selectedItemId={selectedItemId}
-            isPinned
+            isPinned={isPinned}
             onSelectCollection={(colId) => {
               onSelectCollection(colId);
               if (!isPinned && setIsLeftSidePanelOpen) {

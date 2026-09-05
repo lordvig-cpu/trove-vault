@@ -164,7 +164,7 @@ export default function Home() {
       <div className="flex flex-col h-full w-full">
 
         {/* Top Navigation */}
-        <div className="shrink-0 relative z-60">
+        <div className="shrink-0 relative z-[80]">
           <NavigationHeader
             searchQuery={searchQuery}
             onSearchChange={setSearchQuery}
@@ -240,7 +240,7 @@ export default function Home() {
         </div>
 
         {/* Bottom Navigation */}
-        <div className="shrink-0 relative z-60">
+        <div className="shrink-0 relative z-[60]">
           <NavigationFooter 
             activeCollectionName={activeCollection?.name}
             totalItemsCount={allItems.length}

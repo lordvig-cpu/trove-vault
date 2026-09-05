@@ -32,20 +32,23 @@ body {
   color: var(--text-primary);
 }
 
-/* =========================================================================================
-   | GLOBAL Z-INDEX HIERARCHY (Tiers in Multiples of 10)                                   |
-   =========================================================================================
-   | Tier / Layer   | Target Elements                   | Description                      |
-   |----------------|-----------------------------------|-----------------------------------
-   | z-[200]+       | Global Modals, DevTools           | Highest overlay plane            |
-   | z-60 to z-100  | Top Nav Bar, Flyouts, App Header  | Floats above panels              |
-   | z-50           | Left / Right Side Panels (aside)  | Pinned & unpinned side panels    |
-   | z-40           | Sticky Tree Headers, Hover Lift   | Active tree row elevation        |
-   | z-30           | ExplorerActionMenu (Portal)       | Behind panel, above canvas       |
-   | z-20           | Main Content Canvas (<main>)      | Active workspace / content cards |
-   | z-10           | Canvas Overlays / Blackout Masks  | Dimming and focus scrims         |
-   | z-0            | Canvas Grid, Watermark, Video     | Lowest background plane          |
-   ========================================================================================= */
+/* ===========================================================================================================================
+   | GLOBAL Z-INDEX HIERARCHY (Tiers in Multiples of 10)                                                                     |
+   ===========================================================================================================================
+   | Tier / Layer   | Target Elements                   | Description                      | Primary File(s)                 |
+   |----------------|-----------------------------------|----------------------------------|---------------------------------|
+   | z-[200]+       | Global Modals, DevTools           | Highest overlay plane            | *Modal.tsx (e.g. EditItemModal) |
+   | z-[100]        | Logo Hover Trigger Zone           | Invisible video trigger area     | page.tsx                        |
+   | z-[80]         | Top Nav Bar & Flyout Container    | Unpinned Explorer Flyout Menu    | page.tsx, NavigationHeader.tsx  |
+   | z-[70]         | Unpinned ExplorerActionMenu       | Floats over backdrop, under Nav  | ExplorerActionMenu.tsx          |
+   | z-[60]         | Flyout Backdrop & Bottom Nav      | Dimming overlay & Footer         | NavigationHeader.tsx, page.tsx  |
+   | z-50           | Left / Right Side Panels (aside)  | Pinned side panels               | LeftSidePanel.tsx, RightSide... |
+   | z-40           | Sticky Tree Headers, Hover Lift   | Active tree row elevation        | UnifiedExplorerTree*.tsx        |
+   | z-30           | Pinned ExplorerActionMenu         | Behind panel border, above canvas| ExplorerActionMenu.tsx          |
+   | z-20           | Main Content Canvas (<main>)      | Active workspace / content cards | MainContent.tsx                 |
+   | z-10           | Canvas Overlays / Blackout Masks  | Local dimming inside workspace   | MainContent.tsx, NavigationHead.|
+   | z-0            | Canvas Grid, Watermark, Video     | Lowest background plane          | page.tsx                        |
+   =========================================================================================================================== */
 
 /* ==========================================================================
    TAILWIND V4 THEME TOKEN MAPPING

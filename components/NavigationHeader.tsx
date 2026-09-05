@@ -5,6 +5,7 @@ import { CollectionRecord } from '@/types/collection';
 import CollectionDropdown from '@/components/CollectionDropdown';
 import { PinOutlineIcon } from '@/components/icons/PinIcons';
 import { NavigationBarTextureFilter } from '@/components/icons/SystemIcons';
+import { createPortal } from 'react-dom';
 
 export type SearchScope = 'current' | 'all';
 
@@ -89,7 +90,7 @@ export default function NavigationHeader({
     <>
       <NavigationBarTextureFilter />
 
-      <header className="navigation-header h-14 flex items-center justify-between shrink-0 relative z-[200]">
+      <header className="navigation-header h-14 flex items-center justify-between shrink-0 relative z-[10]">
 
         {/* LEFT SECTION */}
         <div className="flex items-center h-full">
@@ -162,19 +163,22 @@ export default function NavigationHeader({
               {/* Floating Menu */}
               {renderMenu && (
                 <>
-                  {/* Floating Menu Overlay (z-[60]) */}
-                  <div
-                    className={`fixed inset-0 top-14 z-[60] ${
-                      animationsEnabled
-                        ? (isClosing && !isPinned ? 'animate-unmount-fade' : 'animate-mount-fade transition-opacity duration-700 ease-in-out')
-                        : 'transition-none'
-                    } ${isPinned ? 'opacity-0 pointer-events-none' : 'opacity-100 pointer-events-auto'}`}
-                    onClick={onToggleLeftSidePanel}
-                  />
+                  {/* Floating Menu Overlay (Portaled to z-[60] on the body) */}
+                  {typeof document !== 'undefined' && createPortal(
+                    <div
+                      className={`fixed inset-0 top-14 z-[60] ${
+                        animationsEnabled
+                          ? (isClosing && !isPinned ? 'animate-unmount-fade' : 'animate-mount-fade transition-opacity duration-700 ease-in-out')
+                          : 'transition-none'
+                      } ${isPinned ? 'opacity-0 pointer-events-none' : 'opacity-100 pointer-events-auto'}`}
+                      onClick={onToggleLeftSidePanel}
+                    />,
+                    document.body
+                  )}
 
-                  {/* Floating Menu Container (Forced to zIndex: 70) */}
+                  {/* Floating Menu Container */}
                   <div
-                    style={{ zIndex: 70 }}
+                    style={{ zIndex: 80 }}
                     className={`nav-flyout-menu transform ${
                       animationsEnabled && !isPinned
                         ? (isClosing ? 'animate-unmount-fade' : 'animate-mount-fade')

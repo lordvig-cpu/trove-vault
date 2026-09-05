@@ -15,7 +15,7 @@ export const GearIcon = ({ className, isActive }: { className?: string; isActive
     <path
       fillRule="evenodd"
       clipRule="evenodd"
-      className={`transition-colors duration-600 ${
+      className={`transition-colors duration-700 ${
         isActive ? 'fill-current' : 'fill-transparent group-hover/gear:fill-current'
       }`}
       d="M12 8.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7Zm7.4 5a7.7 7.7 0 0 0 .1-1.5 7.7 7.7 0 0 0-.1-1.5l2-1.5-2-3.5-2.4 1a8.7 8.7 0 0 0-2.6-1.5L14 2h-4l-.4 3a8.7 8.7 0 0 0-2.6 1.5l-2.4-1-2 3.5 2 1.5a7.7 7.7 0 0 0-.1 1.5c0 .5 0 1 .1 1.5l-2 1.5 2 3.5 2.4-1a8.7 8.7 0 0 0 2.6 1.5l.4 3h4l.4-3a8.7 8.7 0 0 0 2.6-1.5l2.4 1 2-3.5-2-1.5Z"

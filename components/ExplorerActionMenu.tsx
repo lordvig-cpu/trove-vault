@@ -29,16 +29,8 @@ export default function ExplorerActionMenu({
   children,
 }: ExplorerActionMenuProps) {
   const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
 
-  useEffect(() => {
-    if (isOpen) {
-      console.log('🔍 ExplorerActionMenu rendered:', {
-        isPinned,
-        computedZIndex: isPinned ? 30 : 80,
-      });
-    }
-  }, [isOpen, isPinned]);
+  useEffect(() => setMounted(true), []);
 
   if (!isOpen || !mounted || typeof document === 'undefined') return null;
 
@@ -51,7 +43,9 @@ export default function ExplorerActionMenu({
         top: `${top}px`, 
         left: `${left}px`,
         margin: 0,
-        zIndex: isPinned ? 30 : 80 
+        // Pinned: z-30 (tucks behind LeftSidePanel z-50)
+        // Unpinned: z-[70] (tucks behind Flyout Panel z-[80], but floats above Backdrop Overlay z-[60])
+        zIndex: isPinned ? 30 : 70 
       }}
       className={`w-48 bg-[var(--popover-surface-bg)] border border-[var(--panel-border-strong)] shadow-[var(--popover-elevation-shadow)] rounded-lg flex flex-col py-1 backdrop-blur-xl pointer-events-auto relative ${
         animationsEnabled ? 'animate-explorer-menu-in' : ''
@@ -64,7 +58,7 @@ export default function ExplorerActionMenu({
         style={{ zIndex: 1 }}
         aria-hidden="true" 
       />
-      
+
       <div className="px-3 py-1.5 border-b border-[var(--panel-border-subtle)] mb-1 flex items-center justify-between bg-[var(--card-surface-hover)]/30">
         <span className="text-[10px] font-bold text-content-muted uppercase tracking-wider">{title}</span>
         <span className="text-[10px]">{titleIcon}</span>
