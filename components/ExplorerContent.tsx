@@ -6,6 +6,8 @@ import { CollectionRecord } from '@/types/collection';
 import { ItemRecord } from '@/types/item';
 import { UniversalSearchResultItem } from '@/app/page';
 import { SearchScope } from './NavigationHeader';
+import { useUIPreferences } from '@/context/UIPreferencesContext';
+
 
 interface ExplorerContentProps {
   searchScope: SearchScope;
@@ -16,7 +18,6 @@ interface ExplorerContentProps {
   activeCollectionName?: string;
   selectedItemId: number | null;
   loading: boolean;
-  isPinned?: boolean;
   setIsLeftSidePanelOpen?: (open: boolean) => void;
   onSelectCollection: (id: number) => void;
   onSelectItem: (item: ItemRecord, collectionId: number) => void;
@@ -25,7 +26,6 @@ interface ExplorerContentProps {
   onRequestDeleteCollection: (col: CollectionRecord) => void;
   onEditItem: (item: ItemRecord, collectionId: number) => void;
   onDeleteItem: (item: ItemRecord, collectionId: number) => void;
-  animationsEnabled?: boolean;
 }
 
 export default function ExplorerContent({
@@ -37,8 +37,6 @@ export default function ExplorerContent({
   activeCollectionName,
   selectedItemId,
   loading,
-  isPinned = true,
-  animationsEnabled = true,
   setIsLeftSidePanelOpen,
   onSelectCollection,
   onSelectItem,
@@ -48,6 +46,7 @@ export default function ExplorerContent({
   onEditItem,
   onDeleteItem,
 }: ExplorerContentProps) {
+  const { isPinned } = useUIPreferences();
   if (searchScope === 'all' && searchQuery) {
     return (
       <div className="space-y-1.5 w-full min-w-0">
@@ -97,7 +96,6 @@ export default function ExplorerContent({
             collection={colNode}
             activeCollectionId={activeCollectionId}
             selectedItemId={selectedItemId}
-            isPinned={isPinned}
             onSelectCollection={(colId) => {
               onSelectCollection(colId);
               if (!isPinned && setIsLeftSidePanelOpen) {

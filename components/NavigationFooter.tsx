@@ -1,50 +1,32 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { ThemePreset } from '@/types/theme';
+import React from 'react';
 import { AnimationsOnIcon, AnimationsOffIcon, AudioOnIcon, AudioOffIcon } from '@/components/icons/MediaIcons';
 import { DockPanelIcon, MoonIcon, SunIcon } from '@/components/icons/SystemIcons';
+import { useUIPreferences } from '@/context/UIPreferencesContext';
 
 interface NavigationFooterProps {
   activeCollectionName?: string;
   totalItemsCount?: number;
   isRightPanelOpen: boolean;
   onToggleRightPanel: () => void;
-  animationsEnabled: boolean;
-  setAnimationsEnabled: (enabled: boolean) => void;
-  isAudioEnabled: boolean;
-  setIsAudioEnabled: (enabled: boolean) => void;
 }
 
 export default function NavigationFooter({
-  animationsEnabled,
-  setAnimationsEnabled,
   activeCollectionName,
   totalItemsCount = 0,
   isRightPanelOpen,
   onToggleRightPanel,
-  isAudioEnabled,
-  setIsAudioEnabled
 }: NavigationFooterProps) {
-  const [theme, setTheme] = useState<ThemePreset>('theme-default-dark');
-
-  useEffect(() => {
-    const savedTheme = localStorage.getItem('uc_theme_preset') as ThemePreset | null;
-    if (savedTheme === 'theme-default-dark' || savedTheme === 'theme-default-light') {
-      setTheme(savedTheme);
-      document.documentElement.setAttribute('data-theme', savedTheme);
-    } else {
-      setTheme('theme-default-dark');
-      document.documentElement.setAttribute('data-theme', 'theme-default-dark');
-    }
-  }, []);
-
-  const toggleTheme = () => {
-    const nextTheme: ThemePreset = theme === 'theme-default-dark' ? 'theme-default-light' : 'theme-default-dark';
-    setTheme(nextTheme);
-    document.documentElement.setAttribute('data-theme', nextTheme);
-    localStorage.setItem('uc_theme_preset', nextTheme);
-  };
+  // Grab state and toggles directly from Context
+  const {
+    animationsEnabled,
+    toggleAnimations,
+    isAudioEnabled,
+    toggleAudio,
+    theme,
+    toggleTheme,
+  } = useUIPreferences();
 
   return (
     <footer className="navigation-footer h-14 flex items-center justify-between px-4 text-xs select-none shrink-0 z-[60]">
@@ -86,7 +68,7 @@ export default function NavigationFooter({
         {/* Animated Animations Toggle Button */}
         <button
           type="button"
-          onClick={() => setAnimationsEnabled(!animationsEnabled)}
+          onClick={toggleAnimations}
           className="nav-footer-icon-btn group relative"
           title={animationsEnabled ? 'Disable UI Animations' : 'Enable UI Animations'}
         >
@@ -111,7 +93,7 @@ export default function NavigationFooter({
         {/* Animated Audio Toggle Button */}
         <button
           type="button"
-          onClick={() => setIsAudioEnabled(!isAudioEnabled)}
+          onClick={toggleAudio}
           className="nav-footer-icon-btn group relative"
           title={isAudioEnabled ? 'Mute Sound FX' : 'Enable Sound FX'}
         >
@@ -152,9 +134,7 @@ export default function NavigationFooter({
           type="button"
           onClick={toggleTheme}
           className={[
-            // Layout & Surface
             'nav-footer-icon-btn group relative',
-            // Typography & Color
             'text-content-muted hover:text-content-primary',
           ].join(' ')}
           title={
@@ -165,11 +145,8 @@ export default function NavigationFooter({
         >
           <MoonIcon
             className={[
-              // Structure & Specific Dimensions
               'nav-theme-icon nav-theme-icon-moon nav-footer-icon-moon',
-              // Color
               'group-hover:text-content-primary',
-              // Active / Inactive Transition State
               theme === 'theme-default-dark'
                 ? 'nav-theme-icon-active'
                 : 'nav-theme-icon-hidden-left',
@@ -178,11 +155,8 @@ export default function NavigationFooter({
 
           <SunIcon
             className={[
-              // Structure & Specific Dimensions
               'nav-theme-icon nav-theme-icon-sun nav-footer-icon-sun',
-              // Color
               'group-hover:text-content-primary',
-              // Active / Inactive Transition State
               theme === 'theme-default-light'
                 ? 'nav-theme-icon-active'
                 : 'nav-theme-icon-hidden-right',

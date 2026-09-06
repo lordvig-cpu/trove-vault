@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import '@/app/styles/components/ExplorerActionMenu.css';
+import { useUIPreferences } from '@/context/UIPreferencesContext';
 
 interface ExplorerActionMenuProps {
   isOpen: boolean;
@@ -25,11 +26,9 @@ export default function ExplorerActionMenu({
   left,
   title,
   titleIcon,
-  animationsEnabled = true,
-  isPinned = true,
   children,
 }: ExplorerActionMenuProps) {
-  console.log('[ExplorerActionMenu] animationsEnabled:', animationsEnabled);
+  const { animationsEnabled, isPinned } = useUIPreferences(); // Consumed directly from context
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {

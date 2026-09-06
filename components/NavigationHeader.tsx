@@ -6,6 +6,7 @@ import CollectionDropdown from '@/components/CollectionDropdown';
 import { PinOutlineIcon } from '@/components/icons/PinIcons';
 import { NavigationBarTextureFilter } from '@/components/icons/SystemIcons';
 import { createPortal } from 'react-dom';
+import { useUIPreferences } from '@/context/UIPreferencesContext';
 
 export type SearchScope = 'current' | 'all';
 
@@ -25,11 +26,9 @@ interface NavigationHeaderProps {
   onOpenFieldManager?: () => void;
   onOpenTemplateManager: () => void;
   isLeftSidePanelOpen: boolean;
-  isPinned: boolean;
   onToggleLeftSidePanel: () => void;
   onTogglePin: () => void;
   explorerContent: ReactNode;
-  animationsEnabled: boolean;
   allCollectionsCount?: number;
   allItemsCount?: number;
   onAddNewItem?: () => void;
@@ -50,15 +49,14 @@ export default function NavigationHeader({
   onRequestDeleteCollection,
   onOpenTemplateManager,
   isLeftSidePanelOpen,
-  isPinned,
   onToggleLeftSidePanel,
   onTogglePin,
   explorerContent,
-  animationsEnabled,
   allCollectionsCount = 0,
   allItemsCount = 0,
   onAddNewItem,
 }: NavigationHeaderProps) {
+  const { isPinned, animationsEnabled } = useUIPreferences();
   const transitionClass = animationsEnabled ? 'transition-all duration-700 ease-in-out' : 'transition-none';
   const opacityTransition = animationsEnabled ? 'transition-opacity duration-700 ease-in-out' : 'transition-none';
 

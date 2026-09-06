@@ -9,8 +9,6 @@ export interface UnifiedExplorerTreeItemProps {
   item: ItemRecord;
   collectionId: number;
   selectedItemId: number | null;
-  animationsEnabled?: boolean;
-  isPinned?: boolean;
   onSelectItem: (item: ItemRecord, collectionId: number) => void;
   onAddSubItem: (collectionId: number, parentItemId?: number | null) => void;
   onEditItem: (item: ItemRecord, collectionId: number) => void;
@@ -31,8 +29,6 @@ export default function UnifiedExplorerTreeItem({
   item,
   collectionId,
   selectedItemId,
-  animationsEnabled = true,
-  isPinned = true,
   onSelectItem,
   onAddSubItem,
   onEditItem,
@@ -158,8 +154,6 @@ export default function UnifiedExplorerTreeItem({
         left={menuCoords.left}
         title="Item Actions"
         titleIcon="📄"
-        animationsEnabled={animationsEnabled}
-        isPinned={isPinned}
       >
         <button
           type="button"
@@ -234,8 +228,6 @@ export default function UnifiedExplorerTreeItem({
               item={child}
               collectionId={collectionId}
               selectedItemId={selectedItemId}
-              animationsEnabled={animationsEnabled}
-              isPinned={isPinned}
               onSelectItem={onSelectItem}
               onAddSubItem={onAddSubItem}
               onEditItem={onEditItem}

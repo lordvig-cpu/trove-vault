@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { UIPreferencesProvider } from '@/context/UIPreferencesContext';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -17,14 +18,14 @@ export const metadata: Metadata = {
   description: "Collect. Curate. Connect.",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html
-      lang="en"
-      data-theme="theme-default-dark" 
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-    >
-      <body className="min-h-full flex flex-col">{children}</body>
+    <html lang="en">
+      <body>
+        <UIPreferencesProvider>
+          {children}
+        </UIPreferencesProvider>
+      </body>
     </html>
   );
 }

@@ -15,6 +15,7 @@ import TemplateManagerModal from '@/components/TemplateManagerModal';
 import { CollectionRecord } from '@/types/collection';
 import { ItemRecord } from '@/types/item';
 import { useCollections } from '@/hooks/useCollections';
+import { useUIPreferences } from '@/context/UIPreferencesContext';
 
 export interface UniversalSearchResultItem extends ItemRecord {
   collection_name?: string;
@@ -49,15 +50,19 @@ export default function Home() {
     fetchAllData,
   } = useCollections();
 
-  // Layout & Dock States
+  // Layout & Dock States from Context
+  const {
+    isPinned,
+    togglePin,
+    animationsEnabled,
+    isAudioEnabled,
+  } = useUIPreferences();
+
   const [isLogoHovered, setIsLogoHovered] = useState<boolean>(false);
   const [isRightPanelOpen, setIsRightPanelOpen] = useState<boolean>(false);
-  const [isPinned, setIsPinned] = useState<boolean>(false);
   const [isLeftSidePanelOpen, setIsLeftSidePanelOpen] = useState<boolean>(false);
   const [isColDropdownOpen, setIsColDropdownOpen] = useState<boolean>(false);
   const [activeModal, setActiveModal] = useState<ActiveModal>(null);
-  const [animationsEnabled, setAnimationsEnabled] = useState(true);
-  const [isAudioEnabled, setIsAudioEnabled] = useState(true);
   
   const videoRef = useRef<HTMLVideoElement | null>(null);
 
@@ -75,10 +80,8 @@ export default function Home() {
   }, [isLogoHovered]);
 
   const handleTogglePin = () => {
-    const nextPinned = !isPinned;
-    setIsPinned(nextPinned);
+    togglePin();
     setIsLeftSidePanelOpen(true);
-    localStorage.setItem('uc_leftsidepanel_pinned', JSON.stringify(nextPinned));
   };
 
   const handleTreeSelectItem = (item: ItemRecord, collectionId: number) => {
@@ -112,7 +115,6 @@ export default function Home() {
       activeCollectionName={activeCollection?.name}
       selectedItemId={selectedItem?.id || null}
       loading={loading}
-      isPinned={isPinned}
       setIsLeftSidePanelOpen={setIsLeftSidePanelOpen}
       onSelectCollection={(colId) => {
         setActiveCollectionId(colId);
@@ -126,7 +128,6 @@ export default function Home() {
       }
       onEditItem={handleTriggerEditItem}
       onDeleteItem={handleTriggerDeleteItem}
-      animationsEnabled={animationsEnabled}
     />
   );
 
@@ -203,11 +204,9 @@ export default function Home() {
               }
             }}
             isLeftSidePanelOpen={isLeftSidePanelOpen}
-            isPinned={isPinned}
             onToggleLeftSidePanel={() => setIsLeftSidePanelOpen(!isLeftSidePanelOpen)}
             onTogglePin={handleTogglePin}
             explorerContent={explorerTreeElement}
-            animationsEnabled={animationsEnabled}
             allCollectionsCount={allCollections.length}
             allItemsCount={allItems.length}
             onAddNewItem={() => {
@@ -228,7 +227,6 @@ export default function Home() {
           ].join(' ')}
         >
           <LeftSidePanel
-            isPinned={isPinned}
             onTogglePin={handleTogglePin}
             allCollectionsCount={allCollections.length}
             allItemsCount={allItems.length}
@@ -238,7 +236,6 @@ export default function Home() {
             }}
             loading={loading}
             error={error}
-            animationsEnabled={animationsEnabled}
           >
             {explorerTreeElement}
           </LeftSidePanel>
@@ -257,7 +254,6 @@ export default function Home() {
             isOpen={isRightPanelOpen}
             onOpen={() => setIsRightPanelOpen(true)}
             onClose={() => setIsRightPanelOpen(false)}
-            animationsEnabled={animationsEnabled}
           />
         </div>
 
@@ -268,10 +264,6 @@ export default function Home() {
             totalItemsCount={allItems.length}
             isRightPanelOpen={isRightPanelOpen}
             onToggleRightPanel={() => setIsRightPanelOpen(!isRightPanelOpen)}
-            animationsEnabled={animationsEnabled}
-            setAnimationsEnabled={setAnimationsEnabled}
-            isAudioEnabled={isAudioEnabled} 
-            setIsAudioEnabled={setIsAudioEnabled}
           />
         </div>
       </div>

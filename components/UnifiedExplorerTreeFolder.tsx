@@ -17,8 +17,6 @@ export interface UnifiedExplorerTreeFolderProps {
   activeCollectionId: number | null;
   selectedItemId: number | null;
   depth?: number;
-  animationsEnabled?: boolean;
-  isPinned?: boolean;
   onSelectCollection: (id: number) => void;
   onSelectItem: (item: ItemRecord, collectionId: number) => void;
   onAddSubCollection: (parentCollectionId: number) => void;
@@ -34,8 +32,6 @@ export default function UnifiedExplorerTreeFolder({
   activeCollectionId,
   selectedItemId,
   depth = 0,
-  animationsEnabled = true,
-  isPinned = true,
   onSelectCollection,
   onSelectItem,
   onAddSubCollection,
@@ -188,8 +184,6 @@ export default function UnifiedExplorerTreeFolder({
         left={menuCoords.left}
         title="Folder Actions"
         titleIcon="📂"
-        animationsEnabled={animationsEnabled}
-        isPinned={isPinned}
       >
         <button
           type="button"
@@ -275,8 +269,6 @@ export default function UnifiedExplorerTreeFolder({
               activeCollectionId={activeCollectionId}
               selectedItemId={selectedItemId}
               depth={depth + 1}
-              animationsEnabled={animationsEnabled}
-              isPinned={isPinned}
               onSelectCollection={onSelectCollection}
               onSelectItem={onSelectItem}
               onAddSubCollection={onAddSubCollection}
@@ -294,8 +286,6 @@ export default function UnifiedExplorerTreeFolder({
               item={item}
               collectionId={collection.id}
               selectedItemId={selectedItemId}
-              animationsEnabled={animationsEnabled}
-              isPinned={isPinned}
               onSelectItem={onSelectItem}
               onAddSubItem={onAddSubItem}
               onEditItem={onEditItem}

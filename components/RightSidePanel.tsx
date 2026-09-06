@@ -2,6 +2,7 @@
 
 import React, { ReactNode } from 'react';
 import { ChevronLeftIcon, ChevronRightIcon } from '@/components/icons/SystemIcons';
+import { useUIPreferences } from '@/context/UIPreferencesContext';
 
 interface RightPanelProps {
   isOpen: boolean;
@@ -9,7 +10,6 @@ interface RightPanelProps {
   onClose: () => void;
   title?: string;
   children?: ReactNode;
-  animationsEnabled?: boolean;
 }
 
 export default function RightPanel({
@@ -18,8 +18,9 @@ export default function RightPanel({
   onClose,
   title = "Details",
   children,
-  animationsEnabled = true,
 }: RightPanelProps) {
+  const { animationsEnabled } = useUIPreferences();
+
   const transitionClass = animationsEnabled 
     ? 'transition-all duration-700 ease-in-out' 
     : 'transition-none';

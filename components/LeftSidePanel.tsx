@@ -2,9 +2,9 @@
 
 import React from 'react';
 import { PinFilledIcon } from '@/components/icons/PinIcons';
+import { useUIPreferences } from '@/context/UIPreferencesContext';
 
 interface LeftSidePanelProps {
-  isPinned: boolean;
   onTogglePin: () => void;
   allCollectionsCount: number;
   allItemsCount: number;
@@ -13,11 +13,9 @@ interface LeftSidePanelProps {
   loading: boolean;
   error: string | null;
   children: React.ReactNode;
-  animationsEnabled: boolean;
 }
 
 export default function LeftSidePanel({
-  isPinned,
   onTogglePin,
   allCollectionsCount,
   allItemsCount,
@@ -25,11 +23,15 @@ export default function LeftSidePanel({
   onAddNewItem,
   loading,
   error,
-  animationsEnabled,
   children,
 }: LeftSidePanelProps) {
-  const transitionClass = animationsEnabled ? 'transition-all duration-700 ease-in-out' : 'transition-none';
-
+  const { isPinned, animationsEnabled, isHydrated } = useUIPreferences();
+  
+  // Only animate if animations are enabled AND hydration has finished
+  const transitionClass = (animationsEnabled && isHydrated)
+    ? 'transition-all duration-700 ease-in-out'
+    : 'transition-none';
+    
   return (
     <aside
       className={`left-side-panel ${transitionClass} ${
