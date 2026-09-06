@@ -25,6 +25,7 @@ interface ExplorerContentProps {
   onRequestDeleteCollection: (col: CollectionRecord) => void;
   onEditItem: (item: ItemRecord, collectionId: number) => void;
   onDeleteItem: (item: ItemRecord, collectionId: number) => void;
+  animationsEnabled?: boolean;
 }
 
 export default function ExplorerContent({
@@ -37,6 +38,7 @@ export default function ExplorerContent({
   selectedItemId,
   loading,
   isPinned = true,
+  animationsEnabled = true,
   setIsLeftSidePanelOpen,
   onSelectCollection,
   onSelectItem,

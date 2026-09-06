@@ -29,6 +29,7 @@ export default function ExplorerActionMenu({
   isPinned = true,
   children,
 }: ExplorerActionMenuProps) {
+  console.log('[ExplorerActionMenu] animationsEnabled:', animationsEnabled);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -50,7 +51,7 @@ export default function ExplorerActionMenu({
         margin: 0,
         zIndex: isPinned ? 30 : 70,
       }}
-      className={`menuShell ${animationsEnabled ? 'menuSlideIn' : ''}`}
+      className={`menuShell ${animationsEnabled ? 'menuSlideIn' : 'menuNoAnimation'}`}
     >
       {/* Catchment Hover Bridge */}
       <div

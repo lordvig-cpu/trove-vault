@@ -30,6 +30,9 @@ interface NavigationHeaderProps {
   onTogglePin: () => void;
   explorerContent: ReactNode;
   animationsEnabled: boolean;
+  allCollectionsCount?: number;
+  allItemsCount?: number;
+  onAddNewItem?: () => void;
 }
 
 export default function NavigationHeader({
@@ -52,6 +55,9 @@ export default function NavigationHeader({
   onTogglePin,
   explorerContent,
   animationsEnabled,
+  allCollectionsCount = 0,
+  allItemsCount = 0,
+  onAddNewItem,
 }: NavigationHeaderProps) {
   const transitionClass = animationsEnabled ? 'transition-all duration-700 ease-in-out' : 'transition-none';
   const opacityTransition = animationsEnabled ? 'transition-opacity duration-700 ease-in-out' : 'transition-none';
@@ -229,44 +235,47 @@ export default function NavigationHeader({
                       isPinned ? 'nav-flyout-pinned' : 'nav-flyout-unpinned',
                     ].filter(Boolean).join(' ')}
                   >
-                    <div className="flex items-center justify-between border-b border-border-subtle pb-2 shrink-0">
-                      <span className="text-xs font-bold uppercase tracking-wider text-content-muted">
-                        🌲 Explorer
-                      </span>
+                    {/* MATCHED EXPLORER HEADER */}
+                    <div className="left-side-panel-header shrink-0 pb-2">
+                      <div>
+                        <span className="text-[11px] font-bold text-content-muted uppercase tracking-wider block">
+                          Explorer
+                        </span>
+                        <span className="text-[10px] text-content-muted font-mono">
+                          {allCollectionsCount} Folders • {allItemsCount} Items
+                        </span>
+                      </div>
 
-                      <div className="flex items-center gap-1">
+                      <div className="flex items-center gap-1.5">
+                        {activeCollectionId && onAddNewItem && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              onAddNewItem();
+                              onToggleLeftSidePanel(); // Closes the floating popover when adding an item
+                            }}
+                            className="text-[11px] font-semibold text-accent-secondary hover:text-accent-primary shrink-0 cursor-pointer"
+                          >
+                            + New Item
+                          </button>
+                        )}
+
                         {/* PIN BUTTON */}
                         <button
                           type="button"
                           onClick={onTogglePin}
-                          className={[
-                            // Layout & Alignment
-                            'group flex items-center justify-center shrink-0 p-1.5',
-                            // Surface & Borders
-                            'rounded-lg border border-transparent hover:border-border-subtle hover:bg-surface-hover',
-                            // Interaction
-                            'cursor-pointer transition',
-                          ].join(' ')}
+                          className="left-side-panel-pin-btn group"
                           title="Pin Explorer to LeftSidePanel"
                         >
-                          <PinOutlineIcon className="w-3.5 h-3.5 text-content-muted" />
+                          <PinOutlineIcon className="w-3.5 h-3.5 text-content-primary" />
                         </button>
 
                         {/* CLOSE BUTTON */}
                         <button
                           type="button"
                           onClick={onToggleLeftSidePanel}
-                          className={[
-                            // Layout & Sizing
-                            'flex items-center justify-center w-7 h-7 p-1.5',
-                            // Typography & Colors
-                            'text-xs text-content-muted hover:text-content-primary',
-                            // Surface & Borders
-                            'rounded-lg border border-transparent hover:border-border-subtle hover:bg-surface-hover',
-                            // Interaction
-                            'cursor-pointer transition',
-                          ].join(' ')}
-                          title="Close"
+                          className="left-side-panel-pin-btn group text-xs text-content-muted hover:text-content-primary"
+                          title="Close Explorer"
                         >
                           ✕
                         </button>

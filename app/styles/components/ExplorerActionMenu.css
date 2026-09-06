@@ -20,6 +20,13 @@
   animation: explorerMenuSlideIn 800ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
+/* Disable animations when animationsEnabled is false */
+.menuNoAnimation {
+  animation: none !important;
+  transform: none !important;
+  transition: none !important;
+}
+
 /* --------------------------------------------------------------------------
    Outer Flyout Shell
    Amber frosted glass surface matching the active explorer theme.

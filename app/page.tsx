@@ -126,6 +126,7 @@ export default function Home() {
       }
       onEditItem={handleTriggerEditItem}
       onDeleteItem={handleTriggerDeleteItem}
+      animationsEnabled={animationsEnabled}
     />
   );
 
@@ -207,6 +208,11 @@ export default function Home() {
             onTogglePin={handleTogglePin}
             explorerContent={explorerTreeElement}
             animationsEnabled={animationsEnabled}
+            allCollectionsCount={allCollections.length}
+            allItemsCount={allItems.length}
+            onAddNewItem={() => {
+              if (activeCollectionId) handleAddSubItem(activeCollectionId, null);
+            }}
           />
         </div>
 
