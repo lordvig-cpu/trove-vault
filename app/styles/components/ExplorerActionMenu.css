@@ -1,6 +1,10 @@
 /* ==========================================================================
    EXPLORER ACTION MENU PORTAL SLIDE & FADE
+   Flyout popover positioned next to Explorer gear triggers (Folder & Item).
+   Rendered into document body via React Portal to escape panel clipping.
    ========================================================================== */
+
+/* Slide-in entrance animation (disabled when animationsEnabled=false) */
 @keyframes explorerMenuSlideIn {
   0% {
     opacity: 0;
@@ -16,11 +20,15 @@
   animation: explorerMenuSlideIn 800ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
+/* --------------------------------------------------------------------------
+   Outer Flyout Shell
+   Amber frosted glass surface matching the active explorer theme.
+   -------------------------------------------------------------------------- */
 .menuShell {
-  width: 14rem; /* w-56 (224px) */
-  background-color: rgba(69, 26, 3, 0.45);
-  border: 1px solid rgba(245, 158, 11, 0.4);
-  box-shadow: 0 8px 32px 0 rgba(245, 158, 11, 0.2);
+  width: 14rem;
+  background-color: var(--explorer-menu-shell-bg);
+  border: 1px solid var(--explorer-menu-shell-border);
+  box-shadow: var(--explorer-menu-shell-shadow);
   border-radius: 0.5rem;
   display: flex;
   flex-direction: column;
@@ -31,7 +39,12 @@
   position: relative;
 }
 
-/* Hover catchment bridge */
+/* --------------------------------------------------------------------------
+   Hover Catchment Bridge
+   Invisible hitboxes spanning the space between the tree row gear button
+   and this flyout portal. Prevents handleMouseLeave timer triggers during
+   diagonal mouse travel.
+   -------------------------------------------------------------------------- */
 .bridge {
   position: absolute;
   top: -2.5rem;
@@ -40,54 +53,60 @@
   z-index: 1;
 }
 
+/* Compensates for wider gap offset when Explorer sidebar is pinned */
 .bridgePinned {
-  left: -3rem;  /* -left-12 */
+  left: -3rem; /* -left-12 */
   width: 3rem;  /* w-12 */
 }
 
+/* Offset bridge geometry when sidebar is unpinned / collapsed */
 .bridgeUnpinned {
-  left: -2rem;  /* -left-8 */
+  left: -2rem; /* -left-8 */
   width: 2rem;  /* w-8 */
 }
 
-/* Inner content clearance */
+/* --------------------------------------------------------------------------
+   Menu Content Hierarchy
+   Lifts interactive rows above the invisible hover catchment bridge.
+   -------------------------------------------------------------------------- */
 .innerContent {
   position: relative;
   z-index: 10;
   display: flex;
   flex-direction: column;
-  padding-left: 1.25rem; /* pl-5 */
+  padding-left: 1.25rem; /* pl-5: clears gear proximity visual gap */
   padding-right: 0.25rem; /* pr-1 */
 }
 
-/* Header bar */
+/* Top pill banner denoting current action context (Folder vs Item) */
 .headerPill {
-  padding-left: 1rem; /* px-4 */
+  padding-left: 1rem;
   padding-right: 1rem;
   padding-top: 0.375rem;
   padding-bottom: 0.375rem;
-  border-bottom: 1px solid rgba(245, 158, 11, 0.25);
+  border-bottom: 1px solid var(--explorer-menu-header-border);
   margin-bottom: 0.25rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background-color: rgba(245, 158, 11, 0.1);
+  background-color: var(--explorer-menu-header-bg);
   border-radius: 0.375rem;
 }
 
 .headerTitle {
   font-size: 10px;
   font-weight: 700;
-  color: #fbbf24;
+  color: var(--explorer-menu-header-title);
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
 
 .headerIcon {
   font-size: 10px;
-  color: #fcd34d;
+  color: var(--explorer-menu-header-icon);
 }
 
+/* Action button list slot */
 .childrenContainer {
   display: flex;
   flex-direction: column;

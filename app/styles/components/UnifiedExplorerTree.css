@@ -1,4 +1,14 @@
-/* Tree leaf indicator (hidden when row has no nested children) */
+/* ==========================================================================
+   UNIFIED EXPLORER TREE STYLES
+   Hierarchical tree node controls: leaf chevron indicators, active status
+   badges, hover-triggered row action gears, and contextual menu item styling.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   Tree Node Indicators
+   -------------------------------------------------------------------------- */
+
+/* Tree leaf indicator (hidden and unclickable when row has no nested children) */
 .tree-chevron-leaf {
   opacity: 0;
   cursor: default;
@@ -7,35 +17,43 @@
 
 /* Active collection badge indicator */
 .tree-badge-active {
-  color: #34d399; /* text-emerald-400 */
-  background-color: rgba(6, 78, 59, 0.8); /* bg-emerald-950/80 */
-  border-color: rgba(6, 95, 70, 0.6); /* border-emerald-800/60 */
+  color: var(--tree-badge-active-text);
+  background-color: var(--tree-badge-active-bg);
+  border-color: var(--tree-badge-active-border);
 }
 
-/* Tree item gear action button states */
+/* --------------------------------------------------------------------------
+   Tree Node Action Gear Triggers
+   -------------------------------------------------------------------------- */
+
+/* Hidden by default until the parent row container (.group) is hovered */
 .tree-gear-trigger {
   opacity: 0;
 }
 
-/* Reveal when parent row is hovered */
+/* Reveal when parent row container is hovered */
 .group:hover .tree-gear-trigger {
   opacity: 1;
 }
 
 /* Hover surface styling when inactive */
 .tree-gear-trigger:hover {
-  background-color: rgba(30, 41, 59, 0.6); /* bg-slate-800/60 */
+  background-color: var(--tree-gear-bg-hover);
   border-color: var(--panel-border-subtle);
 }
 
-/* Persistent active state when menu is open */
+/* Persistent active state when context menu popover is open */
 .tree-gear-trigger-active {
   opacity: 1;
-  background-color: rgba(30, 41, 59, 0.6);
+  background-color: var(--tree-gear-bg-hover);
   border-color: var(--panel-border-subtle);
 }
 
-/* Context & dropdown menu action button */
+/* --------------------------------------------------------------------------
+   Context Menu Action Rows
+   -------------------------------------------------------------------------- */
+
+/* Standard context & dropdown menu action button */
 .tree-menu-item {
   width: 100%;
   text-align: left;
@@ -43,16 +61,16 @@
 }
 
 .tree-menu-item:hover {
-  background-color: rgba(245, 158, 11, 0.15); /* hover:bg-amber-500/15 */
+  background-color: var(--tree-menu-item-hover-bg);
 }
 
-/* Context menu horizontal divider */
+/* Context menu horizontal separator line */
 .tree-menu-divider {
   border-top-width: 1px;
-  border-color: rgba(245, 158, 11, 0.2); /* border-amber-500/20 */
+  border-color: var(--explorer-menu-divider);
 }
 
-/* Destructive context menu action item */
+/* Destructive context menu action button */
 .tree-menu-item-danger {
   width: 100%;
   text-align: left;
@@ -60,50 +78,58 @@
 }
 
 .tree-menu-item-danger:hover {
-  background-color: rgba(244, 63, 94, 0.15); /* hover:bg-rose-500/15 */
+  background-color: var(--tree-menu-danger-hover-bg);
 }
+
+/* --------------------------------------------------------------------------
+   Destructive Action Item Typography
+   -------------------------------------------------------------------------- */
 
 /* Danger item label text */
 .tree-menu-danger-label {
-  color: #fb7185; /* text-rose-400 */
+  color: var(--tree-menu-danger-label);
 }
 
 .tree-menu-item-danger:hover .tree-menu-danger-label {
-  color: #fda4af; /* text-rose-300 */
+  color: var(--tree-menu-danger-label-hover);
 }
 
 /* Danger item subtext / description */
 .tree-menu-danger-subtext {
-  color: rgba(251, 113, 133, 0.7); /* text-rose-400/70 */
+  color: var(--tree-menu-danger-subtext);
 }
 
 .tree-menu-item-danger:hover .tree-menu-danger-subtext {
-  color: rgba(253, 164, 175, 0.8); /* text-rose-300/80 */
+  color: var(--tree-menu-danger-subtext-hover);
 }
+
+/* --------------------------------------------------------------------------
+   Standard Action Item Amber Typography & Icons
+   -------------------------------------------------------------------------- */
 
 /* Context menu amber action icon */
 .tree-menu-icon-amber {
-  color: rgba(253, 230, 138, 0.9); /* text-amber-200/90 */
+  color: var(--tree-menu-icon-amber);
 }
 
 .group\/action:hover .tree-menu-icon-amber {
-  color: #fef3c7; /* text-amber-100 */
+  color: var(--tree-menu-icon-amber-hover);
 }
 
 /* Amber menu action label */
 .tree-menu-amber-label {
-  color: #fef3c7; /* text-amber-100 */
+  color: var(--tree-menu-label-amber);
 }
 
 .group\/action:hover .tree-menu-amber-label {
-  color: #ffffff;
+  color: var(--tree-menu-label-amber-hover);
 }
 
 /* Amber menu action subtext */
 .tree-menu-amber-subtext {
-  color: rgba(252, 211, 77, 0.6); /* text-amber-300/60 */
+  color: var(--tree-menu-subtext-amber);
 }
 
 .group\/action:hover .tree-menu-amber-subtext {
-  color: rgba(252, 211, 77, 0.8); /* text-amber-300/80 */
+  color: var(--tree-menu-subtext-amber-hover);
 }

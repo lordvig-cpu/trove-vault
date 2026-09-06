@@ -293,4 +293,44 @@ Organized 1-to-1 with component stylesheets in styles/components/
    --tmpl-alert-error-border: rgba(159, 18, 57, 0.80);
    --tmpl-alert-error-text: rgba(253, 164, 175, 1.00);
    /* #endregion */
+
+   /* #region 7. EXPLORER ACTION MENU & TREE POPPERS */
+   /* ======================================================================
+   7. EXPLORER ACTION MENU & TREE POPPERS
+   Mapped to: 
+   - styles/components/ExplorerActionMenu.css
+   - styles/components/UnifiedExplorerTree.css
+   ------------------------------------------------------------------------- */
+   /* Flyout Shell (ExplorerActionMenu.css) */
+   --explorer-menu-shell-bg: rgba(69, 26, 3, 0.45);
+   --explorer-menu-shell-border: rgba(245, 158, 11, 0.40);
+   --explorer-menu-shell-shadow: 0 8px 32px 0 rgba(245, 158, 11, 0.20);
+   --explorer-menu-header-bg: rgba(245, 158, 11, 0.10);
+   --explorer-menu-header-border: rgba(245, 158, 11, 0.25);
+   --explorer-menu-header-title: rgba(251, 191, 36, 1.00);
+   --explorer-menu-header-icon: rgba(252, 211, 77, 1.00);
+   --explorer-menu-divider: rgba(245, 158, 11, 0.20);
+
+   /* Node Triggers & Badges (UnifiedExplorerTree.css) */
+   --tree-gear-bg-hover: rgba(30, 41, 59, 0.60);
+   --tree-badge-active-bg: rgba(6, 78, 59, 0.80);
+   --tree-badge-active-border: rgba(6, 95, 70, 0.60);
+   --tree-badge-active-text: rgba(52, 211, 153, 1.00);
+
+   /* Standard Action Item Tokens */
+   --tree-menu-item-hover-bg: rgba(245, 158, 11, 0.15);
+   --tree-menu-icon-amber: rgba(253, 230, 138, 0.90);
+   --tree-menu-icon-amber-hover: rgba(254, 243, 199, 1.00);
+   --tree-menu-label-amber: rgba(254, 243, 199, 1.00);
+   --tree-menu-label-amber-hover: #ffffff;
+   --tree-menu-subtext-amber: rgba(252, 211, 77, 0.60);
+   --tree-menu-subtext-amber-hover: rgba(252, 211, 77, 0.80);
+
+   /* Destructive Action Item Tokens */
+   --tree-menu-danger-hover-bg: rgba(244, 63, 94, 0.15);
+   --tree-menu-danger-label: rgba(251, 113, 133, 1.00);
+   --tree-menu-danger-label-hover: rgba(253, 164, 175, 1.00);
+   --tree-menu-danger-subtext: rgba(251, 113, 133, 0.70);
+   --tree-menu-danger-subtext-hover: rgba(253, 164, 175, 0.80);
+   /* #endregion */
 }

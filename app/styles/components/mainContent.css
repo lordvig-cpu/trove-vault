@@ -1,16 +1,21 @@
 /* ==========================================================================
    MAIN CONTENT, STUDIO GRID & CARDS
+   Primary workspace styles: multi-layer studio canvas, themed scrollbars,
+   content cards, interactive pills, and ambient watermark background layers.
    ========================================================================== */
 
-/* Main Viewport & Studio Grid Background */
+/* --------------------------------------------------------------------------
+   Main Viewport & Studio Grid Background
+   Multi-layered radial ambient lighting, vignetting, and grid cell lines.
+   -------------------------------------------------------------------------- */
 .studio-grid-canvas {
   background-color: var(--studio-grid-bg);
   background-image: 
-    radial-gradient(ellipse 70% 60% at 10% 25%, var(--studio-grid-glow-top-left-core) 0%, var(--studio-grid-glow-top-left-edge) 50%, transparent 80%),
-    radial-gradient(ellipse 65% 55% at 90% 75%, var(--studio-grid-glow-bottom-right-core) 0%, var(--studio-grid-glow-bottom-right-edge) 50%, transparent 80%),
-    radial-gradient(ellipse 85% 70% at 50% 50%, transparent 40%, var(--studio-grid-vignette) 100%),
-    linear-gradient(to right, var(--studio-grid-line) 1px, transparent 1px),
-    linear-gradient(to bottom, var(--studio-grid-line) 1px, transparent 1px);
+    radial-gradient(ellipse 70% 60% at 10% 25%, var(--studio-grid-glow-top-left-core) 0%, var(--studio-grid-glow-top-left-edge) 50%, rgba(0, 0, 0, 0) 80%),
+    radial-gradient(ellipse 65% 55% at 90% 75%, var(--studio-grid-glow-bottom-right-core) 0%, var(--studio-grid-glow-bottom-right-edge) 50%, rgba(0, 0, 0, 0) 80%),
+    radial-gradient(ellipse 85% 70% at 50% 50%, rgba(0, 0, 0, 0) 40%, var(--studio-grid-vignette) 100%),
+    linear-gradient(to right, var(--studio-grid-line) 1px, rgba(0, 0, 0, 0) 1px),
+    linear-gradient(to bottom, var(--studio-grid-line) 1px, rgba(0, 0, 0, 0) 1px);
   background-size: 
     100% 100%,
     100% 100%,
@@ -19,10 +24,13 @@
     var(--studio-grid-cell-size) var(--studio-grid-cell-size);
 }
 
-/* Studio Amber Scrollbars */
+/* --------------------------------------------------------------------------
+   Studio Amber Scrollbars
+   Fine custom scrollbar using themed amber track blending.
+   -------------------------------------------------------------------------- */
 .main-content-scroll {
   scrollbar-width: thin;
-  scrollbar-color: color-mix(in srgb, var(--brand-secondary-amber) 45%, transparent) transparent;
+  scrollbar-color: color-mix(in srgb, var(--brand-secondary-amber) 45%, rgba(0, 0, 0, 0)) rgba(0, 0, 0, 0);
 }
 
 .main-content-scroll::-webkit-scrollbar {
@@ -31,33 +39,37 @@
 }
 
 .main-content-scroll::-webkit-scrollbar-track {
-  background: transparent;
+  background: rgba(0, 0, 0, 0);
 }
 
 .main-content-scroll::-webkit-scrollbar-thumb {
-  background: color-mix(in srgb, var(--brand-secondary-amber) 50%, transparent) !important;
+  background: color-mix(in srgb, var(--brand-secondary-amber) 50%, rgba(0, 0, 0, 0)) !important;
   border-radius: 9999px;
   border: none !important;
-  transition: background-color 0.2s ease;
+  transition: background-color 200ms ease;
 }
 
 .main-content-scroll::-webkit-scrollbar-thumb:hover {
   background: var(--brand-secondary-amber) !important;
 }
 
-/* Cards & Section Containers */
+/* --------------------------------------------------------------------------
+   Cards & Section Containers
+   -------------------------------------------------------------------------- */
 .content-card {
   background-color: var(--content-card-bg);
   border: 1px solid var(--content-card-border);
   box-shadow: var(--content-card-shadow);
-  border-radius: 0.75rem;
+  border-radius: 0.75rem; /* rounded-xl */
 }
 
-/* Attribute & Sub-Item Pills */
+/* --------------------------------------------------------------------------
+   Attribute & Sub-Item Interactive Pills
+   -------------------------------------------------------------------------- */
 .content-pill {
   background-color: var(--content-pill-bg);
   border: 1px solid var(--content-pill-border);
-  border-radius: 0.5rem;
+  border-radius: 0.5rem; /* rounded-lg */
   padding: 0.75rem;
   transition: border-color 150ms ease, background-color 150ms ease;
 }
@@ -67,22 +79,26 @@
   background-color: var(--content-pill-hover-bg);
 }
 
-/* Badges */
+/* --------------------------------------------------------------------------
+   Status & Root Badges
+   -------------------------------------------------------------------------- */
 .badge-root-item {
   background-color: var(--content-badge-root-bg);
   border: 1px solid var(--content-badge-root-border);
   color: var(--content-badge-root-text);
-  border-radius: 0.25rem;
+  border-radius: 0.25rem; /* rounded */
   font-family: monospace;
   font-size: 11px;
   padding: 0.125rem 0.5rem;
 }
 
-/* Buttons */
+/* --------------------------------------------------------------------------
+   Content Action Buttons
+   -------------------------------------------------------------------------- */
 .content-btn-primary {
   background-color: var(--content-btn-primary-bg);
   color: var(--content-btn-primary-text);
-  border-radius: 0.5rem;
+  border-radius: 0.5rem; /* rounded-lg */
   padding: 0.375rem 0.75rem;
   font-size: 0.75rem;
   font-weight: 700;
@@ -101,7 +117,7 @@
   background-color: var(--content-btn-danger-bg);
   color: var(--content-btn-danger-text);
   border: 1px solid var(--content-btn-danger-border);
-  border-radius: 0.5rem;
+  border-radius: 0.5rem; /* rounded-lg */
   padding: 0.375rem 0.75rem;
   font-size: 0.75rem;
   font-weight: 600;
@@ -118,9 +134,10 @@
 
 /* ==========================================================================
    STUDIO BACKGROUND WATERMARK & HOVER VIDEO
+   Ambient branded graphics displayed behind the main content area.
    ========================================================================== */
 
-/* Watermark Image Layer */
+/* Static high-resolution branding logo image layer */
 .watermark-logo-image {
   width: 1250px;
   max-width: none;
@@ -137,7 +154,7 @@
   transform: scale(1.05);
 }
 
-/* Hover Video Intro Layer */
+/* Ambient video background loop / hover intro layer */
 .watermark-video-player {
   position: absolute;
   inset: 0;
@@ -158,13 +175,16 @@
   transform: scale(0.95);
 }
 
-/* Sticky Upper & Lower Viewport Fades */
+/* --------------------------------------------------------------------------
+   Sticky Upper & Lower Viewport Fades
+   Gradient vignettes masking scroll clipping at the container seams.
+   -------------------------------------------------------------------------- */
 .sticky-shadow-top {
   position: sticky;
   top: 0;
   left: 0;
   right: 0;
-  height: 2.5rem; /* h-10 */
+  height: 2.5rem; /* h-10 (40px) */
   z-index: 30;
   pointer-events: none;
   flex-shrink: 0;
@@ -177,7 +197,7 @@
   bottom: 0;
   left: 0;
   right: 0;
-  height: 2.5rem; /* h-10 */
+  height: 2.5rem; /* h-10 (40px) */
   z-index: 30;
   pointer-events: none;
   flex-shrink: 0;

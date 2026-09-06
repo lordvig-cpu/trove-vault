@@ -1,7 +1,13 @@
 /* ==========================================================================
    BOTTOM NAVIGATION FOOTER STYLES
+   Fixed bottom dock bar: multi-layer lighting gradients, status indicators,
+   glass action triggers, and animated sun/moon theme rotation states.
    ========================================================================== */
 
+/* --------------------------------------------------------------------------
+   Footer Shell
+   Multi-stop radial and linear gradients creating an ambient upward glow.
+   -------------------------------------------------------------------------- */
 .navigation-footer {
   position: relative;
   isolation: isolate;
@@ -11,12 +17,12 @@
       var(--nav-footer-glow-core) 0%,
       var(--nav-footer-glow-mid) 35%,
       var(--nav-footer-glow-deep) 65%,
-      transparent 85%),
+      rgba(0, 0, 0, 0) 85%),
     linear-gradient(90deg,
       var(--nav-footer-edge-dark) 0%,
       var(--nav-footer-edge-fade) 18%,
-      transparent 40%,
-      transparent 60%,
+      rgba(0, 0, 0, 0) 40%,
+      rgba(0, 0, 0, 0) 60%,
       var(--nav-footer-edge-fade) 82%,
       var(--nav-footer-edge-dark) 100%),
     linear-gradient(0deg,
@@ -31,6 +37,7 @@
     inset 0 -1px 0 var(--panel-border-subtle);
 }
 
+/* Upward illumination flare layer */
 .navigation-footer::before {
   content: "";
   position: absolute;
@@ -41,10 +48,11 @@
     radial-gradient(ellipse 140% 140% at 50% 160%,
       var(--nav-footer-accent-bright) 0%,
       var(--nav-footer-accent-subtle) 50%,
-      transparent 75%);
+      rgba(0, 0, 0, 0) 75%);
   mix-blend-mode: screen;
 }
 
+/* Subtle SVG procedural grain overlay */
 .navigation-footer::after {
   content: "";
   position: absolute;
@@ -57,21 +65,25 @@
   mix-blend-mode: overlay;
 }
 
-/* Status Indicator Dot */
+/* --------------------------------------------------------------------------
+   Status Indicators
+   -------------------------------------------------------------------------- */
 .nav-footer-status-dot {
-  width: 0.5rem;
-  height: 0.5rem;
+  width: 0.5rem; /* w-2 */
+  height: 0.5rem; /* h-2 */
   border-radius: 9999px;
   background-color: var(--nav-footer-status-dot);
 }
 
-/* Control & Mode Buttons */
+/* --------------------------------------------------------------------------
+   Control & Mode Buttons
+   -------------------------------------------------------------------------- */
 .nav-footer-icon-btn {
   position: relative;
-  width: 1.75rem; /* w-7 */
-  height: 1.75rem; /* h-7 */
+  width: 1.75rem; /* w-7 (28px) */
+  height: 1.75rem; /* h-7 (28px) */
   padding: 0.375rem;
-  border-radius: 0.5rem;
+  border-radius: 0.5rem; /* rounded-lg */
   border: 1px solid var(--nav-footer-btn-border);
   background-color: var(--nav-footer-btn-bg);
   cursor: pointer;
@@ -87,13 +99,14 @@
   border-color: var(--nav-footer-btn-hover-border);
 }
 
-/* Dock Toggle Button State */
+/* Dock Toggle State: Open / Expanded */
 .nav-footer-dock-btn-open {
   background-color: var(--card-surface-hover);
   border: 1px solid var(--panel-border-subtle);
   color: var(--text-primary);
 }
 
+/* Dock Toggle State: Closed / Collapsed */
 .nav-footer-dock-btn-closed {
   background-color: var(--panel-surface-bg);
   border: 1px solid var(--panel-border-subtle);
@@ -105,7 +118,9 @@
   color: var(--text-primary);
 }
 
-/* Theme Icons */
+/* --------------------------------------------------------------------------
+   Themed Glyph Colors
+   -------------------------------------------------------------------------- */
 .nav-footer-icon-moon {
   color: var(--nav-footer-moon-color);
 }
@@ -114,22 +129,22 @@
   color: var(--nav-footer-sun-color);
 }
 
-/* Base structure for rotating/fading toggle icons */
+/* --------------------------------------------------------------------------
+   General Icon Rotation & Transition Choreography
+   -------------------------------------------------------------------------- */
 .nav-toggle-icon {
-  width: 0.875rem; /* w-3.5 */
-  height: 0.875rem; /* h-3.5 */
-  color: #ffffff;  /* text-white */
+  width: 0.875rem; /* w-3.5 (14px) */
+  height: 0.875rem; /* h-3.5 (14px) */
+  color: rgba(255, 255, 255, 1); /* text-white */
   position: absolute;
   transition: all 500ms cubic-bezier(0, 0, 0.2, 1); /* ease-out */
 }
 
-/* Active visible state */
 .nav-toggle-icon-active {
   opacity: 1;
   transform: rotate(0deg) scale(1);
 }
 
-/* Inactive hidden states */
 .nav-toggle-icon-hidden-left {
   opacity: 0;
   transform: rotate(-90deg) scale(0.5);
@@ -142,24 +157,24 @@
   pointer-events: none;
 }
 
-/* Base structural transitions for theme icons */
+/* --------------------------------------------------------------------------
+   Sun / Moon Theme Switcher Icon Transitions
+   -------------------------------------------------------------------------- */
 .nav-theme-icon {
   position: absolute;
   transition: all 500ms cubic-bezier(0, 0, 0.2, 1);
 }
 
-/* Sizing overrides */
 .nav-theme-icon-moon {
   width: 17px;
   height: 17px;
 }
 
 .nav-theme-icon-sun {
-  width: 0.875rem; /* w-3.5 */
-  height: 0.875rem; /* h-3.5 */
+  width: 0.875rem; /* w-3.5 (14px) */
+  height: 0.875rem; /* h-3.5 (14px) */
 }
 
-/* Theme visibility and transform states */
 .nav-theme-icon-active {
   opacity: 1;
   transform: rotate(0deg) scale(1);

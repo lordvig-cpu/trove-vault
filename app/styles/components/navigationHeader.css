@@ -1,7 +1,13 @@
 /* ==========================================================================
    TOP NAVIGATION HEADER STYLES
+   Main application header: multi-stop ambient down-glow, layered textures,
+   active tab extension seams, floating flyout drawers, and search scoping.
    ========================================================================== */
 
+/* --------------------------------------------------------------------------
+   Header Bar Shell
+   Multi-layer radial and linear gradients projecting downward ambient glow.
+   -------------------------------------------------------------------------- */
 .navigation-header {
   position: relative;
   isolation: isolate;
@@ -11,12 +17,12 @@
       var(--nav-header-glow-core) 0%,
       var(--nav-header-glow-mid) 35%,
       var(--nav-header-glow-deep) 65%,
-      transparent 85%),
+      rgba(0, 0, 0, 0) 85%),
     linear-gradient(90deg,
       var(--nav-header-edge-dark) 0%,
       var(--nav-header-edge-fade) 18%,
-      transparent 40%,
-      transparent 60%,
+      rgba(0, 0, 0, 0) 40%,
+      rgba(0, 0, 0, 0) 60%,
       var(--nav-header-edge-fade) 82%,
       var(--nav-header-edge-dark) 100%),
     linear-gradient(180deg,
@@ -31,6 +37,7 @@
     inset 0 -1px 0 var(--brand-primary);
 }
 
+/* Downward flare highlight */
 .navigation-header::before {
   content: "";
   position: absolute;
@@ -41,10 +48,11 @@
     radial-gradient(ellipse 140% 160% at 50% -60%,
       var(--nav-header-accent-bright) 0%,
       var(--nav-header-accent-subtle) 50%,
-      transparent 75%);
+      rgba(0, 0, 0, 0) 75%);
   mix-blend-mode: screen;
 }
 
+/* Procedural surface texture overlay */
 .navigation-header::after {
   content: "";
   position: absolute;
@@ -57,11 +65,14 @@
   mix-blend-mode: overlay;
 }
 
-/* Tab Button & Extension Seams */
+/* --------------------------------------------------------------------------
+   Tab Navigation & Seamless Seams
+   Active tab cuts through the bottom header border into the panel below.
+   -------------------------------------------------------------------------- */
 .nav-tab-active {
   background-color: var(--nav-header-tab-bg-active);
   border: 1px solid var(--nav-header-tab-border);
-  border-bottom-color: transparent;
+  border-bottom-color: rgba(0, 0, 0, 0);
   border-top-left-radius: 0.5rem;
   border-top-right-radius: 0.5rem;
   border-bottom-left-radius: 0;
@@ -72,13 +83,14 @@
 }
 
 .nav-tab-inactive {
-  background-color: transparent;
-  border: 1px solid transparent;
+  background-color: rgba(0, 0, 0, 0);
+  border: 1px solid rgba(0, 0, 0, 0);
   border-radius: 0.5rem;
   color: var(--text-primary);
   z-index: 50;
 }
 
+/* Accent bottom indicator line */
 .nav-tab-indicator {
   position: absolute;
   bottom: -4px;
@@ -89,6 +101,7 @@
   pointer-events: none;
 }
 
+/* Downward tab seam overlapping the border line */
 .nav-tab-extension {
   position: absolute;
   top: calc(100% - 1px);
@@ -100,12 +113,15 @@
   pointer-events: none;
 }
 
-/* Floating Flyout Menu */
+/* --------------------------------------------------------------------------
+   Floating Flyout Menu
+   Dropdown drawer appearing when tabs are expanded in unpinned mode.
+   -------------------------------------------------------------------------- */
 .nav-flyout-menu {
   position: absolute;
   left: 0;
   margin-top: 11px;
-  width: 22rem; /* w-88 */
+  width: 22rem; /* w-88 (352px) */
   max-height: 75vh;
   background-color: var(--nav-header-flyout-bg);
   border: 1px solid var(--nav-header-flyout-border);
@@ -119,7 +135,9 @@
   gap: 0.5rem;
 }
 
-/* Mount / Unmount Animations */
+/* --------------------------------------------------------------------------
+   Mount / Unmount Keyframe Animations
+   -------------------------------------------------------------------------- */
 @keyframes navMountFade {
   from { opacity: 0; }
   to { opacity: 1; }
@@ -138,7 +156,9 @@
   animation: navUnmountFade 500ms ease-out forwards;
 }
 
-/* Search Bar & Scope Select */
+/* --------------------------------------------------------------------------
+   Search Bar & Scope Selection Control
+   -------------------------------------------------------------------------- */
 .nav-search-select {
   background-color: var(--panel-surface-bg);
   color: var(--text-secondary);
@@ -175,7 +195,9 @@
   border-color: var(--nav-header-search-focus);
 }
 
-/* Live Indicator & Profile Avatar */
+/* --------------------------------------------------------------------------
+   Live Indicator & User Profile Avatar
+   -------------------------------------------------------------------------- */
 .nav-live-badge {
   display: flex;
   align-items: center;
@@ -197,8 +219,8 @@
 }
 
 .nav-profile-badge {
-  width: 2rem;
-  height: 2rem;
+  width: 2rem; /* w-8 */
+  height: 2rem; /* h-8 */
   border-radius: 9999px;
   background-color: var(--nav-header-profile-bg);
   border: 1px solid var(--nav-header-profile-border);
@@ -217,7 +239,9 @@
   border-color: var(--nav-header-profile-border-hover);
 }
 
-/* Pinned fade transition states */
+/* --------------------------------------------------------------------------
+   Pinned & Flyout Visibility States
+   -------------------------------------------------------------------------- */
 .nav-header-pinned-visible {
   opacity: 1;
   transition-delay: 350ms;
@@ -251,7 +275,7 @@
   opacity: 0;
 }
 
-/* Portal overlay pinned / unpinned interaction states */
+/* Portal backdrop overlay states */
 .nav-overlay-pinned {
   opacity: 0;
   pointer-events: none;
@@ -262,7 +286,7 @@
   pointer-events: auto;
 }
 
-/* Flyout menu pinned / unpinned states */
+/* Flyout container translate & clickability states */
 .nav-flyout-pinned {
   opacity: 0;
   transform: translateX(-11.5rem); /* -translate-x-46 (184px) */

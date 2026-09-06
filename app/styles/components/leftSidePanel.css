@@ -1,14 +1,19 @@
 /* ==========================================================================
    LEFT SIDE PANEL & EXPLORER TREE STYLES
+   Orchestrates the collapsible left sidebar, pinned flyouts, search cards,
+   and sticky folder headers for the Explorer panel.
    ========================================================================== */
 
-/* Main Aside Container */
+/* --------------------------------------------------------------------------
+   Main Aside Container
+   Anchored to the left margin; switches layout mode between pinned and flyout.
+   -------------------------------------------------------------------------- */
 .left-side-panel {
   position: absolute;
   left: 0;
   top: 1px;
   bottom: 0;
-  width: 19rem; /* w-76 */
+  width: 19rem; /* w-76 (304px) */
   max-width: 19rem;
   background-color: var(--panel-surface-bg);
   display: flex;
@@ -20,13 +25,17 @@
   z-index: 50;
 }
 
+/* Pinned layout mode: Statically locks the sidebar into the main content flow */
 .left-side-panel-pinned {
   border-right: 1px solid var(--panel-border-accent);
   box-shadow: var(--panel-pinned-shadow);
   opacity: 1;
-  transform: none; /* MUST BE NONE so position:fixed is freed to document.body */
+  /* MUST BE NONE: CSS transforms establish a new stacking context that breaks 
+     fixed child positioning (such as action flyout menus) relative to document.body */
+  transform: none;
 }
 
+/* Unpinned / Collapsed layout mode: Translates out of the viewport */
 .left-side-panel-unpinned {
   border-right: none;
   opacity: 0;
@@ -34,7 +43,9 @@
   transform: translateX(11.5rem); /* translate-x-46 */
 }
 
-/* Panel Header Seam */
+/* --------------------------------------------------------------------------
+   Header & Action Controls
+   -------------------------------------------------------------------------- */
 .left-side-panel-header {
   display: flex;
   align-items: center;
@@ -44,15 +55,15 @@
   flex-shrink: 0;
 }
 
-/* Pin Action Button */
+/* Pinned state toggle trigger */
 .left-side-panel-pin-btn {
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 0.375rem;
   border-radius: 0.5rem;
-  border: 1px solid transparent;
-  background: transparent;
+  border: 1px solid rgba(0, 0, 0, 0); /* transparent border placeholder */
+  background: rgba(0, 0, 0, 0);
   cursor: pointer;
   flex-shrink: 0;
   transition: all 150ms ease;
@@ -63,7 +74,9 @@
   background-color: var(--card-surface-hover);
 }
 
-/* Notice / Status Banners */
+/* --------------------------------------------------------------------------
+   Notice / Status Banners
+   -------------------------------------------------------------------------- */
 .left-side-panel-notice-loading {
   font-size: 0.75rem;
   padding: 0.625rem;
@@ -84,7 +97,10 @@
   color: var(--panel-notice-error-text);
 }
 
-/* Explorer Tree Action Menu Popup & Buttons */
+/* --------------------------------------------------------------------------
+   Explorer Tree Action Menu Popup & Buttons
+   (Inline popover variant used for quick node actions)
+   -------------------------------------------------------------------------- */
 .explorer-action-popup {
   background-color: var(--explorer-menu-bg);
   border: 1px solid var(--explorer-menu-border);
@@ -97,6 +113,7 @@
   white-space: nowrap;
 }
 
+/* Base button appearance inside popups */
 .explorer-action-btn {
   padding: 0.375rem;
   color: var(--explorer-menu-btn-text);
@@ -105,7 +122,7 @@
   cursor: pointer;
   transition: all 150ms ease;
   white-space: nowrap;
-  background: transparent;
+  background: rgba(0, 0, 0, 0);
   border: none;
 }
 
@@ -119,6 +136,7 @@
   color: var(--explorer-menu-btn-accent-hover);
 }
 
+/* Destructive / Delete variant inside popups */
 .explorer-action-btn-danger {
   padding: 0.375rem;
   color: var(--explorer-menu-danger-text);
@@ -127,7 +145,7 @@
   cursor: pointer;
   transition: all 150ms ease;
   white-space: nowrap;
-  background: transparent;
+  background: rgba(0, 0, 0, 0);
   border: none;
 }
 
@@ -136,10 +154,9 @@
   background-color: var(--explorer-menu-danger-hover-bg);
 }
 
-/* ==========================================================================
-   UNIVERSAL SEARCH RESULT CARDS (Left Panel / Flyout)
-   ========================================================================== */
-
+/* --------------------------------------------------------------------------
+   Universal Search Result Cards (Left Panel / Flyout)
+   -------------------------------------------------------------------------- */
 .search-result-card {
   padding: 0.5rem;
   border-radius: 0.5rem;
@@ -160,13 +177,13 @@
 .search-result-card-selected {
   background-color: var(--explorer-item-active-bg);
   border-color: var(--brand-primary);
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);  
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
 }
 
-/* ==========================================================================
-   STICKY TREE FOLDER HEADERS (VS Code Style)
-   ========================================================================== */
-/* Ensure the scroll container clips its upper bleed */
+/* --------------------------------------------------------------------------
+   Sticky Tree Folder Headers (VS Code Style)
+   -------------------------------------------------------------------------- */
+/* Scroll wrapper clipping upper bleed for child sticky rows */
 .explorer-tree-scroll-container {
   position: relative;
   overflow-y: auto;
@@ -174,25 +191,24 @@
   min-height: 0;
   flex: 1;
 }
-   
-/* Sticky Tree Folder Row */
+
+/* Sticky folder header pinned to the scroll ceiling */
 .explorer-folder-sticky-header {
   position: sticky;
   top: 0;
   background-color: var(--explorer-sticky-folder-bg);
   backdrop-filter: blur(12px);
-  /* Uses an inset border line so stacking context never clips it */
+  /* Inset bottom line prevents layout shifting; top spread blocks bleed underneath */
   box-shadow: inset 0 -1px 0 0 var(--explorer-sticky-folder-border),
               0 -8px 0 0 var(--explorer-sticky-folder-bg),
               var(--explorer-sticky-shadow);
 }
 
-/* Optional subtle border/shadow when pinned */
 .explorer-folder-sticky-header:hover {
   border-bottom-color: var(--explorer-sticky-folder-border);
 }
 
-/* Ensure the active/hovered row lifts above sticky neighbors */
+/* Elevates the active/hovered tree row above sibling sticky stacking layers */
 .group:hover {
   z-index: 40 !important;
 }

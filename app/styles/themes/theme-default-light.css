@@ -7,7 +7,7 @@
 
 [data-theme='theme-default-light'] {
 
-    /* #region 0. CORE BRAND, FOUNDATIONS & SHARED PALETTE */
+   /* #region 0. CORE BRAND, FOUNDATIONS & SHARED PALETTE */
     /* ======================================================================
        0. CORE BRAND, FOUNDATIONS & SHARED PALETTE
        Global variables consumed across multiple component sections.
@@ -30,7 +30,7 @@
     --panel-border-strong: rgba(2, 132, 199, 0.35);
     /* #endregion */
 
-    /* #region 1. NAVIGATION HEADER & DROPDOWN */
+   /* #region 1. NAVIGATION HEADER & DROPDOWN */
     /* ======================================================================
        1. NAVIGATION HEADER & DROPDOWN
        Mapped to: 
@@ -84,7 +84,7 @@
     --col-dropdown-form-border: var(--panel-border-subtle);
     /* #endregion */
 
-    /* #region 2. NAVIGATION FOOTER */
+   /* #region 2. NAVIGATION FOOTER */
     /* ======================================================================
        2. NAVIGATION FOOTER
        Mapped to: styles/components/navigationFooter.css
@@ -119,7 +119,7 @@
     --nav-footer-sun-color: rgba(217, 119, 6, 1.00);    /* Amber-600 */
     /* #endregion */
 
-    /* #region 3. MAIN CONTENT & STUDIO CANVAS */
+   /* #region 3. MAIN CONTENT & STUDIO CANVAS */
     /* ======================================================================
        3. MAIN CONTENT & STUDIO CANVAS
        Mapped to: styles/components/mainContent.css
@@ -175,7 +175,7 @@
     --content-btn-danger-text: rgba(190, 18, 60, 1.00);  /* Rose-700 */
     /* #endregion */
 
-    /* #region 4. LEFT SIDE PANEL & EXPLORER TREE */
+   /* #region 4. LEFT SIDE PANEL & EXPLORER TREE */
     /* ======================================================================
        4. LEFT SIDE PANEL & EXPLORER TREE
        Mapped to: styles/components/leftSidePanel.css
@@ -216,7 +216,7 @@
     --explorer-sticky-shadow: 0 4px 10px -2px rgba(15, 23, 42, 0.08);
     /* #endregion */
 
-    /* #region 5. RIGHT SIDE PANEL */
+   /* #region 5. RIGHT SIDE PANEL */
     /* ======================================================================
        5. RIGHT SIDE PANEL
        Mapped to: styles/components/rightSidePanel.css
@@ -237,7 +237,7 @@
     --right-panel-btn-hover-bg: var(--card-surface-hover);
     /* #endregion */
 
-    /* #region 6. MODALS & OVERLAYS */
+   /* #region 6. MODALS & OVERLAYS */    
     /* ======================================================================
        6. MODALS & OVERLAYS
        Mapped to: 
@@ -296,4 +296,44 @@
     --tmpl-alert-error-border: rgba(239, 68, 68, 0.40);
     --tmpl-alert-error-text: rgba(185, 28, 28, 1.00);
     /* #endregion */
+
+   /* #region 7. EXPLORER ACTION MENU & TREE POPPERS (LIGHT THEME) */
+   /* ======================================================================
+   7. EXPLORER ACTION MENU & TREE POPPERS
+   Mapped to: 
+   - styles/components/ExplorerActionMenu.css
+   - styles/components/UnifiedExplorerTree.css
+   ------------------------------------------------------------------------- */
+   /* Flyout Shell (ExplorerActionMenu.css) */
+   --explorer-menu-shell-bg: rgba(255, 251, 245, 0.94);            /* Warm cream glass */
+   --explorer-menu-shell-border: rgba(217, 119, 6, 0.35);           /* Crisp amber-600 border */
+   --explorer-menu-shell-shadow: 0 12px 30px -4px rgba(180, 83, 9, 0.15), 0 4px 10px -2px rgba(0, 0, 0, 0.05);
+   --explorer-menu-header-bg: rgba(245, 158, 11, 0.12);            /* Soft amber pill */
+   --explorer-menu-header-border: rgba(217, 119, 6, 0.25);
+   --explorer-menu-header-title: rgba(180, 83, 9, 1.00);            /* Deep amber-700 for high readability */
+   --explorer-menu-header-icon: rgba(217, 119, 6, 1.00);
+   --explorer-menu-divider: rgba(217, 119, 6, 0.20);
+
+   /* Node Triggers & Badges (UnifiedExplorerTree.css) */
+   --tree-gear-bg-hover: rgba(226, 232, 240, 0.85);                 /* Light slate-200 hover */
+   --tree-badge-active-bg: rgba(209, 250, 229, 0.90);               /* Soft emerald-100 */
+   --tree-badge-active-border: rgba(52, 211, 153, 0.60);
+   --tree-badge-active-text: rgba(6, 95, 70, 1.00);                 /* Deep emerald-800 */
+
+   /* Standard Action Item Tokens */
+   --tree-menu-item-hover-bg: rgba(245, 158, 11, 0.14);             /* Gentle amber highlight */
+   --tree-menu-icon-amber: rgba(217, 119, 6, 0.90);                 /* Amber-600 */
+   --tree-menu-icon-amber-hover: rgba(180, 83, 9, 1.00);            /* Amber-700 */
+   --tree-menu-label-amber: rgba(30, 41, 59, 1.00);                 /* Slate-800 for primary readability */
+   --tree-menu-label-amber-hover: rgba(15, 23, 42, 1.00);           /* Slate-900 */
+   --tree-menu-subtext-amber: rgba(120, 53, 15, 0.75);              /* Warm amber-900/75 description */
+   --tree-menu-subtext-amber-hover: rgba(120, 53, 15, 0.95);
+
+   /* Destructive Action Item Tokens */
+   --tree-menu-danger-hover-bg: rgba(254, 226, 226, 0.70);          /* Soft rose-100 highlight */
+   --tree-menu-danger-label: rgba(225, 29, 72, 1.00);               /* Rose-600 */
+   --tree-menu-danger-label-hover: rgba(190, 18, 60, 1.00);         /* Rose-700 */
+   --tree-menu-danger-subtext: rgba(225, 29, 72, 0.75);             /* Rose-600/75 */
+   --tree-menu-danger-subtext-hover: rgba(190, 18, 60, 0.95);
+   /* #endregion */
 }
