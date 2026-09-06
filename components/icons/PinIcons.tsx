@@ -14,14 +14,14 @@ export function PinOutlineIcon({ className = 'w-4 h-4' }: PinIconProps) {
       strokeWidth="1.8"
       strokeLinecap="round"
       strokeLinejoin="round"
-      className={`transition-all duration-300 ease-out group-hover:fill-white group-hover:stroke-white group-hover:rotate-45 ${className}`}
+      className={`origin-center transition-all duration-300 ease-out group-hover:fill-white group-hover:stroke-white group-hover:rotate-45 ${className}`}
     >
       <path d="M8 3H16L15 8L18 11V13H13V19L12 22L11 19V13H6V11L9 8L8 3Z" />
     </svg>
   );
 }
 
-// Pinned: 45° solid pin -> clears fill to transparent outline & rotates upright (rotate-0) to preview unpinning
+// Pinned: 45° solid white pin -> clears fill to transparent outline & rotates upright to preview unpinning
 export function PinFilledIcon({ className = 'w-4 h-4' }: PinIconProps) {
   return (
     <svg
@@ -31,7 +31,7 @@ export function PinFilledIcon({ className = 'w-4 h-4' }: PinIconProps) {
       strokeWidth="1.8"
       strokeLinecap="round"
       strokeLinejoin="round"
-      className={`rotate-45 transition-all duration-300 ease-out group-hover:fill-transparent group-hover:stroke-content-muted group-hover:rotate-0 ${className}`}
+      className={`origin-center text-content-primary rotate-45 transition-all duration-300 ease-out group-hover:fill-transparent group-hover:stroke-content-muted group-hover:rotate-0 ${className}`}
     >
       <path d="M8 3H16L15 8L18 11V13H13V19L12 22L11 19V13H6V11L9 8L8 3Z" />
     </svg>

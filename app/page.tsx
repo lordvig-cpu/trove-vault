@@ -131,6 +131,43 @@ export default function Home() {
     />
   );
 
+  const explorerFlyoutPanel = (
+    <LeftSidePanel
+      variant="flyout"
+      isOpen={isLeftSidePanelOpen}
+      onClose={() => setIsLeftSidePanelOpen(false)}
+      onTogglePin={handleTogglePin}
+      allCollectionsCount={allCollections.length}
+      allItemsCount={allItems.length}
+      activeCollectionId={activeCollectionId}
+      onAddNewItem={() => {
+        if (activeCollectionId) handleAddSubItem(activeCollectionId, null);
+      }}
+      loading={loading}
+      error={error}
+    >
+      {explorerTreeElement}
+    </LeftSidePanel>
+  );
+
+  const explorerSidebarPanel = (
+    <LeftSidePanel
+      variant="sidebar"
+      isOpen={isLeftSidePanelOpen}
+      onClose={() => setIsLeftSidePanelOpen(false)}
+      allCollectionsCount={allCollections.length}
+      allItemsCount={allItems.length}
+      activeCollectionId={activeCollectionId}
+      onAddNewItem={() => {
+        if (activeCollectionId) handleAddSubItem(activeCollectionId, null);
+      }}
+      loading={loading}
+      error={error}
+    >
+      {explorerTreeElement}
+    </LeftSidePanel>
+  );
+
   return (
     <div className={[
       // Layout & Dimensions
@@ -205,10 +242,7 @@ export default function Home() {
             }}
             isLeftSidePanelOpen={isLeftSidePanelOpen}
             onToggleLeftSidePanel={() => setIsLeftSidePanelOpen(!isLeftSidePanelOpen)}
-            onTogglePin={handleTogglePin}
-            explorerContent={explorerTreeElement}
-            allCollectionsCount={allCollections.length}
-            allItemsCount={allItems.length}
+            unpinnedExplorerPanel={explorerFlyoutPanel}
             onAddNewItem={() => {
               if (activeCollectionId) handleAddSubItem(activeCollectionId, null);
             }}
@@ -226,19 +260,8 @@ export default function Home() {
             isLogoHovered ? 'opacity-0 pointer-events-none' : 'opacity-100',
           ].join(' ')}
         >
-          <LeftSidePanel
-            onTogglePin={handleTogglePin}
-            allCollectionsCount={allCollections.length}
-            allItemsCount={allItems.length}
-            activeCollectionId={activeCollectionId}
-            onAddNewItem={() => {
-              if (activeCollectionId) handleAddSubItem(activeCollectionId, null);
-            }}
-            loading={loading}
-            error={error}
-          >
-            {explorerTreeElement}
-          </LeftSidePanel>
+          {/* ALWAYS render the sidebar, let CSS handle hiding it! */}
+          {explorerSidebarPanel}
 
           {/* Modular Main Content Area */}
           <MainContent
