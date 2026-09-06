@@ -130,7 +130,13 @@ export default function Home() {
   );
 
   return (
-    <div className="h-full w-full bg-canvas text-content-primary flex flex-col overflow-hidden studio-grid-canvas relative">
+    <div className={[
+      // Layout & Dimensions
+      'relative flex flex-col h-full w-full overflow-hidden',
+      // Colors & Surface
+      'bg-canvas text-content-primary studio-grid-canvas',
+    ].join(' ')}
+>
 
       {/* 1. LOGO HOVER TRIGGER ZONE */}
       <div 
@@ -141,9 +147,14 @@ export default function Home() {
       />
 
       {/* 2. DYNAMIC BACKGROUND LAYER */}
-      <div 
-        className="pointer-events-none fixed inset-0 flex items-center justify-center select-none overflow-hidden z-0" 
-        aria-hidden="true"
+      <div aria-hidden="true" className={[
+        // Positioning & Layering
+        'fixed inset-0 z-0',
+        // Layout & Centering
+        'flex items-center justify-center overflow-hidden',
+        // Interaction
+        'pointer-events-none select-none',
+      ].join(' ')}
       >
         <img 
           src="/images/web_background_trove_vault_logo.png" 
@@ -201,9 +212,14 @@ export default function Home() {
 
         {/* Center Workspace */}
         <div 
-          className={`flex-1 min-h-0 flex overflow-hidden relative transition-opacity duration-500 ease-in-out ${
-            isLogoHovered ? 'opacity-0 pointer-events-none' : 'opacity-100'
-          }`}
+          className={[
+            // Layout & Sizing
+            'flex flex-1 min-h-0 relative overflow-hidden',
+            // Transitions & Timing
+            'transition-opacity duration-500 ease-in-out',
+            // Dynamic State
+            isLogoHovered ? 'opacity-0 pointer-events-none' : 'opacity-100',
+          ].join(' ')}
         >
           <LeftSidePanel
             isPinned={isPinned}

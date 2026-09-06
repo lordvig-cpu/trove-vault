@@ -100,9 +100,16 @@ export default function UnifiedExplorerTreeItem({
             e.stopPropagation();
             setIsOpen(!isOpen);
           }}
-          className={`w-4 h-4 flex items-center justify-center text-[9px] text-content-muted hover:text-content-primary transition shrink-0 ${
-            !hasSubItems ? 'opacity-0 cursor-default' : ''
-          }`}
+          className={[
+            // Layout & Sizing
+            'flex items-center justify-center w-4 h-4 shrink-0',
+            // Typography & Content
+            'text-[9px] text-content-muted hover:text-content-primary',
+            // Interaction & Transitions
+            'cursor-pointer transition',
+            // Dynamic Leaf State
+            !hasSubItems && 'tree-chevron-leaf',
+          ].filter(Boolean).join(' ')}
         >
           {isOpen ? '▼' : '▶'}
         </button>
@@ -122,11 +129,16 @@ export default function UnifiedExplorerTreeItem({
           <div
             onMouseEnter={handleGearMouseEnter}
             onMouseLeave={handleMouseLeave}
-            className={`group/gear w-6 h-6 flex items-center justify-center rounded border border-transparent transition-colors cursor-pointer ${
-              isMenuOpen 
-                ? 'opacity-100 bg-slate-800/60 border-[var(--panel-border-subtle)]' 
-                : 'opacity-0 group-hover:opacity-100 hover:bg-slate-800/60 hover:border-[var(--panel-border-subtle)]'
-            }`}
+            className={[
+              // Layout & Sizing
+              'group/gear flex items-center justify-center w-6 h-6 shrink-0',
+              // Surface & Borders
+              'rounded border border-transparent',
+              // Interaction & Transitions
+              'cursor-pointer transition-colors',
+              // Menu Open State vs Default Hover State
+              isMenuOpen ? 'tree-gear-trigger-active' : 'tree-gear-trigger',
+            ].join(' ')}
           >
             <GearIcon 
               isActive={isMenuOpen}
@@ -151,49 +163,68 @@ export default function UnifiedExplorerTreeItem({
       >
         <button
           type="button"
-          onClick={() => { onAddSubItem(collectionId, item.id); setIsMenuOpen(false); }}
-          className="group/action flex items-center gap-2.5 px-3 py-1.5 hover:bg-amber-500/15 text-left transition-all duration-150 w-full rounded"
+          onClick={() => {
+            onAddSubItem(collectionId, item.id);
+            setIsMenuOpen(false);
+          }}
+          className={[
+            'group/action w-full text-left flex items-center gap-2.5 px-3 py-1.5 rounded',
+            'tree-menu-item',
+          ].join(' ')}
         >
           <span className="w-5 shrink-0 flex items-center justify-center">
-            <AddSubItemIcon className="w-3.5 h-3.5 text-amber-200/90 group-hover/action:text-amber-100 group-hover/action:scale-105 transition-transform" />
+            <AddSubItemIcon
+              className={[
+                'w-3.5 h-3.5',
+                'tree-menu-icon-amber',
+                'group-hover/action:scale-105 transition-transform',
+              ].join(' ')}
+            />
           </span>
           <div className="flex flex-col leading-tight min-w-0">
-            <span className="text-xs font-medium text-amber-100 group-hover/action:text-white">Add Sub-Item</span>
-            <span className="text-[9px] text-amber-300/60 group-hover/action:text-amber-300/80">Create a nested record</span>
+            <span className={['text-xs font-medium', 'tree-menu-amber-label'].join(' ')}>Add Sub-Item</span>
+            <span className={['text-[9px]', 'tree-menu-amber-subtext'].join(' ')}>Create a nested record</span>
           </div>
         </button>
 
         <button
           type="button"
-          onClick={() => { onEditItem(item, collectionId); setIsMenuOpen(false); }}
-          className="group/action flex items-center gap-2.5 px-3 py-1.5 hover:bg-amber-500/15 text-left transition-all duration-150 w-full rounded"
+          onClick={() => {
+            onEditItem(item, collectionId);
+            setIsMenuOpen(false);
+          }}
+          className={[
+            'group/action w-full text-left flex items-center gap-2.5 px-3 py-1.5 rounded',
+            'tree-menu-item',
+          ].join(' ')}
         >
-          <span className="w-5 shrink-0 flex items-center justify-center text-sm leading-none group-hover/action:scale-105 transition-transform">
-            ✏️
-          </span>
+          <span className="w-5 shrink-0 flex items-center justify-center text-sm leading-none group-hover/action:scale-105 transition-transform">✏️</span>
           <div className="flex flex-col leading-tight min-w-0">
-            <span className="text-xs font-medium text-amber-100 group-hover/action:text-white">Edit Item</span>
-            <span className="text-[9px] text-amber-300/60 group-hover/action:text-amber-300/80">Update attributes</span>
+            <span className={['text-xs font-medium', 'tree-menu-amber-label'].join(' ')}>Edit Item</span>
+            <span className={['text-[9px]', 'tree-menu-amber-subtext'].join(' ')}>Update attributes</span>
           </div>
         </button>
 
-        {/* Standalone divider line with equal vertical spacing */}
-        <div className="border-t border-amber-500/20 my-1 mx-1" />
+        <div className={['my-1 mx-1', 'tree-menu-divider'].join(' ')} />
 
         <button
           type="button"
-          onClick={() => { onDeleteItem(item, collectionId); setIsMenuOpen(false); }}
-          className="group/action flex items-center gap-2.5 px-3 py-1.5 hover:bg-rose-500/15 text-left transition-all duration-150 group/btn w-full rounded"
+          onClick={() => {
+            onDeleteItem(item, collectionId);
+            setIsMenuOpen(false);
+          }}
+          className={[
+            'group/action w-full text-left flex items-center gap-2.5 px-3 py-1.5 rounded',
+            'tree-menu-item-danger',
+          ].join(' ')}
         >
-          <span className="w-5 shrink-0 flex items-center justify-center text-sm leading-none group-hover/action:scale-105 transition-transform">
-            🗑️
-          </span>
+          <span className="w-5 shrink-0 flex items-center justify-center text-sm leading-none group-hover/action:scale-105 transition-transform">🗑️</span>
           <div className="flex flex-col leading-tight min-w-0">
-            <span className="text-xs font-medium text-rose-400 group-hover/btn:text-rose-300">Delete Item</span>
-            <span className="text-[9px] text-rose-400/70 group-hover/btn:text-rose-300/80">Permanently remove</span>
+            <span className={['text-xs font-medium', 'tree-menu-danger-label'].join(' ')}>Delete Item</span>
+            <span className={['text-[9px]', 'tree-menu-danger-subtext'].join(' ')}>Permanently remove</span>
           </div>
         </button>
-      </ExplorerActionMenu>      
+      </ExplorerActionMenu>            
 
       {isOpen && hasSubItems && (
         <div className="border-l border-border-subtle space-y-0.5 ml-2 pl-1.5 my-0.5 flex flex-col min-w-0">

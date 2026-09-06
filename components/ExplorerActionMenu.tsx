@@ -50,7 +50,7 @@ export default function ExplorerActionMenu({
         margin: 0,
         zIndex: isPinned ? 30 : 70,
       }}
-      className={`menuShell ${animationsEnabled ? 'animate-explorer-menu-in' : ''}`}
+      className={`menuShell ${animationsEnabled ? 'menuSlideIn' : ''}`}
     >
       {/* Catchment Hover Bridge */}
       <div

@@ -30,20 +30,35 @@ export default function RightPanel({
       <button
         type="button"
         onClick={onOpen}
-        className={`right-panel-expand-tab group ${transitionClass} ${
-          isOpen ? 'translate-x-full opacity-0 pointer-events-none' : 'translate-x-0 opacity-100'
-        }`}
+        className={[
+          // Base Component Structure
+          'right-panel-expand-tab group',
+          transitionClass,
+          // Open / Closed State
+          isOpen ? 'right-panel-tab-hidden' : 'right-panel-tab-visible',
+        ].filter(Boolean).join(' ')}
         title="Open Side Panel"
       >
-        <ChevronLeftIcon className="w-3.5 h-3.5 transform group-hover:-translate-x-0.5 transition-transform" />
+        <ChevronLeftIcon
+          className={[
+            // Layout & Sizing
+            'w-3.5 h-3.5',
+            // Transform & Transition
+            'transform group-hover:-translate-x-0.5 transition-transform',
+          ].join(' ')}
+        />
       </button>
 
       {/* 2. DOCKED RIGHT PANEL */}
-      <aside
-        className={`right-side-panel ${transitionClass} ${
-          isOpen ? 'translate-x-0 opacity-100' : 'translate-x-[110%] opacity-0 pointer-events-none'
-        }`}
-      >
+        <aside
+          className={[
+            // Base Component Structure
+            'right-side-panel',
+            transitionClass,
+            // Open / Closed State
+            isOpen ? 'right-panel-docked-open' : 'right-panel-docked-closed',
+          ].filter(Boolean).join(' ')}
+        >
         {/* Panel Header */}
         <div className="right-side-panel-header">
           <span className="text-xs font-bold uppercase tracking-wider text-content-muted">
@@ -54,10 +69,22 @@ export default function RightPanel({
           <button
             type="button"
             onClick={onClose}
-            className="right-side-panel-btn group"
+            className={[
+              'right-side-panel-btn',
+              'group',
+            ].join(' ')}
             title="Collapse Panel"
           >
-            <ChevronRightIcon className="w-3.5 h-3.5 text-content-muted group-hover:text-content-primary transform group-hover:translate-x-0.5 transition-all" />
+            <ChevronRightIcon
+              className={[
+                // Layout & Sizing
+                'w-3.5 h-3.5',
+                // Typography & Color
+                'text-content-muted group-hover:text-content-primary',
+                // Transform & Transition
+                'transform group-hover:translate-x-0.5 transition-all',
+              ].join(' ')}
+            />
           </button>
         </div>
 

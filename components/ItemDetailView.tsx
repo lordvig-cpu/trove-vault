@@ -63,7 +63,16 @@ export default function ItemDetailView({
           <button
             type="button"
             onClick={onEditItem}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-surface-hover hover:bg-surface-hover/80 text-content-secondary hover:text-content-primary border border-border-subtle transition cursor-pointer"
+            className={[
+              // Layout & Spacing
+              'flex items-center gap-1.5 px-3 py-1.5',
+              // Typography & Content
+              'text-xs font-semibold text-content-secondary hover:text-content-primary',
+              // Surface & Borders
+              'bg-surface-hover hover:bg-surface-hover/80 border border-border-subtle rounded-lg',
+              // Interaction
+              'cursor-pointer transition',
+            ].join(' ')}
           >
             <span>✏️</span> Edit
           </button>
@@ -97,7 +106,16 @@ export default function ItemDetailView({
               className="max-h-56 w-auto rounded-lg object-contain border border-border-subtle shadow-md"
             />
           ) : (
-            <div className="flex flex-col items-center justify-center text-content-muted gap-2 border border-dashed border-border-subtle/80 rounded-xl w-full h-full p-6">
+            <div
+              className={[
+                // Layout & Sizing
+                'flex flex-col items-center justify-center gap-2 w-full h-full p-6',
+                // Typography & Colors
+                'text-content-muted',
+                // Surface & Borders
+                'border border-dashed border-border-subtle/80 rounded-xl',
+              ].join(' ')}
+            >
               <span className="text-3xl opacity-40">📷</span>
               <span className="text-xs">No image uploaded</span>
             </div>

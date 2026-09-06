@@ -83,3 +83,27 @@
   background-color: var(--right-panel-btn-hover-bg);
   border-color: var(--right-panel-header-border);
 }
+
+/* Expand tab open / closed states */
+.right-panel-tab-hidden {
+  opacity: 0;
+  transform: translateX(100%);
+  pointer-events: none;
+}
+
+.right-panel-tab-visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* Docked right panel visibility and slide states */
+.right-panel-docked-open {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.right-panel-docked-closed {
+  opacity: 0;
+  transform: translateX(110%);
+  pointer-events: none;
+}

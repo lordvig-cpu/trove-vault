@@ -115,9 +115,16 @@ export default function UnifiedExplorerTreeFolder({
             e.stopPropagation();
             setIsOpen(!isOpen);
           }}
-          className={`w-4 h-4 flex items-center justify-center text-[9px] text-content-muted hover:text-content-primary transition shrink-0 ${
-            !hasChildren ? 'opacity-0 cursor-default' : ''
-          }`}
+          className={[
+            // Layout & Sizing
+            'flex items-center justify-center w-4 h-4 shrink-0',
+            // Typography & Content
+            'text-[9px] text-content-muted hover:text-content-primary',
+            // Interaction & Transitions
+            'cursor-pointer transition',
+            // Dynamic Leaf State
+            !hasChildren && 'tree-chevron-leaf',
+          ].filter(Boolean).join(' ')}
         >
           {isOpen ? '▼' : '▶'}
         </button>
@@ -134,7 +141,16 @@ export default function UnifiedExplorerTreeFolder({
         </span>
 
         {isActiveCollection && (
-          <span className="text-[9px] font-mono text-emerald-400 bg-emerald-950/80 border border-emerald-800/60 px-1.5 py-0.5 rounded shrink-0">
+          <span
+            className={[
+              // Layout & Sizing
+              'px-1.5 py-0.5 rounded shrink-0',
+              // Typography
+              'text-[9px] font-mono',
+              // Surface & Colors
+              'border tree-badge-active',
+            ].join(' ')}
+          >
             active
           </span>
         )}
@@ -143,11 +159,16 @@ export default function UnifiedExplorerTreeFolder({
           <div
             onMouseEnter={handleGearMouseEnter}
             onMouseLeave={handleMouseLeave}
-            className={`group/gear w-6 h-6 flex items-center justify-center rounded border border-transparent transition-colors cursor-pointer ${
-              isMenuOpen 
-                ? 'opacity-100 bg-slate-800/60 border-[var(--panel-border-subtle)]' 
-                : 'opacity-0 group-hover:opacity-100 hover:bg-slate-800/60 hover:border-[var(--panel-border-subtle)]'
-            }`}
+            className={[
+              // Layout & Sizing
+              'group/gear flex items-center justify-center w-6 h-6 shrink-0',
+              // Surface & Borders
+              'rounded border border-transparent',
+              // Interaction & Transitions
+              'cursor-pointer transition-colors',
+              // Menu Open State vs Default Hover State
+              isMenuOpen ? 'tree-gear-trigger-active' : 'tree-gear-trigger',
+            ].join(' ')}
           >
             <GearIcon 
               isActive={isMenuOpen}
@@ -172,11 +193,17 @@ export default function UnifiedExplorerTreeFolder({
       >
         <button
           type="button"
-          onClick={() => { onAddSubCollection(collection.id); setIsMenuOpen(false); }}
-          className="flex items-center gap-3 px-3 py-1.5 hover:bg-amber-500/15 text-left transition-colors"
+          onClick={() => {
+            onAddSubCollection(collection.id);
+            setIsMenuOpen(false);
+          }}
+          className={[
+            'group/action w-full text-left flex items-center gap-2.5 px-3 py-1.5 rounded',
+            'tree-menu-item',
+          ].join(' ')}
         >
-          <span className="text-sm shrink-0">📁</span>
-          <div className="flex flex-col leading-tight">
+          <span className="w-5 shrink-0 flex items-center justify-center text-sm group-hover/action:scale-105 transition-transform">📁</span>
+          <div className="flex flex-col leading-tight min-w-0">
             <span className="text-xs font-medium text-content-primary">New Sub-Folder</span>
             <span className="text-[9px] text-content-muted">Create a nested folder</span>
           </div>
@@ -184,11 +211,17 @@ export default function UnifiedExplorerTreeFolder({
 
         <button
           type="button"
-          onClick={() => { onAddSubItem(collection.id, null); setIsMenuOpen(false); }}
-          className="flex items-center gap-3 px-3 py-1.5 hover:bg-amber-500/15 text-left transition-colors"
+          onClick={() => {
+            onAddSubItem(collection.id, null);
+            setIsMenuOpen(false);
+          }}
+          className={[
+            'group/action w-full text-left flex items-center gap-2.5 px-3 py-1.5 rounded',
+            'tree-menu-item',
+          ].join(' ')}
         >
-          <span className="text-sm shrink-0">📄</span>
-          <div className="flex flex-col leading-tight">
+          <span className="w-5 shrink-0 flex items-center justify-center text-sm group-hover/action:scale-105 transition-transform">📄</span>
+          <div className="flex flex-col leading-tight min-w-0">
             <span className="text-xs font-medium text-content-primary">New Item</span>
             <span className="text-[9px] text-content-muted">Add record to this folder</span>
           </div>
@@ -196,33 +229,42 @@ export default function UnifiedExplorerTreeFolder({
 
         <button
           type="button"
-          onClick={() => { onEditCollection(collection); setIsMenuOpen(false); }}
-          className="flex items-center gap-3 px-3 py-1.5 hover:bg-amber-500/15 text-left transition-colors"
+          onClick={() => {
+            onEditCollection(collection);
+            setIsMenuOpen(false);
+          }}
+          className={[
+            'group/action w-full text-left flex items-center gap-2.5 px-3 py-1.5 rounded',
+            'tree-menu-item',
+          ].join(' ')}
         >
-          <span className="text-sm shrink-0">✏️</span>
-          <div className="flex flex-col leading-tight">
+          <span className="w-5 shrink-0 flex items-center justify-center text-sm group-hover/action:scale-105 transition-transform">✏️</span>
+          <div className="flex flex-col leading-tight min-w-0">
             <span className="text-xs font-medium text-content-primary">Edit Folder</span>
             <span className="text-[9px] text-content-muted">Rename or update</span>
           </div>
         </button>
 
-        {/* Standalone divider line with equal vertical spacing */}
-        <div className="border-t border-amber-500/20 my-1 mx-1" />
+        <div className={['my-1 mx-1', 'tree-menu-divider'].join(' ')} />
 
         <button
           type="button"
-          onClick={() => { onDeleteCollection(collection); setIsMenuOpen(false); }}
-          className="group/action flex items-center gap-2.5 px-3 py-1.5 hover:bg-rose-500/15 text-left transition-all duration-150 group/btn w-full rounded"
+          onClick={() => {
+            onDeleteCollection(collection);
+            setIsMenuOpen(false);
+          }}
+          className={[
+            'group/action w-full text-left flex items-center gap-2.5 px-3 py-1.5 rounded',
+            'tree-menu-item-danger',
+          ].join(' ')}
         >
-          <span className="w-5 shrink-0 flex items-center justify-center text-sm leading-none group-hover/action:scale-105 transition-transform">
-            🗑️
-          </span>
+          <span className="w-5 shrink-0 flex items-center justify-center text-sm group-hover/action:scale-105 transition-transform">🗑️</span>
           <div className="flex flex-col leading-tight min-w-0">
-            <span className="text-xs font-medium text-rose-400 group-hover/btn:text-rose-300">Delete Collection</span>
-            <span className="text-[9px] text-rose-400/70 group-hover/btn:text-rose-300/80">Permanently remove</span>
+            <span className={['text-xs font-medium', 'tree-menu-danger-label'].join(' ')}>Delete Collection</span>
+            <span className={['text-[9px]', 'tree-menu-danger-subtext'].join(' ')}>Permanently remove</span>
           </div>
         </button>
-      </ExplorerActionMenu>
+      </ExplorerActionMenu>      
 
       {isOpen && hasChildren && (
         <div className="border-l border-border-subtle space-y-0.5 ml-2 pl-1.5 my-0.5 flex flex-col min-w-0">

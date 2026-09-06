@@ -216,3 +216,61 @@
 .nav-profile-badge:hover {
   border-color: var(--nav-header-profile-border-hover);
 }
+
+/* Pinned fade transition states */
+.nav-header-pinned-visible {
+  opacity: 1;
+  transition-delay: 350ms;
+}
+
+.nav-header-pinned-hidden {
+  opacity: 0;
+  transition-delay: 0ms;
+}
+
+/* Tab indicator visibility states */
+.nav-tab-indicator-active {
+  opacity: 1;
+}
+
+.nav-tab-indicator-inactive {
+  opacity: 0;
+}
+
+/* Allow parent group hover to reveal inactive indicator */
+.group:hover .nav-tab-indicator-inactive {
+  opacity: 1;
+}
+
+/* Tab extension visibility states */
+.nav-tab-extension-active {
+  opacity: 1;
+}
+
+.nav-tab-extension-inactive {
+  opacity: 0;
+}
+
+/* Portal overlay pinned / unpinned interaction states */
+.nav-overlay-pinned {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.nav-overlay-unpinned {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Flyout menu pinned / unpinned states */
+.nav-flyout-pinned {
+  opacity: 0;
+  transform: translateX(-11.5rem); /* -translate-x-46 (184px) */
+  pointer-events: none;
+}
+
+.nav-flyout-unpinned {
+  opacity: 1;
+  transform: translateX(0);
+  pointer-events: auto;
+}

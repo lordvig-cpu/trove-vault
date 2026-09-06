@@ -99,17 +99,33 @@ export default function NavigationHeader({
 
             {/* SHADOW ERASER MASK */}
             <div
-              className={`absolute top-full left-0 right-[10px] h-3 bg-surface z-10 pointer-events-none ${opacityTransition} ${
-                isPinned ? 'opacity-100 delay-[350ms]' : 'opacity-0 delay-0'
-              }`}
+              className={[
+                // Layout & Geometry
+                'absolute top-full left-0 right-[10px] h-3 z-10',
+                // Surface & Colors
+                'bg-surface',
+                // Interaction & Transitions
+                'pointer-events-none',
+                opacityTransition,
+                // Pinned State Visibility
+                isPinned ? 'nav-header-pinned-visible' : 'nav-header-pinned-hidden',
+              ].join(' ')}
               aria-hidden="true"
             />
 
             {/* RESTORED ACCENT BORDER LINE */}
             <div
-              className={`absolute top-full left-0 w-full h-[1px] bg-[var(--nav-header-accent-line)] z-20 pointer-events-none ${opacityTransition} ${
-                isPinned ? 'opacity-100 delay-[350ms]' : 'opacity-0 delay-0'
-              }`}
+              className={[
+                // Layout & Geometry
+                'absolute top-full left-0 w-full h-[1px] z-20',
+                // Surface & Colors
+                'bg-[var(--nav-header-accent-line)]',
+                // Interaction & Transitions
+                'pointer-events-none',
+                opacityTransition,
+                // Pinned State Visibility
+                isPinned ? 'nav-header-pinned-visible' : 'nav-header-pinned-hidden',
+              ].join(' ')}
               aria-hidden="true"
             />
 
@@ -131,31 +147,46 @@ export default function NavigationHeader({
                     onToggleLeftSidePanel();
                   }
                 }}
-                className={`px-4 py-1.5 font-sans font-black tracking-wide text-sm relative group transition-all ease-out ${
-                  animationsEnabled ? 'duration-500' : 'duration-0'
-                } ${isPinned ? 'cursor-default' : 'cursor-pointer'} ${
-                  isTabActive ? 'nav-tab-active' : 'nav-tab-inactive'
-                }`}
+                className={[
+                  // Layout & Spacing
+                  'relative px-4 py-1.5 group',
+                  // Typography
+                  'font-sans font-black tracking-wide text-sm',
+                  // Transitions & Durations
+                  'transition-all ease-out',
+                  animationsEnabled ? 'duration-500' : 'duration-0',
+                  // State Classes
+                  isPinned ? 'cursor-default' : 'cursor-pointer',
+                  isTabActive ? 'nav-tab-active' : 'nav-tab-inactive',
+                ].join(' ')}
               >
                 <span className="relative inline-block">
                   Explorer
                   <div
-                    className={`nav-tab-indicator transition-opacity ease-out ${
-                      animationsEnabled ? 'duration-500' : 'duration-0'
-                    } ${isTabActive ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}
+                    className={[
+                      // Base Indicator & Transitions
+                      'nav-tab-indicator transition-opacity ease-out',
+                      animationsEnabled ? 'duration-500' : 'duration-0',
+                      // Dynamic State Visibility
+                      isTabActive ? 'nav-tab-indicator-active' : 'nav-tab-indicator-inactive',
+                    ].join(' ')}
                     aria-hidden="true"
                   />
                 </span>
 
                 {/* Seamless Tab Extension */}
                 <div
-                  className={`nav-tab-extension transition-opacity ease-out ${
-                    animationsEnabled ? 'duration-500' : 'duration-0'
-                  } ${
+                  className={[
+                    // Base Extension Layout & Transitions
+                    'nav-tab-extension transition-opacity ease-out',
+                    animationsEnabled ? 'duration-500' : 'duration-0',
+                    // Pinned Border State
                     isPinned
                       ? 'border-r border-[var(--nav-header-accent-line)] border-border-strong'
-                      : 'border-r border-border-strong'
-                  } ${isTabActive ? 'opacity-100' : 'opacity-0'}`}
+                      : 'border-r border-border-strong',
+                    // State Visibility
+                    isTabActive ? 'nav-tab-extension-active' : 'nav-tab-extension-inactive',
+                  ].join(' ')}
                   aria-hidden="true"
                 />
               </button>
@@ -166,11 +197,18 @@ export default function NavigationHeader({
                   {/* Floating Menu Overlay (Portaled to z-[60] on the body) */}
                   {typeof document !== 'undefined' && createPortal(
                     <div
-                      className={`fixed inset-0 top-14 z-[60] ${
+                      className={[
+                        // Layout & Fixed Viewport Positioning
+                        'fixed inset-0 top-14 z-[60]',
+                        // Mount / Unmount Animations & Transitions
                         animationsEnabled
-                          ? (isClosing && !isPinned ? 'animate-unmount-fade' : 'animate-mount-fade transition-opacity duration-700 ease-in-out')
-                          : 'transition-none'
-                      } ${isPinned ? 'opacity-0 pointer-events-none' : 'opacity-100 pointer-events-auto'}`}
+                          ? (isClosing && !isPinned
+                              ? 'animate-unmount-fade'
+                              : 'animate-mount-fade transition-opacity duration-700 ease-in-out')
+                          : 'transition-none',
+                        // Pinned Visibility & Pointer Events
+                        isPinned ? 'nav-overlay-pinned' : 'nav-overlay-unpinned',
+                      ].join(' ')}
                       onClick={onToggleLeftSidePanel}
                     />,
                     document.body
@@ -179,13 +217,17 @@ export default function NavigationHeader({
                   {/* Floating Menu Container */}
                   <div
                     style={{ zIndex: 80 }}
-                    className={`nav-flyout-menu transform ${
+                    className={[
+                      // Base Geometry & Transforms
+                      'nav-flyout-menu transform',
+                      transitionClass,
+                      // Mount / Unmount Animations
                       animationsEnabled && !isPinned
                         ? (isClosing ? 'animate-unmount-fade' : 'animate-mount-fade')
-                        : ''
-                    } ${transitionClass} ${
-                      isPinned ? 'opacity-0 -translate-x-46 pointer-events-none' : 'opacity-100 translate-x-0 pointer-events-auto'
-                    }`}
+                        : '',
+                      // Pinned State & Interaction
+                      isPinned ? 'nav-flyout-pinned' : 'nav-flyout-unpinned',
+                    ].filter(Boolean).join(' ')}
                   >
                     <div className="flex items-center justify-between border-b border-border-subtle pb-2 shrink-0">
                       <span className="text-xs font-bold uppercase tracking-wider text-content-muted">
@@ -197,7 +239,14 @@ export default function NavigationHeader({
                         <button
                           type="button"
                           onClick={onTogglePin}
-                          className="group p-1.5 rounded-lg border border-transparent hover:border-border-subtle hover:bg-surface-hover transition cursor-pointer flex items-center justify-center shrink-0"
+                          className={[
+                            // Layout & Alignment
+                            'group flex items-center justify-center shrink-0 p-1.5',
+                            // Surface & Borders
+                            'rounded-lg border border-transparent hover:border-border-subtle hover:bg-surface-hover',
+                            // Interaction
+                            'cursor-pointer transition',
+                          ].join(' ')}
                           title="Pin Explorer to LeftSidePanel"
                         >
                           <PinOutlineIcon className="w-3.5 h-3.5 text-content-muted" />
@@ -207,7 +256,16 @@ export default function NavigationHeader({
                         <button
                           type="button"
                           onClick={onToggleLeftSidePanel}
-                          className="p-1.5 text-content-muted hover:text-content-primary rounded-lg border border-transparent hover:border-border-subtle hover:bg-surface-hover transition text-xs cursor-pointer flex items-center justify-center w-7 h-7"
+                          className={[
+                            // Layout & Sizing
+                            'flex items-center justify-center w-7 h-7 p-1.5',
+                            // Typography & Colors
+                            'text-xs text-content-muted hover:text-content-primary',
+                            // Surface & Borders
+                            'rounded-lg border border-transparent hover:border-border-subtle hover:bg-surface-hover',
+                            // Interaction
+                            'cursor-pointer transition',
+                          ].join(' ')}
                           title="Close"
                         >
                           ✕
@@ -241,7 +299,16 @@ export default function NavigationHeader({
             <button
               type="button"
               onClick={onOpenTemplateManager}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-surface-hover/80 hover:bg-surface-hover text-content-secondary hover:text-content-primary border border-border-subtle transition cursor-pointer"
+              className={[
+                // Layout & Spacing
+                'flex items-center gap-1.5 px-3 py-1.5',
+                // Typography & Content
+                'text-xs font-semibold text-content-secondary hover:text-content-primary',
+                // Surface & Borders
+                'bg-surface-hover/80 hover:bg-surface-hover border border-border-subtle rounded-lg',
+                // Interaction
+                'cursor-pointer transition',
+              ].join(' ')}
             >
               <span>📑</span>
               <span>Templates</span>

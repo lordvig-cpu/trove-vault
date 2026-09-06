@@ -87,22 +87,24 @@ export default function NavigationFooter({
         <button
           type="button"
           onClick={() => setAnimationsEnabled(!animationsEnabled)}
-          className="nav-footer-icon-btn group"
+          className="nav-footer-icon-btn group relative"
           title={animationsEnabled ? 'Disable UI Animations' : 'Enable UI Animations'}
         >
           <AnimationsOnIcon
-            className={`w-3.5 h-3.5 text-white absolute transform transition-all duration-500 ease-out ${
-              animationsEnabled
-                ? 'rotate-0 opacity-100 scale-100'
-                : '-rotate-90 opacity-0 scale-50 pointer-events-none'
-            }`}
+            className={[
+              'nav-toggle-icon',
+              animationsEnabled 
+                ? 'nav-toggle-icon-active' 
+                : 'nav-toggle-icon-hidden-left',
+            ].join(' ')}
           />
           <AnimationsOffIcon
-            className={`w-3.5 h-3.5 text-white absolute transform transition-all duration-500 ease-out ${
-              !animationsEnabled
-                ? 'rotate-0 opacity-100 scale-100'
-                : 'rotate-90 opacity-0 scale-50 pointer-events-none'
-            }`}
+            className={[
+              'nav-toggle-icon',
+              !animationsEnabled 
+                ? 'nav-toggle-icon-active' 
+                : 'nav-toggle-icon-hidden-right',
+            ].join(' ')}
           />
         </button>
 
@@ -110,22 +112,24 @@ export default function NavigationFooter({
         <button
           type="button"
           onClick={() => setIsAudioEnabled(!isAudioEnabled)}
-          className="nav-footer-icon-btn group"
+          className="nav-footer-icon-btn group relative"
           title={isAudioEnabled ? 'Mute Sound FX' : 'Enable Sound FX'}
         >
           <AudioOnIcon
-            className={`w-3.5 h-3.5 text-white absolute transform transition-all duration-500 ease-out ${
-              isAudioEnabled
-                ? 'rotate-0 opacity-100 scale-100'
-                : '-rotate-90 opacity-0 scale-50 pointer-events-none'
-            }`}
+            className={[
+              'nav-toggle-icon',
+              isAudioEnabled 
+                ? 'nav-toggle-icon-active' 
+                : 'nav-toggle-icon-hidden-left',
+            ].join(' ')}
           />
           <AudioOffIcon
-            className={`w-3.5 h-3.5 text-white absolute transform transition-all duration-500 ease-out ${
-              !isAudioEnabled
-                ? 'rotate-0 opacity-100 scale-100'
-                : 'rotate-90 opacity-0 scale-50 pointer-events-none'
-            }`}
+            className={[
+              'nav-toggle-icon',
+              !isAudioEnabled 
+                ? 'nav-toggle-icon-active' 
+                : 'nav-toggle-icon-hidden-right',
+            ].join(' ')}
           />
         </button>
 
@@ -147,22 +151,42 @@ export default function NavigationFooter({
         <button
           type="button"
           onClick={toggleTheme}
-          className="nav-footer-icon-btn group text-content-muted hover:text-content-primary"
-          title={theme === 'theme-default-dark' ? 'Switch to Sunlit Tide (Light Mode)' : 'Switch to Amber Tide (Dark Mode)'}
+          className={[
+            // Layout & Surface
+            'nav-footer-icon-btn group relative',
+            // Typography & Color
+            'text-content-muted hover:text-content-primary',
+          ].join(' ')}
+          title={
+            theme === 'theme-default-dark'
+              ? 'Switch to Sunlit Tide (Light Mode)'
+              : 'Switch to Amber Tide (Dark Mode)'
+          }
         >
           <MoonIcon
-            className={`w-[17px] h-[17px] nav-footer-icon-moon group-hover:text-content-primary absolute transform transition-all duration-500 ease-out ${
+            className={[
+              // Structure & Specific Dimensions
+              'nav-theme-icon nav-theme-icon-moon nav-footer-icon-moon',
+              // Color
+              'group-hover:text-content-primary',
+              // Active / Inactive Transition State
               theme === 'theme-default-dark'
-                ? 'rotate-0 opacity-100 scale-100'
-                : '-rotate-90 opacity-0 scale-50 pointer-events-none'
-            }`}
+                ? 'nav-theme-icon-active'
+                : 'nav-theme-icon-hidden-left',
+            ].join(' ')}
           />
+
           <SunIcon
-            className={`w-3.5 h-3.5 nav-footer-icon-sun group-hover:text-content-primary absolute transform transition-all duration-500 ease-out ${
+            className={[
+              // Structure & Specific Dimensions
+              'nav-theme-icon nav-theme-icon-sun nav-footer-icon-sun',
+              // Color
+              'group-hover:text-content-primary',
+              // Active / Inactive Transition State
               theme === 'theme-default-light'
-                ? 'rotate-0 opacity-100 scale-100'
-                : 'rotate-90 opacity-0 scale-50 pointer-events-none'
-            }`}
+                ? 'nav-theme-icon-active'
+                : 'nav-theme-icon-hidden-right',
+            ].join(' ')}
           />
         </button>
       </div>

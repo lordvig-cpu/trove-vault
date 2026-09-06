@@ -1,0 +1,109 @@
+/* Tree leaf indicator (hidden when row has no nested children) */
+.tree-chevron-leaf {
+  opacity: 0;
+  cursor: default;
+  pointer-events: none;
+}
+
+/* Active collection badge indicator */
+.tree-badge-active {
+  color: #34d399; /* text-emerald-400 */
+  background-color: rgba(6, 78, 59, 0.8); /* bg-emerald-950/80 */
+  border-color: rgba(6, 95, 70, 0.6); /* border-emerald-800/60 */
+}
+
+/* Tree item gear action button states */
+.tree-gear-trigger {
+  opacity: 0;
+}
+
+/* Reveal when parent row is hovered */
+.group:hover .tree-gear-trigger {
+  opacity: 1;
+}
+
+/* Hover surface styling when inactive */
+.tree-gear-trigger:hover {
+  background-color: rgba(30, 41, 59, 0.6); /* bg-slate-800/60 */
+  border-color: var(--panel-border-subtle);
+}
+
+/* Persistent active state when menu is open */
+.tree-gear-trigger-active {
+  opacity: 1;
+  background-color: rgba(30, 41, 59, 0.6);
+  border-color: var(--panel-border-subtle);
+}
+
+/* Context & dropdown menu action button */
+.tree-menu-item {
+  width: 100%;
+  text-align: left;
+  transition: background-color 150ms ease-in-out, color 150ms ease-in-out;
+}
+
+.tree-menu-item:hover {
+  background-color: rgba(245, 158, 11, 0.15); /* hover:bg-amber-500/15 */
+}
+
+/* Context menu horizontal divider */
+.tree-menu-divider {
+  border-top-width: 1px;
+  border-color: rgba(245, 158, 11, 0.2); /* border-amber-500/20 */
+}
+
+/* Destructive context menu action item */
+.tree-menu-item-danger {
+  width: 100%;
+  text-align: left;
+  transition: background-color 150ms ease-in-out, color 150ms ease-in-out;
+}
+
+.tree-menu-item-danger:hover {
+  background-color: rgba(244, 63, 94, 0.15); /* hover:bg-rose-500/15 */
+}
+
+/* Danger item label text */
+.tree-menu-danger-label {
+  color: #fb7185; /* text-rose-400 */
+}
+
+.tree-menu-item-danger:hover .tree-menu-danger-label {
+  color: #fda4af; /* text-rose-300 */
+}
+
+/* Danger item subtext / description */
+.tree-menu-danger-subtext {
+  color: rgba(251, 113, 133, 0.7); /* text-rose-400/70 */
+}
+
+.tree-menu-item-danger:hover .tree-menu-danger-subtext {
+  color: rgba(253, 164, 175, 0.8); /* text-rose-300/80 */
+}
+
+/* Context menu amber action icon */
+.tree-menu-icon-amber {
+  color: rgba(253, 230, 138, 0.9); /* text-amber-200/90 */
+}
+
+.group\/action:hover .tree-menu-icon-amber {
+  color: #fef3c7; /* text-amber-100 */
+}
+
+/* Amber menu action label */
+.tree-menu-amber-label {
+  color: #fef3c7; /* text-amber-100 */
+}
+
+.group\/action:hover .tree-menu-amber-label {
+  color: #ffffff;
+}
+
+/* Amber menu action subtext */
+.tree-menu-amber-subtext {
+  color: rgba(252, 211, 77, 0.6); /* text-amber-300/60 */
+}
+
+.group\/action:hover .tree-menu-amber-subtext {
+  color: rgba(252, 211, 77, 0.8); /* text-amber-300/80 */
+}
