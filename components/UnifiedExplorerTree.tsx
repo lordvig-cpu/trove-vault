@@ -158,6 +158,7 @@ function UnifiedExplorerTreeItem({ item, collectionId }: { item: ItemRecord; col
         title="Item Actions"
         titleIcon="📄"
       >
+        {/* Add Sub-Item */}
         <button
           type="button"
           onClick={() => {
@@ -167,14 +168,15 @@ function UnifiedExplorerTreeItem({ item, collectionId }: { item: ItemRecord; col
           className="group/action w-full text-left flex items-center gap-2.5 px-3 py-1.5 rounded tree-menu-item"
         >
           <span className="w-5 shrink-0 flex items-center justify-center">
-            <AddSubItemIcon className="w-3.5 h-3.5 tree-menu-icon-amber group-hover/action:scale-105 transition-transform" />
+            <AddSubItemIcon className="w-3.5 h-3.5 text-content-muted group-hover/action:text-content-primary group-hover/action:scale-105 transition-all" />
           </span>
           <div className="flex flex-col leading-tight min-w-0">
-            <span className="text-xs font-medium tree-menu-amber-label">Add Sub-Item</span>
-            <span className="text-[9px] tree-menu-amber-subtext">Create a nested record</span>
+            <span className="text-xs font-medium text-content-primary">Add Sub-Item</span>
+            <span className="text-[9px] text-content-muted">Create a nested record</span>
           </div>
         </button>
 
+        {/* Edit Item */}
         <button
           type="button"
           onClick={() => {
@@ -185,13 +187,14 @@ function UnifiedExplorerTreeItem({ item, collectionId }: { item: ItemRecord; col
         >
           <span className="w-5 shrink-0 flex items-center justify-center text-sm leading-none group-hover/action:scale-105 transition-transform">✏️</span>
           <div className="flex flex-col leading-tight min-w-0">
-            <span className="text-xs font-medium tree-menu-amber-label">Edit Item</span>
-            <span className="text-[9px] tree-menu-amber-subtext">Update attributes</span>
+            <span className="text-xs font-medium text-content-primary">Edit Item</span>
+            <span className="text-[9px] text-content-muted">Update attributes</span>
           </div>
         </button>
 
         <div className="my-1 mx-1 tree-menu-divider" />
 
+        {/* Delete Item */}
         <button
           type="button"
           onClick={() => {

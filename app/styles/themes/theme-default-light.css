@@ -1,9 +1,8 @@
-/* ==========================================================================
-   THEME: DEFAULT LIGHT (AMBER TIDE - DAYBREAK)
-   --------------------------------------------
-   Pure Token Registry: ONLY CSS variables belong in this file.
-   Organized 1-to-1 with component stylesheets in styles/components/
-   ========================================================================== */
+/* THEME: DEFAULT LIGHT (AMBER TIDE - DAYBREAK)
+-----------------------------------------------
+Pure Token Registry: ONLY CSS variables belong in this file.
+Organized 1-to-1 with component stylesheets in styles/components/
+========================================================================== */
 
 [data-theme='theme-default-light'] {
 
@@ -270,7 +269,6 @@
     --modal-badge-key-bg: rgba(224, 242, 254, 0.80);
     --modal-badge-key-border: rgba(2, 132, 199, 0.30);
     --modal-badge-key-text: var(--brand-primary);
-
     --modal-badge-req-bg: rgba(254, 226, 226, 0.80);
     --modal-badge-req-border: rgba(239, 68, 68, 0.40);
     --modal-badge-req-text: rgba(185, 28, 28, 1.00);
@@ -322,12 +320,6 @@
 
    /* Standard Action Item Tokens */
    --tree-menu-item-hover-bg: rgba(245, 158, 11, 0.14);             /* Gentle amber highlight */
-   --tree-menu-icon-amber: rgba(217, 119, 6, 0.90);                 /* Amber-600 */
-   --tree-menu-icon-amber-hover: rgba(180, 83, 9, 1.00);            /* Amber-700 */
-   --tree-menu-label-amber: rgba(30, 41, 59, 1.00);                 /* Slate-800 for primary readability */
-   --tree-menu-label-amber-hover: rgba(15, 23, 42, 1.00);           /* Slate-900 */
-   --tree-menu-subtext-amber: rgba(120, 53, 15, 0.75);              /* Warm amber-900/75 description */
-   --tree-menu-subtext-amber-hover: rgba(120, 53, 15, 0.95);
 
    /* Destructive Action Item Tokens */
    --tree-menu-danger-hover-bg: rgba(254, 226, 226, 0.70);          /* Soft rose-100 highlight */
@@ -335,5 +327,18 @@
    --tree-menu-danger-label-hover: rgba(190, 18, 60, 1.00);         /* Rose-700 */
    --tree-menu-danger-subtext: rgba(225, 29, 72, 0.75);             /* Rose-600/75 */
    --tree-menu-danger-subtext-hover: rgba(190, 18, 60, 0.95);
+
+   /* --- Explorer Action Menu & Row Controls --- */
+   --explorer-menu-bg: rgba(10, 16, 26, 0.95);
+   --explorer-menu-border: var(--border-subtle);
+   --explorer-menu-divider: var(--border-subtle);
+
+   /* Danger action hover state */
+   --explorer-menu-danger-text: var(--panel-notice-error-text, #f87171);
+   --explorer-menu-danger-bg-hover: var(--panel-notice-error-bg, rgba(239, 68, 68, 0.15));
+
+   /* Gear button trigger surfaces */
+   --explorer-gear-hover-bg: var(--surface-hover);
+   --explorer-gear-active-bg: var(--accent-primary);
    /* #endregion */
 }

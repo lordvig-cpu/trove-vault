@@ -148,7 +148,7 @@ export default function LeftSidePanel({
       )}
 
       {error && (
-        <div className="left-side-panel-notice-error px-3 py-1 text-xs text-red-400 mt-2 mx-2">
+        <div className="left-side-panel-notice-error mt-2 mx-2">
           {error}
         </div>
       )}

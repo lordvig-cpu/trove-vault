@@ -277,6 +277,7 @@ Organized 1-to-1 with component stylesheets in styles/components/
    --tmpl-item-bg: rgba(2, 16, 31, 0.60);
    --tmpl-item-border: var(--panel-border-subtle);
    --tmpl-item-hover-border: var(--panel-border-strong);
+   
    --tmpl-item-selected-bg: rgba(7, 72, 115, 0.40);
    --tmpl-item-selected-border: var(--brand-primary);
    --tmpl-item-selected-shadow: 0 4px 12px rgba(7, 72, 115, 0.35);
@@ -319,12 +320,6 @@ Organized 1-to-1 with component stylesheets in styles/components/
 
    /* Standard Action Item Tokens */
    --tree-menu-item-hover-bg: rgba(245, 158, 11, 0.15);
-   --tree-menu-icon-amber: rgba(253, 230, 138, 0.90);
-   --tree-menu-icon-amber-hover: rgba(254, 243, 199, 1.00);
-   --tree-menu-label-amber: rgba(254, 243, 199, 1.00);
-   --tree-menu-label-amber-hover: #ffffff;
-   --tree-menu-subtext-amber: rgba(252, 211, 77, 0.60);
-   --tree-menu-subtext-amber-hover: rgba(252, 211, 77, 0.80);
 
    /* Destructive Action Item Tokens */
    --tree-menu-danger-hover-bg: rgba(244, 63, 94, 0.15);
@@ -332,5 +327,18 @@ Organized 1-to-1 with component stylesheets in styles/components/
    --tree-menu-danger-label-hover: rgba(253, 164, 175, 1.00);
    --tree-menu-danger-subtext: rgba(251, 113, 133, 0.70);
    --tree-menu-danger-subtext-hover: rgba(253, 164, 175, 0.80);
+
+   /* --- Explorer Action Menu & Row Controls --- */
+   --explorer-menu-bg: rgba(10, 16, 26, 0.95);
+   --explorer-menu-border: var(--border-subtle);
+   --explorer-menu-divider: var(--border-subtle);
+
+   /* Danger action hover state */
+   --explorer-menu-danger-text: var(--panel-notice-error-text, #f87171);
+   --explorer-menu-danger-bg-hover: var(--panel-notice-error-bg, rgba(239, 68, 68, 0.15));
+
+   /* Gear button trigger surfaces */
+   --explorer-gear-hover-bg: var(--surface-hover);
+   --explorer-gear-active-bg: var(--accent-primary);
    /* #endregion */
 }

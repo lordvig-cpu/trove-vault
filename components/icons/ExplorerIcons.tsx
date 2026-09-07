@@ -14,7 +14,7 @@ export function FolderCollapseIcon({ className = 'w-3.5 h-3.5' }: ExplorerIconPr
       strokeWidth="1.8"
       strokeLinecap="round"
       strokeLinejoin="round"
-      className={`origin-center transition-all duration-200 text-accent-primary group-hover:text-white ${className}`}
+      className={`origin-center transition-all duration-200 text-accent-primary group-hover:text-content-primary ${className}`}
     >
       <path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z" />
       <line x1="9" y1="13" x2="15" y2="13" />
@@ -32,7 +32,7 @@ export function FolderExpandIcon({ className = 'w-3.5 h-3.5' }: ExplorerIconProp
       strokeWidth="1.8"
       strokeLinecap="round"
       strokeLinejoin="round"
-      className={`origin-center transition-all duration-200 text-accent-primary group-hover:text-white ${className}`}
+      className={`origin-center transition-all duration-200 text-accent-primary group-hover:text-content-primary ${className}`}
     >
       <path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z" />
       <line x1="12" y1="10" x2="12" y2="16" />
@@ -59,7 +59,7 @@ export function ChevronRightIcon({ className = 'w-[10px] h-[10px]' }: ExplorerIc
   );
 }
 
-// Unpinned: Upright outline -> fills white & rotates 45° to preview the pinned state
+// Unpinned: Upright outline -> fills primary & rotates 45° to preview the pinned state
 export function PinOutlineIcon({ className = 'w-4 h-4' }: ExplorerIconProps) {
   return (
     <svg
@@ -69,14 +69,14 @@ export function PinOutlineIcon({ className = 'w-4 h-4' }: ExplorerIconProps) {
       strokeWidth="1.8"
       strokeLinecap="round"
       strokeLinejoin="round"
-      className={`origin-center transition-all duration-300 ease-out group-hover:fill-white group-hover:stroke-white group-hover:rotate-45 ${className}`}
+      className={`origin-center transition-all duration-300 ease-out group-hover:fill-content-primary group-hover:stroke-content-primary group-hover:rotate-45 ${className}`}
     >
       <path d="M8 3H16L15 8L18 11V13H13V19L12 22L11 19V13H6V11L9 8L8 3Z" />
     </svg>
   );
 }
 
-// Pinned: 45° solid white pin -> clears fill to transparent outline & rotates upright to preview unpinning
+// Pinned: 45° solid pin -> clears fill to transparent outline & rotates upright to preview unpinning
 export function PinFilledIcon({ className = 'w-4 h-4' }: ExplorerIconProps) {
   return (
     <svg
