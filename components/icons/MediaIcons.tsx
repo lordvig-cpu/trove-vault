@@ -1,20 +1,28 @@
 import React from 'react';
 
-export const AnimationsOnIcon = ({ className }: { className?: string }) => (
-  <svg className={className} fill="currentColor" viewBox="0 0 24 24">
+export const AnimationsOnIcon = ({ className = '' }: { className?: string }) => (
+  <svg 
+    className={`origin-center transition-transform duration-200 ease-out group-hover:scale-115 ${className}`} 
+    fill="currentColor" 
+    viewBox="0 0 24 24"
+  >
     <rect x="5" y="5" width="14" height="14" rx="2" />
   </svg>
 );
 
-export const AnimationsOffIcon = ({ className }: { className?: string }) => (
-  <svg className={className} fill="currentColor" viewBox="0 0 24 24">
+export const AnimationsOffIcon = ({ className = '' }: { className?: string }) => (
+  <svg 
+    className={`origin-center transition-transform duration-200 ease-out group-hover:scale-115 ${className}`} 
+    fill="currentColor" 
+    viewBox="0 0 24 24"
+  >
     <polygon points="6,4 20,12 6,20" />
   </svg>
 );
 
-export const AudioOnIcon = ({ className }: { className?: string }) => (
+export const AudioOnIcon = ({ className = '' }: { className?: string }) => (
   <svg
-    className={className}
+    className={`origin-center transition-transform duration-200 ease-out group-hover:scale-115 ${className}`}
     fill="none"
     stroke="currentColor"
     strokeWidth="1.8"
@@ -28,9 +36,9 @@ export const AudioOnIcon = ({ className }: { className?: string }) => (
   </svg>
 );
 
-export const AudioOffIcon = ({ className }: { className?: string }) => (
+export const AudioOffIcon = ({ className = '' }: { className?: string }) => (
   <svg
-    className={className}
+    className={`origin-center transition-transform duration-200 ease-out group-hover:scale-115 ${className}`}
     fill="none"
     stroke="currentColor"
     strokeWidth="1.8"

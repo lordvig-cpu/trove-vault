@@ -44,8 +44,8 @@ export default function RightPanel({
           className={[
             // Layout & Sizing
             'w-3.5 h-3.5',
-            // Transform & Transition
-            'transform group-hover:-translate-x-0.5 transition-transform',
+            // Transform & Transition: Nudge left + scale pop
+            'origin-center transition-transform duration-200 ease-out group-hover:-translate-x-0.5 group-hover:scale-115',
           ].join(' ')}
         />
       </button>
@@ -82,8 +82,8 @@ export default function RightPanel({
                 'w-3.5 h-3.5',
                 // Typography & Color
                 'text-content-muted group-hover:text-content-primary',
-                // Transform & Transition
-                'transform group-hover:translate-x-0.5 transition-all',
+                // Transform & Transition: Nudge right + scale pop
+                'origin-center transition-all duration-200 ease-out group-hover:translate-x-0.5 group-hover:scale-115',
               ].join(' ')}
             />
           </button>

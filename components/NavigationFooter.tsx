@@ -122,7 +122,7 @@ export default function NavigationFooter({
           type="button"
           onClick={onToggleRightPanel}
           title={isRightPanelOpen ? 'Close Side Panel' : 'Open Side Panel'}
-          className={`p-1.5 rounded-lg border transition cursor-pointer flex items-center justify-center ${
+          className={`group p-1.5 rounded-lg border transition cursor-pointer flex items-center justify-center ${
             isRightPanelOpen ? 'nav-footer-dock-btn-open' : 'nav-footer-dock-btn-closed'
           }`}
         >

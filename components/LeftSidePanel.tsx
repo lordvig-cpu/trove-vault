@@ -135,7 +135,9 @@ export default function LeftSidePanel({
               className="left-side-panel-pin-btn group"
               title="Close Explorer"
             >
-              <span className="text-xs text-content-primary px-1.5">✕</span>
+              <span className="inline-block origin-center transition-transform duration-200 ease-out group-hover:scale-115 text-xs text-content-primary px-1.5 select-none">
+                ✕
+              </span>
             </button>
           )}
         </div>

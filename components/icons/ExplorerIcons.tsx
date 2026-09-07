@@ -14,7 +14,7 @@ export function FolderCollapseIcon({ className = 'w-3.5 h-3.5' }: ExplorerIconPr
       strokeWidth="1.8"
       strokeLinecap="round"
       strokeLinejoin="round"
-      className={`origin-center transition-all duration-200 text-accent-primary group-hover:text-content-primary ${className}`}
+      className={`origin-center transition-transform duration-200 ease-out text-accent-primary group-hover:text-content-primary group-hover:scale-115 ${className}`}
     >
       <path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z" />
       <line x1="9" y1="13" x2="15" y2="13" />
@@ -32,7 +32,7 @@ export function FolderExpandIcon({ className = 'w-3.5 h-3.5' }: ExplorerIconProp
       strokeWidth="1.8"
       strokeLinecap="round"
       strokeLinejoin="round"
-      className={`origin-center transition-all duration-200 text-accent-primary group-hover:text-content-primary ${className}`}
+      className={`origin-center transition-transform duration-200 ease-out text-accent-primary group-hover:text-content-primary group-hover:scale-115 ${className}`}
     >
       <path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z" />
       <line x1="12" y1="10" x2="12" y2="16" />
