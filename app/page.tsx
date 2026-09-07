@@ -132,7 +132,6 @@ export default function Home() {
   const explorerTreeElement = (
     <ExplorerContent
       unifiedForest={unifiedForest}
-      searchQuery={searchQuery}
       activeCollectionId={activeCollectionId}
       selectedItemId={selectedItem?.id || null}
       expandedFolderIds={expandedFolderIds}
