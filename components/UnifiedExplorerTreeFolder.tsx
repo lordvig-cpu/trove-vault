@@ -133,17 +133,19 @@ export default function UnifiedExplorerTreeFolder({
           className={[
             'flex items-center justify-center w-4 h-4 shrink-0',
             'text-content-muted hover:text-content-primary',
-            'cursor-pointer transition select-none',
+            'cursor-pointer transition',
             !hasChildren && 'tree-chevron-leaf',
           ].filter(Boolean).join(' ')}
         >
           {isOpen ? (
-            <svg viewBox="0 0 16 16" fill="currentColor" className="w-2.5 h-2.5">
-              <path d="M4 6l4 4 4-4H4z" />
+            <svg viewBox="0 0 24 24" fill="currentColor" className="w-[10px] h-[10px]">
+              {/* Down-pointing filled triangle */}
+              <polygon points="5,8 19,8 12,18" />
             </svg>
           ) : (
-            <svg viewBox="0 0 16 16" fill="currentColor" className="w-2.5 h-2.5">
-              <path d="M6 4l4 4-4 4V4z" />
+            <svg viewBox="0 0 24 24" fill="currentColor" className="w-[10px] h-[10px]">
+              {/* Right-pointing filled triangle */}
+              <polygon points="8,5 8,19 18,12" />
             </svg>
           )}
         </button>

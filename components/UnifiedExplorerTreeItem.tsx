@@ -107,7 +107,15 @@ export default function UnifiedExplorerTreeItem({
             !hasSubItems && 'tree-chevron-leaf',
           ].filter(Boolean).join(' ')}
         >
-          {isOpen ? '▼' : '▶'}
+          {isOpen ? (
+            <svg viewBox="0 0 24 24" fill="currentColor" className="w-[10px] h-[10px]">
+              <polygon points="5,8 19,8 12,18" />
+            </svg>
+          ) : (
+            <svg viewBox="0 0 24 24" fill="currentColor" className="w-[10px] h-[10px]">
+              <polygon points="8,5 8,19 18,12" />
+            </svg>
+          )}
         </button>
 
         <span className="w-4 h-4 flex items-center justify-center text-[13px] leading-none shrink-0 select-none">
