@@ -17,8 +17,9 @@ interface ExplorerContentProps {
   activeCollectionId: number | null;
   activeCollectionName?: string;
   selectedItemId: number | null;
+  expandedFolderIds?: Set<number>;
+  onToggleFolder?: (folderId: number, expand: boolean) => void;
   loading: boolean;
-  collapsedFolderIds?: Set<number>;
   setIsLeftSidePanelOpen?: (open: boolean) => void;
   onSelectCollection: (id: number) => void;
   onSelectItem: (item: ItemRecord, collectionId: number) => void;
@@ -38,7 +39,8 @@ export default function ExplorerContent({
   activeCollectionName,
   selectedItemId,
   loading,
-  collapsedFolderIds,
+  expandedFolderIds,
+  onToggleFolder,
   setIsLeftSidePanelOpen,
   onSelectCollection,
   onSelectItem,
@@ -98,7 +100,8 @@ export default function ExplorerContent({
             collection={colNode}
             activeCollectionId={activeCollectionId}
             selectedItemId={selectedItemId}
-            collapsedFolderIds={collapsedFolderIds}
+            expandedFolderIds={expandedFolderIds}
+            onToggleFolder={onToggleFolder}
             onSelectCollection={(colId) => {
               onSelectCollection(colId);
               if (!isPinned && setIsLeftSidePanelOpen) {

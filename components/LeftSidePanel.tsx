@@ -17,9 +17,9 @@ interface LeftSidePanelProps {
   onTogglePin?: () => void;
   allCollectionsCount: number;
   allItemsCount: number;
+  isAnyFolderExpanded?: boolean;
+  onToggleAllFolders?: () => void;
   activeCollectionId?: number | null;
-  isAtDeepestLevel?: boolean;
-  onToggleCurrentFolder?: () => void;
   loading: boolean;
   error: string | null;
   children: React.ReactNode;
@@ -33,8 +33,8 @@ export default function LeftSidePanel({
   allCollectionsCount,
   allItemsCount,
   activeCollectionId,
-  isAtDeepestLevel = false,
-  onToggleCurrentFolder,
+  isAnyFolderExpanded = false,
+  onToggleAllFolders,
   loading,
   error,
   children,
@@ -98,18 +98,18 @@ export default function LeftSidePanel({
         </div>
 
         <div className="flex items-center gap-1.5">
-          {/* FOLDER EXPAND / COLLAPSE CURRENT TOGGLE */}
-          {onToggleCurrentFolder && (
+          {/* FOLDER EXPAND / COLLAPSE ALL TOGGLE */}
+          {onToggleAllFolders && (
             <button
               type="button"
-              onClick={onToggleCurrentFolder}
+              onClick={onToggleAllFolders}
               className="left-side-panel-pin-btn group"
-              title={isAtDeepestLevel ? "Collapse current folder" : "Expand folder"}
+              title={isAnyFolderExpanded ? "Collapse all folders" : "Expand all folders"}
             >
-              {isAtDeepestLevel ? (
+              {isAnyFolderExpanded ? (
                 <FolderCollapseIcon className="w-3.5 h-3.5 text-content-muted" />
               ) : (
-                <FolderExpandIcon className="w-3.5 h-3.5 text-accent-primary" />
+                <FolderExpandIcon className="w-3.5 h-3.5 text-content-muted" />
               )}
             </button>
           )}

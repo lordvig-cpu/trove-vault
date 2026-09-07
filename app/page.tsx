@@ -1,6 +1,10 @@
 'use client';
 
 import { useEffect, useState, useRef } from 'react';
+import { useUIPreferences } from '@/context/UIPreferencesContext';
+import { CollectionRecord } from '@/types/collection';
+import { ItemRecord } from '@/types/item';
+import { useCollections } from '@/hooks/useCollections';
 import NavigationHeader from '@/components/NavigationHeader';
 import NavigationFooter from '@/components/NavigationFooter';
 import MainContent from '@/components/MainContent';
@@ -12,10 +16,6 @@ import EditItemModal from '@/components/EditItemModal';
 import DeleteItemModal from '@/components/DeleteItemModal';
 import DeleteCollectionModal from '@/components/DeleteCollectionModal';
 import TemplateManagerModal from '@/components/TemplateManagerModal';
-import { CollectionRecord } from '@/types/collection';
-import { ItemRecord } from '@/types/item';
-import { useCollections } from '@/hooks/useCollections';
-import { useUIPreferences } from '@/context/UIPreferencesContext';
 
 export interface UniversalSearchResultItem extends ItemRecord {
   collection_name?: string;
@@ -64,36 +64,31 @@ export default function Home() {
   const [isColDropdownOpen, setIsColDropdownOpen] = useState<boolean>(false);
   const [activeModal, setActiveModal] = useState<ActiveModal>(null);
 
-  // Targeted folder collapse tracking (replaces isTreeCollapsed)
-  const [collapsedFolderIds, setCollapsedFolderIds] = useState<Set<number>>(new Set());
+  // Track strictly which folders are currently expanded
+  const [expandedFolderIds, setExpandedFolderIds] = useState<Set<number>>(new Set());
 
-  // True if active folder has no subfolders left to expand
-  const isDeepestLevel = Boolean(
-    activeCollectionId &&
-    !unifiedForest.some((node) => {
-      const findNode = (n: typeof node): boolean => {
-        if (n.id === activeCollectionId) {
-          return Boolean(n.subCollections && n.subCollections.length > 0);
-        }
-        return (n.subCollections || []).some(findNode);
-      };
-      return findNode(node);
-    })
-  );
+  // If even one folder is open, we show the Collapse All (-) button
+  const isAnyFolderExpanded = expandedFolderIds.size > 0;
 
-  const handleToggleCurrentFolder = () => {
-    if (!activeCollectionId) return;
+  const handleToggleAllFolders = () => {
+    if (isAnyFolderExpanded) {
+      // Collapse everything back to root
+      setExpandedFolderIds(new Set());
+    } else {
+      // Expand everything
+      const allIds = new Set(allCollections.map(c => c.id));
+      setExpandedFolderIds(allIds);
+    }
+  };
 
-    setCollapsedFolderIds((prev) => {
+  const handleToggleFolder = (folderId: number, expand: boolean) => {
+    setExpandedFolderIds((prev) => {
       const next = new Set(prev);
-      if (next.has(activeCollectionId)) {
-        next.delete(activeCollectionId); // Expand
-      } else {
-        next.add(activeCollectionId); // Collapse current
-      }
+      if (expand) next.add(folderId);
+      else next.delete(folderId);
       return next;
     });
-  }; 
+  };
   
   const videoRef = useRef<HTMLVideoElement | null>(null);
 
@@ -146,7 +141,8 @@ export default function Home() {
       activeCollectionName={activeCollection?.name}
       selectedItemId={selectedItem?.id || null}
       loading={loading}
-      collapsedFolderIds={collapsedFolderIds}
+      expandedFolderIds={expandedFolderIds}
+      onToggleFolder={handleToggleFolder}
       setIsLeftSidePanelOpen={setIsLeftSidePanelOpen}
       onSelectCollection={(colId) => {
         setActiveCollectionId(colId);
@@ -169,8 +165,8 @@ export default function Home() {
       isOpen={isLeftSidePanelOpen}
       onClose={() => setIsLeftSidePanelOpen(false)}
       onTogglePin={handleTogglePin}
-      isAtDeepestLevel={isDeepestLevel}
-      onToggleCurrentFolder={handleToggleCurrentFolder}
+      isAnyFolderExpanded={isAnyFolderExpanded}
+      onToggleAllFolders={handleToggleAllFolders}
       allCollectionsCount={allCollections.length}
       allItemsCount={allItems.length}
       loading={loading}
@@ -186,8 +182,8 @@ export default function Home() {
       isOpen={isLeftSidePanelOpen}
       onClose={() => setIsLeftSidePanelOpen(false)}
       onTogglePin={handleTogglePin}
-      isAtDeepestLevel={isDeepestLevel}
-      onToggleCurrentFolder={handleToggleCurrentFolder}
+      isAnyFolderExpanded={isAnyFolderExpanded}
+      onToggleAllFolders={handleToggleAllFolders}
       allCollectionsCount={allCollections.length}
       allItemsCount={allItems.length}
       loading={loading}

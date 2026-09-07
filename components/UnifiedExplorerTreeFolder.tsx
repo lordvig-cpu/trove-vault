@@ -18,7 +18,8 @@ export interface UnifiedExplorerTreeFolderProps {
   activeCollectionId: number | null;
   selectedItemId: number | null;
   depth?: number;
-  collapsedFolderIds?: Set<number>;
+  expandedFolderIds?: Set<number>;
+  onToggleFolder?: (folderId: number, expand: boolean) => void;
   onSelectCollection: (id: number) => void;
   onSelectItem: (item: ItemRecord, collectionId: number) => void;
   onAddSubCollection: (parentCollectionId: number) => void;
@@ -34,7 +35,8 @@ export default function UnifiedExplorerTreeFolder({
   activeCollectionId,
   selectedItemId,
   depth = 0,
-  collapsedFolderIds,
+  expandedFolderIds,
+  onToggleFolder,
   onSelectCollection,
   onSelectItem,
   onAddSubCollection,
@@ -44,27 +46,8 @@ export default function UnifiedExplorerTreeFolder({
   onEditItem,
   onDeleteItem,
 }: UnifiedExplorerTreeFolderProps) {
-  const [isOpen, setIsOpen] = useState(true);
-
-  // Sync state if current folder ID was toggled
-  useEffect(() => {
-    if (collapsedFolderIds?.has(collection.id)) {
-      setIsOpen(false);
-    }
-  }, [collapsedFolderIds, collection.id]);
-
   const isActiveCollection = activeCollectionId === collection.id;
-
-  // React to global collapse / expand triggers
-  useEffect(() => {
-    if (!collapsedFolderIds) return;
-
-    if (collapsedFolderIds.has(collection.id)) {
-      setIsOpen(false);
-    } else if (isActiveCollection) {
-      setIsOpen(true);
-    }
-  }, [collapsedFolderIds, collection.id, isActiveCollection]);
+  const isOpen = expandedFolderIds?.has(collection.id) ?? false;
   
   const timeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -129,7 +112,7 @@ export default function UnifiedExplorerTreeFolder({
           type="button"
           onClick={(e) => {
             e.stopPropagation();
-            setIsOpen(!isOpen);
+            onToggleFolder?.(collection.id, !isOpen);
           }}
           className={[
             'flex items-center justify-center w-4 h-4 shrink-0',
@@ -152,15 +135,13 @@ export default function UnifiedExplorerTreeFolder({
           {collection.name}
         </span>
 
-        {isActiveCollection && (
+        {/* ITEM COUNT BADGE */}
+        {Boolean(collection.items && collection.items.length > 0) && (
           <span
-            className={[
-              'px-1.5 py-0.5 rounded shrink-0',
-              'text-[9px] font-mono',
-              'border tree-badge-active',
-            ].join(' ')}
+            title={`${collection.items.length} ${collection.items.length === 1 ? 'item' : 'items'}`}
+            className="px-1.5 py-0.2 rounded text-[10px] font-mono text-amber-400 bg-surface-hover/60 border border-border-subtle/50 shrink-0 select-none"
           >
-            active
+            {collection.items.length}
           </span>
         )}
 
@@ -266,7 +247,8 @@ export default function UnifiedExplorerTreeFolder({
               activeCollectionId={activeCollectionId}
               selectedItemId={selectedItemId}
               depth={depth + 1}
-              collapsedFolderIds={collapsedFolderIds}
+              expandedFolderIds={expandedFolderIds}
+              onToggleFolder={onToggleFolder}
               onSelectCollection={onSelectCollection}
               onSelectItem={onSelectItem}
               onAddSubCollection={onAddSubCollection}
