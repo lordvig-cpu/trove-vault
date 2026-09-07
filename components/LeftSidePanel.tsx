@@ -2,8 +2,12 @@
 
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { PinFilledIcon, PinOutlineIcon } from '@/components/icons/PinIcons';
-import { FolderCollapseIcon, FolderExpandIcon } from '@/components/icons/ExplorerIcons';
+import { 
+  FolderCollapseIcon, 
+  FolderExpandIcon, 
+  PinFilledIcon, 
+  PinOutlineIcon 
+} from '@/components/icons/ExplorerIcons';
 import { useUIPreferences } from '@/context/UIPreferencesContext';
 
 interface LeftSidePanelProps {
