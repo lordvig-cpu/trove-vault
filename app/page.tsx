@@ -39,11 +39,6 @@ export default function Home() {
     selectedItem,
     setSelectedItem,
     selectItemWithChildren,
-    searchQuery,
-    setSearchQuery,
-    searchScope,
-    setSearchScope,
-    universalResults,
     unifiedForest,
     loading,
     error,
@@ -63,6 +58,9 @@ export default function Home() {
   const [isLeftSidePanelOpen, setIsLeftSidePanelOpen] = useState<boolean>(false);
   const [isColDropdownOpen, setIsColDropdownOpen] = useState<boolean>(false);
   const [activeModal, setActiveModal] = useState<ActiveModal>(null);
+
+  // Local Explorer Search State
+  const [searchQuery, setSearchQuery] = useState<string>('');
 
   // Track strictly which folders are currently expanded
   const [expandedFolderIds, setExpandedFolderIds] = useState<Set<number>>(new Set());
@@ -133,25 +131,19 @@ export default function Home() {
 
   const explorerTreeElement = (
     <ExplorerContent
-      searchScope={searchScope}
-      searchQuery={searchQuery}
-      universalResults={universalResults}
       unifiedForest={unifiedForest}
+      searchQuery={searchQuery}
       activeCollectionId={activeCollectionId}
-      activeCollectionName={activeCollection?.name}
       selectedItemId={selectedItem?.id || null}
-      loading={loading}
       expandedFolderIds={expandedFolderIds}
       onToggleFolder={handleToggleFolder}
-      setIsLeftSidePanelOpen={setIsLeftSidePanelOpen}
       onSelectCollection={(colId) => {
         setActiveCollectionId(colId);
         if (!isPinned) setIsLeftSidePanelOpen(false);
       }}
       onSelectItem={handleTreeSelectItem}
       onAddSubItem={handleAddSubItem}
-      onOpenFolderDropdown={() => setIsColDropdownOpen(true)}
-      onRequestDeleteCollection={(col) =>
+      onDeleteCollection={(col: CollectionRecord) =>
         setActiveModal({ type: 'delete_collection', collection: col })
       }
       onEditItem={handleTriggerEditItem}
@@ -167,8 +159,8 @@ export default function Home() {
       onTogglePin={handleTogglePin}
       isAnyFolderExpanded={isAnyFolderExpanded}
       onToggleAllFolders={handleToggleAllFolders}
-      allCollectionsCount={allCollections.length}
-      allItemsCount={allItems.length}
+      searchQuery={searchQuery}
+      onSearchChange={setSearchQuery}
       loading={loading}
       error={error}
     >
@@ -184,8 +176,8 @@ export default function Home() {
       onTogglePin={handleTogglePin}
       isAnyFolderExpanded={isAnyFolderExpanded}
       onToggleAllFolders={handleToggleAllFolders}
-      allCollectionsCount={allCollections.length}
-      allItemsCount={allItems.length}
+      searchQuery={searchQuery}
+      onSearchChange={setSearchQuery}
       loading={loading}
       error={error}
     >
@@ -241,10 +233,6 @@ export default function Home() {
         {/* Top Navigation */}
         <div className="shrink-0 relative z-[80]">
           <NavigationHeader
-            searchQuery={searchQuery}
-            onSearchChange={setSearchQuery}
-            searchScope={searchScope}
-            onSearchScopeChange={setSearchScope}
             activeCollectionName={activeCollection ? activeCollection.name : 'Select Collection'}
             collections={allCollections}
             activeCollectionId={activeCollectionId}

@@ -12,16 +12,15 @@ import { useUIPreferences } from '@/context/UIPreferencesContext';
 
 interface LeftSidePanelProps {
   variant: 'flyout' | 'sidebar';
-  isOpen: boolean; 
-  onClose: () => void; 
-  onTogglePin?: () => void;
-  allCollectionsCount: number;
-  allItemsCount: number;
-  isAnyFolderExpanded?: boolean;
-  onToggleAllFolders?: () => void;
-  activeCollectionId?: number | null;
-  loading: boolean;
-  error: string | null;
+  isOpen: boolean;
+  onClose: () => void;
+  onTogglePin: () => void;
+  isAnyFolderExpanded: boolean;
+  onToggleAllFolders: () => void;
+  searchQuery: string;
+  onSearchChange: (query: string) => void;
+  loading?: boolean;
+  error?: string | null;
   children: React.ReactNode;
 }
 
@@ -30,11 +29,10 @@ export default function LeftSidePanel({
   isOpen,
   onClose,
   onTogglePin,
-  allCollectionsCount,
-  allItemsCount,
-  activeCollectionId,
   isAnyFolderExpanded = false,
   onToggleAllFolders,
+  searchQuery,
+  onSearchChange,
   loading,
   error,
   children,
@@ -87,18 +85,43 @@ export default function LeftSidePanel({
   // ----------------------------------------------------------------------
   const innerContent = (
     <>
-      <div className="left-side-panel-header shrink-0 flex items-center justify-between px-3 py-2.5 border-b border-border-subtle">
-        <div>
-          <span className="text-[11px] font-bold text-content-muted uppercase tracking-wider block">
-            Explorer
+      {/* PANEL HEADER */}
+      <div className="left-side-panel-header px-2.5 py-2 flex items-center justify-between gap-2 border-b border-border-subtle shrink-0">
+        {/* COMPACT SEARCH INPUT */}
+        <div className="relative flex-1 min-w-0">
+          <span className="absolute left-2 top-1/2 -translate-y-1/2 text-content-muted pointer-events-none text-xs select-none">
+            🔍
           </span>
-          <span className="text-[10px] text-content-muted font-mono">
-            {allCollectionsCount} Folders
-          </span>
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => onSearchChange(e.target.value)}
+            placeholder="Search..."
+            className={[
+              'w-full bg-[#040811] rounded-md pl-6 pr-6 py-1 text-xs',
+              'text-accent-secondary placeholder:text-content-muted',
+              'focus:outline-none transition-colors border',
+              searchQuery.length > 0
+                ? 'border-accent-secondary focus:border-accent-secondary'
+                : 'border-border-subtle/80 focus:border-accent-primary',
+            ].join(' ')}
+          />
+          {searchQuery && (
+            <button
+              type="button"
+              onClick={() => onSearchChange('')}
+              className="group absolute right-1.5 top-1/2 -translate-y-1/2 text-content-muted hover:text-accent-secondary text-xs cursor-pointer p-0.5"
+              title="Clear search"
+            >
+              <span className="inline-block origin-center transition-transform duration-200 group-hover:scale-115">
+                ✕
+              </span>
+            </button>
+          )}
         </div>
 
-        <div className="flex items-center gap-1.5">
-          {/* FOLDER EXPAND / COLLAPSE ALL TOGGLE */}
+        {/* HEADER ACTIONS (Toggle Folders, Pin, Close) */}
+        <div className="flex items-center gap-1 shrink-0">
           {onToggleAllFolders && (
             <button
               type="button"

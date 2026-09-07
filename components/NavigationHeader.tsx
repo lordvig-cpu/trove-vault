@@ -9,10 +9,6 @@ import { useUIPreferences } from '@/context/UIPreferencesContext';
 export type SearchScope = 'current' | 'all';
 
 interface NavigationHeaderProps {
-  searchQuery: string;
-  onSearchChange: (query: string) => void;
-  searchScope: SearchScope;
-  onSearchScopeChange: (scope: SearchScope) => void;
   activeCollectionName: string;
   collections: CollectionRecord[];
   activeCollectionId: number | null;
@@ -30,10 +26,6 @@ interface NavigationHeaderProps {
 }
 
 export default function NavigationHeader({
-  searchQuery,
-  onSearchChange,
-  searchScope,
-  onSearchScopeChange,
   activeCollectionName,
   collections,
   activeCollectionId,
@@ -172,36 +164,8 @@ export default function NavigationHeader({
           </div>
         </div>
 
-        {/* RIGHT SECTION: SEARCH BAR + DB STATUS + PROFILE */}
+        {/* RIGHT SECTION: DB STATUS + PROFILE */}
         <div className="flex items-center gap-3 pr-4">
-          <div className="relative flex items-center w-80">
-            <select
-              value={searchScope}
-              onChange={(e) => onSearchScopeChange(e.target.value as SearchScope)}
-              className="nav-search-select"
-            >
-              <option value="current">📁 This Folder</option>
-              <option value="all">🌐 All Folders</option>
-            </select>
-
-            <input
-              type="text"
-              placeholder={searchScope === 'current' ? `Search ${activeCollectionName}...` : 'Search all collections...'}
-              value={searchQuery}
-              onChange={(e) => onSearchChange(e.target.value)}
-              className="nav-search-input"
-            />
-
-            {searchQuery && (
-              <button
-                type="button"
-                onClick={() => onSearchChange('')}
-                className="absolute right-2.5 text-content-muted hover:text-content-primary text-xs font-bold cursor-pointer"
-              >
-                ✕
-              </button>
-            )}
-          </div>
 
           <div className="nav-live-badge">
             <span className="nav-live-dot animate-pulse" />

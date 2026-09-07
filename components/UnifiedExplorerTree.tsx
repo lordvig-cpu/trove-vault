@@ -23,10 +23,10 @@ interface TreeContextType {
   onToggleFolder?: (folderId: number, expand: boolean) => void;
   onSelectCollection: (id: number) => void;
   onSelectItem: (item: ItemRecord, collectionId: number) => void;
-  onAddSubCollection: (parentCollectionId: number) => void;
   onAddSubItem: (collectionId: number, parentItemId?: number | null) => void;
-  onEditCollection: (collection: CollectionRecord) => void;
-  onDeleteCollection: (collection: CollectionRecord) => void;
+  onAddSubCollection?: (parentCollectionId: number) => void;
+  onEditCollection?: (collection: CollectionRecord) => void;
+  onDeleteCollection?: (collection: CollectionRecord) => void;
   onEditItem: (item: ItemRecord, collectionId: number) => void;
   onDeleteItem: (item: ItemRecord, collectionId: number) => void;
 }
@@ -346,7 +346,7 @@ function UnifiedExplorerTreeFolder({ collection, depth = 0 }: { collection: Unif
         <button
           type="button"
           onClick={() => {
-            ctx.onAddSubCollection(collection.id);
+            ctx.onAddSubCollection?.(collection.id);
             setIsMenuOpen(false);
           }}
           className="group/action w-full text-left flex items-center gap-2.5 px-3 py-1.5 rounded tree-menu-item"
@@ -376,7 +376,7 @@ function UnifiedExplorerTreeFolder({ collection, depth = 0 }: { collection: Unif
         <button
           type="button"
           onClick={() => {
-            ctx.onEditCollection(collection);
+            ctx.onEditCollection?.(collection);
             setIsMenuOpen(false);
           }}
           className="group/action w-full text-left flex items-center gap-2.5 px-3 py-1.5 rounded tree-menu-item"
@@ -393,7 +393,7 @@ function UnifiedExplorerTreeFolder({ collection, depth = 0 }: { collection: Unif
         <button
           type="button"
           onClick={() => {
-            ctx.onDeleteCollection(collection);
+            ctx.onDeleteCollection?.(collection);
             setIsMenuOpen(false);
           }}
           className="group/action w-full text-left flex items-center gap-2.5 px-3 py-1.5 rounded tree-menu-item-danger"
