@@ -334,7 +334,7 @@ Organized 1-to-1 with component stylesheets in styles/components/
    --explorer-menu-divider: var(--border-subtle);
 
    /* Danger action hover state */
-   --explorer-menu-danger-text: var(--panel-notice-error-text, #f87171);
+   --explorer-menu-danger-text: var(--panel-notice-error-text, rgba(248, 113, 113, 1.00));
    --explorer-menu-danger-bg-hover: var(--panel-notice-error-bg, rgba(239, 68, 68, 0.15));
 
    /* Gear button trigger surfaces */

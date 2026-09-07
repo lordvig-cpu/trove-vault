@@ -296,7 +296,7 @@ function UnifiedExplorerTreeFolder({ collection, depth = 0 }: { collection: Unif
           {isOpen ? <ChevronDownIcon /> : <ChevronRightIcon />}
         </button>
 
-        <span className="w-4 h-4 flex items-center justify-center text-sm text-amber-400 shrink-0 select-none">
+        <span className="w-4 h-4 flex items-center justify-center text-sm shrink-0 select-none">
           {isOpen ? '📂' : '📁'}
         </span>
 
