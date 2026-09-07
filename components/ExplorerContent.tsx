@@ -18,6 +18,7 @@ interface ExplorerContentProps {
   activeCollectionName?: string;
   selectedItemId: number | null;
   loading: boolean;
+  collapsedFolderIds?: Set<number>;
   setIsLeftSidePanelOpen?: (open: boolean) => void;
   onSelectCollection: (id: number) => void;
   onSelectItem: (item: ItemRecord, collectionId: number) => void;
@@ -25,7 +26,7 @@ interface ExplorerContentProps {
   onOpenFolderDropdown: () => void;
   onRequestDeleteCollection: (col: CollectionRecord) => void;
   onEditItem: (item: ItemRecord, collectionId: number) => void;
-  onDeleteItem: (item: ItemRecord, collectionId: number) => void;
+  onDeleteItem: (item: ItemRecord, collectionId: number) => void;  
 }
 
 export default function ExplorerContent({
@@ -37,6 +38,7 @@ export default function ExplorerContent({
   activeCollectionName,
   selectedItemId,
   loading,
+  collapsedFolderIds,
   setIsLeftSidePanelOpen,
   onSelectCollection,
   onSelectItem,
@@ -96,6 +98,7 @@ export default function ExplorerContent({
             collection={colNode}
             activeCollectionId={activeCollectionId}
             selectedItemId={selectedItemId}
+            collapsedFolderIds={collapsedFolderIds}
             onSelectCollection={(colId) => {
               onSelectCollection(colId);
               if (!isPinned && setIsLeftSidePanelOpen) {

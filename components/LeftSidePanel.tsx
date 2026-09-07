@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { PinFilledIcon, PinOutlineIcon } from '@/components/icons/PinIcons';
+import { FolderCollapseIcon, FolderExpandIcon } from '@/components/icons/ExplorerIcons';
 import { useUIPreferences } from '@/context/UIPreferencesContext';
 
 interface LeftSidePanelProps {
@@ -12,8 +13,9 @@ interface LeftSidePanelProps {
   onTogglePin?: () => void;
   allCollectionsCount: number;
   allItemsCount: number;
-  activeCollectionId: number | null;
-  onAddNewItem: () => void;
+  activeCollectionId?: number | null;
+  isAtDeepestLevel?: boolean;
+  onToggleCurrentFolder?: () => void;
   loading: boolean;
   error: string | null;
   children: React.ReactNode;
@@ -27,7 +29,8 @@ export default function LeftSidePanel({
   allCollectionsCount,
   allItemsCount,
   activeCollectionId,
-  onAddNewItem,
+  isAtDeepestLevel = false,
+  onToggleCurrentFolder,
   loading,
   error,
   children,
@@ -86,22 +89,28 @@ export default function LeftSidePanel({
             Explorer
           </span>
           <span className="text-[10px] text-content-muted font-mono">
-            {allCollectionsCount} Folders • {allItemsCount} Items
+            {allCollectionsCount} Folders
           </span>
         </div>
 
         <div className="flex items-center gap-1.5">
-          {activeCollectionId && (
+          {/* FOLDER EXPAND / COLLAPSE CURRENT TOGGLE */}
+          {onToggleCurrentFolder && (
             <button
               type="button"
-              onClick={onAddNewItem}
-              className="text-[11px] font-semibold text-accent-secondary hover:text-accent-primary shrink-0 cursor-pointer"
+              onClick={onToggleCurrentFolder}
+              className="left-side-panel-pin-btn group"
+              title={isAtDeepestLevel ? "Collapse current folder" : "Expand folder"}
             >
-              + New Item
+              {isAtDeepestLevel ? (
+                <FolderCollapseIcon className="w-3.5 h-3.5 text-content-muted" />
+              ) : (
+                <FolderExpandIcon className="w-3.5 h-3.5 text-accent-primary" />
+              )}
             </button>
           )}
 
-          {/* PIN BUTTON */}
+          {/* PIN BUTTON: Self-contained icon states */}
           <button
             type="button"
             onClick={handlePinAction}
@@ -109,7 +118,7 @@ export default function LeftSidePanel({
             title={isPinned ? 'Unpin LeftSidePanel' : 'Pin LeftSidePanel'}
           >
             {variant === 'flyout' || !isPinned ? (
-              <PinOutlineIcon className="w-3.5 h-3.5 text-[var(--panel-border-strong)]" />
+              <PinOutlineIcon className="w-3.5 h-3.5 text-content-muted" />
             ) : (
               <PinFilledIcon className="w-3.5 h-3.5 text-content-primary" />
             )}

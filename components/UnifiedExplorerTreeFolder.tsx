@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { CollectionRecord } from '@/types/collection';
 import { ItemRecord } from '@/types/item';
 import { GearIcon } from '@/components/icons/ActionIcons';
@@ -17,6 +17,7 @@ export interface UnifiedExplorerTreeFolderProps {
   activeCollectionId: number | null;
   selectedItemId: number | null;
   depth?: number;
+  collapsedFolderIds?: Set<number>;
   onSelectCollection: (id: number) => void;
   onSelectItem: (item: ItemRecord, collectionId: number) => void;
   onAddSubCollection: (parentCollectionId: number) => void;
@@ -32,6 +33,7 @@ export default function UnifiedExplorerTreeFolder({
   activeCollectionId,
   selectedItemId,
   depth = 0,
+  collapsedFolderIds,
   onSelectCollection,
   onSelectItem,
   onAddSubCollection,
@@ -42,12 +44,31 @@ export default function UnifiedExplorerTreeFolder({
   onDeleteItem,
 }: UnifiedExplorerTreeFolderProps) {
   const [isOpen, setIsOpen] = useState(true);
+
+  // Sync state if current folder ID was toggled
+  useEffect(() => {
+    if (collapsedFolderIds?.has(collection.id)) {
+      setIsOpen(false);
+    }
+  }, [collapsedFolderIds, collection.id]);
+
+  const isActiveCollection = activeCollectionId === collection.id;
+
+  // React to global collapse / expand triggers
+  useEffect(() => {
+    if (!collapsedFolderIds) return;
+
+    if (collapsedFolderIds.has(collection.id)) {
+      setIsOpen(false);
+    } else if (isActiveCollection) {
+      setIsOpen(true);
+    }
+  }, [collapsedFolderIds, collection.id, isActiveCollection]);
   
   const timeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [menuCoords, setMenuCoords] = useState({ top: 0, left: 0 });
 
-  const isActiveCollection = activeCollectionId === collection.id;
   const hasChildren =
     (collection.subCollections && collection.subCollections.length > 0) ||
     (collection.items && collection.items.length > 0);
@@ -59,14 +80,12 @@ export default function UnifiedExplorerTreeFolder({
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
     const rect = e.currentTarget.getBoundingClientRect();
 
-    const menuHeight = 215; // Approximate height of the menu with padding
-    const bottomNavReserve = 64; // Height of bottom status bar + padding
+    const menuHeight = 215;
+    const bottomNavReserve = 64;
     const maxAllowedTop = window.innerHeight - menuHeight - bottomNavReserve;
     
-    // Default top aligns slightly above the gear icon
     let calculatedTop = Math.round(rect.top - 4);
 
-    // If opening downwards would clip under the bottom bar, clamp it upwards
     if (calculatedTop > maxAllowedTop) {
       calculatedTop = Math.max(16, maxAllowedTop);
     }
@@ -112,17 +131,21 @@ export default function UnifiedExplorerTreeFolder({
             setIsOpen(!isOpen);
           }}
           className={[
-            // Layout & Sizing
             'flex items-center justify-center w-4 h-4 shrink-0',
-            // Typography & Content
-            'text-[9px] text-content-muted hover:text-content-primary',
-            // Interaction & Transitions
-            'cursor-pointer transition',
-            // Dynamic Leaf State
+            'text-content-muted hover:text-content-primary',
+            'cursor-pointer transition select-none',
             !hasChildren && 'tree-chevron-leaf',
           ].filter(Boolean).join(' ')}
         >
-          {isOpen ? '▼' : '▶'}
+          {isOpen ? (
+            <svg viewBox="0 0 16 16" fill="currentColor" className="w-2.5 h-2.5">
+              <path d="M4 6l4 4 4-4H4z" />
+            </svg>
+          ) : (
+            <svg viewBox="0 0 16 16" fill="currentColor" className="w-2.5 h-2.5">
+              <path d="M6 4l4 4-4 4V4z" />
+            </svg>
+          )}
         </button>
 
         <span className="w-4 h-4 flex items-center justify-center text-sm text-amber-400 shrink-0 select-none">
@@ -139,11 +162,8 @@ export default function UnifiedExplorerTreeFolder({
         {isActiveCollection && (
           <span
             className={[
-              // Layout & Sizing
               'px-1.5 py-0.5 rounded shrink-0',
-              // Typography
               'text-[9px] font-mono',
-              // Surface & Colors
               'border tree-badge-active',
             ].join(' ')}
           >
@@ -156,13 +176,9 @@ export default function UnifiedExplorerTreeFolder({
             onMouseEnter={handleGearMouseEnter}
             onMouseLeave={handleMouseLeave}
             className={[
-              // Layout & Sizing
               'group/gear flex items-center justify-center w-6 h-6 shrink-0',
-              // Surface & Borders
               'rounded border border-transparent',
-              // Interaction & Transitions
               'cursor-pointer transition-colors',
-              // Menu Open State vs Default Hover State
               isMenuOpen ? 'tree-gear-trigger-active' : 'tree-gear-trigger',
             ].join(' ')}
           >
@@ -191,10 +207,7 @@ export default function UnifiedExplorerTreeFolder({
             onAddSubCollection(collection.id);
             setIsMenuOpen(false);
           }}
-          className={[
-            'group/action w-full text-left flex items-center gap-2.5 px-3 py-1.5 rounded',
-            'tree-menu-item',
-          ].join(' ')}
+          className="group/action w-full text-left flex items-center gap-2.5 px-3 py-1.5 rounded tree-menu-item"
         >
           <span className="w-5 shrink-0 flex items-center justify-center text-sm group-hover/action:scale-105 transition-transform">📁</span>
           <div className="flex flex-col leading-tight min-w-0">
@@ -209,10 +222,7 @@ export default function UnifiedExplorerTreeFolder({
             onAddSubItem(collection.id, null);
             setIsMenuOpen(false);
           }}
-          className={[
-            'group/action w-full text-left flex items-center gap-2.5 px-3 py-1.5 rounded',
-            'tree-menu-item',
-          ].join(' ')}
+          className="group/action w-full text-left flex items-center gap-2.5 px-3 py-1.5 rounded tree-menu-item"
         >
           <span className="w-5 shrink-0 flex items-center justify-center text-sm group-hover/action:scale-105 transition-transform">📄</span>
           <div className="flex flex-col leading-tight min-w-0">
@@ -227,10 +237,7 @@ export default function UnifiedExplorerTreeFolder({
             onEditCollection(collection);
             setIsMenuOpen(false);
           }}
-          className={[
-            'group/action w-full text-left flex items-center gap-2.5 px-3 py-1.5 rounded',
-            'tree-menu-item',
-          ].join(' ')}
+          className="group/action w-full text-left flex items-center gap-2.5 px-3 py-1.5 rounded tree-menu-item"
         >
           <span className="w-5 shrink-0 flex items-center justify-center text-sm group-hover/action:scale-105 transition-transform">✏️</span>
           <div className="flex flex-col leading-tight min-w-0">
@@ -239,7 +246,7 @@ export default function UnifiedExplorerTreeFolder({
           </div>
         </button>
 
-        <div className={['my-1 mx-1', 'tree-menu-divider'].join(' ')} />
+        <div className="my-1 mx-1 tree-menu-divider" />
 
         <button
           type="button"
@@ -247,15 +254,12 @@ export default function UnifiedExplorerTreeFolder({
             onDeleteCollection(collection);
             setIsMenuOpen(false);
           }}
-          className={[
-            'group/action w-full text-left flex items-center gap-2.5 px-3 py-1.5 rounded',
-            'tree-menu-item-danger',
-          ].join(' ')}
+          className="group/action w-full text-left flex items-center gap-2.5 px-3 py-1.5 rounded tree-menu-item-danger"
         >
           <span className="w-5 shrink-0 flex items-center justify-center text-sm group-hover/action:scale-105 transition-transform">🗑️</span>
           <div className="flex flex-col leading-tight min-w-0">
-            <span className={['text-xs font-medium', 'tree-menu-danger-label'].join(' ')}>Delete Collection</span>
-            <span className={['text-[9px]', 'tree-menu-danger-subtext'].join(' ')}>Permanently remove</span>
+            <span className="text-xs font-medium tree-menu-danger-label">Delete Collection</span>
+            <span className="text-[9px] tree-menu-danger-subtext">Permanently remove</span>
           </div>
         </button>
       </ExplorerActionMenu>      
@@ -269,6 +273,7 @@ export default function UnifiedExplorerTreeFolder({
               activeCollectionId={activeCollectionId}
               selectedItemId={selectedItemId}
               depth={depth + 1}
+              collapsedFolderIds={collapsedFolderIds}
               onSelectCollection={onSelectCollection}
               onSelectItem={onSelectItem}
               onAddSubCollection={onAddSubCollection}

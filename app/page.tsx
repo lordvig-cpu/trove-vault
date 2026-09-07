@@ -63,6 +63,37 @@ export default function Home() {
   const [isLeftSidePanelOpen, setIsLeftSidePanelOpen] = useState<boolean>(false);
   const [isColDropdownOpen, setIsColDropdownOpen] = useState<boolean>(false);
   const [activeModal, setActiveModal] = useState<ActiveModal>(null);
+
+  // Targeted folder collapse tracking (replaces isTreeCollapsed)
+  const [collapsedFolderIds, setCollapsedFolderIds] = useState<Set<number>>(new Set());
+
+  // True if active folder has no subfolders left to expand
+  const isDeepestLevel = Boolean(
+    activeCollectionId &&
+    !unifiedForest.some((node) => {
+      const findNode = (n: typeof node): boolean => {
+        if (n.id === activeCollectionId) {
+          return Boolean(n.subCollections && n.subCollections.length > 0);
+        }
+        return (n.subCollections || []).some(findNode);
+      };
+      return findNode(node);
+    })
+  );
+
+  const handleToggleCurrentFolder = () => {
+    if (!activeCollectionId) return;
+
+    setCollapsedFolderIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(activeCollectionId)) {
+        next.delete(activeCollectionId); // Expand
+      } else {
+        next.add(activeCollectionId); // Collapse current
+      }
+      return next;
+    });
+  }; 
   
   const videoRef = useRef<HTMLVideoElement | null>(null);
 
@@ -115,6 +146,7 @@ export default function Home() {
       activeCollectionName={activeCollection?.name}
       selectedItemId={selectedItem?.id || null}
       loading={loading}
+      collapsedFolderIds={collapsedFolderIds}
       setIsLeftSidePanelOpen={setIsLeftSidePanelOpen}
       onSelectCollection={(colId) => {
         setActiveCollectionId(colId);
@@ -137,12 +169,10 @@ export default function Home() {
       isOpen={isLeftSidePanelOpen}
       onClose={() => setIsLeftSidePanelOpen(false)}
       onTogglePin={handleTogglePin}
+      isAtDeepestLevel={isDeepestLevel}
+      onToggleCurrentFolder={handleToggleCurrentFolder}
       allCollectionsCount={allCollections.length}
       allItemsCount={allItems.length}
-      activeCollectionId={activeCollectionId}
-      onAddNewItem={() => {
-        if (activeCollectionId) handleAddSubItem(activeCollectionId, null);
-      }}
       loading={loading}
       error={error}
     >
@@ -155,12 +185,11 @@ export default function Home() {
       variant="sidebar"
       isOpen={isLeftSidePanelOpen}
       onClose={() => setIsLeftSidePanelOpen(false)}
+      onTogglePin={handleTogglePin}
+      isAtDeepestLevel={isDeepestLevel}
+      onToggleCurrentFolder={handleToggleCurrentFolder}
       allCollectionsCount={allCollections.length}
       allItemsCount={allItems.length}
-      activeCollectionId={activeCollectionId}
-      onAddNewItem={() => {
-        if (activeCollectionId) handleAddSubItem(activeCollectionId, null);
-      }}
       loading={loading}
       error={error}
     >
