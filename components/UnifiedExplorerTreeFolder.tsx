@@ -6,6 +6,7 @@ import { ItemRecord } from '@/types/item';
 import { GearIcon } from '@/components/icons/ActionIcons';
 import ExplorerActionMenu from '@/components/ExplorerActionMenu';
 import UnifiedExplorerTreeItem from '@/components/UnifiedExplorerTreeItem';
+import { ChevronDownIcon, ChevronRightIcon } from '@/components/icons/ExplorerIcons';
 
 export interface UnifiedCollectionNode extends CollectionRecord {
   items: ItemRecord[];
@@ -137,17 +138,7 @@ export default function UnifiedExplorerTreeFolder({
             !hasChildren && 'tree-chevron-leaf',
           ].filter(Boolean).join(' ')}
         >
-          {isOpen ? (
-            <svg viewBox="0 0 24 24" fill="currentColor" className="w-[10px] h-[10px]">
-              {/* Down-pointing filled triangle */}
-              <polygon points="5,8 19,8 12,18" />
-            </svg>
-          ) : (
-            <svg viewBox="0 0 24 24" fill="currentColor" className="w-[10px] h-[10px]">
-              {/* Right-pointing filled triangle */}
-              <polygon points="8,5 8,19 18,12" />
-            </svg>
-          )}
+          {isOpen ? <ChevronDownIcon /> : <ChevronRightIcon />}
         </button>
 
         <span className="w-4 h-4 flex items-center justify-center text-sm text-amber-400 shrink-0 select-none">

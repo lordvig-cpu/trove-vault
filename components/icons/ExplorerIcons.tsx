@@ -40,3 +40,21 @@ export function FolderExpandIcon({ className = 'w-3.5 h-3.5' }: ExplorerIconProp
     </svg>
   );
 }
+
+// Down-pointing filled triangle (Folder/Item Open)
+export function ChevronDownIcon({ className = 'w-[10px] h-[10px]' }: ExplorerIconProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" className={className}>
+      <polygon points="5,8 19,8 12,18" />
+    </svg>
+  );
+}
+
+// Right-pointing filled triangle (Folder/Item Closed)
+export function ChevronRightIcon({ className = 'w-[10px] h-[10px]' }: ExplorerIconProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" className={className}>
+      <polygon points="8,5 8,19 18,12" />
+    </svg>
+  );
+}
