@@ -9,17 +9,21 @@ interface RightPanelProps {
   onOpen?: () => void;
   onClose: () => void;
   title?: string;
+  reservedWidth?: number;
+  onWidthChange?: (width: number) => void;
   children?: ReactNode;
 }
 
 const MIN_WIDTH = 260;
-const MAX_WIDTH = 720;
+const MIN_WORKSPACE_GAP = 48;
 
 export default function RightPanel({
   isOpen,
   onOpen,
   onClose,
   title = "Details",
+  reservedWidth = 0,
+  onWidthChange,
   children,
 }: RightPanelProps) {
   const { animationsEnabled } = useUIPreferences();
@@ -27,18 +31,33 @@ export default function RightPanel({
   const [panelWidth, setPanelWidth] = useState<number>(360);
   const [isDragging, setIsDragging] = useState<boolean>(false);
   const isDraggingRef = useRef<boolean>(false);
+  const panelWidthRef = useRef<number>(panelWidth);
 
-  // Synchronize drag state into a ref for global window listeners
   useEffect(() => {
     isDraggingRef.current = isDragging;
   }, [isDragging]);
 
   useEffect(() => {
+    panelWidthRef.current = panelWidth;
+  }, [panelWidth]);
+
+  // Auto-clamp if the left panel opens/expands into this space
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const dynamicMax = Math.max(MIN_WIDTH, window.innerWidth - reservedWidth - MIN_WORKSPACE_GAP);
+    setPanelWidth((prev) => (prev > dynamicMax ? dynamicMax : prev));
+  }, [reservedWidth]);
+
+  useEffect(() => {
     const handlePointerMove = (e: PointerEvent) => {
       if (!isDraggingRef.current) return;
-      // Calculate panel width from viewport right edge
+
       const rawWidth = window.innerWidth - e.clientX;
-      const clampedWidth = Math.min(Math.max(rawWidth, MIN_WIDTH), Math.min(MAX_WIDTH, window.innerWidth * 0.75));
+      // Clamp dynamically against the screen minus the left panel's footprint
+      const dynamicMax = Math.max(MIN_WIDTH, window.innerWidth - reservedWidth - MIN_WORKSPACE_GAP);
+      const clampedWidth = Math.min(Math.max(rawWidth, MIN_WIDTH), dynamicMax);
+
+      panelWidthRef.current = clampedWidth;
       setPanelWidth(clampedWidth);
     };
 
@@ -47,6 +66,7 @@ export default function RightPanel({
         setIsDragging(false);
         document.body.style.userSelect = '';
         document.body.style.cursor = '';
+        onWidthChange?.(panelWidthRef.current);
       }
     };
 
@@ -57,7 +77,7 @@ export default function RightPanel({
       window.removeEventListener('pointermove', handlePointerMove);
       window.removeEventListener('pointerup', handlePointerUp);
     };
-  }, []);
+  }, [reservedWidth, onWidthChange]);
 
   // While dragging, turn off transitions completely so resizing has zero input latency
   const transitionClass = (!isDragging && animationsEnabled)
@@ -82,17 +102,19 @@ export default function RightPanel({
         />
       </button>
 
-      {/* 2. DOCKED RIGHT PANEL */}
+      {/* 2. DOCKED RIGHT PANEL (Floating Overlay) */}
       <aside
         style={{
-          width: isOpen ? `${panelWidth}px` : undefined,
+          width: isOpen ? `${panelWidth}px` : 0,
         }}
         className={[
-          'right-side-panel relative',
+          'right-side-panel absolute top-0 bottom-0 right-0 z-30',
+          'backdrop-blur-md shadow-2xl',
           transitionClass,
-          isOpen ? 'right-panel-docked-open' : 'right-panel-docked-closed',
+          isOpen ? 'right-panel-docked-open' : 'right-panel-docked-closed pointer-events-none',
         ].filter(Boolean).join(' ')}
       >
+
         {/* RESIZE HANDLE STRIP */}
         {isOpen && (
           <div

@@ -13,13 +13,14 @@
   left: 0;
   top: 1px;
   bottom: 0;
-  width: 19rem; /* w-76 (304px) */
-  max-width: 19rem;
+  /* Let inline style control width; remove fixed max-width constraint */
+  max-width: none;
   background-color: var(--panel-surface-bg);
   display: flex;
   flex-direction: column;
   gap: 0.625rem;
-  overflow: hidden;
+  /* Allow absolute children (like the reset tab) to hang outside the borders */
+  overflow: visible;
   flex-shrink: 0;
   padding: 0.75rem;
   z-index: 50;

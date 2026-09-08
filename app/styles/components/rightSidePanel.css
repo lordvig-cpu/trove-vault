@@ -47,8 +47,8 @@
   top: 0.5rem;
   bottom: 0.5rem;
   right: 10px;
-  width: 340px;
-  max-width: calc(100vw - 30px);
+  /* Let inline style control width; remove fixed max-width constraint */
+  max-width: none;
   background-color: var(--right-panel-bg);
   border: 1px solid var(--right-panel-border);
   border-top-left-radius: 0.75rem; /* rounded-l-xl */

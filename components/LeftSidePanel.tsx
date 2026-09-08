@@ -19,13 +19,16 @@ interface LeftSidePanelProps {
   onToggleAllFolders: () => void;
   searchQuery: string;
   onSearchChange: (query: string) => void;
+  reservedWidth?: number;
+  onWidthChange?: (width: number) => void;
   loading?: boolean;
   error?: string | null;
   children: React.ReactNode;
 }
 
 const MIN_WIDTH = 220;
-const MAX_WIDTH = 640;
+const DEFAULT_WIDTH = 304;
+const MIN_WORKSPACE_GAP = 48;
 
 export default function LeftSidePanel({
   variant,
@@ -36,29 +39,46 @@ export default function LeftSidePanel({
   onToggleAllFolders,
   searchQuery,
   onSearchChange,
+  reservedWidth = 0,
+  onWidthChange,
   loading,
   error,
   children,
 }: LeftSidePanelProps) {
   const { isPinned, togglePin, animationsEnabled, isHydrated } = useUIPreferences();
-  
-  const [panelWidth, setPanelWidth] = useState<number>(280);
+
+  const [panelWidth, setPanelWidth] = useState<number>(DEFAULT_WIDTH);
   const [isDragging, setIsDragging] = useState<boolean>(false);
   const isDraggingRef = useRef<boolean>(false);
+  const panelWidthRef = useRef<number>(panelWidth);
+  
 
   useEffect(() => {
     isDraggingRef.current = isDragging;
   }, [isDragging]);
 
+  // Keep ref synchronized with current width
+  useEffect(() => {
+    panelWidthRef.current = panelWidth;
+  }, [panelWidth]);
+
+  // Auto-clamp if the right panel opens and would cause an overlap
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const dynamicMax = Math.max(MIN_WIDTH, window.innerWidth - reservedWidth - MIN_WORKSPACE_GAP);
+    setPanelWidth((prev) => (prev > dynamicMax ? dynamicMax : prev));
+  }, [reservedWidth]);
+
   useEffect(() => {
     const handlePointerMove = (e: PointerEvent) => {
       if (!isDraggingRef.current) return;
-      // Distance from left viewport edge
+
       const rawWidth = e.clientX;
-      const clampedWidth = Math.min(
-        Math.max(rawWidth, MIN_WIDTH),
-        Math.min(MAX_WIDTH, window.innerWidth * 0.75)
-      );
+      // Clamp dynamically against the screen minus the opposite panel's footprint
+      const dynamicMax = Math.max(MIN_WIDTH, window.innerWidth - reservedWidth - MIN_WORKSPACE_GAP);
+      const clampedWidth = Math.min(Math.max(rawWidth, MIN_WIDTH), dynamicMax);
+
+      panelWidthRef.current = clampedWidth;
       setPanelWidth(clampedWidth);
     };
 
@@ -67,6 +87,7 @@ export default function LeftSidePanel({
         setIsDragging(false);
         document.body.style.userSelect = '';
         document.body.style.cursor = '';
+        onWidthChange?.(panelWidthRef.current);
       }
     };
 
@@ -77,7 +98,7 @@ export default function LeftSidePanel({
       window.removeEventListener('pointermove', handlePointerMove);
       window.removeEventListener('pointerup', handlePointerUp);
     };
-  }, []);
+  }, [reservedWidth, onWidthChange]);
 
   // Disable transitions while actively dragging for 60+ FPS tracking
   const transitionClass = (!isDragging && animationsEnabled && isHydrated) 
@@ -137,6 +158,10 @@ export default function LeftSidePanel({
             document.body.style.userSelect = 'none';
             document.body.style.cursor = 'col-resize';
           }}
+          onDoubleClick={() => {
+            setPanelWidth(DEFAULT_WIDTH);
+            onWidthChange?.(DEFAULT_WIDTH);
+          }}
           className="group/handle absolute top-0 -right-1.5 w-3 h-full cursor-col-resize z-50 flex items-center justify-center select-none"
           title="Drag to resize panel"
         >
@@ -158,6 +183,32 @@ export default function LeftSidePanel({
             }`} 
           />
         </div>
+      )}
+
+      {/* RESET WIDTH TAB */}
+      {isPinned && panelWidth !== DEFAULT_WIDTH && (
+        <button
+          type="button"
+          onClick={() => {
+            setPanelWidth(DEFAULT_WIDTH);
+            onWidthChange?.(DEFAULT_WIDTH);
+          }}
+          className={[
+            'absolute top-16 -right-7 w-7 h-8 z-40',
+            'flex items-center justify-center',
+            'bg-[var(--panel-surface-bg)] border border-border-subtle border-l-0 rounded-r-md',
+            'text-content-muted hover:text-accent-secondary hover:bg-surface-hover',
+            'shadow-md transition-colors',
+            animationsEnabled ? 'animate-mount-fade' : ''
+          ].join(' ')}
+          title="Reset to default width"
+        >
+          {/* Quick reset/return icon */}
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+            <path d="M3 3v5h5" />
+          </svg>
+        </button>
       )}
 
       {/* PANEL HEADER */}
@@ -300,12 +351,19 @@ export default function LeftSidePanel({
   }
 
   // ----------------------------------------------------------------------
-  // SIDEBAR VARIANT (Pinned Workspace Column)
+  // SIDEBAR VARIANT (Floating Pinned Overlay)
   // ----------------------------------------------------------------------
   return (
     <aside
-      style={{ width: isPinned ? `${panelWidth}px` : undefined }}
-      className={`left-side-panel relative z-[50] ${transitionClass} ${isPinned ? 'left-side-panel-pinned' : 'left-side-panel-unpinned'}`}
+      style={{ 
+        width: isPinned ? `${panelWidth}px` : 0,
+      }}
+      className={[
+        'left-side-panel absolute top-0 bottom-0 left-0 z-30',
+        'backdrop-blur-md shadow-2xl',
+        transitionClass,
+        isPinned ? 'left-side-panel-pinned' : 'left-side-panel-unpinned pointer-events-none',
+      ].filter(Boolean).join(' ')}
     >
       {innerContent}
     </aside>

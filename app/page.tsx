@@ -58,6 +58,8 @@ export default function Home() {
   const [isLeftSidePanelOpen, setIsLeftSidePanelOpen] = useState<boolean>(false);
   const [isColDropdownOpen, setIsColDropdownOpen] = useState<boolean>(false);
   const [activeModal, setActiveModal] = useState<ActiveModal>(null);
+  const [leftPanelWidth, setLeftPanelWidth] = useState<number>(304);
+  const [rightPanelWidth, setRightPanelWidth] = useState<number>(360);
 
   // Local Explorer Search State
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -178,6 +180,8 @@ export default function Home() {
       onToggleAllFolders={handleToggleAllFolders}
       searchQuery={searchQuery}
       onSearchChange={setSearchQuery}
+      reservedWidth={isRightPanelOpen ? rightPanelWidth : 0}
+      onWidthChange={setLeftPanelWidth}
       loading={loading}
       error={error}
     >
@@ -276,20 +280,24 @@ export default function Home() {
           {/* ALWAYS render the sidebar, let CSS handle hiding it! */}
           {explorerSidebarPanel}
 
-          {/* Modular Main Content Area */}
-          <MainContent
-            selectedItem={selectedItem}
-            activeCollectionId={activeCollectionId}
-            isBlurred={!isPinned && isLeftSidePanelOpen}
-            onAddSubItem={handleAddSubItem}
-            onEditItem={handleTriggerEditItem}
-            onDeleteItem={handleTriggerDeleteItem}
-          />
+          {/* Modular Main Content Area (Fixed full canvas behind overlays) */}
+          <div className="w-full h-full flex-1 min-w-0 relative z-10">
+            <MainContent
+              selectedItem={selectedItem}
+              activeCollectionId={activeCollectionId}
+              isBlurred={!isPinned && isLeftSidePanelOpen}
+              onAddSubItem={handleAddSubItem}
+              onEditItem={handleTriggerEditItem}
+              onDeleteItem={handleTriggerDeleteItem}
+            />
+          </div>
 
           <RightSidePanel
             isOpen={isRightPanelOpen}
             onOpen={() => setIsRightPanelOpen(true)}
             onClose={() => setIsRightPanelOpen(false)}
+            reservedWidth={isPinned ? leftPanelWidth : 0}
+            onWidthChange={setRightPanelWidth}
           />
         </div>
 

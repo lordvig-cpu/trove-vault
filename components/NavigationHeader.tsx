@@ -97,7 +97,7 @@ export default function NavigationHeader({
                   }
                 }}
                 className={[
-                  'relative px-4 py-1.5 group',
+                  'relative w-[90px] py-1.5 flex items-center justify-center group',
                   'font-sans font-black tracking-wide text-sm',
                   'transition-all ease-out',
                   animationsEnabled ? 'duration-500' : 'duration-0',
@@ -122,9 +122,6 @@ export default function NavigationHeader({
                   className={[
                     'nav-tab-extension transition-opacity ease-out',
                     animationsEnabled ? 'duration-500' : 'duration-0',
-                    isPinned
-                      ? 'border-r border-[var(--nav-header-accent-line)] border-border-strong'
-                      : 'border-r border-border-strong',
                     isTabActive ? 'nav-tab-extension-active' : 'nav-tab-extension-inactive',
                   ].join(' ')}
                   aria-hidden="true"
