@@ -26,7 +26,7 @@ interface LeftSidePanelProps {
   children: React.ReactNode;
 }
 
-const MIN_WIDTH = 220;
+const MIN_WIDTH = 304;
 const DEFAULT_WIDTH = 304;
 const MIN_WORKSPACE_GAP = 48;
 
@@ -198,7 +198,8 @@ export default function LeftSidePanel({
             'flex items-center justify-center',
             'bg-[var(--panel-surface-bg)] border border-border-subtle border-l-0 rounded-r-md',
             'text-content-muted hover:text-accent-secondary hover:bg-surface-hover',
-            'shadow-md transition-colors',
+            // Added a custom, darker right-leaning shadow to stand out against the dark canvas
+            'shadow-[4px_0_12px_rgba(0,0,0,0.6)] transition-colors',
             animationsEnabled ? 'animate-mount-fade' : ''
           ].join(' ')}
           title="Reset to default width"
@@ -214,7 +215,7 @@ export default function LeftSidePanel({
       {/* PANEL HEADER */}
       <div className="left-side-panel-header px-2.5 py-2 flex items-center justify-between gap-2 border-b border-border-subtle shrink-0">
         {/* COMPACT SEARCH INPUT */}
-        <div className="relative flex-1 min-w-0">
+        <div className="relative flex-1 min-w-0 max-w-[280px]">
           <span className="absolute left-2 top-1/2 -translate-y-1/2 text-content-muted pointer-events-none text-xs select-none">
             🔍
           </span>

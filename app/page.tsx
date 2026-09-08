@@ -55,6 +55,7 @@ export default function Home() {
 
   const [isLogoHovered, setIsLogoHovered] = useState<boolean>(false);
   const [isRightPanelOpen, setIsRightPanelOpen] = useState<boolean>(false);
+  const [isRightPinned, setIsRightPinned] = useState<boolean>(true);
   const [isLeftSidePanelOpen, setIsLeftSidePanelOpen] = useState<boolean>(false);
   const [isColDropdownOpen, setIsColDropdownOpen] = useState<boolean>(false);
   const [activeModal, setActiveModal] = useState<ActiveModal>(null);
@@ -289,6 +290,7 @@ export default function Home() {
               onAddSubItem={handleAddSubItem}
               onEditItem={handleTriggerEditItem}
               onDeleteItem={handleTriggerDeleteItem}
+              rightPanelWidth={isRightPanelOpen && isRightPinned ? rightPanelWidth : 0} // ONLY subtract width if it is pinned!
             />
           </div>
 
@@ -296,6 +298,8 @@ export default function Home() {
             isOpen={isRightPanelOpen}
             onOpen={() => setIsRightPanelOpen(true)}
             onClose={() => setIsRightPanelOpen(false)}
+            isPinned={isRightPinned} // ADD THIS
+            onTogglePin={() => setIsRightPinned(!isRightPinned)} // ADD THIS
             reservedWidth={isPinned ? leftPanelWidth : 0}
             onWidthChange={setRightPanelWidth}
           />

@@ -8,6 +8,8 @@ interface RightPanelProps {
   isOpen: boolean;
   onOpen?: () => void;
   onClose: () => void;
+  isPinned?: boolean;
+  onTogglePin?: () => void;
   title?: string;
   reservedWidth?: number;
   onWidthChange?: (width: number) => void;
@@ -15,12 +17,15 @@ interface RightPanelProps {
 }
 
 const MIN_WIDTH = 260;
+const DEFAULT_WIDTH = 360;
 const MIN_WORKSPACE_GAP = 48;
 
 export default function RightPanel({
   isOpen,
   onOpen,
   onClose,
+  isPinned = true,
+  onTogglePin,
   title = "Details",
   reservedWidth = 0,
   onWidthChange,
@@ -28,7 +33,7 @@ export default function RightPanel({
 }: RightPanelProps) {
   const { animationsEnabled } = useUIPreferences();
   
-  const [panelWidth, setPanelWidth] = useState<number>(360);
+  const [panelWidth, setPanelWidth] = useState<number>(DEFAULT_WIDTH);
   const [isDragging, setIsDragging] = useState<boolean>(false);
   const isDraggingRef = useRef<boolean>(false);
   const panelWidthRef = useRef<number>(panelWidth);
@@ -41,7 +46,6 @@ export default function RightPanel({
     panelWidthRef.current = panelWidth;
   }, [panelWidth]);
 
-  // Auto-clamp if the left panel opens/expands into this space
   useEffect(() => {
     if (typeof window === 'undefined') return;
     const dynamicMax = Math.max(MIN_WIDTH, window.innerWidth - reservedWidth - MIN_WORKSPACE_GAP);
@@ -53,7 +57,6 @@ export default function RightPanel({
       if (!isDraggingRef.current) return;
 
       const rawWidth = window.innerWidth - e.clientX;
-      // Clamp dynamically against the screen minus the left panel's footprint
       const dynamicMax = Math.max(MIN_WIDTH, window.innerWidth - reservedWidth - MIN_WORKSPACE_GAP);
       const clampedWidth = Math.min(Math.max(rawWidth, MIN_WIDTH), dynamicMax);
 
@@ -79,7 +82,6 @@ export default function RightPanel({
     };
   }, [reservedWidth, onWidthChange]);
 
-  // While dragging, turn off transitions completely so resizing has zero input latency
   const transitionClass = (!isDragging && animationsEnabled)
     ? 'transition-all duration-700 ease-in-out' 
     : 'transition-none';
@@ -97,26 +99,21 @@ export default function RightPanel({
         ].filter(Boolean).join(' ')}
         title="Open Side Panel"
       >
-        <ChevronLeftIcon
-          className="w-3.5 h-3.5 origin-center transition-transform duration-200 ease-out group-hover:-translate-x-0.5 group-hover:scale-115"
-        />
+        <ChevronLeftIcon className="w-3.5 h-3.5 origin-center transition-transform duration-200 ease-out group-hover:-translate-x-0.5 group-hover:scale-115" />
       </button>
 
-      {/* 2. DOCKED RIGHT PANEL (Floating Overlay) */}
+      {/* 2. RIGHT PANEL CONTAINER */}
       <aside
-        style={{
-          width: isOpen ? `${panelWidth}px` : 0,
-        }}
+        style={{ width: isOpen ? `${panelWidth}px` : 0 }}
         className={[
-          'right-side-panel absolute top-0 bottom-0 right-0 z-30',
-          'backdrop-blur-md shadow-2xl',
+          'right-side-panel absolute top-0 bottom-0 right-0 z-30 flex flex-col',
+          !isPinned && 'shadow-2xl backdrop-blur-md bg-[var(--panel-surface-bg)]/95',
           transitionClass,
           isOpen ? 'right-panel-docked-open' : 'right-panel-docked-closed pointer-events-none',
         ].filter(Boolean).join(' ')}
       >
-
         {/* RESIZE HANDLE STRIP */}
-        {isOpen && (
+        {isOpen && isPinned && (
           <div
             onPointerDown={(e) => {
               e.preventDefault();
@@ -124,27 +121,47 @@ export default function RightPanel({
               document.body.style.userSelect = 'none';
               document.body.style.cursor = 'col-resize';
             }}
+            onDoubleClick={() => {
+              setPanelWidth(DEFAULT_WIDTH);
+              onWidthChange?.(DEFAULT_WIDTH);
+            }}
             className="group/handle absolute top-0 -left-1.5 w-3 h-full cursor-col-resize z-50 flex items-center justify-center select-none"
-            title="Drag to resize panel"
+            title="Drag to resize, double-click to reset"
           >
-            {/* Full-height amber seam line */}
-            <div
-              className={`absolute top-0 bottom-0 left-1/2 -translate-x-1/2 w-[5px] transition-all duration-150 pointer-events-none ${
-                isDragging
-                  ? 'bg-accent-secondary opacity-100'
-                  : 'opacity-0 group-hover/handle:opacity-100 group-hover/handle:bg-accent-secondary'
+            <div className={`absolute top-0 bottom-0 left-1/2 -translate-x-1/2 w-[5px] transition-all duration-150 pointer-events-none ${
+                isDragging ? 'bg-accent-secondary opacity-100' : 'opacity-0 group-hover/handle:opacity-100 group-hover/handle:bg-accent-secondary'
               }`}
             />
-
-            {/* Visual indicator handle pill */}
-            <div 
-              className={`relative z-10 w-1 h-12 rounded-full transition-all duration-200 pointer-events-none ${
-                isDragging 
-                  ? 'bg-accent-secondary w-1.5 h-20 opacity-100' 
-                  : 'bg-accent-secondary/60 group-hover/handle:bg-accent-secondary group-hover/handle:h-16 group-hover/handle:opacity-100 opacity-0'
+            <div className={`relative z-10 w-1 h-12 rounded-full transition-all duration-200 pointer-events-none ${
+                isDragging ? 'bg-accent-secondary w-1.5 h-20 opacity-100' : 'bg-accent-secondary/60 group-hover/handle:bg-accent-secondary group-hover/handle:h-16 group-hover/handle:opacity-100 opacity-0'
               }`} 
             />
           </div>
+        )}
+
+        {/* RESET WIDTH TAB */}
+        {isOpen && isPinned && panelWidth !== DEFAULT_WIDTH && (
+          <button
+            type="button"
+            onClick={() => {
+              setPanelWidth(DEFAULT_WIDTH);
+              onWidthChange?.(DEFAULT_WIDTH);
+            }}
+            className={[
+              'absolute top-16 -left-7 w-7 h-8 z-40',
+              'flex items-center justify-center',
+              'bg-[var(--panel-surface-bg)] border border-border-subtle border-r-0 rounded-l-md',
+              'text-content-muted hover:text-accent-secondary hover:bg-surface-hover',
+              'shadow-[-4px_0_12px_rgba(0,0,0,0.6)] transition-colors',
+              animationsEnabled ? 'animate-mount-fade' : ''
+            ].join(' ')}
+            title="Reset to default width"
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21 12a9 9 0 1 1-9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" />
+              <path d="M21 3v5h-5" />
+            </svg>
+          </button>
         )}
 
         {/* Panel Header */}
@@ -152,29 +169,24 @@ export default function RightPanel({
           <span className="text-xs font-bold uppercase tracking-wider text-content-muted">
             {title}
           </span>
-
-          {/* Collapse Button */}
-          <button
-            type="button"
-            onClick={onClose}
-            className="right-side-panel-btn group"
-            title="Collapse Panel"
-          >
-            <ChevronRightIcon
-              className="w-3.5 h-3.5 text-content-muted group-hover:text-content-primary origin-center transition-all duration-200 ease-out group-hover:translate-x-0.5 group-hover:scale-115"
-            />
-          </button>
+          <div className="flex items-center gap-1">
+            {/* Pin Toggle Button */}
+            <button type="button" onClick={onTogglePin} className="right-side-panel-btn group" title={isPinned ? "Unpin Panel" : "Pin Panel"}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={`text-content-muted group-hover:text-content-primary transition-transform duration-200 ${isPinned ? '' : '-rotate-45'}`}>
+                <line x1="12" y1="17" x2="12" y2="22"></line>
+                <path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V6h1a2 2 0 0 0 0-4H8a2 2 0 0 0 0 4h1v4.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24Z"></path>
+              </svg>
+            </button>
+            {/* Collapse Button */}
+            <button type="button" onClick={onClose} className="right-side-panel-btn group" title="Collapse Panel">
+              <ChevronRightIcon className="w-3.5 h-3.5 text-content-muted group-hover:text-content-primary origin-center transition-all duration-200 ease-out group-hover:translate-x-0.5 group-hover:scale-115" />
+            </button>
+          </div>
         </div>
 
-        {/* Panel Body with Left-Rail Scrollbar */}
-        <div 
-          className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden pl-3 pr-2 py-3"
-          style={{ direction: 'rtl' }}
-        >
-          <div 
-            className="space-y-4 text-content-primary"
-            style={{ direction: 'ltr' }}
-          >
+        {/* Panel Body (Handles the clipping of internal content) */}
+        <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden pl-3 pr-2 py-3">
+          <div className="space-y-4 text-content-primary">
             {children ? (
               children
             ) : (
