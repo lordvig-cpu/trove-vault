@@ -110,7 +110,7 @@ export default function LeftSidePanel({
             <button
               type="button"
               onClick={() => onSearchChange('')}
-              className="group absolute right-1.5 top-1/2 -translate-y-1/2 text-content-muted hover:text-accent-secondary text-xs cursor-pointer p-0.5"
+              className="group absolute right-1.5 top-1/2 -translate-y-1/2 text-content-muted hover:text-content-primary transition-colors text-xs cursor-pointer p-0.5"
               title="Clear search"
             >
               <span className="inline-block origin-center transition-transform duration-200 group-hover:scale-115">
