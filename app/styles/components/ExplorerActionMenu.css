@@ -68,8 +68,8 @@
 
 /* Offset bridge geometry when sidebar is unpinned / collapsed */
 .bridgeUnpinned {
-  left: -2rem; /* -left-8 */
-  width: 2rem;  /* w-8 */
+  left: -3rem; /* -left-8 */
+  width: 3rem;  /* w-8 */
 }
 
 /* --------------------------------------------------------------------------
