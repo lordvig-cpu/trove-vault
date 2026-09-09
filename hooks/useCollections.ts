@@ -125,6 +125,55 @@ export function useCollections() {
     [allItems]
   );
 
+  // Direct Rename Mutations
+  const renameCollection = useCallback(
+    async (id: number, nextName: string) => {
+      const trimmed = nextName.trim();
+      if (!trimmed) return;
+
+      const { error: updateError } = await supabase
+        .from('collections')
+        .update({ name: trimmed })
+        .eq('id', id);
+
+      if (updateError) {
+        console.error('Failed to rename collection:', updateError);
+        throw updateError;
+      }
+
+      setAllCollections((prev) =>
+        prev.map((c) => (c.id === id ? { ...c, name: trimmed } : c))
+      );
+    },
+    []
+  );
+
+  const renameItem = useCallback(
+    async (id: number, nextName: string) => {
+      const trimmed = nextName.trim();
+      if (!trimmed) return;
+
+      const { error: updateError } = await supabase
+        .from('items')
+        .update({ name: trimmed })
+        .eq('id', id);
+
+      if (updateError) {
+        console.error('Failed to rename item:', updateError);
+        throw updateError;
+      }
+
+      setAllItems((prev) =>
+        prev.map((i) => (i.id === id ? { ...i, name: trimmed } : i))
+      );
+
+      setSelectedItem((prev) =>
+        prev && prev.id === id ? { ...prev, name: trimmed } : prev
+      );
+    },
+    []
+  );
+
   return {
     allCollections,
     allItems,
@@ -134,6 +183,8 @@ export function useCollections() {
     selectedItem,
     setSelectedItem,
     selectItemWithChildren,
+    renameCollection,
+    renameItem,
     searchQuery,
     setSearchQuery,
     searchScope,

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useRef, createContext, useContext } from 'react';
+import React, { useState, useRef, createContext, useContext, useEffect } from 'react';
 import { CollectionRecord } from '@/types/collection';
 import { ItemRecord } from '@/types/item';
 import { GearIcon, AddSubItemIcon } from '@/components/icons/ActionIcons';
@@ -26,8 +26,10 @@ interface TreeContextType {
   onAddSubItem: (collectionId: number, parentItemId?: number | null) => void;
   onAddSubCollection?: (parentCollectionId: number) => void;
   onEditCollection?: (collection: CollectionRecord) => void;
+  onRenameCollection?: (id: number, nextName: string) => Promise<void> | void;
   onDeleteCollection?: (collection: CollectionRecord) => void;
   onEditItem: (item: ItemRecord, collectionId: number) => void;
+  onRenameItem?: (id: number, nextName: string) => Promise<void> | void;
   onDeleteItem: (item: ItemRecord, collectionId: number) => void;
 }
 
@@ -60,10 +62,43 @@ function getItemTypeIcon(item: ItemRecord): string {
 function UnifiedExplorerTreeItem({ item, collectionId }: { item: ItemRecord; collectionId: number }) {
   const ctx = useTreeContext();
   const [isOpen, setIsOpen] = useState(true);
-  
+
   const timeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [menuCoords, setMenuCoords] = useState({ top: 0, left: 0 });
+
+  // Inline Rename State
+  const [isRenaming, setIsRenaming] = useState(false);
+  const [renameValue, setRenameValue] = useState(item.name);
+  const [isSaving, setIsSaving] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (isRenaming && inputRef.current) {
+      inputRef.current.focus();
+      inputRef.current.select();
+    }
+  }, [isRenaming]);
+
+  // Keep menu open while typing
+  const handleRenameSubmit = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    if (!renameValue.trim() || renameValue.trim() === item.name) {
+      setIsRenaming(false);
+      return;
+    }
+
+    try {
+      setIsSaving(true);
+      await ctx.onRenameItem?.(item.id, renameValue.trim());
+      setIsRenaming(false);
+      setIsMenuOpen(false);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   const isSelected = ctx.selectedItemId === item.id;
   const hasSubItems = item.children && item.children.length > 0;
@@ -72,25 +107,29 @@ function UnifiedExplorerTreeItem({ item, collectionId }: { item: ItemRecord; col
   const handleGearMouseEnter = (e: React.MouseEvent<HTMLDivElement>) => {
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
     const rect = e.currentTarget.getBoundingClientRect();
-    
-    const menuHeight = 175;
+
+    const menuHeight = isRenaming ? 230 : 175;
     const bottomNavReserve = 64;
     const maxAllowedTop = window.innerHeight - menuHeight - bottomNavReserve;
-    
+
     let calculatedTop = Math.round(rect.top - 4);
     if (calculatedTop > maxAllowedTop) calculatedTop = Math.max(16, maxAllowedTop);
-    
+
     setMenuCoords({ top: calculatedTop, left: Math.round(rect.right + 6) });
     setIsMenuOpen(true);
   };
-  
+
   const handleMenuMouseEnter = () => {
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
   };
 
   const handleMouseLeave = () => {
+    if (isRenaming) return; // Prevent closing while the user is actively typing
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
-    timeoutRef.current = setTimeout(() => setIsMenuOpen(false), 350);
+    timeoutRef.current = setTimeout(() => {
+      setIsMenuOpen(false);
+      setIsRenaming(false);
+    }, 350);
   };
 
   return (
@@ -139,11 +178,11 @@ function UnifiedExplorerTreeItem({ item, collectionId }: { item: ItemRecord; col
               isMenuOpen ? 'tree-gear-trigger-active' : 'tree-gear-trigger',
             ].join(' ')}
           >
-            <GearIcon 
+            <GearIcon
               isActive={isMenuOpen}
               className={`w-[15px] h-[15px] transition-all duration-300 ease-out ${
                 isMenuOpen ? 'text-white rotate-90' : 'text-content-muted group-hover/gear:text-content-primary'
-              }`} 
+              }`}
             />
           </div>
         </div>
@@ -176,6 +215,62 @@ function UnifiedExplorerTreeItem({ item, collectionId }: { item: ItemRecord; col
           </div>
         </button>
 
+        {/* Rename Item */}
+        <button
+          type="button"
+          onClick={() => {
+            setRenameValue(item.name);
+            setIsRenaming((prev) => !prev);
+          }}
+          className="group/action w-full text-left flex items-center gap-2.5 px-3 py-1.5 rounded tree-menu-item"
+        >
+          <span className="w-5 shrink-0 flex items-center justify-center text-sm leading-none group-hover/action:scale-105 transition-transform">🏷️</span>
+          <div className="flex flex-col leading-tight min-w-0">
+            <span className="text-xs font-medium text-content-primary">Rename Item</span>
+            <span className="text-[9px] text-content-muted">Update name</span>
+          </div>
+        </button>
+
+        {/* Inline Rename Form */}
+        {isRenaming && (
+          <form
+            onSubmit={handleRenameSubmit}
+            className="px-2 py-1.5 mx-1 my-0.5 rounded-lg border border-border-subtle/80 bg-[#070f1d] flex items-center gap-1.5 shadow-inner"
+          >
+            <input
+              ref={inputRef}
+              type="text"
+              value={renameValue}
+              onChange={(e) => setRenameValue(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Escape') setIsRenaming(false);
+              }}
+              className={[
+                'w-full bg-[#040811] rounded-md px-2 py-1 text-xs',
+                'text-accent-secondary placeholder:text-content-muted',
+                'focus:outline-none transition-colors border',
+                renameValue.trim().length > 0
+                  ? 'border-accent-secondary focus:border-accent-secondary'
+                  : 'border-border-subtle/80 focus:border-accent-primary',
+              ].join(' ')}
+              placeholder="Name..."
+              disabled={isSaving}
+            />
+            <button
+              type="submit"
+              disabled={isSaving || !renameValue.trim()}
+              className={[
+                'px-2.5 py-1 text-xs font-semibold rounded-md border border-transparent shrink-0 transition-all cursor-pointer',
+                'bg-surface-hover/80 text-content-muted hover:text-content-primary hover:bg-surface-hover hover:border-border-subtle',
+                'disabled:opacity-50 disabled:cursor-not-allowed',
+              ].join(' ')}
+              title="Save changes"
+            >
+              {isSaving ? '...' : 'Save'}
+            </button>
+          </form>
+        )}
+
         {/* Edit Item */}
         <button
           type="button"
@@ -188,7 +283,7 @@ function UnifiedExplorerTreeItem({ item, collectionId }: { item: ItemRecord; col
           <span className="w-5 shrink-0 flex items-center justify-center text-sm leading-none group-hover/action:scale-105 transition-transform">✏️</span>
           <div className="flex flex-col leading-tight min-w-0">
             <span className="text-xs font-medium text-content-primary">Edit Item</span>
-            <span className="text-[9px] text-content-muted">Update attributes</span>
+            <span className="text-[9px] text-content-muted">Open Item Details</span>
           </div>
         </button>
 
@@ -209,7 +304,7 @@ function UnifiedExplorerTreeItem({ item, collectionId }: { item: ItemRecord; col
             <span className="text-[9px] tree-menu-danger-subtext">Permanently remove</span>
           </div>
         </button>
-      </ExplorerActionMenu>            
+      </ExplorerActionMenu>
 
       {isOpen && hasSubItems && (
         <div className="border-l border-border-subtle space-y-0.5 ml-2 pl-1.5 my-0.5 flex flex-col min-w-0">
@@ -234,10 +329,42 @@ function UnifiedExplorerTreeFolder({ collection, depth = 0 }: { collection: Unif
   const ctx = useTreeContext();
   const isActiveCollection = ctx.activeCollectionId === collection.id;
   const isOpen = ctx.expandedFolderIds?.has(collection.id) ?? false;
-  
+
   const timeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [menuCoords, setMenuCoords] = useState({ top: 0, left: 0 });
+
+  // Inline Folder Rename State
+  const [isRenaming, setIsRenaming] = useState(false);
+  const [renameValue, setRenameValue] = useState(collection.name);
+  const [isSaving, setIsSaving] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (isRenaming && inputRef.current) {
+      inputRef.current.focus();
+      inputRef.current.select();
+    }
+  }, [isRenaming]);
+
+  const handleRenameSubmit = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    if (!renameValue.trim() || renameValue.trim() === collection.name) {
+      setIsRenaming(false);
+      return;
+    }
+
+    try {
+      setIsSaving(true);
+      await ctx.onRenameCollection?.(collection.id, renameValue.trim());
+      setIsRenaming(false);
+      setIsMenuOpen(false);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   const hasChildren = (collection.subCollections && collection.subCollections.length > 0) || (collection.items && collection.items.length > 0);
 
@@ -248,13 +375,13 @@ function UnifiedExplorerTreeFolder({ collection, depth = 0 }: { collection: Unif
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
     const rect = e.currentTarget.getBoundingClientRect();
 
-    const menuHeight = 215;
+    const menuHeight = isRenaming ? 270 : 215;
     const bottomNavReserve = 64;
     const maxAllowedTop = window.innerHeight - menuHeight - bottomNavReserve;
-    
+
     let calculatedTop = Math.round(rect.top - 4);
     if (calculatedTop > maxAllowedTop) calculatedTop = Math.max(16, maxAllowedTop);
-    
+
     setMenuCoords({ top: calculatedTop, left: Math.round(rect.right + 6) });
     setIsMenuOpen(true);
   };
@@ -264,8 +391,12 @@ function UnifiedExplorerTreeFolder({ collection, depth = 0 }: { collection: Unif
   };
 
   const handleMouseLeave = () => {
+    if (isRenaming) return;
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
-    timeoutRef.current = setTimeout(() => setIsMenuOpen(false), 350);
+    timeoutRef.current = setTimeout(() => {
+      setIsMenuOpen(false);
+      setIsRenaming(false);
+    }, 350);
   };
 
   return (
@@ -324,11 +455,11 @@ function UnifiedExplorerTreeFolder({ collection, depth = 0 }: { collection: Unif
               isMenuOpen ? 'tree-gear-trigger-active' : 'tree-gear-trigger',
             ].join(' ')}
           >
-            <GearIcon 
+            <GearIcon
               isActive={isMenuOpen}
               className={`w-[15px] h-[15px] transition-all duration-300 ease-out ${
                 isMenuOpen ? 'text-white rotate-90' : 'text-content-muted group-hover/gear:text-content-primary'
-              }`} 
+              }`}
             />
           </div>
         </div>
@@ -343,6 +474,7 @@ function UnifiedExplorerTreeFolder({ collection, depth = 0 }: { collection: Unif
         title="Folder Actions"
         titleIcon="📂"
       >
+        {/* New Sub-Folder */}
         <button
           type="button"
           onClick={() => {
@@ -358,6 +490,7 @@ function UnifiedExplorerTreeFolder({ collection, depth = 0 }: { collection: Unif
           </div>
         </button>
 
+        {/* New Item */}
         <button
           type="button"
           onClick={() => {
@@ -373,6 +506,63 @@ function UnifiedExplorerTreeFolder({ collection, depth = 0 }: { collection: Unif
           </div>
         </button>
 
+        {/* Rename Folder */}
+        <button
+          type="button"
+          onClick={() => {
+            setRenameValue(collection.name);
+            setIsRenaming((prev) => !prev);
+          }}
+          className="group/action w-full text-left flex items-center gap-2.5 px-3 py-1.5 rounded tree-menu-item"
+        >
+          <span className="w-5 shrink-0 flex items-center justify-center text-sm group-hover/action:scale-105 transition-transform">🏷️</span>
+          <div className="flex flex-col leading-tight min-w-0">
+            <span className="text-xs font-medium text-content-primary">Rename Folder</span>
+            <span className="text-[9px] text-content-muted">Update name</span>
+          </div>
+        </button>
+
+        {/* Inline Rename Form */}
+        {isRenaming && (
+          <form
+            onSubmit={handleRenameSubmit}
+            className="px-2 py-1.5 mx-1 my-0.5 rounded-lg border border-border-subtle/80 bg-[#070f1d] flex items-center gap-1.5 shadow-inner"
+          >
+            <input
+              ref={inputRef}
+              type="text"
+              value={renameValue}
+              onChange={(e) => setRenameValue(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Escape') setIsRenaming(false);
+              }}
+              className={[
+                'w-full bg-[#040811] rounded-md px-2 py-1 text-xs',
+                'text-accent-secondary placeholder:text-content-muted',
+                'focus:outline-none transition-colors border',
+                renameValue.trim().length > 0
+                  ? 'border-accent-secondary focus:border-accent-secondary'
+                  : 'border-border-subtle/80 focus:border-accent-primary',
+              ].join(' ')}
+              placeholder="Name..."
+              disabled={isSaving}
+            />
+            <button
+              type="submit"
+              disabled={isSaving || !renameValue.trim()}
+              className={[
+                'px-2.5 py-1 text-xs font-semibold rounded-md border border-transparent shrink-0 transition-all cursor-pointer',
+                'bg-surface-hover/80 text-content-muted hover:text-content-primary hover:bg-surface-hover hover:border-border-subtle',
+                'disabled:opacity-50 disabled:cursor-not-allowed',
+              ].join(' ')}
+              title="Save changes"
+            >
+              {isSaving ? '...' : 'Save'}
+            </button>
+          </form>
+        )}
+
+        {/* Edit Folder */}
         <button
           type="button"
           onClick={() => {
@@ -384,12 +574,13 @@ function UnifiedExplorerTreeFolder({ collection, depth = 0 }: { collection: Unif
           <span className="w-5 shrink-0 flex items-center justify-center text-sm group-hover/action:scale-105 transition-transform">✏️</span>
           <div className="flex flex-col leading-tight min-w-0">
             <span className="text-xs font-medium text-content-primary">Edit Folder</span>
-            <span className="text-[9px] text-content-muted">Rename or update</span>
+            <span className="text-[9px] text-content-muted">Open Folder Details</span>
           </div>
         </button>
 
         <div className="my-1 mx-1 tree-menu-divider" />
 
+        {/* Delete Collection */}
         <button
           type="button"
           onClick={() => {
@@ -404,7 +595,7 @@ function UnifiedExplorerTreeFolder({ collection, depth = 0 }: { collection: Unif
             <span className="text-[9px] tree-menu-danger-subtext">Permanently remove</span>
           </div>
         </button>
-      </ExplorerActionMenu>      
+      </ExplorerActionMenu>
 
       {isOpen && hasChildren && (
         <div className="border-l border-border-subtle space-y-0.5 ml-2 pl-1.5 my-0.5 flex flex-col min-w-0">

@@ -43,6 +43,8 @@ export default function Home() {
     loading,
     error,
     fetchAllData,
+    renameCollection,
+    renameItem,
   } = useCollections();
 
   // Layout & Dock States from Context
@@ -150,6 +152,8 @@ export default function Home() {
       }
       onEditItem={handleTriggerEditItem}
       onDeleteItem={handleTriggerDeleteItem}
+      onRenameCollection={renameCollection}
+      onRenameItem={renameItem}
     />
   );
 

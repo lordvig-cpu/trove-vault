@@ -18,7 +18,9 @@ export interface ExplorerContentProps {
   onAddSubCollection?: (parentCollectionId: number) => void;
   onEditCollection?: (collection: CollectionRecord) => void;
   onDeleteCollection?: (collection: CollectionRecord) => void;
+  onRenameCollection?: (id: number, nextName: string) => Promise<void> | void;
   onEditItem: (item: ItemRecord, collectionId: number) => void;
+  onRenameItem?: (id: number, nextName: string) => Promise<void> | void;
   onDeleteItem: (item: ItemRecord, collectionId: number) => void;
 }
 
@@ -95,6 +97,8 @@ export default function ExplorerContent({
   onDeleteCollection,
   onEditItem,
   onDeleteItem,
+  onRenameCollection,
+  onRenameItem,
 }: ExplorerContentProps) {
   // Filter forest and build set of folders to auto-expand during search
   const { filteredForest, searchExpandedIds } = useMemo(() => {
@@ -144,6 +148,8 @@ export default function ExplorerContent({
               onDeleteCollection={onDeleteCollection}
               onEditItem={onEditItem}
               onDeleteItem={onDeleteItem}
+              onRenameCollection={onRenameCollection}
+              onRenameItem={onRenameItem}
             />
           ))
         )}
