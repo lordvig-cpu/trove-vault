@@ -11,7 +11,7 @@
 .left-side-panel {
   position: absolute;
   left: 0;
-  top: 1px;
+  top: 0;
   bottom: 0;
   /* Let inline style control width; remove fixed max-width constraint */
   max-width: none;
@@ -28,7 +28,7 @@
 
 /* Pinned layout mode: Statically locks the sidebar into the main content flow */
 .left-side-panel-pinned {
-  border-right: 1px solid var(--panel-border-accent);
+  border-right: 1px solid var(--right-panel-border);
   box-shadow: var(--panel-pinned-shadow);
   opacity: 1;
   /* MUST BE NONE: CSS transforms establish a new stacking context that breaks 

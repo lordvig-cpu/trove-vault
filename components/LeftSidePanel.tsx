@@ -51,18 +51,15 @@ export default function LeftSidePanel({
   const [isDragging, setIsDragging] = useState<boolean>(false);
   const isDraggingRef = useRef<boolean>(false);
   const panelWidthRef = useRef<number>(panelWidth);
-  
 
   useEffect(() => {
     isDraggingRef.current = isDragging;
   }, [isDragging]);
 
-  // Keep ref synchronized with current width
   useEffect(() => {
     panelWidthRef.current = panelWidth;
   }, [panelWidth]);
 
-  // Auto-clamp if the right panel opens and would cause an overlap
   useEffect(() => {
     if (typeof window === 'undefined') return;
     const dynamicMax = Math.max(MIN_WIDTH, window.innerWidth - reservedWidth - MIN_WORKSPACE_GAP);
@@ -74,7 +71,6 @@ export default function LeftSidePanel({
       if (!isDraggingRef.current) return;
 
       const rawWidth = e.clientX;
-      // Clamp dynamically against the screen minus the opposite panel's footprint
       const dynamicMax = Math.max(MIN_WIDTH, window.innerWidth - reservedWidth - MIN_WORKSPACE_GAP);
       const clampedWidth = Math.min(Math.max(rawWidth, MIN_WIDTH), dynamicMax);
 
@@ -100,12 +96,10 @@ export default function LeftSidePanel({
     };
   }, [reservedWidth, onWidthChange]);
 
-  // Disable transitions while actively dragging for 60+ FPS tracking
   const transitionClass = (!isDragging && animationsEnabled && isHydrated) 
     ? 'transition-all duration-700 ease-in-out' 
     : 'transition-none';
 
-  // Flyout lifecycle state machine
   const [renderMenu, setRenderMenu] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
 
@@ -144,9 +138,6 @@ export default function LeftSidePanel({
     }
   };
 
-  // ----------------------------------------------------------------------
-  // UNIFIED CONTENT: Shared between both layout variants
-  // ----------------------------------------------------------------------
   const innerContent = (
     <>
       {/* RESIZE HANDLE STRIP (Right Edge) - Docked Only */}
@@ -165,7 +156,6 @@ export default function LeftSidePanel({
           className="group/handle absolute top-0 -right-1.5 w-3 h-full cursor-col-resize z-50 flex items-center justify-center select-none"
           title="Drag to resize panel"
         >
-          {/* Full-height amber seam line (5px) */}
           <div
             className={`absolute top-0 bottom-0 left-1/2 -translate-x-1/2 w-[5px] transition-all duration-150 pointer-events-none ${
               isDragging
@@ -173,8 +163,6 @@ export default function LeftSidePanel({
                 : 'opacity-0 group-hover/handle:opacity-100 group-hover/handle:bg-accent-secondary'
             }`}
           />
-
-          {/* Visual indicator handle pill */}
           <div 
             className={`relative z-10 w-1 h-12 rounded-full transition-all duration-200 pointer-events-none ${
               isDragging 
@@ -194,18 +182,26 @@ export default function LeftSidePanel({
             onWidthChange?.(DEFAULT_WIDTH);
           }}
           className={[
-            'absolute top-16 -right-7 w-7 h-8 z-40',
+            'group absolute top-16 -right-7 w-7 h-8 z-40',
             'flex items-center justify-center',
-            'bg-[var(--panel-surface-bg)] border border-border-subtle border-l-0 rounded-r-md',
-            'text-content-muted hover:text-accent-secondary hover:bg-surface-hover',
-            // Added a custom, darker right-leaning shadow to stand out against the dark canvas
+            'bg-[var(--panel-surface-bg)] border border-accent-secondary border-l-0 rounded-r-md',
+            'hover:bg-surface-hover',
             'shadow-[4px_0_12px_rgba(0,0,0,0.6)] transition-colors',
             animationsEnabled ? 'animate-mount-fade' : ''
           ].join(' ')}
           title="Reset to default width"
         >
-          {/* Quick reset/return icon */}
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <svg 
+            width="14" 
+            height="14" 
+            viewBox="0 0 24 24" 
+            fill="none" 
+            stroke="currentColor" 
+            strokeWidth="2.5" 
+            strokeLinecap="round" 
+            strokeLinejoin="round"
+            className="text-accent-secondary group-hover:text-white transition-colors"
+          >
             <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
             <path d="M3 3v5h5" />
           </svg>
@@ -253,8 +249,15 @@ export default function LeftSidePanel({
             <button
               type="button"
               onClick={onToggleAllFolders}
-              className="left-side-panel-pin-btn group"
-              title={isAnyFolderExpanded ? "Collapse all folders" : "Expand all folders"}
+              disabled={searchQuery.trim().length > 0}
+              className="left-side-panel-pin-btn group disabled:opacity-30 disabled:pointer-events-none disabled:cursor-not-allowed"
+              title={
+                searchQuery.trim().length > 0
+                  ? 'Folder expansion disabled during search'
+                  : isAnyFolderExpanded
+                  ? 'Collapse all folders'
+                  : 'Expand all folders'
+              }
             >
               {isAnyFolderExpanded ? (
                 <FolderCollapseIcon className="w-3.5 h-3.5 text-content-muted" />
@@ -311,9 +314,6 @@ export default function LeftSidePanel({
     </>
   );
 
-  // ----------------------------------------------------------------------
-  // FLYOUT VARIANT (Unpinned Dropdown)
-  // ----------------------------------------------------------------------
   if (variant === 'flyout') {
     if (!renderMenu && !isPinned) return null;
 
@@ -351,9 +351,6 @@ export default function LeftSidePanel({
     );
   }
 
-  // ----------------------------------------------------------------------
-  // SIDEBAR VARIANT (Floating Pinned Overlay)
-  // ----------------------------------------------------------------------
   return (
     <aside
       style={{ 

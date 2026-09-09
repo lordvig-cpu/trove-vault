@@ -53,31 +53,6 @@ export default function NavigationHeader({
         <div className="flex items-center h-full">
           {/* BRAND & EXPLORER TAB */}
           <div className="flex items-center justify-between h-full w-76 shrink-0 relative">
-            
-            {/* SHADOW ERASER MASK */}
-            <div
-              className={[
-                'absolute top-full left-0 right-[10px] h-3 z-10',
-                'bg-surface',
-                'pointer-events-none',
-                opacityTransition,
-                isPinned ? 'nav-header-pinned-visible' : 'nav-header-pinned-hidden',
-              ].join(' ')}
-              aria-hidden="true"
-            />
-
-            {/* ACCENT BORDER LINE */}
-            <div
-              className={[
-                'absolute top-full left-0 w-full h-[1px] z-20',
-                'bg-[var(--nav-header-accent-line)]',
-                'pointer-events-none',
-                opacityTransition,
-                isPinned ? 'nav-header-pinned-visible' : 'nav-header-pinned-hidden',
-              ].join(' ')}
-              aria-hidden="true"
-            />
-
             {/* BRAND AREA */}
             <div className="flex items-center gap-2 pl-4 relative z-20">
               <img
