@@ -1,9 +1,24 @@
 'use client';
 
-import React, { ReactNode, useState, useEffect, useRef } from 'react';
+import React, { ReactNode } from 'react';
 import { ChevronLeftIcon, ChevronRightIcon } from '@/components/icons/SystemIcons';
 import { useUIPreferences } from '@/context/UIPreferencesContext';
+import { useResizablePanel } from '@/hooks/useResizablePanel';
 
+/* ==========================================================================
+   1. TYPE DEFINITIONS & CONSTANTS
+   ========================================================================== */
+
+/**
+ * Props for the RightSidePanel utility & inspector drawer.
+ * @property isOpen - Controls expansion state and width layout rendering
+ * @property onOpen - Callback fired when clicking the floating expand tab
+ * @property onClose - Dismissal callback fired when clicking the collapse chevron
+ * @property title - Primary header title (defaults to "Details")
+ * @property reservedWidth - Opposite panel's width used to dynamically clamp resizing
+ * @property onWidthChange - Callback notifying root page of user-dragged dimension updates
+ * @property children - Inspector content (or default diagnostic rows if empty)
+ */
 interface RightPanelProps {
   isOpen: boolean;
   onOpen?: () => void;
@@ -18,6 +33,12 @@ const MIN_WIDTH = 260;
 const DEFAULT_WIDTH = 360;
 const MIN_WORKSPACE_GAP = 48;
 
+/* ==========================================================================
+   2. MAIN COMPONENT: RightSidePanel
+   Collapsible drawer positioned along the right seam of the main workspace.
+   Features an animated pull-tab, tactile drag-to-resize seam, and width reset.
+   ========================================================================== */
+
 export default function RightPanel({
   isOpen,
   onOpen,
@@ -27,64 +48,37 @@ export default function RightPanel({
   onWidthChange,
   children,
 }: RightPanelProps) {
+  /* ------------------------------------------------------------------------
+     2.1 USER PREFERENCES & SHARED RESIZING HOOK
+     Reuses useResizablePanel with 'right' direction physics (window.innerWidth - clientX).
+     ------------------------------------------------------------------------ */
   const { animationsEnabled } = useUIPreferences();
-  
-  const [panelWidth, setPanelWidth] = useState<number>(DEFAULT_WIDTH);
-  const [isDragging, setIsDragging] = useState<boolean>(false);
-  const isDraggingRef = useRef<boolean>(false);
-  const panelWidthRef = useRef<number>(panelWidth);
 
-  useEffect(() => {
-    isDraggingRef.current = isDragging;
-  }, [isDragging]);
+  const {
+    panelWidth,
+    isDragging,
+    handlePointerDown,
+    handleResetWidth,
+  } = useResizablePanel({
+    initialWidth: DEFAULT_WIDTH,
+    minWidth: MIN_WIDTH,
+    minGap: MIN_WORKSPACE_GAP,
+    reservedWidth,
+    direction: 'right',
+    onWidthChange,
+  });
 
-  useEffect(() => {
-    panelWidthRef.current = panelWidth;
-  }, [panelWidth]);
-
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    const dynamicMax = Math.max(MIN_WIDTH, window.innerWidth - reservedWidth - MIN_WORKSPACE_GAP);
-    setPanelWidth((prev) => (prev > dynamicMax ? dynamicMax : prev));
-  }, [reservedWidth]);
-
-  useEffect(() => {
-    const handlePointerMove = (e: PointerEvent) => {
-      if (!isDraggingRef.current) return;
-
-      const rawWidth = window.innerWidth - e.clientX;
-      const dynamicMax = Math.max(MIN_WIDTH, window.innerWidth - reservedWidth - MIN_WORKSPACE_GAP);
-      const clampedWidth = Math.min(Math.max(rawWidth, MIN_WIDTH), dynamicMax);
-
-      panelWidthRef.current = clampedWidth;
-      setPanelWidth(clampedWidth);
-    };
-
-    const handlePointerUp = () => {
-      if (isDraggingRef.current) {
-        setIsDragging(false);
-        document.body.style.userSelect = '';
-        document.body.style.cursor = '';
-        onWidthChange?.(panelWidthRef.current);
-      }
-    };
-
-    window.addEventListener('pointermove', handlePointerMove);
-    window.addEventListener('pointerup', handlePointerUp);
-
-    return () => {
-      window.removeEventListener('pointermove', handlePointerMove);
-      window.removeEventListener('pointerup', handlePointerUp);
-    };
-  }, [reservedWidth, onWidthChange]);
-
+  // Temporarily disable CSS width transitions during active drag for zero input latency
   const transitionClass = (!isDragging && animationsEnabled)
     ? 'transition-all duration-700 ease-in-out' 
     : 'transition-none';
 
   return (
     <>
-      {/* 1. FLOATING EXPAND TAB */}
+      {/* --------------------------------------------------------------------
+          2.2 FLOATING EXPAND TAB (Visible When Collapsed)
+          Sticky pull-tab positioned on the right viewport edge.
+          -------------------------------------------------------------------- */}
       <button
         type="button"
         onClick={onOpen}
@@ -98,7 +92,10 @@ export default function RightPanel({
         <ChevronLeftIcon className="w-3.5 h-3.5 origin-center transition-transform duration-200 ease-out group-hover:-translate-x-0.5 group-hover:scale-115" />
       </button>
 
-      {/* 2. RIGHT PANEL CONTAINER */}
+      {/* --------------------------------------------------------------------
+          2.3 DOCKED UTILITY & INSPECTOR PANEL CONTAINER
+          Slides smoothly into the workspace flex container from the right.
+          -------------------------------------------------------------------- */}
       <aside
         style={{ width: isOpen ? `${panelWidth}px` : 0 }}
         className={[
@@ -107,48 +104,51 @@ export default function RightPanel({
           isOpen ? 'right-panel-docked-open' : 'right-panel-docked-closed pointer-events-none',
         ].filter(Boolean).join(' ')}
       >
-        {/* RESIZE HANDLE STRIP */}
+        {/* 
+          Left-Edge Seam Resize Handle:
+          Enables custom panel width resizing with a 5px amber glow highlight on drag.
+        */}
         {isOpen && (
           <div
-            onPointerDown={(e) => {
-              e.preventDefault();
-              setIsDragging(true);
-              document.body.style.userSelect = 'none';
-              document.body.style.cursor = 'col-resize';
-            }}
-            onDoubleClick={() => {
-              setPanelWidth(DEFAULT_WIDTH);
-              onWidthChange?.(DEFAULT_WIDTH);
-            }}
+            onPointerDown={handlePointerDown}
+            onDoubleClick={handleResetWidth}
             className="group/handle absolute top-0 -left-1.5 w-3 h-full cursor-col-resize z-50 flex items-center justify-center select-none"
             title="Drag to resize, double-click to reset"
           >
-            <div className={`absolute top-0 bottom-0 left-1/2 -translate-x-1/2 w-[5px] transition-all duration-150 pointer-events-none ${
-                isDragging ? 'bg-accent-secondary opacity-100' : 'opacity-0 group-hover/handle:opacity-100 group-hover/handle:bg-accent-secondary'
+            {/* Full-height amber vertical glow line */}
+            <div
+              className={`absolute top-0 bottom-0 left-1/2 -translate-x-1/2 w-[5px] transition-all duration-150 pointer-events-none ${
+                isDragging
+                  ? 'bg-accent-secondary opacity-100'
+                  : 'opacity-0 group-hover/handle:opacity-100 group-hover/handle:bg-accent-secondary'
               }`}
             />
-            <div className={`relative z-10 w-1 h-12 rounded-full transition-all duration-200 pointer-events-none ${
-                isDragging ? 'bg-accent-secondary w-1.5 h-20 opacity-100' : 'bg-accent-secondary/60 group-hover/handle:bg-accent-secondary group-hover/handle:h-16 group-hover/handle:opacity-100 opacity-0'
+            {/* Tactile central pill */}
+            <div
+              className={`relative z-10 w-1 h-12 rounded-full transition-all duration-200 pointer-events-none ${
+                isDragging
+                  ? 'bg-accent-secondary w-1.5 h-20 opacity-100'
+                  : 'bg-accent-secondary/60 group-hover/handle:bg-accent-secondary group-hover/handle:h-16 group-hover/handle:opacity-100 opacity-0'
               }`} 
             />
           </div>
         )}
 
-        {/* RESET WIDTH TAB */}
+        {/* 
+          Reset Width Floating Pull-Tab:
+          Appears on the outer seam when the panel is dragged away from DEFAULT_WIDTH (360px).
+        */}
         {isOpen && panelWidth !== DEFAULT_WIDTH && (
           <button
             type="button"
-            onClick={() => {
-              setPanelWidth(DEFAULT_WIDTH);
-              onWidthChange?.(DEFAULT_WIDTH);
-            }}
+            onClick={handleResetWidth}
             className={[
               'group absolute top-16 -left-7 w-7 h-8 z-40',
               'flex items-center justify-center',
               'bg-[var(--panel-surface-bg)] border border-accent-secondary border-r-0 rounded-l-md',
               'hover:bg-surface-hover',
               'shadow-[-4px_0_12px_rgba(0,0,0,0.6)] transition-colors',
-              animationsEnabled ? 'animate-mount-fade' : ''
+              animationsEnabled ? 'animate-mount-fade' : '',
             ].join(' ')}
             title="Reset to default width"
           >
@@ -169,20 +169,24 @@ export default function RightPanel({
           </button>
         )}
 
-        {/* Panel Header */}
+        {/* Top Header: Section title and collapse trigger button */}
         <div className="right-side-panel-header">
           <span className="text-xs font-bold uppercase tracking-wider text-content-muted">
             {title}
           </span>
           <div className="flex items-center gap-1">
-            {/* Collapse Button */}
-            <button type="button" onClick={onClose} className="right-side-panel-btn group" title="Collapse Panel">
+            <button
+              type="button"
+              onClick={onClose}
+              className="right-side-panel-btn group"
+              title="Collapse Panel"
+            >
               <ChevronRightIcon className="w-3.5 h-3.5 text-content-muted group-hover:text-content-primary origin-center transition-all duration-200 ease-out group-hover:translate-x-0.5 group-hover:scale-115" />
             </button>
           </div>
         </div>
 
-        {/* Panel Body */}
+        {/* Panel Scrollable Body */}
         <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden pl-3 pr-2 py-3">
           <div className="space-y-4 text-content-primary">
             {children ? (

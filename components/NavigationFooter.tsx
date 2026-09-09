@@ -1,10 +1,30 @@
 'use client';
 
 import React from 'react';
-import { AnimationsOnIcon, AnimationsOffIcon, AudioOnIcon, AudioOffIcon } from '@/components/icons/MediaIcons';
-import { DockPanelIcon, MoonIcon, SunIcon } from '@/components/icons/SystemIcons';
+import { 
+  AnimationsOnIcon, 
+  AnimationsOffIcon, 
+  AudioOnIcon, 
+  AudioOffIcon 
+} from '@/components/icons/MediaIcons';
+import { 
+  DockPanelIcon, 
+  MoonIcon, 
+  SunIcon 
+} from '@/components/icons/SystemIcons';
 import { useUIPreferences } from '@/context/UIPreferencesContext';
 
+/* ==========================================================================
+   1. TYPE DEFINITIONS & INTERFACES
+   ========================================================================== */
+
+/**
+ * Props for the NavigationFooter status bar.
+ * @property activeCollectionName - Name of the currently selected collection folder (or undefined)
+ * @property totalItemsCount - Total inventory count of records loaded across all collections
+ * @property isRightPanelOpen - Boolean state tracking whether the right utility panel is expanded
+ * @property onToggleRightPanel - Handler toggling expansion/collapse of the right utility drawer
+ */
 interface NavigationFooterProps {
   activeCollectionName?: string;
   totalItemsCount?: number;
@@ -12,13 +32,23 @@ interface NavigationFooterProps {
   onToggleRightPanel: () => void;
 }
 
+/* ==========================================================================
+   2. MAIN COMPONENT: NavigationFooter
+   Fixed-height (h-14) bottom status bar anchored at z-[60].
+   Coordinates data metrics, operational readiness, sound/animation preferences,
+   docking toggles, and global color theme switching.
+   ========================================================================== */
+
 export default function NavigationFooter({
   activeCollectionName,
   totalItemsCount = 0,
   isRightPanelOpen,
   onToggleRightPanel,
 }: NavigationFooterProps) {
-  // Grab state and toggles directly from Context
+  /* ------------------------------------------------------------------------
+     2.1 GLOBAL PREFERENCES CONTEXT
+     Consumes persisted UI toggles and themes directly from UIPreferencesContext.
+     ------------------------------------------------------------------------ */
   const {
     animationsEnabled,
     toggleAnimations,
@@ -31,7 +61,10 @@ export default function NavigationFooter({
   return (
     <footer className="navigation-footer h-14 flex items-center justify-between px-4 text-xs select-none shrink-0 z-[60]">
       
-      {/* LEFT: STATUS & ACTIVE COLLECTION */}
+      {/* --------------------------------------------------------------------
+          2.2 LEFT: SYSTEM READINESS & ACTIVE CONTEXT
+          Displays live database status dot alongside the currently active collection.
+          -------------------------------------------------------------------- */}
       <div className="flex items-center gap-3 relative z-10">
         <div className="flex items-center gap-2">
           <span className="nav-footer-status-dot animate-pulse" />
@@ -50,22 +83,33 @@ export default function NavigationFooter({
         )}
       </div>
 
-      {/* MIDDLE */}
+      {/* --------------------------------------------------------------------
+          2.3 CENTER: UTILITY / WORKSPACE BREADCRUMB SLOT
+          Reserved central utility region for quick shortcuts or breadcrumb tracks.
+          -------------------------------------------------------------------- */}
       <div className="flex items-center gap-1.5 text-xs text-content-muted cursor-pointer select-none">
         <label className="flex items-center gap-1.5 cursor-pointer text-content-muted hover:text-content-primary transition-colors">
           MIDDLE CONTENT
         </label>
       </div>
 
-      {/* RIGHT: METRICS, PANEL TOGGLE, & THEME TOGGLE */}
+      {/* --------------------------------------------------------------------
+          2.4 RIGHT: INVENTORY METRICS & SYSTEM TOGGLES
+          Item counters and interactive buttons for animations, sound FX,
+          right side panel docking, and theme switching.
+          -------------------------------------------------------------------- */}
       <div className="flex items-center gap-3 relative z-10">
+        {/* Total Aggregated Inventory Count */}
         <span className="text-[11px] font-mono text-content-muted">
           Items: <span className="text-content-primary font-semibold">{totalItemsCount}</span>
         </span>
 
         <span className="text-border-subtle">|</span>
 
-        {/* Animated Animations Toggle Button */}
+        {/* 
+          Animated UI Transitions Toggle Button:
+          Dual-icon sliding track morphing between AnimationsOn and AnimationsOff.
+        */}
         <button
           type="button"
           onClick={toggleAnimations}
@@ -90,7 +134,10 @@ export default function NavigationFooter({
           />
         </button>
 
-        {/* Animated Audio Toggle Button */}
+        {/* 
+          Animated Ambient Audio & Sound FX Toggle:
+          Dual-icon sliding track morphing between AudioOn and AudioOff.
+        */}
         <button
           type="button"
           onClick={toggleAudio}
@@ -117,19 +164,25 @@ export default function NavigationFooter({
 
         <span className="text-border-subtle">|</span>
 
-        {/* Right Dock Panel Toggle Icon */}
+        {/* 
+          Right Side Panel Drawer Toggle:
+          Indicates open vs closed panel dock state using dynamic border classes.
+        */}
         <button
           type="button"
           onClick={onToggleRightPanel}
           title={isRightPanelOpen ? 'Close Side Panel' : 'Open Side Panel'}
-          className={`group p-1.5 rounded-lg border transition cursor-pointer flex items-center justify-center ${
+          className={`p-1.5 rounded-lg border transition cursor-pointer flex items-center justify-center ${
             isRightPanelOpen ? 'nav-footer-dock-btn-open' : 'nav-footer-dock-btn-closed'
           }`}
         >
           <DockPanelIcon className="w-4 h-4" isOpen={isRightPanelOpen} />
         </button>
 
-        {/* Theme Toggle Button */}
+        {/* 
+          Application Theme Toggle:
+          Smooth 500ms sliding transition between Dark Mode (Moon) and Light Mode (Sun).
+        */}
         <button
           type="button"
           onClick={toggleTheme}
@@ -143,6 +196,7 @@ export default function NavigationFooter({
               : 'Switch to Amber Tide (Dark Mode)'
           }
         >
+          {/* Moon Icon (Dark Mode Active) */}
           <MoonIcon
             className={[
               'nav-theme-icon nav-theme-icon-moon nav-footer-icon-moon',
@@ -153,6 +207,7 @@ export default function NavigationFooter({
             ].join(' ')}
           />
 
+          {/* Sun Icon (Light Mode Active) */}
           <SunIcon
             className={[
               'nav-theme-icon nav-theme-icon-sun nav-footer-icon-sun',

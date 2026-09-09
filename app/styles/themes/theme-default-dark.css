@@ -213,6 +213,12 @@ Organized 1-to-1 with component stylesheets in styles/components/
    --explorer-sticky-folder-bg: rgba(4, 22, 40, 0.95);
    --explorer-sticky-folder-border: var(--panel-border-subtle);
    --explorer-sticky-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.65);
+
+   /* Search Bar & Shortcut Badge (LeftSidePanelHeader.tsx) */
+   --explorer-search-input-bg: rgba(4, 8, 17, 1.00);
+   --explorer-kbd-text: rgba(52, 211, 153, 1.00);
+   --explorer-kbd-bg: rgba(6, 78, 59, 0.80);
+   --explorer-kbd-border: rgba(6, 95, 70, 0.60);
    /* #endregion */
 
    /* #region 5. RIGHT SIDE PANEL */
@@ -314,6 +320,10 @@ Organized 1-to-1 with component stylesheets in styles/components/
    --explorer-menu-header-border: rgba(245, 158, 11, 0.25);
    --explorer-menu-header-title: rgba(251, 191, 36, 1.00);
    --explorer-menu-header-icon: rgba(252, 211, 77, 1.00);
+
+   /* Inline Rename / Action Form (ExplorerActionMenu.tsx) */
+   --explorer-menu-form-bg: rgba(7, 15, 29, 0.95);
+   --explorer-menu-input-bg: rgba(4, 8, 17, 1.00);
 
    /* Action Item Rows & Dividers */
    --explorer-menu-divider: rgba(245, 158, 11, 0.20);

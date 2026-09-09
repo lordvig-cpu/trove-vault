@@ -1,29 +1,30 @@
 'use client';
 
-import { useEffect, useState, useRef } from 'react';
+import { useState } from 'react';
 import { useUIPreferences } from '@/context/UIPreferencesContext';
-import { CollectionRecord } from '@/types/collection';
 import { ItemRecord } from '@/types/item';
 import { useCollections } from '@/hooks/useCollections';
 import { useModals } from '@/hooks/useModals';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
+import { useExplorerFolders } from '@/hooks/useExplorerFolders';
 import NavigationHeader from '@/components/NavigationHeader';
 import NavigationFooter from '@/components/NavigationFooter';
 import MainContent from '@/components/MainContent';
 import RightSidePanel from '@/components/RightSidePanel';
 import LeftSidePanel from '@/components/LeftSidePanel';
 import ExplorerContent from '@/components/ExplorerContent';
-import CreateItemModal from '@/components/CreateItemModal';
-import EditItemModal from '@/components/EditItemModal';
-import DeleteItemModal from '@/components/DeleteItemModal';
-import DeleteCollectionModal from '@/components/DeleteCollectionModal';
-import TemplateManagerModal from '@/components/TemplateManagerModal';
+import ModalContainers from '@/components/ModalContainers';
+import DynamicWatermark from '@/components/DynamicWatermark';
 
 export interface UniversalSearchResultItem extends ItemRecord {
   collection_name?: string;
 }
 
 export default function Home() {
+  /* ------------------------------------------------------------------------
+     1. DATA LAYER (Supabase Records, Trees & CRUD Mutations)
+     Manages active collections, items, selection, and remote persistence.
+     ------------------------------------------------------------------------ */
   const {
     allCollections,
     allItems,
@@ -41,6 +42,10 @@ export default function Home() {
     renameItem,
   } = useCollections();
 
+  /* ------------------------------------------------------------------------
+     2. MODAL DIALOG STATE
+     Manages active modal types via a unified discriminated union.
+     ------------------------------------------------------------------------ */
   const {
     activeModal,
     closeModal,
@@ -51,14 +56,29 @@ export default function Home() {
     openDeleteItem,
   } = useModals();
 
-  // Layout & Dock States from Context
+  /* ------------------------------------------------------------------------
+     3. EXPLORER TREE STATE
+     Tracks search filtering, expansion tracking, and bulk toggle state.
+     ------------------------------------------------------------------------ */
   const {
-    isPinned,
-    togglePin,
-    animationsEnabled,
-    isAudioEnabled,
-  } = useUIPreferences();
+    searchQuery,
+    setSearchQuery,
+    expandedFolderIds,
+    isAnyFolderExpanded,
+    handleToggleAllFolders,
+    handleToggleFolder,
+  } = useExplorerFolders(allCollections);
 
+  /* ------------------------------------------------------------------------
+     4. GLOBAL UI & LAYOUT PREFERENCES
+     Reads persistent user preferences from UIPreferencesContext.
+     ------------------------------------------------------------------------ */
+  const { isPinned, togglePin, isAudioEnabled } = useUIPreferences();
+
+  /* ------------------------------------------------------------------------
+     5. LOCAL VIEWPORT & INTERACTION STATES
+     Governs side panel docking, widths, dropdowns, and watermark hover.
+     ------------------------------------------------------------------------ */
   const [isLogoHovered, setIsLogoHovered] = useState<boolean>(false);
   const [isRightPanelOpen, setIsRightPanelOpen] = useState<boolean>(false);
   const [isLeftSidePanelOpen, setIsLeftSidePanelOpen] = useState<boolean>(false);
@@ -66,27 +86,22 @@ export default function Home() {
   const [leftPanelWidth, setLeftPanelWidth] = useState<number>(304);
   const [rightPanelWidth, setRightPanelWidth] = useState<number>(360);
 
-  // Local Explorer Search State
-  const [searchQuery, setSearchQuery] = useState<string>('');
-
-  // Track strictly which folders are currently expanded
-  const [expandedFolderIds, setExpandedFolderIds] = useState<Set<number>>(new Set());
-
-  const isAnyFolderExpanded = expandedFolderIds.size > 0;
-
-  // KEYBOARD SHORTCUTS
+  /* ------------------------------------------------------------------------
+     6. GLOBAL KEYBOARD SHORTCUTS
+     Handles global hotkeys (Esc dismissals, Ctrl+K / Cmd+K Explorer focus).
+     ------------------------------------------------------------------------ */
   useKeyboardShortcuts([
     {
       key: 'Escape',
       allowInInputs: true,
       action: () => {
-        // 1. Dismiss active modal dialog
+        // Dismiss active modal if one is currently mounted
         if (activeModal) {
           closeModal();
           return;
         }
 
-        // 2. If focus is inside an input (e.g., search), blur it
+        // If actively typing, blur the input without closing panels
         if (
           document.activeElement instanceof HTMLInputElement ||
           document.activeElement instanceof HTMLTextAreaElement
@@ -95,13 +110,13 @@ export default function Home() {
           return;
         }
 
-        // 3. Dismiss floating unpinned Explorer flyout
+        // Dismiss floating flyout if unpinned
         if (isLeftSidePanelOpen && !isPinned) {
           setIsLeftSidePanelOpen(false);
           return;
         }
 
-        // 4. Dismiss open right side panel
+        // Dismiss open right utility drawer
         if (isRightPanelOpen) {
           setIsRightPanelOpen(false);
         }
@@ -113,12 +128,12 @@ export default function Home() {
       action: (e) => {
         e.preventDefault();
 
-        // 1. Reveal flyout if unpinned and closed
+        // Reveal the unpinned flyout if closed
         if (!isPinned && !isLeftSidePanelOpen) {
           setIsLeftSidePanelOpen(true);
         }
 
-        // 2. Target the specific variant's input
+        // Target the appropriate input variant based on pin docking state
         const targetInputId = isPinned
           ? 'explorer-search-input-sidebar'
           : 'explorer-search-input-flyout';
@@ -134,56 +149,10 @@ export default function Home() {
     },
   ]);
 
-  const handleToggleAllFolders = () => {
-    if (isAnyFolderExpanded) {
-      setExpandedFolderIds(new Set());
-    } else {
-      const allIds = new Set(allCollections.map((c) => c.id));
-      setExpandedFolderIds(allIds);
-    }
-  };
-
-  const handleToggleFolder = (folderId: number, expand: boolean) => {
-    setExpandedFolderIds((prev) => {
-      const next = new Set(prev);
-      if (expand) next.add(folderId);
-      else next.delete(folderId);
-      return next;
-    });
-  };
-
-  const videoRef = useRef<HTMLVideoElement | null>(null);
-
-  useEffect(() => {
-    const video = videoRef.current;
-    if (!video) return;
-
-    let isSubscribed = true;
-
-    if (isLogoHovered) {
-      try {
-        video.currentTime = 0;
-      } catch {}
-
-      const playPromise = video.play();
-      if (playPromise !== undefined) {
-        playPromise.catch((err) => {
-          // Gracefully handle aborts if hover exited rapidly
-          if (err.name !== 'AbortError') {
-            console.warn('Playback error:', err);
-          }
-        });
-      }
-    } else {
-      // Pause cleanly
-      video.pause();
-    }
-
-    return () => {
-      isSubscribed = false;
-    };
-  }, [isLogoHovered]);
-
+  /* ------------------------------------------------------------------------
+     7. EVENT HANDLERS & DELEGATION
+     Coordinates user interactions across navigation panels and modals.
+     ------------------------------------------------------------------------ */
   const handleTogglePin = () => {
     togglePin();
     setIsLeftSidePanelOpen(true);
@@ -206,6 +175,10 @@ export default function Home() {
     openDeleteItem(item, collectionId);
   };
 
+  /* ------------------------------------------------------------------------
+     8. MEMOIZED EXPLORER SUB-COMPONENTS
+     Shared tree component used by both flyout and sidebar variants.
+     ------------------------------------------------------------------------ */
   const explorerTreeElement = (
     <ExplorerContent
       unifiedForest={unifiedForest}
@@ -228,6 +201,7 @@ export default function Home() {
     />
   );
 
+  // Unpinned floating flyout popover
   const explorerFlyoutPanel = (
     <LeftSidePanel
       variant="flyout"
@@ -245,6 +219,7 @@ export default function Home() {
     </LeftSidePanel>
   );
 
+  // Pinned desktop-docked split sidebar
   const explorerSidebarPanel = (
     <LeftSidePanel
       variant="sidebar"
@@ -264,6 +239,9 @@ export default function Home() {
     </LeftSidePanel>
   );
 
+  /* ------------------------------------------------------------------------
+     9. VIEWPORT COMPOSITION & PRESENTATION SHELL
+     ------------------------------------------------------------------------ */
   return (
     <div
       className={[
@@ -271,42 +249,16 @@ export default function Home() {
         'bg-canvas text-content-primary studio-grid-canvas',
       ].join(' ')}
     >
-      {/* 1. LOGO HOVER TRIGGER ZONE */}
-      <div
-        className="absolute top-0 left-0 w-36 h-10 z-[100] cursor-pointer"
-        onMouseEnter={() => setIsLogoHovered(true)}
-        onMouseLeave={() => setIsLogoHovered(false)}
-        aria-hidden="true"
+      {/* Dynamic Watermark Background & Hover Video Trigger */}
+      <DynamicWatermark
+        isHovered={isLogoHovered}
+        onHoverChange={setIsLogoHovered}
+        isAudioEnabled={isAudioEnabled}
       />
 
-      {/* 2. DYNAMIC BACKGROUND LAYER */}
-      <div
-        aria-hidden="true"
-        className={[
-          'fixed inset-0 z-0',
-          'flex items-center justify-center overflow-hidden',
-          'pointer-events-none select-none',
-        ].join(' ')}
-      >
-        <img
-          src="/images/web_background_trove_vault_logo.png"
-          alt=""
-          className={`watermark-logo-image ${isLogoHovered ? 'watermark-logo-image-hidden' : ''}`}
-        />
-
-        <video
-          ref={videoRef}
-          src="/videos/website_intro_video.mp4"
-          preload="auto"
-          muted={!isAudioEnabled}
-          playsInline
-          className={`watermark-video-player ${isLogoHovered ? 'watermark-video-active' : 'watermark-video-inactive'}`}
-        />
-      </div>
-
-      {/* 3. APPLICATION SHELL */}
+      {/* Primary Application Shell */}
       <div className="flex flex-col h-full w-full">
-        {/* Top Navigation */}
+        {/* Tier 1: Top Navigation Header */}
         <div className="shrink-0 relative z-[80]">
           <NavigationHeader
             activeCollectionName={activeCollection ? activeCollection.name : 'Select Collection'}
@@ -334,7 +286,7 @@ export default function Home() {
           />
         </div>
 
-        {/* Center Workspace */}
+        {/* Tier 2: Center Workspace (Pinned Explorer, Canvas, and Right Panel) */}
         <div
           className={[
             'flex flex-1 min-h-0 relative overflow-hidden',
@@ -342,8 +294,10 @@ export default function Home() {
             isLogoHovered ? 'opacity-0 pointer-events-none' : 'opacity-100',
           ].join(' ')}
         >
+          {/* Docked Explorer Sidebar */}
           {explorerSidebarPanel}
 
+          {/* Center Main Stage / Detail Canvas */}
           <div className="w-full h-full flex-1 min-w-0 relative z-10">
             <MainContent
               selectedItem={selectedItem}
@@ -356,6 +310,7 @@ export default function Home() {
             />
           </div>
 
+          {/* Docked Right Utility & Actions Panel */}
           <RightSidePanel
             isOpen={isRightPanelOpen}
             onOpen={() => setIsRightPanelOpen(true)}
@@ -365,7 +320,7 @@ export default function Home() {
           />
         </div>
 
-        {/* Bottom Navigation */}
+        {/* Tier 3: Bottom Navigation Footer & Status */}
         <div className="shrink-0 relative z-[60]">
           <NavigationFooter
             activeCollectionName={activeCollection?.name}
@@ -376,61 +331,15 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Modals Container */}
-      {activeModal?.type === 'template_manager' && (
-        <TemplateManagerModal
-          isOpen={true}
-          onClose={closeModal}
-          collectionId={activeModal.collectionId}
-          collectionName={activeModal.collectionName}
-          onTemplateApplied={() => fetchAllData()}
-        />
-      )}
-
-      {activeModal?.type === 'delete_collection' && (
-        <DeleteCollectionModal
-          isOpen={true}
-          onClose={closeModal}
-          onCollectionDeleted={() => fetchAllData(null)}
-          collection={activeModal.collection}
-        />
-      )}
-
-      {activeModal?.type === 'create_item' && (
-        <CreateItemModal
-          isOpen={true}
-          onClose={closeModal}
-          onItemCreated={() => fetchAllData(activeModal.collectionId)}
-          collectionId={activeModal.collectionId}
-          availableParents={allItems.filter(
-            (i) => i.collection_id === activeModal.collectionId
-          )}
-          initialParentId={activeModal.parentItemId || null}
-        />
-      )}
-
-      {activeModal?.type === 'edit_item' && (
-        <EditItemModal
-          isOpen={true}
-          onClose={closeModal}
-          onItemUpdated={() => fetchAllData(activeModal.collectionId)}
-          item={activeModal.item}
-        />
-      )}
-
-      {activeModal?.type === 'delete_item' && (
-        <DeleteItemModal
-          isOpen={true}
-          onClose={closeModal}
-          onItemDeleted={() => {
-            if (activeModal.item.id === selectedItem?.id) {
-              setSelectedItem(null);
-            }
-            fetchAllData(activeModal.collectionId);
-          }}
-          item={activeModal.item}
-        />
-      )}
+      {/* Modals & Dialog Portals */}
+      <ModalContainers
+        activeModal={activeModal}
+        closeModal={closeModal}
+        allItems={allItems}
+        selectedItem={selectedItem}
+        setSelectedItem={setSelectedItem}
+        fetchAllData={fetchAllData}
+      />
     </div>
   );
 }

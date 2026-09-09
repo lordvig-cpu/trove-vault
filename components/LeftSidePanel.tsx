@@ -1,15 +1,32 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React from 'react';
 import { createPortal } from 'react-dom';
-import { 
-  FolderCollapseIcon, 
-  FolderExpandIcon, 
-  PinFilledIcon, 
-  PinOutlineIcon 
-} from '@/components/icons/ExplorerIcons';
 import { useUIPreferences } from '@/context/UIPreferencesContext';
+import { useResizablePanel } from '@/hooks/useResizablePanel';
+import { useFlyoutLifecycle } from '@/hooks/useFlyoutLifecycle';
+import LeftSidePanelHeader from '@/components/LeftSidePanelHeader';
 
+/* ==========================================================================
+   1. TYPE DEFINITIONS & CONSTANTS
+   ========================================================================== */
+
+/**
+ * Props for the LeftSidePanel container.
+ * @property variant - Layout rendering strategy: floating popover ('flyout') or docked split column ('sidebar')
+ * @property isOpen - Controls visibility and mount lifecycle for the unpinned flyout
+ * @property onClose - Dismissal handler invoked by backdrop clicks, escape keys, or close triggers
+ * @property onTogglePin - Toggles between docked sidebar and floating flyout presentation modes
+ * @property isAnyFolderExpanded - Determines whether accordion toggle displays Expand All or Collapse All
+ * @property onToggleAllFolders - Bulk accordion expansion handler
+ * @property searchQuery - Filter string used to filter tree nodes
+ * @property onSearchChange - Callback updating active search text
+ * @property reservedWidth - Footprint of the opposite panel used to prevent viewport overlap during resizing
+ * @property onWidthChange - Callback notifying root page of user-dragged dimension changes
+ * @property loading - Renders hierarchy syncing progress indicators
+ * @property error - Displays tree-load or persistence error notices
+ * @property children - ExplorerContent tree node elements rendered inside the scroll chassis
+ */
 interface LeftSidePanelProps {
   variant: 'flyout' | 'sidebar';
   isOpen: boolean;
@@ -26,9 +43,11 @@ interface LeftSidePanelProps {
   children: React.ReactNode;
 }
 
-const MIN_WIDTH = 304;
 const DEFAULT_WIDTH = 304;
-const MIN_WORKSPACE_GAP = 48;
+
+/* ==========================================================================
+   2. MAIN COMPONENT: LeftSidePanel
+   ========================================================================== */
 
 export default function LeftSidePanel({
   variant,
@@ -45,117 +64,66 @@ export default function LeftSidePanel({
   error,
   children,
 }: LeftSidePanelProps) {
+  /* ------------------------------------------------------------------------
+     2.1 CONTEXT & PREFERENCES
+     Reads user preferences to manage docking, animations, and SSR hydration.
+     ------------------------------------------------------------------------ */
   const { isPinned, togglePin, animationsEnabled, isHydrated } = useUIPreferences();
 
-  const [panelWidth, setPanelWidth] = useState<number>(DEFAULT_WIDTH);
-  const [isDragging, setIsDragging] = useState<boolean>(false);
-  const isDraggingRef = useRef<boolean>(false);
-  const panelWidthRef = useRef<number>(panelWidth);
+  /* ------------------------------------------------------------------------
+     2.2 RESIZING CONTROLLER HOOK
+     Manages mouse drag physics, opposite-panel clamping, and default resets.
+     ------------------------------------------------------------------------ */
+  const {
+    panelWidth,
+    isDragging,
+    handlePointerDown,
+    handleResetWidth,
+  } = useResizablePanel({
+    initialWidth: DEFAULT_WIDTH,
+    minWidth: 304,
+    minGap: 48,
+    reservedWidth,
+    direction: 'left',
+    onWidthChange,
+  });
 
-  useEffect(() => {
-    isDraggingRef.current = isDragging;
-  }, [isDragging]);
+  /* ------------------------------------------------------------------------
+     2.3 FLYOUT LIFECYCLE & ANIMATION HOOK
+     Coordinates entrance and exit timers so unmounting transitions complete.
+     ------------------------------------------------------------------------ */
+  const { renderMenu, isClosing } = useFlyoutLifecycle(
+    isOpen,
+    isPinned,
+    animationsEnabled,
+    variant
+  );
 
-  useEffect(() => {
-    panelWidthRef.current = panelWidth;
-  }, [panelWidth]);
-
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    const dynamicMax = Math.max(MIN_WIDTH, window.innerWidth - reservedWidth - MIN_WORKSPACE_GAP);
-    setPanelWidth((prev) => (prev > dynamicMax ? dynamicMax : prev));
-  }, [reservedWidth]);
-
-  useEffect(() => {
-    const handlePointerMove = (e: PointerEvent) => {
-      if (!isDraggingRef.current) return;
-
-      const rawWidth = e.clientX;
-      const dynamicMax = Math.max(MIN_WIDTH, window.innerWidth - reservedWidth - MIN_WORKSPACE_GAP);
-      const clampedWidth = Math.min(Math.max(rawWidth, MIN_WIDTH), dynamicMax);
-
-      panelWidthRef.current = clampedWidth;
-      setPanelWidth(clampedWidth);
-    };
-
-    const handlePointerUp = () => {
-      if (isDraggingRef.current) {
-        setIsDragging(false);
-        document.body.style.userSelect = '';
-        document.body.style.cursor = '';
-        onWidthChange?.(panelWidthRef.current);
-      }
-    };
-
-    window.addEventListener('pointermove', handlePointerMove);
-    window.addEventListener('pointerup', handlePointerUp);
-
-    return () => {
-      window.removeEventListener('pointermove', handlePointerMove);
-      window.removeEventListener('pointerup', handlePointerUp);
-    };
-  }, [reservedWidth, onWidthChange]);
-
-  const transitionClass = (!isDragging && animationsEnabled && isHydrated) 
-    ? 'transition-all duration-700 ease-in-out' 
+  // Suppress CSS transitions during drag resizing for instantaneous 60+ FPS tracking
+  const transitionClass = (!isDragging && animationsEnabled && isHydrated)
+    ? 'transition-all duration-700 ease-in-out'
     : 'transition-none';
 
-  const [renderMenu, setRenderMenu] = useState(false);
-  const [isClosing, setIsClosing] = useState(false);
+  const handlePinAction = () => (onTogglePin ? onTogglePin() : togglePin());
 
-  useEffect(() => {
-    if (variant !== 'flyout') return;
-
-    if (isOpen && !isPinned) {
-      setRenderMenu(true);
-      setIsClosing(false);
-    } else if (renderMenu) {
-      if (isPinned) {
-        const timer = setTimeout(() => {
-          setRenderMenu(false);
-        }, 700);
-        return () => clearTimeout(timer);
-      }
-
-      if (animationsEnabled) {
-        setIsClosing(true);
-        const timer = setTimeout(() => {
-          setRenderMenu(false);
-          setIsClosing(false);
-        }, 500);
-        return () => clearTimeout(timer);
-      } else {
-        setRenderMenu(false);
-      }
-    }
-  }, [isOpen, renderMenu, animationsEnabled, isPinned, variant]);
-
-  const handlePinAction = () => {
-    if (onTogglePin) {
-      onTogglePin();
-    } else {
-      togglePin();
-    }
-  };
-
+  /* ------------------------------------------------------------------------
+     2.4 UNIFIED INTERNAL CONTENT CHASSIS
+     Shared structure rendered within both flyout and docked sidebar shells.
+     ------------------------------------------------------------------------ */
   const innerContent = (
     <>
-      {/* RESIZE HANDLE STRIP (Right Edge) - Docked Only */}
+      {/* 
+        Resize Drag Handle:
+        Anchored to the right seam when pinned. Displays a 5px amber glow line on hover/drag.
+      */}
       {isPinned && (
         <div
-          onPointerDown={(e) => {
-            e.preventDefault();
-            setIsDragging(true);
-            document.body.style.userSelect = 'none';
-            document.body.style.cursor = 'col-resize';
-          }}
-          onDoubleClick={() => {
-            setPanelWidth(DEFAULT_WIDTH);
-            onWidthChange?.(DEFAULT_WIDTH);
-          }}
+          onPointerDown={handlePointerDown}
+          onDoubleClick={handleResetWidth}
           className="group/handle absolute top-0 -right-1.5 w-3 h-full cursor-col-resize z-50 flex items-center justify-center select-none"
           title="Drag to resize panel"
         >
+          {/* Full-height amber seam line */}
           <div
             className={`absolute top-0 bottom-0 left-1/2 -translate-x-1/2 w-[5px] transition-all duration-150 pointer-events-none ${
               isDragging
@@ -163,42 +131,43 @@ export default function LeftSidePanel({
                 : 'opacity-0 group-hover/handle:opacity-100 group-hover/handle:bg-accent-secondary'
             }`}
           />
-          <div 
+          {/* Central tactile grab handle pill */}
+          <div
             className={`relative z-10 w-1 h-12 rounded-full transition-all duration-200 pointer-events-none ${
-              isDragging 
-                ? 'bg-accent-secondary w-1.5 h-20 opacity-100' 
+              isDragging
+                ? 'bg-accent-secondary w-1.5 h-20 opacity-100'
                 : 'bg-accent-secondary/60 group-hover/handle:bg-accent-secondary group-hover/handle:h-16 group-hover/handle:opacity-100 opacity-0'
-            }`} 
+            }`}
           />
         </div>
       )}
 
-      {/* RESET WIDTH TAB */}
+      {/* 
+        Reset Width Floating Pull-Tab:
+        Appears along the outer seam when dragged away from the default width.
+      */}
       {isPinned && panelWidth !== DEFAULT_WIDTH && (
         <button
           type="button"
-          onClick={() => {
-            setPanelWidth(DEFAULT_WIDTH);
-            onWidthChange?.(DEFAULT_WIDTH);
-          }}
+          onClick={handleResetWidth}
           className={[
             'group absolute top-16 -right-7 w-7 h-8 z-40',
             'flex items-center justify-center',
             'bg-[var(--panel-surface-bg)] border border-accent-secondary border-l-0 rounded-r-md',
             'hover:bg-surface-hover',
             'shadow-[4px_0_12px_rgba(0,0,0,0.6)] transition-colors',
-            animationsEnabled ? 'animate-mount-fade' : ''
+            animationsEnabled ? 'animate-mount-fade' : '',
           ].join(' ')}
           title="Reset to default width"
         >
-          <svg 
-            width="14" 
-            height="14" 
-            viewBox="0 0 24 24" 
-            fill="none" 
-            stroke="currentColor" 
-            strokeWidth="2.5" 
-            strokeLinecap="round" 
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.5"
+            strokeLinecap="round"
             strokeLinejoin="round"
             className="text-accent-secondary group-hover:text-white transition-colors"
           >
@@ -208,147 +177,82 @@ export default function LeftSidePanel({
         </button>
       )}
 
-      {/* PANEL HEADER */}
-      <div className="left-side-panel-header px-2.5 py-2 flex items-center justify-between gap-2 border-b border-border-subtle shrink-0">
-        {/* COMPACT SEARCH INPUT */}
-        <div className="relative flex-1 min-w-0 max-w-[280px]">
-          <span className="absolute left-2 top-1/2 -translate-y-1/2 text-content-muted pointer-events-none text-xs select-none">
-            🔍
-          </span>
-          <input
-            id={`explorer-search-input-${variant}`}
-            type="text"
-            value={searchQuery}
-            onChange={(e) => onSearchChange(e.target.value)}
-            placeholder="Search..."
-            className={[
-              'w-full bg-[#040811] rounded-md pl-6 pr-12 py-1 text-xs',
-              'text-accent-secondary placeholder:text-content-muted',
-              'focus:outline-none transition-colors border',
-              searchQuery.length > 0
-                ? 'border-accent-secondary'
-                : 'border-border-subtle/80 focus:border-accent-secondary',
-            ].join(' ')}
-          />
-          {searchQuery ? (
-            <button
-              type="button"
-              onClick={() => onSearchChange('')}
-              className="group absolute right-1.5 top-1/2 -translate-y-1/2 text-content-muted hover:text-content-primary transition-colors text-xs cursor-pointer p-0.5"
-              title="Clear search"
-            >
-              <span className="inline-block origin-center transition-transform duration-200 group-hover:scale-115">
-                ✕
-              </span>
-            </button>
-          ) : (
-            <kbd className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none select-none text-[8px] leading-none font-mono tracking-tight text-emerald-400 bg-emerald-950/80 border border-emerald-800/60 px-1 py-[2px] rounded-[3px] shadow-sm">
-              Ctrl K
-            </kbd>
-          )}
-        </div>
+      {/* Top Header: Search bar, shortcuts, accordion controls, and pin toggles */}
+      <LeftSidePanelHeader
+        variant={variant}
+        isPinned={isPinned}
+        searchQuery={searchQuery}
+        onSearchChange={onSearchChange}
+        isAnyFolderExpanded={isAnyFolderExpanded}
+        onToggleAllFolders={onToggleAllFolders}
+        onTogglePin={handlePinAction}
+        onClose={onClose}
+      />
 
-        {/* HEADER ACTIONS (Toggle Folders, Pin, Close) */}
-        <div className="flex items-center gap-1 shrink-0">
-          {onToggleAllFolders && (
-            <button
-              type="button"
-              onClick={onToggleAllFolders}
-              disabled={searchQuery.trim().length > 0}
-              className="left-side-panel-pin-btn group disabled:opacity-30 disabled:pointer-events-none disabled:cursor-not-allowed"
-              title={
-                searchQuery.trim().length > 0
-                  ? 'Folder expansion disabled during search'
-                  : isAnyFolderExpanded
-                  ? 'Collapse all folders'
-                  : 'Expand all folders'
-              }
-            >
-              {isAnyFolderExpanded ? (
-                <FolderCollapseIcon className="w-3.5 h-3.5 text-content-muted" />
-              ) : (
-                <FolderExpandIcon className="w-3.5 h-3.5 text-content-muted" />
-              )}
-            </button>
-          )}
-
-          {/* PIN BUTTON */}
-          <button
-            type="button"
-            onClick={handlePinAction}
-            className="left-side-panel-pin-btn group"
-            title={isPinned ? 'Unpin LeftSidePanel' : 'Pin LeftSidePanel'}
-          >
-            {variant === 'flyout' || !isPinned ? (
-              <PinOutlineIcon className="w-3.5 h-3.5 text-content-muted" />
-            ) : (
-              <PinFilledIcon className="w-3.5 h-3.5 text-content-primary" />
-            )}
-          </button>
-
-          {variant === 'flyout' && (
-            <button
-              type="button"
-              onClick={onClose}
-              className="left-side-panel-pin-btn group"
-              title="Close Explorer"
-            >
-              <span className="inline-block origin-center transition-transform duration-200 ease-out group-hover:scale-115 text-xs text-content-primary px-1.5 select-none">
-                ✕
-              </span>
-            </button>
-          )}
-        </div>
-      </div>
-
+      {/* Syncing Progress Banner */}
       {loading && (
         <div className="left-side-panel-notice-loading animate-pulse shrink-0 px-3 py-1 text-xs text-content-muted mt-2 mx-2">
           ⏳ Syncing hierarchy...
         </div>
       )}
 
+      {/* Error Feedback Notice */}
       {error && (
         <div className="left-side-panel-notice-error mt-2 mx-2">
           {error}
         </div>
       )}
 
+      {/* Dedicated Scrollable Explorer Tree Viewport */}
       <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden px-2 pb-6 min-w-0 left-panel-scroll">
         {children}
       </div>
     </>
   );
 
+  /* ------------------------------------------------------------------------
+     3. FLYOUT VARIANT (Unpinned Floating Dropdown Popover)
+     Renders into document body via React Portal with a click-outside backdrop.
+     ------------------------------------------------------------------------ */
   if (variant === 'flyout') {
     if (!renderMenu && !isPinned) return null;
 
     return (
       <>
-        {isHydrated && createPortal(
-          <div 
-            onClick={onClose}
-            className={[
-              'fixed inset-0 top-14 z-[60] bg-transparent',
-              animationsEnabled
-                ? (isClosing && !isPinned ? 'animate-unmount-fade' : 'animate-mount-fade')
-                : '',
-              isPinned ? 'nav-overlay-pinned' : 'nav-overlay-unpinned',
-            ].join(' ')}
-            aria-hidden="true"
-          />,
-          document.body
-        )}
+        {/* Transparent Click-Outside Dismissal Backdrop */}
+        {isHydrated &&
+          createPortal(
+            <div
+              onClick={onClose}
+              className={[
+                'fixed inset-0 top-14 z-[60] bg-transparent',
+                animationsEnabled
+                  ? isClosing && !isPinned
+                    ? 'animate-unmount-fade'
+                    : 'animate-mount-fade'
+                  : '',
+                isPinned ? 'nav-overlay-pinned' : 'nav-overlay-unpinned',
+              ].join(' ')}
+              aria-hidden="true"
+            />,
+            document.body
+          )}
 
+        {/* Floating Flyout Menu Shell */}
         <aside
           style={{ zIndex: 80 }}
           className={[
             'nav-flyout-menu relative transform',
             transitionClass,
             animationsEnabled && !isPinned
-              ? (isClosing ? 'animate-unmount-fade' : 'animate-mount-fade')
+              ? isClosing
+                ? 'animate-unmount-fade'
+                : 'animate-mount-fade'
               : '',
             isPinned ? 'nav-flyout-pinned' : 'nav-flyout-unpinned',
-          ].filter(Boolean).join(' ')}
+          ]
+            .filter(Boolean)
+            .join(' ')}
         >
           {innerContent}
         </aside>
@@ -356,17 +260,21 @@ export default function LeftSidePanel({
     );
   }
 
+  /* ------------------------------------------------------------------------
+     4. SIDEBAR VARIANT (Pinned Desktop-Docked Split Column)
+     Occupies physical layout space in the main workspace flex container.
+     ------------------------------------------------------------------------ */
   return (
     <aside
-      style={{ 
-        width: isPinned ? `${panelWidth}px` : 0,
-      }}
+      style={{ width: isPinned ? `${panelWidth}px` : 0 }}
       className={[
         'left-side-panel absolute top-0 bottom-0 left-0 z-30',
         'backdrop-blur-md shadow-2xl',
         transitionClass,
         isPinned ? 'left-side-panel-pinned' : 'left-side-panel-unpinned pointer-events-none',
-      ].filter(Boolean).join(' ')}
+      ]
+        .filter(Boolean)
+        .join(' ')}
     >
       {innerContent}
     </aside>

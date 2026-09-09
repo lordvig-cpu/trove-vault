@@ -213,6 +213,13 @@ Organized 1-to-1 with component stylesheets in styles/components/
     --explorer-sticky-folder-bg: rgba(248, 250, 252, 0.96);
     --explorer-sticky-folder-border: var(--panel-border-subtle);
     --explorer-sticky-shadow: 0 4px 10px -2px rgba(15, 23, 42, 0.08);
+
+    /* Search Bar & Shortcut Badge (LeftSidePanelHeader.tsx) */
+    --explorer-search-input-bg: rgba(255, 255, 255, 1.00);
+    --explorer-kbd-text: rgba(4, 120, 87, 1.00);
+    --explorer-kbd-bg: rgba(209, 250, 229, 0.85);
+    --explorer-kbd-border: rgba(52, 211, 153, 0.60);
+
     /* #endregion */
 
    /* #region 5. RIGHT SIDE PANEL */
@@ -313,6 +320,10 @@ Organized 1-to-1 with component stylesheets in styles/components/
    --explorer-menu-header-title: rgba(180, 83, 9, 1.00);
    --explorer-menu-header-icon: rgba(217, 119, 6, 1.00);
 
+   /* Inline Rename / Action Form (ExplorerActionMenu.tsx) */
+   --explorer-menu-form-bg: rgba(241, 245, 249, 0.95);
+   --explorer-menu-input-bg: rgba(255, 255, 255, 1.00);
+
    /* Action Item Rows & Dividers */
    --explorer-menu-divider: rgba(15, 23, 42, 0.08);
    --explorer-menu-item-hover-bg: rgba(201, 123, 8, 0.10);
@@ -324,6 +335,10 @@ Organized 1-to-1 with component stylesheets in styles/components/
 
    /* Node Triggers & Badges (UnifiedExplorerTree.css) */
    --tree-gear-bg-hover: rgba(226, 232, 240, 0.65);
+
+   /* Active gear trigger icon when menu is popped */
+   --tree-gear-icon-active: var(--content-primary);   
+
    --tree-badge-active-bg: rgba(209, 250, 229, 0.85);
    --tree-badge-active-border: rgba(52, 211, 153, 0.60);
    --tree-badge-active-text: rgba(4, 120, 87, 1.00);

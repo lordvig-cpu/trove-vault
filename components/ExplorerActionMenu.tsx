@@ -5,6 +5,21 @@ import { createPortal } from 'react-dom';
 import '@/app/styles/components/ExplorerActionMenu.css';
 import { useUIPreferences } from '@/context/UIPreferencesContext';
 
+/* ==========================================================================
+   1. TYPE DEFINITIONS & INTERFACES
+   ========================================================================== */
+
+/**
+ * Props for the ExplorerActionMenu flyout portal.
+ * @property isOpen - Controls mounting and visibility of the action menu portal
+ * @property onMouseEnter - Cancels close grace-period timers when cursor enters portal hitboxes
+ * @property onMouseLeave - Initiates close grace-period timers when cursor departs portal hitboxes
+ * @property top - Viewport Y-coordinate (px) calculated relative to the triggering gear icon
+ * @property left - Viewport X-coordinate (px) calculated relative to the triggering gear icon
+ * @property title - Pill banner label (e.g., "Folder Actions", "Item Actions")
+ * @property titleIcon - Context icon glyph shown adjacent to the title banner
+ * @property children - Interactive menu items, dividers, or inline forms rendered inside
+ */
 interface ExplorerActionMenuProps {
   isOpen: boolean;
   onMouseEnter: () => void;
@@ -16,6 +31,10 @@ interface ExplorerActionMenuProps {
   children: React.ReactNode;
 }
 
+/* ==========================================================================
+   2. MAIN COMPONENT: ExplorerActionMenu
+   ========================================================================== */
+
 export default function ExplorerActionMenu({
   isOpen,
   onMouseEnter,
@@ -26,17 +45,39 @@ export default function ExplorerActionMenu({
   titleIcon,
   children,
 }: ExplorerActionMenuProps) {
+  /* ------------------------------------------------------------------------
+     2.1 CONTEXT & PREFERENCES
+     Reads user preferences to conditionally apply slide animations and
+     adjust z-index layering when the Explorer panel is pinned vs floating.
+     ------------------------------------------------------------------------ */
   const { animationsEnabled, isPinned } = useUIPreferences();
+
+  /* ------------------------------------------------------------------------
+     2.2 SSR HYDRATION SAFETY
+     React Portals require access to `document.body`. Delay mounting until
+     after client hydration to prevent server/client DOM mismatch warnings.
+     ------------------------------------------------------------------------ */
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
+  // Guard against unmounted SSR execution or closed visibility states
   if (!isOpen || !mounted || typeof document === 'undefined') return null;
 
+  /* ------------------------------------------------------------------------
+     2.3 VIEWPORT POSITIONING GEOMETRY
+     Offset the horizontal position by +14px to guarantee clean clearance
+     from the triggering gear icon boundary.
+     ------------------------------------------------------------------------ */
   const adjustedLeft = left + 14;
 
+  /* ------------------------------------------------------------------------
+     2.4 PORTAL SHELL & CATCHMENT HITBOX RENDERING
+     Mounts directly to document.body to break free from parent CSS overflow
+     clipping in the left side panel.
+     ------------------------------------------------------------------------ */
   return createPortal(
     <div
       onMouseEnter={onMouseEnter}
@@ -46,23 +87,29 @@ export default function ExplorerActionMenu({
         top: `${top}px`,
         left: `${adjustedLeft}px`,
         margin: 0,
-        zIndex: isPinned ? 30 : 70,
+        zIndex: isPinned ? 30 : 70, // Sits above docked panels while remaining under modals
       }}
       className={`menuShell ${animationsEnabled ? 'menuSlideIn' : 'menuNoAnimation'}`}
     >
-      {/* Catchment Hover Bridge */}
+      {/* 
+        Catchment Hover Bridge:
+        Spans the invisible geometric void between the trigger gear icon and this
+        portal body so fast or diagonal cursor transit does not trigger mouseLeave.
+      */}
       <div
         className={`bridge ${isPinned ? 'bridgePinned' : 'bridgeUnpinned'}`}
         aria-hidden="true"
       />
 
-      {/* Inner Content Wrapper */}
+      {/* Internal Content Chassis */}
       <div className="innerContent">
+        {/* Context Category Pill Banner */}
         <div className="headerPill">
           <span className="headerTitle">{title}</span>
           <span className="headerIcon">{titleIcon}</span>
         </div>
 
+        {/* Action Item Slots */}
         <div className="childrenContainer">{children}</div>
       </div>
     </div>,
@@ -70,10 +117,15 @@ export default function ExplorerActionMenu({
   );
 }
 
-// ==========================================
-// SUB-COMPONENTS
-// ==========================================
+/* ==========================================================================
+   3. SUB-COMPONENTS & ACTION PRIMITIVES
+   Reusable modular rows, destructive buttons, dividers, and rename forms.
+   ========================================================================== */
 
+/**
+ * Standard Action Row Button
+ * Renders an interactive option with leading icon, primary label, and descriptor.
+ */
 export function ActionMenuItem({
   icon,
   label,
@@ -102,6 +154,10 @@ export function ActionMenuItem({
   );
 }
 
+/**
+ * Destructive / Danger Action Row Button
+ * Uses danger token variables to display high-visibility warning colors on hover.
+ */
 export function ActionMenuDangerItem({
   icon,
   label,
@@ -130,10 +186,19 @@ export function ActionMenuDangerItem({
   );
 }
 
+/**
+ * Menu Divider Line
+ * Inset separator utilizing `--explorer-menu-divider` theme variables.
+ */
 export function ActionMenuDivider() {
   return <div className="my-1 mx-1 tree-menu-divider" />;
 }
 
+/**
+ * Inline Rename Form
+ * Self-focusing text input enabling instant in-place folder or item renaming
+ * without opening a full blocking modal dialog.
+ */
 export function ActionMenuRenameForm({
   initialValue,
   onSave,
@@ -147,6 +212,7 @@ export function ActionMenuRenameForm({
   const [isSaving, setIsSaving] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
+  // Auto-focus and highlight initial text on entry
   useEffect(() => {
     if (inputRef.current) {
       inputRef.current.focus();
@@ -157,26 +223,26 @@ export function ActionMenuRenameForm({
   const handleSubmit = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     const trimmed = value.trim();
+
+    // Dismiss cleanly if empty or unchanged
     if (!trimmed || trimmed === initialValue) {
       onCancel();
       return;
     }
+
     try {
       setIsSaving(true);
       await onSave(trimmed);
       onCancel();
     } catch (err) {
-      console.error(err);
+      console.error('Failed to save inline rename:', err);
     } finally {
       setIsSaving(false);
     }
   };
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="px-2 py-1.5 mx-1 my-0.5 rounded-lg border border-border-subtle/80 bg-[#070f1d] flex items-center gap-1.5 shadow-inner"
-    >
+    <form onSubmit={handleSubmit} className="renameForm">
       <input
         ref={inputRef}
         type="text"
@@ -186,12 +252,10 @@ export function ActionMenuRenameForm({
           if (e.key === 'Escape') onCancel();
         }}
         className={[
-          'w-full bg-[#040811] rounded-md px-2 py-1 text-xs',
-          'text-accent-secondary placeholder:text-content-muted',
-          'focus:outline-none transition-colors border',
+          'renameInput',
           value.trim().length > 0
-            ? 'border-accent-secondary focus:border-accent-secondary'
-            : 'border-border-subtle/80 focus:border-accent-primary',
+            ? 'border-[var(--brand-secondary-amber)] focus:border-[var(--brand-secondary-amber)]'
+            : 'border-[var(--panel-border-subtle)] focus:border-[var(--brand-secondary-amber)]',
         ].join(' ')}
         placeholder="Name..."
         disabled={isSaving}
