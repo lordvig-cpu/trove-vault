@@ -216,20 +216,21 @@ export default function LeftSidePanel({
             🔍
           </span>
           <input
+            id={`explorer-search-input-${variant}`}
             type="text"
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
             placeholder="Search..."
             className={[
-              'w-full bg-[#040811] rounded-md pl-6 pr-6 py-1 text-xs',
+              'w-full bg-[#040811] rounded-md pl-6 pr-12 py-1 text-xs',
               'text-accent-secondary placeholder:text-content-muted',
               'focus:outline-none transition-colors border',
               searchQuery.length > 0
-                ? 'border-accent-secondary focus:border-accent-secondary'
-                : 'border-border-subtle/80 focus:border-accent-primary',
+                ? 'border-accent-secondary'
+                : 'border-border-subtle/80 focus:border-accent-secondary',
             ].join(' ')}
           />
-          {searchQuery && (
+          {searchQuery ? (
             <button
               type="button"
               onClick={() => onSearchChange('')}
@@ -240,6 +241,10 @@ export default function LeftSidePanel({
                 ✕
               </span>
             </button>
+          ) : (
+            <kbd className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none select-none text-[8px] leading-none font-mono tracking-tight text-emerald-400 bg-emerald-950/80 border border-emerald-800/60 px-1 py-[2px] rounded-[3px] shadow-sm">
+              Ctrl K
+            </kbd>
           )}
         </div>
 

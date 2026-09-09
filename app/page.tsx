@@ -5,6 +5,8 @@ import { useUIPreferences } from '@/context/UIPreferencesContext';
 import { CollectionRecord } from '@/types/collection';
 import { ItemRecord } from '@/types/item';
 import { useCollections } from '@/hooks/useCollections';
+import { useModals } from '@/hooks/useModals';
+import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 import NavigationHeader from '@/components/NavigationHeader';
 import NavigationFooter from '@/components/NavigationFooter';
 import MainContent from '@/components/MainContent';
@@ -20,14 +22,6 @@ import TemplateManagerModal from '@/components/TemplateManagerModal';
 export interface UniversalSearchResultItem extends ItemRecord {
   collection_name?: string;
 }
-
-type ActiveModal =
-  | { type: 'template_manager'; collectionId: number; collectionName: string }
-  | { type: 'delete_collection'; collection: CollectionRecord }
-  | { type: 'create_item'; collectionId: number; parentItemId?: number | null }
-  | { type: 'edit_item'; item: ItemRecord; collectionId: number }
-  | { type: 'delete_item'; item: ItemRecord; collectionId: number }
-  | null;
 
 export default function Home() {
   const {
@@ -47,6 +41,16 @@ export default function Home() {
     renameItem,
   } = useCollections();
 
+  const {
+    activeModal,
+    closeModal,
+    openTemplateManager,
+    openDeleteCollection,
+    openCreateItem,
+    openEditItem,
+    openDeleteItem,
+  } = useModals();
+
   // Layout & Dock States from Context
   const {
     isPinned,
@@ -59,7 +63,6 @@ export default function Home() {
   const [isRightPanelOpen, setIsRightPanelOpen] = useState<boolean>(false);
   const [isLeftSidePanelOpen, setIsLeftSidePanelOpen] = useState<boolean>(false);
   const [isColDropdownOpen, setIsColDropdownOpen] = useState<boolean>(false);
-  const [activeModal, setActiveModal] = useState<ActiveModal>(null);
   const [leftPanelWidth, setLeftPanelWidth] = useState<number>(304);
   const [rightPanelWidth, setRightPanelWidth] = useState<number>(360);
 
@@ -69,16 +72,73 @@ export default function Home() {
   // Track strictly which folders are currently expanded
   const [expandedFolderIds, setExpandedFolderIds] = useState<Set<number>>(new Set());
 
-  // If even one folder is open, we show the Collapse All (-) button
   const isAnyFolderExpanded = expandedFolderIds.size > 0;
+
+  // KEYBOARD SHORTCUTS
+  useKeyboardShortcuts([
+    {
+      key: 'Escape',
+      allowInInputs: true,
+      action: () => {
+        // 1. Dismiss active modal dialog
+        if (activeModal) {
+          closeModal();
+          return;
+        }
+
+        // 2. If focus is inside an input (e.g., search), blur it
+        if (
+          document.activeElement instanceof HTMLInputElement ||
+          document.activeElement instanceof HTMLTextAreaElement
+        ) {
+          (document.activeElement as HTMLElement).blur();
+          return;
+        }
+
+        // 3. Dismiss floating unpinned Explorer flyout
+        if (isLeftSidePanelOpen && !isPinned) {
+          setIsLeftSidePanelOpen(false);
+          return;
+        }
+
+        // 4. Dismiss open right side panel
+        if (isRightPanelOpen) {
+          setIsRightPanelOpen(false);
+        }
+      },
+    },
+    {
+      key: 'k',
+      ctrl: true,
+      action: (e) => {
+        e.preventDefault();
+
+        // 1. Reveal flyout if unpinned and closed
+        if (!isPinned && !isLeftSidePanelOpen) {
+          setIsLeftSidePanelOpen(true);
+        }
+
+        // 2. Target the specific variant's input
+        const targetInputId = isPinned
+          ? 'explorer-search-input-sidebar'
+          : 'explorer-search-input-flyout';
+
+        setTimeout(() => {
+          const searchInput = document.getElementById(targetInputId) as HTMLInputElement | null;
+          if (searchInput) {
+            searchInput.focus();
+            searchInput.select();
+          }
+        }, 50);
+      },
+    },
+  ]);
 
   const handleToggleAllFolders = () => {
     if (isAnyFolderExpanded) {
-      // Collapse everything back to root
       setExpandedFolderIds(new Set());
     } else {
-      // Expand everything
-      const allIds = new Set(allCollections.map(c => c.id));
+      const allIds = new Set(allCollections.map((c) => c.id));
       setExpandedFolderIds(allIds);
     }
   };
@@ -91,20 +151,37 @@ export default function Home() {
       return next;
     });
   };
-  
+
   const videoRef = useRef<HTMLVideoElement | null>(null);
 
   useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    let isSubscribed = true;
+
     if (isLogoHovered) {
-      if (videoRef.current) {
-        videoRef.current.currentTime = 0;
-        videoRef.current.play().catch(() => {});
+      try {
+        video.currentTime = 0;
+      } catch {}
+
+      const playPromise = video.play();
+      if (playPromise !== undefined) {
+        playPromise.catch((err) => {
+          // Gracefully handle aborts if hover exited rapidly
+          if (err.name !== 'AbortError') {
+            console.warn('Playback error:', err);
+          }
+        });
       }
     } else {
-      if (videoRef.current) {
-        videoRef.current.pause();
-      }
+      // Pause cleanly
+      video.pause();
     }
+
+    return () => {
+      isSubscribed = false;
+    };
   }, [isLogoHovered]);
 
   const handleTogglePin = () => {
@@ -119,18 +196,14 @@ export default function Home() {
     }
   };
 
-  const handleAddSubItem = (collectionId: number, parentItemId: number | null = null) => {
-    setActiveModal({ type: 'create_item', collectionId, parentItemId });
-  };
-
   const handleTriggerEditItem = (item: ItemRecord, collectionId: number) => {
     setActiveCollectionId(collectionId);
-    setActiveModal({ type: 'edit_item', item, collectionId });
+    openEditItem(item, collectionId);
   };
 
   const handleTriggerDeleteItem = (item: ItemRecord, collectionId: number) => {
     setActiveCollectionId(collectionId);
-    setActiveModal({ type: 'delete_item', item, collectionId });
+    openDeleteItem(item, collectionId);
   };
 
   const explorerTreeElement = (
@@ -146,10 +219,8 @@ export default function Home() {
         if (!isPinned) setIsLeftSidePanelOpen(false);
       }}
       onSelectItem={handleTreeSelectItem}
-      onAddSubItem={handleAddSubItem}
-      onDeleteCollection={(col: CollectionRecord) =>
-        setActiveModal({ type: 'delete_collection', collection: col })
-      }
+      onAddSubItem={openCreateItem}
+      onDeleteCollection={openDeleteCollection}
       onEditItem={handleTriggerEditItem}
       onDeleteItem={handleTriggerDeleteItem}
       onRenameCollection={renameCollection}
@@ -194,41 +265,39 @@ export default function Home() {
   );
 
   return (
-    <div className={[
-      // Layout & Dimensions
-      'relative flex flex-col h-full w-full overflow-hidden',
-      // Colors & Surface
-      'bg-canvas text-content-primary studio-grid-canvas',
-    ].join(' ')}
->
-
+    <div
+      className={[
+        'relative flex flex-col h-full w-full overflow-hidden',
+        'bg-canvas text-content-primary studio-grid-canvas',
+      ].join(' ')}
+    >
       {/* 1. LOGO HOVER TRIGGER ZONE */}
-      <div 
-        className="absolute top-0 left-0 w-36 h-10 z-[100] cursor-pointer" 
+      <div
+        className="absolute top-0 left-0 w-36 h-10 z-[100] cursor-pointer"
         onMouseEnter={() => setIsLogoHovered(true)}
         onMouseLeave={() => setIsLogoHovered(false)}
         aria-hidden="true"
       />
 
       {/* 2. DYNAMIC BACKGROUND LAYER */}
-      <div aria-hidden="true" className={[
-        // Positioning & Layering
-        'fixed inset-0 z-0',
-        // Layout & Centering
-        'flex items-center justify-center overflow-hidden',
-        // Interaction
-        'pointer-events-none select-none',
-      ].join(' ')}
+      <div
+        aria-hidden="true"
+        className={[
+          'fixed inset-0 z-0',
+          'flex items-center justify-center overflow-hidden',
+          'pointer-events-none select-none',
+        ].join(' ')}
       >
-        <img 
-          src="/images/web_background_trove_vault_logo.png" 
-          alt="" 
-          className={`watermark-logo-image ${isLogoHovered ? 'watermark-logo-image-hidden' : ''}`} 
+        <img
+          src="/images/web_background_trove_vault_logo.png"
+          alt=""
+          className={`watermark-logo-image ${isLogoHovered ? 'watermark-logo-image-hidden' : ''}`}
         />
 
         <video
           ref={videoRef}
           src="/videos/website_intro_video.mp4"
+          preload="auto"
           muted={!isAudioEnabled}
           playsInline
           className={`watermark-video-player ${isLogoHovered ? 'watermark-video-active' : 'watermark-video-inactive'}`}
@@ -237,7 +306,6 @@ export default function Home() {
 
       {/* 3. APPLICATION SHELL */}
       <div className="flex flex-col h-full w-full">
-
         {/* Top Navigation */}
         <div className="shrink-0 relative z-[80]">
           <NavigationHeader
@@ -251,46 +319,37 @@ export default function Home() {
             onCollectionsUpdated={() => fetchAllData()}
             isDropdownOpen={isColDropdownOpen}
             setIsDropdownOpen={setIsColDropdownOpen}
-            onRequestDeleteCollection={(col) => setActiveModal({ type: 'delete_collection', collection: col })}
+            onRequestDeleteCollection={openDeleteCollection}
             onOpenTemplateManager={() => {
               if (activeCollection) {
-                setActiveModal({
-                  type: 'template_manager',
-                  collectionId: activeCollection.id,
-                  collectionName: activeCollection.name,
-                });
+                openTemplateManager(activeCollection.id, activeCollection.name);
               }
             }}
             isLeftSidePanelOpen={isLeftSidePanelOpen}
             onToggleLeftSidePanel={() => setIsLeftSidePanelOpen(!isLeftSidePanelOpen)}
             unpinnedExplorerPanel={explorerFlyoutPanel}
             onAddNewItem={() => {
-              if (activeCollectionId) handleAddSubItem(activeCollectionId, null);
+              if (activeCollectionId) openCreateItem(activeCollectionId, null);
             }}
           />
         </div>
 
         {/* Center Workspace */}
-        <div 
+        <div
           className={[
-            // Layout & Sizing
             'flex flex-1 min-h-0 relative overflow-hidden',
-            // Transitions & Timing
             'transition-opacity duration-500 ease-in-out',
-            // Dynamic State
             isLogoHovered ? 'opacity-0 pointer-events-none' : 'opacity-100',
           ].join(' ')}
         >
-          {/* ALWAYS render the sidebar, let CSS handle hiding it! */}
           {explorerSidebarPanel}
 
-          {/* Modular Main Content Area (Fixed full canvas behind overlays) */}
           <div className="w-full h-full flex-1 min-w-0 relative z-10">
             <MainContent
               selectedItem={selectedItem}
               activeCollectionId={activeCollectionId}
               isBlurred={!isPinned && isLeftSidePanelOpen}
-              onAddSubItem={handleAddSubItem}
+              onAddSubItem={openCreateItem}
               onEditItem={handleTriggerEditItem}
               onDeleteItem={handleTriggerDeleteItem}
               rightPanelWidth={isRightPanelOpen ? rightPanelWidth : 0}
@@ -308,7 +367,7 @@ export default function Home() {
 
         {/* Bottom Navigation */}
         <div className="shrink-0 relative z-[60]">
-          <NavigationFooter 
+          <NavigationFooter
             activeCollectionName={activeCollection?.name}
             totalItemsCount={allItems.length}
             isRightPanelOpen={isRightPanelOpen}
@@ -316,12 +375,12 @@ export default function Home() {
           />
         </div>
       </div>
-        
+
       {/* Modals Container */}
       {activeModal?.type === 'template_manager' && (
         <TemplateManagerModal
           isOpen={true}
-          onClose={() => setActiveModal(null)}
+          onClose={closeModal}
           collectionId={activeModal.collectionId}
           collectionName={activeModal.collectionName}
           onTemplateApplied={() => fetchAllData()}
@@ -331,7 +390,7 @@ export default function Home() {
       {activeModal?.type === 'delete_collection' && (
         <DeleteCollectionModal
           isOpen={true}
-          onClose={() => setActiveModal(null)}
+          onClose={closeModal}
           onCollectionDeleted={() => fetchAllData(null)}
           collection={activeModal.collection}
         />
@@ -340,7 +399,7 @@ export default function Home() {
       {activeModal?.type === 'create_item' && (
         <CreateItemModal
           isOpen={true}
-          onClose={() => setActiveModal(null)}
+          onClose={closeModal}
           onItemCreated={() => fetchAllData(activeModal.collectionId)}
           collectionId={activeModal.collectionId}
           availableParents={allItems.filter(
@@ -353,7 +412,7 @@ export default function Home() {
       {activeModal?.type === 'edit_item' && (
         <EditItemModal
           isOpen={true}
-          onClose={() => setActiveModal(null)}
+          onClose={closeModal}
           onItemUpdated={() => fetchAllData(activeModal.collectionId)}
           item={activeModal.item}
         />
@@ -362,7 +421,7 @@ export default function Home() {
       {activeModal?.type === 'delete_item' && (
         <DeleteItemModal
           isOpen={true}
-          onClose={() => setActiveModal(null)}
+          onClose={closeModal}
           onItemDeleted={() => {
             if (activeModal.item.id === selectedItem?.id) {
               setSelectedItem(null);

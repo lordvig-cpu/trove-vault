@@ -1,7 +1,8 @@
 'use client';
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useEffect, useState } from 'react';
 import { ThemePreset } from '@/types/theme';
+import { useLocalStorage } from '@/hooks/useLocalStorage';
 
 interface UIPreferencesContextType {
   // Animations
@@ -24,7 +25,7 @@ interface UIPreferencesContextType {
   togglePin: () => void;
   setIsPinned: (val: boolean) => void;
 
-  // disable that CSS transitions stay disabled until the initial localStorage values are restored
+  // Flag indicating client mount is complete
   isHydrated: boolean;
 }
 
@@ -38,67 +39,48 @@ const STORAGE_KEYS = {
 };
 
 export function UIPreferencesProvider({ children }: { children: React.ReactNode }) {
-  const [animationsEnabled, setAnimationsEnabledState] = useState<boolean>(true);
-  const [isAudioEnabled, setIsAudioEnabledState] = useState<boolean>(true);
-  const [theme, setThemeState] = useState<ThemePreset>('theme-default-dark');
-  const [isPinned, setIsPinnedState] = useState<boolean>(false);
+  // Use our SSR-safe useLocalStorage hook for persistent preferences
+  const [animationsEnabled, setAnimationsEnabled] = useLocalStorage<boolean>(
+    STORAGE_KEYS.ANIMATIONS,
+    true
+  );
+  const [isAudioEnabled, setIsAudioEnabled] = useLocalStorage<boolean>(
+    STORAGE_KEYS.AUDIO,
+    true
+  );
+  const [theme, setThemeState] = useLocalStorage<ThemePreset>(
+    STORAGE_KEYS.THEME,
+    'theme-default-dark'
+  );
+  const [isPinned, setIsPinned] = useLocalStorage<boolean>(
+    STORAGE_KEYS.PINNED,
+    false
+  );
+
   const [isHydrated, setIsHydrated] = useState<boolean>(false);
 
-  // Hydrate preferences from localStorage on initial client mount
+  // Apply data-theme to HTML tag whenever theme changes
   useEffect(() => {
-    try {
-      const savedAnimations = localStorage.getItem(STORAGE_KEYS.ANIMATIONS);
-      if (savedAnimations !== null) {
-        setAnimationsEnabledState(savedAnimations === 'true');
-      }
-
-      const savedAudio = localStorage.getItem(STORAGE_KEYS.AUDIO);
-      if (savedAudio !== null) {
-        setIsAudioEnabledState(savedAudio === 'true');
-      }
-
-      const savedPinned = localStorage.getItem(STORAGE_KEYS.PINNED);
-      if (savedPinned !== null) {
-        setIsPinnedState(savedPinned === 'true');
-      }
-
-      const savedTheme = localStorage.getItem(STORAGE_KEYS.THEME) as ThemePreset | null;
-      if (savedTheme === 'theme-default-dark' || savedTheme === 'theme-default-light') {
-        setThemeState(savedTheme);
-        document.documentElement.setAttribute('data-theme', savedTheme);
-      } else {
-        document.documentElement.setAttribute('data-theme', 'theme-default-dark');
-      }
-    } catch {
-      // Graceful fallback if localStorage is disabled or inaccessible
-    } finally {
-      // Mark hydration complete on the next tick
-      requestAnimationFrame(() => setIsHydrated(true));
+    if (typeof document !== 'undefined') {
+      document.documentElement.setAttribute('data-theme', theme);
     }
+  }, [theme]);
+
+  // Mark hydration complete on initial client tick to prevent CSS animation flashes
+  useEffect(() => {
+    requestAnimationFrame(() => setIsHydrated(true));
   }, []);
 
-  const setAnimationsEnabled = (val: boolean) => {
-    setAnimationsEnabledState(val);
-    localStorage.setItem(STORAGE_KEYS.ANIMATIONS, String(val));
-  };
-
   const toggleAnimations = () => {
-    setAnimationsEnabled(!animationsEnabled);
-  };
-
-  const setIsAudioEnabled = (val: boolean) => {
-    setIsAudioEnabledState(val);
-    localStorage.setItem(STORAGE_KEYS.AUDIO, String(val));
+    setAnimationsEnabled((prev) => !prev);
   };
 
   const toggleAudio = () => {
-    setIsAudioEnabled(!isAudioEnabled);
+    setIsAudioEnabled((prev) => !prev);
   };
 
   const setTheme = (nextTheme: ThemePreset) => {
     setThemeState(nextTheme);
-    document.documentElement.setAttribute('data-theme', nextTheme);
-    localStorage.setItem(STORAGE_KEYS.THEME, nextTheme);
   };
 
   const toggleTheme = () => {
@@ -107,13 +89,8 @@ export function UIPreferencesProvider({ children }: { children: React.ReactNode 
     setTheme(nextTheme);
   };
 
-  const setIsPinned = (val: boolean) => {
-    setIsPinnedState(val);
-    localStorage.setItem(STORAGE_KEYS.PINNED, String(val));
-  };
-
   const togglePin = () => {
-    setIsPinned(!isPinned);
+    setIsPinned((prev) => !prev);
   };
 
   return (

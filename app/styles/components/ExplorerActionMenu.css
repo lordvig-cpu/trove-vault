@@ -42,6 +42,7 @@
   padding-top: 0.25rem;
   padding-bottom: 0.25rem;
   backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   pointer-events: auto;
   position: relative;
 }
@@ -117,4 +118,26 @@
 .childrenContainer {
   display: flex;
   flex-direction: column;
+}
+
+/* Action Rows & Dividers */
+.tree-menu-item:hover {
+  background-color: var(--explorer-menu-item-hover-bg);
+}
+
+.tree-menu-item-danger:hover {
+  background-color: var(--explorer-menu-danger-hover-bg);
+}
+
+.tree-menu-danger-label {
+  color: var(--explorer-menu-danger-label);
+}
+
+.tree-menu-danger-subtext {
+  color: var(--explorer-menu-danger-subtext);
+}
+
+.tree-menu-divider {
+  height: 1px;
+  background-color: var(--explorer-menu-divider);
 }
