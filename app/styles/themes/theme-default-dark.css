@@ -336,6 +336,10 @@ Organized 1-to-1 with component stylesheets in styles/components/
 
    /* Node Triggers & Badges (UnifiedExplorerTree.css) */
    --tree-gear-bg-hover: rgba(30, 41, 59, 0.60);
+
+   /* Active gear trigger icon when menu is popped */
+   --tree-gear-icon-active: var(--content-primary);
+   
    --tree-badge-active-bg: rgba(6, 78, 59, 0.80);
    --tree-badge-active-border: rgba(6, 95, 70, 0.60);
    --tree-badge-active-text: rgba(52, 211, 153, 1.00);
