@@ -40,7 +40,7 @@ export default function CreateItemModal2({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Fetch all templates and their field definitions
+  // Fetch all templates and their field definitions, auto-matching the folder context
   useEffect(() => {
     async function loadTemplatesAndFields() {
       if (!isOpen) return;
@@ -62,14 +62,30 @@ export default function CreateItemModal2({
 
       setAvailableTemplates(fullTemplates);
 
-      // Default to the first template if none selected
-      if (fullTemplates.length > 0 && selectedTemplateId === null) {
-        applyTemplateFields(fullTemplates[0]);
+      if (fullTemplates.length === 0) return;
+
+      // 1. Check if launched from a dynamic virtual folder (negative ID, e.g. -2 for Comics)
+      let targetTemplate: CollectionTemplate | undefined;
+      if (collectionId !== null && collectionId < 0) {
+        const targetId = Math.abs(collectionId);
+        targetTemplate = fullTemplates.find((t) => t.id === targetId);
       }
+
+      // 2. Check if launched as a sub-item, inheriting from parent if available
+      if (!targetTemplate && initialParentId && availableParents) {
+        const parentRecord = availableParents.find((p) => p.id === initialParentId);
+        if (parentRecord?.template_id) {
+          targetTemplate = fullTemplates.find((t) => t.id === parentRecord.template_id);
+        }
+      }
+
+      // 3. Fallback to the first available template
+      const resolvedTemplate = targetTemplate || fullTemplates[0];
+      applyTemplateFields(resolvedTemplate);
     }
 
     loadTemplatesAndFields();
-  }, [isOpen]);
+  }, [isOpen, collectionId, initialParentId, availableParents]);
 
   // Isolate dynamic values strictly to the selected template
   const applyTemplateFields = (template: CollectionTemplate) => {
@@ -181,9 +197,11 @@ export default function CreateItemModal2({
       }
 
       const effectiveParentId = initialParentId !== null ? initialParentId : parentId;
+      // Virtual category folders use negative IDs (e.g., -2), which must sanitize to null for PostgreSQL
+      const effectiveCollectionId = collectionId && collectionId > 0 ? collectionId : null;
 
       const { error: insertError } = await supabase.from('items2').insert({
-        collection_id: collectionId,
+        collection_id: effectiveCollectionId,
         template_id: selectedTemplateId || null,
         parent_id: effectiveParentId || null,
         name: name.trim(),
@@ -324,29 +342,34 @@ export default function CreateItemModal2({
           {/* Parent Item Selector */}
           <div className="space-y-1">
             <div className="flex items-center justify-between">
-              <label className="text-xs font-semibold text-slate-300">Parent Item</label>
-              {Boolean(initialParentId) && (
-                <span className="text-[10px] font-mono text-indigo-400 bg-indigo-950/70 border border-indigo-800/60 px-1.5 py-0.5 rounded">
+              <label className="text-xs font-semibold text-content-secondary">Parent Item</label>
+              {initialParentId ? (
+                <span className="text-[10px] font-mono text-accent-secondary bg-accent-primary/10 border border-accent-secondary/30 px-1.5 py-0.5 rounded">
                   Locked to Parent
+                </span>
+              ) : (
+                <span className="text-[10px] font-mono text-emerald-400 bg-emerald-950/60 border border-emerald-800/60 px-1.5 py-0.5 rounded">
+                  Root Item
                 </span>
               )}
             </div>
+
             <select
-              value={initialParentId || parentId || ''}
-              disabled={Boolean(initialParentId)}
-              onChange={(e) => setParentId(e.target.value ? Number(e.target.value) : null)}
-              className={`w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none transition ${
-                initialParentId
-                  ? 'opacity-60 cursor-not-allowed bg-slate-900 border-slate-800/60 text-slate-400'
-                  : 'focus:border-indigo-500'
-              }`}
+              value={parentId ?? ''}
+              disabled={true} // Locked: hierarchy is driven via the Explorer tree actions
+              className="w-full bg-surface-subtle border border-border-subtle rounded-lg px-3 py-2 text-xs text-content-muted opacity-60 cursor-not-allowed focus:outline-none select-none"
             >
-              <option value="">None (Top-Level Root Item)</option>
-              {flatItemList.map((it) => (
-                <option key={it.id} value={it.id}>
-                  {it.label}
-                </option>
-              ))}
+              {initialParentId ? (
+                flatItemList
+                  .filter((it) => it.id === initialParentId)
+                  .map((it) => (
+                    <option key={it.id} value={it.id}>
+                      {it.label}
+                    </option>
+                  ))
+              ) : (
+                <option value="">None (Top-Level Root Item)</option>
+              )}
             </select>
           </div>
 

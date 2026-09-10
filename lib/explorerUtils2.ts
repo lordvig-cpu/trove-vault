@@ -1,5 +1,6 @@
 import { CollectionRecord } from '@/types/collection2';
 import { ItemRecord } from '@/types/item2';
+import { CollectionTemplate } from '@/types/template2';
 import { UnifiedCollectionNode } from '@/components/UnifiedExplorerTree2';
 import { SearchScope } from '@/components/NavigationHeader2';
 
@@ -7,7 +8,7 @@ export const STANDALONE_COLLECTION_ID = 0;
 
 /**
  * Traverses parent item relationships to determine whether an item
- * belongs to a collection or is a standalone root item.
+ * belongs to an explicit collection or is a standalone root item.
  */
 export function getItemRootCollectionId(
   item: ItemRecord,
@@ -22,6 +23,50 @@ export function getItemRootCollectionId(
   const parent = allItems.find((i) => i.id === item.parent_id);
   if (!parent) return null;
   return getItemRootCollectionId(parent, allItems);
+}
+
+/**
+ * Traverses upwards to find the top-level root ancestor item of a standalone item.
+ */
+export function getStandaloneRootItem(
+  item: ItemRecord,
+  allItems: ItemRecord[]
+): ItemRecord {
+  if (!item.parent_id) return item;
+  const parent = allItems.find((i) => i.id === item.parent_id);
+  if (!parent) return item;
+  return getStandaloneRootItem(parent, allItems);
+}
+
+/**
+ * Resolves the dynamic category definition for an item based STRICTLY 
+ * on its assigned template_id from the database.
+ */
+export function detectItemCategory(
+  item: ItemRecord,
+  templates: CollectionTemplate[] = []
+): { id: number; name: string; icon: string } {
+  // 1. Dynamic Database-Driven Grouping (Supports infinite templates)
+  if (item.template_id) {
+    const matchedTemplate = templates.find((t) => t.id === item.template_id);
+    if (matchedTemplate) {
+      return {
+        id: -matchedTemplate.id, // Negative ID proxies the template for the modal
+        name: matchedTemplate.name,
+        icon: matchedTemplate.icon || '📦',
+      };
+    }
+    
+    // If templates haven't loaded into context yet, preserve the ID
+    return {
+      id: -item.template_id,
+      name: 'Loading Category...',
+      icon: '📦',
+    };
+  }
+
+  // 2. Generic Fallback for items without a template_id
+  return { id: -999, name: 'Uncategorized Items', icon: '📦' };
 }
 
 /**
@@ -109,8 +154,9 @@ export function isAncestorOf(
 }
 
 /**
- * Builds the complete unified tree forest, incorporating both nested collections
- * and standalone/uncategorized items.
+ * Builds the complete unified tree forest:
+ * 1. Explicit user collections from collections2
+ * 2. Standalone items partitioned dynamically into category folders by template.
  */
 export function buildFilteredUnifiedForest(
   collections: CollectionRecord[],
@@ -118,7 +164,8 @@ export function buildFilteredUnifiedForest(
   parentCollectionId: number | null = null,
   activeCollectionId: number | null = null,
   searchQuery: string = '',
-  searchScope: SearchScope = 'current'
+  searchScope: SearchScope = 'current',
+  templates: CollectionTemplate[] = []
 ): UnifiedCollectionNode[] {
   const isSearchingCurrent = searchScope === 'current' && searchQuery.trim() !== '';
 
@@ -126,7 +173,6 @@ export function buildFilteredUnifiedForest(
   const forest: UnifiedCollectionNode[] = collections
     .filter((col) => (col.parent_id || null) === parentCollectionId)
     .map((col) => {
-      // Find items belonging directly to this collection or inheriting through parent items
       const collectionRawItems = allItems.filter(
         (it) => getItemRootCollectionId(it, allItems) === col.id
       );
@@ -138,7 +184,8 @@ export function buildFilteredUnifiedForest(
         col.id,
         activeCollectionId,
         searchQuery,
-        searchScope
+        searchScope,
+        templates
       );
 
       let filteredItems = fullItemTree;
@@ -175,45 +222,63 @@ export function buildFilteredUnifiedForest(
       return true;
     });
 
-  // 2. Synthesize a root container for standalone items (collection_id IS NULL)
+  // 2. Synthesize dynamic category folders for standalone items (collection_id IS NULL)
   if (parentCollectionId === null) {
     const standaloneItems = allItems.filter(
       (it) => getItemRootCollectionId(it, allItems) === null
     );
 
     if (standaloneItems.length > 0) {
-      const standaloneFullTree = buildItemHierarchy(standaloneItems, null);
-      let standaloneFilteredItems = standaloneFullTree;
+      // Group items under their root ancestor's detected category
+      const categoryMap = new Map<
+        number,
+        { meta: { id: number; name: string; icon: string }; items: ItemRecord[] }
+      >();
 
-      if (isSearchingCurrent) {
-        if (
-          activeCollectionId === STANDALONE_COLLECTION_ID ||
-          activeCollectionId === null
-        ) {
-          standaloneFilteredItems = filterItemHierarchy(standaloneFullTree, searchQuery);
-        } else {
-          standaloneFilteredItems = [];
+      for (const item of standaloneItems) {
+        const rootItem = getStandaloneRootItem(item, allItems);
+        const categoryMeta = detectItemCategory(rootItem, templates);
+
+        if (!categoryMap.has(categoryMeta.id)) {
+          categoryMap.set(categoryMeta.id, {
+            meta: categoryMeta,
+            items: [],
+          });
         }
+        categoryMap.get(categoryMeta.id)!.items.push(item);
       }
 
-      const standaloneNode: UnifiedCollectionNode = {
-        id: STANDALONE_COLLECTION_ID,
-        name: 'Standalone Items',
-        description: 'Items not assigned to any collection container',
-        icon: '📦',
-        items: standaloneFilteredItems,
-        subCollections: [],
-      };
+      // Generate a virtual collection node for each active category
+      categoryMap.forEach(({ meta, items }) => {
+        const categoryFullTree = buildItemHierarchy(items, null);
+        let categoryFilteredItems = categoryFullTree;
 
-      const shouldIncludeStandalone =
-        !isSearchingCurrent ||
-        standaloneNode.items.length > 0 ||
-        activeCollectionId === STANDALONE_COLLECTION_ID ||
-        activeCollectionId === null;
+        if (isSearchingCurrent) {
+          if (activeCollectionId === meta.id || activeCollectionId === null) {
+            categoryFilteredItems = filterItemHierarchy(categoryFullTree, searchQuery);
+          } else {
+            categoryFilteredItems = [];
+          }
+        }
 
-      if (shouldIncludeStandalone) {
-        forest.push(standaloneNode);
-      }
+        const categoryNode: UnifiedCollectionNode = {
+          id: meta.id,
+          name: meta.name,
+          description: `All standalone ${meta.name}`,
+          icon: meta.icon,
+          items: categoryFilteredItems,
+          subCollections: [],
+        };
+
+        const shouldInclude =
+          !isSearchingCurrent ||
+          categoryNode.items.length > 0 ||
+          activeCollectionId === meta.id;
+
+        if (shouldInclude && categoryNode.items.length > 0) {
+          forest.push(categoryNode);
+        }
+      });
     }
   }
 

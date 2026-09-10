@@ -64,7 +64,7 @@ export default function Home() {
     isAnyFolderExpanded,
     handleToggleAllFolders,
     handleToggleFolder,
-  } = useExplorerFolders2(allCollections);
+  } = useExplorerFolders2(unifiedForest); // <-- Change allCollections to unifiedForest
 
   /* ------------------------------------------------------------------------
      4. GLOBAL UI PREFERENCES
@@ -201,6 +201,7 @@ export default function Home() {
       onSearchChange={setSearchQuery}
       loading={loading}
       error={error}
+      onAddNewItem={() => openCreateItem(null, null)}
     >
       {explorerTreeElement}
     </LeftSidePanel>
@@ -220,6 +221,7 @@ export default function Home() {
       onWidthChange={setLeftPanelWidth}
       loading={loading}
       error={error}
+      onAddNewItem={() => openCreateItem(null, null)}
     >
       {explorerTreeElement}
     </LeftSidePanel>

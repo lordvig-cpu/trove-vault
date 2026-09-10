@@ -41,6 +41,7 @@ interface LeftSidePanelProps {
   loading?: boolean;
   error?: string | null;
   children: React.ReactNode;
+  onAddNewItem?: () => void; // <-- Add prop
 }
 
 const DEFAULT_WIDTH = 304;
@@ -63,6 +64,7 @@ export default function LeftSidePanel2({
   loading,
   error,
   children,
+  onAddNewItem,
 }: LeftSidePanelProps) {
   /* ------------------------------------------------------------------------
      2.1 CONTEXT & PREFERENCES
@@ -187,6 +189,7 @@ export default function LeftSidePanel2({
         onToggleAllFolders={onToggleAllFolders}
         onTogglePin={handlePinAction}
         onClose={onClose}
+        onAddNewItem={onAddNewItem}
       />
 
       {/* Syncing Progress Banner */}

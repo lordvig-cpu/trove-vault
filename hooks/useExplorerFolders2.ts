@@ -1,79 +1,58 @@
 'use client';
 
-import { useState, useCallback } from 'react';
-import { CollectionRecord } from '@/types/collection2';
-import { STANDALONE_COLLECTION_ID } from '@/lib/explorerUtils2';
+import { useState, useMemo, useCallback } from 'react';
 
-/* ==========================================================================
-   CUSTOM HOOK: useExplorerFolders2
-   Manages local search filtering and expanded folder IDs for the V2 tree.
-   Separating this from useCollections2 keeps the data layer lean.
-   ========================================================================== */
+export interface FolderNodeLike {
+  id: number;
+  subCollections?: FolderNodeLike[];
+}
 
-export function useExplorerFolders2(allCollections: CollectionRecord[]) {
-  /* ------------------------------------------------------------------------
-     1. LOCAL SEARCH STATE
-     Bound to LeftSidePanelHeader2 to filter the unified tree.
-     ------------------------------------------------------------------------ */
+export function useExplorerFolders2(nodes: FolderNodeLike[] = []) {
   const [searchQuery, setSearchQuery] = useState<string>('');
-
-  /* ------------------------------------------------------------------------
-     2. EXPLICIT EXPANSION STATE
-     Tracks open folder IDs using a Set for O(1) lookups during rendering.
-     ------------------------------------------------------------------------ */
   const [expandedFolderIds, setExpandedFolderIds] = useState<Set<number>>(new Set());
 
-  /* ------------------------------------------------------------------------
-     3. DERIVED UI FLAGS
-     ------------------------------------------------------------------------ */
-  const isAnyFolderExpanded = expandedFolderIds.size > 0;
-
-  /* ------------------------------------------------------------------------
-     4. EVENT HANDLERS
-     ------------------------------------------------------------------------ */
-
-  /**
-   * Bulk Toggle:
-   * Collapses all folders if any are open, or expands every collection plus
-   * the standalone root container if all are closed.
-   */
-  const handleToggleAllFolders = useCallback(() => {
-    if (expandedFolderIds.size > 0) {
-      setExpandedFolderIds(new Set());
-    } else {
-      const allIds = new Set([
-        ...allCollections.map((c) => c.id),
-        STANDALONE_COLLECTION_ID,
+  // Recursively extract all IDs from the forest (handles root folders, virtual folders, and sub-folders)
+  const allFolderIds = useMemo(() => {
+    const extractIds = (items: FolderNodeLike[]): number[] => {
+      return items.flatMap((node) => [
+        node.id,
+        ...(node.subCollections ? extractIds(node.subCollections) : []),
       ]);
-      setExpandedFolderIds(allIds);
-    }
-  }, [expandedFolderIds.size, allCollections]);
+    };
+    return extractIds(nodes);
+  }, [nodes]);
 
-  /**
-   * Single Folder Toggle:
-   * Adds or removes a specific collection ID from the expansion Set.
-   */
-  const handleToggleFolder = useCallback((folderId: number, expand: boolean) => {
+  const isAnyFolderExpanded = useMemo(() => {
+    return expandedFolderIds.size > 0;
+  }, [expandedFolderIds]);
+
+  const handleToggleFolder = useCallback((folderId: number) => {
     setExpandedFolderIds((prev) => {
       const next = new Set(prev);
-      if (expand) {
-        next.add(folderId);
-      } else {
+      if (next.has(folderId)) {
         next.delete(folderId);
+      } else {
+        next.add(folderId);
       }
       return next;
     });
   }, []);
 
+  const handleToggleAllFolders = useCallback(() => {
+    setExpandedFolderIds((prev) => {
+      if (prev.size > 0) {
+        return new Set();
+      }
+      return new Set(allFolderIds);
+    });
+  }, [allFolderIds]);
+
   return {
     searchQuery,
     setSearchQuery,
     expandedFolderIds,
-    setExpandedFolderIds,
     isAnyFolderExpanded,
-    handleToggleAllFolders,
     handleToggleFolder,
+    handleToggleAllFolders,
   };
 }
-
-export const useExplorerFolders = useExplorerFolders2;

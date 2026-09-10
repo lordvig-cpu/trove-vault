@@ -32,6 +32,7 @@ interface LeftSidePanelHeaderProps {
   onToggleAllFolders?: () => void;
   onTogglePin: () => void;
   onClose: () => void;
+  onAddNewItem?: () => void;
 }
 
 /* ==========================================================================
@@ -47,6 +48,7 @@ export default function LeftSidePanelHeader2({
   onToggleAllFolders,
   onTogglePin,
   onClose,
+  onAddNewItem,
 }: LeftSidePanelHeaderProps) {
   return (
     <div className="left-side-panel-header px-2.5 py-2 flex items-center justify-between gap-2 border-b border-border-subtle shrink-0">
@@ -98,7 +100,32 @@ export default function LeftSidePanelHeader2({
           2.2 ACTION CONTROLS
           Buttons for bulk folder toggling, pin mode switching, and closing.
           -------------------------------------------------------------------- */}
+      {/* Action Controls */}
       <div className="flex items-center gap-1 shrink-0">
+        
+        {/* Add Standalone Item */}
+        {onAddNewItem && (
+          <button
+            type="button"
+            onClick={onAddNewItem}
+            className="left-side-panel-pin-btn group"
+            title="Create New Item"
+          >
+            <svg
+              className="w-3.5 h-3.5 text-accent-secondary group-hover:text-white transition-colors"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <line x1="12" y1="5" x2="12" y2="19" />
+              <line x1="5" y1="12" x2="19" y2="12" />
+            </svg>
+          </button>
+        )}
+
         {/* Bulk Expand / Collapse Accordion Toggle */}
         {onToggleAllFolders && (
           <button
