@@ -193,6 +193,10 @@ export default function Home() {
       }}
       onSelectItem={handleTreeSelectItem}
       onAddSubItem={openCreateItem}
+      // Opens the schema/template manager modal for this folder
+      onEditCollection={(col) => openTemplateManager(col.id, col.name)}
+      // Opens the collection switcher / creator dropdown
+      onAddSubCollection={() => setIsColDropdownOpen(true)}
       onDeleteCollection={openDeleteCollection}
       onEditItem={handleTriggerEditItem}
       onDeleteItem={handleTriggerDeleteItem}
