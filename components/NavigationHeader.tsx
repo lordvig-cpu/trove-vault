@@ -6,29 +6,8 @@ import CollectionDropdown from '@/components/CollectionDropdown';
 import { NavigationBarTextureFilter } from '@/components/icons/SystemIcons';
 import { useUIPreferences } from '@/context/UIPreferencesContext';
 
-/* ==========================================================================
-   1. TYPE DEFINITIONS & INTERFACES
-   ========================================================================== */
-
 export type SearchScope = 'current' | 'all';
 
-/**
- * Props for NavigationHeader.
- * @property activeCollectionName - Name of the collection currently open in the workspace
- * @property collections - Full list of collections for the dropdown selector
- * @property activeCollectionId - ID of current collection (or null if none selected)
- * @property onSelectCollection - Callback when switching active collection
- * @property onCollectionsUpdated - Trigger to refetch collections after mutations
- * @property isDropdownOpen - Controlled open state of the collection switcher dropdown
- * @property setIsDropdownOpen - State setter for the collection switcher dropdown
- * @property onRequestDeleteCollection - Trigger to launch delete collection confirmation modal
- * @property onOpenFieldManager - Optional callback to launch custom field settings
- * @property onOpenTemplateManager - Callback launching the schema template manager modal
- * @property isLeftSidePanelOpen - Whether the floating flyout panel is actively revealed
- * @property onToggleLeftSidePanel - Callback toggling the flyout panel visibility
- * @property onAddNewItem - Optional handler to launch create item dialog
- * @property unpinnedExplorerPanel - Pre-rendered LeftSidePanel (flyout variant) anchored under the tab
- */
 interface NavigationHeaderProps {
   activeCollectionName: string;
   collections: CollectionRecord[];
@@ -46,12 +25,6 @@ interface NavigationHeaderProps {
   unpinnedExplorerPanel?: React.ReactNode;
 }
 
-/* ==========================================================================
-   2. MAIN COMPONENT: NavigationHeader
-   Fixed top navigation bar (h-14) hosting branding, the Explorer toggle tab,
-   the collection switcher, and live database status indicators.
-   ========================================================================== */
-
 export default function NavigationHeader({
   activeCollectionName,
   collections,
@@ -66,62 +39,21 @@ export default function NavigationHeader({
   onToggleLeftSidePanel,
   unpinnedExplorerPanel,
 }: NavigationHeaderProps) {
-  /* ------------------------------------------------------------------------
-     2.1 CONTEXT & ACTIVE TAB EVALUATION
-     Reads layout preferences to determine whether the Explorer tab displays
-     in its active highlighted state (docked/pinned or unpinned flyout open).
-     ------------------------------------------------------------------------ */
   const { isPinned, animationsEnabled } = useUIPreferences();
-  const opacityTransition = animationsEnabled
-    ? 'transition-opacity duration-700 ease-in-out'
-    : 'transition-none';
+  const opacityTransition = animationsEnabled ? 'transition-opacity duration-700 ease-in-out' : 'transition-none';
 
   const isTabActive = isPinned || isLeftSidePanelOpen;
 
   return (
     <>
-      {/* SVG brushed steel noise texture filter referenced by header styles */}
       <NavigationBarTextureFilter />
 
       <header className="navigation-header h-14 flex items-center justify-between shrink-0 relative z-[10]">
-        
-        {/* ------------------------------------------------------------------
-            2.2 LEFT SECTION: BRANDING & PRIMARY NAVIGATION
-            ------------------------------------------------------------------ */}
+        {/* LEFT SECTION */}
         <div className="flex items-center h-full">
-          
-          {/* Brand & Explorer Tab Cluster (Fixed w-76 aligns with docked sidebar seam) */}
+          {/* BRAND & EXPLORER TAB */}
           <div className="flex items-center justify-between h-full w-76 shrink-0 relative">
-
-            {/* 
-              Shadow Eraser Mask:
-              Masks bottom shadows beneath the navigation bar when the sidebar is pinned
-              to produce a seamless, integrated column appearance.
-            */}
-            <div
-              className={[
-                'absolute top-full left-0 right-[10px] h-3 z-10',
-                'bg-surface',
-                'pointer-events-none',
-                opacityTransition,
-                isPinned ? 'nav-header-pinned-visible' : 'nav-header-pinned-hidden',
-              ].join(' ')}
-              aria-hidden="true"
-            />
-
-            {/* Accent Border Line: Continuous horizontal separator under the navbar */}
-            <div
-              className={[
-                'absolute top-full left-0 w-full h-[1px] z-20',
-                'bg-[var(--nav-header-accent-line)]',
-                'pointer-events-none',
-                opacityTransition,
-                isPinned ? 'nav-header-pinned-visible' : 'nav-header-pinned-hidden',
-              ].join(' ')}
-              aria-hidden="true"
-            />
-
-            {/* Brand Logo Anchor */}
+            {/* BRAND AREA */}
             <div className="flex items-center gap-2 pl-4 relative z-20">
               <img
                 src="/images/nav_bar_website_logo.png"
@@ -130,12 +62,11 @@ export default function NavigationHeader({
               />
             </div>
 
-            {/* Explorer Mode Toggle Tab & Flyout Anchor */}
+            {/* EXPLORER TOGGLE BUTTON & FLYOUT CONTAINER */}
             <div className="relative z-30">
               <button
                 type="button"
                 onClick={() => {
-                  // Ignore clicks if the sidebar is already docked/pinned
                   if (!isPinned) {
                     onToggleLeftSidePanel();
                   }
@@ -151,7 +82,6 @@ export default function NavigationHeader({
               >
                 <span className="relative inline-block">
                   Explorer
-                  {/* Underline Indicator */}
                   <div
                     className={[
                       'nav-tab-indicator transition-opacity ease-out',
@@ -162,7 +92,7 @@ export default function NavigationHeader({
                   />
                 </span>
 
-                {/* Seamless Tab Extension (Blends tab bottom directly into the panel below) */}
+                {/* Seamless Tab Extension */}
                 <div
                   className={[
                     'nav-tab-extension transition-opacity ease-out',
@@ -173,12 +103,12 @@ export default function NavigationHeader({
                 />
               </button>
 
-              {/* Unpinned Floating Flyout Mount Slot */}
+              {/* FLYOUT ANCHOR: This relative wrapper guarantees absolute left-0 positions precisely under the button */}
               {unpinnedExplorerPanel}
             </div>
           </div>
 
-          {/* Collection Selection & Schema Template Actions */}
+          {/* OTHER NAVIGATION BUTTONS */}
           <div className="flex items-center gap-3 px-4 h-full">
             <CollectionDropdown
               collections={collections}
@@ -206,18 +136,14 @@ export default function NavigationHeader({
           </div>
         </div>
 
-        {/* ------------------------------------------------------------------
-            2.3 RIGHT SECTION: DATABASE STATUS & USER BADGE
-            ------------------------------------------------------------------ */}
+        {/* RIGHT SECTION: DB STATUS + PROFILE */}
         <div className="flex items-center gap-3 pr-4">
-          
-          {/* Live Supabase Connection Badge */}
+
           <div className="nav-live-badge">
             <span className="nav-live-dot animate-pulse" />
             <span className="text-content-secondary hidden sm:inline">Supabase</span> Live
           </div>
 
-          {/* Account Profile Trigger */}
           <div
             className="nav-profile-badge"
             title="User Profile / Account"

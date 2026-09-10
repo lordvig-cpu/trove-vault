@@ -205,37 +205,27 @@ export function ActionMenuRenameForm({
   onCancel,
 }: {
   initialValue: string;
-  onSave: (val: string) => Promise<void> | void;
+  onSave: (value: string) => Promise<void> | void;
   onCancel: () => void;
 }) {
   const [value, setValue] = useState(initialValue);
   const [isSaving, setIsSaving] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Auto-focus and highlight initial text on entry
   useEffect(() => {
-    if (inputRef.current) {
-      inputRef.current.focus();
-      inputRef.current.select();
-    }
+    inputRef.current?.focus();
+    inputRef.current?.select();
   }, []);
 
-  const handleSubmit = async (e?: React.FormEvent) => {
-    if (e) e.preventDefault();
-    const trimmed = value.trim();
-
-    // Dismiss cleanly if empty or unchanged
-    if (!trimmed || trimmed === initialValue) {
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!value.trim() || value.trim() === initialValue) {
       onCancel();
       return;
     }
-
     try {
       setIsSaving(true);
-      await onSave(trimmed);
-      onCancel();
-    } catch (err) {
-      console.error('Failed to save inline rename:', err);
+      await onSave(value.trim());
     } finally {
       setIsSaving(false);
     }
@@ -251,24 +241,14 @@ export function ActionMenuRenameForm({
         onKeyDown={(e) => {
           if (e.key === 'Escape') onCancel();
         }}
-        className={[
-          'renameInput',
-          value.trim().length > 0
-            ? 'border-[var(--brand-secondary-amber)] focus:border-[var(--brand-secondary-amber)]'
-            : 'border-[var(--panel-border-subtle)] focus:border-[var(--brand-secondary-amber)]',
-        ].join(' ')}
+        className="renameInput"
         placeholder="Name..."
         disabled={isSaving}
       />
       <button
         type="submit"
         disabled={isSaving || !value.trim()}
-        className={[
-          'px-2.5 py-1 text-xs font-semibold rounded-md border border-transparent shrink-0 transition-all cursor-pointer',
-          'bg-surface-hover/80 text-content-muted hover:text-content-primary hover:bg-surface-hover hover:border-border-subtle',
-          'disabled:opacity-50 disabled:cursor-not-allowed',
-        ].join(' ')}
-        title="Save changes"
+        className="px-2.5 py-1 text-xs font-semibold rounded-md border border-transparent shrink-0 transition-all cursor-pointer bg-surface-hover/80 text-content-muted hover:text-content-primary hover:bg-surface-hover hover:border-border-subtle disabled:opacity-50"
       >
         {isSaving ? '...' : 'Save'}
       </button>

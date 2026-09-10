@@ -93,34 +93,6 @@ export default function NavigationHeader2({
           {/* Brand & Explorer Tab Cluster (Fixed w-76 aligns with docked sidebar seam) */}
           <div className="flex items-center justify-between h-full w-76 shrink-0 relative">
 
-            {/* 
-              Shadow Eraser Mask:
-              Masks bottom shadows beneath the navigation bar when the sidebar is pinned
-              to produce a seamless, integrated column appearance.
-            */}
-            <div
-              className={[
-                'absolute top-full left-0 right-[10px] h-3 z-10',
-                'bg-surface',
-                'pointer-events-none',
-                opacityTransition,
-                isPinned ? 'nav-header-pinned-visible' : 'nav-header-pinned-hidden',
-              ].join(' ')}
-              aria-hidden="true"
-            />
-
-            {/* Accent Border Line: Continuous horizontal separator under the navbar */}
-            <div
-              className={[
-                'absolute top-full left-0 w-full h-[1px] z-20',
-                'bg-[var(--nav-header-accent-line)]',
-                'pointer-events-none',
-                opacityTransition,
-                isPinned ? 'nav-header-pinned-visible' : 'nav-header-pinned-hidden',
-              ].join(' ')}
-              aria-hidden="true"
-            />
-
             {/* Brand Logo Anchor */}
             <div className="flex items-center gap-2 pl-4 relative z-20">
               <img

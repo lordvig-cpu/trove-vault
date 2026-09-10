@@ -179,6 +179,8 @@ export default function Home() {
       }}
       onSelectItem={handleTreeSelectItem}
       onAddSubItem={openCreateItem}
+      onAddSubCollection={() => setIsColDropdownOpen(true)}
+      onEditCollection={(col) => openTemplateManager(col.id, col.name)}
       onDeleteCollection={openDeleteCollection}
       onEditItem={handleTriggerEditItem}
       onDeleteItem={handleTriggerDeleteItem}

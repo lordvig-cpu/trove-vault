@@ -5,6 +5,7 @@ import { CollectionRecord } from '@/types/collection2';
 import { ItemRecord } from '@/types/item2';
 import { GearIcon, AddSubItemIcon } from '@/components/icons/ActionIcons';
 import { ChevronDownIcon, ChevronRightIcon } from '@/components/icons/ExplorerIcons';
+import { useActionMenu2 } from '@/hooks/useActionMenu2';
 import ExplorerActionMenu, {
   ActionMenuItem,
   ActionMenuDangerItem,
@@ -138,7 +139,7 @@ function UnifiedExplorerTreeItem({
   onDeleteItem: (item: ItemRecord, collectionId: number | null) => void;
 }) {
   const [isOpen, setIsOpen] = useState(true);
-  const menu = useActionMenuLifecycle();
+  const menu = useActionMenu2(`item-${item.id}`, 215);
 
   const isSelected = selectedItemId === item.id;
   const hasSubItems = Boolean(item.children && item.children.length > 0);
@@ -215,66 +216,71 @@ function UnifiedExplorerTreeItem({
 
       {/* Item Context Menu Popover Portal */}
       <ExplorerActionMenu
-        isOpen={menu.isMenuOpen}
-        onMouseEnter={menu.handleMenuMouseEnter}
-        onMouseLeave={menu.handleMouseLeave}
-        top={menu.menuCoords.top}
-        left={menu.menuCoords.left}
-        title="Item Actions"
-        titleIcon="📄"
-      >
-        {menu.isRenaming ? (
-          <ActionMenuRenameForm
-            initialValue={item.name}
-            onSave={async (newName) => {
-              if (onRenameItem) await onRenameItem(item.id, newName);
-              menu.closeMenu();
-            }}
-            onCancel={() => menu.setIsRenaming(false)}
-          />
-        ) : (
-          <>
-            <ActionMenuItem
-              icon={<AddSubItemIcon className="w-3.5 h-3.5 text-accent-secondary" />}
-              label="Add Sub-Item"
-              subtext="Create a nested child record"
-              onClick={() => {
-                onAddSubItem(collectionId, item.id);
-                menu.closeMenu();
-              }}
-            />
+      isOpen={menu.isMenuOpen}
+      onMouseEnter={menu.handleMenuMouseEnter}
+      onMouseLeave={menu.handleMouseLeave}
+      top={menu.menuCoords.top}
+      left={menu.menuCoords.left}
+      title="Item Actions"
+      titleIcon="📄"
+    >
+      {/* 1. Add Sub-Item */}
+      <ActionMenuItem
+        icon={<AddSubItemIcon className="w-3.5 h-3.5" />}
+        label="Add Sub-Item"
+        subtext="Create a nested record"
+        onClick={() => {
+          onAddSubItem(collectionId, item.id);
+          menu.closeMenu();
+        }}
+      />
 
-            <ActionMenuItem
-              icon={<span>✏️</span>}
-              label="Rename Item"
-              subtext="Quick inline rename"
-              onClick={() => menu.setIsRenaming(true)}
-            />
+      {/* 2. Rename Action Button */}
+      <ActionMenuItem
+        icon={<span>🏷️</span>}
+        label="Rename Item"
+        subtext="Inline edit title"
+        onClick={() => {
+          menu.setIsRenaming((prev: boolean) => !prev);
+        }}
+      />
 
-            <ActionMenuItem
-              icon={<span>📝</span>}
-              label="Edit Properties"
-              subtext="Configure detailed attributes"
-              onClick={() => {
-                onEditItem(item, collectionId);
-                menu.closeMenu();
-              }}
-            />
+      {/* 3. Inline Rename Form (Expands beneath without replacing the menu) */}
+      {menu.isRenaming && (
+        <ActionMenuRenameForm
+          initialValue={item.name}
+          onSave={async (nextName) => {
+            await onRenameItem?.(item.id, nextName);
+            menu.closeMenu();
+          }}
+          onCancel={() => menu.setIsRenaming(false)}
+        />
+      )}
 
-            <ActionMenuDivider />
+      {/* 4. Edit Item Modal Trigger */}
+      <ActionMenuItem
+        icon={<span>✏️</span>}
+        label="Edit Item"
+        subtext="Update attributes & template"
+        onClick={() => {
+          onEditItem(item, collectionId);
+          menu.closeMenu();
+        }}
+      />
 
-            <ActionMenuDangerItem
-              icon={<span>🗑️</span>}
-              label="Delete Item"
-              subtext="Permanently remove record"
-              onClick={() => {
-                onDeleteItem(item, collectionId);
-                menu.closeMenu();
-              }}
-            />
-          </>
-        )}
-      </ExplorerActionMenu>
+      <ActionMenuDivider />
+
+      {/* 5. Delete Item */}
+      <ActionMenuDangerItem
+        icon={<span>🗑️</span>}
+        label="Delete Item"
+        subtext="Permanently remove"
+        onClick={() => {
+          onDeleteItem(item, collectionId);
+          menu.closeMenu();
+        }}
+      />
+    </ExplorerActionMenu>
 
       {/* Recursive Sub-Items */}
       {isOpen && hasSubItems && (
@@ -321,7 +327,7 @@ export default function UnifiedExplorerTree2({
   onRenameItem,
   onDeleteItem,
 }: UnifiedExplorerTreeProps) {
-  const menu = useActionMenuLifecycle();
+  const menu = useActionMenu2(`folder-${collection.id}`, 255);
 
   const isStandalone = collection.id === STANDALONE_COLLECTION_ID;
   const effectiveCollectionId = isStandalone ? null : collection.id;
@@ -424,86 +430,81 @@ export default function UnifiedExplorerTree2({
         onMouseLeave={menu.handleMouseLeave}
         top={menu.menuCoords.top}
         left={menu.menuCoords.left}
-        title={isStandalone ? 'Container Actions' : 'Folder Actions'}
-        titleIcon={collection.icon ? collection.icon : '📂'}
+        title="Folder Actions"
+        titleIcon="📁"
       >
-        {isStandalone ? (
+        {/* 1. Sub-Folder */}
+        {onAddSubCollection && (
           <ActionMenuItem
-            icon={<span>📄</span>}
-            label="New Item"
-            subtext="Add standalone item"
+            icon={<span>📁</span>}
+            label="New Sub-Folder"
+            subtext="Create a nested collection"
             onClick={() => {
-              onAddSubItem(null, null);
+              onAddSubCollection(collection.id);
               menu.closeMenu();
             }}
           />
-        ) : menu.isRenaming ? (
+        )}
+
+        {/* 2. New Item */}
+        <ActionMenuItem
+          icon={<span>📄</span>}
+          label="New Item"
+          subtext="Add record to this folder"
+          onClick={() => {
+            onAddSubItem(collection.id, null);
+            menu.closeMenu();
+          }}
+        />
+
+        {/* 3. Rename Folder Action */}
+        <ActionMenuItem
+          icon={<span>🏷️</span>}
+          label="Rename Folder"
+          subtext="Inline edit name"
+          onClick={() => {
+          menu.setIsRenaming((prev: boolean) => !prev);
+        }}
+        />
+
+        {/* 4. Inline Rename Form */}
+        {menu.isRenaming && (
           <ActionMenuRenameForm
             initialValue={collection.name}
-            onSave={async (newName) => {
-              if (onRenameCollection) await onRenameCollection(collection.id, newName);
+            onSave={async (nextName) => {
+              await onRenameCollection?.(collection.id, nextName);
               menu.closeMenu();
             }}
             onCancel={() => menu.setIsRenaming(false)}
           />
-        ) : (
-          <>
-            {onAddSubCollection && (
-              <ActionMenuItem
-                icon={<span>📁</span>}
-                label="New Sub-Folder"
-                subtext="Create a nested collection"
-                onClick={() => {
-                  onAddSubCollection(collection.id);
-                  menu.closeMenu();
-                }}
-              />
-            )}
+        )}
 
-            <ActionMenuItem
-              icon={<span>📄</span>}
-              label="New Item"
-              subtext="Add record to this folder"
-              onClick={() => {
-                onAddSubItem(collection.id, null);
-                menu.closeMenu();
-              }}
-            />
+        {/* 5. Edit / Folder Settings */}
+        {onEditCollection && (
+          <ActionMenuItem
+            icon={<span>⚙️</span>}
+            label="Folder Settings"
+            subtext="Manage folder templates"
+            onClick={() => {
+              onEditCollection(collection);
+              menu.closeMenu();
+            }}
+          />
+        )}
 
-            <ActionMenuItem
-              icon={<span>✏️</span>}
-              label="Rename Folder"
-              subtext="Quick inline rename"
-              onClick={() => menu.setIsRenaming(true)}
-            />
+        <ActionMenuDivider />
 
-            {onEditCollection && (
-              <ActionMenuItem
-                icon={<span>⚙️</span>}
-                label="Folder Settings"
-                subtext="Manage folder templates"
-                onClick={() => {
-                  onEditCollection(collection);
-                  menu.closeMenu();
-                }}
-              />
-            )}
-
-            {onDeleteCollection && (
-              <>
-                <ActionMenuDivider />
-                <ActionMenuDangerItem
-                  icon={<span>🗑️</span>}
-                  label="Delete Folder"
-                  subtext="Remove collection & contents"
-                  onClick={() => {
-                    onDeleteCollection(collection);
-                    menu.closeMenu();
-                  }}
-                />
-              </>
-            )}
-          </>
+        {/* 6. Delete Collection */}
+        {onDeleteCollection && (
+          <ActionMenuDangerItem
+            icon={<span>🗑️</span>}
+            label="Delete Collection"
+            subtext="Permanently remove"
+            onClick={() => {
+              onDeleteCollection(collection);
+              menu.closeMenu();
+            }}
+          />
         )}
       </ExplorerActionMenu>
 
