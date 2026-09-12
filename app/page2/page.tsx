@@ -64,7 +64,7 @@ export default function Home() {
     isAnyFolderExpanded,
     handleToggleAllFolders,
     handleToggleFolder,
-  } = useExplorerFolders2(unifiedForest); // <-- Change allCollections to unifiedForest
+  } = useExplorerFolders2(unifiedForest);
 
   /* ------------------------------------------------------------------------
      4. GLOBAL UI PREFERENCES
@@ -179,7 +179,10 @@ export default function Home() {
       }}
       onSelectItem={handleTreeSelectItem}
       onAddSubItem={openCreateItem}
-      onAddSubCollection={() => setIsColDropdownOpen(true)}
+      onEditTemplate={(categoryId: number) => {
+        const templateId = Math.abs(categoryId);
+        console.log('Open Template Editor for Template ID:', templateId);
+      }}
       onEditCollection={(col) => openTemplateManager(col.id, col.name)}
       onDeleteCollection={openDeleteCollection}
       onEditItem={handleTriggerEditItem}

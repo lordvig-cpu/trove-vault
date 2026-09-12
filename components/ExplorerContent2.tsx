@@ -38,13 +38,13 @@ export interface ExplorerContentProps {
   onSelectCollection: (id: number) => void;
   onSelectItem: (item: ItemRecord, collectionId: number | null) => void;
   onAddSubItem: (collectionId: number | null, parentItemId?: number | null) => void;
-  onAddSubCollection?: (parentCollectionId: number) => void;
-  onEditCollection?: (collection: CollectionRecord) => void;
-  onDeleteCollection?: (collection: CollectionRecord) => void;
-  onRenameCollection?: (id: number, nextName: string) => Promise<void> | void;
+  onEditTemplate?: (categoryId: number) => void;
   onEditItem: (item: ItemRecord, collectionId: number | null) => void;
-  onRenameItem?: (id: number, nextName: string) => Promise<void> | void;
   onDeleteItem: (item: ItemRecord, collectionId: number | null) => void;
+  onRenameCollection?: (id: number, nextName: string) => Promise<void> | void;
+  onDeleteCollection?: (collection: CollectionRecord) => void;
+  onEditCollection?: (collection: CollectionRecord) => void;
+  onRenameItem?: (id: number, nextName: string) => Promise<void> | void;
 }
 
 /* ==========================================================================
@@ -144,10 +144,10 @@ function filterCollection(
 }
 
 /* ==========================================================================
-   3. MAIN COMPONENT: ExplorerContent2
+   3. MAIN COMPONENT: ExplorerContent
    ========================================================================== */
 
-export default function ExplorerContent2({
+export default function ExplorerContent({
   unifiedForest,
   searchQuery = '',
   activeCollectionId,
@@ -157,12 +157,12 @@ export default function ExplorerContent2({
   onSelectCollection,
   onSelectItem,
   onAddSubItem,
-  onAddSubCollection,
-  onEditCollection,
-  onDeleteCollection,
+  onEditTemplate,
   onEditItem,
   onDeleteItem,
+  onDeleteCollection,
   onRenameCollection,
+  onEditCollection,
   onRenameItem,
 }: ExplorerContentProps) {
   /* ------------------------------------------------------------------------
@@ -210,24 +210,24 @@ export default function ExplorerContent2({
           </div>
         ) : (
           /* Forest Root Nodes */
-          filteredForest.map((node) => (
+          unifiedForest.map((colNode) => (
             <UnifiedExplorerTree
-              key={`root-col-${node.id}`}
-              collection={node}
+              key={`root-col-${colNode.id}`}
+              collection={colNode}
               activeCollectionId={activeCollectionId}
               selectedItemId={selectedItemId}
-              expandedFolderIds={effectiveExpandedIds}
+              expandedFolderIds={expandedFolderIds}
               onToggleFolder={onToggleFolder}
               onSelectCollection={onSelectCollection}
               onSelectItem={onSelectItem}
-              onAddSubCollection={onAddSubCollection}
               onAddSubItem={onAddSubItem}
-              onEditCollection={onEditCollection}
-              onDeleteCollection={onDeleteCollection}
+              onEditTemplate={onEditTemplate}
               onEditItem={onEditItem}
+              onRenameItem={onRenameItem}
               onDeleteItem={onDeleteItem}
               onRenameCollection={onRenameCollection}
-              onRenameItem={onRenameItem}
+              onDeleteCollection={onDeleteCollection}
+              onEditCollection={onEditCollection}
             />
           ))
         )}

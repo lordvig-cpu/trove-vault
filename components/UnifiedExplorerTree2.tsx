@@ -33,78 +33,19 @@ export interface UnifiedExplorerTreeProps {
   onSelectCollection: (id: number) => void;
   onSelectItem: (item: ItemRecord, collectionId: number | null) => void;
   onAddSubItem: (collectionId: number | null, parentItemId?: number | null) => void;
+  onEditTemplate?: (categoryId: number) => void;
+  onEditItem: (item: ItemRecord, collectionId: number | null) => void;
+  onDeleteItem: (item: ItemRecord, collectionId: number | null) => void;
+  onRenameItem?: (id: number, nextName: string) => Promise<void> | void;
+  // Deprecated folder callbacks kept optional for backwards compatibility
   onAddSubCollection?: (parentCollectionId: number) => void;
   onEditCollection?: (collection: CollectionRecord) => void;
   onDeleteCollection?: (collection: CollectionRecord) => void;
   onRenameCollection?: (id: number, nextName: string) => Promise<void> | void;
-  onEditItem: (item: ItemRecord, collectionId: number | null) => void;
-  onRenameItem?: (id: number, nextName: string) => Promise<void> | void;
-  onDeleteItem: (item: ItemRecord, collectionId: number | null) => void;
 }
 
 /* ==========================================================================
-   2. REUSABLE MENU FLYOUT CONTROLLER HOOK
-   ========================================================================== */
-
-function useActionMenuLifecycle() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [menuCoords, setMenuCoords] = useState({ top: 0, left: 0 });
-  const [isRenaming, setIsRenaming] = useState(false);
-  const timeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
-
-  const handleGearMouseEnter = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (timeoutRef.current) clearTimeout(timeoutRef.current);
-    const rect = e.currentTarget.getBoundingClientRect();
-
-    const menuHeight = 220;
-    const bottomNavReserve = 64;
-    const maxAllowedTop = window.innerHeight - menuHeight - bottomNavReserve;
-
-    let calculatedTop = Math.round(rect.top - 4);
-    if (calculatedTop > maxAllowedTop) {
-      calculatedTop = Math.max(16, maxAllowedTop);
-    }
-
-    setMenuCoords({
-      top: calculatedTop,
-      left: Math.round(rect.right + 6),
-    });
-    setIsMenuOpen(true);
-  };
-
-  const handleMenuMouseEnter = () => {
-    if (timeoutRef.current) clearTimeout(timeoutRef.current);
-  };
-
-  const handleMouseLeave = () => {
-    if (isRenaming) return;
-    if (timeoutRef.current) clearTimeout(timeoutRef.current);
-    timeoutRef.current = setTimeout(() => {
-      setIsMenuOpen(false);
-      setIsRenaming(false);
-    }, 350);
-  };
-
-  const closeMenu = () => {
-    if (timeoutRef.current) clearTimeout(timeoutRef.current);
-    setIsMenuOpen(false);
-    setIsRenaming(false);
-  };
-
-  return {
-    isMenuOpen,
-    menuCoords,
-    isRenaming,
-    setIsRenaming,
-    handleGearMouseEnter,
-    handleMenuMouseEnter,
-    handleMouseLeave,
-    closeMenu,
-  };
-}
-
-/* ==========================================================================
-   3. ITEM ROW SUBCOMPONENT: UnifiedExplorerTreeItem
+   2. ITEM ROW SUBCOMPONENT: UnifiedExplorerTreeItem
    ========================================================================== */
 
 function getItemTypeIcon(item: ItemRecord): string {
@@ -216,71 +157,71 @@ function UnifiedExplorerTreeItem({
 
       {/* Item Context Menu Popover Portal */}
       <ExplorerActionMenu
-      isOpen={menu.isMenuOpen}
-      onMouseEnter={menu.handleMenuMouseEnter}
-      onMouseLeave={menu.handleMouseLeave}
-      top={menu.menuCoords.top}
-      left={menu.menuCoords.left}
-      title="Item Actions"
-      titleIcon="📄"
-    >
-      {/* 1. Add Sub-Item */}
-      <ActionMenuItem
-        icon={<AddSubItemIcon className="w-3.5 h-3.5" />}
-        label="Add Sub-Item"
-        subtext="Create a nested record"
-        onClick={() => {
-          onAddSubItem(collectionId, item.id);
-          menu.closeMenu();
-        }}
-      />
-
-      {/* 2. Rename Action Button */}
-      <ActionMenuItem
-        icon={<span>🏷️</span>}
-        label="Rename Item"
-        subtext="Inline edit title"
-        onClick={() => {
-          menu.setIsRenaming((prev: boolean) => !prev);
-        }}
-      />
-
-      {/* 3. Inline Rename Form (Expands beneath without replacing the menu) */}
-      {menu.isRenaming && (
-        <ActionMenuRenameForm
-          initialValue={item.name}
-          onSave={async (nextName) => {
-            await onRenameItem?.(item.id, nextName);
+        isOpen={menu.isMenuOpen}
+        onMouseEnter={menu.handleMenuMouseEnter}
+        onMouseLeave={menu.handleMouseLeave}
+        top={menu.menuCoords.top}
+        left={menu.menuCoords.left}
+        title="Item Actions"
+        titleIcon="📄"
+      >
+        {/* 1. Add Sub-Item */}
+        <ActionMenuItem
+          icon={<AddSubItemIcon className="w-3.5 h-3.5" />}
+          label="Add Sub-Item"
+          subtext="Create a nested record"
+          onClick={() => {
+            onAddSubItem(collectionId, item.id);
             menu.closeMenu();
           }}
-          onCancel={() => menu.setIsRenaming(false)}
         />
-      )}
 
-      {/* 4. Edit Item Modal Trigger */}
-      <ActionMenuItem
-        icon={<span>✏️</span>}
-        label="Edit Item"
-        subtext="Update attributes & template"
-        onClick={() => {
-          onEditItem(item, collectionId);
-          menu.closeMenu();
-        }}
-      />
+        {/* 2. Rename Action Button */}
+        <ActionMenuItem
+          icon={<span>🏷️</span>}
+          label="Rename Item"
+          subtext="Inline edit title"
+          onClick={() => {
+            menu.setIsRenaming((prev: boolean) => !prev);
+          }}
+        />
 
-      <ActionMenuDivider />
+        {/* 3. Inline Rename Form */}
+        {menu.isRenaming && (
+          <ActionMenuRenameForm
+            initialValue={item.name}
+            onSave={async (nextName) => {
+              await onRenameItem?.(item.id, nextName);
+              menu.closeMenu();
+            }}
+            onCancel={() => menu.setIsRenaming(false)}
+          />
+        )}
 
-      {/* 5. Delete Item */}
-      <ActionMenuDangerItem
-        icon={<span>🗑️</span>}
-        label="Delete Item"
-        subtext="Permanently remove"
-        onClick={() => {
-          onDeleteItem(item, collectionId);
-          menu.closeMenu();
-        }}
-      />
-    </ExplorerActionMenu>
+        {/* 4. Edit Item Modal Trigger */}
+        <ActionMenuItem
+          icon={<span>✏️</span>}
+          label="Edit Item"
+          subtext="Update attributes & template"
+          onClick={() => {
+            onEditItem(item, collectionId);
+            menu.closeMenu();
+          }}
+        />
+
+        <ActionMenuDivider />
+
+        {/* 5. Delete Item */}
+        <ActionMenuDangerItem
+          icon={<span>🗑️</span>}
+          label="Delete Item"
+          subtext="Permanently remove"
+          onClick={() => {
+            onDeleteItem(item, collectionId);
+            menu.closeMenu();
+          }}
+        />
+      </ExplorerActionMenu>
 
       {/* Recursive Sub-Items */}
       {isOpen && hasSubItems && (
@@ -306,7 +247,7 @@ function UnifiedExplorerTreeItem({
 }
 
 /* ==========================================================================
-   4. MAIN COMPONENT: UnifiedExplorerTree2 (Collection / Folder Root)
+   3. MAIN COMPONENT: UnifiedExplorerTree2 (Category & Collection Root)
    ========================================================================== */
 
 export default function UnifiedExplorerTree2({
@@ -319,16 +260,17 @@ export default function UnifiedExplorerTree2({
   onSelectCollection,
   onSelectItem,
   onAddSubItem,
-  onAddSubCollection,
-  onEditCollection,
-  onDeleteCollection,
-  onRenameCollection,
+  onEditTemplate,
   onEditItem,
   onRenameItem,
   onDeleteItem,
+  onRenameCollection,
+  onDeleteCollection,
+  onEditCollection,
 }: UnifiedExplorerTreeProps) {
-  const menu = useActionMenu2(`folder-${collection.id}`, 255);
+  const menu = useActionMenu2(`node-${collection.id}`, 240);
 
+  const isVirtualCategory = collection.id < 0;
   const isStandalone = collection.id === STANDALONE_COLLECTION_ID;
   const effectiveCollectionId = isStandalone ? null : collection.id;
 
@@ -343,10 +285,10 @@ export default function UnifiedExplorerTree2({
 
   return (
     <div className="select-none text-[13px] font-sans w-full min-w-0 flex flex-col">
-      {/* Collection / Folder Row Surface (Sticky Stack) */}
+      {/* Row Surface (Sticky Stack) */}
       <div
         onClick={() => onSelectCollection(collection.id)}
-        title={`Folder: ${collection.name}`}
+        title={`${isVirtualCategory ? 'Category' : 'Collection'}: ${collection.name}`}
         style={{
           top: `${stickyTop}px`,
           zIndex: stickyZIndex,
@@ -374,14 +316,14 @@ export default function UnifiedExplorerTree2({
           {isOpen ? <ChevronDownIcon /> : <ChevronRightIcon />}
         </button>
 
-        {/* Folder Graphic or Custom Container Icon */}
+        {/* Glyph Icon */}
         <span className="w-4 h-4 flex items-center justify-center text-sm text-amber-400 shrink-0 select-none">
-          {collection.icon ? collection.icon : (isOpen ? '📂' : '📁')}
+          {collection.icon ? collection.icon : isOpen ? '📂' : '📁'}
         </span>
 
-        {/* Truncated Folder Name */}
+        {/* Truncated Name */}
         <span
-          title={`Folder: ${collection.name}`}
+          title={`${isVirtualCategory ? 'Category' : 'Collection'}: ${collection.name}`}
           className="text-[13px] tracking-tight font-medium truncate shrink min-w-0"
         >
           {collection.name}
@@ -423,90 +365,122 @@ export default function UnifiedExplorerTree2({
         </div>
       </div>
 
-      {/* Folder Context Menu Popover Portal */}
-      <ExplorerActionMenu
-        isOpen={menu.isMenuOpen}
-        onMouseEnter={menu.handleMenuMouseEnter}
-        onMouseLeave={menu.handleMouseLeave}
-        top={menu.menuCoords.top}
-        left={menu.menuCoords.left}
-        title="Folder Actions"
-        titleIcon="📁"
-      >
-        {/* 1. Sub-Folder */}
-        {onAddSubCollection && (
+      {/* Dynamic Popover Portal: Category vs Collection Actions */}
+      {isVirtualCategory ? (
+        /* ----------------------------------------------------
+           1. VIRTUAL CATEGORY ACTIONS (ID < 0)
+           ---------------------------------------------------- */
+        <ExplorerActionMenu
+          isOpen={menu.isMenuOpen}
+          onMouseEnter={menu.handleMenuMouseEnter}
+          onMouseLeave={menu.handleMouseLeave}
+          top={menu.menuCoords.top}
+          left={menu.menuCoords.left}
+          title="Category Actions"
+          titleIcon="🏷️"
+        >
           <ActionMenuItem
-            icon={<span>📁</span>}
-            label="New Sub-Folder"
-            subtext="Create a nested collection"
+            icon={<span>📄</span>}
+            label="New Item"
+            subtext="Add record to this category"
             onClick={() => {
-              onAddSubCollection(collection.id);
+              onAddSubItem(collection.id, null);
               menu.closeMenu();
             }}
           />
-        )}
 
-        {/* 2. New Item */}
-        <ActionMenuItem
-          icon={<span>📄</span>}
-          label="New Item"
-          subtext="Add record to this folder"
-          onClick={() => {
-            onAddSubItem(collection.id, null);
-            menu.closeMenu();
-          }}
-        />
-
-        {/* 3. Rename Folder Action */}
-        <ActionMenuItem
-          icon={<span>🏷️</span>}
-          label="Rename Folder"
-          subtext="Inline edit name"
-          onClick={() => {
-          menu.setIsRenaming((prev: boolean) => !prev);
-        }}
-        />
-
-        {/* 4. Inline Rename Form */}
-        {menu.isRenaming && (
-          <ActionMenuRenameForm
-            initialValue={collection.name}
-            onSave={async (nextName) => {
-              await onRenameCollection?.(collection.id, nextName);
-              menu.closeMenu();
-            }}
-            onCancel={() => menu.setIsRenaming(false)}
-          />
-        )}
-
-        {/* 5. Edit / Folder Settings */}
-        {onEditCollection && (
           <ActionMenuItem
             icon={<span>⚙️</span>}
-            label="Folder Settings"
-            subtext="Manage folder templates"
+            label="Edit Item Template"
+            subtext="Manage attributes & schema"
             onClick={() => {
-              onEditCollection(collection);
+              onEditTemplate?.(collection.id);
               menu.closeMenu();
             }}
           />
-        )}
+        </ExplorerActionMenu>
+      ) : (
+        /* ----------------------------------------------------
+           2. USER COLLECTION ACTIONS (ID > 0)
+           ---------------------------------------------------- */
+        <ExplorerActionMenu
+          isOpen={menu.isMenuOpen}
+          onMouseEnter={menu.handleMenuMouseEnter}
+          onMouseLeave={menu.handleMouseLeave}
+          top={menu.menuCoords.top}
+          left={menu.menuCoords.left}
+          title="Collection Actions"
+          titleIcon="📁"
+        >
+          {/* 1. New Item */}
+          <ActionMenuItem
+            icon={<span>📄</span>}
+            label="New Item"
+            subtext="Create item in this collection"
+            onClick={() => {
+              onAddSubItem(collection.id, null);
+              menu.closeMenu();
+            }}
+          />
 
-        <ActionMenuDivider />
+          {/* 2. Add Existing Item (Stub) */}
+          <ActionMenuItem
+            icon={<span>📥</span>}
+            label="Add Existing Item"
+            subtext="Link catalog item here"
+            onClick={() => {
+              console.log('Add Existing Item to collection:', collection.id);
+              menu.closeMenu();
+            }}
+          />
 
-        {/* 6. Delete Collection */}
-        {onDeleteCollection && (
+          {/* 3. Rename Collection */}
+          <ActionMenuItem
+            icon={<span>🏷️</span>}
+            label="Rename Collection"
+            subtext="Inline edit title"
+            onClick={() => {
+              menu.setIsRenaming((prev: boolean) => !prev);
+            }}
+          />
+
+          {/* Inline Rename Form */}
+          {menu.isRenaming && (
+            <ActionMenuRenameForm
+              initialValue={collection.name}
+              onSave={async (nextName) => {
+                await onRenameCollection?.(collection.id, nextName);
+                menu.closeMenu();
+              }}
+              onCancel={() => menu.setIsRenaming(false)}
+            />
+          )}
+
+          {/* 4. Collection Settings (Stub) */}
+          <ActionMenuItem
+            icon={<span>⚙️</span>}
+            label="Collection Settings"
+            subtext="Manage collection metadata"
+            onClick={() => {
+              onEditCollection?.(collection);
+              menu.closeMenu();
+            }}
+          />
+
+          <ActionMenuDivider />
+
+          {/* 5. Delete Collection */}
           <ActionMenuDangerItem
             icon={<span>🗑️</span>}
             label="Delete Collection"
             subtext="Permanently remove"
             onClick={() => {
-              onDeleteCollection(collection);
+              onDeleteCollection?.(collection);
               menu.closeMenu();
             }}
           />
-        )}
-      </ExplorerActionMenu>
+        </ExplorerActionMenu>
+      )}
 
       {/* Nested Hierarchy: Sub-Collections and Items */}
       {isOpen && hasChildren && (
@@ -523,13 +497,13 @@ export default function UnifiedExplorerTree2({
               onSelectCollection={onSelectCollection}
               onSelectItem={onSelectItem}
               onAddSubItem={onAddSubItem}
-              onAddSubCollection={onAddSubCollection}
-              onEditCollection={onEditCollection}
-              onDeleteCollection={onDeleteCollection}
-              onRenameCollection={onRenameCollection}
+              onEditTemplate={onEditTemplate}
               onEditItem={onEditItem}
               onRenameItem={onRenameItem}
               onDeleteItem={onDeleteItem}
+              onRenameCollection={onRenameCollection}
+              onDeleteCollection={onDeleteCollection}
+              onEditCollection={onEditCollection}
             />
           ))}
 
