@@ -11,6 +11,7 @@ import {
   buildFilteredUnifiedForest,
 } from '@/lib/explorerUtils2';
 import { UniversalSearchResultItem } from '@/app/page2/page';
+import { CollectionTemplate } from '@/types/template2';
 
 /* ==========================================================================
    CUSTOM HOOK: useCollections2
@@ -24,6 +25,7 @@ export function useCollections2() {
      ------------------------------------------------------------------------ */
   const [allCollections, setAllCollections] = useState<CollectionRecord[]>([]);
   const [allItems, setAllItems] = useState<ItemRecord[]>([]);
+  const [templates, setTemplates] = useState<CollectionTemplate[]>([]);
 
   /* ------------------------------------------------------------------------
      2. ACTIVE SELECTION STATE
@@ -50,7 +52,7 @@ export function useCollections2() {
      ========================================================================== */
 
   /**
-   * Fetches all collections and items from Supabase V2 concurrently.
+   * Fetches all collections, items, and templates from Supabase V2 concurrently.
    */
   const fetchAllData = useCallback(
     async (preferredActiveCollectionId?: number | null) => {
@@ -58,40 +60,43 @@ export function useCollections2() {
         setLoading(true);
         setError(null);
 
-        // Query collections2 and items2 in parallel
-        const [colsRes, itemsRes] = await Promise.all([
+        const [colsRes, itemsRes, tmplsRes] = await Promise.all([
           supabase.from('collections2').select('*').order('id', { ascending: true }),
           supabase.from('items2').select('*').order('id', { ascending: true }),
+          supabase.from('collection_templates').select('*').order('id', { ascending: true }),
         ]);
 
         if (colsRes.error) throw colsRes.error;
         if (itemsRes.error) throw itemsRes.error;
+        if (tmplsRes.error) throw tmplsRes.error;
 
-        const collections = (colsRes.data as CollectionRecord[]) || [];
-        const items = (itemsRes.data as ItemRecord[]) || [];
+        const fetchedCollections = (colsRes.data as CollectionRecord[]) || [];
+        const fetchedItems = (itemsRes.data as ItemRecord[]) || [];
+        const fetchedTemplates = (tmplsRes.data as CollectionTemplate[]) || [];
 
-        setAllCollections(collections);
-        setAllItems(items);
+        setAllCollections(fetchedCollections);
+        setAllItems(fetchedItems);
+        setTemplates(fetchedTemplates);
 
-        // Auto-resolve active pointers
-        if (collections.length > 0) {
+        // Auto-resolve active pointers using the freshly fetched collections
+        if (fetchedCollections.length > 0) {
           const targetId =
             preferredActiveCollectionId !== undefined
               ? preferredActiveCollectionId
               : activeCollectionId;
 
-          const exists = collections.some((c) => c.id === targetId);
-          const nextValidId = exists && targetId ? targetId : collections[0].id;
+          const exists = fetchedCollections.some((c) => c.id === targetId);
+          const nextValidId = exists && targetId ? targetId : fetchedCollections[0].id;
 
           setActiveCollectionId(nextValidId);
 
-          // Restore deeply-nested item selection
+          // Restore deeply-nested item selection using the freshly fetched items
           if (selectedItem) {
-            const found = items.find((i) => i.id === selectedItem.id);
+            const found = fetchedItems.find((i) => i.id === selectedItem.id);
             if (found) {
               setSelectedItem({
                 ...found,
-                children: buildItemHierarchy(items, found.id),
+                children: buildItemHierarchy(fetchedItems, found.id),
               });
             }
           }
@@ -147,9 +152,10 @@ export function useCollections2() {
       null,
       activeCollectionId,
       searchQuery,
-      searchScope
+      searchScope,
+      templates
     );
-  }, [allCollections, allItems, activeCollectionId, searchQuery, searchScope]);
+  }, [allCollections, allItems, activeCollectionId, searchQuery, searchScope, templates]);
 
   const activeCollection = allCollections.find((c) => c.id === activeCollectionId) || null;
 
@@ -229,6 +235,7 @@ export function useCollections2() {
   return {
     allCollections,
     allItems,
+    templates,
     activeCollectionId,
     setActiveCollectionId,
     activeCollection,

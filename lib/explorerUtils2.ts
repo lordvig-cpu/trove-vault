@@ -46,26 +46,26 @@ export function detectItemCategory(
   item: ItemRecord,
   templates: CollectionTemplate[] = []
 ): { id: number; name: string; icon: string } {
-  // 1. Dynamic Database-Driven Grouping (Supports infinite templates)
+  // 1. Dynamic Database-Driven Grouping
   if (item.template_id) {
     const matchedTemplate = templates.find((t) => t.id === item.template_id);
     if (matchedTemplate) {
       return {
-        id: -matchedTemplate.id, // Negative ID proxies the template for the modal
+        id: -matchedTemplate.id,
         name: matchedTemplate.name,
         icon: matchedTemplate.icon || '📦',
       };
     }
     
-    // If templates haven't loaded into context yet, preserve the ID
+    // Fallback if templates array is empty or still fetching:
     return {
       id: -item.template_id,
-      name: 'Loading Category...',
-      icon: '📦',
+      name: item.template_id === 2 ? 'Trading Card Games (TCG)' : item.template_id === 3 ? 'Comic Books & Graphic Novels' : `Category #${item.template_id}`,
+      icon: item.template_id === 2 ? '🃏' : item.template_id === 3 ? '📚' : '📦',
     };
   }
 
-  // 2. Generic Fallback for items without a template_id
+  // 2. Generic Fallback for unassigned items
   return { id: -999, name: 'Uncategorized Items', icon: '📦' };
 }
 

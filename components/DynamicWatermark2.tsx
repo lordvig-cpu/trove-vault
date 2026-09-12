@@ -34,26 +34,30 @@ export default function DynamicWatermark({
     const video = videoRef.current;
     if (!video) return;
 
+    // Ensure muted state is synchronized directly on the DOM element
+    video.muted = !isAudioEnabled;
+
     if (isHovered) {
       try {
-        // Rewind to the beginning on each hover entry
         video.currentTime = 0;
       } catch {}
 
-      // Handle async play promise to prevent unhandled pause interruption crashes
       const playPromise = video.play();
       if (playPromise !== undefined) {
         playPromise.catch((err) => {
-          if (err.name !== 'AbortError') {
+          // If blocked by browser autoplay policy, retry muted so the visual still plays
+          if (err.name === 'NotAllowedError') {
+            video.muted = true;
+            video.play().catch(() => {});
+          } else if (err.name !== 'AbortError') {
             console.warn('DynamicWatermark playback error:', err);
           }
         });
       }
     } else {
-      // Pause playback immediately when cursor leaves
       video.pause();
     }
-  }, [isHovered]);
+  }, [isHovered, isAudioEnabled]);
 
   return (
     <>
