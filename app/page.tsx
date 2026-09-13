@@ -67,7 +67,17 @@ export default function Home() {
     handleToggleFolder,
   } = useExplorerCategories(unifiedForest);
 
-  const [filterCollectionId, setFilterCollectionId] = useState<number | null>(null);
+  const [filterCollectionIds, setFilterCollectionIds] = useState<number[]>([]);
+
+  const handleToggleFilterCollection = (id: number) => {
+    setFilterCollectionIds((prev) => 
+      prev.includes(id) ? prev.filter((colId) => colId !== id) : [...prev, id]
+    );
+  };
+
+  const handleClearCollectionFilters = () => {
+    setFilterCollectionIds([]);
+  };
 
   /* ------------------------------------------------------------------------
      4. GLOBAL UI & LAYOUT PREFERENCES
@@ -180,11 +190,15 @@ export default function Home() {
      ------------------------------------------------------------------------ */
 
   const filteredForest = useMemo(() => {
-  if (filterCollectionId === null) {
-    return unifiedForest;
-  }
-  return unifiedForest.filter((node) => node.id === filterCollectionId);
-}, [unifiedForest, filterCollectionId]);
+    // 1. If NO filters are active: Show all items grouped by Smart Categories
+    if (filterCollectionIds.length === 0) {
+      // Exclude explicit User Collections (positive IDs); keep virtual template folders (negative IDs)
+      return unifiedForest.filter((node) => node.id < 0);
+    }
+    
+    // 2. If filters ARE active: Only show the specifically checked Collections
+    return unifiedForest.filter((node) => filterCollectionIds.includes(node.id));
+  }, [unifiedForest, filterCollectionIds]);
   
   const explorerTreeElement = (
     <ExplorerContent
@@ -227,8 +241,9 @@ export default function Home() {
       error={error}
       onAddNewItem={() => openCreateItem(null, null)}
       collections={allCollections}
-      filterCollectionId={filterCollectionId}
-      onSelectFilterCollection={setFilterCollectionId}
+      filterCollectionIds={filterCollectionIds}
+      onToggleFilterCollection={handleToggleFilterCollection}
+      onClearCollectionFilters={handleClearCollectionFilters}
     >
       {explorerTreeElement}
     </LeftSidePanel>
@@ -250,8 +265,9 @@ export default function Home() {
       error={error}
       onAddNewItem={() => openCreateItem(null, null)}
       collections={allCollections}
-      filterCollectionId={filterCollectionId}
-      onSelectFilterCollection={setFilterCollectionId}
+      filterCollectionIds={filterCollectionIds}
+      onToggleFilterCollection={handleToggleFilterCollection}
+      onClearCollectionFilters={handleClearCollectionFilters}
     >
       {explorerTreeElement}
     </LeftSidePanel>

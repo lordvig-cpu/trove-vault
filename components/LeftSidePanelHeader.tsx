@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import {
   FolderCollapseIcon,
   FolderExpandIcon,
@@ -10,6 +10,7 @@ import {
   SlidersHorizontalIcon,
   SearchGlassIcon,
 } from '@/components/icons/ExplorerIcons';
+import ExplorerSearchMenu from '@/components/ExplorerSearchMenu';
 import { CollectionRecord } from '@/types/collection';
 
 /* ==========================================================================
@@ -27,9 +28,12 @@ interface LeftSidePanelHeaderProps {
   onClose: () => void;
   onAddNewItem?: () => void;
   collections: CollectionRecord[];
-  filterCollectionId: number | null;
-  onSelectFilterCollection: (collectionId: number | null) => void;
-  // Backward compatibility aliases
+  
+  // Multi-Select Array Props
+  filterCollectionIds: number[];
+  onToggleFilterCollection: (collectionId: number) => void;
+  onClearCollectionFilters: () => void;
+  
   isAnyFolderExpanded?: boolean;
   onToggleAllFolders?: () => void;
 }
@@ -51,15 +55,34 @@ export default function LeftSidePanelHeader({
   onClose,
   onAddNewItem,
   collections = [],
-  filterCollectionId,
-  onSelectFilterCollection,
+  filterCollectionIds = [],
+  onToggleFilterCollection,
+  onClearCollectionFilters,
 }: LeftSidePanelHeaderProps) {
   const [showAdvancedSearch, setShowAdvancedSearch] = useState(false);
+  const [menuCoords, setMenuCoords] = useState({ top: 0, left: 0 });
   const [isSearchFocused, setIsSearchFocused] = useState(false);
-  const isFilterActive = filterCollectionId !== null;
+  const triggerBtnRef = useRef<HTMLButtonElement>(null);
 
+  const isFilterActive = filterCollectionIds.length > 0;
   const activeIsExpanded = isAnyCategoryExpanded ?? isAnyFolderExpanded;
   const activeToggleAll = onToggleAllCategories ?? onToggleAllFolders;
+
+  const handleToggleAdvancedSearch = () => {
+    if (!showAdvancedSearch && triggerBtnRef.current) {
+      const rect = triggerBtnRef.current.getBoundingClientRect();
+
+      setMenuCoords({
+        // Aligns the top of the menu with the slider button
+        top: Math.round(rect.top - 4),
+        // Pushes it outside the panel's right border (clearing the scrollbar/seam)
+        left: Math.round(rect.right + 10),
+      });
+      setShowAdvancedSearch(true);
+    } else {
+      setShowAdvancedSearch(false);
+    }
+  };
 
   return (
     <div className="left-side-panel-header px-2.5 py-2 flex flex-col gap-2 border-b border-border-subtle shrink-0">
@@ -68,8 +91,6 @@ export default function LeftSidePanelHeader({
           ROW 1: Top Actions (Right Aligned)
           ------------------------------------------------------------------ */}
       <div className="flex items-center justify-end gap-1 w-full shrink-0">
-        
-        {/* Create Standalone Item (+) */}
         {onAddNewItem && (
           <button
             type="button"
@@ -92,7 +113,6 @@ export default function LeftSidePanelHeader({
           </button>
         )}
 
-        {/* Bulk Expand / Collapse Toggle */}
         {activeToggleAll && (
           <button
             type="button"
@@ -115,7 +135,6 @@ export default function LeftSidePanelHeader({
           </button>
         )}
 
-        {/* Pin / Dock Toggle */}
         <button
           type="button"
           onClick={onTogglePin}
@@ -129,7 +148,6 @@ export default function LeftSidePanelHeader({
           )}
         </button>
 
-        {/* Close Button (Flyout Mode Only) */}
         {variant === 'flyout' && (
           <button
             type="button"
@@ -145,13 +163,11 @@ export default function LeftSidePanelHeader({
       </div>
 
       {/* ------------------------------------------------------------------
-          ROW 2: Search Bar + External Advanced Search Slider Button
+          ROW 2: Search Bar + Advanced Search Sliders Button
           ------------------------------------------------------------------ */}
       <div className="flex items-center gap-1.5 w-full">
-        {/* Search Input Box */}
         <div className="relative flex-1 min-w-0 flex items-center">
-          {/* Leading Icon: Amber filter when typed; SVG Magnifying Glass with focus-fill when empty */}
-          <span className="absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none flex items-center justify-center select-none">
+          <span className="absolute left-2 top-1/2 -translate-y-1/2 pointer-events-none flex items-center justify-center select-none">
             {searchQuery.trim().length > 0 ? (
               <FilterIcon className="w-3.5 h-3.5 text-accent-secondary" isActive={true} />
             ) : (
@@ -164,7 +180,6 @@ export default function LeftSidePanelHeader({
             )}
           </span>
 
-          {/* Input Target */}
           <input
             id={`explorer-search-input-${variant}`}
             type="text"
@@ -180,7 +195,6 @@ export default function LeftSidePanelHeader({
             ].join(' ')}
           />
 
-          {/* Clear Search ✕ Button */}
           {searchQuery && (
             <button
               type="button"
@@ -195,12 +209,14 @@ export default function LeftSidePanelHeader({
           )}
         </div>
 
-        {/* Advanced Search Sliders Button */}
         <button
+          ref={triggerBtnRef}
           type="button"
-          onClick={() => setShowAdvancedSearch((prev) => !prev)}
+          onClick={handleToggleAdvancedSearch}
           className={`p-1.5 rounded-lg border transition cursor-pointer relative shrink-0 flex items-center justify-center ${
-            showAdvancedSearch || isFilterActive
+            showAdvancedSearch
+              ? 'bg-surface-hover border-border-strong text-white'
+              : isFilterActive
               ? 'bg-accent-primary/20 border-accent-primary/50 text-accent-secondary'
               : 'bg-surface border-border-subtle text-content-muted hover:text-content-primary hover:border-border-strong'
           }`}
@@ -210,47 +226,80 @@ export default function LeftSidePanelHeader({
             className="w-3.5 h-3.5"
             isActive={showAdvancedSearch || isFilterActive}
           />
-          {isFilterActive && (
+          {isFilterActive && !showAdvancedSearch && (
             <span className="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-accent-secondary animate-pulse" />
           )}
         </button>
       </div>
 
       {/* ------------------------------------------------------------------
-          ROW 3: Advanced Search / Filter Drawer
+          ADVANCED SEARCH MENU PORTAL (Checkbox List)
           ------------------------------------------------------------------ */}
-      {(showAdvancedSearch || isFilterActive) && (
-        <div className="flex items-center gap-2 px-2 py-1.5 rounded-lg bg-surface/80 border border-border-subtle text-xs animate-mount-fade">
-          <span className="text-[10px] uppercase font-bold text-content-muted tracking-wider shrink-0">
-            Collection:
-          </span>
-          <select
-            value={filterCollectionId ?? ''}
-            onChange={(e) => {
-              const val = e.target.value ? Number(e.target.value) : null;
-              onSelectFilterCollection(val);
-            }}
-            className="w-full bg-canvas border border-border-subtle rounded px-2 py-1 text-xs text-content-primary focus:outline-none focus:border-accent-secondary"
-          >
-            <option value="">-- All Items (No Filter) --</option>
-            {collections.map((col) => (
-              <option key={col.id} value={col.id}>
-                {col.icon || '📁'} {col.name}
-              </option>
-            ))}
-          </select>
+      <ExplorerSearchMenu
+        isOpen={showAdvancedSearch}
+        onClose={() => setShowAdvancedSearch(false)}
+        top={menuCoords.top}
+        left={menuCoords.left}
+        isPinned={isPinned}
+        title="Advanced Search"
+        titleIcon={
+          <SlidersHorizontalIcon className="w-3.5 h-3.5 text-accent-secondary" isActive={true} />
+        }
+      >
+        <div className="flex flex-col gap-1.5 px-1 py-1">
+          
+          {/* 1. Action-Menu Style Label */}
+          <div className="flex items-center gap-2.5 px-2 py-1">
+            <span className="w-5 shrink-0 flex items-center justify-center text-sm">
+              📁
+            </span>
+            <div className="flex flex-col leading-tight min-w-0">
+              <span className="text-xs font-medium text-white">Collection(s):</span>
+            </div>
+          </div>
+          
+          {/* 2. Darker Inner Box for Checkboxes */}
+          <div className="flex flex-col mx-2 mb-1 bg-[#040811] border border-[var(--explorer-menu-divider,rgba(245,158,11,0.2))] shadow-inner rounded-md max-h-52 overflow-y-auto overflow-x-hidden left-panel-scroll p-1">
+            {collections.map((col) => {
+              const isChecked = filterCollectionIds.includes(col.id);
+              return (
+                <label
+                  key={col.id}
+                  className="flex items-center gap-2.5 px-2 py-1.5 hover:bg-surface-hover/60 rounded transition-colors cursor-pointer"
+                >
+                  <input
+                    type="checkbox"
+                    checked={isChecked}
+                    onChange={() => onToggleFilterCollection(col.id)}
+                    className="w-3.5 h-3.5 rounded border-border-strong text-accent-secondary bg-surface focus:ring-1 focus:ring-accent-secondary/50 cursor-pointer shrink-0"
+                  />
+                  {/* Folder Icon removed; displaying name only */}
+                  <span className="text-xs text-content-primary font-medium truncate min-w-0">
+                    {col.name}
+                  </span>
+                </label>
+              );
+            })}
+          </div>
+
+          {/* 3. Clear Filters Action */}
           {isFilterActive && (
-            <button
-              type="button"
-              onClick={() => onSelectFilterCollection(null)}
-              className="text-xs text-content-muted hover:text-rose-400 p-0.5 cursor-pointer"
-              title="Reset collection filter"
-            >
-              ✕
-            </button>
+            <div className="border-t border-[var(--explorer-menu-divider,rgba(245,158,11,0.2))] mt-0.5 pt-1.5 px-2 pb-0.5">
+              <button
+                type="button"
+                onClick={() => {
+                  onClearCollectionFilters();
+                  setShowAdvancedSearch(false);
+                }}
+                className="text-[10px] w-full font-semibold text-rose-400 hover:text-rose-300 transition text-right cursor-pointer"
+              >
+                ✕ Clear Filters
+              </button>
+            </div>
           )}
+          
         </div>
-      )}
+      </ExplorerSearchMenu>
     </div>
   );
 }

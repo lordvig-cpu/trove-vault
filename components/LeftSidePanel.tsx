@@ -27,12 +27,13 @@ interface LeftSidePanelProps {
   error?: string | null;
   children: React.ReactNode;
   onAddNewItem?: () => void;
-  // Collection Filter Props forwarded to LeftSidePanelHeader
   collections: CollectionRecord[];
-  filterCollectionId: number | null;
-  onSelectFilterCollection: (collectionId: number | null) => void;
+  
+  // New Multi-Select Array Props
+  filterCollectionIds: number[];
+  onToggleFilterCollection: (collectionId: number) => void;
+  onClearCollectionFilters: () => void;
 
-  // Backward-compatibility prop aliases
   isAnyFolderExpanded?: boolean;
   onToggleAllFolders?: () => void;
 }
@@ -61,8 +62,9 @@ export default function LeftSidePanel({
   children,
   onAddNewItem,
   collections = [],
-  filterCollectionId,
-  onSelectFilterCollection,
+  filterCollectionIds = [],
+  onToggleFilterCollection,
+  onClearCollectionFilters,
 }: LeftSidePanelProps) {
   // Resolve canonical category terminology or legacy folder props
   const activeIsExpanded = isAnyCategoryExpanded ?? isAnyFolderExpanded;
@@ -180,8 +182,9 @@ export default function LeftSidePanel({
         onClose={onClose}
         onAddNewItem={onAddNewItem}
         collections={collections}
-        filterCollectionId={filterCollectionId}
-        onSelectFilterCollection={onSelectFilterCollection}
+        filterCollectionIds={filterCollectionIds}
+        onToggleFilterCollection={onToggleFilterCollection}
+        onClearCollectionFilters={onClearCollectionFilters}
       />
 
       {/* Syncing Progress Banner */}
