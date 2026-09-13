@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useUIPreferences } from '@/context/UIPreferencesContext';
 import { ItemRecord } from '@/types/item';
 import { useCollections } from '@/hooks/useCollections';
@@ -67,6 +67,8 @@ export default function Home() {
     handleToggleFolder,
   } = useExplorerCategories(unifiedForest);
 
+  const [filterCollectionId, setFilterCollectionId] = useState<number | null>(null);
+
   /* ------------------------------------------------------------------------
      4. GLOBAL UI & LAYOUT PREFERENCES
      ------------------------------------------------------------------------ */
@@ -90,11 +92,19 @@ export default function Home() {
       key: 'Escape',
       allowInInputs: true,
       action: () => {
+        // 1. Dismiss active modal if one is open
         if (activeModal) {
           closeModal();
           return;
         }
 
+        // 2. If search text is present, clear the search query first
+        if (searchQuery.trim().length > 0) {
+          setSearchQuery('');
+          return;
+        }
+
+        // 3. If focused inside an input/textarea without search text, blur focus
         if (
           document.activeElement instanceof HTMLInputElement ||
           document.activeElement instanceof HTMLTextAreaElement
@@ -103,11 +113,13 @@ export default function Home() {
           return;
         }
 
+        // 4. Dismiss unpinned floating flyout if open
         if (isLeftSidePanelOpen && !isPinned) {
           setIsLeftSidePanelOpen(false);
           return;
         }
 
+        // 5. Dismiss open right utility drawer
         if (isRightPanelOpen) {
           setIsRightPanelOpen(false);
         }
@@ -166,9 +178,17 @@ export default function Home() {
   /* ------------------------------------------------------------------------
      8. MEMOIZED EXPLORER SUB-COMPONENTS
      ------------------------------------------------------------------------ */
+
+  const filteredForest = useMemo(() => {
+  if (filterCollectionId === null) {
+    return unifiedForest;
+  }
+  return unifiedForest.filter((node) => node.id === filterCollectionId);
+}, [unifiedForest, filterCollectionId]);
+  
   const explorerTreeElement = (
     <ExplorerContent
-      unifiedForest={unifiedForest}
+      unifiedForest={filteredForest}
       searchQuery={searchQuery}
       activeCollectionId={activeCollectionId}
       selectedItemId={selectedItem?.id || null}
@@ -206,6 +226,9 @@ export default function Home() {
       loading={loading}
       error={error}
       onAddNewItem={() => openCreateItem(null, null)}
+      collections={allCollections}
+      filterCollectionId={filterCollectionId}
+      onSelectFilterCollection={setFilterCollectionId}
     >
       {explorerTreeElement}
     </LeftSidePanel>
@@ -226,6 +249,9 @@ export default function Home() {
       loading={loading}
       error={error}
       onAddNewItem={() => openCreateItem(null, null)}
+      collections={allCollections}
+      filterCollectionId={filterCollectionId}
+      onSelectFilterCollection={setFilterCollectionId}
     >
       {explorerTreeElement}
     </LeftSidePanel>

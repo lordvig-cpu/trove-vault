@@ -2,6 +2,76 @@ import React from 'react';
 
 interface ExplorerIconProps {
   className?: string;
+  isActive?: boolean;
+}
+
+// Horizontal equalizer / tuning sliders (Advanced Search Trigger)
+export function SlidersHorizontalIcon({ className = 'w-3.5 h-3.5', isActive = false }: ExplorerIconProps) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={`origin-center transition-all duration-200 ${className}`}
+    >
+      {/* Top track + thumb */}
+      <line x1="21" y1="5" x2="14" y2="5" />
+      <line x1="10" y1="5" x2="3" y2="5" />
+      <circle cx="12" cy="5" r="2" fill={isActive ? 'currentColor' : 'none'} />
+
+      {/* Middle track + thumb */}
+      <line x1="21" y1="12" x2="8" y2="12" />
+      <line x1="4" y1="12" x2="3" y2="12" />
+      <circle cx="6" cy="12" r="2" fill={isActive ? 'currentColor' : 'none'} />
+
+      {/* Bottom track + thumb */}
+      <line x1="21" y1="19" x2="18" y2="19" />
+      <line x1="14" y1="19" x2="3" y2="19" />
+      <circle cx="16" cy="19" r="2" fill={isActive ? 'currentColor' : 'none'} />
+    </svg>
+  );
+}
+
+// Filter icon
+export function FilterIcon({ className = 'w-3.5 h-3.5', isActive = false }: ExplorerIconProps) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill={isActive ? 'currentColor' : 'none'}
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={`origin-center transition-all duration-200 ${className}`}
+    >
+      <path d="M4 5h16l-6.5 7.5v5l-3 1.5v-6.5L4 5z"/>
+      {/*<polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />*/}
+    </svg>
+  );
+}
+
+// Search Glass: Unfilled stroke outline by default; solid fill when active/focused
+export function SearchGlassIcon({
+  className = 'w-3.5 h-3.5',
+  isFocused = false,
+}: ExplorerIconProps & { isFocused?: boolean }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill={isFocused ? 'currentColor' : 'none'}
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={`origin-center transition-all duration-200 ${className}`}
+    >
+      <circle cx="11" cy="11" r="7" />
+      <line x1="21" y1="21" x2="16.65" y2="16.65" />
+    </svg>
+  );
 }
 
 // Folder with a minus sign (Collapse All / Current)

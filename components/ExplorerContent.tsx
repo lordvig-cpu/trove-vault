@@ -246,6 +246,3 @@ export default function ExplorerContent({
     </div>
   );
 }
-
-// Backward-compatibility alias during refactoring transitions
-// export const ExplorerContent2 = ExplorerContent;

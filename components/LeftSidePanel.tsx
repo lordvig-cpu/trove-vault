@@ -6,28 +6,12 @@ import { useUIPreferences } from '@/context/UIPreferencesContext';
 import { useResizablePanel } from '@/hooks/useResizablePanel';
 import { useFlyoutLifecycle } from '@/hooks/useFlyoutLifecycle';
 import LeftSidePanelHeader from '@/components/LeftSidePanelHeader';
+import { CollectionRecord } from '@/types/collection';
 
 /* ==========================================================================
    1. TYPE DEFINITIONS & CONSTANTS
    ========================================================================== */
 
-/**
- * Props for the LeftSidePanel container.
- * @property variant - Layout rendering strategy: floating popover ('flyout') or docked split column ('sidebar')
- * @property isOpen - Controls visibility and mount lifecycle for the unpinned flyout
- * @property onClose - Dismissal handler invoked by backdrop clicks, escape keys, or close triggers
- * @property onTogglePin - Toggles between docked sidebar and floating flyout presentation modes
- * @property isAnyCategoryExpanded - Determines whether accordion toggle displays Expand All or Collapse All
- * @property onToggleAllCategories - Bulk accordion expansion handler
- * @property searchQuery - Filter string used to filter tree nodes
- * @property onSearchChange - Callback updating active search text
- * @property reservedWidth - Footprint of the opposite panel used to prevent viewport overlap during resizing
- * @property onWidthChange - Callback notifying root page of user-dragged dimension changes
- * @property loading - Renders hierarchy syncing progress indicators
- * @property error - Displays tree-load or persistence error notices
- * @property children - ExplorerContent tree node elements rendered inside the scroll chassis
- * @property onAddNewItem - Callback launching standalone item creation
- */
 interface LeftSidePanelProps {
   variant: 'flyout' | 'sidebar';
   isOpen: boolean;
@@ -43,8 +27,12 @@ interface LeftSidePanelProps {
   error?: string | null;
   children: React.ReactNode;
   onAddNewItem?: () => void;
+  // Collection Filter Props forwarded to LeftSidePanelHeader
+  collections: CollectionRecord[];
+  filterCollectionId: number | null;
+  onSelectFilterCollection: (collectionId: number | null) => void;
 
-  // Backward-compatibility aliases
+  // Backward-compatibility prop aliases
   isAnyFolderExpanded?: boolean;
   onToggleAllFolders?: () => void;
 }
@@ -72,20 +60,21 @@ export default function LeftSidePanel({
   error,
   children,
   onAddNewItem,
+  collections = [],
+  filterCollectionId,
+  onSelectFilterCollection,
 }: LeftSidePanelProps) {
-  // Support both canonical category terminology and legacy folder props
+  // Resolve canonical category terminology or legacy folder props
   const activeIsExpanded = isAnyCategoryExpanded ?? isAnyFolderExpanded;
   const activeToggleAll = onToggleAllCategories ?? onToggleAllFolders;
 
   /* ------------------------------------------------------------------------
      2.1 CONTEXT & PREFERENCES
-     Reads user preferences to manage docking, animations, and SSR hydration.
      ------------------------------------------------------------------------ */
   const { isPinned, togglePin, animationsEnabled, isHydrated } = useUIPreferences();
 
   /* ------------------------------------------------------------------------
      2.2 RESIZING CONTROLLER HOOK
-     Manages mouse drag physics, opposite-panel clamping, and default resets.
      ------------------------------------------------------------------------ */
   const {
     panelWidth,
@@ -102,8 +91,7 @@ export default function LeftSidePanel({
   });
 
   /* ------------------------------------------------------------------------
-     2.3 FLYOUT LIFECYCLE & ANIMATION HOOK
-     Coordinates entrance and exit timers so unmounting transitions complete.
+     2.3 FLYOUT LIFECYCLE HOOK
      ------------------------------------------------------------------------ */
   const { renderMenu, isClosing } = useFlyoutLifecycle(
     isOpen,
@@ -112,7 +100,6 @@ export default function LeftSidePanel({
     variant
   );
 
-  // Suppress CSS transitions during drag resizing for instantaneous 60+ FPS tracking
   const transitionClass = (!isDragging && animationsEnabled && isHydrated)
     ? 'transition-all duration-700 ease-in-out'
     : 'transition-none';
@@ -121,14 +108,10 @@ export default function LeftSidePanel({
 
   /* ------------------------------------------------------------------------
      2.4 UNIFIED INTERNAL CONTENT CHASSIS
-     Shared structure rendered within both flyout and docked sidebar shells.
      ------------------------------------------------------------------------ */
   const innerContent = (
     <>
-      {/* 
-        Resize Drag Handle:
-        Anchored to the right seam when pinned. Displays a 5px amber glow line on hover/drag.
-      */}
+      {/* Seam Resize Handle (Pinned mode only) */}
       {isPinned && (
         <div
           onPointerDown={handlePointerDown}
@@ -136,7 +119,6 @@ export default function LeftSidePanel({
           className="group/handle absolute top-0 -right-1.5 w-3 h-full cursor-col-resize z-50 flex items-center justify-center select-none"
           title="Drag to resize panel"
         >
-          {/* Full-height amber seam line */}
           <div
             className={`absolute top-0 bottom-0 left-1/2 -translate-x-1/2 w-[5px] transition-all duration-150 pointer-events-none ${
               isDragging
@@ -144,7 +126,6 @@ export default function LeftSidePanel({
                 : 'opacity-0 group-hover/handle:opacity-100 group-hover/handle:bg-accent-secondary'
             }`}
           />
-          {/* Central tactile grab handle pill */}
           <div
             className={`relative z-10 w-1 h-12 rounded-full transition-all duration-200 pointer-events-none ${
               isDragging
@@ -155,10 +136,7 @@ export default function LeftSidePanel({
         </div>
       )}
 
-      {/* 
-        Reset Width Floating Pull-Tab:
-        Appears along the outer seam when dragged away from the default width.
-      */}
+      {/* Reset Width Button */}
       {isPinned && panelWidth !== DEFAULT_WIDTH && (
         <button
           type="button"
@@ -190,17 +168,20 @@ export default function LeftSidePanel({
         </button>
       )}
 
-      {/* Top Header: Search bar, shortcuts, accordion controls, and pin toggles */}
+      {/* Header with Search, Filter Button & Filter Tray */}
       <LeftSidePanelHeader
         variant={variant}
         isPinned={isPinned}
         searchQuery={searchQuery}
         onSearchChange={onSearchChange}
-        isAnyFolderExpanded={activeIsExpanded}
-        onToggleAllFolders={activeToggleAll}
+        isAnyCategoryExpanded={activeIsExpanded}
+        onToggleAllCategories={activeToggleAll}
         onTogglePin={handlePinAction}
         onClose={onClose}
         onAddNewItem={onAddNewItem}
+        collections={collections}
+        filterCollectionId={filterCollectionId}
+        onSelectFilterCollection={onSelectFilterCollection}
       />
 
       {/* Syncing Progress Banner */}
@@ -210,6 +191,7 @@ export default function LeftSidePanel({
         </div>
       )}
 
+      {/* Error Feedback Notice */}
       {error && (
         <div className="left-side-panel-notice-error mt-2 mx-2">
           {error}
@@ -224,15 +206,13 @@ export default function LeftSidePanel({
   );
 
   /* ------------------------------------------------------------------------
-     3. FLYOUT VARIANT (Unpinned Floating Dropdown Popover)
-     Renders into document body via React Portal with a click-outside backdrop.
+     3. FLYOUT VARIANT
      ------------------------------------------------------------------------ */
   if (variant === 'flyout') {
     if (!renderMenu && !isPinned) return null;
 
     return (
       <>
-        {/* Transparent Click-Outside Dismissal Backdrop */}
         {isHydrated &&
           createPortal(
             <div
@@ -251,7 +231,6 @@ export default function LeftSidePanel({
             document.body
           )}
 
-        {/* Floating Flyout Menu Shell */}
         <aside
           style={{ zIndex: 80 }}
           className={[
@@ -274,8 +253,7 @@ export default function LeftSidePanel({
   }
 
   /* ------------------------------------------------------------------------
-     4. SIDEBAR VARIANT (Pinned Desktop-Docked Split Column)
-     Occupies physical layout space in the main workspace flex container.
+     4. SIDEBAR VARIANT
      ------------------------------------------------------------------------ */
   return (
     <aside
