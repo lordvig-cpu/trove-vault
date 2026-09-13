@@ -64,11 +64,5 @@ export function useExplorerCategories(nodes: ExplorerNodeLike[] = []) {
     isAnyCategoryExpanded,
     handleToggleCategory,
     handleToggleAllCategories,
-
-    // Backward-compatibility aliases for smooth transition across remaining components
-    expandedFolderIds: expandedCategoryIds,
-    isAnyFolderExpanded: isAnyCategoryExpanded,
-    handleToggleFolder: handleToggleCategory,
-    handleToggleAllFolders: handleToggleAllCategories,
   };
 }

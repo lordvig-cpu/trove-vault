@@ -42,10 +42,6 @@ export interface UnifiedExplorerTreeProps {
   onEditCollection?: (collection: CollectionRecord) => void;
   onDeleteCollection?: (collection: CollectionRecord) => void;
   onRenameCollection?: (id: number, nextName: string) => Promise<void> | void;
-
-  // Backward-compatibility prop aliases during transition
-  expandedFolderIds?: Set<number>;
-  onToggleFolder?: (folderId: number, expand: boolean) => void;
 }
 
 /* ==========================================================================
@@ -261,8 +257,6 @@ export default function UnifiedExplorerTree({
   depth = 0,
   expandedCategoryIds,
   onToggleCategory,
-  expandedFolderIds,
-  onToggleFolder,
   onSelectCollection,
   onSelectItem,
   onAddSubItem,
@@ -277,9 +271,9 @@ export default function UnifiedExplorerTree({
 }: UnifiedExplorerTreeProps) {
   const menu = useExplorerActionMenu(`node-${collection.id}`, 240);
 
-  // Support both canonical and legacy folder props
-  const activeExpandedIds = expandedCategoryIds || expandedFolderIds;
-  const activeToggleHandler = onToggleCategory || onToggleFolder;
+  // Support both canonical and legacy category props
+  const activeExpandedIds = expandedCategoryIds;
+  const activeToggleHandler = onToggleCategory;
 
   const isVirtualCategory = collection.id < 0;
   const isStandalone = collection.id === STANDALONE_COLLECTION_ID;
@@ -305,7 +299,7 @@ export default function UnifiedExplorerTree({
           zIndex: stickyZIndex,
         }}
         className={[
-          'group flex items-center h-7 px-1.5 gap-1.5 cursor-pointer transition w-full min-w-0 explorer-folder-sticky-header',
+          'group flex items-center h-7 px-1.5 gap-1.5 cursor-pointer transition w-full min-w-0 explorer-category-sticky-header',
           isActiveCollection
             ? 'bg-accent-primary/15 text-accent-secondary font-medium'
             : 'text-content-secondary hover:bg-surface-hover/60 hover:text-content-primary',

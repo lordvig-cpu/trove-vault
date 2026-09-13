@@ -210,8 +210,8 @@ Organized 1-to-1 with component stylesheets in styles/components/
    --explorer-menu-danger-hover-text: rgba(251, 113, 133, 1.00);
 
    /* Sticky Tree Header Tokens */
-   --explorer-sticky-folder-bg: rgba(4, 22, 40, 0.95);
-   --explorer-sticky-folder-border: var(--panel-border-subtle);
+   --explorer-sticky-category-bg: rgba(4, 22, 40, 0.95);
+   --explorer-sticky-category-border: var(--panel-border-subtle);
    --explorer-sticky-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.65);
 
    /* Search Bar & Shortcut Badge (LeftSidePanelHeader.tsx) */

@@ -32,10 +32,7 @@ interface LeftSidePanelHeaderProps {
   // Multi-Select Array Props
   filterCollectionIds: number[];
   onToggleFilterCollection: (collectionId: number) => void;
-  onClearCollectionFilters: () => void;
-  
-  isAnyFolderExpanded?: boolean;
-  onToggleAllFolders?: () => void;
+  onClearCollectionFilters: () => void;  
 }
 
 /* ==========================================================================
@@ -49,8 +46,6 @@ export default function LeftSidePanelHeader({
   onSearchChange,
   isAnyCategoryExpanded,
   onToggleAllCategories,
-  isAnyFolderExpanded = false,
-  onToggleAllFolders,
   onTogglePin,
   onClose,
   onAddNewItem,
@@ -65,8 +60,8 @@ export default function LeftSidePanelHeader({
   const triggerBtnRef = useRef<HTMLButtonElement>(null);
 
   const isFilterActive = filterCollectionIds.length > 0;
-  const activeIsExpanded = isAnyCategoryExpanded ?? isAnyFolderExpanded;
-  const activeToggleAll = onToggleAllCategories ?? onToggleAllFolders;
+  const activeIsExpanded = isAnyCategoryExpanded;
+  const activeToggleAll = onToggleAllCategories;
 
   const handleToggleAdvancedSearch = () => {
     if (!showAdvancedSearch && triggerBtnRef.current) {
@@ -241,6 +236,7 @@ export default function LeftSidePanelHeader({
         top={menuCoords.top}
         left={menuCoords.left}
         isPinned={isPinned}
+        triggerRef={triggerBtnRef}
         title="Advanced Search"
         titleIcon={
           <SlidersHorizontalIcon className="w-3.5 h-3.5 text-accent-secondary" isActive={true} />

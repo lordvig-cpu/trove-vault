@@ -61,10 +61,6 @@ export default function Home() {
   const {
     searchQuery,
     setSearchQuery,
-    expandedFolderIds,
-    isAnyFolderExpanded,
-    handleToggleAllFolders,
-    handleToggleFolder,
   } = useExplorerCategories(unifiedForest);
 
   const [filterCollectionIds, setFilterCollectionIds] = useState<number[]>([]);
@@ -192,7 +188,7 @@ export default function Home() {
   const filteredForest = useMemo(() => {
     // 1. If NO filters are active: Show all items grouped by Smart Categories
     if (filterCollectionIds.length === 0) {
-      // Exclude explicit User Collections (positive IDs); keep virtual template folders (negative IDs)
+      // Exclude explicit User Collections (positive IDs); keep virtual template categories (negative IDs)
       return unifiedForest.filter((node) => node.id < 0);
     }
     
@@ -206,8 +202,6 @@ export default function Home() {
       searchQuery={searchQuery}
       activeCollectionId={activeCollectionId}
       selectedItemId={selectedItem?.id || null}
-      expandedFolderIds={expandedFolderIds}
-      onToggleFolder={handleToggleFolder}
       onSelectCollection={(colId) => {
         setActiveCollectionId(colId);
         if (!isPinned) setIsLeftSidePanelOpen(false);
@@ -233,8 +227,6 @@ export default function Home() {
       isOpen={isLeftSidePanelOpen}
       onClose={() => setIsLeftSidePanelOpen(false)}
       onTogglePin={handleTogglePin}
-      isAnyFolderExpanded={isAnyFolderExpanded}
-      onToggleAllFolders={handleToggleAllFolders}
       searchQuery={searchQuery}
       onSearchChange={setSearchQuery}
       loading={loading}
@@ -255,8 +247,6 @@ export default function Home() {
       isOpen={isLeftSidePanelOpen}
       onClose={() => setIsLeftSidePanelOpen(false)}
       onTogglePin={handleTogglePin}
-      isAnyFolderExpanded={isAnyFolderExpanded}
-      onToggleAllFolders={handleToggleAllFolders}
       searchQuery={searchQuery}
       onSearchChange={setSearchQuery}
       reservedWidth={isRightPanelOpen ? rightPanelWidth : 0}

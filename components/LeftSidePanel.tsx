@@ -33,9 +33,6 @@ interface LeftSidePanelProps {
   filterCollectionIds: number[];
   onToggleFilterCollection: (collectionId: number) => void;
   onClearCollectionFilters: () => void;
-
-  isAnyFolderExpanded?: boolean;
-  onToggleAllFolders?: () => void;
 }
 
 const DEFAULT_WIDTH = 304;
@@ -51,8 +48,6 @@ export default function LeftSidePanel({
   onTogglePin,
   isAnyCategoryExpanded,
   onToggleAllCategories,
-  isAnyFolderExpanded = false,
-  onToggleAllFolders,
   searchQuery,
   onSearchChange,
   reservedWidth = 0,
@@ -66,9 +61,9 @@ export default function LeftSidePanel({
   onToggleFilterCollection,
   onClearCollectionFilters,
 }: LeftSidePanelProps) {
-  // Resolve canonical category terminology or legacy folder props
-  const activeIsExpanded = isAnyCategoryExpanded ?? isAnyFolderExpanded;
-  const activeToggleAll = onToggleAllCategories ?? onToggleAllFolders;
+  // Resolve canonical category terminology
+  const activeIsExpanded = isAnyCategoryExpanded;
+  const activeToggleAll = onToggleAllCategories;
 
   /* ------------------------------------------------------------------------
      2.1 CONTEXT & PREFERENCES

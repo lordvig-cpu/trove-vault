@@ -47,10 +47,6 @@ export interface ExplorerContentProps {
   onEditCollection?: (collection: CollectionRecord) => void;
   onRenameItem?: (id: number, nextName: string) => Promise<void> | void;
   onAddSubCollection?: (parentCollectionId: number) => void;
-
-  // Backward-compatibility prop aliases during transition
-  expandedFolderIds?: Set<number>;
-  onToggleFolder?: (folderId: number, expand: boolean) => void;
 }
 
 /* ==========================================================================
@@ -159,8 +155,6 @@ export default function ExplorerContent({
   selectedItemId,
   expandedCategoryIds,
   onToggleCategory,
-  expandedFolderIds,
-  onToggleFolder,
   onSelectCollection,
   onSelectItem,
   onAddSubItem,
@@ -172,9 +166,9 @@ export default function ExplorerContent({
   onEditCollection,
   onRenameItem,
 }: ExplorerContentProps) {
-  // Support both canonical and legacy folder prop naming
-  const activeExpandedIds = expandedCategoryIds || expandedFolderIds;
-  const activeToggleHandler = onToggleCategory || onToggleFolder;
+  // Support both canonical and legacy category prop naming
+  const activeExpandedIds = expandedCategoryIds;
+  const activeToggleHandler = onToggleCategory;
 
   /* ------------------------------------------------------------------------
      3.1 SEARCH MEMOIZATION & AUTO-EXPAND CALCULATION

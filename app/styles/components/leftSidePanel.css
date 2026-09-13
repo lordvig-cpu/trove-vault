@@ -1,7 +1,7 @@
 /* ==========================================================================
    LEFT SIDE PANEL & EXPLORER TREE STYLES
    Orchestrates the collapsible left sidebar, pinned flyouts, search cards,
-   and sticky folder headers for the Explorer panel.
+   and sticky Category headers for the Explorer panel.
    ========================================================================== */
 
 /* --------------------------------------------------------------------------
@@ -231,7 +231,7 @@
 }
 
 /* --------------------------------------------------------------------------
-   Sticky Tree Folder Headers (VS Code Style)
+   Sticky Tree Category Headers (VS Code Style)
    -------------------------------------------------------------------------- */
 /* Scroll wrapper clipping upper bleed for child sticky rows */
 .explorer-tree-scroll-container {
@@ -242,20 +242,20 @@
   flex: 1;
 }
 
-/* Sticky folder header pinned to the scroll ceiling */
-.explorer-folder-sticky-header {
+/* Sticky Category header pinned to the scroll ceiling */
+.explorer-category-sticky-header {
   position: sticky;
   top: 0;
-  background-color: var(--explorer-sticky-folder-bg);
+  background-color: var(--explorer-sticky-category-bg);
   backdrop-filter: blur(12px);
   /* Inset bottom line prevents layout shifting; top spread blocks bleed underneath */
-  box-shadow: inset 0 -1px 0 0 var(--explorer-sticky-folder-border),
-              0 -8px 0 0 var(--explorer-sticky-folder-bg),
+  box-shadow: inset 0 -1px 0 0 var(--explorer-sticky-category-border),
+              0 -8px 0 0 var(--explorer-sticky-category-bg),
               var(--explorer-sticky-shadow);
 }
 
-.explorer-folder-sticky-header:hover {
-  border-bottom-color: var(--explorer-sticky-folder-border);
+.explorer-category-sticky-header:hover {
+  border-bottom-color: var(--explorer-sticky-category-border);
 }
 
 /* Elevates the active/hovered tree row above sibling sticky stacking layers */

@@ -1,6 +1,6 @@
 /* ==========================================================================
    EXPLORER ACTION MENU PORTAL SLIDE & FADE
-   Flyout popover positioned next to Explorer gear triggers (Folder & Item).
+   Flyout popover positioned next to Explorer gear triggers (Category & Item).
    Rendered into document body via React Portal to escape panel clipping.
    ========================================================================== */
 
@@ -86,7 +86,7 @@
   padding-right: 0.25rem; /* pr-1 */
 }
 
-/* Top pill banner denoting current action context (Folder vs Item) */
+/* Top pill banner denoting current action context (Category vs Item) */
 .headerPill {
   padding-left: 1rem;
   padding-right: 1rem;
