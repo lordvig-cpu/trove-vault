@@ -5,14 +5,14 @@
 @import "./styles/themes/theme-default-light.css";
 
 /* 2. Functional Component Stylesheets */
-@import "./styles/components/navigationHeader.css";
-@import "./styles/components/navigationFooter.css";
-@import "./styles/components/mainContent.css";
-@import "./styles/components/leftSidePanel.css";
+@import "./styles/components/NavigationHeader.css";
+@import "./styles/components/NavigationFooter.css";
+@import "./styles/components/MainContent.css";
+@import "./styles/components/LeftSidePanel.css";
 @import "./styles/components/UnifiedExplorerTree.css";
-@import "./styles/components/rightSidePanel.css";
+@import "./styles/components/RightSidePanel.css";
 @import "./styles/components/collectionDropdown.css";
-@import "./styles/components/templateManagerModal.css";
+@import "./styles/components/TemplateManagerModal.css";
 
 /* ==========================================================================
    GLOBAL VIEWPORT & RESET

@@ -6,7 +6,7 @@ import { ItemRecord } from '@/types/item';
 import { useCollections } from '@/hooks/useCollections';
 import { useModals } from '@/hooks/useModals';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
-import { useExplorerFolders } from '@/hooks/useExplorerFolders';
+import { useExplorerCategories } from '@/hooks/useExplorerCategories';
 import NavigationHeader from '@/components/NavigationHeader';
 import NavigationFooter from '@/components/NavigationFooter';
 import MainContent from '@/components/MainContent';
@@ -23,7 +23,6 @@ export interface UniversalSearchResultItem extends ItemRecord {
 export default function Home() {
   /* ------------------------------------------------------------------------
      1. DATA LAYER (Supabase Records, Trees & CRUD Mutations)
-     Manages active collections, items, selection, and remote persistence.
      ------------------------------------------------------------------------ */
   const {
     allCollections,
@@ -44,7 +43,6 @@ export default function Home() {
 
   /* ------------------------------------------------------------------------
      2. MODAL DIALOG STATE
-     Manages active modal types via a unified discriminated union.
      ------------------------------------------------------------------------ */
   const {
     activeModal,
@@ -57,8 +55,8 @@ export default function Home() {
   } = useModals();
 
   /* ------------------------------------------------------------------------
-     3. EXPLORER TREE STATE
-     Tracks search filtering, expansion tracking, and bulk toggle state.
+     3. EXPLORER TREE STATE (Accordion & Search)
+     Pass unifiedForest so virtual category nodes can expand and collapse cleanly
      ------------------------------------------------------------------------ */
   const {
     searchQuery,
@@ -67,17 +65,15 @@ export default function Home() {
     isAnyFolderExpanded,
     handleToggleAllFolders,
     handleToggleFolder,
-  } = useExplorerFolders(allCollections);
+  } = useExplorerCategories(unifiedForest);
 
   /* ------------------------------------------------------------------------
      4. GLOBAL UI & LAYOUT PREFERENCES
-     Reads persistent user preferences from UIPreferencesContext.
      ------------------------------------------------------------------------ */
   const { isPinned, togglePin, isAudioEnabled } = useUIPreferences();
 
   /* ------------------------------------------------------------------------
      5. LOCAL VIEWPORT & INTERACTION STATES
-     Governs side panel docking, widths, dropdowns, and watermark hover.
      ------------------------------------------------------------------------ */
   const [isLogoHovered, setIsLogoHovered] = useState<boolean>(false);
   const [isRightPanelOpen, setIsRightPanelOpen] = useState<boolean>(false);
@@ -88,20 +84,17 @@ export default function Home() {
 
   /* ------------------------------------------------------------------------
      6. GLOBAL KEYBOARD SHORTCUTS
-     Handles global hotkeys (Esc dismissals, Ctrl+K / Cmd+K Explorer focus).
      ------------------------------------------------------------------------ */
   useKeyboardShortcuts([
     {
       key: 'Escape',
       allowInInputs: true,
       action: () => {
-        // Dismiss active modal if one is currently mounted
         if (activeModal) {
           closeModal();
           return;
         }
 
-        // If actively typing, blur the input without closing panels
         if (
           document.activeElement instanceof HTMLInputElement ||
           document.activeElement instanceof HTMLTextAreaElement
@@ -110,13 +103,11 @@ export default function Home() {
           return;
         }
 
-        // Dismiss floating flyout if unpinned
         if (isLeftSidePanelOpen && !isPinned) {
           setIsLeftSidePanelOpen(false);
           return;
         }
 
-        // Dismiss open right utility drawer
         if (isRightPanelOpen) {
           setIsRightPanelOpen(false);
         }
@@ -128,12 +119,10 @@ export default function Home() {
       action: (e) => {
         e.preventDefault();
 
-        // Reveal the unpinned flyout if closed
         if (!isPinned && !isLeftSidePanelOpen) {
           setIsLeftSidePanelOpen(true);
         }
 
-        // Target the appropriate input variant based on pin docking state
         const targetInputId = isPinned
           ? 'explorer-search-input-sidebar'
           : 'explorer-search-input-flyout';
@@ -151,33 +140,31 @@ export default function Home() {
 
   /* ------------------------------------------------------------------------
      7. EVENT HANDLERS & DELEGATION
-     Coordinates user interactions across navigation panels and modals.
      ------------------------------------------------------------------------ */
   const handleTogglePin = () => {
     togglePin();
     setIsLeftSidePanelOpen(true);
   };
 
-  const handleTreeSelectItem = (item: ItemRecord, collectionId: number) => {
+  const handleTreeSelectItem = (item: ItemRecord, collectionId: number | null) => {
     selectItemWithChildren(item, collectionId);
     if (!isPinned) {
       setIsLeftSidePanelOpen(false);
     }
   };
 
-  const handleTriggerEditItem = (item: ItemRecord, collectionId: number) => {
+  const handleTriggerEditItem = (item: ItemRecord, collectionId: number | null) => {
     setActiveCollectionId(collectionId);
     openEditItem(item, collectionId);
   };
 
-  const handleTriggerDeleteItem = (item: ItemRecord, collectionId: number) => {
+  const handleTriggerDeleteItem = (item: ItemRecord, collectionId: number | null) => {
     setActiveCollectionId(collectionId);
     openDeleteItem(item, collectionId);
   };
 
   /* ------------------------------------------------------------------------
      8. MEMOIZED EXPLORER SUB-COMPONENTS
-     Shared tree component used by both flyout and sidebar variants.
      ------------------------------------------------------------------------ */
   const explorerTreeElement = (
     <ExplorerContent
@@ -193,6 +180,11 @@ export default function Home() {
       }}
       onSelectItem={handleTreeSelectItem}
       onAddSubItem={openCreateItem}
+      onEditTemplate={(categoryId: number) => {
+        const templateId = Math.abs(categoryId);
+        console.log('Open Template Editor for Template ID:', templateId);
+      }}
+      onEditCollection={(col) => openTemplateManager(col.id, col.name)}
       onDeleteCollection={openDeleteCollection}
       onEditItem={handleTriggerEditItem}
       onDeleteItem={handleTriggerDeleteItem}
@@ -201,7 +193,6 @@ export default function Home() {
     />
   );
 
-  // Unpinned floating flyout popover
   const explorerFlyoutPanel = (
     <LeftSidePanel
       variant="flyout"
@@ -214,12 +205,12 @@ export default function Home() {
       onSearchChange={setSearchQuery}
       loading={loading}
       error={error}
+      onAddNewItem={() => openCreateItem(null, null)}
     >
       {explorerTreeElement}
     </LeftSidePanel>
   );
 
-  // Pinned desktop-docked split sidebar
   const explorerSidebarPanel = (
     <LeftSidePanel
       variant="sidebar"
@@ -234,6 +225,7 @@ export default function Home() {
       onWidthChange={setLeftPanelWidth}
       loading={loading}
       error={error}
+      onAddNewItem={() => openCreateItem(null, null)}
     >
       {explorerTreeElement}
     </LeftSidePanel>
@@ -249,7 +241,7 @@ export default function Home() {
         'bg-canvas text-content-primary studio-grid-canvas',
       ].join(' ')}
     >
-      {/* Dynamic Watermark Background & Hover Video Trigger */}
+      {/* Dynamic Watermark Background & Video Trigger */}
       <DynamicWatermark
         isHovered={isLogoHovered}
         onHoverChange={setIsLogoHovered}
@@ -281,7 +273,7 @@ export default function Home() {
             onToggleLeftSidePanel={() => setIsLeftSidePanelOpen(!isLeftSidePanelOpen)}
             unpinnedExplorerPanel={explorerFlyoutPanel}
             onAddNewItem={() => {
-              if (activeCollectionId) openCreateItem(activeCollectionId, null);
+              openCreateItem(activeCollectionId, null);
             }}
           />
         </div>
