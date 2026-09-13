@@ -29,10 +29,16 @@ interface LeftSidePanelHeaderProps {
   onAddNewItem?: () => void;
   collections: CollectionRecord[];
   
+  // Passed down to display the "Active" badge like the old dropdown
+  activeCollectionId?: number | null;
+
   // Multi-Select Array Props
   filterCollectionIds: number[];
   onToggleFilterCollection: (collectionId: number) => void;
-  onClearCollectionFilters: () => void;  
+  onClearCollectionFilters: () => void;
+  
+  isAnyFolderExpanded?: boolean;
+  onToggleAllFolders?: () => void;
 }
 
 /* ==========================================================================
@@ -46,10 +52,13 @@ export default function LeftSidePanelHeader({
   onSearchChange,
   isAnyCategoryExpanded,
   onToggleAllCategories,
+  isAnyFolderExpanded = false,
+  onToggleAllFolders,
   onTogglePin,
   onClose,
   onAddNewItem,
   collections = [],
+  activeCollectionId = null,
   filterCollectionIds = [],
   onToggleFilterCollection,
   onClearCollectionFilters,
@@ -60,18 +69,16 @@ export default function LeftSidePanelHeader({
   const triggerBtnRef = useRef<HTMLButtonElement>(null);
 
   const isFilterActive = filterCollectionIds.length > 0;
-  const activeIsExpanded = isAnyCategoryExpanded;
-  const activeToggleAll = onToggleAllCategories;
+  const activeIsExpanded = isAnyCategoryExpanded ?? isAnyFolderExpanded;
+  const activeToggleAll = onToggleAllCategories ?? onToggleAllFolders;
 
   const handleToggleAdvancedSearch = () => {
     if (!showAdvancedSearch && triggerBtnRef.current) {
       const rect = triggerBtnRef.current.getBoundingClientRect();
 
       setMenuCoords({
-        // Aligns the top of the menu with the slider button
         top: Math.round(rect.top - 4),
-        // Pushes it outside the panel's right border (clearing the scrollbar/seam)
-        left: Math.round(rect.right + 10),
+        left: Math.round(rect.right - 2),
       });
       setShowAdvancedSearch(true);
     } else {
@@ -228,7 +235,7 @@ export default function LeftSidePanelHeader({
       </div>
 
       {/* ------------------------------------------------------------------
-          ADVANCED SEARCH MENU PORTAL (Checkbox List)
+          ADVANCED SEARCH ACTION MENU PORTAL
           ------------------------------------------------------------------ */}
       <ExplorerSearchMenu
         isOpen={showAdvancedSearch}
@@ -244,41 +251,197 @@ export default function LeftSidePanelHeader({
       >
         <div className="flex flex-col gap-1.5 px-1 py-1">
           
-          {/* 1. Action-Menu Style Label */}
-          <div className="flex items-center gap-2.5 px-2 py-1">
-            <span className="w-5 shrink-0 flex items-center justify-center text-sm">
-              📁
-            </span>
-            <div className="flex flex-col leading-tight min-w-0">
+          {/* 1. Header Row: "Collection(s):" + Amber Number Count Badge */}
+          <div className="flex items-center justify-between px-2 py-1">
+            <div className="flex items-center gap-2">
+              <span className="w-4 shrink-0 flex items-center justify-center text-sm">
+                📁
+              </span>
               <span className="text-xs font-medium text-white">Collection(s):</span>
             </div>
-          </div>
-          
-          {/* 2. Darker Inner Box for Checkboxes */}
-          <div className="flex flex-col mx-2 mb-1 bg-[#040811] border border-[var(--explorer-menu-divider,rgba(245,158,11,0.2))] shadow-inner rounded-md max-h-52 overflow-y-auto overflow-x-hidden left-panel-scroll p-1">
-            {collections.map((col) => {
-              const isChecked = filterCollectionIds.includes(col.id);
-              return (
-                <label
-                  key={col.id}
-                  className="flex items-center gap-2.5 px-2 py-1.5 hover:bg-surface-hover/60 rounded transition-colors cursor-pointer"
-                >
-                  <input
-                    type="checkbox"
-                    checked={isChecked}
-                    onChange={() => onToggleFilterCollection(col.id)}
-                    className="w-3.5 h-3.5 rounded border-border-strong text-accent-secondary bg-surface focus:ring-1 focus:ring-accent-secondary/50 cursor-pointer shrink-0"
-                  />
-                  {/* Folder Icon removed; displaying name only */}
-                  <span className="text-xs text-content-primary font-medium truncate min-w-0">
-                    {col.name}
-                  </span>
-                </label>
-              );
-            })}
+            
+            <span
+              title={`${collections.length} ${collections.length === 1 ? 'collection' : 'collections'}`}
+              className="px-1.5 py-0.5 rounded text-[10px] font-mono font-bold text-accent-secondary bg-surface-hover/60 border border-border-subtle/50 shrink-0 select-none"
+            >
+              {collections.length}
+            </span>
           </div>
 
-          {/* 3. Clear Filters Action */}
+          {/* 2. Horizontal Divider */}
+          <div className="my-1 mx-2 tree-menu-divider" />
+
+          {/* 3. Select All / None Quick Toggle Row */}
+          {collections.length > 0 && (() => {
+            const allSelected =
+              collections.length > 0 &&
+              collections.every((col) => filterCollectionIds.includes(col.id));
+            const hasSome = collections.some((col) =>
+              filterCollectionIds.includes(col.id)
+            );
+            const isIndeterminate = hasSome && !allSelected;
+
+            return (
+              <div className="mx-2 px-1 py-1 flex items-center justify-between">
+                <label className="flex items-center gap-2 cursor-pointer select-none">
+                  <input
+                    type="checkbox"
+                    checked={collections.length > 0 && allSelected}
+                    ref={(input) => {
+                      if (input) {
+                        input.indeterminate = isIndeterminate;
+                      }
+                    }}
+                    onChange={() => {
+                      // If ALL are selected OR SOME are selected (indeterminate),
+                      // clicking it clears them all.
+                      if (allSelected || isIndeterminate) {
+                        onClearCollectionFilters();
+                      } else {
+                        // If NONE are selected, select all available
+                        collections.forEach((col) => {
+                          if (!filterCollectionIds.includes(col.id)) {
+                            onToggleFilterCollection(col.id);
+                          }
+                        });
+                      }
+                    }}
+                    className="w-3.5 h-3.5 rounded border-border-strong text-accent-secondary bg-surface focus:ring-1 focus:ring-accent-secondary/50 cursor-pointer shrink-0"
+                  />
+                  <span className="text-[11px] font-semibold text-content-secondary hover:text-content-primary transition-colors">
+                    {allSelected || isIndeterminate ? 'Deselect All' : 'Select All'}
+                  </span>
+                </label>
+
+                {isFilterActive && (
+                  <span className="text-[10px] font-mono text-accent-secondary">
+                    {filterCollectionIds.length}/{collections.length}
+                  </span>
+                )}
+              </div>
+            );
+          })()}
+          
+          {/* 4. Collection List with Nested Groups in Unified Cards */}
+          <div className="flex flex-col mx-2 mb-1 bg-[#040811] border border-[var(--explorer-menu-divider,rgba(245,158,11,0.2))] shadow-inner rounded-md max-h-60 overflow-y-auto overflow-x-hidden left-panel-scroll p-1.5 space-y-1.5">
+            {(() => {
+              const allSelected =
+                collections.length > 0 &&
+                collections.every((col) => filterCollectionIds.includes(col.id));
+
+              // Build recursive hierarchy tree
+              const buildCollectionTree = (
+                items: CollectionRecord[],
+                parentId: number | null = null
+              ): Array<CollectionRecord & { children?: CollectionRecord[] }> => {
+                return items
+                  .filter((c) => (c.parent_id ?? null) === parentId)
+                  .map((c) => ({
+                    ...c,
+                    children: buildCollectionTree(items, c.id),
+                  }));
+              };
+
+              const rootTrees = buildCollectionTree(collections, null);
+
+              // Catch any orphan collections whose parent_id doesn't exist
+              const rootIds = new Set(rootTrees.map((r) => r.id));
+              collections.forEach((col) => {
+                if (col.parent_id && !collections.some((p) => p.id === col.parent_id) && !rootIds.has(col.id)) {
+                  rootTrees.push({ ...col, children: [] });
+                }
+              });
+
+              // Recursive node renderer within the same card bubble
+              const renderNodeRow = (
+                node: CollectionRecord & { children?: CollectionRecord[] },
+                depth = 0
+              ) => {
+                const isChecked = filterCollectionIds.includes(node.id);
+                const hasChildren = node.children && node.children.length > 0;
+
+                return (
+                  <div key={node.id} className="flex flex-col">
+                    <label
+                      style={{ paddingLeft: `${depth * 14 + 8}px` }}
+                      className={`group py-1.5 pr-2.5 rounded-md transition flex items-center justify-between cursor-pointer hover:bg-surface-hover/60 ${
+                        isChecked ? 'text-accent-secondary' : 'text-content-primary'
+                      }`}
+                    >
+                      <div className="flex items-center gap-2 min-w-0 flex-1">
+                        {/* Checkbox: visible when checked, hovered, or All Selected */}
+                        <div className="w-3.5 h-3.5 shrink-0 flex items-center justify-center">
+                          <input
+                            type="checkbox"
+                            checked={isChecked}
+                            onChange={() => onToggleFilterCollection(node.id)}
+                            className={`w-3.5 h-3.5 rounded border-border-strong text-accent-secondary bg-surface focus:ring-1 focus:ring-accent-secondary/50 cursor-pointer transition-opacity duration-150 ${
+                              allSelected || isChecked
+                                ? 'opacity-100 pointer-events-auto'
+                                : 'opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto'
+                            }`}
+                          />
+                        </div>
+
+                        {/* Sub-item tree branch indicator */}
+                        {depth > 0 && (
+                          <svg
+                            viewBox="0 0 16 16"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            className="w-3.5 h-3.5 text-content-muted/60 shrink-0 select-none -ml-1 mr-0.5"
+                          >
+                            {/* L-shaped corner branch line pointing right towards the folder */}
+                            <path d="M 5 2 L 5 9 L 13 9" />
+                            <polyline points="10 6 13 9 10 12" />
+                          </svg>
+                        )}
+
+                        {/* Folder Icon */}
+                        <span className="text-sm shrink-0 select-none">
+                          {node.icon || '📁'}
+                        </span>
+
+                        {/* Name & Description Stack */}
+                        <div className="flex flex-col min-w-0">
+                          <span className="text-xs font-semibold truncate">
+                            {node.name}
+                          </span>
+                          {node.description && (
+                            <p className="text-[10px] text-content-muted truncate mt-0.5">
+                              {node.description}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    </label>
+
+                    {/* Render sub-collection children nested inside the SAME bubble card */}
+                    {hasChildren && (
+                      <div className="border-t border-border-subtle/30 pt-0.5 flex flex-col">
+                        {node.children!.map((child) => renderNodeRow(child, depth + 1))}
+                      </div>
+                    )}
+                  </div>
+                );
+              };
+
+              return rootTrees.map((rootNode) => (
+                /* SINGLE UNIFIED CARD BUBBLE PER ROOT COLLECTION TREE */
+                <div
+                  key={rootNode.id}
+                  className="rounded-lg border border-border-subtle/50 bg-surface/30 hover:border-border-subtle transition flex flex-col overflow-hidden"
+                >
+                  {renderNodeRow(rootNode, 0)}
+                </div>
+              ));
+            })()}
+          </div>
+
+          {/* 5. Clear Filters Reset Action */}
           {isFilterActive && (
             <div className="border-t border-[var(--explorer-menu-divider,rgba(245,158,11,0.2))] mt-0.5 pt-1.5 px-2 pb-0.5">
               <button

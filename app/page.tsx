@@ -236,6 +236,7 @@ export default function Home() {
       filterCollectionIds={filterCollectionIds}
       onToggleFilterCollection={handleToggleFilterCollection}
       onClearCollectionFilters={handleClearCollectionFilters}
+      activeCollectionId={activeCollectionId}
     >
       {explorerTreeElement}
     </LeftSidePanel>
@@ -258,6 +259,7 @@ export default function Home() {
       filterCollectionIds={filterCollectionIds}
       onToggleFilterCollection={handleToggleFilterCollection}
       onClearCollectionFilters={handleClearCollectionFilters}
+      activeCollectionId={activeCollectionId}
     >
       {explorerTreeElement}
     </LeftSidePanel>

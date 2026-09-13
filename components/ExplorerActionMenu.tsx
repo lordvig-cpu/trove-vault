@@ -5,21 +5,6 @@ import { createPortal } from 'react-dom';
 import '@/app/styles/components/ExplorerActionMenu.css';
 import { useUIPreferences } from '@/context/UIPreferencesContext';
 
-/* ==========================================================================
-   1. TYPE DEFINITIONS & INTERFACES
-   ========================================================================== */
-
-/**
- * Props for the ExplorerActionMenu flyout portal.
- * @property isOpen - Controls mounting and visibility of the action menu portal
- * @property onMouseEnter - Cancels close grace-period timers when cursor enters portal hitboxes
- * @property onMouseLeave - Initiates close grace-period timers when cursor departs portal hitboxes
- * @property top - Viewport Y-coordinate (px) calculated relative to the triggering gear icon
- * @property left - Viewport X-coordinate (px) calculated relative to the triggering gear icon
- * @property title - Pill banner label (e.g., "Category Actions", "Collection Actions", "Item Actions")
- * @property titleIcon - Context icon glyph shown adjacent to the title banner
- * @property children - Interactive menu items, dividers, or inline forms rendered inside
- */
 interface ExplorerActionMenuProps {
   isOpen: boolean;
   onMouseEnter: () => void;
@@ -31,10 +16,6 @@ interface ExplorerActionMenuProps {
   children: React.ReactNode;
 }
 
-/* ==========================================================================
-   2. MAIN COMPONENT: ExplorerActionMenu
-   ========================================================================== */
-
 export default function ExplorerActionMenu({
   isOpen,
   onMouseEnter,
@@ -45,39 +26,48 @@ export default function ExplorerActionMenu({
   titleIcon,
   children,
 }: ExplorerActionMenuProps) {
-  /* ------------------------------------------------------------------------
-     2.1 CONTEXT & PREFERENCES
-     Reads user preferences to conditionally apply slide animations and
-     adjust z-index layering when the Explorer panel is pinned vs floating.
-     ------------------------------------------------------------------------ */
   const { animationsEnabled, isPinned } = useUIPreferences();
-
-  /* ------------------------------------------------------------------------
-     2.2 SSR HYDRATION SAFETY
-     React Portals require access to `document.body`. Delay mounting until
-     after client hydration to prevent server/client DOM mismatch warnings.
-     ------------------------------------------------------------------------ */
   const [mounted, setMounted] = useState(false);
+  const [shouldRender, setShouldRender] = useState(isOpen);
+  const [isClosing, setIsClosing] = useState(false);
+  const closeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  // Guard against unmounted SSR execution or closed visibility states
-  if (!isOpen || !mounted || typeof document === 'undefined') return null;
+  useEffect(() => {
+    if (isOpen) {
+      if (closeTimeoutRef.current) clearTimeout(closeTimeoutRef.current);
+      setShouldRender(true);
+      setIsClosing(false);
+    } else if (shouldRender) {
+      if (animationsEnabled) {
+        setIsClosing(true);
+        closeTimeoutRef.current = setTimeout(() => {
+          setShouldRender(false);
+          setIsClosing(false);
+        }, 340); // Matches menuSlideOut 350ms duration
+      } else {
+        setShouldRender(false);
+      }
+    }
 
-  /* ------------------------------------------------------------------------
-     2.3 VIEWPORT POSITIONING GEOMETRY
-     Offset the horizontal position by +14px to guarantee clean clearance
-     from the triggering gear icon boundary.
-     ------------------------------------------------------------------------ */
-  const adjustedLeft = left + 14;
+    return () => {
+      if (closeTimeoutRef.current) clearTimeout(closeTimeoutRef.current);
+    };
+  }, [isOpen, animationsEnabled, shouldRender]);
 
-  /* ------------------------------------------------------------------------
-     2.4 PORTAL SHELL & CATCHMENT HITBOX RENDERING
-     Mounts directly to document.body to break free from parent CSS overflow
-     clipping in the left side panel.
-     ------------------------------------------------------------------------ */
+  if (!shouldRender || !mounted || typeof document === 'undefined') return null;
+
+  const adjustedLeft = isPinned ? left + 10 : left;
+
+  const animationClass = !animationsEnabled
+    ? 'menuNoAnimation'
+    : isClosing
+    ? 'menuSlideOut'
+    : 'menuSlideIn';
+
   return createPortal(
     <div
       onMouseEnter={onMouseEnter}
@@ -87,29 +77,25 @@ export default function ExplorerActionMenu({
         top: `${top}px`,
         left: `${adjustedLeft}px`,
         margin: 0,
-        zIndex: isPinned ? 30 : 70, // Sits above docked panels while remaining under modals
+        zIndex: isPinned ? 30 : 70,
       }}
-      className={`menuShell ${animationsEnabled ? 'menuSlideIn' : 'menuNoAnimation'}`}
+      className={`menuShell ${animationClass}`}
     >
-      {/* 
-        Catchment Hover Bridge:
-        Spans the invisible geometric void between the trigger gear icon and this
-        portal body so fast or diagonal cursor transit does not trigger mouseLeave.
-      */}
-      <div
-        className={`bridge ${isPinned ? 'bridgePinned' : 'bridgeUnpinned'}`}
-        aria-hidden="true"
-      />
+      {/* Catchment Hover Bridge (disabled during exit to prevent sticking) */}
+      {!isClosing && (
+        <div
+          className={`bridge ${isPinned ? 'bridgePinned' : 'bridgeUnpinned'}`}
+          aria-hidden="true"
+        />
+      )}
 
-      {/* Internal Content Chassis */}
+      {/* Inner Content Wrapper */}
       <div className="innerContent">
-        {/* Context Category Pill Banner */}
         <div className="headerPill">
           <span className="headerTitle">{title}</span>
           <span className="headerIcon">{titleIcon}</span>
         </div>
 
-        {/* Action Item Slots */}
         <div className="childrenContainer">{children}</div>
       </div>
     </div>,
@@ -118,14 +104,9 @@ export default function ExplorerActionMenu({
 }
 
 /* ==========================================================================
-   3. SUB-COMPONENTS & ACTION PRIMITIVES
-   Reusable modular rows, destructive buttons, dividers, and rename forms.
+   SUB-COMPONENTS FOR REUSABLE ACTIONS
    ========================================================================== */
 
-/**
- * Standard Action Row Button
- * Renders an interactive option with leading icon, primary label, and descriptor.
- */
 export function ActionMenuItem({
   icon,
   label,
@@ -134,30 +115,32 @@ export function ActionMenuItem({
 }: {
   icon: React.ReactNode;
   label: string;
-  subtext: string;
+  subtext?: string;
   onClick: () => void;
 }) {
   return (
     <button
       type="button"
       onClick={onClick}
-      className="group/action w-full text-left flex items-center gap-2.5 px-3 py-1.5 rounded tree-menu-item cursor-pointer"
+      className="w-full text-left px-2.5 py-1.5 rounded-md hover:bg-surface-hover/70 flex items-center gap-2.5 transition-colors cursor-pointer group"
     >
-      <span className="w-5 shrink-0 flex items-center justify-center text-sm leading-none group-hover/action:scale-105 transition-transform select-none">
+      <span className="w-4 h-4 flex items-center justify-center shrink-0 text-content-muted group-hover:text-content-primary">
         {icon}
       </span>
       <div className="flex flex-col leading-tight min-w-0">
-        <span className="text-xs font-medium text-content-primary">{label}</span>
-        <span className="text-[9px] text-content-muted">{subtext}</span>
+        <span className="text-xs font-medium text-content-primary group-hover:text-white truncate">
+          {label}
+        </span>
+        {subtext && (
+          <span className="text-[10px] text-content-muted group-hover:text-content-secondary truncate">
+            {subtext}
+          </span>
+        )}
       </div>
     </button>
   );
 }
 
-/**
- * Destructive / Danger Action Row Button
- * Uses danger token variables to display high-visibility warning colors on hover.
- */
 export function ActionMenuDangerItem({
   icon,
   label,
@@ -166,39 +149,36 @@ export function ActionMenuDangerItem({
 }: {
   icon: React.ReactNode;
   label: string;
-  subtext: string;
+  subtext?: string;
   onClick: () => void;
 }) {
   return (
     <button
       type="button"
       onClick={onClick}
-      className="group/action w-full text-left flex items-center gap-2.5 px-3 py-1.5 rounded tree-menu-item-danger cursor-pointer"
+      className="w-full text-left px-2.5 py-1.5 rounded-md hover:bg-rose-950/40 flex items-center gap-2.5 transition-colors cursor-pointer group border border-transparent hover:border-rose-900/40"
     >
-      <span className="w-5 shrink-0 flex items-center justify-center text-sm leading-none group-hover/action:scale-105 transition-transform select-none">
+      <span className="w-4 h-4 flex items-center justify-center shrink-0 text-rose-400">
         {icon}
       </span>
       <div className="flex flex-col leading-tight min-w-0">
-        <span className="text-xs font-medium tree-menu-danger-label">{label}</span>
-        <span className="text-[9px] tree-menu-danger-subtext">{subtext}</span>
+        <span className="text-xs font-medium text-rose-300 group-hover:text-rose-200 truncate">
+          {label}
+        </span>
+        {subtext && (
+          <span className="text-[10px] text-rose-400/70 group-hover:text-rose-300 truncate">
+            {subtext}
+          </span>
+        )}
       </div>
     </button>
   );
 }
 
-/**
- * Menu Divider Line
- * Inset separator utilizing `--explorer-menu-divider` theme variables.
- */
 export function ActionMenuDivider() {
-  return <div className="my-1 mx-1 tree-menu-divider" />;
+  return <div className="my-1 mx-2 tree-menu-divider" />;
 }
 
-/**
- * Inline Rename Form
- * Self-focusing text input enabling instant in-place collection or item renaming
- * without opening a full blocking modal dialog.
- */
 export function ActionMenuRenameForm({
   initialValue,
   onSave,
@@ -208,70 +188,50 @@ export function ActionMenuRenameForm({
   onSave: (val: string) => Promise<void> | void;
   onCancel: () => void;
 }) {
-  const [value, setValue] = useState(initialValue);
-  const [isSaving, setIsSaving] = useState(false);
+  const [val, setVal] = useState(initialValue);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Auto-focus and highlight initial text on entry
   useEffect(() => {
-    if (inputRef.current) {
-      inputRef.current.focus();
-      inputRef.current.select();
-    }
+    inputRef.current?.focus();
+    inputRef.current?.select();
   }, []);
 
-  const handleSubmit = async (e?: React.FormEvent) => {
-    if (e) e.preventDefault();
-    const trimmed = value.trim();
-
-    // Dismiss cleanly if empty or unchanged
-    if (!trimmed || trimmed === initialValue) {
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (val.trim() && val.trim() !== initialValue) {
+      onSave(val.trim());
+    } else {
       onCancel();
-      return;
-    }
-
-    try {
-      setIsSaving(true);
-      await onSave(trimmed);
-      onCancel();
-    } catch (err) {
-      console.error('Failed to save inline rename:', err);
-    } finally {
-      setIsSaving(false);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="renameForm">
+    <form onSubmit={handleSubmit} className="px-2 py-1 flex flex-col gap-1.5">
       <input
         ref={inputRef}
         type="text"
-        value={value}
-        onChange={(e) => setValue(e.target.value)}
+        value={val}
+        onChange={(e) => setVal(e.target.value)}
         onKeyDown={(e) => {
           if (e.key === 'Escape') onCancel();
         }}
-        className={[
-          'renameInput',
-          value.trim().length > 0
-            ? 'border-[var(--brand-secondary-amber)] focus:border-[var(--brand-secondary-amber)]'
-            : 'border-[var(--panel-border-subtle)] focus:border-[var(--brand-secondary-amber)]',
-        ].join(' ')}
-        placeholder="Name..."
-        disabled={isSaving}
+        className="text-xs bg-[#040811] text-white px-2 py-1 rounded border border-accent-secondary/50 focus:outline-none focus:ring-1 focus:ring-accent-secondary"
       />
-      <button
-        type="submit"
-        disabled={isSaving || !value.trim()}
-        className={[
-          'px-2.5 py-1 text-xs font-semibold rounded-md border border-transparent shrink-0 transition-all cursor-pointer',
-          'bg-surface-hover/80 text-content-muted hover:text-content-primary hover:bg-surface-hover hover:border-border-subtle',
-          'disabled:opacity-50 disabled:cursor-not-allowed',
-        ].join(' ')}
-        title="Save changes"
-      >
-        {isSaving ? '...' : 'Save'}
-      </button>
+      <div className="flex items-center justify-end gap-1.5 text-[10px]">
+        <button
+          type="button"
+          onClick={onCancel}
+          className="px-2 py-0.5 rounded text-content-muted hover:text-white"
+        >
+          Cancel
+        </button>
+        <button
+          type="submit"
+          className="px-2 py-0.5 rounded bg-accent-secondary/20 text-accent-secondary hover:bg-accent-secondary/30 font-medium"
+        >
+          Save
+        </button>
+      </div>
     </form>
   );
 }

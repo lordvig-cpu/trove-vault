@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { CollectionRecord } from '@/types/collection';
 import { ItemRecord } from '@/types/item';
 import { GearIcon, AddSubItemIcon } from '@/components/icons/ActionIcons';
@@ -16,7 +16,7 @@ import { STANDALONE_COLLECTION_ID } from '@/lib/explorerUtils';
 
 /* ==========================================================================
    1. TYPE DEFINITIONS & INTERFACES
-   ========================================================================== */
+   ========================================================================= */
 
 export interface UnifiedCollectionNode extends CollectionRecord {
   items: ItemRecord[];
@@ -223,9 +223,9 @@ function UnifiedExplorerTreeItem({
         />
       </ExplorerActionMenu>
 
-      {/* Recursive Sub-Items */}
+      {/* Recursive Sub-Items with guide line directly under the chevron center (13.5px) */}
       {isOpen && hasSubItems && (
-        <div className="border-l border-border-subtle space-y-0.5 ml-2 pl-1.5 my-0.5 flex flex-col min-w-0">
+        <div className="border-l border-border-subtle space-y-0.5 ml-[13.5px] pl-2.5 my-0.5 flex flex-col min-w-0">
           {item.children?.map((child) => (
             <UnifiedExplorerTreeItem
               key={`subitem-${child.id}`}
@@ -271,15 +271,23 @@ export default function UnifiedExplorerTree({
 }: UnifiedExplorerTreeProps) {
   const menu = useExplorerActionMenu(`node-${collection.id}`, 240);
 
-  // Support both canonical and legacy category props
-  const activeExpandedIds = expandedCategoryIds;
-  const activeToggleHandler = onToggleCategory;
-
   const isVirtualCategory = collection.id < 0;
   const isStandalone = collection.id === STANDALONE_COLLECTION_ID;
   const effectiveCollectionId = isStandalone ? null : collection.id;
 
-  const isOpen = activeExpandedIds ? activeExpandedIds.has(collection.id) : true;
+  // Local open state initialized to true or according to expandedCategoryIds
+  const [localIsOpen, setLocalIsOpen] = useState(
+    expandedCategoryIds ? expandedCategoryIds.has(collection.id) : true
+  );
+
+  // Sync state if header toggles all categories
+  useEffect(() => {
+    if (expandedCategoryIds !== undefined) {
+      setLocalIsOpen(expandedCategoryIds.has(collection.id));
+    }
+  }, [expandedCategoryIds, collection.id]);
+
+  const isOpen = localIsOpen;
   const isActiveCollection = activeCollectionId === collection.id;
   const hasChildren =
     Boolean(collection.subCollections && collection.subCollections.length > 0) ||
@@ -287,6 +295,14 @@ export default function UnifiedExplorerTree({
 
   const stickyTop = depth * 28;
   const stickyZIndex = 20 - depth;
+
+  const handleToggle = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+    const nextState = !isOpen;
+    setLocalIsOpen(nextState);
+    onToggleCategory?.(collection.id, nextState);
+  };
 
   return (
     <div className="select-none text-[13px] font-sans w-full min-w-0 flex flex-col">
@@ -308,17 +324,16 @@ export default function UnifiedExplorerTree({
         {/* Accordion Chevron */}
         <button
           type="button"
-          onClick={(e) => {
-            e.stopPropagation();
-            activeToggleHandler?.(collection.id, !isOpen);
-          }}
+          onClick={handleToggle}
           className={[
             'flex items-center justify-center w-4 h-4 shrink-0',
-            'text-content-muted hover:text-content-primary transition',
-            !hasChildren && 'tree-chevron-leaf',
+            'text-[9px] text-content-muted hover:text-content-primary',
+            'cursor-pointer transition select-none',
+            !hasChildren && 'opacity-0 pointer-events-none cursor-default',
           ].filter(Boolean).join(' ')}
+          title={isOpen ? 'Collapse category' : 'Expand category'}
         >
-          {isOpen ? <ChevronDownIcon /> : <ChevronRightIcon />}
+          {isOpen ? '▼' : '▶\uFE0E'}
         </button>
 
         {/* Glyph Icon */}
@@ -504,9 +519,9 @@ export default function UnifiedExplorerTree({
         </ExplorerActionMenu>
       )}
 
-      {/* Nested Hierarchy: Sub-Collections and Items */}
+      {/* Nested Hierarchy: Sub-Collections and Items with guide line directly under chevron center (13.5px) */}
       {isOpen && hasChildren && (
-        <div className="border-l border-border-subtle space-y-0.5 ml-2 pl-1.5 my-0.5 flex flex-col min-w-0">
+        <div className="border-l border-border-subtle space-y-0.5 ml-[13.5px] pl-2.5 my-0.5 flex flex-col min-w-0">
           {collection.subCollections?.map((subCol) => (
             <UnifiedExplorerTree
               key={`col-${subCol.id}`}
@@ -514,8 +529,8 @@ export default function UnifiedExplorerTree({
               activeCollectionId={activeCollectionId}
               selectedItemId={selectedItemId}
               depth={depth + 1}
-              expandedCategoryIds={activeExpandedIds}
-              onToggleCategory={activeToggleHandler}
+              expandedCategoryIds={expandedCategoryIds}
+              onToggleCategory={onToggleCategory}
               onSelectCollection={onSelectCollection}
               onSelectItem={onSelectItem}
               onAddSubItem={onAddSubItem}
