@@ -120,15 +120,15 @@ export default function LeftSidePanel({
           <div
             className={`absolute top-0 bottom-0 left-1/2 -translate-x-1/2 w-[5px] transition-all duration-150 pointer-events-none ${
               isDragging
-                ? 'bg-accent-secondary opacity-100'
-                : 'opacity-0 group-hover/handle:opacity-100 group-hover/handle:bg-accent-secondary'
+                ? 'panel-grip-active'
+                : 'panel-grip-idle'
             }`}
           />
           <div
             className={`relative z-10 w-1 h-12 rounded-full transition-all duration-200 pointer-events-none ${
               isDragging
-                ? 'bg-accent-secondary w-1.5 h-20 opacity-100'
-                : 'bg-accent-secondary/60 group-hover/handle:bg-accent-secondary group-hover/handle:h-16 group-hover/handle:opacity-100 opacity-0'
+                ? 'panel-grip-active w-1.5 h-20'
+                : 'panel-grip-idle group-hover/handle:h-16'
             }`}
           />
         </div>
@@ -142,14 +142,12 @@ export default function LeftSidePanel({
           className={[
             'group absolute top-16 -right-7 w-7 h-8 z-40',
             'flex items-center justify-center',
-            'bg-[var(--panel-surface-bg)] border border-accent-secondary border-l-0 rounded-r-md',
-            'hover:bg-surface-hover',
-            'shadow-[4px_0_12px_rgba(0,0,0,0.6)] transition-colors',
+            'panel-reset-button border border-l-0 rounded-r-md transition-colors',
             animationsEnabled ? 'animate-mount-fade' : '',
           ].join(' ')}
           title="Reset to default width"
         >
-          <ResetWidthIcon className="w-3.5 h-3.5 text-accent-secondary group-hover:text-white" />
+          <ResetWidthIcon className="w-3.5 h-3.5 panel-reset-icon" />
         </button>
       )}
 
@@ -172,7 +170,7 @@ export default function LeftSidePanel({
 
       {/* Syncing Progress Banner */}
       {loading && (
-        <div className="left-side-panel-notice-loading animate-pulse shrink-0 px-3 py-1 text-xs text-content-muted mt-2 mx-2">
+        <div className="left-side-panel-notice-loading panel-notice-text animate-pulse shrink-0 px-3 py-1 text-xs mt-2 mx-2">
           ⏳ Syncing hierarchy...
         </div>
       )}
@@ -204,7 +202,7 @@ export default function LeftSidePanel({
             <div
               onClick={onClose}
               className={[
-                'fixed inset-0 top-14 z-[60] bg-transparent',
+                'fixed inset-0 top-14 z-[60] panel-overlay',
                 animationsEnabled
                   ? isClosing && !isPinned
                     ? 'animate-unmount-fade'
@@ -246,7 +244,7 @@ export default function LeftSidePanel({
       style={{ width: isPinned ? `${panelWidth}px` : 0 }}
       className={[
         'left-side-panel absolute top-0 bottom-0 left-0 z-50',
-        'backdrop-blur-md shadow-2xl',
+        'panel-shell',
         transitionClass,
         // Force transform to none in all states to prevent GPU layer popping
         '!transform-none',

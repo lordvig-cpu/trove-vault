@@ -95,7 +95,7 @@ export const PinOutlineIcon = ({ className = 'w-4 h-4' }: { className?: string }
     strokeWidth="1.8"
     strokeLinecap="round"
     strokeLinejoin="round"
-    className={`origin-center transition-all duration-300 ease-out group-hover:fill-content-primary group-hover:stroke-content-primary group-hover:rotate-45 ${className}`}
+    className={`origin-center icon-pin-outline transition-all duration-300 ease-out group-hover:rotate-45 ${className}`}
   >
     <path d="M8 3H16L15 8L18 11V13H13V19L12 22L11 19V13H6V11L9 8L8 3Z" />
   </svg>
@@ -110,7 +110,7 @@ export const PinFilledIcon = ({ className = 'w-4 h-4' }: { className?: string })
     strokeWidth="1.8"
     strokeLinecap="round"
     strokeLinejoin="round"
-    className={`origin-center text-content-primary rotate-45 transition-all duration-300 ease-out group-hover:fill-transparent group-hover:stroke-content-muted group-hover:rotate-0 ${className}`}
+    className={`origin-center icon-pin-filled rotate-45 transition-all duration-300 ease-out group-hover:rotate-0 ${className}`}
   >
     <path d="M8 3H16L15 8L18 11V13H13V19L12 22L11 19V13H6V11L9 8L8 3Z" />
   </svg>

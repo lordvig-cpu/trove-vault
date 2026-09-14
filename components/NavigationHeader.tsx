@@ -163,8 +163,8 @@ export default function NavigationHeader({
               onClick={onOpenTemplateManager}
               className={[
                 'flex items-center gap-1.5 px-3 py-1.5',
-                'text-xs font-semibold text-content-secondary hover:text-content-primary',
-                'bg-surface-hover/80 hover:bg-surface-hover border border-border-subtle rounded-lg',
+                'text-xs font-semibold ui-secondary ui-hover-primary',
+                'ui-surface-hover ui-border-subtle border rounded-lg',
                 'cursor-pointer transition',
               ].join(' ')}
             >
@@ -182,7 +182,7 @@ export default function NavigationHeader({
           {/* Live Supabase Connection Badge */}
           <div className="nav-live-badge">
             <span className="nav-live-dot animate-pulse" />
-            <span className="text-content-secondary hidden sm:inline">Supabase</span> Live
+              <span className="ui-secondary hidden sm:inline">Supabase</span> Live
           </div>
 
           {/* Account Profile Trigger */}

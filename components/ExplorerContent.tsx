@@ -239,7 +239,7 @@ export default function ExplorerContent({
         {filteredForest.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-32 text-center px-4 select-none">
             <span className="text-xl mb-1">🔍</span>
-            <p className="text-xs text-content-muted">No categories, collections, or items found</p>
+            <p className="text-xs ui-muted">No categories, collections, or items found</p>
           </div>
         ) : (
           /* Forest Root Nodes (Categories & Collections) */

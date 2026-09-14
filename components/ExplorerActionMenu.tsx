@@ -140,7 +140,7 @@ export function ActionMenuItem({
       onClick={onClick}
       className="actionMenuItem group"
     >
-      <span className="w-4 h-4 flex items-center justify-center shrink-0 text-content-muted group-hover:text-content-primary">
+      <span className="w-4 h-4 flex items-center justify-center shrink-0 ui-muted ui-hover-primary">
         {icon}
       </span>
       <div className="flex flex-col leading-tight min-w-0">

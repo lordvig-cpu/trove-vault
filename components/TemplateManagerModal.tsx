@@ -200,15 +200,15 @@ export default function TemplateManagerModal({
           <div>
             <div className="flex items-center gap-2">
               <span className="text-xl">📑</span>
-              <h2 className="text-base font-bold text-content-primary">Collection Schema Templates</h2>
+              <h2 className="text-base font-bold ui-primary">Collection Schema Templates</h2>
             </div>
-            <p className="text-xs text-content-muted mt-0.5">
-              Select a pre-built template or apply saved schemas to <strong className="text-accent-secondary">{collectionName}</strong>
+            <p className="text-xs ui-muted mt-0.5">
+              Select a pre-built template or apply saved schemas to <strong className="ui-accent">{collectionName}</strong>
             </p>
           </div>
           <button
             onClick={onClose}
-            className="text-content-muted hover:text-content-primary p-1 rounded-lg hover:bg-surface-hover transition cursor-pointer"
+            className="ui-muted ui-hover-primary p-1 rounded-lg ui-hover-surface transition cursor-pointer"
           >
             ✕
           </button>
@@ -221,7 +221,7 @@ export default function TemplateManagerModal({
           {successMsg && (
             <div className="tmpl-alert-success">
               <span>{successMsg}</span>
-              <button onClick={() => setSuccessMsg(null)} className="hover:text-white cursor-pointer">✕</button>
+              <button onClick={() => setSuccessMsg(null)} className="ui-hover-primary cursor-pointer">✕</button>
             </div>
           )}
 
@@ -229,11 +229,11 @@ export default function TemplateManagerModal({
           {showSaveAsCustom ? (
             <form onSubmit={handleSaveCurrentAsTemplate} className="field-modal-form">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-accent-secondary">Save Collection Schema as Reusable Template</span>
+                <span className="text-xs font-bold ui-accent">Save Collection Schema as Reusable Template</span>
                 <button
                   type="button"
                   onClick={() => setShowSaveAsCustom(false)}
-                  className="text-xs text-content-muted hover:text-content-primary cursor-pointer"
+                  className="text-xs ui-muted ui-hover-primary cursor-pointer"
                 >
                   Cancel
                 </button>
@@ -241,7 +241,7 @@ export default function TemplateManagerModal({
 
               <div className="grid grid-cols-4 gap-3">
                 <div className="col-span-3 space-y-1">
-                  <label className="text-[11px] font-semibold text-content-secondary">Template Name *</label>
+                  <label className="text-[11px] font-semibold ui-secondary">Template Name *</label>
                   <input
                     type="text"
                     required
@@ -252,7 +252,7 @@ export default function TemplateManagerModal({
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-[11px] font-semibold text-content-secondary">Emoji Icon</label>
+                  <label className="text-[11px] font-semibold ui-secondary">Emoji Icon</label>
                   <input
                     type="text"
                     value={newTemplateIcon}
@@ -266,7 +266,7 @@ export default function TemplateManagerModal({
                 <button
                   type="button"
                   onClick={() => setShowSaveAsCustom(false)}
-                  className="px-3 py-1.5 text-xs text-content-muted hover:text-content-primary cursor-pointer"
+                  className="px-3 py-1.5 text-xs ui-muted ui-hover-primary cursor-pointer"
                 >
                   Cancel
                 </button>
@@ -284,7 +284,7 @@ export default function TemplateManagerModal({
               <button
                 type="button"
                 onClick={() => setShowSaveAsCustom(true)}
-                className="text-xs font-semibold text-accent-secondary hover:text-accent-primary flex items-center gap-1.5 bg-surface-hover/60 border border-border-subtle px-3 py-1.5 rounded-xl transition cursor-pointer"
+                  className="text-xs font-semibold ui-accent ui-hover-primary flex items-center gap-1.5 ui-surface-hover ui-border-subtle px-3 py-1.5 rounded-xl transition cursor-pointer"
               >
                 <span>💾</span>
                 <span>Save Current Schema as New Template</span>
@@ -296,12 +296,12 @@ export default function TemplateManagerModal({
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {/* Left Templates List */}
             <div className="md:col-span-1 space-y-2 max-h-80 overflow-y-auto pr-1 main-content-scroll">
-              <span className="text-[11px] font-bold text-content-muted uppercase tracking-wider block mb-2">
+              <span className="text-[11px] font-bold ui-muted uppercase tracking-wider block mb-2">
                 Available Templates
               </span>
 
               {loading ? (
-                <div className="p-4 text-xs text-content-muted text-center animate-pulse">Loading templates...</div>
+                <div className="p-4 text-xs ui-muted text-center animate-pulse">Loading templates...</div>
               ) : (
                 templates.map((tmpl) => {
                   const isSelected = tmpl.id === selectedTemplateId;
@@ -313,10 +313,10 @@ export default function TemplateManagerModal({
                     >
                       <span className="text-xl shrink-0">{tmpl.icon}</span>
                       <div className="min-w-0 flex-1">
-                        <span className={`text-xs font-semibold truncate block ${isSelected ? 'text-content-primary font-bold' : 'text-content-secondary'}`}>
+                        <span className={`text-xs font-semibold truncate block ${isSelected ? 'ui-primary font-bold' : 'ui-secondary'}`}>
                           {tmpl.name}
                         </span>
-                        <span className="text-[10px] text-content-muted block truncate">
+                        <span className="text-[10px] ui-muted block truncate">
                           {tmpl.is_system_preset ? 'System Preset' : 'Custom Template'} • {tmpl.fields?.length || 0} Fields
                         </span>
                       </div>
@@ -330,14 +330,14 @@ export default function TemplateManagerModal({
             <div className="md:col-span-2 field-modal-form justify-between">
               {selectedTemplate ? (
                 <div className="space-y-4">
-                  <div className="flex items-start justify-between border-b border-border-subtle pb-3">
+                  <div className="flex items-start justify-between ui-border-bottom-subtle border-b pb-3">
                     <div>
                       <div className="flex items-center gap-2">
                         <span className="text-xl">{selectedTemplate.icon}</span>
-                        <h3 className="text-sm font-bold text-content-primary">{selectedTemplate.name}</h3>
+                        <h3 className="text-sm font-bold ui-primary">{selectedTemplate.name}</h3>
                       </div>
                       {selectedTemplate.description && (
-                        <p className="text-xs text-content-muted mt-1">{selectedTemplate.description}</p>
+                        <p className="text-xs ui-muted mt-1">{selectedTemplate.description}</p>
                       )}
                     </div>
                     <span className="tmpl-badge-count">
@@ -350,16 +350,16 @@ export default function TemplateManagerModal({
                     {(selectedTemplate.fields || []).map((f) => (
                       <div
                         key={f.id}
-                        className="bg-canvas/50 border border-border-subtle rounded-lg p-2.5 flex items-center justify-between text-xs"
+                        className="ui-input rounded-lg p-2.5 flex items-center justify-between text-xs"
                       >
                         <div className="flex items-center gap-2">
-                          <span className="text-content-primary font-medium">{f.label}</span>
-                          <span className="text-[10px] font-mono text-content-muted bg-surface px-1.5 py-0.5 rounded border border-border-subtle">
+                          <span className="ui-primary font-medium">{f.label}</span>
+                          <span className="text-[10px] font-mono ui-muted ui-surface px-1.5 py-0.5 rounded ui-border-subtle border">
                             {f.name}
                           </span>
                         </div>
                         <div className="flex items-center gap-2">
-                          <span className="text-[10px] font-mono text-accent-secondary bg-surface px-1.5 py-0.5 rounded border border-border-subtle">
+                          <span className="text-[10px] font-mono ui-accent ui-surface px-1.5 py-0.5 rounded ui-border-subtle border">
                             {f.field_type}
                           </span>
                           {f.is_required && (
@@ -373,8 +373,8 @@ export default function TemplateManagerModal({
                   </div>
 
                   {/* Apply Actions */}
-                  <div className="pt-3 border-t border-border-subtle flex items-center justify-between">
-                    <span className="text-[11px] text-content-muted">Apply fields to active collection:</span>
+                  <div className="pt-3 ui-border-top-subtle border-t flex items-center justify-between">
+                    <span className="text-[11px] ui-muted">Apply fields to active collection:</span>
                     <div className="flex gap-2">
                       <button
                         type="button"
@@ -398,7 +398,7 @@ export default function TemplateManagerModal({
                   </div>
                 </div>
               ) : (
-                <div className="h-full flex items-center justify-center text-xs text-content-muted">
+                <div className="h-full flex items-center justify-center text-xs ui-muted">
                   Select a template on the left to preview its schema definition.
                 </div>
               )}
@@ -411,7 +411,7 @@ export default function TemplateManagerModal({
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-1.5 text-xs font-medium text-content-secondary bg-surface-hover hover:bg-surface-hover/80 rounded-lg transition cursor-pointer"
+            className="px-4 py-1.5 text-xs font-medium ui-secondary ui-surface-hover rounded-lg transition cursor-pointer"
           >
             Close
           </button>

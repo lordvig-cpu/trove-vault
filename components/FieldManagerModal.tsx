@@ -143,16 +143,16 @@ export default function FieldManagerModal({
           <div>
             <div className="flex items-center gap-2">
               <span className="text-xl">⚙️</span>
-              <h2 className="text-base font-bold text-content-primary">Custom Field Templates</h2>
+              <h2 className="text-base font-bold ui-primary">Custom Field Templates</h2>
             </div>
-            <p className="text-xs text-content-muted mt-0.5">
-              Define reusable attribute schemas for <strong className="text-accent-secondary">{collectionName}</strong>
+            <p className="text-xs ui-muted mt-0.5">
+              Define reusable attribute schemas for <strong className="ui-accent">{collectionName}</strong>
             </p>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="text-content-muted hover:text-content-primary p-1 rounded-lg hover:bg-surface-hover transition cursor-pointer"
+            className="ui-muted ui-hover-primary p-1 rounded-lg ui-hover-surface transition cursor-pointer"
           >
             ✕
           </button>
@@ -161,21 +161,21 @@ export default function FieldManagerModal({
         {/* Modal Body */}
         <div className="p-6 overflow-y-auto space-y-6 flex-1 main-content-scroll">
           {error && (
-            <div className="p-3 bg-rose-950/60 border border-rose-800 text-rose-300 text-xs rounded-lg">
+            <div className="p-3 ui-danger-surface ui-danger text-xs rounded-lg">
               {error}
             </div>
           )}
 
           {/* New Field Creator Panel */}
           <form onSubmit={handleAddField} className="field-modal-form">
-            <h3 className="text-xs font-bold text-accent-secondary uppercase tracking-wider">
+            <h3 className="text-xs font-bold ui-accent uppercase tracking-wider">
               + Add New Custom Field
             </h3>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               {/* Field Label */}
               <div className="sm:col-span-1 space-y-1">
-                <label className="text-[11px] font-semibold text-content-secondary">Field Label *</label>
+                <label className="text-[11px] font-semibold ui-secondary">Field Label *</label>
                 <input
                   type="text"
                   required
@@ -188,7 +188,7 @@ export default function FieldManagerModal({
 
               {/* Field Type */}
               <div className="space-y-1">
-                <label className="text-[11px] font-semibold text-content-secondary">Data Type</label>
+                <label className="text-[11px] font-semibold ui-secondary">Data Type</label>
                 <select
                   value={fieldType}
                   onChange={(e) => setFieldType(e.target.value as FieldDefinition['field_type'])}
@@ -204,12 +204,12 @@ export default function FieldManagerModal({
 
               {/* Options or Required */}
               <div className="flex items-end pb-1">
-                <label className="flex items-center gap-2 text-xs text-content-secondary cursor-pointer select-none">
+                <label className="flex items-center gap-2 text-xs ui-secondary cursor-pointer select-none">
                   <input
                     type="checkbox"
                     checked={isRequired}
                     onChange={(e) => setIsRequired(e.target.checked)}
-                    className="rounded border-border-subtle bg-canvas text-accent-primary focus:ring-0 w-4 h-4 cursor-pointer"
+                    className="rounded ui-border-subtle ui-input w-4 h-4 cursor-pointer"
                   />
                   <span>Mandatory Field</span>
                 </label>
@@ -219,7 +219,7 @@ export default function FieldManagerModal({
             {/* Dropdown Options Input if Type == 'select' */}
             {fieldType === 'select' && (
               <div className="space-y-1 pt-1">
-                <label className="text-[11px] font-semibold text-accent-secondary">
+                <label className="text-[11px] font-semibold ui-accent">
                   Dropdown Options (comma-separated)
                 </label>
                 <input
@@ -246,19 +246,19 @@ export default function FieldManagerModal({
 
           {/* Configured Fields List */}
           <div className="space-y-2">
-            <div className="flex items-center justify-between border-b border-border-subtle pb-2">
-              <span className="text-xs font-semibold text-content-muted uppercase tracking-wider">
+            <div className="flex items-center justify-between ui-border-bottom-subtle border-b pb-2">
+              <span className="text-xs font-semibold ui-muted uppercase tracking-wider">
                 Active Template Fields ({fields.length})
               </span>
-              <span className="text-[11px] text-content-muted font-mono">Mapped to JSONB</span>
+              <span className="text-[11px] ui-muted font-mono">Mapped to JSONB</span>
             </div>
 
             {loading ? (
-              <div className="p-4 text-center text-xs text-content-muted animate-pulse">
+              <div className="p-4 text-center text-xs ui-muted animate-pulse">
                 Loading fields schema...
               </div>
             ) : fields.length === 0 ? (
-              <p className="text-xs text-content-muted italic py-4 text-center">
+              <p className="text-xs ui-muted italic py-4 text-center">
                 No custom field templates defined yet. Add your first field above!
               </p>
             ) : (
@@ -266,7 +266,7 @@ export default function FieldManagerModal({
                 {fields.map((field) => (
                   <div key={field.id} className="field-modal-row group">
                     <div className="flex items-center gap-3">
-                      <span className="text-xs font-bold text-content-primary">{field.label}</span>
+                      <span className="text-xs font-bold ui-primary">{field.label}</span>
                       <span className="field-modal-badge-key">
                         key: {field.name}
                       </span>
@@ -283,7 +283,7 @@ export default function FieldManagerModal({
                     <button
                       type="button"
                       onClick={() => handleDeleteField(field.id)}
-                      className="text-content-muted hover:text-rose-400 p-1 rounded text-xs opacity-0 group-hover:opacity-100 transition cursor-pointer"
+                      className="ui-muted ui-invisible ui-hover-primary p-1 rounded text-xs transition cursor-pointer"
                       title="Delete Field"
                     >
                       🗑️
@@ -300,7 +300,7 @@ export default function FieldManagerModal({
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-1.5 text-xs font-medium text-content-secondary bg-surface-hover hover:bg-surface-hover/80 rounded-lg transition cursor-pointer"
+            className="px-4 py-1.5 text-xs font-medium ui-secondary ui-surface-hover rounded-lg transition cursor-pointer"
           >
             Done
           </button>

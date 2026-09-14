@@ -5,6 +5,8 @@
 @import "./styles/themes/theme-default-light.css";
 
 /* 2. Functional Component Stylesheets */
+@import "./styles/components/ExplorerPrimitives.css";
+@import "./styles/components/ContentPrimitives.css";
 @import "./styles/components/NavigationHeader.css";
 @import "./styles/components/NavigationFooter.css";
 @import "./styles/components/MainContent.css";
@@ -13,6 +15,7 @@
 @import "./styles/components/RightSidePanel.css";
 @import "./styles/components/collectionDropdown.css";
 @import "./styles/components/TemplateManagerModal.css";
+@import "./styles/components/ItemModal.css";
 
 /* ==========================================================================
    GLOBAL VIEWPORT & RESET

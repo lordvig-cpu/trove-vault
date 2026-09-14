@@ -68,16 +68,16 @@ export default function NavigationFooter({
       <div className="flex items-center gap-3 relative z-10">
         <div className="flex items-center gap-2">
           <span className="nav-footer-status-dot animate-pulse" />
-          <span className="text-[11px] font-mono text-content-muted">
-            Status: <span className="text-content-primary font-medium">Ready</span>
+          <span className="text-[11px] font-mono ui-muted">
+            Status: <span className="ui-primary font-medium">Ready</span>
           </span>
         </div>
 
         {activeCollectionName && (
           <>
-            <span className="text-border-subtle">|</span>
-            <span className="text-[11px] text-content-muted truncate max-w-[200px] sm:max-w-xs">
-              Active: <span className="text-accent-secondary font-medium">{activeCollectionName}</span>
+            <span className="ui-muted">|</span>
+            <span className="text-[11px] ui-muted truncate max-w-[200px] sm:max-w-xs">
+              Active: <span className="ui-accent font-medium">{activeCollectionName}</span>
             </span>
           </>
         )}
@@ -87,8 +87,8 @@ export default function NavigationFooter({
           2.3 CENTER: UTILITY / WORKSPACE BREADCRUMB SLOT
           Reserved central utility region for quick shortcuts or breadcrumb tracks.
           -------------------------------------------------------------------- */}
-      <div className="flex items-center gap-1.5 text-xs text-content-muted cursor-pointer select-none">
-        <label className="flex items-center gap-1.5 cursor-pointer text-content-muted hover:text-content-primary transition-colors">
+      <div className="flex items-center gap-1.5 text-xs ui-muted cursor-pointer select-none">
+        <label className="flex items-center gap-1.5 cursor-pointer ui-muted ui-hover-primary transition-colors">
           MIDDLE CONTENT
         </label>
       </div>
@@ -100,11 +100,11 @@ export default function NavigationFooter({
           -------------------------------------------------------------------- */}
       <div className="flex items-center gap-3 relative z-10">
         {/* Total Aggregated Inventory Count */}
-        <span className="text-[11px] font-mono text-content-muted">
-          Items: <span className="text-content-primary font-semibold">{totalItemsCount}</span>
+        <span className="text-[11px] font-mono ui-muted">
+          Items: <span className="ui-primary font-semibold">{totalItemsCount}</span>
         </span>
 
-        <span className="text-border-subtle">|</span>
+        <span className="ui-muted">|</span>
 
         {/* 
           Animated UI Transitions Toggle Button:
@@ -188,7 +188,7 @@ export default function NavigationFooter({
           onClick={toggleTheme}
           className={[
             'nav-footer-icon-btn group relative',
-            'text-content-muted hover:text-content-primary',
+            'ui-muted ui-hover-primary',
           ].join(' ')}
           title={
             theme === 'theme-default-dark'
@@ -200,7 +200,7 @@ export default function NavigationFooter({
           <MoonIcon
             className={[
               'nav-theme-icon nav-theme-icon-moon nav-footer-icon-moon',
-              'group-hover:text-content-primary',
+              'ui-hover-primary',
               theme === 'theme-default-dark'
                 ? 'nav-theme-icon-active'
                 : 'nav-theme-icon-hidden-left',
@@ -211,7 +211,7 @@ export default function NavigationFooter({
           <SunIcon
             className={[
               'nav-theme-icon nav-theme-icon-sun nav-footer-icon-sun',
-              'group-hover:text-content-primary',
+              'ui-hover-primary',
               theme === 'theme-default-light'
                 ? 'nav-theme-icon-active'
                 : 'nav-theme-icon-hidden-right',

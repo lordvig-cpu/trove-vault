@@ -62,8 +62,8 @@ export default function CollectionFilterTree({
       <div key={node.id} className="flex flex-col">
         <label
           style={{ paddingLeft: `${depth * 14 + 8}px` }}
-          className={`group py-1.5 pr-2.5 rounded-md transition flex items-center justify-between cursor-pointer hover:bg-surface-hover/60 ${
-            isChecked ? 'text-accent-secondary' : 'text-content-primary'
+          className={`group explorer-filter-row py-1.5 pr-2.5 rounded-md flex items-center justify-between cursor-pointer ${
+            isChecked ? 'explorer-filter-row-selected' : ''
           }`}
         >
           <div className="flex items-center gap-2 min-w-0 flex-1">
@@ -72,10 +72,10 @@ export default function CollectionFilterTree({
                 type="checkbox"
                 checked={isChecked}
                 onChange={() => onToggleFilterCollection(node.id)}
-                className={`w-3.5 h-3.5 rounded border-border-strong text-accent-secondary bg-surface focus:ring-1 focus:ring-accent-secondary/50 cursor-pointer transition-opacity duration-150 ${
+                className={`explorer-filter-checkbox w-3.5 h-3.5 rounded cursor-pointer transition-opacity duration-150 ${
                   allSelected || isChecked
-                    ? 'opacity-100 pointer-events-auto'
-                    : 'opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto'
+                    ? 'pointer-events-auto'
+                    : 'explorer-filter-checkbox-hidden pointer-events-none group-hover:pointer-events-auto'
                 }`}
               />
             </div>
@@ -88,19 +88,19 @@ export default function CollectionFilterTree({
                 strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                className="w-3.5 h-3.5 text-content-muted/60 shrink-0 select-none -ml-1 mr-0.5"
+                className="explorer-filter-branch w-3.5 h-3.5 shrink-0 select-none -ml-1 mr-0.5"
               >
                 <path d="M 5 2 L 5 9 L 13 9" />
                 <polyline points="10 6 13 9 10 12" />
               </svg>
             )}
 
-            <span className="text-sm shrink-0 select-none">{node.icon || '📁'}</span>
+            <span className="text-sm explorer-filter-branch shrink-0 select-none">{node.icon || '📁'}</span>
 
             <div className="flex flex-col min-w-0">
-              <span className="text-xs font-semibold truncate">{node.name}</span>
+              <span className="text-xs font-semibold explorer-panel-primary truncate">{node.name}</span>
               {node.description && (
-                <p className="text-[10px] text-content-muted truncate mt-0.5">
+                <p className="text-[10px] explorer-panel-muted truncate mt-0.5">
                   {node.description}
                 </p>
               )}
@@ -109,7 +109,7 @@ export default function CollectionFilterTree({
         </label>
 
         {hasChildren && (
-          <div className="border-t border-border-subtle/30 pt-0.5 flex flex-col">
+          <div className="explorer-filter-nested border-t pt-0.5 flex flex-col">
             {node.children!.map((child) => renderNode(child, depth + 1))}
           </div>
         )}
@@ -118,11 +118,11 @@ export default function CollectionFilterTree({
   };
 
   return (
-    <div className="flex flex-col mx-2 mb-1 bg-[#040811] border border-[var(--explorer-menu-divider,rgba(245,158,11,0.2))] shadow-inner rounded-md max-h-60 overflow-y-auto overflow-x-hidden left-panel-scroll p-1.5 space-y-1.5">
+    <div className="explorer-filter-shell flex flex-col mx-2 mb-1 rounded-md max-h-60 overflow-y-auto overflow-x-hidden left-panel-scroll p-1.5 space-y-1.5">
       {roots.map((root) => (
         <div
           key={root.id}
-          className="rounded-lg border border-border-subtle/50 bg-surface/30 hover:border-border-subtle transition flex flex-col overflow-hidden"
+          className="explorer-filter-root-card rounded-lg transition flex flex-col overflow-hidden"
         >
           {renderNode(root)}
         </div>

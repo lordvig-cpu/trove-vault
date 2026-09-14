@@ -120,16 +120,16 @@ export default function RightPanel({
             <div
               className={`absolute top-0 bottom-0 left-1/2 -translate-x-1/2 w-[5px] transition-all duration-150 pointer-events-none ${
                 isDragging
-                  ? 'bg-accent-secondary opacity-100'
-                  : 'opacity-0 group-hover/handle:opacity-100 group-hover/handle:bg-accent-secondary'
+                  ? 'panel-grip-active'
+                  : 'panel-grip-idle'
               }`}
             />
             {/* Tactile central pill */}
             <div
               className={`relative z-10 w-1 h-12 rounded-full transition-all duration-200 pointer-events-none ${
                 isDragging
-                  ? 'bg-accent-secondary w-1.5 h-20 opacity-100'
-                  : 'bg-accent-secondary/60 group-hover/handle:bg-accent-secondary group-hover/handle:h-16 group-hover/handle:opacity-100 opacity-0'
+                  ? 'panel-grip-active w-1.5 h-20'
+                  : 'panel-grip-idle group-hover/handle:h-16'
               }`} 
             />
           </div>
@@ -146,20 +146,18 @@ export default function RightPanel({
             className={[
               'group absolute top-16 -left-7 w-7 h-8 z-40',
               'flex items-center justify-center',
-              'bg-[var(--panel-surface-bg)] border border-accent-secondary border-r-0 rounded-l-md',
-              'hover:bg-surface-hover',
-              'shadow-[-4px_0_12px_rgba(0,0,0,0.6)] transition-colors',
+              'panel-reset-button border border-r-0 rounded-l-md transition-colors',
               animationsEnabled ? 'animate-mount-fade' : '',
             ].join(' ')}
             title="Reset to default width"
           >
-            <ResetWidthRightIcon className="w-3.5 h-3.5 text-accent-secondary group-hover:text-white" />
+            <ResetWidthRightIcon className="w-3.5 h-3.5 panel-reset-icon" />
           </button>
         )}
 
         {/* Top Header: Section title and collapse trigger button */}
         <div className="right-side-panel-header">
-          <span className="text-xs font-bold uppercase tracking-wider text-content-muted">
+          <span className="text-xs font-bold uppercase tracking-wider panel-notice-text">
             {title}
           </span>
           <div className="flex items-center gap-1">
@@ -169,14 +167,14 @@ export default function RightPanel({
               className="right-side-panel-btn group"
               title="Collapse Panel"
             >
-              <ChevronRightIcon className="w-3.5 h-3.5 text-content-muted group-hover:text-content-primary origin-center transition-all duration-200 ease-out group-hover:translate-x-0.5 group-hover:scale-115" />
+              <ChevronRightIcon className="w-3.5 h-3.5 panel-notice-text origin-center transition-all duration-200 ease-out group-hover:translate-x-0.5 group-hover:scale-115" />
             </button>
           </div>
         </div>
 
         {/* Panel Scrollable Body */}
         <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden pl-3 pr-2 py-3">
-          <div className="space-y-4 text-content-primary">
+          <div className="space-y-4 ui-primary">
             {children ? (
               children
             ) : (

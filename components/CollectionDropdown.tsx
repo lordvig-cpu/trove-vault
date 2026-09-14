@@ -131,13 +131,13 @@ export default function CollectionDropdown({
             style={{ paddingLeft: `${level * 14 + 8}px` }}
           >
             <div className="flex items-center gap-2 min-w-0 flex-1">
-              <span className="text-amber-400 text-sm shrink-0">
+              <span className="dropdown-icon text-sm shrink-0">
                 {col.icon || '📁'}
               </span>
               <div className="flex flex-col min-w-0">
                 <span className="truncate text-xs">{col.name}</span>
                 {col.description && (
-                  <span className="truncate text-[10px] text-content-muted font-normal">
+                  <span className="truncate text-[10px] dropdown-muted font-normal">
                     {col.description}
                   </span>
                 )}
@@ -150,13 +150,13 @@ export default function CollectionDropdown({
             </div>
 
             <div
-              className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition shrink-0"
+              className="flex items-center gap-1 ui-invisible transition shrink-0"
               onClick={(e) => e.stopPropagation()}
             >
               <button
                 type="button"
                 onClick={() => handleStartCreate(col.id)}
-                className="p-1 text-content-muted hover:text-amber-300 rounded hover:bg-surface-hover text-[10px]"
+                className="p-1 dropdown-muted dropdown-control rounded text-[10px]"
                 title="Add Sub-Collection"
               >
                 +📁
@@ -168,7 +168,7 @@ export default function CollectionDropdown({
                     onRequestDelete(col);
                     setIsOpen(false);
                   }}
-                  className="p-1 text-content-muted hover:text-rose-400 rounded hover:bg-surface-hover text-[10px]"
+                  className="p-1 dropdown-muted dropdown-control-danger rounded text-[10px]"
                   title="Delete Collection"
                 >
                   🗑️
@@ -197,13 +197,13 @@ export default function CollectionDropdown({
         onClick={() => setIsOpen(!isOpen)}
         className="col-dropdown-trigger"
       >
-        <span className="text-amber-400">
+        <span className="dropdown-icon">
           {activeCollection?.icon || '📁'}
         </span>
         <span className="truncate max-w-[140px]">
           {activeCollection ? activeCollection.name : 'Select Collection'}
         </span>
-        <span className="text-[10px] text-content-muted">▾</span>
+        <span className="text-[10px] dropdown-muted">▾</span>
       </button>
 
       {isOpen && (
@@ -217,14 +217,14 @@ export default function CollectionDropdown({
           />
 
           <div className="col-dropdown-panel">
-            <div className="flex items-center justify-between border-b border-border-subtle pb-2">
-              <span className="text-xs font-bold uppercase tracking-wider text-content-muted">
+            <div className="flex items-center justify-between ui-border-bottom-subtle border-b pb-2">
+              <span className="text-xs font-bold uppercase tracking-wider dropdown-muted">
                 Collections
               </span>
               <button
                 type="button"
                 onClick={() => handleStartCreate(null)}
-                className="text-[11px] font-semibold text-accent-secondary hover:text-accent-primary cursor-pointer"
+                className="text-[11px] font-semibold dropdown-accent ui-hover-accent cursor-pointer"
               >
                 + New Root Collection
               </button>
@@ -233,13 +233,13 @@ export default function CollectionDropdown({
             {isCreating && (
               <form onSubmit={handleCreateCollection} className="col-dropdown-form">
                 <div className="flex items-center justify-between">
-                  <span className="text-[11px] font-bold text-accent-secondary">
+                  <span className="text-[11px] font-bold dropdown-accent">
                     {parentCollectionId ? '➕ New Sub-Collection' : '➕ New Root Collection'}
                   </span>
                   <button
                     type="button"
                     onClick={() => setIsCreating(false)}
-                    className="text-content-muted hover:text-content-primary text-xs"
+                    className="dropdown-muted ui-hover-primary text-xs"
                   >
                     ✕
                   </button>
@@ -252,7 +252,7 @@ export default function CollectionDropdown({
                   onChange={(e) => setNewColName(e.target.value)}
                   autoFocus
                   required
-                  className="w-full bg-canvas border border-border-subtle rounded px-2 py-1 text-xs text-content-primary focus:outline-none focus:border-accent-primary"
+                  className="w-full dropdown-input border rounded px-2 py-1 text-xs"
                 />
 
                 <input
@@ -260,23 +260,23 @@ export default function CollectionDropdown({
                   placeholder="Description (optional)..."
                   value={newColDesc}
                   onChange={(e) => setNewColDesc(e.target.value)}
-                  className="w-full bg-canvas border border-border-subtle rounded px-2 py-1 text-[11px] text-content-secondary focus:outline-none focus:border-accent-primary"
+                  className="w-full dropdown-input border rounded px-2 py-1 text-[11px]"
                 />
 
-                {error && <span className="text-[10px] text-rose-400">{error}</span>}
+                {error && <span className="text-[10px] dropdown-error">{error}</span>}
 
                 <div className="flex justify-end gap-1.5 mt-1">
                   <button
                     type="button"
                     onClick={() => setIsCreating(false)}
-                    className="px-2 py-1 text-[11px] text-content-muted hover:text-content-primary"
+                    className="px-2 py-1 text-[11px] dropdown-muted ui-hover-primary"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
                     disabled={isSaving || !newColName.trim()}
-                    className="px-2.5 py-1 bg-accent-primary hover:bg-accent-primary-hover disabled:opacity-50 text-white rounded text-[11px] font-semibold"
+                    className="px-2.5 py-1 ui-primary-surface rounded text-[11px] font-semibold dropdown-disabled"
                   >
                     {isSaving ? 'Creating...' : 'Create'}
                   </button>
@@ -286,7 +286,7 @@ export default function CollectionDropdown({
 
             <div className="max-h-64 overflow-y-auto space-y-1 col-dropdown-scroll pr-1">
               {collections.length === 0 ? (
-                <div className="text-xs text-content-muted text-center py-4">
+                <div className="text-xs dropdown-muted text-center py-4">
                   No collections yet. Click "+ New Root Collection" above.
                 </div>
               ) : (

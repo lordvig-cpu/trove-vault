@@ -246,17 +246,17 @@ export default function EditItemModal({
      2.6 RENDER
      ------------------------------------------------------------------------ */
   return (
-    <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl max-h-[90vh] flex flex-col">
+    <div className="fixed inset-0 z-50 item-modal-backdrop flex items-center justify-center p-4">
+      <div className="item-modal-dialog rounded-2xl w-full max-w-lg overflow-hidden max-h-[90vh] flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between p-5 border-b border-slate-800 shrink-0">
+        <div className="item-modal-header flex items-center justify-between p-5 shrink-0">
           <div>
-            <h2 className="text-base font-bold text-white">Edit Item</h2>
-            <p className="text-[11px] text-slate-500 font-mono">ID: #{item.id}</p>
+            <h2 className="text-base font-bold item-modal-primary-text">Edit Item</h2>
+            <p className="text-[11px] item-modal-muted font-mono">ID: #{item.id}</p>
           </div>
           <button
             onClick={onClose}
-            className="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800 transition cursor-pointer"
+            className="item-modal-cancel-button p-1 rounded-lg transition cursor-pointer"
           >
             ✕
           </button>
@@ -265,19 +265,19 @@ export default function EditItemModal({
         {/* Form Body */}
         <form onSubmit={handleSubmit} className="p-5 space-y-4 overflow-y-auto flex-1">
           {error && (
-            <div className="p-3 bg-rose-950/60 border border-rose-800 text-rose-300 text-xs rounded-lg">
+            <div className="item-modal-error p-3 text-xs rounded-lg">
               {error}
             </div>
           )}
 
           {/* Item Template Picker */}
-          <div className="bg-indigo-950/40 border border-indigo-900/60 rounded-xl p-3.5 space-y-2">
+          <div className="item-modal-template-panel rounded-xl p-3.5 space-y-2">
             <div className="flex items-center justify-between">
-              <label className="text-xs font-bold text-indigo-300 flex items-center gap-1.5">
+              <label className="text-xs font-bold item-modal-template-heading flex items-center gap-1.5">
                 <span>📑</span>
                 <span>Item Schema Template</span>
               </label>
-              <span className="text-[10px] text-slate-400 font-mono">
+              <span className="text-[10px] item-modal-template-count font-mono">
                 {activeTemplateFields.length} Defined Fields
               </span>
             </div>
@@ -285,7 +285,7 @@ export default function EditItemModal({
             <select
               value={selectedTemplateId || 'blank'}
               onChange={(e) => handleTemplateSelect(e.target.value as any)}
-              className="w-full bg-slate-900 border border-slate-800 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-indigo-500"
+              className="w-full item-modal-input rounded-lg px-2.5 py-1.5 text-xs"
             >
               {availableTemplates.map((tmpl) => (
                 <option key={tmpl.id} value={tmpl.id}>
@@ -297,18 +297,18 @@ export default function EditItemModal({
 
             {/* Schema Diff Visualizer */}
             {activeTemplateFields.length > 0 && (
-              <div className="pt-1 text-[11px] space-y-1">
+              <div className="pt-1 text-[11px] space-y-1 item-modal-muted">
                 {diffSummary.merged.length > 0 && (
-                  <div className="flex items-center gap-1.5 text-sky-300">
-                    <span className="font-mono text-[10px] bg-sky-950/80 border border-sky-800/80 px-1 py-0.2 rounded">
+                  <div className="flex items-center gap-1.5 item-modal-template-heading">
+                    <span className="font-mono text-[10px] px-1 py-0.2 rounded">
                       🔵 PRESERVED / MERGED ({diffSummary.merged.length})
                     </span>
                     <span className="truncate">{diffSummary.merged.join(', ')}</span>
                   </div>
                 )}
                 {diffSummary.added.length > 0 && (
-                  <div className="flex items-center gap-1.5 text-emerald-300">
-                    <span className="font-mono text-[10px] bg-emerald-950/80 border border-emerald-800/80 px-1 py-0.2 rounded">
+                  <div className="flex items-center gap-1.5 item-modal-template-heading">
+                    <span className="font-mono text-[10px] px-1 py-0.2 rounded">
                       🟢 ADDED ({diffSummary.added.length})
                     </span>
                     <span className="truncate">{diffSummary.added.join(', ')}</span>
@@ -320,13 +320,13 @@ export default function EditItemModal({
 
           {/* Item Name */}
           <div className="space-y-1">
-            <label className="text-xs font-semibold text-slate-300">Item Name *</label>
+            <label className="text-xs font-semibold item-modal-label">Item Name *</label>
             <input
               type="text"
               required
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500 transition"
+              className="w-full item-modal-input rounded-lg px-3 py-2 text-xs transition"
             />
           </div>
 
@@ -351,18 +351,18 @@ export default function EditItemModal({
           />
 
           {/* Actions */}
-          <div className="flex items-center justify-end gap-2 pt-4 border-t border-slate-800">
+          <div className="flex items-center justify-end gap-2 pt-4 item-modal-property-divider">
             <button
               type="button"
               onClick={onClose}
-              className="px-3 py-1.5 text-xs font-medium text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition cursor-pointer"
+              className="item-modal-cancel-button px-3 py-1.5 text-xs font-medium rounded-lg transition cursor-pointer"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={saving}
-              className="px-4 py-1.5 text-xs font-medium text-white bg-indigo-600 hover:bg-indigo-500 rounded-lg transition shadow-md shadow-indigo-600/30 disabled:opacity-50 cursor-pointer"
+              className="item-modal-primary-button px-4 py-1.5 text-xs font-medium rounded-lg transition cursor-pointer"
             >
               {saving ? 'Saving Changes...' : 'Save Changes'}
             </button>

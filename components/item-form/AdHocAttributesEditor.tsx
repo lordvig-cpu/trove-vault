@@ -23,13 +23,13 @@ export default function AdHocAttributesEditor({
   placeholders = { key: 'Key', value: 'Value' },
 }: AdHocAttributesEditorProps) {
   return (
-    <div className="space-y-2 pt-2 border-t border-slate-800">
+    <div className="space-y-2 pt-2 item-modal-property-divider">
       <div className="flex items-center justify-between">
-        <label className="text-xs font-semibold text-slate-400">Additional Custom Fields</label>
+        <label className="text-xs font-semibold item-modal-muted">Additional Custom Fields</label>
         <button
           type="button"
           onClick={onAdd}
-          className="text-[11px] font-medium text-indigo-400 hover:text-indigo-300 cursor-pointer"
+          className="text-[11px] font-medium item-modal-template-heading cursor-pointer"
         >
           + Add Custom Field
         </button>
@@ -43,19 +43,19 @@ export default function AdHocAttributesEditor({
               placeholder={placeholders.key}
               value={attribute.key}
               onChange={(event) => onChange(index, 'key', event.target.value)}
-              className="flex-1 bg-slate-950 border border-slate-800 rounded-lg px-2.5 py-1.5 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500"
+              className="flex-1 item-modal-input rounded-lg px-2.5 py-1.5 text-xs"
             />
             <input
               type="text"
               placeholder={placeholders.value}
               value={attribute.value}
               onChange={(event) => onChange(index, 'value', event.target.value)}
-              className="flex-1 bg-slate-950 border border-slate-800 rounded-lg px-2.5 py-1.5 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500"
+              className="flex-1 item-modal-input rounded-lg px-2.5 py-1.5 text-xs"
             />
             <button
               type="button"
               onClick={() => onRemove(index)}
-              className="text-slate-500 hover:text-rose-400 text-xs px-1 cursor-pointer"
+              className="item-modal-muted text-xs px-1 cursor-pointer"
             >
               ✕
             </button>

@@ -1,0 +1,163 @@
+/* Shared item and confirmation modal visual styles. */
+
+.item-modal-backdrop,
+.confirm-modal-backdrop {
+  background-color: var(--modal-overlay-bg);
+  backdrop-filter: blur(4px);
+}
+
+.item-modal-dialog,
+.confirm-modal-dialog {
+  background-color: var(--modal-dialog-bg);
+  border: 1px solid var(--modal-dialog-border);
+  box-shadow: var(--modal-dialog-shadow);
+}
+
+.item-modal-header,
+.confirm-modal-header {
+  border-bottom: 1px solid var(--modal-header-border);
+}
+
+.item-modal-footer,
+.confirm-modal-footer {
+  background-color: var(--modal-footer-bg);
+  border-top: 1px solid var(--modal-footer-border);
+}
+
+.item-modal-error,
+.confirm-modal-error {
+  background-color: var(--modal-alert-error-bg, var(--modal-badge-req-bg));
+  border: 1px solid var(--modal-alert-error-border, var(--modal-badge-req-border));
+  color: var(--modal-alert-error-text, var(--modal-badge-req-text));
+}
+
+.item-modal-template-panel {
+  background-color: var(--item-template-bg, var(--modal-form-bg));
+  border: 1px solid var(--item-template-border, var(--modal-form-border));
+}
+
+.item-modal-label {
+  color: var(--text-secondary);
+}
+
+.item-modal-muted {
+  color: var(--text-muted);
+}
+
+.item-modal-primary-text {
+  color: var(--text-primary);
+}
+
+.item-modal-input {
+  background-color: var(--modal-input-bg);
+  border: 1px solid var(--modal-input-border);
+  color: var(--text-primary);
+}
+
+.item-modal-input::placeholder {
+  color: var(--text-muted);
+}
+
+.item-modal-input:focus {
+  border-color: var(--modal-input-focus-border);
+  outline: none;
+}
+
+.item-modal-template-heading {
+  color: var(--item-template-heading, var(--brand-primary));
+}
+
+.item-modal-template-count {
+  color: var(--text-muted);
+}
+
+.item-modal-danger-text {
+  color: var(--modal-badge-req-text);
+}
+
+.item-modal-danger-button {
+  background-color: var(--content-btn-danger-bg);
+  color: var(--content-btn-danger-text);
+  box-shadow: var(--content-btn-danger-shadow, none);
+}
+
+.item-modal-danger-button:hover {
+  background-color: var(--content-btn-danger-hover);
+}
+
+.item-modal-primary-button {
+  background-color: var(--content-btn-primary-bg);
+  color: var(--content-btn-primary-text);
+  box-shadow: var(--content-btn-primary-shadow, none);
+}
+
+.item-modal-primary-button:hover {
+  background-color: var(--content-btn-primary-hover);
+}
+
+.item-modal-primary-button:disabled,
+.item-modal-danger-button:disabled {
+  opacity: 0.5;
+}
+
+.item-modal-cancel-button {
+  color: var(--text-muted);
+}
+
+.item-modal-cancel-button:hover {
+  color: var(--text-primary);
+  background-color: var(--card-surface-hover);
+}
+
+.item-modal-property-divider {
+  border-top: 1px solid var(--modal-header-border);
+}
+
+.item-modal-parent-select {
+  background-color: var(--modal-input-bg);
+  border: 1px solid var(--modal-input-border);
+  color: var(--text-muted);
+  opacity: 0.6;
+}
+
+.item-modal-root-badge {
+  background-color: var(--content-badge-root-bg);
+  border: 1px solid var(--content-badge-root-border);
+  color: var(--content-badge-root-text);
+}
+
+.confirm-modal-danger-panel {
+  background-color: var(--confirm-danger-panel-bg, var(--modal-badge-req-bg));
+  border: 1px solid var(--confirm-danger-panel-border, var(--modal-badge-req-border));
+}
+
+.confirm-modal-danger-heading,
+.confirm-modal-danger-copy {
+  color: var(--modal-badge-req-text);
+}
+
+.confirm-modal-count {
+  background-color: var(--modal-badge-req-bg);
+  border: 1px solid var(--modal-badge-req-border);
+  color: var(--modal-badge-req-text);
+}
+
+.confirm-modal-list,
+.confirm-modal-empty,
+.confirm-modal-loading {
+  background-color: var(--modal-form-bg);
+  color: var(--text-muted);
+}
+
+.confirm-modal-list {
+  border: 1px solid var(--modal-badge-req-border);
+}
+
+.confirm-modal-item,
+.confirm-modal-item-name {
+  color: var(--text-secondary);
+}
+
+.confirm-modal-item-id {
+  color: var(--text-muted);
+}

@@ -182,6 +182,8 @@ Organized 1-to-1 with component stylesheets in styles/components/
    /* Aside Container & Docking */
    --panel-border-accent: rgba(81, 155, 255, 0.85);
    --panel-pinned-shadow: 14px 0 35px -4px rgba(0, 0, 0, 0.85);
+   --panel-reset-shadow: 4px 0 12px rgba(0, 0, 0, 0.60);
+   --panel-shell-shadow: 0 25px 50px rgba(0, 0, 0, 0.50);
 
    /* Feedback & Sync Notice Banners */
    --panel-notice-loading-bg: rgba(4, 22, 40, 1.00);
@@ -278,6 +280,14 @@ Organized 1-to-1 with component stylesheets in styles/components/
    --modal-badge-req-bg: rgba(76, 5, 25, 0.60);
    --modal-badge-req-border: rgba(159, 18, 57, 0.60);
    --modal-badge-req-text: rgba(254, 205, 211, 1.00);
+   --item-template-bg: rgba(49, 46, 129, 0.40);
+   --item-template-border: rgba(49, 46, 129, 0.60);
+   --item-template-heading: rgba(165, 180, 252, 1.00);
+   --item-modal-inline-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+   --confirm-danger-panel-bg: rgba(76, 5, 25, 0.30);
+   --confirm-danger-panel-border: rgba(159, 18, 57, 0.50);
+   --explorer-filter-inset-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.25);
+   --explorer-filter-pill-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
 
    /* Template Manager Specific Tokens */
    --tmpl-item-bg: rgba(2, 16, 31, 0.60);

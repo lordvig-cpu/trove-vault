@@ -63,8 +63,8 @@ function UnifiedExplorerTreeItem({
         className={[
           'group flex items-center h-7 px-1.5 gap-1.5 rounded-md cursor-pointer transition w-full min-w-0',
           isSelected
-            ? 'bg-accent-primary/25 text-content-primary font-medium border border-accent-primary/40'
-            : 'text-content-muted hover:bg-surface-hover/60 hover:text-content-secondary',
+            ? 'explorer-tree-item-selected font-medium'
+            : 'explorer-tree-item',
         ].join(' ')}
       >
         <button
@@ -75,7 +75,7 @@ function UnifiedExplorerTreeItem({
           }}
           className={[
             'flex items-center justify-center w-4 h-4 shrink-0',
-            'text-content-muted hover:text-content-primary transition',
+            'explorer-tree-muted transition',
             !hasSubItems && 'tree-chevron-leaf',
           ].filter(Boolean).join(' ')}
         >
@@ -90,7 +90,7 @@ function UnifiedExplorerTreeItem({
           title={item.name}
           className={[
             'text-[13px] tracking-tight truncate shrink min-w-0',
-            isSelected ? 'text-accent-secondary font-medium' : '',
+            isSelected ? 'explorer-tree-item-selected-name font-medium' : '',
           ].join(' ')}
         >
           {item.name}
@@ -111,8 +111,8 @@ function UnifiedExplorerTreeItem({
               className={[
                 'w-[15px] h-[15px] transition-all duration-300 ease-out',
                 menu.isMenuOpen
-                  ? 'text-content-primary rotate-90'
-                  : 'text-content-muted group-hover/gear:text-content-primary',
+                  ? 'explorer-tree-gear-open rotate-90'
+                  : 'explorer-tree-gear-closed',
               ].join(' ')}
             />
           </div>
@@ -122,7 +122,7 @@ function UnifiedExplorerTreeItem({
       <ExplorerItemActionMenu item={item} collectionId={collectionId} menu={menu} />
 
       {isOpen && hasSubItems && (
-        <div className="border-l border-border-subtle space-y-0.5 ml-[13.5px] pl-2.5 my-0.5 flex flex-col min-w-0">
+        <div className="explorer-tree-branch border-l space-y-0.5 ml-[13.5px] pl-2.5 my-0.5 flex flex-col min-w-0">
           {item.children?.map((child) => (
             <UnifiedExplorerTreeItem
               key={`subitem-${child.id}`}
@@ -189,8 +189,8 @@ export default function UnifiedExplorerTree({
         className={[
           'group flex items-center h-7 px-1.5 gap-1.5 cursor-pointer transition w-full min-w-0 explorer-category-sticky-header',
           isActiveCollection
-            ? 'bg-accent-primary/15 text-accent-secondary font-medium'
-            : 'text-content-secondary hover:bg-surface-hover/60 hover:text-content-primary',
+            ? 'explorer-category-row-active font-medium'
+            : 'explorer-category-row',
         ].join(' ')}
       >
         <button
@@ -198,16 +198,16 @@ export default function UnifiedExplorerTree({
           onClick={handleToggle}
           className={[
             'flex items-center justify-center w-4 h-4 shrink-0',
-            'text-[9px] text-content-muted hover:text-content-primary',
+            'text-[9px] explorer-tree-muted',
             'cursor-pointer transition select-none',
-            !hasChildren && 'opacity-0 pointer-events-none cursor-default',
+            !hasChildren && 'explorer-tree-hidden pointer-events-none cursor-default',
           ].filter(Boolean).join(' ')}
           title={localIsOpen ? 'Collapse category' : 'Expand category'}
         >
           {localIsOpen ? '▼' : '▶\uFE0E'}
         </button>
 
-        <span className="w-4 h-4 flex items-center justify-center text-sm text-amber-400 shrink-0 select-none">
+        <span className="w-4 h-4 flex items-center justify-center text-sm explorer-category-icon shrink-0 select-none">
           {collection.icon || (localIsOpen ? '📂' : '📁')}
         </span>
 
@@ -221,7 +221,7 @@ export default function UnifiedExplorerTree({
         {collection.items?.length ? (
           <span
             title={`${collection.items.length} ${collection.items.length === 1 ? 'item' : 'items'}`}
-            className="px-1.5 py-0.2 rounded text-[10px] font-mono text-amber-400 bg-surface-hover/60 border border-border-subtle/50 shrink-0 select-none"
+            className="explorer-tree-badge px-1.5 py-0.2 rounded text-[10px] font-mono shrink-0 select-none"
           >
             {collection.items.length}
           </span>
@@ -242,8 +242,8 @@ export default function UnifiedExplorerTree({
               className={[
                 'w-[15px] h-[15px] transition-all duration-300 ease-out',
                 menu.isMenuOpen
-                  ? 'text-content-primary rotate-90'
-                  : 'text-content-muted group-hover/gear:text-content-primary',
+                  ? 'explorer-tree-primary rotate-90'
+                  : 'explorer-tree-action-icon',
               ].join(' ')}
             />
           </div>
@@ -257,7 +257,7 @@ export default function UnifiedExplorerTree({
       />
 
       {localIsOpen && hasChildren && (
-        <div className="border-l border-border-subtle space-y-0.5 ml-[13.5px] pl-2.5 my-0.5 flex flex-col min-w-0">
+        <div className="explorer-tree-branch border-l space-y-0.5 ml-[13.5px] pl-2.5 my-0.5 flex flex-col min-w-0">
           {collection.subCollections?.map((subCollection) => (
             <UnifiedExplorerTree
               key={`col-${subCollection.id}`}

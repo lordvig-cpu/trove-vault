@@ -1,0 +1,103 @@
+/* Shared semantic visuals for content, admin, and navigation components. */
+
+.ui-primary { color: var(--text-primary); }
+.ui-secondary { color: var(--text-secondary); }
+.ui-muted { color: var(--text-muted); }
+.ui-accent { color: var(--brand-secondary-amber); }
+.ui-danger { color: var(--content-btn-danger-text); }
+.ui-hover-primary:hover { color: var(--text-primary); }
+.ui-hover-accent:hover { color: var(--brand-secondary-amber); }
+.ui-surface { background-color: var(--panel-surface-bg); }
+.ui-surface-hover { background-color: var(--card-surface-hover); }
+.ui-border-subtle { border-color: var(--panel-border-subtle); }
+.ui-border-strong { border-color: var(--panel-border-strong); }
+.ui-border-top-subtle { border-top-color: var(--panel-border-subtle); }
+.ui-border-bottom-subtle { border-bottom-color: var(--panel-border-subtle); }
+.ui-hover-surface:hover { background-color: var(--card-surface-hover); }
+.ui-input {
+  background-color: var(--modal-input-bg);
+  border-color: var(--modal-input-border);
+  color: var(--text-primary);
+}
+.ui-input::placeholder { color: var(--text-muted); }
+.ui-input:focus { border-color: var(--modal-input-focus-border); outline: none; }
+.ui-danger-surface { background-color: var(--content-btn-danger-bg); }
+.ui-danger-surface:hover { background-color: var(--content-btn-danger-hover); }
+.ui-primary-surface { background-color: var(--content-btn-primary-bg); color: var(--content-btn-primary-text); }
+.ui-primary-surface:hover { background-color: var(--content-btn-primary-hover); }
+.ui-disabled:disabled { opacity: 0.5; }
+.ui-invisible { opacity: 0; }
+.group:hover .ui-invisible { opacity: 1; }
+
+.detail-item-badge {
+  background-color: var(--explorer-item-active-bg);
+  border: 1px solid var(--explorer-item-active-border);
+  color: var(--brand-secondary-amber);
+}
+.detail-parent-badge {
+  background-color: var(--card-surface-hover);
+  border: 1px solid var(--panel-border-subtle);
+  color: var(--text-muted);
+}
+.detail-standalone-badge {
+  background-color: var(--content-badge-root-bg);
+  border: 1px solid var(--content-badge-root-border);
+  color: var(--content-badge-root-text);
+}
+.detail-heading { color: var(--text-primary); }
+.detail-muted { color: var(--text-muted); }
+.detail-accent { color: var(--brand-secondary-amber); }
+.detail-action-secondary {
+  background-color: var(--card-surface-hover);
+  border: 1px solid var(--panel-border-subtle);
+  color: var(--text-secondary);
+}
+.detail-action-secondary:hover { color: var(--text-primary); background-color: var(--card-surface-hover); }
+.detail-image { border-color: var(--panel-border-subtle); box-shadow: var(--content-card-shadow); }
+.detail-empty-image { color: var(--text-muted); border-color: var(--panel-border-subtle); }
+.detail-empty-icon { opacity: 0.4; }
+.detail-divider { border-color: var(--panel-border-subtle); }
+
+.dropdown-icon { color: var(--brand-secondary-amber); }
+.dropdown-muted { color: var(--text-muted); }
+.dropdown-primary { color: var(--text-primary); }
+.dropdown-secondary { color: var(--text-secondary); }
+.dropdown-accent { color: var(--brand-secondary-amber); }
+.dropdown-danger { color: var(--content-btn-danger-text); }
+.dropdown-control:hover { color: var(--text-primary); background-color: var(--card-surface-hover); }
+.dropdown-control-danger:hover { color: var(--content-btn-danger-text); background-color: var(--card-surface-hover); }
+.dropdown-input {
+  background-color: var(--canvas-bg-primary);
+  border-color: var(--panel-border-subtle);
+  color: var(--text-primary);
+}
+.dropdown-input::placeholder { color: var(--text-muted); }
+.dropdown-input:focus { border-color: var(--brand-primary); outline: none; }
+.dropdown-error { color: var(--content-btn-danger-text); }
+.dropdown-disabled:disabled { opacity: 0.5; }
+
+.panel-grip-active { background-color: var(--brand-secondary-amber); opacity: 1; }
+.panel-grip-idle { background-color: var(--brand-secondary-amber); opacity: 0; }
+.group:hover .panel-grip-idle { opacity: 1; }
+.panel-reset-button {
+  background-color: var(--panel-surface-bg);
+  border-color: var(--brand-secondary-amber);
+  box-shadow: var(--panel-reset-shadow);
+}
+.panel-reset-button:hover { background-color: var(--card-surface-hover); }
+.panel-reset-icon { color: var(--brand-secondary-amber); }
+.panel-reset-icon:hover { color: var(--text-primary); }
+.panel-shell { box-shadow: var(--panel-shell-shadow); backdrop-filter: blur(12px); }
+.icon-primary { color: var(--brand-primary); }
+.icon-primary-hover:hover { color: var(--text-primary); }
+.icon-pin-filled { color: var(--text-primary); }
+.icon-pin-filled:hover { color: var(--text-muted); }
+.icon-pin-filled:hover { fill: transparent; }
+.ui-hover-primary:hover { color: var(--text-primary); }
+.icon-pin-outline:hover { color: var(--text-primary); }
+.icon-gear-active { fill: currentColor; }
+.icon-gear-idle { fill: transparent; }
+.group:hover .icon-gear-idle { fill: currentColor; }
+.icon-pin-outline:hover { fill: var(--text-primary); stroke: var(--text-primary); }
+.panel-notice-text { color: var(--text-muted); }
+.panel-overlay { background-color: transparent; }
