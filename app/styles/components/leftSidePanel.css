@@ -34,6 +34,8 @@
   /* MUST BE NONE: CSS transforms establish a new stacking context that breaks 
      fixed child positioning (such as action flyout menus) relative to document.body */
   transform: none;
+  /* Keep the docked panel above the navigation bar's lower shadow layer */
+  z-index: 90;
 }
 
 /* Unpinned / Collapsed layout mode: Translates out of the viewport */

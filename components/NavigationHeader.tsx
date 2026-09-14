@@ -72,9 +72,6 @@ export default function NavigationHeader({
      in its active highlighted state (docked/pinned or unpinned flyout open).
      ------------------------------------------------------------------------ */
   const { isPinned, animationsEnabled } = useUIPreferences();
-  const opacityTransition = animationsEnabled
-    ? 'transition-opacity duration-700 ease-in-out'
-    : 'transition-none';
 
   const isTabActive = isPinned || isLeftSidePanelOpen;
 
@@ -83,7 +80,7 @@ export default function NavigationHeader({
       {/* SVG brushed steel noise texture filter referenced by header styles */}
       <NavigationBarTextureFilter />
 
-      <header className="navigation-header h-14 flex items-center justify-between shrink-0 relative z-[10]">
+      <header className="navigation-header h-14 flex items-center justify-between shrink-0 relative z-[80]">
         
         {/* ------------------------------------------------------------------
             2.2 LEFT SECTION: BRANDING & PRIMARY NAVIGATION
@@ -92,34 +89,6 @@ export default function NavigationHeader({
           
           {/* Brand & Explorer Tab Cluster (Fixed w-76 aligns with docked sidebar seam) */}
           <div className="flex items-center justify-between h-full w-76 shrink-0 relative">
-
-            {/* 
-              Shadow Eraser Mask:
-              Masks bottom shadows beneath the navigation bar when the sidebar is pinned
-              to produce a seamless, integrated column appearance.
-            */}
-            <div
-              className={[
-                'absolute top-full left-0 right-[10px] h-3 z-10',
-                'bg-surface',
-                'pointer-events-none',
-                opacityTransition,
-                isPinned ? 'nav-header-pinned-visible' : 'nav-header-pinned-hidden',
-              ].join(' ')}
-              aria-hidden="true"
-            />
-
-            {/* Accent Border Line: Continuous horizontal separator under the navbar */}
-            <div
-              className={[
-                'absolute top-full left-0 w-full h-[1px] z-20',
-                'bg-[var(--nav-header-accent-line)]',
-                'pointer-events-none',
-                opacityTransition,
-                isPinned ? 'nav-header-pinned-visible' : 'nav-header-pinned-hidden',
-              ].join(' ')}
-              aria-hidden="true"
-            />
 
             {/* Brand Logo Anchor */}
             <div className="flex items-center gap-2 pl-4 relative z-20">

@@ -95,6 +95,7 @@
 .right-panel-docked-open {
   opacity: 1;
   transform: translateX(0);
+  z-index: 90;
 }
 
 .right-panel-docked-closed {

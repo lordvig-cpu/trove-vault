@@ -248,9 +248,11 @@ export default function LeftSidePanel({
     <aside
       style={{ width: isPinned ? `${panelWidth}px` : 0 }}
       className={[
-        'left-side-panel absolute top-0 bottom-0 left-0 z-30',
+        'left-side-panel absolute top-0 bottom-0 left-0 z-50',
         'backdrop-blur-md shadow-2xl',
         transitionClass,
+        // Force transform to none in all states to prevent GPU layer popping
+        '!transform-none',
         isPinned ? 'left-side-panel-pinned' : 'left-side-panel-unpinned pointer-events-none',
       ]
         .filter(Boolean)
