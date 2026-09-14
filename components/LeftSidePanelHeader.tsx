@@ -350,7 +350,7 @@ export default function LeftSidePanelHeader({
             
             <span
               title={`${collections.length} ${collections.length === 1 ? 'collection' : 'collections'}`}
-              className="px-1.5 py-0.5 rounded text-[10px] font-mono font-bold text-accent-secondary bg-surface-hover/60 border border-border-subtle/50 shrink-0 select-none"
+              className="px-1.5 py-0.5 rounded text-[10px] font-mono font-bold text-accent-secondary bg-surface border border-border-subtle/50 shrink-0 select-none"
             >
               {collections.length}
             </span>

@@ -187,3 +187,159 @@
 .renameInput::placeholder {
   color: var(--text-muted, rgba(110, 143, 174, 1.00));
 }
+
+.actionMenuItem {
+  width: 100%;
+  text-align: left;
+  padding: 0.375rem 0.625rem;
+  border-radius: 0.375rem;
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  transition: background-color 150ms ease, color 150ms ease;
+  cursor: pointer;
+  background: transparent;
+  border: none;
+}
+
+.actionMenuItem:hover {
+  background-color: var(--explorer-menu-item-hover-bg, rgba(255, 255, 255, 0.08));
+}
+
+.actionMenuItemLabel {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--explorer-menu-item-text, var(--content-primary));
+  transition: color 150ms ease;
+}
+
+.actionMenuItem:hover .actionMenuItemLabel {
+  color: var(--explorer-menu-item-hover-text, rgba(255,255,255,1.00));
+}
+
+.actionMenuItemSubtext {
+  font-size: 0.625rem;
+  color: var(--explorer-menu-item-subtext, var(--content-muted));
+  transition: color 150ms ease;
+}
+
+.actionMenuItem:hover .actionMenuItemSubtext {
+  color: var(--explorer-menu-item-hover-subtext, var(--content-secondary));
+}
+
+/* --------------------------------------------------------------------------
+   Action Menu Danger / Destructive Item
+   -------------------------------------------------------------------------- */
+.actionMenuDangerItem {
+  width: 100%;
+  text-align: left;
+  padding: 0.375rem 0.625rem;
+  border-radius: 0.375rem;
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease;
+  cursor: pointer;
+  background: transparent;
+  border: 1px solid transparent;
+}
+
+.actionMenuDangerItem:hover {
+  background-color: var(--explorer-menu-danger-hover-bg);
+  border-color: var(--explorer-menu-danger-hover-border);
+}
+
+.actionMenuDangerIcon {
+  width: 1rem;
+  height: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--explorer-menu-danger-icon);
+}
+
+.actionMenuDangerLabel {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--explorer-menu-danger-text);
+  transition: color 150ms ease;
+}
+
+.actionMenuDangerItem:hover .actionMenuDangerLabel {
+  color: var(--explorer-menu-danger-hover-text);
+}
+
+.actionMenuDangerSubtext {
+  font-size: 0.625rem;
+  color: var(--explorer-menu-danger-subtext);
+  transition: color 150ms ease;
+}
+
+.actionMenuDangerItem:hover .actionMenuDangerSubtext {
+  color: var(--explorer-menu-danger-hover-subtext);
+}
+
+/* --------------------------------------------------------------------------
+   Action Menu Inline Rename Form
+   -------------------------------------------------------------------------- */
+.actionMenuRenameForm {
+  padding: 0.25rem 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+.actionMenuRenameInput {
+  font-size: 0.75rem;
+  line-height: 1rem;
+  background-color: var(--explorer-menu-rename-input-bg);
+  color: var(--explorer-menu-rename-input-text);
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  border: 1px solid var(--explorer-menu-rename-input-border);
+  outline: none;
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+}
+
+.actionMenuRenameInput:focus {
+  border-color: var(--explorer-menu-rename-input-focus);
+  box-shadow: 0 0 0 1px var(--explorer-menu-rename-input-focus);
+}
+
+.actionMenuRenameActions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.375rem;
+  font-size: 0.625rem;
+}
+
+.actionMenuRenameCancelBtn {
+  padding: 0.125rem 0.5rem;
+  border-radius: 0.25rem;
+  color: var(--explorer-menu-rename-cancel-text);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: color 150ms ease;
+}
+
+.actionMenuRenameCancelBtn:hover {
+  color: var(--explorer-menu-rename-cancel-hover-text);
+}
+
+.actionMenuRenameSaveBtn {
+  padding: 0.125rem 0.5rem;
+  border-radius: 0.25rem;
+  font-weight: 500;
+  background-color: var(--explorer-menu-rename-save-bg);
+  color: var(--explorer-menu-rename-save-text);
+  border: none;
+  cursor: pointer;
+  transition: background-color 150ms ease;
+}
+
+.actionMenuRenameSaveBtn:hover {
+  background-color: var(--explorer-menu-rename-save-hover-bg);
+}

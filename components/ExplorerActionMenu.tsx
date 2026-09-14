@@ -122,17 +122,17 @@ export function ActionMenuItem({
     <button
       type="button"
       onClick={onClick}
-      className="w-full text-left px-2.5 py-1.5 rounded-md hover:bg-surface-hover/70 flex items-center gap-2.5 transition-colors cursor-pointer group"
+      className="actionMenuItem group"
     >
       <span className="w-4 h-4 flex items-center justify-center shrink-0 text-content-muted group-hover:text-content-primary">
         {icon}
       </span>
       <div className="flex flex-col leading-tight min-w-0">
-        <span className="text-xs font-medium text-content-primary group-hover:text-white truncate">
+        <span className="actionMenuItemLabel truncate">
           {label}
         </span>
         {subtext && (
-          <span className="text-[10px] text-content-muted group-hover:text-content-secondary truncate">
+          <span className="actionMenuItemSubtext truncate">
             {subtext}
           </span>
         )}
@@ -156,17 +156,17 @@ export function ActionMenuDangerItem({
     <button
       type="button"
       onClick={onClick}
-      className="w-full text-left px-2.5 py-1.5 rounded-md hover:bg-rose-950/40 flex items-center gap-2.5 transition-colors cursor-pointer group border border-transparent hover:border-rose-900/40"
+      className="actionMenuDangerItem group"
     >
-      <span className="w-4 h-4 flex items-center justify-center shrink-0 text-rose-400">
+      <span className="actionMenuDangerIcon">
         {icon}
       </span>
       <div className="flex flex-col leading-tight min-w-0">
-        <span className="text-xs font-medium text-rose-300 group-hover:text-rose-200 truncate">
+        <span className="actionMenuDangerLabel truncate">
           {label}
         </span>
         {subtext && (
-          <span className="text-[10px] text-rose-400/70 group-hover:text-rose-300 truncate">
+          <span className="actionMenuDangerSubtext truncate">
             {subtext}
           </span>
         )}
@@ -206,7 +206,7 @@ export function ActionMenuRenameForm({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="px-2 py-1 flex flex-col gap-1.5">
+    <form onSubmit={handleSubmit} className="actionMenuRenameForm">
       <input
         ref={inputRef}
         type="text"
@@ -215,19 +215,19 @@ export function ActionMenuRenameForm({
         onKeyDown={(e) => {
           if (e.key === 'Escape') onCancel();
         }}
-        className="text-xs bg-[#040811] text-white px-2 py-1 rounded border border-accent-secondary/50 focus:outline-none focus:ring-1 focus:ring-accent-secondary"
+        className="actionMenuRenameInput"
       />
-      <div className="flex items-center justify-end gap-1.5 text-[10px]">
+      <div className="actionMenuRenameActions">
         <button
           type="button"
           onClick={onCancel}
-          className="px-2 py-0.5 rounded text-content-muted hover:text-white"
+          className="actionMenuRenameCancelBtn"
         >
           Cancel
         </button>
         <button
           type="submit"
-          className="px-2 py-0.5 rounded bg-accent-secondary/20 text-accent-secondary hover:bg-accent-secondary/30 font-medium"
+          className="actionMenuRenameSaveBtn"
         >
           Save
         </button>

@@ -115,3 +115,35 @@ export const PinFilledIcon = ({ className = 'w-4 h-4' }: { className?: string })
     <path d="M8 3H16L15 8L18 11V13H13V19L12 22L11 19V13H6V11L9 8L8 3Z" />
   </svg>
 );
+
+/* ResetWidthIcon: Counter-clockwise arrow indicator used to restore default sidebar/panel width. */
+export const ResetWidthIcon = ({ className = 'w-3.5 h-3.5' }: { className?: string }) => (
+  <svg
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2.5"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className={`origin-center transition-colors ${className}`}
+  >
+    <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+    <path d="M3 3v5h5" />
+  </svg>
+);
+
+/* ResetWidthRightIcon: Clockwise arrow indicator used to restore default right sidebar/panel width. */
+export const ResetWidthRightIcon = ({ className = 'w-3.5 h-3.5' }: { className?: string }) => (
+  <svg
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2.5"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className={`origin-center transition-colors ${className}`}
+  >
+    <path d="M21 12a9 9 0 1 1-9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" />
+    <path d="M21 3v5h-5" />
+  </svg>
+);

@@ -328,7 +328,7 @@ Organized 1-to-1 with component stylesheets in styles/components/
      0 0 20px 0 rgba(245, 158, 11, 0.18);
 
    /* Header Pill Banner */
-   --explorer-menu-header-bg: rgba(245, 158, 11, 0.10);
+   --explorer-menu-header-bg: rgba(78, 39, 7, 1.00);
    --explorer-menu-header-border: rgba(245, 158, 11, 0.25);
    --explorer-menu-header-title: rgba(251, 191, 36, 1.00);
    --explorer-menu-header-icon: rgba(252, 211, 77, 1.00);
@@ -339,12 +339,37 @@ Organized 1-to-1 with component stylesheets in styles/components/
 
    /* Action Item Rows & Dividers */
    --explorer-menu-divider: rgba(245, 158, 11, 0.20);
-   --explorer-menu-item-hover-bg: rgba(245, 158, 11, 0.15);
 
-   /* Destructive Action Item Tokens */
-   --explorer-menu-danger-hover-bg: rgba(244, 63, 94, 0.15);
+   /* Menu Item Interactive States */
+   --explorer-menu-item-text: var(--content-primary, #e2e8f0);
+   --explorer-menu-item-hover-bg:  rgba(245, 158, 11, 0.15);
+   --explorer-menu-item-hover-text: #ffffff;
+   --explorer-menu-item-subtext: var(--content-muted, #94a3b8);
+   --explorer-menu-item-hover-subtext: var(--content-secondary, #cbd5e1);
+
+   /* Menu Danger Item Interactive States */
+   --explorer-menu-danger-text: #fda4af;             /* rose-300 */
+   --explorer-menu-danger-icon: #fb7185;             /* rose-400 */
+   --explorer-menu-danger-subtext: rgba(251, 113, 133, 0.7); /* rose-400/70 */
+   --explorer-menu-danger-hover-bg: rgba(76, 5, 25, 0.4);   /* rose-950/40 */
+   --explorer-menu-danger-hover-border: rgba(136, 19, 55, 0.4); /* rose-900/40 */
+   --explorer-menu-danger-hover-text: #fecdd3;        /* rose-200 */
+   --explorer-menu-danger-hover-subtext: #fda4af;     /* rose-300 */
+
+   /* Menu Rename Form Controls */
+   --explorer-menu-rename-input-bg: #040811;
+   --explorer-menu-rename-input-text: #ffffff;
+   --explorer-menu-rename-input-border: rgba(245, 158, 11, 0.5);
+   --explorer-menu-rename-input-focus: var(--accent-secondary, #f59e0b);
+   --explorer-menu-rename-cancel-text: var(--content-muted, #94a3b8);
+   --explorer-menu-rename-cancel-hover-text: #ffffff;
+   --explorer-menu-rename-save-bg: rgba(245, 158, 11, 0.2);
+   --explorer-menu-rename-save-hover-bg: rgba(245, 158, 11, 0.3);
+   --explorer-menu-rename-save-text: var(--accent-secondary, #f59e0b);
+   
+/*   --explorer-menu-danger-hover-bg: rgba(244, 63, 94, 0.15);
    --explorer-menu-danger-label: rgba(251, 113, 133, 1.00);
-   --explorer-menu-danger-subtext: rgba(248, 113, 113, 1.00);
+   --explorer-menu-danger-subtext: rgba(248, 113, 113, 1.00); */
 
    /* Node Triggers & Badges (UnifiedExplorerTree.css) */
    --tree-gear-bg-hover: rgba(30, 41, 59, 0.60);

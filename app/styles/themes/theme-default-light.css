@@ -327,7 +327,7 @@ Organized 1-to-1 with component stylesheets in styles/components/
      0 0 20px 0 rgba(245, 158, 11, 0.18);
 
    /* Header Pill Banner */
-   --explorer-menu-header-bg: rgba(201, 123, 8, 0.08);
+   --explorer-menu-header-bg: rgba(78, 39, 7, 1.00);
    --explorer-menu-header-border: rgba(201, 123, 8, 0.20);
    --explorer-menu-header-title: rgba(180, 83, 9, 1.00);
    --explorer-menu-header-icon: rgba(217, 119, 6, 1.00);
@@ -338,12 +338,38 @@ Organized 1-to-1 with component stylesheets in styles/components/
 
    /* Action Item Rows & Dividers */
    --explorer-menu-divider: rgba(15, 23, 42, 0.08);
-   --explorer-menu-item-hover-bg: rgba(201, 123, 8, 0.10);
+
+   /* Menu Item Interactive States */
+   --explorer-menu-item-text: var(--content-primary, #e2e8f0);
+   --explorer-menu-item-hover-bg:  rgba(201, 123, 8, 0.10);
+   --explorer-menu-item-hover-text: #ffffff;
+   --explorer-menu-item-subtext: var(--content-muted, #94a3b8);
+   --explorer-menu-item-hover-subtext: var(--content-secondary, #cbd5e1);
+
+   /* Menu Danger Item Interactive States */
+   --explorer-menu-danger-text: #e11d48;             /* rose-600 */
+   --explorer-menu-danger-icon: #f43f5e;             /* rose-500 */
+   --explorer-menu-danger-subtext: #9f1239;          /* rose-800 */
+   --explorer-menu-danger-hover-bg: #ffe4e6;         /* rose-100 */
+   --explorer-menu-danger-hover-border: #fecdd3;     /* rose-200 */
+   --explorer-menu-danger-hover-text: #be123c;       /* rose-700 */
+   --explorer-menu-danger-hover-subtext: #881337;    /* rose-900 */
+
+   /* Menu Rename Form Controls */
+   --explorer-menu-rename-input-bg: #ffffff;
+   --explorer-menu-rename-input-text: #0f172a;
+   --explorer-menu-rename-input-border: rgba(217, 119, 6, 0.4);
+   --explorer-menu-rename-input-focus: var(--accent-secondary, #d97706);
+   --explorer-menu-rename-cancel-text: var(--content-muted, #64748b);
+   --explorer-menu-rename-cancel-hover-text: #0f172a;
+   --explorer-menu-rename-save-bg: rgba(217, 119, 6, 0.15);
+   --explorer-menu-rename-save-hover-bg: rgba(217, 119, 6, 0.25);
+   --explorer-menu-rename-save-text: var(--accent-secondary, #b45309);
 
    /* Destructive Action Item Tokens */
-   --explorer-menu-danger-hover-bg: rgba(254, 226, 226, 0.90);
+/*   --explorer-menu-danger-hover-bg: rgba(254, 226, 226, 0.90);
    --explorer-menu-danger-label: rgba(225, 29, 72, 1.00);
-   --explorer-menu-danger-subtext: rgba(159, 18, 57, 1.00);
+   --explorer-menu-danger-subtext: rgba(159, 18, 57, 1.00); */
 
    /* Node Triggers & Badges (UnifiedExplorerTree.css) */
    --tree-gear-bg-hover: rgba(226, 232, 240, 0.65);
