@@ -64,6 +64,7 @@ export default function LeftSidePanelHeader({
   onClearCollectionFilters,
 }: LeftSidePanelHeaderProps) {
   const [showAdvancedSearch, setShowAdvancedSearch] = useState(false);
+  const [showAppliedFilters, setShowAppliedFilters] = useState(false); // Controls pill section visibility
   const [menuCoords, setMenuCoords] = useState({ top: 0, left: 0 });
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const triggerBtnRef = useRef<HTMLButtonElement>(null);
@@ -78,7 +79,7 @@ export default function LeftSidePanelHeader({
 
       setMenuCoords({
         top: Math.round(rect.top - 4),
-        left: Math.round(rect.right - 2),
+        left: Math.round(rect.right - 4),
       });
       setShowAdvancedSearch(true);
     } else {
@@ -169,17 +170,15 @@ export default function LeftSidePanelHeader({
           ------------------------------------------------------------------ */}
       <div className="flex items-center gap-1.5 w-full">
         <div className="relative flex-1 min-w-0 flex items-center">
+          
+          {/* Left Magnifying Glass */}
           <span className="absolute left-2 top-1/2 -translate-y-1/2 pointer-events-none flex items-center justify-center select-none">
-            {searchQuery.trim().length > 0 ? (
-              <FilterIcon className="w-3.5 h-3.5 text-accent-secondary" isActive={true} />
-            ) : (
-              <SearchGlassIcon
-                className={`w-3.5 h-3.5 transition-colors duration-200 ${
-                  isSearchFocused ? 'text-white' : 'text-content-muted'
-                }`}
-                isFocused={isSearchFocused}
-              />
-            )}
+            <SearchGlassIcon
+              className={`w-3.5 h-3.5 transition-colors duration-200 ${
+                isSearchFocused ? 'text-white' : 'text-content-muted'
+              }`}
+              isFocused={isSearchFocused}
+            />
           </span>
 
           <input
@@ -192,25 +191,50 @@ export default function LeftSidePanelHeader({
             title="Enter search [shortcut: Ctrl-K]"
             placeholder={isFilterActive ? 'Search filtered collection...' : 'Search...'}
             className={[
-              'explorer-search-input w-full !pl-8 !pr-8',
+              'explorer-search-input w-full !pl-8',
+              isFilterActive && searchQuery ? '!pr-14' : (isFilterActive || searchQuery ? '!pr-8' : '!pr-3'),
               searchQuery.length > 0 ? 'explorer-search-input-active' : '',
             ].join(' ')}
           />
 
-          {searchQuery && (
-            <button
-              type="button"
-              onClick={() => onSearchChange('')}
-              className="group absolute right-2 top-1/2 -translate-y-1/2 text-content-muted hover:text-content-primary transition-colors text-xs cursor-pointer p-0.5"
-              title="Clear search"
-            >
-              <span className="inline-block origin-center transition-transform duration-200 group-hover:scale-115">
-                ✕
-              </span>
-            </button>
-          )}
+          {/* Right-aligned Actions inside Search Input */}
+          <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1.5">
+            {/* 1. Clear Search Text Button */}
+            {searchQuery && (
+              <button
+                type="button"
+                onClick={() => onSearchChange('')}
+                className="text-content-muted hover:text-content-primary transition-colors text-xs cursor-pointer p-0.5"
+                title="Clear search text"
+              >
+                <span className="inline-block origin-center transition-transform duration-200 hover:scale-115">
+                  ✕
+                </span>
+              </button>
+            )}
+
+            {/* 2. Filter Funnel Toggle Icon (Only shows when a filter is applied) */}
+            {isFilterActive && (
+              <button
+                type="button"
+                onClick={() => setShowAppliedFilters((prev) => !prev)}
+                className={`p-0.5 rounded transition-all cursor-pointer flex items-center justify-center ${
+                  showAppliedFilters
+                    ? 'text-accent-secondary drop-shadow-[0_0_6px_rgba(245,158,11,0.5)]'
+                    : 'text-white hover:text-accent-secondary'
+                }`}
+                title={showAppliedFilters ? 'Hide applied filters' : 'Show applied filters'}
+              >
+                <FilterIcon
+                  className="w-3.5 h-3.5"
+                  isActive={showAppliedFilters}
+                />
+              </button>
+            )}
+          </div>
         </div>
 
+        {/* Sliders Button for Advanced Search Popup */}
         <button
           ref={triggerBtnRef}
           type="button"
@@ -233,6 +257,70 @@ export default function LeftSidePanelHeader({
           )}
         </button>
       </div>
+
+      {/* ------------------------------------------------------------------
+          ROW 3: COLLAPSIBLE FILTERS APPLIED SECTION
+          ------------------------------------------------------------------ */}
+      {isFilterActive && showAppliedFilters && (
+        <div className="w-full flex flex-col gap-1.5 pt-1 animate-mount-fade">
+          
+          {/* Header row: Title on left, Clear all on right */}
+          <div className="flex items-center justify-between px-1">
+            <div className="flex items-center gap-1.5">
+              <span className="text-[11px] font-semibold tracking-wider text-content-muted uppercase">
+                Filters Applied
+              </span>
+              <span className="text-[10px] font-mono font-bold text-accent-secondary">
+                ({filterCollectionIds.length})
+              </span>
+            </div>
+
+            <button
+              type="button"
+              onClick={onClearCollectionFilters}
+              className="text-[10px] font-medium text-content-muted hover:text-rose-400 transition-colors cursor-pointer"
+              title="Clear all collection filters"
+            >
+              Clear all
+            </button>
+          </div>
+
+          {/* Subtle divider */}
+          <div className="border-t border-border-subtle/50 mx-0.5" />
+
+          {/* Darker Recessed Panel Container for Pills (matching Image 2) */}
+          <div className="bg-[#040811] border border-border-subtle/60 shadow-inner rounded-lg p-1.5 flex flex-wrap items-center gap-1.5 min-h-[36px] max-h-36 overflow-y-auto left-panel-scroll">
+            {filterCollectionIds.map((id) => {
+              const col = collections.find((c) => c.id === id);
+              if (!col) return null;
+
+              return (
+                <span
+                  key={id}
+                  className="group inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-surface/90 border border-border-subtle hover:border-accent-secondary/60 text-content-primary text-[11px] select-none transition-all shadow-sm"
+                >
+                  {/* '✕' Dismiss Button on Left */}
+                  <button
+                    type="button"
+                    onClick={() => onToggleFilterCollection(id)}
+                    className="text-accent-secondary hover:text-rose-400 font-bold text-[10px] leading-none cursor-pointer pr-0.5 transition-colors"
+                    title={`Remove filter: ${col.name}`}
+                  >
+                    ✕
+                  </button>
+
+                  {/* Icon & Name */}
+                  <span className="text-[11px] opacity-80">{col.icon || '📁'}</span>
+                  <span className="max-w-[110px] truncate font-medium text-white group-hover:text-accent-secondary transition-colors">
+                    {col.name}
+                  </span>
+                </span>
+              );
+            })}
+          </div>
+
+        </div>
+      )}
 
       {/* ------------------------------------------------------------------
           ADVANCED SEARCH ACTION MENU PORTAL

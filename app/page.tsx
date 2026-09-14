@@ -15,6 +15,9 @@ import LeftSidePanel from '@/components/LeftSidePanel';
 import ExplorerContent from '@/components/ExplorerContent';
 import ModalContainers from '@/components/ModalContainers';
 import DynamicWatermark from '@/components/DynamicWatermark';
+import UnifiedExplorerTree, {
+  type UnifiedCollectionNode,
+} from '@/components/UnifiedExplorerTree';
 
 export interface UniversalSearchResultItem extends ItemRecord {
   collection_name?: string;
@@ -185,15 +188,42 @@ export default function Home() {
      8. MEMOIZED EXPLORER SUB-COMPONENTS
      ------------------------------------------------------------------------ */
 
+  // Filtered Forest Computation
   const filteredForest = useMemo(() => {
-    // 1. If NO filters are active: Show all items grouped by Smart Categories
+    // 1. If NO filters are active: Show the default view (e.g. Smart Categories or unfiltered forest)
     if (filterCollectionIds.length === 0) {
-      // Exclude explicit User Collections (positive IDs); keep virtual template categories (negative IDs)
       return unifiedForest.filter((node) => node.id < 0);
     }
-    
-    // 2. If filters ARE active: Only show the specifically checked Collections
-    return unifiedForest.filter((node) => filterCollectionIds.includes(node.id));
+
+    // 2. Recursive prune function to filter both root collections AND sub-collections
+    const pruneNode = (
+      node: UnifiedCollectionNode
+    ): UnifiedCollectionNode | null => {
+      // Recursively prune child sub-collections
+      const prunedSubCollections = (node.subCollections || [])
+        .map(pruneNode)
+        .filter((child): child is UnifiedCollectionNode => child !== null);
+
+      const isSelfChecked = filterCollectionIds.includes(node.id);
+      const hasCheckedChildren = prunedSubCollections.length > 0;
+
+      // Keep this node if it is selected OR if any of its descendants are selected
+      if (isSelfChecked || hasCheckedChildren) {
+        return {
+          ...node,
+          // Only show sub-collections that passed the filter
+          subCollections: prunedSubCollections,
+          // If the parent itself is unchecked, don't show its direct items—only show the branch to the checked sub-collection
+          items: isSelfChecked ? node.items : [],
+        };
+      }
+
+      return null;
+    };
+
+    return unifiedForest
+      .map(pruneNode)
+      .filter((node): node is UnifiedCollectionNode => node !== null);
   }, [unifiedForest, filterCollectionIds]);
   
   const explorerTreeElement = (
