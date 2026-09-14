@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { supabase } from '@/lib/supabase';
 import { uploadItemImage } from '@/lib/storage';
+import { fetchTemplateCatalog } from '@/lib/templateCatalog';
 import { ItemRecord } from '@/types/item';
 import { FieldDefinition } from '@/types/field';
 import { CollectionTemplate } from '@/types/template';
@@ -63,21 +64,7 @@ export default function EditItemModal({
       setPreviewUrl(null);
       setError(null);
 
-      // Fetch all templates
-      const { data: tmpls } = await supabase
-        .from('collection_templates')
-        .select('*')
-        .order('is_system_preset', { ascending: false });
-
-      const { data: flds } = await supabase
-        .from('template_fields')
-        .select('*')
-        .order('display_order', { ascending: true });
-
-      const fullTemplates: CollectionTemplate[] = (tmpls || []).map((t) => ({
-        ...t,
-        fields: (flds || []).filter((f) => f.template_id === t.id),
-      }));
+      const fullTemplates = await fetchTemplateCatalog();
 
       setAvailableTemplates(fullTemplates);
 

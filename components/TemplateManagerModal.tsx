@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
-import { FieldDefinition } from '@/types/field';
 import { CollectionTemplate } from '@/types/template';
+import { fetchTemplateCatalog } from '@/lib/templateCatalog';
 
 /* ==========================================================================
    1. TYPE DEFINITIONS & INTERFACES
@@ -50,25 +50,7 @@ export default function TemplateManagerModal({
       setLoading(true);
       setError(null);
 
-      const { data: tmpls, error: tmplError } = await supabase
-        .from('collection_templates')
-        .select('*')
-        .order('is_system_preset', { ascending: false })
-        .order('id', { ascending: true });
-
-      if (tmplError) throw tmplError;
-
-      const { data: flds, error: fldError } = await supabase
-        .from('template_fields')
-        .select('*')
-        .order('display_order', { ascending: true });
-
-      if (fldError) throw fldError;
-
-      const fullTemplates = (tmpls || []).map((t) => ({
-        ...t,
-        fields: (flds || []).filter((f) => f.template_id === t.id),
-      }));
+      const fullTemplates = await fetchTemplateCatalog();
 
       setTemplates(fullTemplates);
       if (fullTemplates.length > 0 && !selectedTemplateId) {
