@@ -11,6 +11,7 @@ import {
   SearchGlassIcon,
 } from '@/components/icons/ExplorerIcons';
 import ExplorerSearchMenu from '@/components/ExplorerSearchMenu';
+import CollectionFilterTree from '@/components/CollectionFilterTree';
 import { CollectionRecord } from '@/types/collection';
 
 /* ==========================================================================
@@ -407,123 +408,11 @@ export default function LeftSidePanelHeader({
           })()}
           
           {/* 4. Collection List with Nested Groups in Unified Cards */}
-          <div className="flex flex-col mx-2 mb-1 bg-[#040811] border border-[var(--explorer-menu-divider,rgba(245,158,11,0.2))] shadow-inner rounded-md max-h-60 overflow-y-auto overflow-x-hidden left-panel-scroll p-1.5 space-y-1.5">
-            {(() => {
-              const allSelected =
-                collections.length > 0 &&
-                collections.every((col) => filterCollectionIds.includes(col.id));
-
-              // Build recursive hierarchy tree
-              const buildCollectionTree = (
-                items: CollectionRecord[],
-                parentId: number | null = null
-              ): Array<CollectionRecord & { children?: CollectionRecord[] }> => {
-                return items
-                  .filter((c) => (c.parent_id ?? null) === parentId)
-                  .map((c) => ({
-                    ...c,
-                    children: buildCollectionTree(items, c.id),
-                  }));
-              };
-
-              const rootTrees = buildCollectionTree(collections, null);
-
-              // Catch any orphan collections whose parent_id doesn't exist
-              const rootIds = new Set(rootTrees.map((r) => r.id));
-              collections.forEach((col) => {
-                if (col.parent_id && !collections.some((p) => p.id === col.parent_id) && !rootIds.has(col.id)) {
-                  rootTrees.push({ ...col, children: [] });
-                }
-              });
-
-              // Recursive node renderer within the same card bubble
-              const renderNodeRow = (
-                node: CollectionRecord & { children?: CollectionRecord[] },
-                depth = 0
-              ) => {
-                const isChecked = filterCollectionIds.includes(node.id);
-                const hasChildren = node.children && node.children.length > 0;
-
-                return (
-                  <div key={node.id} className="flex flex-col">
-                    <label
-                      style={{ paddingLeft: `${depth * 14 + 8}px` }}
-                      className={`group py-1.5 pr-2.5 rounded-md transition flex items-center justify-between cursor-pointer hover:bg-surface-hover/60 ${
-                        isChecked ? 'text-accent-secondary' : 'text-content-primary'
-                      }`}
-                    >
-                      <div className="flex items-center gap-2 min-w-0 flex-1">
-                        {/* Checkbox: visible when checked, hovered, or All Selected */}
-                        <div className="w-3.5 h-3.5 shrink-0 flex items-center justify-center">
-                          <input
-                            type="checkbox"
-                            checked={isChecked}
-                            onChange={() => onToggleFilterCollection(node.id)}
-                            className={`w-3.5 h-3.5 rounded border-border-strong text-accent-secondary bg-surface focus:ring-1 focus:ring-accent-secondary/50 cursor-pointer transition-opacity duration-150 ${
-                              allSelected || isChecked
-                                ? 'opacity-100 pointer-events-auto'
-                                : 'opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto'
-                            }`}
-                          />
-                        </div>
-
-                        {/* Sub-item tree branch indicator */}
-                        {depth > 0 && (
-                          <svg
-                            viewBox="0 0 16 16"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            className="w-3.5 h-3.5 text-content-muted/60 shrink-0 select-none -ml-1 mr-0.5"
-                          >
-                            {/* L-shaped corner branch line pointing right towards the folder */}
-                            <path d="M 5 2 L 5 9 L 13 9" />
-                            <polyline points="10 6 13 9 10 12" />
-                          </svg>
-                        )}
-
-                        {/* Folder Icon */}
-                        <span className="text-sm shrink-0 select-none">
-                          {node.icon || '📁'}
-                        </span>
-
-                        {/* Name & Description Stack */}
-                        <div className="flex flex-col min-w-0">
-                          <span className="text-xs font-semibold truncate">
-                            {node.name}
-                          </span>
-                          {node.description && (
-                            <p className="text-[10px] text-content-muted truncate mt-0.5">
-                              {node.description}
-                            </p>
-                          )}
-                        </div>
-                      </div>
-                    </label>
-
-                    {/* Render sub-collection children nested inside the SAME bubble card */}
-                    {hasChildren && (
-                      <div className="border-t border-border-subtle/30 pt-0.5 flex flex-col">
-                        {node.children!.map((child) => renderNodeRow(child, depth + 1))}
-                      </div>
-                    )}
-                  </div>
-                );
-              };
-
-              return rootTrees.map((rootNode) => (
-                /* SINGLE UNIFIED CARD BUBBLE PER ROOT COLLECTION TREE */
-                <div
-                  key={rootNode.id}
-                  className="rounded-lg border border-border-subtle/50 bg-surface/30 hover:border-border-subtle transition flex flex-col overflow-hidden"
-                >
-                  {renderNodeRow(rootNode, 0)}
-                </div>
-              ));
-            })()}
-          </div>
+          <CollectionFilterTree
+            collections={collections}
+            filterCollectionIds={filterCollectionIds}
+            onToggleFilterCollection={onToggleFilterCollection}
+          />
 
           {/* 5. Clear Filters Reset Action */}
           {isFilterActive && (

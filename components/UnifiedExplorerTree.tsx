@@ -1,24 +1,19 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { CollectionRecord } from '@/types/collection';
+import React, { useEffect, useState } from 'react';
 import { ItemRecord } from '@/types/item';
-import { GearIcon, AddSubItemIcon } from '@/components/icons/ActionIcons';
+import { GearIcon } from '@/components/icons/ActionIcons';
 import { ChevronDownIcon, ChevronRightIcon } from '@/components/icons/ExplorerIcons';
 import { useExplorerActionMenu } from '@/hooks/useExplorerActionMenu';
-import { useExplorerActions } from '@/context/ExplorerActionsContext';
 import { useExplorerSelection } from '@/context/ExplorerSelectionContext';
-import ExplorerActionMenu, {
-  ActionMenuItem,
-  ActionMenuDangerItem,
-  ActionMenuDivider,
-  ActionMenuRenameForm,
-} from '@/components/ExplorerActionMenu';
+import ExplorerCollectionActionMenu from '@/components/ExplorerCollectionActionMenu';
+import ExplorerItemActionMenu from '@/components/ExplorerItemActionMenu';
 import { STANDALONE_COLLECTION_ID } from '@/lib/explorerUtils';
+import { CollectionRecord } from '@/types/collection';
 
 /* ==========================================================================
    1. TYPE DEFINITIONS & INTERFACES
-   ========================================================================= */
+   ========================================================================== */
 
 export interface UnifiedCollectionNode extends CollectionRecord {
   items: ItemRecord[];
@@ -31,7 +26,7 @@ export interface UnifiedExplorerTreeProps {
 }
 
 /* ==========================================================================
-   2. ITEM ROW SUBCOMPONENT: UnifiedExplorerTreeItem
+   2. ITEM ROW
    ========================================================================== */
 
 function getItemTypeIcon(item: ItemRecord): string {
@@ -54,17 +49,14 @@ function UnifiedExplorerTreeItem({
   depth: number;
 }) {
   const { selectedItemId, onSelectItem } = useExplorerSelection();
-  const { onAddSubItem, onEditItem, onRenameItem, onDeleteItem } = useExplorerActions();
   const [isOpen, setIsOpen] = useState(true);
   const menu = useExplorerActionMenu(`item-${item.id}`, 215);
-
   const isSelected = selectedItemId === item.id;
   const hasSubItems = Boolean(item.children && item.children.length > 0);
   const typeIcon = getItemTypeIcon(item);
 
   return (
     <div className="select-none text-[13px] font-sans w-full min-w-0 flex flex-col">
-      {/* Primary Item Row Surface */}
       <div
         onClick={() => onSelectItem(item, collectionId)}
         title={item.name}
@@ -75,11 +67,10 @@ function UnifiedExplorerTreeItem({
             : 'text-content-muted hover:bg-surface-hover/60 hover:text-content-secondary',
         ].join(' ')}
       >
-        {/* Accordion Chevron */}
         <button
           type="button"
-          onClick={(e) => {
-            e.stopPropagation();
+          onClick={(event) => {
+            event.stopPropagation();
             setIsOpen(!isOpen);
           }}
           className={[
@@ -91,12 +82,10 @@ function UnifiedExplorerTreeItem({
           {isOpen ? <ChevronDownIcon /> : <ChevronRightIcon />}
         </button>
 
-        {/* Category Glyph Icon */}
         <span className="w-4 h-4 flex items-center justify-center text-[13px] leading-none shrink-0 select-none">
           {typeIcon}
         </span>
 
-        {/* Truncated Item Title */}
         <span
           title={item.name}
           className={[
@@ -107,7 +96,6 @@ function UnifiedExplorerTreeItem({
           {item.name}
         </span>
 
-        {/* Action Gear Trigger */}
         <div className="relative transition shrink-0 ml-auto">
           <div
             onMouseEnter={menu.handleGearMouseEnter}
@@ -131,75 +119,8 @@ function UnifiedExplorerTreeItem({
         </div>
       </div>
 
-      {/* Item Context Menu Popover Portal */}
-      <ExplorerActionMenu
-        isOpen={menu.isMenuOpen}
-        onMouseEnter={menu.handleMenuMouseEnter}
-        onMouseLeave={menu.handleMouseLeave}
-        top={menu.menuCoords.top}
-        left={menu.menuCoords.left}
-        title="Item Actions"
-        titleIcon="📄"
-      >
-        {/* 1. Add Sub-Item */}
-        <ActionMenuItem
-          icon={<AddSubItemIcon className="w-3.5 h-3.5" />}
-          label="Add Sub-Item"
-          subtext="Create a nested record"
-          onClick={() => {
-            onAddSubItem(collectionId, item.id);
-            menu.closeMenu();
-          }}
-        />
+      <ExplorerItemActionMenu item={item} collectionId={collectionId} menu={menu} />
 
-        {/* 2. Rename Action Button */}
-        <ActionMenuItem
-          icon={<span>🏷️</span>}
-          label="Rename Item"
-          subtext="Inline edit title"
-          onClick={() => {
-            menu.setIsRenaming((prev: boolean) => !prev);
-          }}
-        />
-
-        {/* 3. Inline Rename Form */}
-        {menu.isRenaming && (
-          <ActionMenuRenameForm
-            initialValue={item.name}
-            onSave={async (nextName) => {
-              await onRenameItem?.(item.id, nextName);
-              menu.closeMenu();
-            }}
-            onCancel={() => menu.setIsRenaming(false)}
-          />
-        )}
-
-        {/* 4. Edit Item Modal Trigger */}
-        <ActionMenuItem
-          icon={<span>✏️</span>}
-          label="Edit Item"
-          subtext="Update attributes & template"
-          onClick={() => {
-            onEditItem(item, collectionId);
-            menu.closeMenu();
-          }}
-        />
-
-        <ActionMenuDivider />
-
-        {/* 5. Delete Item */}
-        <ActionMenuDangerItem
-          icon={<span>🗑️</span>}
-          label="Delete Item"
-          subtext="Permanently remove"
-          onClick={() => {
-            onDeleteItem(item, collectionId);
-            menu.closeMenu();
-          }}
-        />
-      </ExplorerActionMenu>
-
-      {/* Recursive Sub-Items with guide line directly under the chevron center (13.5px) */}
       {isOpen && hasSubItems && (
         <div className="border-l border-border-subtle space-y-0.5 ml-[13.5px] pl-2.5 my-0.5 flex flex-col min-w-0">
           {item.children?.map((child) => (
@@ -217,7 +138,7 @@ function UnifiedExplorerTreeItem({
 }
 
 /* ==========================================================================
-   3. MAIN COMPONENT: UnifiedExplorerTree (Category & Collection Root)
+   3. COLLECTION / CATEGORY ROW
    ========================================================================== */
 
 export default function UnifiedExplorerTree({
@@ -230,59 +151,41 @@ export default function UnifiedExplorerTree({
     onToggleCategory,
     onSelectCollection,
   } = useExplorerSelection();
-  const {
-    onAddSubItem,
-    onEditTemplate,
-    onRenameCollection,
-    onDeleteCollection,
-    onEditCollection,
-    onAddSubCollection,
-  } = useExplorerActions();
   const menu = useExplorerActionMenu(`node-${collection.id}`, 240);
 
   const isVirtualCategory = collection.id < 0;
-  const isStandalone = collection.id === STANDALONE_COLLECTION_ID;
-  const effectiveCollectionId = isStandalone ? null : collection.id;
-
-  // Local open state initialized to true or according to expandedCategoryIds
+  const effectiveCollectionId =
+    collection.id === STANDALONE_COLLECTION_ID ? null : collection.id;
   const [localIsOpen, setLocalIsOpen] = useState(
     expandedCategoryIds ? expandedCategoryIds.has(collection.id) : true
   );
 
-  // Sync state if header toggles all categories
   useEffect(() => {
     if (expandedCategoryIds !== undefined) {
       setLocalIsOpen(expandedCategoryIds.has(collection.id));
     }
   }, [expandedCategoryIds, collection.id]);
 
-  const isOpen = localIsOpen;
-  const isActiveCollection = activeCollectionId === collection.id;
   const hasChildren =
-    Boolean(collection.subCollections && collection.subCollections.length > 0) ||
-    Boolean(collection.items && collection.items.length > 0);
-
+    Boolean(collection.subCollections?.length) || Boolean(collection.items?.length);
+  const isActiveCollection = activeCollectionId === collection.id;
   const stickyTop = depth * 28;
   const stickyZIndex = 20 - depth;
 
-  const handleToggle = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    e.preventDefault();
-    const nextState = !isOpen;
+  const handleToggle = (event: React.MouseEvent) => {
+    event.stopPropagation();
+    event.preventDefault();
+    const nextState = !localIsOpen;
     setLocalIsOpen(nextState);
     onToggleCategory?.(collection.id, nextState);
   };
 
   return (
     <div className="select-none text-[13px] font-sans w-full min-w-0 flex flex-col">
-      {/* Row Surface (Sticky Stack) */}
       <div
         onClick={() => onSelectCollection(collection.id)}
         title={`${isVirtualCategory ? 'Category' : 'Collection'}: ${collection.name}`}
-        style={{
-          top: `${stickyTop}px`,
-          zIndex: stickyZIndex,
-        }}
+        style={{ top: `${stickyTop}px`, zIndex: stickyZIndex }}
         className={[
           'group flex items-center h-7 px-1.5 gap-1.5 cursor-pointer transition w-full min-w-0 explorer-category-sticky-header',
           isActiveCollection
@@ -290,7 +193,6 @@ export default function UnifiedExplorerTree({
             : 'text-content-secondary hover:bg-surface-hover/60 hover:text-content-primary',
         ].join(' ')}
       >
-        {/* Accordion Chevron */}
         <button
           type="button"
           onClick={handleToggle}
@@ -300,17 +202,15 @@ export default function UnifiedExplorerTree({
             'cursor-pointer transition select-none',
             !hasChildren && 'opacity-0 pointer-events-none cursor-default',
           ].filter(Boolean).join(' ')}
-          title={isOpen ? 'Collapse category' : 'Expand category'}
+          title={localIsOpen ? 'Collapse category' : 'Expand category'}
         >
-          {isOpen ? '▼' : '▶\uFE0E'}
+          {localIsOpen ? '▼' : '▶\uFE0E'}
         </button>
 
-        {/* Glyph Icon */}
         <span className="w-4 h-4 flex items-center justify-center text-sm text-amber-400 shrink-0 select-none">
-          {collection.icon ? collection.icon : isOpen ? '📂' : '📁'}
+          {collection.icon || (localIsOpen ? '📂' : '📁')}
         </span>
 
-        {/* Truncated Name */}
         <span
           title={`${isVirtualCategory ? 'Category' : 'Collection'}: ${collection.name}`}
           className="text-[13px] tracking-tight font-medium truncate shrink min-w-0"
@@ -318,19 +218,15 @@ export default function UnifiedExplorerTree({
           {collection.name}
         </span>
 
-        {/* Item Count Pill Badge */}
-        {Boolean(collection.items && collection.items.length > 0) && (
+        {collection.items?.length ? (
           <span
-            title={`${collection.items.length} ${
-              collection.items.length === 1 ? 'item' : 'items'
-            }`}
+            title={`${collection.items.length} ${collection.items.length === 1 ? 'item' : 'items'}`}
             className="px-1.5 py-0.2 rounded text-[10px] font-mono text-amber-400 bg-surface-hover/60 border border-border-subtle/50 shrink-0 select-none"
           >
             {collection.items.length}
           </span>
-        )}
+        ) : null}
 
-        {/* Action Gear Trigger */}
         <div className="relative transition shrink-0 ml-auto">
           <div
             onMouseEnter={menu.handleGearMouseEnter}
@@ -354,151 +250,21 @@ export default function UnifiedExplorerTree({
         </div>
       </div>
 
-      {/* Dynamic Popover Portal: Category vs Collection Actions */}
-      {isVirtualCategory ? (
-        /* ----------------------------------------------------
-           1. VIRTUAL CATEGORY ACTIONS (ID < 0)
-           ---------------------------------------------------- */
-        <ExplorerActionMenu
-          isOpen={menu.isMenuOpen}
-          onMouseEnter={menu.handleMenuMouseEnter}
-          onMouseLeave={menu.handleMouseLeave}
-          top={menu.menuCoords.top}
-          left={menu.menuCoords.left}
-          title="Category Actions"
-          titleIcon="🏷️"
-        >
-          <ActionMenuItem
-            icon={<span>📄</span>}
-            label="New Item"
-            subtext="Add record to this category"
-            onClick={() => {
-              onAddSubItem(collection.id, null);
-              menu.closeMenu();
-            }}
-          />
+      <ExplorerCollectionActionMenu
+        collection={collection}
+        isVirtualCategory={isVirtualCategory}
+        menu={menu}
+      />
 
-          <ActionMenuItem
-            icon={<span>⚙️</span>}
-            label="Edit Item Template"
-            subtext="Manage attributes & schema"
-            onClick={() => {
-              onEditTemplate?.(collection.id);
-              menu.closeMenu();
-            }}
-          />
-        </ExplorerActionMenu>
-      ) : (
-        /* ----------------------------------------------------
-           2. USER COLLECTION ACTIONS (ID > 0)
-           ---------------------------------------------------- */
-        <ExplorerActionMenu
-          isOpen={menu.isMenuOpen}
-          onMouseEnter={menu.handleMenuMouseEnter}
-          onMouseLeave={menu.handleMouseLeave}
-          top={menu.menuCoords.top}
-          left={menu.menuCoords.left}
-          title="Collection Actions"
-          titleIcon="📁"
-        >
-          {/* 1. New Item */}
-          <ActionMenuItem
-            icon={<span>📄</span>}
-            label="New Item"
-            subtext="Create item in this collection"
-            onClick={() => {
-              onAddSubItem(collection.id, null);
-              menu.closeMenu();
-            }}
-          />
-
-          {/* 2. Add Existing Item (Stub) */}
-          <ActionMenuItem
-            icon={<span>📥</span>}
-            label="Add Existing Item"
-            subtext="Link catalog item here"
-            onClick={() => {
-              console.log('Add Existing Item to collection:', collection.id);
-              menu.closeMenu();
-            }}
-          />
-
-          {/* 3. Rename Collection */}
-          <ActionMenuItem
-            icon={<span>🏷️</span>}
-            label="Rename Collection"
-            subtext="Inline edit title"
-            onClick={() => {
-              menu.setIsRenaming((prev: boolean) => !prev);
-            }}
-          />
-
-          {/* Inline Rename Form */}
-          {menu.isRenaming && (
-            <ActionMenuRenameForm
-              initialValue={collection.name}
-              onSave={async (nextName) => {
-                await onRenameCollection?.(collection.id, nextName);
-                menu.closeMenu();
-              }}
-              onCancel={() => menu.setIsRenaming(false)}
-            />
-          )}
-
-          {/* 4. Collection Settings */}
-          {onEditCollection && (
-            <ActionMenuItem
-              icon={<span>⚙️</span>}
-              label="Collection Settings"
-              subtext="Manage collection metadata"
-              onClick={() => {
-                onEditCollection(collection);
-                menu.closeMenu();
-              }}
-            />
-          )}
-
-          {/* 5. Sub-Collection Creation */}
-          {onAddSubCollection && (
-            <ActionMenuItem
-              icon={<span>📁</span>}
-              label="New Sub-Collection"
-              subtext="Create a nested collection"
-              onClick={() => {
-                onAddSubCollection(collection.id);
-                menu.closeMenu();
-              }}
-            />
-          )}
-
-          <ActionMenuDivider />
-
-          {/* 6. Delete Collection */}
-          {onDeleteCollection && (
-            <ActionMenuDangerItem
-              icon={<span>🗑️</span>}
-              label="Delete Collection"
-              subtext="Permanently remove"
-              onClick={() => {
-                onDeleteCollection(collection);
-                menu.closeMenu();
-              }}
-            />
-          )}
-        </ExplorerActionMenu>
-      )}
-
-      {/* Nested Hierarchy: Sub-Collections and Items with guide line directly under chevron center (13.5px) */}
-      {isOpen && hasChildren && (
+      {localIsOpen && hasChildren && (
         <div className="border-l border-border-subtle space-y-0.5 ml-[13.5px] pl-2.5 my-0.5 flex flex-col min-w-0">
-          {collection.subCollections?.map((subCol) => (
+          {collection.subCollections?.map((subCollection) => (
             <UnifiedExplorerTree
-              key={`col-${subCol.id}`}
-              collection={subCol}
+              key={`col-${subCollection.id}`}
+              collection={subCollection}
               depth={depth + 1}
             />
           ))}
-
           {collection.items?.map((item) => (
             <UnifiedExplorerTreeItem
               key={`item-${item.id}`}
