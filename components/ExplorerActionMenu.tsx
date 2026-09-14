@@ -5,6 +5,11 @@ import { createPortal } from 'react-dom';
 import '@/app/styles/components/ExplorerActionMenu.css';
 import { useUIPreferences } from '@/context/UIPreferencesContext';
 
+/* --------------------------------------------------------------------------
+  ACTION MENU CONTRACT
+  The parent tree row owns menu state and coordinates. This component owns
+  rendering, portal mounting, positioning offsets, and open/close animation.
+  -------------------------------------------------------------------------- */
 interface ExplorerActionMenuProps {
   isOpen: boolean;
   onMouseEnter: () => void;
@@ -27,7 +32,11 @@ export default function ExplorerActionMenu({
   children,
 }: ExplorerActionMenuProps) {
   const { animationsEnabled, isPinned } = useUIPreferences();
+
+  // Portals render into document.body, so wait until the browser has mounted.
   const [mounted, setMounted] = useState(false);
+
+  // Keep the menu mounted during its closing animation before removing it.
   const [shouldRender, setShouldRender] = useState(isOpen);
   const [isClosing, setIsClosing] = useState(false);
   const closeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -36,6 +45,8 @@ export default function ExplorerActionMenu({
     setMounted(true);
   }, []);
 
+  // Synchronize the rendered lifecycle with the requested open state. Closing
+  // is delayed so CSS can play the exit animation before unmounting the portal.
   useEffect(() => {
     if (isOpen) {
       if (closeTimeoutRef.current) clearTimeout(closeTimeoutRef.current);
@@ -58,8 +69,10 @@ export default function ExplorerActionMenu({
     };
   }, [isOpen, animationsEnabled, shouldRender]);
 
+  // Avoid rendering a portal during SSR or before document.body is available.
   if (!shouldRender || !mounted || typeof document === 'undefined') return null;
 
+  // Pinned menus need a small horizontal correction to clear the sidebar seam.
   const adjustedLeft = isPinned ? left + 10 : left;
 
   const animationClass = !animationsEnabled
@@ -68,6 +81,8 @@ export default function ExplorerActionMenu({
     ? 'menuSlideOut'
     : 'menuSlideIn';
 
+  // Render outside the tree's overflow container so the menu can cross panel
+  // boundaries and remain positioned against the viewport.
   return createPortal(
     <div
       onMouseEnter={onMouseEnter}
@@ -104,9 +119,10 @@ export default function ExplorerActionMenu({
 }
 
 /* ==========================================================================
-   SUB-COMPONENTS FOR REUSABLE ACTIONS
-   ========================================================================== */
+  REUSABLE ACTION CONTROLS
+  ========================================================================== */
 
+// Standard action with a neutral hover treatment.
 export function ActionMenuItem({
   icon,
   label,
@@ -141,6 +157,7 @@ export function ActionMenuItem({
   );
 }
 
+// Destructive action variant used for delete operations.
 export function ActionMenuDangerItem({
   icon,
   label,
@@ -175,10 +192,12 @@ export function ActionMenuDangerItem({
   );
 }
 
+// Visual separator between groups of related menu actions.
 export function ActionMenuDivider() {
   return <div className="my-1 mx-2 tree-menu-divider" />;
 }
 
+// Inline rename editor used inside collection and item action menus.
 export function ActionMenuRenameForm({
   initialValue,
   onSave,
@@ -191,11 +210,13 @@ export function ActionMenuRenameForm({
   const [val, setVal] = useState(initialValue);
   const inputRef = useRef<HTMLInputElement>(null);
 
+  // Focus and select the existing name as soon as the form appears.
   useEffect(() => {
     inputRef.current?.focus();
     inputRef.current?.select();
   }, []);
 
+  // Save only meaningful changes; otherwise treat submission as cancellation.
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (val.trim() && val.trim() !== initialValue) {

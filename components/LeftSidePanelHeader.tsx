@@ -28,9 +28,6 @@ interface LeftSidePanelHeaderProps {
   onClose: () => void;
   onAddNewItem?: () => void;
   collections: CollectionRecord[];
-  
-  // Passed down to display the "Active" badge like the old dropdown
-  activeCollectionId?: number | null;
 
   // Multi-Select Array Props
   filterCollectionIds: number[];
@@ -58,7 +55,6 @@ export default function LeftSidePanelHeader({
   onClose,
   onAddNewItem,
   collections = [],
-  activeCollectionId = null,
   filterCollectionIds = [],
   onToggleFilterCollection,
   onClearCollectionFilters,

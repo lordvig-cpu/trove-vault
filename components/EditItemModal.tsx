@@ -6,6 +6,9 @@ import { uploadItemImage } from '@/lib/storage';
 import { ItemRecord } from '@/types/item';
 import { FieldDefinition } from '@/types/field';
 import { CollectionTemplate } from '@/types/template';
+import AdHocAttributesEditor from '@/components/item-form/AdHocAttributesEditor';
+import ItemImagePicker from '@/components/item-form/ItemImagePicker';
+import TemplateFieldInputs from '@/components/item-form/TemplateFieldInputs';
 
 /* ==========================================================================
    1. TYPE DEFINITIONS & PROPS
@@ -248,6 +251,10 @@ export default function EditItemModal({
 
   const activeImageDisplay = previewUrl || existingImageUrl;
 
+  const handleDynamicValueChange = (fieldName: string, value: unknown) => {
+    setDynamicValues((previous) => ({ ...previous, [fieldName]: value }));
+  };
+
   /* ------------------------------------------------------------------------
      2.6 RENDER
      ------------------------------------------------------------------------ */
@@ -336,168 +343,25 @@ export default function EditItemModal({
             />
           </div>
 
-          {/* Photo Box */}
-          <div className="space-y-1.5">
-            <div className="flex items-center justify-between">
-              <label className="text-xs font-semibold text-slate-300">Item Photo</label>
-              {activeImageDisplay && (
-                <label className="text-[11px] font-medium text-indigo-400 hover:text-indigo-300 cursor-pointer">
-                  Replace Photo
-                  <input type="file" accept="image/*" onChange={handleFileChange} className="hidden" />
-                </label>
-              )}
-            </div>
+          <ItemImagePicker
+            imageUrl={activeImageDisplay}
+            onFileChange={handleFileChange}
+            onRemove={handleRemoveImage}
+            replaceLabel="Replace Photo"
+          />
 
-            {activeImageDisplay ? (
-              <div className="relative w-full h-36 rounded-xl overflow-hidden border border-slate-700 bg-slate-950 flex items-center justify-center group">
-                <img src={activeImageDisplay} alt="Item" className="h-full w-full object-contain" />
-                <button
-                  type="button"
-                  onClick={handleRemoveImage}
-                  className="absolute top-2 right-2 bg-rose-600/90 hover:bg-rose-500 text-white text-xs px-2 py-1 rounded-lg shadow-lg transition cursor-pointer"
-                >
-                  Remove Photo
-                </button>
-              </div>
-            ) : (
-              <label className="border-2 border-dashed border-slate-800 hover:border-indigo-500/50 rounded-xl p-4 flex flex-col items-center justify-center cursor-pointer bg-slate-950/50 hover:bg-slate-950 transition group">
-                <span className="text-2xl mb-1 group-hover:scale-110 transition">📷</span>
-                <span className="text-xs text-slate-400 font-medium">Click to upload photo</span>
-                <span className="text-[10px] text-slate-600 mt-0.5">PNG, JPG, WEBP up to 5MB</span>
-                <input type="file" accept="image/*" onChange={handleFileChange} className="hidden" />
-              </label>
-            )}
-          </div>
+          <TemplateFieldInputs
+            fields={activeTemplateFields}
+            values={dynamicValues}
+            onChange={handleDynamicValueChange}
+          />
 
-          {/* Template Input Fields */}
-          {activeTemplateFields.length > 0 && (
-            <div className="space-y-3 pt-2 border-t border-slate-800">
-              <span className="text-xs font-bold text-indigo-300 uppercase tracking-wider block">
-                Template Properties
-              </span>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {activeTemplateFields.map((field) => (
-                  <div key={field.id} className="space-y-1">
-                    <label className="text-[11px] font-semibold text-slate-300">
-                      {field.label} {field.is_required && <span className="text-rose-400">*</span>}
-                    </label>
-
-                    {field.field_type === 'text' && (
-                      <input
-                        type="text"
-                        required={field.is_required}
-                        value={dynamicValues[field.name] || ''}
-                        onChange={(e) =>
-                          setDynamicValues({ ...dynamicValues, [field.name]: e.target.value })
-                        }
-                        className="w-full bg-slate-950 border border-slate-800 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-indigo-500"
-                      />
-                    )}
-
-                    {field.field_type === 'number' && (
-                      <input
-                        type="number"
-                        required={field.is_required}
-                        value={dynamicValues[field.name] || ''}
-                        onChange={(e) =>
-                          setDynamicValues({
-                            ...dynamicValues,
-                            [field.name]: e.target.value === '' ? '' : Number(e.target.value),
-                          })
-                        }
-                        className="w-full bg-slate-950 border border-slate-800 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-indigo-500"
-                      />
-                    )}
-
-                    {field.field_type === 'select' && (
-                      <select
-                        value={dynamicValues[field.name] || ''}
-                        onChange={(e) =>
-                          setDynamicValues({ ...dynamicValues, [field.name]: e.target.value })
-                        }
-                        className="w-full bg-slate-950 border border-slate-800 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-indigo-500"
-                      >
-                        {(field.options || []).map((opt) => (
-                          <option key={opt} value={opt}>
-                            {opt}
-                          </option>
-                        ))}
-                      </select>
-                    )}
-
-                    {field.field_type === 'boolean' && (
-                      <label className="flex items-center gap-2 pt-1 text-xs text-slate-300 cursor-pointer">
-                        <input
-                          type="checkbox"
-                          checked={Boolean(dynamicValues[field.name])}
-                          onChange={(e) =>
-                            setDynamicValues({ ...dynamicValues, [field.name]: e.target.checked })
-                          }
-                          className="rounded border-slate-800 bg-slate-950 text-indigo-600 focus:ring-0 w-4 h-4"
-                        />
-                        <span>Yes / True</span>
-                      </label>
-                    )}
-
-                    {field.field_type === 'date' && (
-                      <input
-                        type="date"
-                        required={field.is_required}
-                        value={dynamicValues[field.name] || ''}
-                        onChange={(e) =>
-                          setDynamicValues({ ...dynamicValues, [field.name]: e.target.value })
-                        }
-                        className="w-full bg-slate-950 border border-slate-800 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-indigo-500"
-                      />
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Ad-Hoc Freeform Fields */}
-          <div className="space-y-2 pt-2 border-t border-slate-800">
-            <div className="flex items-center justify-between">
-              <label className="text-xs font-semibold text-slate-400">Additional Custom Fields</label>
-              <button
-                type="button"
-                onClick={handleAddAdHocRow}
-                className="text-[11px] font-medium text-indigo-400 hover:text-indigo-300 cursor-pointer"
-              >
-                + Add Custom Field
-              </button>
-            </div>
-
-            <div className="space-y-2 max-h-28 overflow-y-auto pr-1">
-              {adHocAttributes.map((attr, idx) => (
-                <div key={idx} className="flex gap-2 items-center">
-                  <input
-                    type="text"
-                    placeholder="Key"
-                    value={attr.key}
-                    onChange={(e) => handleAdHocChange(idx, 'key', e.target.value)}
-                    className="flex-1 bg-slate-950 border border-slate-800 rounded-lg px-2.5 py-1.5 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500"
-                  />
-                  <input
-                    type="text"
-                    placeholder="Value"
-                    value={attr.value}
-                    onChange={(e) => handleAdHocChange(idx, 'value', e.target.value)}
-                    className="flex-1 bg-slate-950 border border-slate-800 rounded-lg px-2.5 py-1.5 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => handleRemoveAdHocRow(idx)}
-                    className="text-slate-500 hover:text-rose-400 text-xs px-1 cursor-pointer"
-                  >
-                    ✕
-                  </button>
-                </div>
-              ))}
-            </div>
-          </div>
+          <AdHocAttributesEditor
+            attributes={adHocAttributes}
+            onAdd={handleAddAdHocRow}
+            onChange={handleAdHocChange}
+            onRemove={handleRemoveAdHocRow}
+          />
 
           {/* Actions */}
           <div className="flex items-center justify-end gap-2 pt-4 border-t border-slate-800">

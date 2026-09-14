@@ -2,6 +2,14 @@
 
 import React, { useMemo } from 'react';
 import UnifiedExplorerTree, { UnifiedCollectionNode } from '@/components/UnifiedExplorerTree';
+import {
+  ExplorerActionsProvider,
+  ExplorerActionsContextValue,
+} from '@/context/ExplorerActionsContext';
+import {
+  ExplorerSelectionProvider,
+  ExplorerSelectionContextValue,
+} from '@/context/ExplorerSelectionContext';
 import { ItemRecord } from '@/types/item';
 import { CollectionRecord } from '@/types/collection';
 
@@ -201,6 +209,26 @@ export default function ExplorerContent({
     ? new Set([...(activeExpandedIds || []), ...searchExpandedIds])
     : activeExpandedIds;
 
+  const selectionValue: ExplorerSelectionContextValue = {
+    activeCollectionId,
+    selectedItemId,
+    expandedCategoryIds: effectiveExpandedIds,
+    onToggleCategory: activeToggleHandler,
+    onSelectCollection,
+    onSelectItem,
+  };
+
+  const actionsValue: ExplorerActionsContextValue = {
+    onAddSubItem,
+    onEditTemplate,
+    onEditItem,
+    onDeleteItem,
+    onRenameCollection,
+    onDeleteCollection,
+    onEditCollection,
+    onRenameItem,
+  };
+
   /* ------------------------------------------------------------------------
      3.3 TREE HIERARCHY RENDERING & EMPTY STATES
      ------------------------------------------------------------------------ */
@@ -215,26 +243,16 @@ export default function ExplorerContent({
           </div>
         ) : (
           /* Forest Root Nodes (Categories & Collections) */
-          filteredForest.map((node) => (
-            <UnifiedExplorerTree
-              key={`root-col-${node.id}`}
-              collection={node}
-              activeCollectionId={activeCollectionId}
-              selectedItemId={selectedItemId}
-              expandedCategoryIds={effectiveExpandedIds}
-              onToggleCategory={activeToggleHandler}
-              onSelectCollection={onSelectCollection}
-              onSelectItem={onSelectItem}
-              onAddSubItem={onAddSubItem}
-              onEditTemplate={onEditTemplate}
-              onEditItem={onEditItem}
-              onRenameItem={onRenameItem}
-              onDeleteItem={onDeleteItem}
-              onRenameCollection={onRenameCollection}
-              onDeleteCollection={onDeleteCollection}
-              onEditCollection={onEditCollection}
-            />
-          ))
+          <ExplorerActionsProvider value={actionsValue}>
+            <ExplorerSelectionProvider value={selectionValue}>
+              {filteredForest.map((node) => (
+                <UnifiedExplorerTree
+                  key={`root-col-${node.id}`}
+                  collection={node}
+                />
+              ))}
+            </ExplorerSelectionProvider>
+          </ExplorerActionsProvider>
         )}
       </div>
     </div>

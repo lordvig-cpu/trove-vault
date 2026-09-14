@@ -15,9 +15,7 @@ import LeftSidePanel from '@/components/LeftSidePanel';
 import ExplorerContent from '@/components/ExplorerContent';
 import ModalContainers from '@/components/ModalContainers';
 import DynamicWatermark from '@/components/DynamicWatermark';
-import UnifiedExplorerTree, {
-  type UnifiedCollectionNode,
-} from '@/components/UnifiedExplorerTree';
+import { type UnifiedCollectionNode } from '@/components/UnifiedExplorerTree';
 
 export interface UniversalSearchResultItem extends ItemRecord {
   collection_name?: string;
@@ -266,7 +264,6 @@ export default function Home() {
       filterCollectionIds={filterCollectionIds}
       onToggleFilterCollection={handleToggleFilterCollection}
       onClearCollectionFilters={handleClearCollectionFilters}
-      activeCollectionId={activeCollectionId}
     >
       {explorerTreeElement}
     </LeftSidePanel>
@@ -289,7 +286,6 @@ export default function Home() {
       filterCollectionIds={filterCollectionIds}
       onToggleFilterCollection={handleToggleFilterCollection}
       onClearCollectionFilters={handleClearCollectionFilters}
-      activeCollectionId={activeCollectionId}
     >
       {explorerTreeElement}
     </LeftSidePanel>

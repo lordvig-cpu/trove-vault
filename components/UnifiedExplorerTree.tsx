@@ -6,6 +6,8 @@ import { ItemRecord } from '@/types/item';
 import { GearIcon, AddSubItemIcon } from '@/components/icons/ActionIcons';
 import { ChevronDownIcon, ChevronRightIcon } from '@/components/icons/ExplorerIcons';
 import { useExplorerActionMenu } from '@/hooks/useExplorerActionMenu';
+import { useExplorerActions } from '@/context/ExplorerActionsContext';
+import { useExplorerSelection } from '@/context/ExplorerSelectionContext';
 import ExplorerActionMenu, {
   ActionMenuItem,
   ActionMenuDangerItem,
@@ -25,23 +27,7 @@ export interface UnifiedCollectionNode extends CollectionRecord {
 
 export interface UnifiedExplorerTreeProps {
   collection: UnifiedCollectionNode;
-  activeCollectionId: number | null;
-  selectedItemId: number | null;
   depth?: number;
-  expandedCategoryIds?: Set<number>;
-  onToggleCategory?: (id: number, expand: boolean) => void;
-  onSelectCollection: (id: number) => void;
-  onSelectItem: (item: ItemRecord, collectionId: number | null) => void;
-  onAddSubItem: (collectionId: number | null, parentItemId?: number | null) => void;
-  onEditTemplate?: (categoryId: number) => void;
-  onEditItem: (item: ItemRecord, collectionId: number | null) => void;
-  onDeleteItem: (item: ItemRecord, collectionId: number | null) => void;
-  onRenameItem?: (id: number, nextName: string) => Promise<void> | void;
-  // Collection callbacks
-  onAddSubCollection?: (parentCollectionId: number) => void;
-  onEditCollection?: (collection: CollectionRecord) => void;
-  onDeleteCollection?: (collection: CollectionRecord) => void;
-  onRenameCollection?: (id: number, nextName: string) => Promise<void> | void;
 }
 
 /* ==========================================================================
@@ -61,24 +47,14 @@ function getItemTypeIcon(item: ItemRecord): string {
 function UnifiedExplorerTreeItem({
   item,
   collectionId,
-  selectedItemId,
   depth = 0,
-  onSelectItem,
-  onAddSubItem,
-  onEditItem,
-  onRenameItem,
-  onDeleteItem,
 }: {
   item: ItemRecord;
   collectionId: number | null;
-  selectedItemId: number | null;
   depth: number;
-  onSelectItem: (item: ItemRecord, collectionId: number | null) => void;
-  onAddSubItem: (collectionId: number | null, parentItemId?: number | null) => void;
-  onEditItem: (item: ItemRecord, collectionId: number | null) => void;
-  onRenameItem?: (id: number, nextName: string) => Promise<void> | void;
-  onDeleteItem: (item: ItemRecord, collectionId: number | null) => void;
 }) {
+  const { selectedItemId, onSelectItem } = useExplorerSelection();
+  const { onAddSubItem, onEditItem, onRenameItem, onDeleteItem } = useExplorerActions();
   const [isOpen, setIsOpen] = useState(true);
   const menu = useExplorerActionMenu(`item-${item.id}`, 215);
 
@@ -231,13 +207,7 @@ function UnifiedExplorerTreeItem({
               key={`subitem-${child.id}`}
               item={child}
               collectionId={collectionId}
-              selectedItemId={selectedItemId}
               depth={depth + 1}
-              onSelectItem={onSelectItem}
-              onAddSubItem={onAddSubItem}
-              onEditItem={onEditItem}
-              onRenameItem={onRenameItem}
-              onDeleteItem={onDeleteItem}
             />
           ))}
         </div>
@@ -252,23 +222,22 @@ function UnifiedExplorerTreeItem({
 
 export default function UnifiedExplorerTree({
   collection,
-  activeCollectionId,
-  selectedItemId,
   depth = 0,
-  expandedCategoryIds,
-  onToggleCategory,
-  onSelectCollection,
-  onSelectItem,
-  onAddSubItem,
-  onEditTemplate,
-  onEditItem,
-  onRenameItem,
-  onDeleteItem,
-  onRenameCollection,
-  onDeleteCollection,
-  onEditCollection,
-  onAddSubCollection,
 }: UnifiedExplorerTreeProps) {
+  const {
+    activeCollectionId,
+    expandedCategoryIds,
+    onToggleCategory,
+    onSelectCollection,
+  } = useExplorerSelection();
+  const {
+    onAddSubItem,
+    onEditTemplate,
+    onRenameCollection,
+    onDeleteCollection,
+    onEditCollection,
+    onAddSubCollection,
+  } = useExplorerActions();
   const menu = useExplorerActionMenu(`node-${collection.id}`, 240);
 
   const isVirtualCategory = collection.id < 0;
@@ -526,22 +495,7 @@ export default function UnifiedExplorerTree({
             <UnifiedExplorerTree
               key={`col-${subCol.id}`}
               collection={subCol}
-              activeCollectionId={activeCollectionId}
-              selectedItemId={selectedItemId}
               depth={depth + 1}
-              expandedCategoryIds={expandedCategoryIds}
-              onToggleCategory={onToggleCategory}
-              onSelectCollection={onSelectCollection}
-              onSelectItem={onSelectItem}
-              onAddSubItem={onAddSubItem}
-              onEditTemplate={onEditTemplate}
-              onEditItem={onEditItem}
-              onRenameItem={onRenameItem}
-              onDeleteItem={onDeleteItem}
-              onRenameCollection={onRenameCollection}
-              onDeleteCollection={onDeleteCollection}
-              onEditCollection={onEditCollection}
-              onAddSubCollection={onAddSubCollection}
             />
           ))}
 
@@ -550,13 +504,7 @@ export default function UnifiedExplorerTree({
               key={`item-${item.id}`}
               item={item}
               collectionId={effectiveCollectionId}
-              selectedItemId={selectedItemId}
               depth={depth + 1}
-              onSelectItem={onSelectItem}
-              onAddSubItem={onAddSubItem}
-              onEditItem={onEditItem}
-              onRenameItem={onRenameItem}
-              onDeleteItem={onDeleteItem}
             />
           ))}
         </div>

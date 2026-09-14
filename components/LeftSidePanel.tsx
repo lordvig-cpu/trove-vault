@@ -29,7 +29,6 @@ interface LeftSidePanelProps {
   children: React.ReactNode;
   onAddNewItem?: () => void;
   collections: CollectionRecord[];
-  activeCollectionId?: number | null;
 
   // New Multi-Select Array Props
   filterCollectionIds: number[];
@@ -59,7 +58,6 @@ export default function LeftSidePanel({
   children,
   onAddNewItem,
   collections = [],
-  activeCollectionId = null,
   filterCollectionIds = [],
   onToggleFilterCollection,
   onClearCollectionFilters,
@@ -167,7 +165,6 @@ export default function LeftSidePanel({
         onClose={onClose}
         onAddNewItem={onAddNewItem}
         collections={collections}
-        activeCollectionId={activeCollectionId}
         filterCollectionIds={filterCollectionIds}
         onToggleFilterCollection={onToggleFilterCollection}
         onClearCollectionFilters={onClearCollectionFilters}
