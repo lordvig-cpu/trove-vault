@@ -1,0 +1,440 @@
+/* THEME: CONCEPT 3 • PREMIUM CONTRAST (LUMINOUS SAPPHIRE & AMBER)
+   High-contrast, electric ambient glow styling based on the Image 1 mockup.
+   ========================================================================== */
+
+[data-theme='theme-premium-contrast'] {
+
+   /* #region 0. CORE BRAND, FOUNDATIONS & SHARED PALETTE */
+   /* Primary Brand Accents */
+   --brand-primary: rgba(0, 119, 255, 1.00);
+   --brand-primary-hover: rgba(0, 162, 255, 1.00);
+   --brand-secondary-amber: rgba(245, 158, 11, 1.00);
+
+   /* Typography Hierarchy */
+   --text-primary: rgba(255, 255, 255, 1.00);
+   --text-secondary: rgba(203, 213, 225, 1.00);
+   --text-muted: rgba(148, 163, 184, 1.00);
+
+   /* Shared Physical Surfaces & Borders */
+   --panel-surface-bg: rgba(4, 22, 54, 0.88);
+   --card-surface-hover: rgba(14, 55, 115, 0.95);
+   --popover-surface-bg: rgba(2, 14, 38, 0.98);
+   --panel-border-subtle: rgba(0, 140, 255, 0.40);
+   --panel-border-strong: rgba(0, 180, 255, 0.85);
+   /* #endregion */
+
+   /* #region 1. NAVIGATION HEADER & DROPDOWN */
+   /* Calibrated Navigation Header Background matching Image 2 (media_1789506355968.png) */
+   --nav-header-background:
+     linear-gradient(180deg,
+       rgba(255, 255, 255, 0.12) 0%,
+       rgba(255, 255, 255, 0.03) 24%,
+       transparent 55%),
+     radial-gradient(ellipse 110% 160% at 50% -30%,
+       rgba(2, 70, 145, 0.85) 0%,
+       rgba(1, 45, 100, 0.55) 45%,
+       rgba(0, 20, 55, 0.10) 85%),
+     linear-gradient(90deg,
+       rgba(1, 20, 48, 0.70) 0%,
+       rgba(1, 28, 62, 0.20) 18%,
+       transparent 38%,
+       transparent 62%,
+       rgba(1, 28, 62, 0.20) 82%,
+       rgba(1, 20, 48, 0.70) 100%),
+     linear-gradient(180deg,
+       #023c7c 0%,
+       #003672 16%,
+       #013165 32%,
+       #00244b 55%,
+       #001f42 76%,
+       #001b3a 100%);
+
+   --nav-header-border-bottom: #02396c;
+   --nav-header-shadow:
+     inset 0 1px 0 rgba(255, 255, 255, 0.14),
+     inset 0 -1px 0 rgba(0, 102, 204, 0.25),
+     0 4px 16px -2px rgba(0, 0, 0, 0.65);
+
+   /* Downward Flare Highlight (::before) */
+   --nav-header-flare-bg:
+     radial-gradient(ellipse 140% 160% at 50% -45%,
+       rgba(0, 180, 255, 0.25) 0%,
+       rgba(0, 110, 220, 0.12) 45%,
+       transparent 75%);
+   --nav-header-flare-blend: screen;
+   --nav-header-flare-opacity: 0.90;
+
+   /* Brushed Satin Surface Texture Overlay (::after) */
+   --nav-header-texture-bg:
+     repeating-linear-gradient(90deg,
+       rgba(255, 255, 255, 0.015) 0px,
+       rgba(255, 255, 255, 0.015) 1px,
+       transparent 1px,
+       transparent 3px,
+       rgba(0, 0, 0, 0.02) 3px,
+       rgba(0, 0, 0, 0.02) 4px,
+       transparent 4px,
+       transparent 6px);
+   --nav-header-texture-filter: url("#navigationBarTexture");
+   --nav-header-texture-opacity: 0.20;
+   --nav-header-texture-blend: overlay;
+
+   /* Radial & Gradient Lighting Atmosphere Fallbacks */
+   --nav-header-glow-core: rgba(0, 160, 255, 0.60);
+   --nav-header-glow-mid: rgba(0, 110, 220, 0.30);
+   --nav-header-glow-deep: rgba(7, 72, 140, 0.15);
+   --nav-header-edge-dark: rgba(1, 20, 48, 0.70);
+   --nav-header-edge-fade: rgba(1, 28, 62, 0.20);
+   --nav-header-accent-bright: rgba(0, 210, 255, 0.35);
+   --nav-header-accent-subtle: rgba(0, 130, 210, 0.18);
+
+   /* Tab Controls & Indicator Lines */
+   --nav-header-accent-line: rgba(0, 160, 255, 0.85);
+   --nav-header-tab-indicator: rgba(245, 158, 11, 1.00);
+   --nav-header-tab-bg-active: rgba(14, 28, 44, 0.95);
+   --nav-header-tab-border: #02396c;
+   --nav-header-tab-shadow: 0 -4px 16px rgba(0, 160, 255, 0.35);
+
+   /* Floating Flyout Menu */
+   --nav-header-flyout-bg: rgba(4, 22, 54, 0.92);
+   --nav-header-flyout-border: var(--panel-border-strong);
+   --nav-header-flyout-shadow: 0 20px 50px rgba(0, 0, 0, 0.85), 0 0 25px rgba(0, 140, 255, 0.25);
+
+   /* Search Bar & Controls */
+   --nav-header-search-bg: var(--canvas-bg-primary);
+   --nav-header-search-border: var(--panel-border-subtle);
+   --nav-header-search-focus: var(--brand-primary);
+
+   /* Status Indicator & Profile Avatar */
+   --nav-header-status-dot: rgba(52, 211, 153, 1.00);
+   --nav-header-status-text: rgba(52, 211, 153, 1.00);
+   --nav-header-profile-bg: rgba(0, 119, 255, 0.20);
+   --nav-header-profile-border: rgba(0, 160, 255, 0.70);
+   --nav-header-profile-border-hover: var(--brand-primary-hover);
+   --nav-header-profile-text: var(--brand-secondary-amber);
+
+   /* Collection Dropdown Specific Tokens */
+   --col-dropdown-btn-bg: rgba(10, 45, 95, 0.85);
+   --col-dropdown-btn-hover-bg: rgba(14, 55, 115, 1.00);
+   --col-dropdown-btn-border: var(--panel-border-subtle);
+   --col-dropdown-panel-bg: var(--popover-surface-bg);
+   --col-dropdown-panel-border: var(--panel-border-strong);
+   --col-dropdown-panel-shadow: 0 20px 50px rgba(0, 0, 0, 0.85), 0 0 20px rgba(0, 140, 255, 0.30);
+   --col-dropdown-item-active-bg: rgba(0, 119, 255, 0.25);
+   --col-dropdown-item-active-border: rgba(0, 180, 255, 0.75);
+   --col-dropdown-form-bg: var(--panel-surface-bg);
+   --col-dropdown-form-border: rgba(0, 140, 255, 0.50);
+   /* #endregion */
+
+   /* #region 2. NAVIGATION FOOTER (Vertically Reversed from Header) */
+   --nav-footer-background:
+     linear-gradient(0deg,
+       rgba(255, 255, 255, 0.12) 0%,
+       rgba(255, 255, 255, 0.03) 24%,
+       transparent 55%),
+     radial-gradient(ellipse 110% 160% at 50% 130%,
+       rgba(2, 70, 145, 0.85) 0%,
+       rgba(1, 45, 100, 0.55) 45%,
+       rgba(0, 20, 55, 0.10) 85%),
+     linear-gradient(90deg,
+       rgba(1, 20, 48, 0.70) 0%,
+       rgba(1, 28, 62, 0.20) 18%,
+       transparent 38%,
+       transparent 62%,
+       rgba(1, 28, 62, 0.20) 82%,
+       rgba(1, 20, 48, 0.70) 100%),
+     linear-gradient(0deg,
+       #023c7c 0%,
+       #003672 16%,
+       #013165 32%,
+       #00244b 55%,
+       #001f42 76%,
+       #001b3a 100%);
+
+   --nav-footer-border-top: #02396c;
+   --nav-footer-shadow:
+     inset 0 -1px 0 rgba(255, 255, 255, 0.14),
+     inset 0 1px 0 rgba(0, 102, 204, 0.25),
+     0 -4px 16px -2px rgba(0, 0, 0, 0.65);
+
+   /* Upward Flare Highlight (::before) */
+   --nav-footer-flare-bg:
+     radial-gradient(ellipse 140% 160% at 50% 145%,
+       rgba(0, 180, 255, 0.25) 0%,
+       rgba(0, 110, 220, 0.12) 45%,
+       transparent 75%);
+   --nav-footer-flare-blend: screen;
+   --nav-footer-flare-opacity: 0.90;
+
+   /* Brushed Satin Surface Texture Overlay (::after) */
+   --nav-footer-texture-bg:
+     repeating-linear-gradient(90deg,
+       rgba(255, 255, 255, 0.015) 0px,
+       rgba(255, 255, 255, 0.015) 1px,
+       transparent 1px,
+       transparent 3px,
+       rgba(0, 0, 0, 0.02) 3px,
+       rgba(0, 0, 0, 0.02) 4px,
+       transparent 4px,
+       transparent 6px);
+   --nav-footer-texture-filter: url("#navigationBarTexture");
+   --nav-footer-texture-opacity: 0.20;
+   --nav-footer-texture-blend: overlay;
+
+   /* Radial & Gradient Lighting Atmosphere Fallbacks */
+   --nav-footer-glow-core: rgba(0, 160, 255, 0.60);
+   --nav-footer-glow-mid: rgba(0, 110, 220, 0.30);
+   --nav-footer-glow-deep: rgba(7, 72, 140, 0.15);
+   --nav-footer-edge-dark: rgba(1, 20, 48, 0.70);
+   --nav-footer-edge-fade: rgba(1, 28, 62, 0.20);
+   --nav-footer-accent-bright: rgba(0, 210, 255, 0.35);
+   --nav-footer-accent-subtle: rgba(0, 130, 210, 0.18);
+
+   --nav-footer-bg-surface: var(--panel-surface-bg);
+   --nav-footer-border-subtle: var(--panel-border-subtle);
+   --nav-footer-border-strong: #02396c;
+
+   --nav-footer-status-dot: rgba(52, 211, 153, 1.00);
+   --nav-footer-status-text: var(--text-primary);
+
+   --nav-footer-btn-bg: transparent;
+   --nav-footer-btn-border: transparent;
+   --nav-footer-btn-hover-bg: var(--card-surface-hover);
+   --nav-footer-btn-hover-border: var(--panel-border-subtle);
+   --nav-footer-btn-text: var(--text-primary);
+
+   --nav-footer-moon-color: var(--brand-secondary-amber);
+   --nav-footer-sun-color: rgba(245, 158, 11, 1.00);
+   /* #endregion */
+
+   /* #region 3. MAIN CONTENT & STUDIO CANVAS */
+   --canvas-bg-primary: rgba(3, 9, 24, 1.00);
+
+   /* Studio Grid Canvas Layers & Illuminated Gradients */
+   --studio-grid-bg: rgba(2, 8, 23, 1.00);
+   --studio-grid-glow-top-left-core: rgba(0, 130, 255, 0.30);
+   --studio-grid-glow-top-left-edge: rgba(0, 80, 220, 0.12);
+   --studio-grid-glow-bottom-right-core: rgba(245, 158, 11, 0.18);
+   --studio-grid-glow-bottom-right-edge: rgba(217, 119, 6, 0.05);
+   --studio-grid-vignette: rgba(0, 2, 14, 0.60);
+   --studio-grid-line: rgba(0, 180, 255, 0.09);
+   --studio-grid-cell-size: 32px;
+
+   --watermark-logo-opacity: 0.20;
+   --watermark-logo-brightness: 0.90;
+   --watermark-logo-shadow: 0 25px 35px rgb(0 0 0 / 0.35);
+   --video-bg-shadow: 0 25px 35px rgb(0 0 0 / 0.40);
+   --video-bg-opacity: 1.00;
+
+   --content-overlay-blur: 3.5px;
+   --content-overlay-brightness-dim: 0.60;
+   --content-overlay-brightness-default: 1.00;
+   --sticky-shadow-upper: linear-gradient(to bottom, rgba(2, 8, 23, 0.90), transparent);
+   --sticky-shadow-lower: linear-gradient(to top, rgba(2, 8, 23, 0.90), transparent);
+
+   /* ItemDetailView Display Cards with Signature Electric Cyan/Blue Glow */
+   --content-card-bg: linear-gradient(180deg, rgba(8, 38, 86, 0.88) 0%, rgba(3, 16, 42, 0.96) 100%);
+   --content-card-border: rgba(0, 140, 255, 0.82);
+   --content-card-shadow: 
+     0 0 24px rgba(0, 140, 255, 0.35), 
+     inset 0 0 14px rgba(0, 120, 255, 0.12), 
+     0 20px 40px rgba(0, 0, 0, 0.70);
+
+   /* Attribute & Nested Item Pills */
+   --content-pill-bg: rgba(2, 12, 32, 0.70);
+   --content-pill-border: rgba(0, 160, 255, 0.35);
+   --content-pill-hover-bg: rgba(14, 55, 115, 0.85);
+   --content-pill-hover-border: var(--panel-border-strong);
+
+   /* Badges & Content Actions */
+   --content-badge-root-bg: rgba(6, 95, 70, 0.35);
+   --content-badge-root-border: rgba(16, 185, 129, 0.70);
+   --content-badge-root-text: rgba(52, 211, 153, 1.00);
+   --content-btn-primary-bg: #0077ff;
+   --content-btn-primary-hover: #0091ff;
+   --content-btn-primary-text: #ffffff;
+   --content-btn-danger-bg: rgba(225, 29, 72, 0.18);
+   --content-btn-danger-hover: rgba(225, 29, 72, 0.30);
+   --content-btn-danger-border: rgba(244, 63, 94, 0.50);
+   --content-btn-danger-text: rgba(254, 205, 211, 1.00);
+   /* #endregion */
+
+   /* #region 4. LEFT SIDE PANEL & EXPLORER TREE */
+   --panel-border-accent: rgba(0, 160, 255, 0.90);
+   --panel-pinned-shadow: 14px 0 35px -4px rgba(0, 0, 0, 0.85), 4px 0 20px rgba(0, 140, 255, 0.15);
+   --panel-reset-shadow: 4px 0 12px rgba(0, 0, 0, 0.60);
+   --panel-shell-shadow: 0 25px 50px rgba(0, 0, 0, 0.50);
+
+   --panel-notice-loading-bg: rgba(4, 22, 54, 1.00);
+   --panel-notice-loading-text: rgba(245, 158, 11, 1.00);
+   --panel-notice-loading-border: rgba(0, 140, 255, 0.30);
+   --panel-notice-error-bg: rgba(76, 5, 25, 0.60);
+   --panel-notice-error-text: rgba(254, 205, 211, 1.00);
+   --panel-notice-error-border: rgba(159, 18, 57, 1.00);
+
+   /* Tree Node & Row Active States (Active Node has Golden Amber Box in Image 1) */
+   --explorer-item-hover-bg: rgba(14, 55, 115, 0.70);
+   --explorer-item-active-bg: rgba(245, 158, 11, 0.15);
+   --explorer-item-active-border: rgba(245, 158, 11, 0.90);
+
+   /* Hover Action Popup */
+   --explorer-menu-bg: var(--popover-surface-bg);
+   --explorer-menu-border: rgba(0, 180, 255, 0.60);
+   --explorer-menu-btn-text: rgba(148, 163, 184, 1.00);
+   --explorer-menu-btn-hover-bg: rgba(14, 55, 115, 1.00);
+   --explorer-menu-btn-hover-text: rgba(255, 255, 255, 1.00);
+   --explorer-menu-btn-accent-hover: rgba(245, 158, 11, 1.00);
+
+   --explorer-menu-danger-text: rgba(244, 63, 94, 1.00);
+   --explorer-menu-danger-hover-bg: rgba(76, 5, 25, 0.45);
+   --explorer-menu-danger-hover-text: rgba(251, 113, 133, 1.00);
+
+   --explorer-sticky-category-bg: rgba(4, 22, 54, 0.95);
+   --explorer-sticky-category-border: var(--panel-border-subtle);
+   --explorer-sticky-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.65);
+
+   --explorer-search-input-bg: rgba(2, 10, 26, 1.00);
+   --explorer-kbd-text: rgba(52, 211, 153, 1.00);
+   --explorer-kbd-bg: rgba(6, 78, 59, 0.80);
+   --explorer-kbd-border: rgba(6, 95, 70, 0.60);
+
+   /* Explorer Folder Tabs (Items & Collections) */
+   --explorer-tab-text-idle: rgba(148, 163, 184, 1.00);
+   --explorer-tab-text-hover: rgba(255, 255, 255, 1.00);
+   --explorer-tab-text-active: rgba(251, 191, 36, 1.00);
+   --explorer-tab-border-idle: rgba(0, 140, 255, 0.30);
+   --explorer-tab-border-hover: rgba(0, 180, 255, 0.60);
+   --explorer-tab-border-active: rgba(245, 158, 11, 0.95);
+   --explorer-tab-bg-idle: rgba(3, 14, 36, 0.85);
+   --explorer-tab-bg-hover: rgba(8, 38, 76, 0.95);
+   --explorer-tab-bg-active: rgba(14, 45, 88, 0.98);
+   --explorer-tab-shadow-right: rgba(0, 0, 0, 0.75);
+   --explorer-tab-baseline: rgba(245, 158, 11, 1.00);
+   /* #endregion */
+
+   /* #region 5. RIGHT SIDE PANEL */
+   --right-panel-bg: var(--panel-surface-bg);
+   --right-panel-border: var(--panel-border-strong);
+   --right-panel-shadow: -20px 20px 50px rgba(0, 0, 0, 0.85);
+
+   --right-panel-tab-bg: var(--panel-surface-bg);
+   --right-panel-tab-hover-bg: var(--card-surface-hover);
+   --right-panel-tab-border: var(--panel-border-subtle);
+   --right-panel-tab-hover-border: var(--panel-border-strong);
+
+   --right-panel-header-border: var(--panel-border-subtle);
+   --right-panel-btn-hover-bg: var(--card-surface-hover);
+   /* #endregion */
+
+   /* #region 6. MODALS & OVERLAYS */
+   --modal-overlay-bg: rgba(0, 0, 0, 0.75);
+   --modal-dialog-bg: var(--panel-surface-bg);
+   --modal-dialog-border: var(--panel-border-strong);
+   --modal-dialog-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.85), 0 0 25px rgba(0, 140, 255, 0.25);
+
+   --modal-header-bg: rgba(2, 14, 36, 0.50);
+   --modal-header-border: var(--panel-border-subtle);
+   --modal-footer-bg: rgba(2, 14, 36, 0.60);
+   --modal-footer-border: var(--panel-border-subtle);
+
+   --modal-form-bg: rgba(2, 14, 36, 0.75);
+   --modal-form-border: var(--panel-border-subtle);
+   --modal-input-bg: var(--canvas-bg-primary);
+   --modal-input-border: var(--panel-border-subtle);
+   --modal-input-focus-border: var(--brand-primary);
+
+   --modal-row-bg: rgba(2, 14, 36, 0.60);
+   --modal-row-border: var(--panel-border-subtle);
+   --modal-row-hover-border: var(--panel-border-strong);
+
+   --modal-badge-key-bg: rgba(0, 119, 255, 0.30);
+   --modal-badge-key-border: rgba(0, 180, 255, 0.40);
+   --modal-badge-key-text: var(--brand-secondary-amber);
+   --modal-badge-req-bg: rgba(76, 5, 25, 0.60);
+   --modal-badge-req-border: rgba(159, 18, 57, 0.60);
+   --modal-badge-req-text: rgba(254, 205, 211, 1.00);
+   --item-template-bg: rgba(49, 46, 129, 0.40);
+   --item-template-border: rgba(49, 46, 129, 0.60);
+   --item-template-heading: rgba(165, 180, 252, 1.00);
+   --item-modal-inline-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+   --confirm-danger-panel-bg: rgba(76, 5, 25, 0.30);
+   --confirm-danger-panel-border: rgba(159, 18, 57, 0.50);
+   --explorer-filter-inset-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.25);
+   --explorer-filter-pill-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+
+   --tmpl-item-bg: rgba(2, 14, 36, 0.65);
+   --tmpl-item-border: var(--panel-border-subtle);
+   --tmpl-item-hover-border: var(--panel-border-strong);
+   
+   --tmpl-item-selected-bg: rgba(0, 119, 255, 0.35);
+   --tmpl-item-selected-border: var(--brand-primary);
+   --tmpl-item-selected-shadow: 0 4px 16px rgba(0, 119, 255, 0.40);
+
+   --tmpl-badge-count-bg: rgba(0, 119, 255, 0.30);
+   --tmpl-badge-count-border: rgba(0, 180, 255, 0.40);
+   --tmpl-badge-count-text: var(--brand-secondary-amber);
+
+   --tmpl-alert-success-bg: rgba(6, 78, 59, 0.60);
+   --tmpl-alert-success-border: rgba(6, 95, 70, 0.80);
+   --tmpl-alert-success-text: rgba(110, 231, 183, 1.00);
+
+   --tmpl-alert-error-bg: rgba(76, 5, 25, 0.60);
+   --tmpl-alert-error-border: rgba(159, 18, 57, 0.80);
+   --tmpl-alert-error-text: rgba(253, 164, 175, 1.00);
+   /* #endregion */
+
+   /* #region 7. EXPLORER ACTION MENU & TREE POPPERS (Warm Amber Terminal in Image 1) */
+   --explorer-menu-shell-bg: linear-gradient(180deg, rgba(46, 24, 6, 0.94) 0%, rgba(20, 11, 3, 0.98) 100%);
+   --explorer-menu-shell-border: rgba(245, 158, 11, 0.95);
+
+   --explorer-menu-shell-shadow: 
+     20px 0 45px -4px rgba(0, 0, 0, 0.85),
+     12px -14px 30px -4px rgba(0, 0, 0, 0.70),
+     12px 18px 30px -4px rgba(0, 0, 0, 0.75),
+     6px 0 14px -2px rgba(0, 0, 0, 0.80),
+     0 0 32px 0 rgba(245, 158, 11, 0.35),
+     inset 0 0 16px 0 rgba(245, 158, 11, 0.12);
+
+   --explorer-menu-header-bg: rgba(69, 26, 3, 0.95);
+   --explorer-menu-header-border: rgba(245, 158, 11, 0.60);
+   --explorer-menu-header-title: rgba(251, 191, 36, 1.00);
+   --explorer-menu-header-icon: rgba(252, 211, 77, 1.00);
+
+   --explorer-menu-form-bg: rgba(14, 8, 3, 0.95);
+   --explorer-menu-input-bg: rgba(6, 4, 1, 1.00);
+
+   --explorer-menu-divider: rgba(245, 158, 11, 0.30);
+
+   --explorer-menu-item-text: #f1f5f9;
+   --explorer-menu-item-hover-bg: rgba(245, 158, 11, 0.20);
+   --explorer-menu-item-hover-text: #ffffff;
+   --explorer-menu-item-subtext: #cbd5e1;
+   --explorer-menu-item-hover-subtext: #ffffff;
+
+   --explorer-menu-danger-text: #fda4af;
+   --explorer-menu-danger-icon: #fb7185;
+   --explorer-menu-danger-subtext: rgba(251, 113, 133, 0.7);
+   --explorer-menu-danger-hover-bg: rgba(76, 5, 25, 0.5);
+   --explorer-menu-danger-hover-border: rgba(159, 18, 57, 0.6);
+   --explorer-menu-danger-hover-text: #fecdd3;
+   --explorer-menu-danger-hover-subtext: #fda4af;
+
+   --explorer-menu-rename-input-bg: #060401;
+   --explorer-menu-rename-input-text: #ffffff;
+   --explorer-menu-rename-input-border: rgba(245, 158, 11, 0.8);
+   --explorer-menu-rename-input-focus: #f59e0b;
+   --explorer-menu-rename-cancel-text: #94a3b8;
+   --explorer-menu-rename-cancel-hover-text: #ffffff;
+   --explorer-menu-rename-save-bg: rgba(245, 158, 11, 0.25);
+   --explorer-menu-rename-save-hover-bg: rgba(245, 158, 11, 0.4);
+   --explorer-menu-rename-save-text: #f59e0b;
+
+   --tree-gear-bg-hover: rgba(30, 58, 95, 0.80);
+   --tree-gear-icon-active: var(--text-primary);
+
+   --tree-badge-active-bg: rgba(6, 95, 70, 0.85);
+   --tree-badge-active-border: rgba(16, 185, 129, 0.70);
+   --tree-badge-active-text: rgba(52, 211, 153, 1.00);
+   /* #endregion */
+}
+

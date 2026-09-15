@@ -12,7 +12,7 @@
   position: relative;
   isolation: isolate;
   overflow: visible;
-  background:
+  background: var(--nav-header-background,
     radial-gradient(ellipse 190% 240% at 50% -90%,
       var(--nav-header-glow-core) 0%,
       var(--nav-header-glow-mid) 35%,
@@ -30,11 +30,11 @@
       var(--brand-primary) 22%,
       var(--panel-surface-bg) 52%,
       var(--popover-surface-bg) 78%,
-      var(--canvas-bg-primary) 100%);
-  border-bottom: 1px solid var(--panel-border-strong);
-  box-shadow:
+      var(--canvas-bg-primary) 100%));
+  border-bottom: 1px solid var(--nav-header-border-bottom, var(--panel-border-strong));
+  box-shadow: var(--nav-header-shadow,
     inset 0 1px 0 var(--panel-border-subtle),
-    inset 0 -1px 0 var(--brand-primary);
+    inset 0 -1px 0 var(--brand-primary));
 }
 
 /* Downward flare highlight */
@@ -43,13 +43,14 @@
   position: absolute;
   inset: 0;
   pointer-events: none;
-  z-index: -1;
-  background:
+  z-index: 1;
+  background: var(--nav-header-flare-bg,
     radial-gradient(ellipse 140% 160% at 50% -60%,
       var(--nav-header-accent-bright) 0%,
       var(--nav-header-accent-subtle) 50%,
-      rgba(0, 0, 0, 0) 75%);
-  mix-blend-mode: screen;
+      rgba(0, 0, 0, 0) 75%));
+  mix-blend-mode: var(--nav-header-flare-blend, screen);
+  opacity: var(--nav-header-flare-opacity, 1);
 }
 
 /* Procedural surface texture overlay */
@@ -58,11 +59,11 @@
   position: absolute;
   inset: 0;
   pointer-events: none;
-  z-index: -1;
-  background: var(--text-primary);
-  filter: url("#navigationBarTexture");
-  opacity: 0.14;
-  mix-blend-mode: overlay;
+  z-index: 1;
+  background: var(--nav-header-texture-bg, var(--text-primary));
+  filter: var(--nav-header-texture-filter, url("#navigationBarTexture"));
+  opacity: var(--nav-header-texture-opacity, 0.14);
+  mix-blend-mode: var(--nav-header-texture-blend, overlay);
 }
 
 /* --------------------------------------------------------------------------

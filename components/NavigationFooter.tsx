@@ -87,7 +87,7 @@ export default function NavigationFooter({
           2.3 CENTER: UTILITY / WORKSPACE BREADCRUMB SLOT
           Reserved central utility region for quick shortcuts or breadcrumb tracks.
           -------------------------------------------------------------------- */}
-      <div className="flex items-center gap-1.5 text-xs ui-muted cursor-pointer select-none">
+      <div className="flex items-center gap-1.5 text-xs ui-muted cursor-pointer select-none relative z-10">
         <label className="flex items-center gap-1.5 cursor-pointer ui-muted ui-hover-primary transition-colors">
           MIDDLE CONTENT
         </label>

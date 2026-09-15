@@ -118,9 +118,10 @@ export function UIPreferencesProvider({ children }: { children: React.ReactNode 
 
   const toggleTheme = () => {
     const nextTheme: ThemePreset =
-      theme === 'theme-default-dark' ? 'theme-default-light' : 'theme-default-dark';
+      theme === 'theme-default-light' ? 'theme-default-dark' : 'theme-default-light';
     setTheme(nextTheme);
   };
+
 
   const togglePin = () => {
     setIsPinned((prev) => !prev);

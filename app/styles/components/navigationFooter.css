@@ -12,7 +12,7 @@
   position: relative;
   isolation: isolate;
   overflow: hidden;
-  background:
+  background: var(--nav-footer-background,
     radial-gradient(ellipse 190% 200% at 50% 190%,
       var(--nav-footer-glow-core) 0%,
       var(--nav-footer-glow-mid) 35%,
@@ -30,11 +30,11 @@
       var(--brand-primary) 18%,
       var(--panel-surface-bg) 50%,
       var(--popover-surface-bg) 75%,
-      var(--canvas-bg-primary) 100%);
-  border-top: 1px solid var(--panel-border-strong);
-  box-shadow:
+      var(--canvas-bg-primary) 100%));
+  border-top: 1px solid var(--nav-footer-border-top, var(--panel-border-strong));
+  box-shadow: var(--nav-footer-shadow,
     inset 0 1px 0 var(--brand-primary),
-    inset 0 -1px 0 var(--panel-border-subtle);
+    inset 0 -1px 0 var(--panel-border-subtle));
 }
 
 /* Upward illumination flare layer */
@@ -43,13 +43,14 @@
   position: absolute;
   inset: 0;
   pointer-events: none;
-  z-index: -1;
-  background:
+  z-index: 1;
+  background: var(--nav-footer-flare-bg,
     radial-gradient(ellipse 140% 140% at 50% 160%,
       var(--nav-footer-accent-bright) 0%,
       var(--nav-footer-accent-subtle) 50%,
-      rgba(0, 0, 0, 0) 75%);
-  mix-blend-mode: screen;
+      rgba(0, 0, 0, 0) 75%));
+  mix-blend-mode: var(--nav-footer-flare-blend, screen);
+  opacity: var(--nav-footer-flare-opacity, 1);
 }
 
 /* Subtle SVG procedural grain overlay */
@@ -58,11 +59,11 @@
   position: absolute;
   inset: 0;
   pointer-events: none;
-  z-index: -1;
-  background: var(--text-primary);
-  filter: url("#navigationBarTexture");
-  opacity: 0.10;
-  mix-blend-mode: overlay;
+  z-index: 1;
+  background: var(--nav-footer-texture-bg, var(--text-primary));
+  filter: var(--nav-footer-texture-filter, url("#navigationBarTexture"));
+  opacity: var(--nav-footer-texture-opacity, 0.10);
+  mix-blend-mode: var(--nav-footer-texture-blend, overlay);
 }
 
 /* --------------------------------------------------------------------------

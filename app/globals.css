@@ -3,6 +3,7 @@
 /* 1. Theme Token Registries */
 @import "./styles/themes/theme-default-dark.css";
 @import "./styles/themes/theme-default-light.css";
+@import "./styles/themes/theme-premium-contrast.css";
 
 /* 2. Functional Component Stylesheets */
 @import "./styles/components/ExplorerPrimitives.css";
