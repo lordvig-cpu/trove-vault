@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
 
 /* ==========================================================================
    NODE CONTRACT
@@ -32,17 +32,35 @@ export function useExplorerCategories(nodes: ExplorerNodeLike[] = []) {
     return extractIds(nodes);
   }, [nodes]);
 
+  const hasInitialized = useRef(false);
+  const prevIdsRef = useRef<number[]>([]);
+
+  // Automatically expand all tree nodes on initial load or when view transitions across forests
+  useEffect(() => {
+    if (allNodeIds.length === 0) return;
+
+    const prevIds = prevIdsRef.current;
+    const isNewForest = prevIds.length === 0 || !allNodeIds.some((id) => prevIds.includes(id));
+
+    if (!hasInitialized.current || isNewForest) {
+      setExpandedCategoryIds(new Set(allNodeIds));
+      hasInitialized.current = true;
+    }
+    prevIdsRef.current = allNodeIds;
+  }, [allNodeIds]);
+
   const isAnyCategoryExpanded = useMemo(() => {
     return expandedCategoryIds.size > 0;
   }, [expandedCategoryIds]);
 
-  const handleToggleCategory = useCallback((categoryId: number) => {
+  const handleToggleCategory = useCallback((categoryId: number, forceState?: boolean) => {
     setExpandedCategoryIds((prev) => {
       const next = new Set(prev);
-      if (next.has(categoryId)) {
-        next.delete(categoryId);
-      } else {
+      const shouldExpand = forceState !== undefined ? forceState : !next.has(categoryId);
+      if (shouldExpand) {
         next.add(categoryId);
+      } else {
+        next.delete(categoryId);
       }
       return next;
     });

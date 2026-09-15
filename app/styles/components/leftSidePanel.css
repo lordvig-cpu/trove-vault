@@ -51,10 +51,9 @@
    -------------------------------------------------------------------------- */
 .left-side-panel-header {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  border-bottom: 1px solid var(--panel-border-subtle);
-  padding-bottom: 0.5rem;
+  flex-direction: column;
+  border-bottom: 1px solid var(--explorer-tab-baseline);
+  padding-bottom: 0;
   flex-shrink: 0;
 }
 
@@ -75,6 +74,83 @@
 .left-side-panel-pin-btn:hover {
   border-color: var(--panel-border-subtle);
   background-color: var(--card-surface-hover);
+}
+
+/* --------------------------------------------------------------------------
+   Explorer Folder Tabs (Paper Folder Style)
+   -------------------------------------------------------------------------- */
+.explorer-tab-baseline {
+  border-color: var(--explorer-tab-baseline);
+}
+
+.explorer-folder-tab {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.025em;
+  line-height: 1;
+  height: 1.625rem;
+  padding: 0 0.95rem;
+  border: none;
+  background: transparent;
+  outline: none;
+  transition: color 150ms ease;
+  user-select: none;
+}
+
+.explorer-folder-tab-idle {
+  color: var(--explorer-tab-text-idle);
+}
+
+.explorer-folder-tab-idle:hover {
+  color: var(--explorer-tab-text-hover);
+}
+
+.explorer-folder-tab-active {
+  color: var(--explorer-tab-text-active);
+  font-weight: 700;
+}
+
+.explorer-tab-svg-fill {
+  transition: fill 150ms ease;
+}
+
+.explorer-tab-svg-stroke {
+  transition: stroke 150ms ease;
+}
+
+.explorer-folder-tab-idle .explorer-tab-svg-fill {
+  fill: var(--explorer-tab-bg-idle);
+}
+
+.explorer-folder-tab-idle:hover .explorer-tab-svg-fill {
+  fill: var(--explorer-tab-bg-hover);
+}
+
+.explorer-folder-tab-idle .explorer-tab-svg-stroke {
+  stroke: var(--explorer-tab-border-idle);
+}
+
+.explorer-folder-tab-idle:hover .explorer-tab-svg-stroke {
+  stroke: var(--explorer-tab-border-hover);
+}
+
+.explorer-folder-tab-active .explorer-tab-svg-fill {
+  fill: var(--explorer-tab-bg-active);
+}
+
+.explorer-folder-tab-active .explorer-tab-svg-stroke {
+  stroke: var(--explorer-tab-border-active);
+}
+
+/* Cast 3D shadow to the right of the active selected tab */
+.explorer-folder-tab-active svg {
+  filter: drop-shadow(4px 1px 5px var(--explorer-tab-shadow-right))
+          drop-shadow(-1px 0px 2px rgba(0, 0, 0, 0.35));
 }
 
 /* --------------------------------------------------------------------------

@@ -13,6 +13,7 @@ import {
 import ExplorerSearchMenu from '@/components/ExplorerSearchMenu';
 import CollectionFilterTree from '@/components/CollectionFilterTree';
 import { CollectionRecord } from '@/types/collection';
+import { ExplorerTab } from '@/lib/filterExplorerForest';
 
 /* ==========================================================================
    1. TYPE DEFINITIONS & INTERFACES
@@ -21,6 +22,8 @@ import { CollectionRecord } from '@/types/collection';
 interface LeftSidePanelHeaderProps {
   variant: 'flyout' | 'sidebar';
   isPinned: boolean;
+  activeTab?: ExplorerTab;
+  onTabChange?: (tab: ExplorerTab) => void;
   searchQuery: string;
   onSearchChange: (val: string) => void;
   isAnyCategoryExpanded?: boolean;
@@ -28,6 +31,7 @@ interface LeftSidePanelHeaderProps {
   onTogglePin: () => void;
   onClose: () => void;
   onAddNewItem?: () => void;
+  onAddNewCollection?: () => void;
   collections: CollectionRecord[];
 
   // Multi-Select Array Props
@@ -46,6 +50,8 @@ interface LeftSidePanelHeaderProps {
 export default function LeftSidePanelHeader({
   variant,
   isPinned,
+  activeTab = 'items',
+  onTabChange,
   searchQuery,
   onSearchChange,
   isAnyCategoryExpanded,
@@ -55,6 +61,7 @@ export default function LeftSidePanelHeader({
   onTogglePin,
   onClose,
   onAddNewItem,
+  onAddNewCollection,
   collections = [],
   filterCollectionIds = [],
   onToggleFilterCollection,
@@ -85,81 +92,43 @@ export default function LeftSidePanelHeader({
   };
 
   return (
-    <div className="left-side-panel-header explorer-panel-divider px-2.5 py-2 flex flex-col gap-2 shrink-0">
+    <div className="left-side-panel-header px-2.5 pt-2 pb-0 flex flex-col gap-2 shrink-0">
       
       {/* ------------------------------------------------------------------
-          ROW 1: Top Actions (Right Aligned)
+          ROW 1: Top Utility Bar: Explorer Title & Panel Controls
           ------------------------------------------------------------------ */}
-      <div className="flex items-center justify-end gap-1 w-full shrink-0">
-        {onAddNewItem && (
-          <button
-            type="button"
-            onClick={onAddNewItem}
-            className="left-side-panel-pin-btn group"
-            title="Create New Item"
-          >
-            <svg
-              className="w-3.5 h-3.5 explorer-panel-accent transition-colors"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <line x1="12" y1="5" x2="12" y2="19" />
-              <line x1="5" y1="12" x2="19" y2="12" />
-            </svg>
-          </button>
-        )}
+      <div className="flex items-center justify-between gap-1 w-full shrink-0 h-6">
+        <span className="text-xs font-bold uppercase tracking-wider explorer-panel-muted px-0.5 select-none">
+          Explorer
+        </span>
 
-        {activeToggleAll && (
+        <div className="flex items-center gap-1 shrink-0">
           <button
             type="button"
-            onClick={activeToggleAll}
-            disabled={searchQuery.trim().length > 0}
-            className="left-side-panel-pin-btn explorer-panel-disabled group disabled:pointer-events-none disabled:cursor-not-allowed"
-            title={
-              searchQuery.trim().length > 0
-                ? 'Tree expansion disabled during search'
-                : activeIsExpanded
-                ? 'Collapse all'
-                : 'Expand all'
-            }
+            onClick={onTogglePin}
+            className="left-side-panel-pin-btn group"
+            title={isPinned ? 'Unpin LeftSidePanel' : 'Pin LeftSidePanel'}
           >
-            {activeIsExpanded ? (
-              <FolderCollapseIcon className="w-3.5 h-3.5 explorer-panel-muted" />
+            {variant === 'flyout' || !isPinned ? (
+              <PinOutlineIcon className="w-3.5 h-3.5 text-content-muted group-hover:text-white" />
             ) : (
-              <FolderExpandIcon className="w-3.5 h-3.5 explorer-panel-muted" />
+              <PinFilledIcon className="w-3.5 h-3.5 text-content-primary" />
             )}
           </button>
-        )}
 
-        <button
-          type="button"
-          onClick={onTogglePin}
-          className="left-side-panel-pin-btn group"
-          title={isPinned ? 'Unpin LeftSidePanel' : 'Pin LeftSidePanel'}
-        >
-          {variant === 'flyout' || !isPinned ? (
-            <PinOutlineIcon className="w-3.5 h-3.5 explorer-panel-muted" />
-          ) : (
-            <PinFilledIcon className="w-3.5 h-3.5 explorer-panel-primary" />
+          {variant === 'flyout' && (
+            <button
+              type="button"
+              onClick={onClose}
+              className="left-side-panel-pin-btn group"
+              title="Close Explorer"
+            >
+              <span className="inline-block origin-center transition-all duration-200 ease-out group-hover:scale-115 text-xs text-content-muted group-hover:text-white px-1 select-none">
+                ✕
+              </span>
+            </button>
           )}
-        </button>
-
-        {variant === 'flyout' && (
-          <button
-            type="button"
-            onClick={onClose}
-            className="left-side-panel-pin-btn group"
-            title="Close Explorer"
-          >
-              <span className="inline-block origin-center transition-transform duration-200 ease-out group-hover:scale-115 text-xs explorer-panel-primary px-1 select-none">
-              ✕
-            </span>
-          </button>
-        )}
+        </div>
       </div>
 
       {/* ------------------------------------------------------------------
@@ -318,6 +287,153 @@ export default function LeftSidePanelHeader({
 
         </div>
       )}
+
+      {/* ------------------------------------------------------------------
+          ROW 3: View Tabs & Contextual Create Action (Seated directly on baseline)
+          ------------------------------------------------------------------ */}
+      <div className="flex items-end justify-between gap-1 w-full shrink-0 -mb-[1px]">
+        {/* Left: View Mode Paper Folder Tabs */}
+        <div role="tablist" aria-label="Explorer views" className="flex items-center relative">
+          {/* Tab 1: Items */}
+          <button
+            type="button"
+            role="tab"
+            aria-selected={activeTab === 'items'}
+            onClick={() => onTabChange?.('items')}
+            className={`explorer-folder-tab ${
+              activeTab === 'items'
+                ? 'explorer-folder-tab-active z-20'
+                : 'explorer-folder-tab-idle z-10'
+            }`}
+            title="Show Items organized by Category"
+          >
+            <svg
+              className="absolute inset-0 w-full h-full pointer-events-none"
+              viewBox="0 0 100 28"
+              preserveAspectRatio="none"
+            >
+              <path
+                d="M 0,28 L 8,3 C 9,1 11,0 14,0 L 86,0 C 89,0 91,1 92,3 L 100,28 Z"
+                className="explorer-tab-svg-fill"
+              />
+              <path
+                d="M 0,28 L 8,3 C 9,1 11,0 14,0 L 86,0 C 89,0 91,1 92,3 L 100,28"
+                className="explorer-tab-svg-stroke"
+                fill="none"
+                strokeWidth="1.5"
+                vectorEffect="non-scaling-stroke"
+              />
+            </svg>
+            <span className="relative z-10 px-0.5">Items</span>
+          </button>
+
+          {/* Tab 2: Collections (Overlaps Tab 1 with diagonal left edge) */}
+          <button
+            type="button"
+            role="tab"
+            aria-selected={activeTab === 'collections'}
+            onClick={() => onTabChange?.('collections')}
+            className={`explorer-folder-tab -ml-3.5 ${
+              activeTab === 'collections'
+                ? 'explorer-folder-tab-active z-20'
+                : 'explorer-folder-tab-idle z-10'
+            }`}
+            title="Show Collections hierarchy"
+          >
+            <svg
+              className="absolute inset-0 w-full h-full pointer-events-none"
+              viewBox="0 0 100 28"
+              preserveAspectRatio="none"
+            >
+              <path
+                d="M 0,28 L 8,3 C 9,1 11,0 14,0 L 86,0 C 89,0 91,1 92,3 L 100,28 Z"
+                className="explorer-tab-svg-fill"
+              />
+              <path
+                d="M 0,28 L 8,3 C 9,1 11,0 14,0 L 86,0 C 89,0 91,1 92,3 L 100,28"
+                className="explorer-tab-svg-stroke"
+                fill="none"
+                strokeWidth="1.5"
+                vectorEffect="non-scaling-stroke"
+              />
+            </svg>
+            <span className="relative z-10 px-0.5">Collections</span>
+          </button>
+        </div>
+
+        {/* Right: Actions Cluster (Contextual Add + Expand/Collapse) */}
+        <div className="flex items-center gap-0.5 shrink-0 h-[26px]">
+          {/* Contextual Add Button */}
+          {activeTab === 'collections' ? (
+            onAddNewCollection && (
+              <button
+                type="button"
+                onClick={onAddNewCollection}
+                className="left-side-panel-pin-btn group"
+                title="Create New Collection"
+              >
+                <svg
+                  className="w-3 h-3 origin-center transition-all duration-200 ease-out group-hover:scale-115 text-content-muted group-hover:text-white"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <line x1="12" y1="5" x2="12" y2="19" />
+                  <line x1="5" y1="12" x2="19" y2="12" />
+                </svg>
+              </button>
+            )
+          ) : (
+            onAddNewItem && (
+              <button
+                type="button"
+                onClick={onAddNewItem}
+                className="left-side-panel-pin-btn group"
+                title="Create New Item"
+              >
+                <svg
+                  className="w-3 h-3 origin-center transition-all duration-200 ease-out group-hover:scale-115 text-content-muted group-hover:text-white"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <line x1="12" y1="5" x2="12" y2="19" />
+                  <line x1="5" y1="12" x2="19" y2="12" />
+                </svg>
+              </button>
+            )
+          )}
+
+          {/* Bulk Expand / Collapse Accordion Toggle */}
+          {activeToggleAll && (
+            <button
+              type="button"
+              onClick={activeToggleAll}
+              disabled={searchQuery.trim().length > 0}
+              className="left-side-panel-pin-btn explorer-panel-disabled group disabled:pointer-events-none disabled:cursor-not-allowed"
+              title={
+                searchQuery.trim().length > 0
+                  ? 'Tree expansion disabled during search'
+                  : activeIsExpanded
+                  ? 'Collapse all'
+                  : 'Expand all'
+              }
+            >
+              {activeIsExpanded ? (
+                <FolderCollapseIcon className="w-3.5 h-3.5 text-content-muted group-hover:text-white" />
+              ) : (
+                <FolderExpandIcon className="w-3.5 h-3.5 text-content-muted group-hover:text-white" />
+              )}
+            </button>
+          )}
+        </div>
+      </div>
 
       {/* ------------------------------------------------------------------
           ADVANCED SEARCH ACTION MENU PORTAL

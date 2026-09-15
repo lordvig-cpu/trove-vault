@@ -21,6 +21,7 @@ import { ItemRecord } from '@/types/item';
 export type ActiveModal =
   | { type: 'template_manager'; collectionId: number; collectionName: string }
   | { type: 'delete_collection'; collection: CollectionRecord }
+  | { type: 'create_collection'; parentCollectionId?: number | null }
   | { type: 'create_item'; collectionId: number | null; parentItemId?: number | null }
   | { type: 'edit_item'; item: ItemRecord; collectionId: number | null }
   | { type: 'delete_item'; item: ItemRecord; collectionId: number | null }
@@ -56,6 +57,13 @@ export function useModals() {
   }, []);
 
   /**
+   * Opens the creation dialog to add a new collection.
+   */
+  const openCreateCollection = useCallback((parentCollectionId?: number | null) => {
+    setActiveModal({ type: 'create_collection', parentCollectionId });
+  }, []);
+
+  /**
    * Opens the creation dialog to add a new item (collectionId can be null for standalone items).
    */
   const openCreateItem = useCallback(
@@ -85,6 +93,7 @@ export function useModals() {
     closeModal,
     openTemplateManager,
     openDeleteCollection,
+    openCreateCollection,
     openCreateItem,
     openEditItem,
     openDeleteItem,

@@ -221,7 +221,20 @@ Organized 1-to-1 with component stylesheets in styles/components/
    --explorer-kbd-text: rgba(52, 211, 153, 1.00);
    --explorer-kbd-bg: rgba(6, 78, 59, 0.80);
    --explorer-kbd-border: rgba(6, 95, 70, 0.60);
-   /* #endregion */
+
+    /* Explorer Folder Tabs (Items & Collections) */
+    --explorer-tab-text-idle: rgba(110, 143, 174, 1.00);
+    --explorer-tab-text-hover: rgba(255, 255, 255, 1.00);
+    --explorer-tab-text-active: var(--nav-header-tab-indicator);
+    --explorer-tab-border-idle: rgba(0, 190, 230, 0.20);
+    --explorer-tab-border-hover: rgba(0, 190, 230, 0.45);
+    --explorer-tab-border-active: var(--nav-header-tab-indicator);
+    --explorer-tab-bg-idle: rgba(4, 18, 33, 0.85);
+    --explorer-tab-bg-hover: rgba(8, 38, 66, 0.95);
+    --explorer-tab-bg-active: rgba(14, 42, 72, 0.98);
+    --explorer-tab-shadow-right: rgba(0, 0, 0, 0.75);
+    --explorer-tab-baseline: var(--nav-header-tab-indicator);
+    /* #endregion */
 
    /* #region 5. RIGHT SIDE PANEL */
    /* ======================================================================

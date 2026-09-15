@@ -8,6 +8,7 @@ import { useFlyoutLifecycle } from '@/hooks/useFlyoutLifecycle';
 import LeftSidePanelHeader from '@/components/LeftSidePanelHeader';
 import { CollectionRecord } from '@/types/collection';
 import { ResetWidthIcon } from '@/components/icons/SystemIcons';
+import { ExplorerTab } from '@/lib/filterExplorerForest';
 
 /* ==========================================================================
    1. TYPE DEFINITIONS & CONSTANTS
@@ -18,6 +19,8 @@ interface LeftSidePanelProps {
   isOpen: boolean;
   onClose: () => void;
   onTogglePin: () => void;
+  activeTab?: ExplorerTab;
+  onTabChange?: (tab: ExplorerTab) => void;
   isAnyCategoryExpanded?: boolean;
   onToggleAllCategories?: () => void;
   searchQuery: string;
@@ -28,6 +31,7 @@ interface LeftSidePanelProps {
   error?: string | null;
   children: React.ReactNode;
   onAddNewItem?: () => void;
+  onAddNewCollection?: () => void;
   collections: CollectionRecord[];
 
   // New Multi-Select Array Props
@@ -47,6 +51,8 @@ export default function LeftSidePanel({
   isOpen,
   onClose,
   onTogglePin,
+  activeTab,
+  onTabChange,
   isAnyCategoryExpanded,
   onToggleAllCategories,
   searchQuery,
@@ -57,6 +63,7 @@ export default function LeftSidePanel({
   error,
   children,
   onAddNewItem,
+  onAddNewCollection,
   collections = [],
   filterCollectionIds = [],
   onToggleFilterCollection,
@@ -155,6 +162,8 @@ export default function LeftSidePanel({
       <LeftSidePanelHeader
         variant={variant}
         isPinned={isPinned}
+        activeTab={activeTab}
+        onTabChange={onTabChange}
         searchQuery={searchQuery}
         onSearchChange={onSearchChange}
         isAnyCategoryExpanded={activeIsExpanded}
@@ -162,6 +171,7 @@ export default function LeftSidePanel({
         onTogglePin={handlePinAction}
         onClose={onClose}
         onAddNewItem={onAddNewItem}
+        onAddNewCollection={onAddNewCollection}
         collections={collections}
         filterCollectionIds={filterCollectionIds}
         onToggleFilterCollection={onToggleFilterCollection}

@@ -15,7 +15,7 @@ import LeftSidePanel from '@/components/LeftSidePanel';
 import ExplorerContent from '@/components/ExplorerContent';
 import ModalContainers from '@/components/ModalContainers';
 import DynamicWatermark from '@/components/DynamicWatermark';
-import { filterExplorerForest } from '@/lib/filterExplorerForest';
+import { filterExplorerForest, ExplorerTab } from '@/lib/filterExplorerForest';
 
 export interface UniversalSearchResultItem extends ItemRecord {
   collection_name?: string;
@@ -28,6 +28,7 @@ export default function Home() {
   const {
     allCollections,
     allItems,
+    templates,
     activeCollectionId,
     setActiveCollectionId,
     activeCollection,
@@ -50,31 +51,48 @@ export default function Home() {
     closeModal,
     openTemplateManager,
     openDeleteCollection,
+    openCreateCollection,
     openCreateItem,
     openEditItem,
     openDeleteItem,
   } = useModals();
 
   /* ------------------------------------------------------------------------
-     3. EXPLORER TREE STATE (Accordion & Search)
-     Pass unifiedForest so virtual category nodes can expand and collapse cleanly
+     3. EXPLORER TABS, FILTERS & TREE STATE
+     Pass filteredForest so virtual category nodes and collections can expand and collapse cleanly
      ------------------------------------------------------------------------ */
-  const {
-    searchQuery,
-    setSearchQuery,
-  } = useExplorerCategories(unifiedForest);
-
+  const [activeExplorerTab, setActiveExplorerTab] = useState<ExplorerTab>('items');
   const [filterCollectionIds, setFilterCollectionIds] = useState<number[]>([]);
 
   const handleToggleFilterCollection = (id: number) => {
     setFilterCollectionIds((prev) => 
       prev.includes(id) ? prev.filter((colId) => colId !== id) : [...prev, id]
     );
+    // When advanced search filter is set to Collections, light up the Collections tab
+    setActiveExplorerTab('collections');
   };
 
   const handleClearCollectionFilters = () => {
     setFilterCollectionIds([]);
   };
+
+  const filteredForest = filterExplorerForest(
+    unifiedForest,
+    filterCollectionIds,
+    activeExplorerTab,
+    allItems,
+    allCollections,
+    templates
+  );
+
+  const {
+    searchQuery,
+    setSearchQuery,
+    expandedCategoryIds,
+    isAnyCategoryExpanded,
+    handleToggleCategory,
+    handleToggleAllCategories,
+  } = useExplorerCategories(filteredForest);
 
   /* ------------------------------------------------------------------------
      4. GLOBAL UI & LAYOUT PREFERENCES
@@ -186,14 +204,14 @@ export default function Home() {
      8. MEMOIZED EXPLORER SUB-COMPONENTS
      ------------------------------------------------------------------------ */
 
-  const filteredForest = filterExplorerForest(unifiedForest, filterCollectionIds);
-  
   const explorerTreeElement = (
     <ExplorerContent
       unifiedForest={filteredForest}
       searchQuery={searchQuery}
       activeCollectionId={activeCollectionId}
       selectedItemId={selectedItem?.id || null}
+      expandedCategoryIds={expandedCategoryIds}
+      onToggleCategory={handleToggleCategory}
       onSelectCollection={(colId) => {
         setActiveCollectionId(colId);
         if (!isPinned) setIsLeftSidePanelOpen(false);
@@ -219,11 +237,16 @@ export default function Home() {
       isOpen={isLeftSidePanelOpen}
       onClose={() => setIsLeftSidePanelOpen(false)}
       onTogglePin={handleTogglePin}
+      activeTab={activeExplorerTab}
+      onTabChange={setActiveExplorerTab}
+      isAnyCategoryExpanded={isAnyCategoryExpanded}
+      onToggleAllCategories={handleToggleAllCategories}
       searchQuery={searchQuery}
       onSearchChange={setSearchQuery}
       loading={loading}
       error={error}
       onAddNewItem={() => openCreateItem(null, null)}
+      onAddNewCollection={() => openCreateCollection(null)}
       collections={allCollections}
       filterCollectionIds={filterCollectionIds}
       onToggleFilterCollection={handleToggleFilterCollection}
@@ -239,6 +262,10 @@ export default function Home() {
       isOpen={isLeftSidePanelOpen}
       onClose={() => setIsLeftSidePanelOpen(false)}
       onTogglePin={handleTogglePin}
+      activeTab={activeExplorerTab}
+      onTabChange={setActiveExplorerTab}
+      isAnyCategoryExpanded={isAnyCategoryExpanded}
+      onToggleAllCategories={handleToggleAllCategories}
       searchQuery={searchQuery}
       onSearchChange={setSearchQuery}
       reservedWidth={isRightPanelOpen ? rightPanelWidth : 0}
@@ -246,6 +273,7 @@ export default function Home() {
       loading={loading}
       error={error}
       onAddNewItem={() => openCreateItem(null, null)}
+      onAddNewCollection={() => openCreateCollection(null)}
       collections={allCollections}
       filterCollectionIds={filterCollectionIds}
       onToggleFilterCollection={handleToggleFilterCollection}
@@ -352,6 +380,7 @@ export default function Home() {
         activeModal={activeModal}
         closeModal={closeModal}
         allItems={allItems}
+        collections={allCollections}
         selectedItem={selectedItem}
         setSelectedItem={setSelectedItem}
         fetchAllData={fetchAllData}

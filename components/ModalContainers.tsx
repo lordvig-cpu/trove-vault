@@ -3,8 +3,10 @@
 import React from 'react';
 import { ActiveModal } from '@/hooks/useModals';
 import { ItemRecord } from '@/types/item';
+import { CollectionRecord } from '@/types/collection';
 import TemplateManagerModal from '@/components/TemplateManagerModal';
 import DeleteCollectionModal from '@/components/DeleteCollectionModal';
+import CreateCollectionModal from '@/components/CreateCollectionModal';
 import CreateItemModal from '@/components/CreateItemModal';
 import EditItemModal from '@/components/EditItemModal';
 import DeleteItemModal from '@/components/DeleteItemModal';
@@ -18,6 +20,7 @@ import DeleteItemModal from '@/components/DeleteItemModal';
  * @property activeModal - Discriminated union tracking the active dialog and its payload (or null)
  * @property closeModal - Dismissal callback resetting activeModal state
  * @property allItems - Complete item list used to derive valid parent items for nested creations
+ * @property collections - Complete collections list for parent collection selector
  * @property selectedItem - Currently active item shown in the main viewport canvas
  * @property setSelectedItem - State setter to clear selection if the active item is deleted
  * @property fetchAllData - Data layer refresher called to resync Supabase cache after mutations
@@ -26,6 +29,7 @@ interface ModalContainersProps {
   activeModal: ActiveModal;
   closeModal: () => void;
   allItems: ItemRecord[];
+  collections?: CollectionRecord[];
   selectedItem: ItemRecord | null;
   setSelectedItem: (item: ItemRecord | null) => void;
   fetchAllData: (preferredActiveCollectionId?: number | null) => Promise<void>;
@@ -41,6 +45,7 @@ export default function ModalContainers({
   activeModal,
   closeModal,
   allItems,
+  collections = [],
   selectedItem,
   setSelectedItem,
   fetchAllData,
@@ -79,7 +84,21 @@ export default function ModalContainers({
       )}
 
       {/* --------------------------------------------------------------------
-          2.3 CREATE ITEM MODAL
+          2.3 CREATE COLLECTION MODAL
+          Instantiates a new collection container or nested sub-collection.
+          -------------------------------------------------------------------- */}
+      {activeModal.type === 'create_collection' && (
+        <CreateCollectionModal
+          isOpen={true}
+          onClose={closeModal}
+          onCollectionCreated={(newId) => fetchAllData(newId)}
+          collections={collections}
+          initialParentId={activeModal.parentCollectionId || null}
+        />
+      )}
+
+      {/* --------------------------------------------------------------------
+          2.4 CREATE ITEM MODAL
           Instantiates a new record under a collection, as a standalone root item,
           or nested under an existing parent item.
           -------------------------------------------------------------------- */}
