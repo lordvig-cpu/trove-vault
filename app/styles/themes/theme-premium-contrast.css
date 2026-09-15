@@ -49,7 +49,7 @@
        #001f42 76%,
        #001b3a 100%);
 
-   --nav-header-border-bottom: #02396c;
+   --nav-header-border-bottom: var(--panel-border-strong);
    --nav-header-shadow:
      inset 0 1px 0 rgba(255, 255, 255, 0.14),
      inset 0 -1px 0 rgba(0, 102, 204, 0.25),
@@ -91,9 +91,17 @@
    /* Tab Controls & Indicator Lines */
    --nav-header-accent-line: rgba(0, 160, 255, 0.85);
    --nav-header-tab-indicator: rgba(245, 158, 11, 1.00);
-   --nav-header-tab-bg-active: rgba(14, 28, 44, 0.95);
-   --nav-header-tab-border: #02396c;
-   --nav-header-tab-shadow: 0 -4px 16px rgba(0, 160, 255, 0.35);
+   --nav-header-tab-baseline: rgba(0, 160, 255, 0.28);
+   --nav-header-tab-bg-active:
+     linear-gradient(180deg,
+       rgba(4, 20, 48, 0.98) 0%,
+       rgba(8, 36, 78, 0.96) 55%,
+       rgba(14, 52, 108, 0.96) 100%);
+   --nav-header-tab-border: var(--panel-border-strong);
+   --nav-header-tab-shadow:
+     inset 0 1px 0 rgba(255, 255, 255, 0.15),
+     0 -2px 10px rgba(0, 160, 255, 0.25),
+     0 0 15px rgba(0, 140, 255, 0.20);
 
    /* Floating Flyout Menu */
    --nav-header-flyout-bg: rgba(4, 22, 54, 0.92);
@@ -151,7 +159,7 @@
        #001f42 76%,
        #001b3a 100%);
 
-   --nav-footer-border-top: #02396c;
+   --nav-footer-border-top: var(--panel-border-strong);
    --nav-footer-shadow:
      inset 0 -1px 0 rgba(255, 255, 255, 0.14),
      inset 0 1px 0 rgba(0, 102, 204, 0.25),
@@ -192,7 +200,7 @@
 
    --nav-footer-bg-surface: var(--panel-surface-bg);
    --nav-footer-border-subtle: var(--panel-border-subtle);
-   --nav-footer-border-strong: #02396c;
+   --nav-footer-border-strong: var(--panel-border-strong);
 
    --nav-footer-status-dot: rgba(52, 211, 153, 1.00);
    --nav-footer-status-text: var(--text-primary);

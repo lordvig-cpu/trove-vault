@@ -106,7 +106,7 @@ export default function LeftSidePanel({
   );
 
   const transitionClass = (!isDragging && animationsEnabled && isHydrated)
-    ? 'transition-all duration-700 ease-in-out'
+    ? 'transition-[transform,opacity] duration-500 ease-out'
     : 'transition-none';
 
   const handlePinAction = () => (onTogglePin ? onTogglePin() : togglePin());
@@ -228,12 +228,12 @@ export default function LeftSidePanel({
         <aside
           style={{ zIndex: 80 }}
           className={[
-            'nav-flyout-menu relative transform',
+            'nav-flyout-menu',
             transitionClass,
             animationsEnabled && !isPinned
               ? isClosing
-                ? 'animate-unmount-fade'
-                : 'animate-mount-fade'
+                ? 'animate-flyout-slide-out'
+                : 'animate-flyout-slide-in'
               : '',
             isPinned ? 'nav-flyout-pinned' : 'nav-flyout-unpinned',
           ]
@@ -251,13 +251,11 @@ export default function LeftSidePanel({
      ------------------------------------------------------------------------ */
   return (
     <aside
-      style={{ width: isPinned ? `${panelWidth}px` : 0 }}
+      style={{ width: `${panelWidth}px` }}
       className={[
         'left-side-panel absolute top-0 bottom-0 left-0 z-50',
         'panel-shell',
         transitionClass,
-        // Force transform to none in all states to prevent GPU layer popping
-        '!transform-none',
         isPinned ? 'left-side-panel-pinned' : 'left-side-panel-unpinned pointer-events-none',
       ]
         .filter(Boolean)

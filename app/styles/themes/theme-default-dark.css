@@ -46,8 +46,10 @@ Organized 1-to-1 with component stylesheets in styles/components/
    --nav-header-accent-subtle: rgba(0, 130, 210, 0.08);
 
    /* Tab Controls & Indicator Lines */
+   --nav-header-border-bottom: var(--panel-border-strong);
    --nav-header-accent-line: rgba(81, 155, 255, 0.85);
    --nav-header-tab-indicator: rgba(231, 116, 40, 1.00);
+   --nav-header-tab-baseline: rgba(0, 190, 230, 0.25);
    --nav-header-tab-bg-active: var(--panel-surface-bg);
    --nav-header-tab-border: var(--panel-border-strong);
    --nav-header-tab-shadow: 0 -4px 12px rgba(0, 190, 230, 0.15);
@@ -98,6 +100,7 @@ Organized 1-to-1 with component stylesheets in styles/components/
    --nav-footer-accent-subtle: rgba(0, 130, 210, 0.06);
 
    /* Base Surfaces & Dividers */
+   --nav-footer-border-top: var(--panel-border-strong);
    --nav-footer-bg-surface: var(--panel-surface-bg);
    --nav-footer-border-subtle: var(--panel-border-subtle);
    --nav-footer-border-strong: var(--panel-border-strong);

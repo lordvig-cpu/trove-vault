@@ -124,32 +124,42 @@ export default function NavigationHeader({
                   }
                 }}
                 className={[
-                  'relative w-[90px] py-1.5 flex items-center justify-center group',
+                  'relative w-[90px] py-1.5 flex flex-col items-center justify-center group',
                   'font-sans font-black tracking-wide text-sm',
-                  'transition-all ease-out',
-                  animationsEnabled ? 'duration-500' : 'duration-0',
+                  'outline-none focus:outline-none focus-visible:outline-none',
+                  'transition-[background,border-color,box-shadow] ease-out',
+                  animationsEnabled ? 'duration-300' : 'duration-0',
                   isPinned ? 'cursor-default' : 'cursor-pointer',
                   isTabActive ? 'nav-tab-active' : 'nav-tab-inactive',
                 ].join(' ')}
               >
-                <span className="relative inline-block">
-                  Explorer
-                  {/* Underline Indicator */}
+                <span>Explorer</span>
+
+                {/* Underline Track: Full-width barely-visible blue line with centered gold indicator */}
+                <div className="absolute inset-x-0 bottom-[4px] flex items-center justify-center pointer-events-none">
                   <div
                     className={[
-                      'nav-tab-indicator transition-opacity ease-out',
-                      animationsEnabled ? 'duration-500' : 'duration-0',
+                      'nav-tab-baseline transition-opacity ease-out',
+                      animationsEnabled ? 'duration-300' : 'duration-0',
+                      isTabActive ? 'opacity-100' : 'opacity-0',
+                    ].join(' ')}
+                    aria-hidden="true"
+                  />
+                  <div
+                    className={[
+                      'nav-tab-indicator relative w-[60px] transition-opacity ease-out',
+                      animationsEnabled ? 'duration-300' : 'duration-0',
                       isTabActive ? 'nav-tab-indicator-active' : 'nav-tab-indicator-inactive',
                     ].join(' ')}
                     aria-hidden="true"
                   />
-                </span>
+                </div>
 
                 {/* Seamless Tab Extension (Blends tab bottom directly into the panel below) */}
                 <div
                   className={[
                     'nav-tab-extension transition-opacity ease-out',
-                    animationsEnabled ? 'duration-500' : 'duration-0',
+                    animationsEnabled ? 'duration-300' : 'duration-0',
                     isTabActive ? 'nav-tab-extension-active' : 'nav-tab-extension-inactive',
                   ].join(' ')}
                   aria-hidden="true"

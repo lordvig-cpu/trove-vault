@@ -41,7 +41,7 @@ export function useFlyoutLifecycle(
     else if (renderMenu) {
       // 1. User clicked "Pin"
       if (isPinned) {
-        const timer = setTimeout(() => setRenderMenu(false), 700);
+        const timer = setTimeout(() => setRenderMenu(false), 500);
         return () => clearTimeout(timer);
       }
 
@@ -51,7 +51,7 @@ export function useFlyoutLifecycle(
         const timer = setTimeout(() => {
           setRenderMenu(false);
           setIsClosing(false);
-        }, 500);
+        }, 300);
         return () => clearTimeout(timer);
       } 
       

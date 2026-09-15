@@ -71,7 +71,7 @@ export default function RightPanel({
 
   // Temporarily disable CSS width transitions during active drag for zero input latency
   const transitionClass = (!isDragging && animationsEnabled)
-    ? 'transition-all duration-700 ease-in-out' 
+    ? 'transition-[transform,opacity] duration-500 ease-out' 
     : 'transition-none';
 
   return (
@@ -98,7 +98,7 @@ export default function RightPanel({
           Slides smoothly into the workspace flex container from the right.
           -------------------------------------------------------------------- */}
       <aside
-        style={{ width: isOpen ? `${panelWidth}px` : 0 }}
+        style={{ width: `${panelWidth}px` }}
         className={[
           'right-side-panel absolute top-0 bottom-0 right-0 z-30 flex flex-col',
           transitionClass,

@@ -24,6 +24,9 @@
   flex-shrink: 0;
   padding: 0.75rem;
   z-index: 50;
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+  transform: translateX(0);
 }
 
 /* Pinned layout mode: Statically locks the sidebar into the main content flow */
@@ -31,9 +34,7 @@
   border-right: 1px solid var(--right-panel-border);
   box-shadow: var(--panel-pinned-shadow);
   opacity: 1;
-  /* MUST BE NONE: CSS transforms establish a new stacking context that breaks 
-     fixed child positioning (such as action flyout menus) relative to document.body */
-  transform: none;
+  transform: translateX(0);
   /* Keep the docked panel above the navigation bar's lower shadow layer */
   z-index: 90;
 }

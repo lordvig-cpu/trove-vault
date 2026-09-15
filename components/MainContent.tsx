@@ -65,7 +65,7 @@ export default function MainContent({
         >
           {/* Main Stage Presentation Shell with Backdrop Filter Fades */}
           <main
-            className={`flex-1 flex flex-col transition-all duration-300 ease-in-out ${
+            className={`flex-1 flex flex-col transition-[filter,brightness] duration-300 ease-out will-change-[filter] ${
               isBlurred
                 ? 'filter blur-[var(--content-overlay-blur)] brightness-[var(--content-overlay-brightness-dim)] pointer-events-none select-none'
                 : 'filter-none brightness-[var(--content-overlay-brightness-default)]'

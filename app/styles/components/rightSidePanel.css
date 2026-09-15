@@ -48,6 +48,8 @@
   flex-direction: column;
   /* CRITICAL: Must be visible so the reset tab and handle can protrude */
   overflow: visible; 
+  will-change: transform, opacity;
+  backface-visibility: hidden;
 }
 
 /* Header & Collapse Control */
