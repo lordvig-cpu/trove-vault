@@ -7,23 +7,39 @@ import { SearchScope } from '@/components/NavigationHeader';
 export const STANDALONE_COLLECTION_ID = 0;
 
 /**
- * Traverses parent item relationships upwards to determine whether an item
- * belongs to an explicit collection or is a standalone root item.
+ * Traverses parent item relationships upwards to determine all collections
+ * an item belongs to (or inherits from parent ancestors).
+ */
+export function getItemRootCollectionIds(
+  item: ItemRecord,
+  allItems: ItemRecord[]
+): number[] {
+  if (item.collection_ids && item.collection_ids.length > 0) {
+    return item.collection_ids;
+  }
+  if (item.collection_id !== null && item.collection_id !== undefined) {
+    return [item.collection_id];
+  }
+  if (!item.parent_id) {
+    return [];
+  }
+  const parent = allItems.find((i) => i.id === item.parent_id);
+  if (!parent) return [];
+  return getItemRootCollectionIds(parent, allItems);
+}
+
+/**
+ * Traverses parent item relationships upwards to determine the primary collection
+ * an item belongs to.
  */
 export function getItemRootCollectionId(
   item: ItemRecord,
   allItems: ItemRecord[]
 ): number | null {
-  if (item.collection_id !== null && item.collection_id !== undefined) {
-    return item.collection_id;
-  }
-  if (!item.parent_id) {
-    return null;
-  }
-  const parent = allItems.find((i) => i.id === item.parent_id);
-  if (!parent) return null;
-  return getItemRootCollectionId(parent, allItems);
+  const ids = getItemRootCollectionIds(item, allItems);
+  return ids.length > 0 ? ids[0] : null;
 }
+
 
 /**
  * Traverses upwards to find the top-level root ancestor item of a standalone item.
@@ -178,8 +194,8 @@ export function buildFilteredUnifiedForest(
   const forest: UnifiedCollectionNode[] = collections
     .filter((col) => (col.parent_id || null) === parentCollectionId)
     .map((col) => {
-      const collectionRawItems = allItems.filter(
-        (it) => getItemRootCollectionId(it, allItems) === col.id
+      const collectionRawItems = allItems.filter((it) =>
+        getItemRootCollectionIds(it, allItems).includes(col.id)
       );
       const fullItemTree = buildItemHierarchy(collectionRawItems, null);
 
@@ -227,10 +243,10 @@ export function buildFilteredUnifiedForest(
       return true;
     });
 
-  // 2. Synthesize dynamic category nodes for standalone items (collection_id IS NULL)
+  // 2. Synthesize dynamic category nodes for standalone items (no collection membership)
   if (parentCollectionId === null) {
     const standaloneItems = allItems.filter(
-      (it) => getItemRootCollectionId(it, allItems) === null
+      (it) => getItemRootCollectionIds(it, allItems).length === 0
     );
 
     if (standaloneItems.length > 0) {

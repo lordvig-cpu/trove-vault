@@ -62,15 +62,30 @@ export default function DeleteCollectionModal({
         setLoadingItems(true);
         setError(null);
 
+        const { data: juncData, error: juncErr } = await supabase
+          .from('item_collections')
+          .select('item_id')
+          .eq('collection_id', collection.id);
+
+        if (juncErr) throw juncErr;
+
+        const linkedItemIds = (juncData || []).map((r: { item_id: number }) => r.item_id);
+        if (linkedItemIds.length === 0) {
+          setCascadeList([]);
+          setLoadingItems(false);
+          return;
+        }
+
         const { data, error: fetchErr } = await supabase
           .from('items')
           .select('*')
-          .eq('collection_id', collection.id)
+          .in('id', linkedItemIds)
           .order('id', { ascending: true });
 
         if (fetchErr) throw fetchErr;
 
         const rawItems = (data || []) as ItemRecord[];
+
         const nestedTree = buildItemHierarchy(rawItems, null);
 
         const flattenTree = (nodes: ItemRecord[], depth = 1): FlatSubItem[] => {
@@ -158,14 +173,14 @@ export default function DeleteCollectionModal({
 
           <div className="confirm-modal-danger-panel rounded-xl p-3.5 space-y-2">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold confirm-modal-danger-heading">Cascade Impact</span>
+              <span className="text-xs font-semibold confirm-modal-danger-heading">Items In Collection</span>
               <span className="confirm-modal-count text-[10px] font-mono px-1.5 py-0.5 rounded">
-                {loadingItems ? 'Counting...' : `${cascadeList.length} item${cascadeList.length === 1 ? '' : 's'} affected`}
+                {loadingItems ? 'Counting...' : `${cascadeList.length} item${cascadeList.length === 1 ? '' : 's'} linked`}
               </span>
             </div>
 
             <p className="text-xs confirm-modal-danger-copy leading-relaxed">
-              Deleting this collection will permanently drop all associated items and nested hierarchies:
+              Deleting this collection will remove it from the vault and unlink the following items (items will remain preserved in any other collections or as standalone collectibles):
             </p>
 
             {loadingItems ? (

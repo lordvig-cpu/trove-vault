@@ -5,6 +5,7 @@ import type { CollectionTemplate } from '@/types/template';
 import {
   detectItemCategory,
   getStandaloneRootItem,
+  getItemRootCollectionIds,
   getItemRootCollectionId,
   isDescendantOf,
 } from '@/lib/explorerUtils';
@@ -102,17 +103,19 @@ export function filterExplorerForest(
     const targetItems =
       filterCollectionIds.length > 0
         ? allItems.filter((item) => {
-            const colId = getItemRootCollectionId(item, allItems);
-            if (colId === null) return false;
-            if (filterCollectionIds.includes(colId)) return true;
-            return filterCollectionIds.some((fId) =>
-              isDescendantOf(collections, colId, fId)
+            const colIds = getItemRootCollectionIds(item, allItems);
+            if (colIds.length === 0) return false;
+            return colIds.some(
+              (colId) =>
+                filterCollectionIds.includes(colId) ||
+                filterCollectionIds.some((fId) => isDescendantOf(collections, colId, fId))
             );
           })
         : allItems;
 
     return buildCategoryNodesFromItems(targetItems, allItems, templates);
   }
+
 
   // Collections view: if no specific filters are checked, show all collections
   if (filterCollectionIds.length === 0) {

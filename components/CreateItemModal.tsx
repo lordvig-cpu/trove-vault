@@ -216,15 +216,28 @@ export default function CreateItemModal({
       // Virtual category nodes use negative IDs (e.g., -2), which must sanitize to null for PostgreSQL
       const effectiveCollectionId = collectionId && collectionId > 0 ? collectionId : null;
 
-      const { error: insertError } = await supabase.from('items').insert({
-        collection_id: effectiveCollectionId,
-        template_id: selectedTemplateId || null,
-        parent_id: effectiveParentId || null,
-        name: name.trim(),
-        attributes: jsonAttributes,
-      });
+      const { data: createdItem, error: insertError } = await supabase
+        .from('items')
+        .insert({
+          template_id: selectedTemplateId || null,
+          parent_id: effectiveParentId || null,
+          name: name.trim(),
+          attributes: jsonAttributes,
+        })
+        .select()
+        .single();
 
       if (insertError) throw insertError;
+
+      // If created inside a collection, link via item_collections junction
+      if (effectiveCollectionId && createdItem) {
+        const { error: linkError } = await supabase.from('item_collections').insert({
+          item_id: createdItem.id,
+          collection_id: effectiveCollectionId,
+        });
+        if (linkError) console.warn('Failed to link item to collection:', linkError);
+      }
+
 
       // Reset form state
       setName('');

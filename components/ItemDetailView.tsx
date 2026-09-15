@@ -59,7 +59,7 @@ export default function ItemDetailView({
                 Root Item
               </span>
             )}
-            {item.collection_id === null && (
+            {(!item.collection_ids || item.collection_ids.length === 0) && item.collection_id === null && (
               <span className="detail-standalone-badge px-2 py-0.5 rounded text-[11px] font-mono">
                 Standalone
               </span>

@@ -110,8 +110,8 @@ export default function ModalContainers({
           collectionId={activeModal.collectionId}
           availableParents={allItems.filter((i) =>
             activeModal.collectionId !== null
-              ? i.collection_id === activeModal.collectionId
-              : i.collection_id === null
+              ? (i.collection_ids?.includes(activeModal.collectionId) || i.collection_id === activeModal.collectionId)
+              : (!i.collection_ids || i.collection_ids.length === 0 || i.collection_id === null)
           )}
           initialParentId={activeModal.parentItemId || null}
         />

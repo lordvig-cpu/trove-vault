@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
-import { CollectionTemplate } from '@/types/template';
+import { ItemTemplate } from '@/types/template';
 import { fetchTemplateCatalog } from '@/lib/templateCatalog';
 
 /* ==========================================================================
@@ -12,30 +12,29 @@ import { fetchTemplateCatalog } from '@/lib/templateCatalog';
 export interface TemplateManagerModalProps {
   isOpen: boolean;
   onClose: () => void;
-  collectionId: number | null;
-  collectionName: string;
-  onTemplateApplied: () => void;
+  collectionId?: number | null;
+  collectionName?: string;
+  onTemplateApplied?: () => void;
 }
 
 /* ==========================================================================
    2. MAIN COMPONENT: TemplateManagerModal
-   Allows users to inspect schema definitions, apply system/custom presets 
-   to a collection, or export a collection's fields as a new template.
+   Allows users to inspect schema definitions, browse item blueprints,
+   and register custom templates.
    ========================================================================== */
 
 export default function TemplateManagerModal({
   isOpen,
   onClose,
-  collectionId,
   collectionName,
   onTemplateApplied,
 }: TemplateManagerModalProps) {
-  const [templates, setTemplates] = useState<CollectionTemplate[]>([]);
+  const [templates, setTemplates] = useState<ItemTemplate[]>([]);
   const [selectedTemplateId, setSelectedTemplateId] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
-  const [applying, setApplying] = useState(false);
   const [savingCustom, setSavingCustom] = useState(false);
   const [newTemplateName, setNewTemplateName] = useState('');
+  const [newTemplateDesc, setNewTemplateDesc] = useState('');
   const [newTemplateIcon, setNewTemplateIcon] = useState('📦');
   const [showSaveAsCustom, setShowSaveAsCustom] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -43,7 +42,7 @@ export default function TemplateManagerModal({
 
   /* ------------------------------------------------------------------------
      2.1 DATA FETCHING
-     Loads templates and nested field schemas from Supabase.
+     Loads item templates and nested field schemas from Supabase.
      ------------------------------------------------------------------------ */
   async function fetchTemplates() {
     try {
@@ -72,86 +71,26 @@ export default function TemplateManagerModal({
     }
   }, [isOpen]);
 
-  if (!isOpen || !collectionId) return null;
+  if (!isOpen) return null;
 
   const selectedTemplate = templates.find((t) => t.id === selectedTemplateId) || null;
 
   /* ------------------------------------------------------------------------
-     2.2 TEMPLATE APPLICATION HANDLERS
+     2.2 CREATE CUSTOM MASTER ITEM TEMPLATE
      ------------------------------------------------------------------------ */
-  const handleApplyTemplate = async (mode: 'replace' | 'append') => {
-    if (!selectedTemplate || !selectedTemplate.fields || !collectionId) return;
-
-    setApplying(true);
-    setError(null);
-    setSuccessMsg(null);
-
-    try {
-      if (mode === 'replace') {
-        const { error: delError } = await supabase
-          .from('collection_fields')
-          .delete()
-          .eq('collection_id', collectionId);
-
-        if (delError) throw delError;
-      }
-
-      const fieldsToInsert = selectedTemplate.fields.map((f, idx) => ({
-        collection_id: collectionId,
-        name: f.name,
-        label: f.label,
-        field_type: f.field_type,
-        options: f.options || [],
-        is_required: f.is_required,
-        display_order: idx + 1,
-      }));
-
-      if (fieldsToInsert.length > 0) {
-        const { error: insertError } = await supabase
-          .from('collection_fields')
-          .insert(fieldsToInsert);
-
-        if (insertError) throw insertError;
-      }
-
-      setSuccessMsg(`Successfully applied "${selectedTemplate.name}" template!`);
-      onTemplateApplied();
-    } catch (err: any) {
-      console.error('Apply template error:', err);
-      setError(err?.message || 'Failed to apply template');
-    } finally {
-      setApplying(false);
-    }
-  };
-
-  /* ------------------------------------------------------------------------
-     2.3 EXPORT CUSTOM SCHEMA TO MASTER TEMPLATE
-     ------------------------------------------------------------------------ */
-  const handleSaveCurrentAsTemplate = async (e: React.FormEvent) => {
+  const handleCreateTemplate = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newTemplateName.trim() || !collectionId) return;
+    if (!newTemplateName.trim()) return;
 
     setSavingCustom(true);
     setError(null);
 
     try {
-      const { data: currentFields, error: fieldFetchErr } = await supabase
-        .from('collection_fields')
-        .select('*')
-        .eq('collection_id', collectionId)
-        .order('display_order', { ascending: true });
-
-      if (fieldFetchErr) throw fieldFetchErr;
-
-      if (!currentFields || currentFields.length === 0) {
-        throw new Error('This collection has no custom fields to save into a template.');
-      }
-
       const { data: createdTemplate, error: tmplCreateErr } = await supabase
-        .from('collection_templates')
+        .from('item_templates')
         .insert({
           name: newTemplateName.trim(),
-          description: `Custom template exported from "${collectionName}"`,
+          description: newTemplateDesc.trim() || 'Custom item blueprint',
           icon: newTemplateIcon || '📦',
           is_system_preset: false,
         })
@@ -160,27 +99,13 @@ export default function TemplateManagerModal({
 
       if (tmplCreateErr) throw tmplCreateErr;
 
-      const templateFieldsToInsert = currentFields.map((f, idx) => ({
-        template_id: createdTemplate.id,
-        name: f.name,
-        label: f.label,
-        field_type: f.field_type,
-        options: f.options || [],
-        is_required: f.is_required,
-        display_order: idx + 1,
-      }));
-
-      const { error: tmplFieldsErr } = await supabase
-        .from('template_fields')
-        .insert(templateFieldsToInsert);
-
-      if (tmplFieldsErr) throw tmplFieldsErr;
-
       setSuccessMsg(`Template "${createdTemplate.name}" created successfully!`);
       setShowSaveAsCustom(false);
       setNewTemplateName('');
+      setNewTemplateDesc('');
       await fetchTemplates();
       setSelectedTemplateId(createdTemplate.id);
+      if (onTemplateApplied) onTemplateApplied();
     } catch (err: any) {
       console.error('Save template error:', err);
       setError(err?.message || 'Failed to save template');
@@ -190,7 +115,7 @@ export default function TemplateManagerModal({
   };
 
   /* ------------------------------------------------------------------------
-     2.4 COMPONENT RENDER
+     2.3 COMPONENT RENDER
      ------------------------------------------------------------------------ */
   return (
     <div className="field-modal-backdrop">
@@ -200,10 +125,11 @@ export default function TemplateManagerModal({
           <div>
             <div className="flex items-center gap-2">
               <span className="text-xl">📑</span>
-              <h2 className="text-base font-bold ui-primary">Collection Schema Templates</h2>
+              <h2 className="text-base font-bold ui-primary">Item Schema Templates</h2>
             </div>
             <p className="text-xs ui-muted mt-0.5">
-              Select a pre-built template or apply saved schemas to <strong className="ui-accent">{collectionName}</strong>
+              Browse pre-built item blueprints and dynamic attribute definitions
+              {collectionName ? <> for <strong className="ui-accent">{collectionName}</strong></> : ''}
             </p>
           </div>
           <button
@@ -225,11 +151,11 @@ export default function TemplateManagerModal({
             </div>
           )}
 
-          {/* Save Custom Schema Form */}
+          {/* Create Custom Item Template Form */}
           {showSaveAsCustom ? (
-            <form onSubmit={handleSaveCurrentAsTemplate} className="field-modal-form">
+            <form onSubmit={handleCreateTemplate} className="field-modal-form">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold ui-accent">Save Collection Schema as Reusable Template</span>
+                <span className="text-xs font-bold ui-accent">Add New Item Template</span>
                 <button
                   type="button"
                   onClick={() => setShowSaveAsCustom(false)}
@@ -245,7 +171,7 @@ export default function TemplateManagerModal({
                   <input
                     type="text"
                     required
-                    placeholder="e.g. My Custom Miniature Game Template"
+                    placeholder="e.g. Vinyl Records & Audio Media"
                     value={newTemplateName}
                     onChange={(e) => setNewTemplateName(e.target.value)}
                     className="field-modal-input"
@@ -262,6 +188,17 @@ export default function TemplateManagerModal({
                 </div>
               </div>
 
+              <div className="space-y-1">
+                <label className="text-[11px] font-semibold ui-secondary">Description</label>
+                <input
+                  type="text"
+                  placeholder="e.g. Albums, LPs, singles, pressing editions, and matrices"
+                  value={newTemplateDesc}
+                  onChange={(e) => setNewTemplateDesc(e.target.value)}
+                  className="field-modal-input"
+                />
+              </div>
+
               <div className="flex justify-end gap-2 pt-1">
                 <button
                   type="button"
@@ -275,7 +212,7 @@ export default function TemplateManagerModal({
                   disabled={savingCustom}
                   className="content-btn-primary"
                 >
-                  {savingCustom ? 'Saving...' : 'Save Template'}
+                  {savingCustom ? 'Saving...' : 'Create Template'}
                 </button>
               </div>
             </form>
@@ -284,10 +221,10 @@ export default function TemplateManagerModal({
               <button
                 type="button"
                 onClick={() => setShowSaveAsCustom(true)}
-                  className="text-xs font-semibold ui-accent ui-hover-primary flex items-center gap-1.5 ui-surface-hover ui-border-subtle px-3 py-1.5 rounded-xl transition cursor-pointer"
+                className="text-xs font-semibold ui-accent ui-hover-primary flex items-center gap-1.5 ui-surface-hover ui-border-subtle px-3 py-1.5 rounded-xl transition cursor-pointer"
               >
-                <span>💾</span>
-                <span>Save Current Schema as New Template</span>
+                <span>✨</span>
+                <span>Add Custom Item Template</span>
               </button>
             </div>
           )}
@@ -297,7 +234,7 @@ export default function TemplateManagerModal({
             {/* Left Templates List */}
             <div className="md:col-span-1 space-y-2 max-h-80 overflow-y-auto pr-1 main-content-scroll">
               <span className="text-[11px] font-bold ui-muted uppercase tracking-wider block mb-2">
-                Available Templates
+                Available Item Templates
               </span>
 
               {loading ? (
@@ -326,7 +263,7 @@ export default function TemplateManagerModal({
               )}
             </div>
 
-            {/* Right Inspection & Apply Panel */}
+            {/* Right Inspection Panel */}
             <div className="md:col-span-2 field-modal-form justify-between">
               {selectedTemplate ? (
                 <div className="space-y-4">
@@ -347,54 +284,45 @@ export default function TemplateManagerModal({
 
                   {/* Field Specs Preview */}
                   <div className="space-y-1.5 max-h-52 overflow-y-auto pr-1 main-content-scroll">
-                    {(selectedTemplate.fields || []).map((f) => (
-                      <div
-                        key={f.id}
-                        className="ui-input rounded-lg p-2.5 flex items-center justify-between text-xs"
-                      >
-                        <div className="flex items-center gap-2">
-                          <span className="ui-primary font-medium">{f.label}</span>
-                          <span className="text-[10px] font-mono ui-muted ui-surface px-1.5 py-0.5 rounded ui-border-subtle border">
-                            {f.name}
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <span className="text-[10px] font-mono ui-accent ui-surface px-1.5 py-0.5 rounded ui-border-subtle border">
-                            {f.field_type}
-                          </span>
-                          {f.is_required && (
-                            <span className="field-modal-badge-required">
-                              Req
-                            </span>
-                          )}
-                        </div>
+                    {(selectedTemplate.fields || []).length === 0 ? (
+                      <div className="p-4 text-xs ui-muted text-center italic">
+                        No specific schema fields defined for this blueprint yet.
                       </div>
-                    ))}
+                    ) : (
+                      (selectedTemplate.fields || []).map((f) => (
+                        <div
+                          key={f.id}
+                          className="ui-input rounded-lg p-2.5 flex items-center justify-between text-xs"
+                        >
+                          <div className="flex items-center gap-2">
+                            <span className="ui-primary font-medium">{f.label}</span>
+                            <span className="text-[10px] font-mono ui-muted ui-surface px-1.5 py-0.5 rounded ui-border-subtle border">
+                              {f.name}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className="text-[10px] font-mono ui-accent ui-surface px-1.5 py-0.5 rounded ui-border-subtle border">
+                              {f.field_type}
+                            </span>
+                            {f.is_required && (
+                              <span className="field-modal-badge-required">
+                                Req
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      ))
+                    )}
                   </div>
 
-                  {/* Apply Actions */}
+                  {/* Schema Context Info */}
                   <div className="pt-3 ui-border-top-subtle border-t flex items-center justify-between">
-                    <span className="text-[11px] ui-muted">Apply fields to active collection:</span>
-                    <div className="flex gap-2">
-                      <button
-                        type="button"
-                        onClick={() => handleApplyTemplate('replace')}
-                        disabled={applying}
-                        className="content-btn-danger"
-                        title="Replaces active collection fields with this template"
-                      >
-                        {applying ? 'Applying...' : 'Replace Schema'}
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => handleApplyTemplate('append')}
-                        disabled={applying}
-                        className="content-btn-primary"
-                        title="Appends this template fields to existing collection fields"
-                      >
-                        {applying ? 'Applying...' : 'Apply / Merge'}
-                      </button>
-                    </div>
+                    <span className="text-[11px] ui-muted">
+                      Assigned to items directly during creation or editing.
+                    </span>
+                    <span className="text-[10px] font-semibold ui-accent px-2 py-1 rounded bg-blue-500/10 border border-blue-500/20">
+                      Item Blueprint
+                    </span>
                   </div>
                 </div>
               ) : (

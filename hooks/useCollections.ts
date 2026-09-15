@@ -11,7 +11,7 @@ import {
   buildFilteredUnifiedForest,
 } from '@/lib/explorerUtils';
 import { UniversalSearchResultItem } from '@/app/page';
-import { CollectionTemplate } from '@/types/template';
+import { ItemTemplate } from '@/types/template';
 
 /* ==========================================================================
    CUSTOM HOOK: useCollections
@@ -25,7 +25,7 @@ export function useCollections() {
      ------------------------------------------------------------------------ */
   const [allCollections, setAllCollections] = useState<CollectionRecord[]>([]);
   const [allItems, setAllItems] = useState<ItemRecord[]>([]);
-  const [templates, setTemplates] = useState<CollectionTemplate[]>([]);
+  const [templates, setTemplates] = useState<ItemTemplate[]>([]);
 
   /* ------------------------------------------------------------------------
      2. ACTIVE SELECTION STATE
@@ -43,8 +43,9 @@ export function useCollections() {
 
   /* ------------------------------------------------------------------------
      4. UI FEEDBACK STATE
+     Tracks loading and error states during async remote Supabase mutations.
      ------------------------------------------------------------------------ */
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   /* ==========================================================================
@@ -60,23 +61,42 @@ export function useCollections() {
         setLoading(true);
         setError(null);
 
-        const [colsRes, itemsRes, tmplsRes] = await Promise.all([
+        const [colsRes, itemsRes, tmplsRes, itemColsRes] = await Promise.all([
           supabase.from('collections').select('*').order('id', { ascending: true }),
           supabase.from('items').select('*').order('id', { ascending: true }),
-          supabase.from('collection_templates').select('*').order('id', { ascending: true }),
+          supabase.from('item_templates').select('*').order('id', { ascending: true }),
+          supabase.from('item_collections').select('*'),
         ]);
 
         if (colsRes.error) throw colsRes.error;
         if (itemsRes.error) throw itemsRes.error;
         if (tmplsRes.error) throw tmplsRes.error;
+        if (itemColsRes.error) throw itemColsRes.error;
+
+        const itemCollectionsMap = new Map<number, number[]>();
+        ((itemColsRes.data as { item_id: number; collection_id: number }[]) || []).forEach(
+          ({ item_id, collection_id }) => {
+            if (!itemCollectionsMap.has(item_id)) itemCollectionsMap.set(item_id, []);
+            itemCollectionsMap.get(item_id)!.push(collection_id);
+          }
+        );
 
         const fetchedCollections = (colsRes.data as CollectionRecord[]) || [];
-        const fetchedItems = (itemsRes.data as ItemRecord[]) || [];
-        const fetchedTemplates = (tmplsRes.data as CollectionTemplate[]) || [];
+        const rawItems = (itemsRes.data as ItemRecord[]) || [];
+        const fetchedItems: ItemRecord[] = rawItems.map((it) => {
+          const colIds = itemCollectionsMap.get(it.id) || [];
+          return {
+            ...it,
+            collection_ids: colIds,
+            collection_id: colIds.length > 0 ? colIds[0] : null,
+          };
+        });
+        const fetchedTemplates = (tmplsRes.data as ItemTemplate[]) || [];
 
         setAllCollections(fetchedCollections);
         setAllItems(fetchedItems);
         setTemplates(fetchedTemplates);
+
 
         // Auto-resolve active collection pointer using fresh data
         if (fetchedCollections.length > 0) {
@@ -134,7 +154,13 @@ export function useCollections() {
         .map((it) => ({
           ...it,
           collection_name:
-            allCollections.find((c) => c.id === it.collection_id)?.name || 'Standalone Item',
+            it.collection_ids && it.collection_ids.length > 0
+              ? it.collection_ids
+                  .map((id) => allCollections.find((c) => c.id === id)?.name)
+                  .filter(Boolean)
+                  .join(', ')
+              : allCollections.find((c) => c.id === it.collection_id)?.name || 'Standalone Item',
+
         }));
       setUniversalResults(matches);
     } else {

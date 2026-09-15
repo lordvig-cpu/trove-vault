@@ -1,16 +1,16 @@
 import { supabase } from '@/lib/supabase';
-import { CollectionTemplate } from '@/types/template';
+import { ItemTemplate } from '@/types/template';
 
-export async function fetchTemplateCatalog(): Promise<CollectionTemplate[]> {
+export async function fetchTemplateCatalog(): Promise<ItemTemplate[]> {
   const [{ data: templates, error: templateError }, { data: fields, error: fieldError }] =
     await Promise.all([
       supabase
-        .from('collection_templates')
+        .from('item_templates')
         .select('*')
         .order('is_system_preset', { ascending: false })
         .order('id', { ascending: true }),
       supabase
-        .from('template_fields')
+        .from('item_template_fields')
         .select('*')
         .order('display_order', { ascending: true }),
     ]);
@@ -23,3 +23,4 @@ export async function fetchTemplateCatalog(): Promise<CollectionTemplate[]> {
     fields: (fields || []).filter((field) => field.template_id === template.id),
   }));
 }
+

@@ -1,13 +1,14 @@
 /* ==========================================================================
    TYPE DEFINITIONS: FieldDefinition
    Defines schema attributes mapped to JSONB custom attributes across
-   collections, standalone items, and templates.
+   items and item templates.
    ========================================================================== */
 
 export type FieldType = 'text' | 'number' | 'boolean' | 'select' | 'date';
 
 export interface FieldDefinition {
   id: number;
+  template_id?: number | null;
   collection_id?: number | null;
   name: string;
   label: string;
