@@ -106,7 +106,7 @@ export default function LeftSidePanel({
   );
 
   const transitionClass = (!isDragging && animationsEnabled && isHydrated)
-    ? 'transition-[transform,opacity] duration-500 ease-out'
+    ? 'transition-[width,transform,opacity] duration-500 ease-in-out'
     : 'transition-none';
 
   const handlePinAction = () => (onTogglePin ? onTogglePin() : togglePin());

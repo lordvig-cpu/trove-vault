@@ -118,7 +118,7 @@
   height: 2.5px;
   background-color: var(--nav-header-tab-indicator);
   border-radius: 9999px;
-  box-shadow: 0 0 6px rgba(245, 158, 11, 0.45);
+  box-shadow: 0 0 6px var(--nav-header-tab-indicator, rgba(248, 188, 9, 0.45));
   pointer-events: none;
   z-index: 10;
 }
@@ -161,7 +161,7 @@
   margin-top: 11px;
   width: 22rem; /* w-88 (352px) */
   max-height: 75vh;
-  background-color: var(--nav-header-flyout-bg);
+  background: var(--explorer-panel-bg, var(--nav-header-flyout-bg));
   border: 1px solid var(--nav-header-flyout-border);
   border-radius: 0.75rem;
   border-top-left-radius: 0;
@@ -173,6 +173,47 @@
   gap: 0.5rem;
   will-change: transform, opacity;
   backface-visibility: hidden;
+  overflow: hidden;
+}
+
+/* Downward flare highlight */
+.nav-flyout-menu::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  background: var(--explorer-panel-flare-bg,
+    radial-gradient(ellipse 140% 120% at 50% -25%,
+      rgba(0, 180, 255, 0.22) 0%,
+      rgba(0, 110, 220, 0.10) 45%,
+      transparent 75%));
+  mix-blend-mode: var(--explorer-panel-flare-blend, normal);
+  opacity: var(--explorer-panel-flare-opacity, 0);
+  border-radius: inherit;
+}
+
+/* Procedural surface texture overlay */
+.nav-flyout-menu::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  background: var(--explorer-panel-texture-bg,
+    repeating-linear-gradient(90deg,
+      rgba(255, 255, 255, 0.012) 0px,
+      rgba(255, 255, 255, 0.012) 1px,
+      transparent 1px,
+      transparent 3px,
+      rgba(0, 0, 0, 0.02) 3px,
+      rgba(0, 0, 0, 0.02) 4px,
+      transparent 4px,
+      transparent 6px));
+  filter: var(--explorer-panel-texture-filter, url("#navigationBarTexture"));
+  opacity: var(--explorer-panel-texture-opacity, 0.11);
+  mix-blend-mode: var(--explorer-panel-texture-blend, overlay);
+  border-radius: inherit;
 }
 
 /* --------------------------------------------------------------------------

@@ -71,7 +71,7 @@ export default function RightPanel({
 
   // Temporarily disable CSS width transitions during active drag for zero input latency
   const transitionClass = (!isDragging && animationsEnabled)
-    ? 'transition-[transform,opacity] duration-500 ease-out' 
+    ? 'transition-[width,transform,opacity] duration-500 ease-in-out' 
     : 'transition-none';
 
   return (

@@ -110,9 +110,9 @@ export default function LeftSidePanelHeader({
             title={isPinned ? 'Unpin LeftSidePanel' : 'Pin LeftSidePanel'}
           >
             {variant === 'flyout' || !isPinned ? (
-              <PinOutlineIcon className="w-3.5 h-3.5 text-content-muted group-hover:text-white" />
+              <PinOutlineIcon className="w-3.5 h-3.5 text-[var(--explorer-action-icon,rgba(109,170,209,0.85))] group-hover:text-white" />
             ) : (
-              <PinFilledIcon className="w-3.5 h-3.5 text-content-primary" />
+              <PinFilledIcon className="w-3.5 h-3.5 text-[var(--explorer-action-icon,rgba(109,170,209,0.85))] group-hover:text-white" />
             )}
           </button>
 
@@ -123,7 +123,7 @@ export default function LeftSidePanelHeader({
               className="left-side-panel-pin-btn group"
               title="Close Explorer"
             >
-              <span className="inline-block origin-center transition-all duration-200 ease-out group-hover:scale-115 text-xs text-content-muted group-hover:text-white px-1 select-none">
+              <span className="inline-block origin-center transition-all duration-200 ease-out group-hover:scale-115 text-xs text-[var(--explorer-action-icon,rgba(109,170,209,0.85))] group-hover:text-white px-1 select-none">
                 ✕
               </span>
             </button>
@@ -215,11 +215,11 @@ export default function LeftSidePanelHeader({
           title="Advanced Search & Filters"
         >
           <SlidersHorizontalIcon
-            className="w-3.5 h-3.5"
-            isActive={showAdvancedSearch || isFilterActive}
+            className="w-3.5 h-3.5 text-[var(--brand-secondary-amber)]"
+            isActive={true}
           />
           {isFilterActive && !showAdvancedSearch && (
-            <span className="absolute top-1 right-1 w-1.5 h-1.5 rounded-full explorer-panel-accent animate-pulse" />
+            <span className="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-[var(--brand-secondary-amber)] animate-pulse" />
           )}
         </button>
       </div>
@@ -312,9 +312,17 @@ export default function LeftSidePanelHeader({
               viewBox="0 0 100 28"
               preserveAspectRatio="none"
             >
+              <defs>
+                <linearGradient id="explorerTabActiveGradient-items" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="var(--explorer-tab-active-top, #125e9e)" className="tab-grad-top" />
+                  <stop offset="45%" stopColor="var(--explorer-tab-active-mid, #0a4070)" className="tab-grad-mid" />
+                  <stop offset="100%" stopColor="var(--explorer-tab-active-bottom, #052446)" className="tab-grad-bottom" />
+                </linearGradient>
+              </defs>
               <path
                 d="M 0,28 L 8,3 C 9,1 11,0 14,0 L 86,0 C 89,0 91,1 92,3 L 100,28 Z"
                 className="explorer-tab-svg-fill"
+                style={activeTab === 'items' ? { fill: 'url(#explorerTabActiveGradient-items)' } : undefined}
               />
               <path
                 d="M 0,28 L 8,3 C 9,1 11,0 14,0 L 86,0 C 89,0 91,1 92,3 L 100,28"
@@ -345,9 +353,17 @@ export default function LeftSidePanelHeader({
               viewBox="0 0 100 28"
               preserveAspectRatio="none"
             >
+              <defs>
+                <linearGradient id="explorerTabActiveGradient-collections" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="var(--explorer-tab-active-top, #125e9e)" className="tab-grad-top" />
+                  <stop offset="45%" stopColor="var(--explorer-tab-active-mid, #0a4070)" className="tab-grad-mid" />
+                  <stop offset="100%" stopColor="var(--explorer-tab-active-bottom, #052446)" className="tab-grad-bottom" />
+                </linearGradient>
+              </defs>
               <path
                 d="M 0,28 L 8,3 C 9,1 11,0 14,0 L 86,0 C 89,0 91,1 92,3 L 100,28 Z"
                 className="explorer-tab-svg-fill"
+                style={activeTab === 'collections' ? { fill: 'url(#explorerTabActiveGradient-collections)' } : undefined}
               />
               <path
                 d="M 0,28 L 8,3 C 9,1 11,0 14,0 L 86,0 C 89,0 91,1 92,3 L 100,28"
@@ -373,7 +389,7 @@ export default function LeftSidePanelHeader({
                 title="Create New Collection"
               >
                 <svg
-                  className="w-3 h-3 origin-center transition-all duration-200 ease-out group-hover:scale-115 text-content-muted group-hover:text-white"
+                  className="w-3 h-3 origin-center transition-all duration-200 ease-out group-hover:scale-115 text-[var(--explorer-action-icon,rgba(109,170,209,0.85))] group-hover:text-white"
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
@@ -395,7 +411,7 @@ export default function LeftSidePanelHeader({
                 title="Create New Item"
               >
                 <svg
-                  className="w-3 h-3 origin-center transition-all duration-200 ease-out group-hover:scale-115 text-content-muted group-hover:text-white"
+                  className="w-3 h-3 origin-center transition-all duration-200 ease-out group-hover:scale-115 text-[var(--explorer-action-icon,rgba(109,170,209,0.85))] group-hover:text-white"
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
@@ -426,9 +442,9 @@ export default function LeftSidePanelHeader({
               }
             >
               {activeIsExpanded ? (
-                <FolderCollapseIcon className="w-3.5 h-3.5 text-content-muted group-hover:text-white" />
+                <FolderCollapseIcon className="w-3.5 h-3.5 text-[var(--explorer-action-icon,rgba(109,170,209,0.85))] group-hover:text-white" />
               ) : (
-                <FolderExpandIcon className="w-3.5 h-3.5 text-content-muted group-hover:text-white" />
+                <FolderExpandIcon className="w-3.5 h-3.5 text-[var(--explorer-action-icon,rgba(109,170,209,0.85))] group-hover:text-white" />
               )}
             </button>
           )}
@@ -447,7 +463,7 @@ export default function LeftSidePanelHeader({
         triggerRef={triggerBtnRef}
         title="Advanced Search"
         titleIcon={
-          <SlidersHorizontalIcon className="w-3.5 h-3.5 explorer-panel-accent" isActive={true} />
+          <SlidersHorizontalIcon className="w-3.5 h-3.5 text-[var(--brand-secondary-amber)]" isActive={true} />
         }
       >
         <div className="flex flex-col gap-1.5 px-1 py-1">

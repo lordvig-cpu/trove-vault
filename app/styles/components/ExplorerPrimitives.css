@@ -15,9 +15,19 @@
 
 .explorer-filter-checkbox {
   background-color: var(--panel-surface-bg);
-  border-color: var(--panel-border-strong);
+  border: 1px solid var(--explorer-search-input-border, rgba(0, 160, 255, 0.58));
   color: var(--brand-secondary-amber);
-  box-shadow: 0 0 0 1px var(--panel-border-subtle);
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+}
+
+.explorer-filter-checkbox:hover {
+  border-color: var(--explorer-input-border-hover, rgba(0, 190, 255, 0.80));
+}
+
+.explorer-filter-checkbox:focus {
+  outline: none;
+  border-color: var(--brand-secondary-amber);
+  box-shadow: 0 0 4px var(--explorer-input-focus-glow, rgba(248, 188, 9, 0.25));
 }
 
 .explorer-filter-branch {
@@ -25,12 +35,12 @@
 }
 
 .explorer-tree-item {
-  color: var(--text-muted);
+  color: var(--explorer-item-text, rgba(167, 190, 212, 0.95));
 }
 
 .explorer-tree-item:hover {
   background-color: var(--explorer-item-hover-bg);
-  color: var(--text-secondary);
+  color: var(--explorer-item-text-hover, rgba(240, 249, 255, 1.00));
 }
 
 .explorer-tree-item-selected {
@@ -44,7 +54,7 @@
 }
 
 .explorer-tree-muted {
-  color: var(--text-muted);
+  color: var(--explorer-tree-muted, rgba(105, 147, 185, 0.75));
 }
 
 .explorer-tree-primary {
@@ -52,7 +62,7 @@
 }
 
 .explorer-tree-secondary {
-  color: var(--text-secondary);
+  color: var(--explorer-item-text, rgba(167, 190, 212, 0.95));
 }
 
 .explorer-tree-gear-open {
@@ -60,7 +70,7 @@
 }
 
 .explorer-tree-gear-closed {
-  color: var(--text-muted);
+  color: var(--explorer-tree-muted, rgba(105, 147, 185, 0.75));
 }
 
 .explorer-category-row {
@@ -82,7 +92,7 @@
 }
 
 .explorer-panel-muted {
-  color: var(--text-muted);
+  color: var(--explorer-title-text, rgba(138, 194, 235, 0.95));
 }
 
 .explorer-panel-primary {
@@ -99,17 +109,22 @@
 
 .explorer-panel-control {
   color: var(--text-muted);
+  background-color: var(--explorer-control-bg, rgba(4, 24, 56, 0.75));
+  border: 1px solid var(--explorer-search-input-border, rgba(0, 160, 255, 0.58));
+  transition: border-color 150ms ease, background-color 150ms ease, color 150ms ease, box-shadow 150ms ease;
 }
 
 .explorer-panel-control:hover {
   color: var(--text-primary);
   background-color: var(--card-surface-hover);
+  border-color: var(--explorer-input-border-hover, rgba(0, 190, 255, 0.80));
 }
 
 .explorer-panel-control-active {
   color: var(--brand-secondary-amber);
-  background-color: var(--explorer-item-active-bg);
-  border-color: var(--explorer-item-active-border);
+  background-color: var(--explorer-control-bg, rgba(6, 28, 64, 0.85));
+  border-color: var(--brand-secondary-amber);
+  box-shadow: 0 0 4px var(--explorer-input-focus-glow, rgba(248, 188, 9, 0.25));
 }
 
 .explorer-panel-disabled:disabled {
@@ -176,23 +191,26 @@
 }
 
 .explorer-category-count {
-  background-color: var(--card-surface-hover);
-  border: 1px solid var(--panel-border-subtle);
-  color: var(--brand-secondary-amber);
+  background-color: var(--explorer-category-badge-bg, rgba(2, 14, 36, 0.90));
+  border: 1px solid var(--explorer-category-badge-border, rgba(0, 140, 255, 0.40));
+  color: var(--explorer-category-badge-text, var(--brand-secondary-amber));
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
 }
 
 .explorer-tree-badge {
-  background-color: var(--card-surface-hover);
-  border: 1px solid var(--panel-border-subtle);
-  color: var(--brand-secondary-amber);
+  background-color: var(--explorer-category-badge-bg, rgba(2, 14, 36, 0.90));
+  border: 1px solid var(--explorer-category-badge-border, rgba(0, 140, 255, 0.40));
+  color: var(--explorer-category-badge-text, var(--brand-secondary-amber));
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+  font-weight: 700;
 }
 
 .explorer-tree-action-icon {
-  color: var(--text-muted);
+  color: var(--explorer-action-icon, rgba(109, 170, 209, 0.85));
 }
 
 .explorer-tree-branch {
-  border-color: var(--panel-border-subtle);
+  border-color: var(--explorer-tree-branch, rgba(0, 180, 255, 0.30));
 }
 
 .explorer-filter-checkbox-hidden {

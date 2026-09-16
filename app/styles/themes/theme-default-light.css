@@ -214,29 +214,87 @@ Organized 1-to-1 with component stylesheets in styles/components/
     --explorer-menu-danger-hover-bg: rgba(254, 226, 226, 0.90);
     --explorer-menu-danger-hover-text: rgba(159, 18, 57, 1.00);
 
+    /* Explorer Panel Surface, Flare & Texture */
+    --explorer-panel-bg: var(--panel-surface-bg);
+    --explorer-panel-border: var(--panel-border-strong);
+    --explorer-panel-flare-bg:
+      radial-gradient(ellipse 140% 120% at 50% -25%,
+        rgba(14, 165, 233, 0.10) 0%,
+        transparent 75%);
+    --explorer-panel-flare-blend: multiply;
+    --explorer-panel-flare-opacity: 0.50;
+
+    --explorer-panel-texture-bg:
+      repeating-linear-gradient(90deg,
+        rgba(0, 0, 0, 0.01) 0px,
+        rgba(0, 0, 0, 0.01) 1px,
+        transparent 1px,
+        transparent 3px,
+        rgba(255, 255, 255, 0.02) 3px,
+        rgba(255, 255, 255, 0.02) 4px,
+        transparent 4px,
+        transparent 6px);
+    --explorer-panel-texture-filter: url("#navigationBarTexture");
+    --explorer-panel-texture-opacity: 0.08;
+    --explorer-panel-texture-blend: overlay;
+
     /* Sticky Tree Header Tokens */
     --explorer-sticky-category-bg: rgba(248, 250, 252, 0.96);
     --explorer-sticky-category-border: var(--panel-border-subtle);
     --explorer-sticky-shadow: 0 4px 10px -2px rgba(15, 23, 42, 0.08);
 
+    /* Category Row Glass Cards & Count Badges */
+    --explorer-category-card-bg: rgba(241, 245, 249, 0.85);
+    --explorer-category-card-border: var(--panel-border-subtle);
+    --explorer-category-card-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.60);
+    --explorer-category-card-hover-bg: rgba(226, 232, 240, 0.95);
+    --explorer-category-card-hover-border: var(--panel-border-strong);
+    --explorer-category-card-active-bg: rgba(254, 243, 199, 0.90);
+    --explorer-category-card-active-border: var(--brand-secondary-amber);
+
+    --explorer-category-badge-bg: rgba(226, 232, 240, 0.90);
+    --explorer-category-badge-border: var(--panel-border-subtle);
+    --explorer-category-badge-text: var(--brand-secondary-amber);
+
+    --explorer-tree-branch: rgba(100, 116, 139, 0.30);
+
     /* Search Bar & Shortcut Badge (LeftSidePanelHeader.tsx) */
     --explorer-search-input-bg: rgba(255, 255, 255, 1.00);
+    --explorer-search-input-border: rgba(2, 132, 199, 0.50);
+    --explorer-input-border-idle: rgba(2, 132, 199, 0.50);
+    --explorer-input-border-hover: rgba(2, 132, 199, 0.80);
+    --explorer-input-focus-glow: rgba(217, 119, 6, 0.25);
+    --explorer-control-bg: rgba(241, 245, 249, 0.80);
     --explorer-kbd-text: rgba(4, 120, 87, 1.00);
     --explorer-kbd-bg: rgba(209, 250, 229, 0.85);
     --explorer-kbd-border: rgba(52, 211, 153, 0.60);
 
+     /* Explorer Panel Typography & Icons */
+     --explorer-title-text: rgba(30, 64, 175, 0.90);
+     --explorer-search-placeholder: rgba(71, 85, 105, 0.80);
+     --explorer-search-icon: rgba(37, 99, 235, 0.80);
+     --explorer-action-icon: rgba(37, 99, 235, 0.80);
+     --explorer-action-icon-hover: rgba(15, 23, 42, 1.00);
+     --explorer-item-text: rgba(51, 65, 85, 0.95);
+     --explorer-item-text-hover: rgba(15, 23, 42, 1.00);
+     --explorer-tree-muted: rgba(100, 116, 139, 0.75);
+
     /* Explorer Folder Tabs (Items & Collections) */
-    --explorer-tab-text-idle: rgba(100, 116, 139, 1.00);
+    --explorer-tab-text-idle: rgba(71, 85, 105, 0.85);
     --explorer-tab-text-hover: rgba(15, 23, 42, 1.00);
     --explorer-tab-text-active: var(--nav-header-tab-indicator);
     --explorer-tab-border-idle: rgba(15, 23, 42, 0.18);
     --explorer-tab-border-hover: rgba(15, 23, 42, 0.35);
     --explorer-tab-border-active: var(--nav-header-tab-indicator);
+    --explorer-tab-glow-active: drop-shadow(4px 1px 5px var(--explorer-tab-shadow-right));
     --explorer-tab-bg-idle: rgba(226, 232, 240, 0.65);
     --explorer-tab-bg-hover: rgba(241, 245, 249, 0.95);
-    --explorer-tab-bg-active: rgba(254, 243, 199, 0.95);
-    --explorer-tab-shadow-right: rgba(15, 23, 42, 0.35);
-    --explorer-tab-baseline: var(--nav-header-tab-indicator);
+     --explorer-tab-bg-active: #fde68a;
+     --explorer-tab-active-top: #fef3c7;
+     --explorer-tab-active-mid: #fde68a;
+     --explorer-tab-active-bottom: #fcd34d;
+     --explorer-tab-shadow-right: rgba(15, 23, 42, 0.35);
+     --explorer-tab-baseline: var(--nav-header-tab-indicator);
     /* #endregion */
 
    /* #region 5. RIGHT SIDE PANEL */
@@ -383,7 +441,7 @@ Organized 1-to-1 with component stylesheets in styles/components/
    /* Menu Rename Form Controls */
    --explorer-menu-rename-input-bg: #ffffff;
    --explorer-menu-rename-input-text: #0f172a;
-   --explorer-menu-rename-input-border: rgba(217, 119, 6, 0.4);
+   --explorer-menu-rename-input-border: var(--explorer-input-border-idle, rgba(2, 132, 199, 0.50));
    --explorer-menu-rename-input-focus: var(--accent-secondary, #d97706);
    --explorer-menu-rename-cancel-text: var(--content-muted, #64748b);
    --explorer-menu-rename-cancel-hover-text: #0f172a;

@@ -8,7 +8,7 @@
    /* Primary Brand Accents */
    --brand-primary: rgba(0, 119, 255, 1.00);
    --brand-primary-hover: rgba(0, 162, 255, 1.00);
-   --brand-secondary-amber: rgba(245, 158, 11, 1.00);
+   --brand-secondary-amber: rgba(248, 188, 9, 1.00);
 
    /* Typography Hierarchy */
    --text-primary: rgba(255, 255, 255, 1.00);
@@ -90,7 +90,7 @@
 
    /* Tab Controls & Indicator Lines */
    --nav-header-accent-line: rgba(0, 160, 255, 0.85);
-   --nav-header-tab-indicator: rgba(245, 158, 11, 1.00);
+   --nav-header-tab-indicator: rgba(248, 188, 9, 1.00);
    --nav-header-tab-baseline: rgba(0, 160, 255, 0.28);
    --nav-header-tab-bg-active:
      linear-gradient(180deg,
@@ -212,7 +212,7 @@
    --nav-footer-btn-text: var(--text-primary);
 
    --nav-footer-moon-color: var(--brand-secondary-amber);
-   --nav-footer-sun-color: rgba(245, 158, 11, 1.00);
+   --nav-footer-sun-color: var(--brand-secondary-amber);
    /* #endregion */
 
    /* #region 3. MAIN CONTENT & STUDIO CANVAS */
@@ -222,8 +222,8 @@
    --studio-grid-bg: rgba(2, 8, 23, 1.00);
    --studio-grid-glow-top-left-core: rgba(0, 130, 255, 0.30);
    --studio-grid-glow-top-left-edge: rgba(0, 80, 220, 0.12);
-   --studio-grid-glow-bottom-right-core: rgba(245, 158, 11, 0.18);
-   --studio-grid-glow-bottom-right-edge: rgba(217, 119, 6, 0.05);
+   --studio-grid-glow-bottom-right-core: rgba(248, 188, 9, 0.18);
+   --studio-grid-glow-bottom-right-edge: rgba(248, 188, 9, 0.05);
    --studio-grid-vignette: rgba(0, 2, 14, 0.60);
    --studio-grid-line: rgba(0, 180, 255, 0.09);
    --studio-grid-cell-size: 32px;
@@ -273,17 +273,46 @@
    --panel-reset-shadow: 4px 0 12px rgba(0, 0, 0, 0.60);
    --panel-shell-shadow: 0 25px 50px rgba(0, 0, 0, 0.50);
 
+   /* Explorer Panel Sapphire Chassis Surface, Flare & Texture (Calibrated to Target Image 2) */
+   --explorer-panel-bg:
+     linear-gradient(180deg,
+       #001836 0%,
+       #002244 10%,
+       #002b52 24%,
+       #002444 42%,
+       #001f3e 60%,
+       #001c3a 80%,
+       #00142b 100%);
+   --explorer-panel-border: var(--panel-border-strong);
+   --explorer-panel-flare-bg: none;
+   --explorer-panel-flare-blend: normal;
+   --explorer-panel-flare-opacity: 0;
+
+   --explorer-panel-texture-bg:
+     repeating-linear-gradient(90deg,
+       rgba(255, 255, 255, 0.012) 0px,
+       rgba(255, 255, 255, 0.012) 1px,
+       transparent 1px,
+       transparent 3px,
+       rgba(0, 0, 0, 0.02) 3px,
+       rgba(0, 0, 0, 0.02) 4px,
+       transparent 4px,
+       transparent 6px);
+   --explorer-panel-texture-filter: url("#navigationBarTexture");
+   --explorer-panel-texture-opacity: 0.11;
+   --explorer-panel-texture-blend: overlay;
+
    --panel-notice-loading-bg: rgba(4, 22, 54, 1.00);
-   --panel-notice-loading-text: rgba(245, 158, 11, 1.00);
+   --panel-notice-loading-text: rgba(248, 188, 9, 1.00);
    --panel-notice-loading-border: rgba(0, 140, 255, 0.30);
    --panel-notice-error-bg: rgba(76, 5, 25, 0.60);
    --panel-notice-error-text: rgba(254, 205, 211, 1.00);
    --panel-notice-error-border: rgba(159, 18, 57, 1.00);
 
    /* Tree Node & Row Active States (Active Node has Golden Amber Box in Image 1) */
-   --explorer-item-hover-bg: rgba(14, 55, 115, 0.70);
-   --explorer-item-active-bg: rgba(245, 158, 11, 0.15);
-   --explorer-item-active-border: rgba(245, 158, 11, 0.90);
+   --explorer-item-hover-bg: rgba(10, 42, 88, 0.70);
+   --explorer-item-active-bg: rgba(248, 188, 9, 0.15);
+   --explorer-item-active-border: rgba(248, 188, 9, 0.90);
 
    /* Hover Action Popup */
    --explorer-menu-bg: var(--popover-surface-bg);
@@ -291,33 +320,81 @@
    --explorer-menu-btn-text: rgba(148, 163, 184, 1.00);
    --explorer-menu-btn-hover-bg: rgba(14, 55, 115, 1.00);
    --explorer-menu-btn-hover-text: rgba(255, 255, 255, 1.00);
-   --explorer-menu-btn-accent-hover: rgba(245, 158, 11, 1.00);
+   --explorer-menu-btn-accent-hover: rgba(248, 188, 9, 1.00);
 
    --explorer-menu-danger-text: rgba(244, 63, 94, 1.00);
    --explorer-menu-danger-hover-bg: rgba(76, 5, 25, 0.45);
    --explorer-menu-danger-hover-text: rgba(251, 113, 133, 1.00);
 
+   /* Category Row Glass Cards & Count Badges (Target Image 2) */
+   --explorer-category-card-bg:
+     linear-gradient(180deg,
+       rgba(4, 28, 62, 0.85) 0%,
+       rgba(1, 18, 44, 0.90) 100%);
+   --explorer-category-card-border: rgba(0, 120, 220, 0.32);
+   --explorer-category-card-shadow:
+     inset 0 1px 0 rgba(255, 255, 255, 0.10),
+     0 2px 8px rgba(0, 0, 0, 0.45);
+   --explorer-category-card-hover-bg:
+     linear-gradient(180deg,
+       rgba(8, 38, 80, 0.90) 0%,
+       rgba(3, 24, 56, 0.95) 100%);
+   --explorer-category-card-hover-border: rgba(0, 160, 240, 0.50);
+   --explorer-category-card-active-bg:
+     linear-gradient(180deg,
+       rgba(12, 45, 95, 0.92) 0%,
+       rgba(6, 28, 66, 0.98) 100%);
+   --explorer-category-card-active-border: rgba(248, 188, 9, 0.85);
+
+   --explorer-category-badge-bg: rgba(1, 12, 30, 0.90);
+   --explorer-category-badge-border: rgba(0, 120, 220, 0.35);
+   --explorer-category-badge-text: rgba(248, 188, 9, 1.00);
+
+   --explorer-tree-branch: rgba(0, 160, 240, 0.28);
+
    --explorer-sticky-category-bg: rgba(4, 22, 54, 0.95);
    --explorer-sticky-category-border: var(--panel-border-subtle);
    --explorer-sticky-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.65);
 
-   --explorer-search-input-bg: rgba(2, 10, 26, 1.00);
+   /* Search Bar & Shortcut Badge (LeftSidePanelHeader.tsx) */
+   --explorer-search-input-bg: rgba(0, 20, 48, 0.88);
+   --explorer-search-input-border: rgba(0, 160, 255, 0.58);
+   --explorer-input-border-idle: rgba(0, 160, 255, 0.58);
+   --explorer-input-border-hover: rgba(0, 190, 255, 0.80);
+   --explorer-input-focus-glow: rgba(248, 188, 9, 0.25);
+   --explorer-control-bg: rgba(4, 24, 56, 0.75);
    --explorer-kbd-text: rgba(52, 211, 153, 1.00);
    --explorer-kbd-bg: rgba(6, 78, 59, 0.80);
    --explorer-kbd-border: rgba(6, 95, 70, 0.60);
 
+   /* Explorer Panel Icy Sky Blue Typography & Icons (Target Image Palette) */
+   --explorer-title-text: rgba(138, 194, 235, 0.95);
+   --explorer-search-placeholder: rgba(105, 147, 185, 0.85);
+   --explorer-search-icon: rgba(122, 189, 228, 0.80);
+   --explorer-action-icon: rgba(109, 170, 209, 0.85);
+   --explorer-action-icon-hover: rgba(255, 255, 255, 1.00);
+   --explorer-item-text: rgba(167, 190, 212, 0.95);
+   --explorer-item-text-hover: rgba(240, 249, 255, 1.00);
+   --explorer-tree-muted: rgba(105, 147, 185, 0.75);
+
    /* Explorer Folder Tabs (Items & Collections) */
-   --explorer-tab-text-idle: rgba(148, 163, 184, 1.00);
-   --explorer-tab-text-hover: rgba(255, 255, 255, 1.00);
-   --explorer-tab-text-active: rgba(251, 191, 36, 1.00);
-   --explorer-tab-border-idle: rgba(0, 140, 255, 0.30);
-   --explorer-tab-border-hover: rgba(0, 180, 255, 0.60);
-   --explorer-tab-border-active: rgba(245, 158, 11, 0.95);
-   --explorer-tab-bg-idle: rgba(3, 14, 36, 0.85);
-   --explorer-tab-bg-hover: rgba(8, 38, 76, 0.95);
-   --explorer-tab-bg-active: rgba(14, 45, 88, 0.98);
+   --explorer-tab-text-idle: rgba(107, 152, 184, 0.90);
+   --explorer-tab-text-hover: rgba(186, 230, 253, 1.00);
+   --explorer-tab-text-active: rgba(248, 188, 9, 1.00);
+   --explorer-tab-border-idle: rgba(0, 100, 190, 0.28);
+   --explorer-tab-border-hover: rgba(0, 160, 240, 0.55);
+   --explorer-tab-border-active: rgba(248, 188, 9, 1.00);
+   --explorer-tab-glow-active:
+     drop-shadow(0 -2px 6px rgba(248, 188, 9, 0.50))
+     drop-shadow(4px 1px 5px rgba(0, 0, 0, 0.75));
+   --explorer-tab-bg-idle: rgba(2, 12, 30, 0.85);
+   --explorer-tab-bg-hover: rgba(6, 28, 60, 0.95);
+   --explorer-tab-bg-active: #0a4070;
+   --explorer-tab-active-top: #125e9e;
+   --explorer-tab-active-mid: #0a4070;
+   --explorer-tab-active-bottom: #052446;
    --explorer-tab-shadow-right: rgba(0, 0, 0, 0.75);
-   --explorer-tab-baseline: rgba(245, 158, 11, 1.00);
+   --explorer-tab-baseline: rgba(248, 188, 9, 1.00);
    /* #endregion */
 
    /* #region 5. RIGHT SIDE PANEL */
@@ -391,30 +468,30 @@
    --tmpl-alert-error-text: rgba(253, 164, 175, 1.00);
    /* #endregion */
 
-   /* #region 7. EXPLORER ACTION MENU & TREE POPPERS (Warm Amber Terminal in Image 1) */
+   /* #region 7. EXPLORER ACTION MENU & TREE POPPERS (Warm Gold Terminal in Image 1) */
    --explorer-menu-shell-bg: linear-gradient(180deg, rgba(46, 24, 6, 0.94) 0%, rgba(20, 11, 3, 0.98) 100%);
-   --explorer-menu-shell-border: rgba(245, 158, 11, 0.95);
+   --explorer-menu-shell-border: rgba(248, 188, 9, 0.95);
 
    --explorer-menu-shell-shadow: 
      20px 0 45px -4px rgba(0, 0, 0, 0.85),
      12px -14px 30px -4px rgba(0, 0, 0, 0.70),
      12px 18px 30px -4px rgba(0, 0, 0, 0.75),
      6px 0 14px -2px rgba(0, 0, 0, 0.80),
-     0 0 32px 0 rgba(245, 158, 11, 0.35),
-     inset 0 0 16px 0 rgba(245, 158, 11, 0.12);
+     0 0 32px 0 rgba(248, 188, 9, 0.35),
+     inset 0 0 16px 0 rgba(248, 188, 9, 0.12);
 
    --explorer-menu-header-bg: rgba(69, 26, 3, 0.95);
-   --explorer-menu-header-border: rgba(245, 158, 11, 0.60);
-   --explorer-menu-header-title: rgba(251, 191, 36, 1.00);
-   --explorer-menu-header-icon: rgba(252, 211, 77, 1.00);
+   --explorer-menu-header-border: rgba(248, 188, 9, 0.60);
+   --explorer-menu-header-title: rgba(248, 188, 9, 1.00);
+   --explorer-menu-header-icon: rgba(248, 188, 9, 1.00);
 
    --explorer-menu-form-bg: rgba(14, 8, 3, 0.95);
    --explorer-menu-input-bg: rgba(6, 4, 1, 1.00);
 
-   --explorer-menu-divider: rgba(245, 158, 11, 0.30);
+   --explorer-menu-divider: rgba(248, 188, 9, 0.30);
 
    --explorer-menu-item-text: #f1f5f9;
-   --explorer-menu-item-hover-bg: rgba(245, 158, 11, 0.20);
+   --explorer-menu-item-hover-bg: rgba(248, 188, 9, 0.20);
    --explorer-menu-item-hover-text: #ffffff;
    --explorer-menu-item-subtext: #cbd5e1;
    --explorer-menu-item-hover-subtext: #ffffff;
@@ -429,13 +506,13 @@
 
    --explorer-menu-rename-input-bg: #060401;
    --explorer-menu-rename-input-text: #ffffff;
-   --explorer-menu-rename-input-border: rgba(245, 158, 11, 0.8);
-   --explorer-menu-rename-input-focus: #f59e0b;
+   --explorer-menu-rename-input-border: var(--explorer-input-border-idle, rgba(0, 160, 255, 0.58));
+   --explorer-menu-rename-input-focus: #F8BC09;
    --explorer-menu-rename-cancel-text: #94a3b8;
    --explorer-menu-rename-cancel-hover-text: #ffffff;
-   --explorer-menu-rename-save-bg: rgba(245, 158, 11, 0.25);
-   --explorer-menu-rename-save-hover-bg: rgba(245, 158, 11, 0.4);
-   --explorer-menu-rename-save-text: #f59e0b;
+   --explorer-menu-rename-save-bg: rgba(248, 188, 9, 0.25);
+   --explorer-menu-rename-save-hover-bg: rgba(248, 188, 9, 0.4);
+   --explorer-menu-rename-save-text: #F8BC09;
 
    --tree-gear-bg-hover: rgba(30, 58, 95, 0.80);
    --tree-gear-icon-active: var(--text-primary);

@@ -231,7 +231,7 @@ export default function NavigationHeader({
                 <span
                   className={`w-2 h-2 rounded-full transition-all ${
                     theme === 'theme-premium-contrast'
-                      ? 'bg-amber-400 shadow-[0_0_8px_#f59e0b]'
+                      ? 'bg-[var(--brand-secondary-amber)] shadow-[0_0_8px_var(--brand-secondary-amber)]'
                       : 'bg-slate-500'
                   }`}
                 />
@@ -272,7 +272,7 @@ export default function NavigationHeader({
                   }`}
                 >
                   <span className="flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-amber-400 shadow-[0_0_6px_#f59e0b]" />
+                    <span className="w-2 h-2 rounded-full bg-[var(--brand-secondary-amber)] shadow-[0_0_6px_var(--brand-secondary-amber)]" />
                     <span>Concept 3 • Premium Contrast</span>
                   </span>
                   {theme === 'theme-premium-contrast' && <span className="text-sky-400 font-bold">✓</span>}

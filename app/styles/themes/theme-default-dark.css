@@ -14,7 +14,7 @@ Organized 1-to-1 with component stylesheets in styles/components/
    /* Primary Brand Accents */
    --brand-primary: rgba(7, 72, 115, 1.00);
    --brand-primary-hover: rgba(0, 130, 210, 1.00);
-   --brand-secondary-amber: rgba(245, 165, 36, 1.00);
+   --brand-secondary-amber: rgba(248, 188, 9, 1.00);
 
    /* Typography Hierarchy */
    --text-primary: rgba(255, 255, 255, 1.00);
@@ -118,7 +118,7 @@ Organized 1-to-1 with component stylesheets in styles/components/
 
    /* Theme Toggle Accent Icons */
    --nav-footer-moon-color: var(--brand-secondary-amber);
-   --nav-footer-sun-color: rgba(245, 158, 11, 1.00);
+   --nav-footer-sun-color: var(--brand-secondary-amber);
    /* #endregion */
 
    /* #region 3. MAIN CONTENT & STUDIO CANVAS */
@@ -190,7 +190,7 @@ Organized 1-to-1 with component stylesheets in styles/components/
 
    /* Feedback & Sync Notice Banners */
    --panel-notice-loading-bg: rgba(4, 22, 40, 1.00);
-   --panel-notice-loading-text: rgba(245, 165, 36, 1.00);
+   --panel-notice-loading-text: rgba(248, 188, 9, 1.00);
    --panel-notice-loading-border: rgba(0, 190, 230, 0.15);
    --panel-notice-error-bg: rgba(76, 5, 25, 0.60);
    --panel-notice-error-text: rgba(254, 205, 211, 1.00);
@@ -207,37 +207,95 @@ Organized 1-to-1 with component stylesheets in styles/components/
    --explorer-menu-btn-text: rgba(110, 143, 174, 1.00);
    --explorer-menu-btn-hover-bg: rgba(10, 53, 85, 1.00);
    --explorer-menu-btn-hover-text: rgba(255, 255, 255, 1.00);
-   --explorer-menu-btn-accent-hover: rgba(245, 165, 36, 1.00);
+   --explorer-menu-btn-accent-hover: rgba(248, 188, 9, 1.00);
 
    /* Action Popup Destructive States */
    --explorer-menu-danger-text: rgba(244, 63, 94, 1.00);
    --explorer-menu-danger-hover-bg: rgba(76, 5, 25, 0.45);
    --explorer-menu-danger-hover-text: rgba(251, 113, 133, 1.00);
 
+   /* Explorer Panel Surface, Flare & Texture */
+   --explorer-panel-bg: var(--panel-surface-bg);
+   --explorer-panel-border: var(--panel-border-strong);
+   --explorer-panel-flare-bg:
+     radial-gradient(ellipse 140% 120% at 50% -25%,
+       rgba(0, 190, 230, 0.15) 0%,
+       transparent 75%);
+   --explorer-panel-flare-blend: screen;
+   --explorer-panel-flare-opacity: 0.70;
+
+   --explorer-panel-texture-bg:
+     repeating-linear-gradient(90deg,
+       rgba(255, 255, 255, 0.015) 0px,
+       rgba(255, 255, 255, 0.015) 1px,
+       transparent 1px,
+       transparent 3px,
+       rgba(0, 0, 0, 0.02) 3px,
+       rgba(0, 0, 0, 0.02) 4px,
+       transparent 4px,
+       transparent 6px);
+   --explorer-panel-texture-filter: url("#navigationBarTexture");
+   --explorer-panel-texture-opacity: 0.12;
+   --explorer-panel-texture-blend: overlay;
+
    /* Sticky Tree Header Tokens */
    --explorer-sticky-category-bg: rgba(4, 22, 40, 0.95);
    --explorer-sticky-category-border: var(--panel-border-subtle);
    --explorer-sticky-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.65);
 
+   /* Category Row Glass Cards & Count Badges */
+   --explorer-category-card-bg: rgba(8, 32, 60, 0.75);
+   --explorer-category-card-border: var(--panel-border-subtle);
+   --explorer-category-card-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+   --explorer-category-card-hover-bg: rgba(12, 44, 82, 0.85);
+   --explorer-category-card-hover-border: var(--panel-border-strong);
+   --explorer-category-card-active-bg: rgba(14, 52, 98, 0.90);
+   --explorer-category-card-active-border: var(--brand-secondary-amber);
+
+   --explorer-category-badge-bg: rgba(2, 12, 28, 0.85);
+   --explorer-category-badge-border: var(--panel-border-subtle);
+   --explorer-category-badge-text: var(--brand-secondary-amber);
+
+   --explorer-tree-branch: rgba(0, 190, 230, 0.25);
+
    /* Search Bar & Shortcut Badge (LeftSidePanelHeader.tsx) */
-   --explorer-search-input-bg: rgba(4, 8, 17, 1.00);
+   --explorer-search-input-bg: rgba(2, 18, 44, 0.90);
+   --explorer-search-input-border: rgba(0, 160, 255, 0.55);
+   --explorer-input-border-idle: rgba(0, 160, 255, 0.55);
+   --explorer-input-border-hover: rgba(0, 190, 255, 0.75);
+   --explorer-input-focus-glow: rgba(248, 188, 9, 0.25);
+   --explorer-control-bg: rgba(4, 24, 56, 0.70);
    --explorer-kbd-text: rgba(52, 211, 153, 1.00);
    --explorer-kbd-bg: rgba(6, 78, 59, 0.80);
    --explorer-kbd-border: rgba(6, 95, 70, 0.60);
 
-    /* Explorer Folder Tabs (Items & Collections) */
-    --explorer-tab-text-idle: rgba(110, 143, 174, 1.00);
-    --explorer-tab-text-hover: rgba(255, 255, 255, 1.00);
-    --explorer-tab-text-active: var(--nav-header-tab-indicator);
-    --explorer-tab-border-idle: rgba(0, 190, 230, 0.20);
-    --explorer-tab-border-hover: rgba(0, 190, 230, 0.45);
-    --explorer-tab-border-active: var(--nav-header-tab-indicator);
-    --explorer-tab-bg-idle: rgba(4, 18, 33, 0.85);
-    --explorer-tab-bg-hover: rgba(8, 38, 66, 0.95);
-    --explorer-tab-bg-active: rgba(14, 42, 72, 0.98);
-    --explorer-tab-shadow-right: rgba(0, 0, 0, 0.75);
-    --explorer-tab-baseline: var(--nav-header-tab-indicator);
-    /* #endregion */
+   /* Explorer Panel Icy Sky Blue Typography & Icons */
+   --explorer-title-text: rgba(138, 194, 235, 0.95);
+   --explorer-search-placeholder: rgba(105, 147, 185, 0.85);
+   --explorer-search-icon: rgba(122, 189, 228, 0.80);
+   --explorer-action-icon: rgba(109, 170, 209, 0.85);
+   --explorer-action-icon-hover: rgba(255, 255, 255, 1.00);
+   --explorer-item-text: rgba(167, 190, 212, 0.95);
+   --explorer-item-text-hover: rgba(240, 249, 255, 1.00);
+   --explorer-tree-muted: rgba(105, 147, 185, 0.75);
+
+   /* Explorer Folder Tabs (Items & Collections) */
+   --explorer-tab-text-idle: rgba(107, 152, 184, 0.90);
+   --explorer-tab-text-hover: rgba(255, 255, 255, 1.00);
+   --explorer-tab-text-active: var(--nav-header-tab-indicator);
+   --explorer-tab-border-idle: rgba(0, 190, 230, 0.20);
+   --explorer-tab-border-hover: rgba(0, 190, 230, 0.45);
+   --explorer-tab-border-active: var(--nav-header-tab-indicator);
+   --explorer-tab-glow-active: drop-shadow(4px 1px 5px var(--explorer-tab-shadow-right));
+   --explorer-tab-bg-idle: rgba(4, 18, 33, 0.85);
+   --explorer-tab-bg-hover: rgba(8, 38, 66, 0.95);
+   --explorer-tab-bg-active: #0a4070;
+   --explorer-tab-active-top: #105994;
+   --explorer-tab-active-mid: #0a3d6d;
+   --explorer-tab-active-bottom: #042244;
+   --explorer-tab-shadow-right: rgba(0, 0, 0, 0.75);
+   --explorer-tab-baseline: var(--nav-header-tab-indicator);
+   /* #endregion */
 
    /* #region 5. RIGHT SIDE PANEL */
    /* ======================================================================
@@ -338,7 +396,7 @@ Organized 1-to-1 with component stylesheets in styles/components/
    ------------------------------------------------------------------------- */
    /* Flyout Shell (ExplorerActionMenu.css) */
    --explorer-menu-shell-bg: rgba(69, 26, 3, 0.80);
-   --explorer-menu-shell-border: rgba(245, 158, 11, 0.40);
+   --explorer-menu-shell-border: rgba(248, 188, 9, 0.40);
 
    /* 3-Sided Elevation Shadow: Top, Right, and Bottom */
    --explorer-menu-shell-shadow: 
@@ -350,25 +408,25 @@ Organized 1-to-1 with component stylesheets in styles/components/
      12px 18px 30px -4px rgba(0, 0, 0, 0.75),
      /* 4. Tight Contact Edge Shadow (Top, Right, Bottom) */
      6px 0 14px -2px rgba(0, 0, 0, 0.80),
-     /* 5. Ambient Warm Amber Glow */
-     0 0 20px 0 rgba(245, 158, 11, 0.18);
+     /* 5. Ambient Warm Gold Glow */
+     0 0 20px 0 rgba(248, 188, 9, 0.18);
 
    /* Header Pill Banner */
    --explorer-menu-header-bg: rgba(78, 39, 7, 1.00);
-   --explorer-menu-header-border: rgba(245, 158, 11, 0.25);
-   --explorer-menu-header-title: rgba(251, 191, 36, 1.00);
-   --explorer-menu-header-icon: rgba(252, 211, 77, 1.00);
+   --explorer-menu-header-border: rgba(248, 188, 9, 0.25);
+   --explorer-menu-header-title: rgba(248, 188, 9, 1.00);
+   --explorer-menu-header-icon: rgba(248, 188, 9, 1.00);
 
    /* Inline Rename / Action Form (ExplorerActionMenu.tsx) */
    --explorer-menu-form-bg: rgba(7, 15, 29, 0.95);
    --explorer-menu-input-bg: rgba(4, 8, 17, 1.00);
 
    /* Action Item Rows & Dividers */
-   --explorer-menu-divider: rgba(245, 158, 11, 0.20);
+   --explorer-menu-divider: rgba(248, 188, 9, 0.20);
 
    /* Menu Item Interactive States */
    --explorer-menu-item-text: var(--content-primary, #e2e8f0);
-   --explorer-menu-item-hover-bg:  rgba(245, 158, 11, 0.15);
+   --explorer-menu-item-hover-bg:  rgba(248, 188, 9, 0.15);
    --explorer-menu-item-hover-text: #ffffff;
    --explorer-menu-item-subtext: var(--content-muted, #94a3b8);
    --explorer-menu-item-hover-subtext: var(--content-secondary, #cbd5e1);
@@ -385,13 +443,13 @@ Organized 1-to-1 with component stylesheets in styles/components/
    /* Menu Rename Form Controls */
    --explorer-menu-rename-input-bg: #040811;
    --explorer-menu-rename-input-text: #ffffff;
-   --explorer-menu-rename-input-border: rgba(245, 158, 11, 0.5);
-   --explorer-menu-rename-input-focus: var(--accent-secondary, #f59e0b);
+   --explorer-menu-rename-input-border: var(--explorer-input-border-idle, rgba(0, 160, 255, 0.55));
+   --explorer-menu-rename-input-focus: var(--accent-secondary, #F8BC09);
    --explorer-menu-rename-cancel-text: var(--content-muted, #94a3b8);
    --explorer-menu-rename-cancel-hover-text: #ffffff;
-   --explorer-menu-rename-save-bg: rgba(245, 158, 11, 0.2);
-   --explorer-menu-rename-save-hover-bg: rgba(245, 158, 11, 0.3);
-   --explorer-menu-rename-save-text: var(--accent-secondary, #f59e0b);
+   --explorer-menu-rename-save-bg: rgba(248, 188, 9, 0.2);
+   --explorer-menu-rename-save-hover-bg: rgba(248, 188, 9, 0.3);
+   --explorer-menu-rename-save-text: var(--accent-secondary, #F8BC09);
    
 /*   --explorer-menu-danger-hover-bg: rgba(244, 63, 94, 0.15);
    --explorer-menu-danger-label: rgba(251, 113, 133, 1.00);

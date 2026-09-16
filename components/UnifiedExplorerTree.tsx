@@ -187,7 +187,7 @@ export default function UnifiedExplorerTree({
         title={`${isVirtualCategory ? 'Category' : 'Collection'}: ${collection.name}`}
         style={{ top: `${stickyTop}px`, zIndex: stickyZIndex }}
         className={[
-          'group flex items-center h-7 px-1.5 gap-1.5 cursor-pointer transition w-full min-w-0 explorer-category-sticky-header',
+          'group flex items-center h-8 px-2 gap-1.5 cursor-pointer transition w-full min-w-0 explorer-category-sticky-header',
           isActiveCollection
             ? 'explorer-category-row-active font-medium'
             : 'explorer-category-row',
@@ -221,7 +221,7 @@ export default function UnifiedExplorerTree({
         {collection.items?.length ? (
           <span
             title={`${collection.items.length} ${collection.items.length === 1 ? 'item' : 'items'}`}
-            className="explorer-tree-badge px-1.5 py-0.2 rounded text-[10px] font-mono shrink-0 select-none"
+            className="explorer-tree-badge px-2 py-0.5 rounded-full text-[10.5px] font-mono shrink-0 select-none"
           >
             {collection.items.length}
           </span>
