@@ -95,7 +95,7 @@ export default function CollectionFilterTree({
               </svg>
             )}
 
-            <span className="text-sm explorer-filter-branch shrink-0 select-none">{node.icon || '📁'}</span>
+            <span className="text-sm explorer-filter-icon shrink-0 select-none">{node.icon || '📁'}</span>
 
             <div className="flex flex-col min-w-0">
               <span className="text-xs font-semibold explorer-panel-primary truncate">{node.name}</span>

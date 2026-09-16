@@ -72,8 +72,8 @@ export default function ExplorerActionMenu({
   // Avoid rendering a portal during SSR or before document.body is available.
   if (!shouldRender || !mounted || typeof document === 'undefined') return null;
 
-  // Pinned menus need a small horizontal correction to clear the sidebar seam.
-  const adjustedLeft = isPinned ? left + 10 : left;
+  // Horizontal correction to clear the sidebar seam while maintaining overlap with the panel
+  const adjustedLeft = isPinned ? left + 25 : left + 15;
 
   const animationClass = !animationsEnabled
     ? 'menuNoAnimation'

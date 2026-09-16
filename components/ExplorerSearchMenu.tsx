@@ -105,13 +105,16 @@ export default function ExplorerSearchMenu({
   ? 'searchMenuSlideOut' 
   : 'searchMenuSlideIn';
 
+  // Horizontal correction to clear the sidebar seam while maintaining overlap with the panel
+  const adjustedLeft = left + 15;
+
   return createPortal(
     <div
       ref={menuRef}
       style={{
         position: 'fixed',
         top: `${top}px`,
-        left: `${left}px`,
+        left: `${adjustedLeft}px`,
         margin: 0,
         zIndex: isPinned ? 30 : 70,
       }}

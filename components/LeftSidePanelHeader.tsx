@@ -378,22 +378,22 @@ export default function LeftSidePanelHeader({
         </div>
 
         {/* Right: Actions Cluster (Contextual Add + Expand/Collapse) */}
-        <div className="flex items-center gap-0.5 shrink-0 h-[26px]">
+        <div className="flex items-center gap-1 shrink-0 mb-1">
           {/* Contextual Add Button */}
           {activeTab === 'collections' ? (
             onAddNewCollection && (
               <button
                 type="button"
                 onClick={onAddNewCollection}
-                className="left-side-panel-pin-btn group"
+                className="explorer-tab-action-btn group"
                 title="Create New Collection"
               >
                 <svg
-                  className="w-3 h-3 origin-center transition-all duration-200 ease-out group-hover:scale-115 text-[var(--explorer-action-icon,rgba(109,170,209,0.85))] group-hover:text-white"
+                  className="w-2.5 h-2.5 origin-center transition-transform duration-150 ease-out group-hover:scale-110 text-[var(--explorer-action-icon,rgba(109,170,209,0.85))] group-hover:text-white"
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
-                  strokeWidth="2.2"
+                  strokeWidth="2.5"
                   strokeLinecap="round"
                   strokeLinejoin="round"
                 >
@@ -407,15 +407,15 @@ export default function LeftSidePanelHeader({
               <button
                 type="button"
                 onClick={onAddNewItem}
-                className="left-side-panel-pin-btn group"
+                className="explorer-tab-action-btn group"
                 title="Create New Item"
               >
                 <svg
-                  className="w-3 h-3 origin-center transition-all duration-200 ease-out group-hover:scale-115 text-[var(--explorer-action-icon,rgba(109,170,209,0.85))] group-hover:text-white"
+                  className="w-2.5 h-2.5 origin-center transition-transform duration-150 ease-out group-hover:scale-110 text-[var(--explorer-action-icon,rgba(109,170,209,0.85))] group-hover:text-white"
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
-                  strokeWidth="2.2"
+                  strokeWidth="2.5"
                   strokeLinecap="round"
                   strokeLinejoin="round"
                 >
@@ -432,7 +432,7 @@ export default function LeftSidePanelHeader({
               type="button"
               onClick={activeToggleAll}
               disabled={searchQuery.trim().length > 0}
-              className="left-side-panel-pin-btn explorer-panel-disabled group disabled:pointer-events-none disabled:cursor-not-allowed"
+              className="explorer-tab-action-btn explorer-panel-disabled group disabled:pointer-events-none disabled:cursor-not-allowed"
               title={
                 searchQuery.trim().length > 0
                   ? 'Tree expansion disabled during search'
@@ -442,9 +442,9 @@ export default function LeftSidePanelHeader({
               }
             >
               {activeIsExpanded ? (
-                <FolderCollapseIcon className="w-3.5 h-3.5 text-[var(--explorer-action-icon,rgba(109,170,209,0.85))] group-hover:text-white" />
+                <FolderCollapseIcon className="w-3 h-3 text-[var(--explorer-action-icon,rgba(109,170,209,0.85))] group-hover:text-white" />
               ) : (
-                <FolderExpandIcon className="w-3.5 h-3.5 text-[var(--explorer-action-icon,rgba(109,170,209,0.85))] group-hover:text-white" />
+                <FolderExpandIcon className="w-3 h-3 text-[var(--explorer-action-icon,rgba(109,170,209,0.85))] group-hover:text-white" />
               )}
             </button>
           )}
@@ -479,7 +479,7 @@ export default function LeftSidePanelHeader({
             
             <span
               title={`${collections.length} ${collections.length === 1 ? 'collection' : 'collections'}`}
-              className="explorer-filter-option px-1.5 py-0.5 rounded text-[10px] font-mono font-bold shrink-0 select-none"
+              className="explorer-filter-option px-2 py-0.5 rounded-md text-[10px] font-mono font-bold shrink-0 select-none"
             >
               {collections.length}
             </span>

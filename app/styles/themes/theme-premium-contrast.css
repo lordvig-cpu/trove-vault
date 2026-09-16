@@ -215,56 +215,53 @@
    --nav-footer-sun-color: var(--brand-secondary-amber);
    /* #endregion */
 
-   /* #region 3. MAIN CONTENT & STUDIO CANVAS */
-   --canvas-bg-primary: rgba(3, 9, 24, 1.00);
+   /* #region 3. MAIN CONTENT & STUDIO CANVAS (Dark Slate/Charcoal Canvas with Soft Sapphire Ambient Tint) */
+   --canvas-bg-primary: rgba(10, 15, 24, 1.00);
 
-   /* Studio Grid Canvas Layers & Illuminated Gradients */
-   --studio-grid-bg: rgba(2, 8, 23, 1.00);
-   --studio-grid-glow-top-left-core: rgba(0, 130, 255, 0.30);
-   --studio-grid-glow-top-left-edge: rgba(0, 80, 220, 0.12);
-   --studio-grid-glow-bottom-right-core: rgba(248, 188, 9, 0.18);
-   --studio-grid-glow-bottom-right-edge: rgba(248, 188, 9, 0.05);
-   --studio-grid-vignette: rgba(0, 2, 14, 0.60);
-   --studio-grid-line: rgba(0, 180, 255, 0.09);
+   /* Studio Grid Canvas Layers & Textures */
+   --studio-grid-bg: rgba(8, 12, 20, 1.00);
+   --studio-grid-glow-top-left-core: rgba(0, 120, 225, 0.22);
+   --studio-grid-glow-top-left-edge: rgba(0, 70, 160, 0.08);
+   --studio-grid-glow-bottom-right-core: rgba(217, 119, 6, 0.10);
+   --studio-grid-glow-bottom-right-edge: rgba(217, 119, 6, 0.03);
+   --studio-grid-vignette: rgba(0, 2, 10, 0.55);
+   --studio-grid-line: rgba(100, 170, 240, 0.06);
    --studio-grid-cell-size: 32px;
 
-   --watermark-logo-opacity: 0.20;
-   --watermark-logo-brightness: 0.90;
-   --watermark-logo-shadow: 0 25px 35px rgb(0 0 0 / 0.35);
-   --video-bg-shadow: 0 25px 35px rgb(0 0 0 / 0.40);
+   --watermark-logo-opacity: 0.18;
+   --watermark-logo-brightness: 0.82;
+   --watermark-logo-shadow: 0 25px 30px rgb(0 0 0 / 0.25);
+   --video-bg-shadow: 0 25px 30px rgb(0 0 0 / 0.30);
    --video-bg-opacity: 1.00;
 
    --content-overlay-blur: 3.5px;
    --content-overlay-brightness-dim: 0.60;
    --content-overlay-brightness-default: 1.00;
-   --sticky-shadow-upper: linear-gradient(to bottom, rgba(2, 8, 23, 0.90), transparent);
-   --sticky-shadow-lower: linear-gradient(to top, rgba(2, 8, 23, 0.90), transparent);
+   --sticky-shadow-upper: linear-gradient(to bottom, rgba(8, 12, 20, 0.90), transparent);
+   --sticky-shadow-lower: linear-gradient(to top, rgba(8, 12, 20, 0.90), transparent);
 
-   /* ItemDetailView Display Cards with Signature Electric Cyan/Blue Glow */
-   --content-card-bg: linear-gradient(180deg, rgba(8, 38, 86, 0.88) 0%, rgba(3, 16, 42, 0.96) 100%);
-   --content-card-border: rgba(0, 140, 255, 0.82);
-   --content-card-shadow: 
-     0 0 24px rgba(0, 140, 255, 0.35), 
-     inset 0 0 14px rgba(0, 120, 255, 0.12), 
-     0 20px 40px rgba(0, 0, 0, 0.70);
+   /* ItemDetailView Display Cards */
+   --content-card-bg: rgba(6, 22, 44, 0.80);
+   --content-card-border: rgba(0, 140, 255, 0.40);
+   --content-card-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.5), 0 0 16px rgba(0, 140, 255, 0.12);
 
    /* Attribute & Nested Item Pills */
-   --content-pill-bg: rgba(2, 12, 32, 0.70);
-   --content-pill-border: rgba(0, 160, 255, 0.35);
-   --content-pill-hover-bg: rgba(14, 55, 115, 0.85);
+   --content-pill-bg: rgba(10, 17, 28, 0.60);
+   --content-pill-border: rgba(0, 160, 255, 0.22);
+   --content-pill-hover-bg: rgba(14, 55, 115, 0.75);
    --content-pill-hover-border: var(--panel-border-strong);
 
    /* Badges & Content Actions */
-   --content-badge-root-bg: rgba(6, 95, 70, 0.35);
-   --content-badge-root-border: rgba(16, 185, 129, 0.70);
+   --content-badge-root-bg: rgba(6, 78, 59, 0.60);
+   --content-badge-root-border: rgba(16, 185, 129, 0.60);
    --content-badge-root-text: rgba(52, 211, 153, 1.00);
-   --content-btn-primary-bg: #0077ff;
-   --content-btn-primary-hover: #0091ff;
+   --content-btn-primary-bg: var(--brand-primary);
+   --content-btn-primary-hover: var(--brand-primary-hover);
    --content-btn-primary-text: #ffffff;
-   --content-btn-danger-bg: rgba(225, 29, 72, 0.18);
-   --content-btn-danger-hover: rgba(225, 29, 72, 0.30);
-   --content-btn-danger-border: rgba(244, 63, 94, 0.50);
-   --content-btn-danger-text: rgba(254, 205, 211, 1.00);
+   --content-btn-danger-bg: rgba(244, 63, 94, 0.10);
+   --content-btn-danger-hover: rgba(244, 63, 94, 0.20);
+   --content-btn-danger-border: rgba(244, 63, 94, 0.30);
+   --content-btn-danger-text: rgba(253, 164, 175, 1.00);
    /* #endregion */
 
    /* #region 4. LEFT SIDE PANEL & EXPLORER TREE */
@@ -398,17 +395,63 @@
    /* #endregion */
 
    /* #region 5. RIGHT SIDE PANEL */
-   --right-panel-bg: var(--panel-surface-bg);
-   --right-panel-border: var(--panel-border-strong);
-   --right-panel-shadow: -20px 20px 50px rgba(0, 0, 0, 0.85);
+   /* Right Inspector Sapphire Chassis Surface, Flare & Texture */
+   --right-panel-bg:
+     linear-gradient(180deg,
+       rgba(255, 255, 255, 0.07) 0%,
+       rgba(255, 255, 255, 0.015) 14%,
+       transparent 36%),
+     linear-gradient(270deg,
+       rgba(0, 24, 60, 0.25) 0%,
+       transparent 60%,
+       rgba(0, 140, 255, 0.06) 100%),
+     linear-gradient(180deg,
+       #001a38 0%,
+       #00244c 12%,
+       #002c58 28%,
+       #00264b 48%,
+       #001f40 68%,
+       #001732 86%,
+       #001124 100%);
+   --right-panel-border: #02396c;
+   --right-panel-shadow:
+     -14px 0 35px -4px rgba(0, 0, 0, 0.85),
+     -4px 0 20px rgba(0, 140, 255, 0.12),
+     inset 1px 0 0 rgba(255, 255, 255, 0.08);
 
-   --right-panel-tab-bg: var(--panel-surface-bg);
-   --right-panel-tab-hover-bg: var(--card-surface-hover);
-   --right-panel-tab-border: var(--panel-border-subtle);
+   /* Ambient Flare Highlight (::before) */
+   --right-panel-flare-bg:
+     radial-gradient(ellipse 130% 120% at 85% -20%,
+       rgba(0, 180, 255, 0.18) 0%,
+       rgba(0, 110, 220, 0.08) 45%,
+       transparent 75%);
+   --right-panel-flare-blend: screen;
+   --right-panel-flare-opacity: 0.70;
+
+   /* Brushed Satin Surface Texture Overlay (::after) */
+   --right-panel-texture-bg:
+     repeating-linear-gradient(90deg,
+       rgba(255, 255, 255, 0.012) 0px,
+       rgba(255, 255, 255, 0.012) 1px,
+       transparent 1px,
+       transparent 3px,
+       rgba(0, 0, 0, 0.02) 3px,
+       rgba(0, 0, 0, 0.02) 4px,
+       transparent 4px,
+       transparent 6px);
+   --right-panel-texture-filter: url("#navigationBarTexture");
+   --right-panel-texture-opacity: 0.10;
+   --right-panel-texture-blend: overlay;
+
+   /* Floating Expand Pull-Tab Trigger */
+   --right-panel-tab-bg: rgba(6, 26, 60, 0.90);
+   --right-panel-tab-hover-bg: rgba(14, 55, 115, 1.00);
+   --right-panel-tab-border: #02396c;
    --right-panel-tab-hover-border: var(--panel-border-strong);
 
-   --right-panel-header-border: var(--panel-border-subtle);
-   --right-panel-btn-hover-bg: var(--card-surface-hover);
+   /* Header & Action Controls */
+   --right-panel-header-border: rgba(0, 140, 255, 0.25);
+   --right-panel-btn-hover-bg: rgba(14, 55, 115, 0.70);
    /* #endregion */
 
    /* #region 6. MODALS & OVERLAYS */
@@ -468,27 +511,46 @@
    --tmpl-alert-error-text: rgba(253, 164, 175, 1.00);
    /* #endregion */
 
-   /* #region 7. EXPLORER ACTION MENU & TREE POPPERS (Warm Gold Terminal in Image 1) */
-   --explorer-menu-shell-bg: linear-gradient(180deg, rgba(46, 24, 6, 0.94) 0%, rgba(20, 11, 3, 0.98) 100%);
-   --explorer-menu-shell-border: rgba(248, 188, 9, 0.95);
+   /* #region 7. EXPLORER ACTION MENU & SEARCH MENU POPPERS (Warm Amber Cockpit Chassis & Sapphire Filter Cards) */
+   --explorer-menu-shell-bg:
+     linear-gradient(180deg,
+       rgba(255, 255, 255, 0.08) 0%,
+       rgba(255, 255, 255, 0.02) 15%,
+       transparent 30%),
+     radial-gradient(ellipse 130% 90% at 50% -20%,
+       rgba(217, 119, 6, 0.45) 0%,
+       rgba(146, 64, 14, 0.22) 50%,
+       transparent 85%),
+     radial-gradient(ellipse 110% 40% at 50% 100%,
+       rgba(180, 83, 9, 0.20) 0%,
+       transparent 70%),
+     linear-gradient(180deg,
+       #381a04 0%,
+       #241002 18%,
+       #180b03 42%,
+       #100601 70%,
+       #0a0401 100%);
+   --explorer-menu-shell-border: #f59e0b;
 
-   --explorer-menu-shell-shadow: 
+   --explorer-menu-shell-shadow:
+     0 0 25px 0 rgba(245, 158, 11, 0.45),
+     0 0 8px 0 rgba(245, 158, 11, 0.35),
      20px 0 45px -4px rgba(0, 0, 0, 0.85),
-     12px -14px 30px -4px rgba(0, 0, 0, 0.70),
-     12px 18px 30px -4px rgba(0, 0, 0, 0.75),
-     6px 0 14px -2px rgba(0, 0, 0, 0.80),
-     0 0 32px 0 rgba(248, 188, 9, 0.35),
-     inset 0 0 16px 0 rgba(248, 188, 9, 0.12);
+     0 20px 40px rgba(0, 0, 0, 0.85),
+     inset 0 1px 0 rgba(255, 235, 175, 0.28);
 
-   --explorer-menu-header-bg: rgba(69, 26, 3, 0.95);
-   --explorer-menu-header-border: rgba(248, 188, 9, 0.60);
-   --explorer-menu-header-title: rgba(248, 188, 9, 1.00);
-   --explorer-menu-header-icon: rgba(248, 188, 9, 1.00);
+   --explorer-menu-header-bg:
+     linear-gradient(180deg,
+       rgba(146, 64, 14, 0.50) 0%,
+       rgba(69, 26, 3, 0.65) 100%);
+   --explorer-menu-header-border: rgba(245, 158, 11, 0.45);
+   --explorer-menu-header-title: #fbbf24;
+   --explorer-menu-header-icon: #f59e0b;
 
    --explorer-menu-form-bg: rgba(14, 8, 3, 0.95);
    --explorer-menu-input-bg: rgba(6, 4, 1, 1.00);
 
-   --explorer-menu-divider: rgba(248, 188, 9, 0.30);
+   --explorer-menu-divider: rgba(245, 158, 11, 0.28);
 
    --explorer-menu-item-text: #f1f5f9;
    --explorer-menu-item-hover-bg: rgba(248, 188, 9, 0.20);
@@ -513,6 +575,40 @@
    --explorer-menu-rename-save-bg: rgba(248, 188, 9, 0.25);
    --explorer-menu-rename-save-hover-bg: rgba(248, 188, 9, 0.4);
    --explorer-menu-rename-save-text: #F8BC09;
+
+   /* Filter Tree Shell & Capsule Cards in Search Menu (Image 2) */
+   --explorer-filter-surface-bg: transparent;
+   --explorer-filter-shell-border: transparent;
+   --explorer-filter-inset-shadow: none;
+
+   --explorer-filter-card-bg:
+     linear-gradient(180deg,
+       rgba(2, 28, 68, 0.95) 0%,
+       rgba(1, 16, 42, 0.98) 100%);
+   --explorer-filter-card-border: rgba(0, 140, 255, 0.75);
+   --explorer-filter-card-shadow:
+     0 2px 8px rgba(0, 0, 0, 0.50),
+     0 0 8px rgba(0, 140, 255, 0.15);
+
+   --explorer-filter-card-hover-bg:
+     linear-gradient(180deg,
+       rgba(3, 38, 90, 0.98) 0%,
+       rgba(2, 22, 56, 1.00) 100%);
+   --explorer-filter-card-hover-border: rgba(0, 180, 255, 0.95);
+   --explorer-filter-card-hover-shadow:
+     0 4px 14px rgba(0, 0, 0, 0.60),
+     0 0 12px rgba(0, 180, 255, 0.30);
+
+   /* Sapphire count badge pill in search menu */
+   --explorer-filter-badge-bg: rgba(0, 24, 60, 0.95);
+   --explorer-filter-badge-border: rgba(0, 140, 255, 0.75);
+   --explorer-filter-badge-text: #fbbf24;
+   --explorer-filter-badge-shadow: 0 0 8px rgba(0, 140, 255, 0.25);
+
+   --explorer-filter-option-label: #ffffff;
+   --explorer-filter-checkbox-bg: #ffffff;
+   --explorer-filter-checkbox-border: rgba(245, 158, 11, 0.80);
+   --explorer-filter-icon-color: #fbbf24;
 
    --tree-gear-bg-hover: rgba(30, 58, 95, 0.80);
    --tree-gear-icon-active: var(--text-primary);

@@ -156,7 +156,7 @@ export default function RightPanel({
         )}
 
         {/* Top Header: Section title and collapse trigger button */}
-        <div className="right-side-panel-header">
+        <div className="right-side-panel-header relative z-10">
           <span className="text-xs font-bold uppercase tracking-wider panel-notice-text">
             {title}
           </span>
@@ -173,7 +173,7 @@ export default function RightPanel({
         </div>
 
         {/* Panel Scrollable Body */}
-        <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden pl-3 pr-2 py-3">
+        <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden pl-3 pr-2 py-3 relative z-10">
           <div className="space-y-4 ui-primary">
             {children ? (
               children

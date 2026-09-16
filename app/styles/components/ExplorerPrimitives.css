@@ -14,9 +14,10 @@
 }
 
 .explorer-filter-checkbox {
-  background-color: var(--panel-surface-bg);
-  border: 1px solid var(--explorer-search-input-border, rgba(0, 160, 255, 0.58));
+  background-color: var(--explorer-filter-checkbox-bg, var(--panel-surface-bg));
+  border: 1px solid var(--explorer-filter-checkbox-border, var(--explorer-search-input-border, rgba(0, 160, 255, 0.58)));
   color: var(--brand-secondary-amber);
+  accent-color: var(--brand-secondary-amber);
   transition: border-color 150ms ease, box-shadow 150ms ease;
 }
 
@@ -169,13 +170,18 @@
 }
 
 .explorer-filter-option {
-  background-color: var(--panel-surface-bg);
-  border: 1px solid var(--panel-border-subtle);
-  color: var(--brand-secondary-amber);
+  background: var(--explorer-filter-badge-bg, var(--panel-surface-bg));
+  border: 1px solid var(--explorer-filter-badge-border, var(--panel-border-subtle));
+  color: var(--explorer-filter-badge-text, var(--brand-secondary-amber));
+  box-shadow: var(--explorer-filter-badge-shadow, none);
 }
 
 .explorer-filter-option-label {
-  color: var(--text-secondary);
+  color: var(--explorer-filter-option-label, var(--text-secondary));
+}
+
+.explorer-filter-icon {
+  color: var(--explorer-filter-icon-color, var(--brand-secondary-amber));
 }
 
 .explorer-filter-clear {
@@ -226,18 +232,23 @@
 }
 
 .explorer-filter-shell {
-  background-color: var(--explorer-filter-surface-bg, var(--popover-surface-bg));
-  border: 1px solid var(--panel-border-subtle);
+  background: var(--explorer-filter-surface-bg, var(--popover-surface-bg));
+  border: 1px solid var(--explorer-filter-shell-border, var(--panel-border-subtle));
   box-shadow: var(--explorer-filter-inset-shadow);
 }
 
 .explorer-filter-root-card {
-  background-color: var(--panel-surface-bg);
-  border: 1px solid var(--panel-border-subtle);
+  background: var(--explorer-filter-card-bg, var(--panel-surface-bg));
+  border: 1.5px solid var(--explorer-filter-card-border, var(--panel-border-subtle));
+  border-radius: 0.5rem;
+  box-shadow: var(--explorer-filter-card-shadow, none);
+  transition: border-color 150ms ease, background-color 150ms ease, box-shadow 150ms ease;
 }
 
 .explorer-filter-root-card:hover {
-  border-color: var(--panel-border-strong);
+  background: var(--explorer-filter-card-hover-bg, var(--card-surface-hover));
+  border-color: var(--explorer-filter-card-hover-border, var(--panel-border-strong));
+  box-shadow: var(--explorer-filter-card-hover-shadow, none);
 }
 
 .explorer-tree-hidden {
