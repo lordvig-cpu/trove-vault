@@ -1,0 +1,24 @@
+/* Edit these two seeds to recolor BOTH modes. No regeneration is needed.
+   Defaults correspond to Premium Contrast's #0077ff and #f8bc09.
+   Light mode transforms the same dark recipe through role coefficients. */
+:is([data-theme='theme-oklch-dark'], [data-theme='theme-oklch-light']) {
+  --oklch-blue: oklch(0.596659 0.221181 258.03031);
+  --oklch-yellow: oklch(0.827324 0.16838 85.08092);
+
+  /* L_out = offset + L_dark * scale; C_out = C_dark * chroma. */
+  --oklch-surface-offset: 0;
+  --oklch-surface-scale: 1;
+  --oklch-surface-chroma: 1;
+  --oklch-ink-offset: 0;
+  --oklch-ink-scale: 1;
+  --oklch-ink-chroma: 1;
+  --oklch-accent-offset: 0;
+  --oklch-accent-scale: 1;
+  --oklch-accent-chroma: 1;
+  --oklch-shadow-opacity: 1;
+  --oklch-glow-opacity: 1;
+}
+
+[data-theme='theme-oklch-dark'] {
+  color-scheme: dark;
+}

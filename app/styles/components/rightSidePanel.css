@@ -13,12 +13,12 @@
   padding-right: 0.5rem;
   border-top-left-radius: 0.375rem;
   border-bottom-left-radius: 0.375rem;
-  background-color: var(--right-panel-tab-bg);
-  border-top: 1px solid var(--right-panel-tab-border);
-  border-bottom: 1px solid var(--right-panel-tab-border);
-  border-left: 1px solid var(--right-panel-tab-border);
+  background-color: var(--primary-right-panel-tab-bg);
+  border-top: 1px solid var(--primary-border-strong);
+  border-bottom: 1px solid var(--primary-border-strong);
+  border-left: 1px solid var(--primary-border-strong);
   color: var(--text-muted);
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 10px 15px -3px var(--shadow-black-50);
   backdrop-filter: blur(12px);
   cursor: pointer;
   display: flex;
@@ -29,9 +29,9 @@
 }
 
 .right-panel-expand-tab:hover {
-  background-color: var(--right-panel-tab-hover-bg);
-  border-color: var(--right-panel-tab-hover-border);
-  color: var(--text-primary);
+  background-color: var(--primary-col-dropdown-btn-hover-bg);
+  border-color: var(--primary-border-strong);
+  color: var(--text-strong);
 }
 
 /* Docked Right Aside (Full Height, Flush) */
@@ -42,9 +42,9 @@
   right: 0;
   max-width: none;
   isolation: isolate;
-  background: var(--right-panel-bg, var(--panel-surface-bg));
-  border-left: 1px solid var(--right-panel-border);
-  box-shadow: var(--right-panel-shadow, -4px 0 14px -2px rgba(0, 0, 0, 0.55));
+  background: var(--primary-right-panel-bg);
+  border-left: 1px solid var(--primary-border-strong);
+  box-shadow: var(--right-panel-shadow);
   z-index: 40;
   display: flex;
   flex-direction: column;
@@ -62,13 +62,9 @@
   pointer-events: none;
   z-index: 1;
   clip-path: inset(0);
-  background: var(--right-panel-flare-bg,
-    radial-gradient(ellipse 140% 120% at 75% -20%,
-      rgba(0, 180, 255, 0.18) 0%,
-      rgba(0, 110, 220, 0.08) 45%,
-      transparent 75%));
-  mix-blend-mode: var(--right-panel-flare-blend, screen);
-  opacity: var(--right-panel-flare-opacity, 0);
+  background: var(--primary-right-panel-flare-bg);
+  mix-blend-mode: var(--right-panel-flare-blend);
+  opacity: var(--right-panel-flare-opacity);
 }
 
 /* Procedural surface texture overlay */
@@ -79,19 +75,10 @@
   pointer-events: none;
   z-index: 1;
   clip-path: inset(0);
-  background: var(--right-panel-texture-bg,
-    repeating-linear-gradient(90deg,
-      rgba(255, 255, 255, 0.012) 0px,
-      rgba(255, 255, 255, 0.012) 1px,
-      transparent 1px,
-      transparent 3px,
-      rgba(0, 0, 0, 0.02) 3px,
-      rgba(0, 0, 0, 0.02) 4px,
-      transparent 4px,
-      transparent 6px));
-  filter: var(--right-panel-texture-filter, url("#navigationBarTexture"));
-  opacity: var(--right-panel-texture-opacity, 0);
-  mix-blend-mode: var(--right-panel-texture-blend, overlay);
+  background: var(--right-panel-texture-bg);
+  filter: var(--right-panel-texture-filter);
+  opacity: var(--right-panel-texture-opacity);
+  mix-blend-mode: var(--right-panel-texture-blend);
 }
 
 /* Header & Collapse Control */
@@ -100,7 +87,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 0.75rem 1rem;
-  border-bottom: 1px solid var(--right-panel-header-border);
+  border-bottom: 1px solid var(--primary-right-panel-header-border);
   flex-shrink: 0;
 }
 
@@ -109,8 +96,8 @@
   width: 1.75rem;
   border-radius: 0.375rem;
   color: var(--text-muted);
-  border: 1px solid rgba(0, 0, 0, 0);
-  background: rgba(0, 0, 0, 0);
+  border: 1px solid transparent;
+  background: transparent;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -119,9 +106,9 @@
 }
 
 .right-side-panel-btn:hover {
-  color: var(--text-primary);
-  background-color: var(--right-panel-btn-hover-bg);
-  border-color: var(--right-panel-header-border);
+  color: var(--text-strong);
+  background-color: var(--primary-right-panel-btn-hover-bg);
+  border-color: var(--primary-right-panel-header-border);
 }
 
 /* Visibility States */

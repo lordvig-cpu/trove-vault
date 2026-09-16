@@ -415,7 +415,7 @@
        #001f40 68%,
        #001732 86%,
        #001124 100%);
-   --right-panel-border: #02396c;
+   --right-panel-border: var(--panel-border-strong);
    --right-panel-shadow:
      -4px 0 14px -2px rgba(0, 0, 0, 0.55),
      -2px 0 5px 0 rgba(0, 0, 0, 0.35),

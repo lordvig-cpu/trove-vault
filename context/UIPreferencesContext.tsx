@@ -1,7 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { ThemePreset } from '@/types/theme';
+import { normalizeTheme, ThemePreset } from '@/types/theme';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 
 /* ==========================================================================
@@ -73,10 +73,11 @@ export function UIPreferencesProvider({ children }: { children: React.ReactNode 
     true
   );
 
-  const [theme, setThemeState] = useLocalStorage<ThemePreset>(
+  const [storedTheme, setThemeState] = useLocalStorage<string>(
     STORAGE_KEYS.THEME,
-    'theme-default-dark'
+    'theme-oklch-dark'
   );
+  const theme = normalizeTheme(storedTheme);
 
   const [isPinned, setIsPinned] = useLocalStorage<boolean>(
     STORAGE_KEYS.PINNED,
@@ -117,9 +118,8 @@ export function UIPreferencesProvider({ children }: { children: React.ReactNode 
   };
 
   const toggleTheme = () => {
-    const nextTheme: ThemePreset =
-      theme === 'theme-default-light' ? 'theme-default-dark' : 'theme-default-light';
-    setTheme(nextTheme);
+    setThemeState(current => normalizeTheme(current) === 'theme-oklch-dark'
+      ? 'theme-oklch-light' : 'theme-oklch-dark');
   };
 
 

@@ -11,15 +11,15 @@
   border-radius: 0.5rem;
   font-size: 0.75rem;
   font-weight: 600;
-  background-color: var(--col-dropdown-btn-bg);
-  color: var(--text-primary);
-  border: 1px solid var(--col-dropdown-btn-border);
+  background-color: var(--primary-col-dropdown-btn-bg);
+  color: var(--text-strong);
+  border: 1px solid var(--primary-border-subtle);
   transition: all 150ms ease;
   cursor: pointer;
 }
 
 .col-dropdown-trigger:hover {
-  background-color: var(--col-dropdown-btn-hover-bg);
+  background-color: var(--primary-col-dropdown-btn-hover-bg);
 }
 
 /* Floating Menu Panel */
@@ -28,11 +28,11 @@
   left: 0;
   margin-top: 0.5rem;
   width: 20rem; /* w-80 */
-  background-color: var(--col-dropdown-panel-bg);
-  border: 1px solid var(--col-dropdown-panel-border);
+  background-color: var(--surface-popover);
+  border: 1px solid var(--primary-border-strong);
   border-radius: 0.75rem;
   box-shadow: var(--col-dropdown-panel-shadow);
-  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.1), var(--col-dropdown-panel-shadow);
+  box-shadow: 0 0 0 1px var(--highlight-white-10), var(--col-dropdown-panel-shadow);
   backdrop-filter: blur(24px);
   z-index: 50;
   padding: 0.75rem;
@@ -56,19 +56,19 @@
 }
 
 .col-dropdown-item-active {
-  background-color: var(--col-dropdown-item-active-bg);
-  border-color: var(--col-dropdown-item-active-border);
-  color: var(--text-primary);
+  background-color: var(--primary-col-dropdown-item-active-bg);
+  border-color: var(--primary-col-dropdown-item-active-border);
+  color: var(--text-strong);
   font-weight: 600;
 }
 
 .col-dropdown-item-inactive {
-  color: var(--text-secondary);
+  color: var(--text-soft);
 }
 
 .col-dropdown-item-inactive:hover {
-  background-color: var(--card-surface-hover);
-  color: var(--text-primary);
+  background-color: var(--surface-primary-hover);
+  color: var(--text-strong);
 }
 
 /* Active Badge */
@@ -86,7 +86,7 @@
 
 /* Sub-Item / Child Lines */
 .col-dropdown-branch {
-  border-left: 1px solid var(--panel-border-subtle);
+  border-left: 1px solid var(--primary-border-subtle);
   margin-left: 0.875rem;
   padding-left: 0.125rem;
   margin-top: 0.125rem;
@@ -98,8 +98,8 @@
 /* Inline Create Form */
 .col-dropdown-form {
   padding: 0.625rem;
-  background-color: var(--col-dropdown-form-bg);
-  border: 1px solid var(--col-dropdown-form-border);
+  background-color: var(--surface-panel);
+  border: 1px solid var(--primary-col-dropdown-form-border);
   border-radius: 0.5rem;
   display: flex;
   flex-direction: column;

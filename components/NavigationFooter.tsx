@@ -13,6 +13,7 @@ import {
   SunIcon 
 } from '@/components/icons/SystemIcons';
 import { useUIPreferences } from '@/context/UIPreferencesContext';
+import OklchSeedControls from '@/components/OklchSeedControls';
 
 /* ==========================================================================
    1. TYPE DEFINITIONS & INTERFACES
@@ -58,6 +59,8 @@ export default function NavigationFooter({
     toggleTheme,
   } = useUIPreferences();
 
+  const isLightTheme = theme === 'theme-oklch-light';
+
   return (
     <footer className="navigation-footer h-14 flex items-center justify-between px-4 text-xs select-none shrink-0 z-[60]">
       
@@ -84,13 +87,10 @@ export default function NavigationFooter({
       </div>
 
       {/* --------------------------------------------------------------------
-          2.3 CENTER: UTILITY / WORKSPACE BREADCRUMB SLOT
-          Reserved central utility region for quick shortcuts or breadcrumb tracks.
+          2.3 CENTER: LIVE THEME COLORS
           -------------------------------------------------------------------- */}
-      <div className="flex items-center gap-1.5 text-xs ui-muted cursor-pointer select-none relative z-10">
-        <label className="flex items-center gap-1.5 cursor-pointer ui-muted ui-hover-primary transition-colors">
-          MIDDLE CONTENT
-        </label>
+      <div className="relative z-10">
+        <OklchSeedControls />
       </div>
 
       {/* --------------------------------------------------------------------
@@ -186,14 +186,13 @@ export default function NavigationFooter({
         <button
           type="button"
           onClick={toggleTheme}
+          aria-label={isLightTheme ? 'Switch to dark mode' : 'Switch to light mode'}
           className={[
             'nav-footer-icon-btn group relative',
             'ui-muted ui-hover-primary',
           ].join(' ')}
           title={
-            theme === 'theme-default-dark'
-              ? 'Switch to Sunlit Tide (Light Mode)'
-              : 'Switch to Amber Tide (Dark Mode)'
+            isLightTheme ? 'Switch to dark mode' : 'Switch to light mode'
           }
         >
           {/* Moon Icon (Dark Mode Active) */}
@@ -201,7 +200,7 @@ export default function NavigationFooter({
             className={[
               'nav-theme-icon nav-theme-icon-moon nav-footer-icon-moon',
               'ui-hover-primary',
-              theme === 'theme-default-dark'
+              !isLightTheme
                 ? 'nav-theme-icon-active'
                 : 'nav-theme-icon-hidden-left',
             ].join(' ')}
@@ -212,7 +211,7 @@ export default function NavigationFooter({
             className={[
               'nav-theme-icon nav-theme-icon-sun nav-footer-icon-sun',
               'ui-hover-primary',
-              theme === 'theme-default-light'
+              isLightTheme
                 ? 'nav-theme-icon-active'
                 : 'nav-theme-icon-hidden-right',
             ].join(' ')}

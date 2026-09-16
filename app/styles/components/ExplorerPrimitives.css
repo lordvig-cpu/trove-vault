@@ -1,34 +1,34 @@
 /* Shared Explorer row, filter, and panel-control visuals. */
 
 .explorer-filter-row {
-  color: var(--text-primary);
+  color: var(--text-strong);
   transition: background-color 150ms ease;
 }
 
 .explorer-filter-row:hover {
-  background-color: var(--card-surface-hover);
+  background-color: var(--surface-primary-hover);
 }
 
 .explorer-filter-row-selected {
-  color: var(--brand-secondary-amber);
+  color: var(--secondary-accent);
 }
 
 .explorer-filter-checkbox {
-  background-color: var(--explorer-filter-checkbox-bg, var(--panel-surface-bg));
-  border: 1px solid var(--explorer-filter-checkbox-border, var(--explorer-search-input-border, rgba(0, 160, 255, 0.58)));
-  color: var(--brand-secondary-amber);
-  accent-color: var(--brand-secondary-amber);
+  background-color: var(--explorer-filter-checkbox-bg);
+  border: 1px solid var(--secondary-explorer-filter-checkbox-border);
+  color: var(--secondary-accent);
+  accent-color: var(--secondary-accent);
   transition: border-color 150ms ease, box-shadow 150ms ease;
 }
 
 .explorer-filter-checkbox:hover {
-  border-color: var(--explorer-input-border-hover, rgba(0, 190, 255, 0.80));
+  border-color: var(--primary-border-input-hover);
 }
 
 .explorer-filter-checkbox:focus {
   outline: none;
-  border-color: var(--brand-secondary-amber);
-  box-shadow: 0 0 4px var(--explorer-input-focus-glow, rgba(248, 188, 9, 0.25));
+  border-color: var(--secondary-accent);
+  box-shadow: var(--secondary-focus-ring);
 }
 
 .explorer-filter-branch {
@@ -36,96 +36,96 @@
 }
 
 .explorer-tree-item {
-  color: var(--explorer-item-text, rgba(167, 190, 212, 0.95));
+  color: var(--primary-explorer-item-text);
 }
 
 .explorer-tree-item:hover {
-  background-color: var(--explorer-item-hover-bg);
-  color: var(--explorer-item-text-hover, rgba(240, 249, 255, 1.00));
+  background-color: var(--primary-explorer-item-hover-bg);
+  color: var(--explorer-item-text-hover);
 }
 
 .explorer-tree-item-selected {
-  background-color: var(--explorer-item-active-bg);
-  border: 1px solid var(--explorer-item-active-border);
-  color: var(--text-primary);
+  background-color: var(--secondary-selection-bg);
+  border: 1px solid var(--secondary-selection-border);
+  color: var(--text-strong);
 }
 
 .explorer-tree-item-selected-name {
-  color: var(--brand-secondary-amber);
+  color: var(--secondary-accent);
 }
 
 .explorer-tree-muted {
-  color: var(--explorer-tree-muted, rgba(105, 147, 185, 0.75));
+  color: var(--primary-explorer-tree-muted);
 }
 
 .explorer-tree-primary {
-  color: var(--text-primary);
+  color: var(--text-strong);
 }
 
 .explorer-tree-secondary {
-  color: var(--explorer-item-text, rgba(167, 190, 212, 0.95));
+  color: var(--primary-explorer-item-text);
 }
 
 .explorer-tree-gear-open {
-  color: var(--text-primary);
+  color: var(--text-strong);
 }
 
 .explorer-tree-gear-closed {
-  color: var(--explorer-tree-muted, rgba(105, 147, 185, 0.75));
+  color: var(--primary-explorer-tree-muted);
 }
 
 .explorer-category-row {
-  color: var(--text-secondary);
+  color: var(--text-soft);
 }
 
 .explorer-category-row:hover {
-  background-color: var(--explorer-item-hover-bg);
-  color: var(--text-primary);
+  background-color: var(--primary-explorer-item-hover-bg);
+  color: var(--text-strong);
 }
 
 .explorer-category-row-active {
-  background-color: var(--explorer-item-active-bg);
-  color: var(--brand-secondary-amber);
+  background-color: var(--secondary-selection-bg);
+  color: var(--secondary-accent);
 }
 
 .explorer-panel-divider {
-  border-color: var(--panel-border-subtle);
+  border-color: var(--primary-border-subtle);
 }
 
 .explorer-panel-muted {
-  color: var(--explorer-title-text, rgba(138, 194, 235, 0.95));
+  color: var(--primary-explorer-title-text);
 }
 
 .explorer-panel-primary {
-  color: var(--text-primary);
+  color: var(--text-strong);
 }
 
 .explorer-panel-accent {
-  color: var(--brand-secondary-amber);
+  color: var(--secondary-accent);
 }
 
 .explorer-panel-hover:hover {
-  color: var(--text-primary);
+  color: var(--text-strong);
 }
 
 .explorer-panel-control {
   color: var(--text-muted);
-  background-color: var(--explorer-control-bg, rgba(4, 24, 56, 0.75));
-  border: 1px solid var(--explorer-search-input-border, rgba(0, 160, 255, 0.58));
+  background-color: var(--primary-explorer-control-bg);
+  border: 1px solid var(--primary-border-input);
   transition: border-color 150ms ease, background-color 150ms ease, color 150ms ease, box-shadow 150ms ease;
 }
 
 .explorer-panel-control:hover {
-  color: var(--text-primary);
-  background-color: var(--card-surface-hover);
-  border-color: var(--explorer-input-border-hover, rgba(0, 190, 255, 0.80));
+  color: var(--text-strong);
+  background-color: var(--surface-primary-hover);
+  border-color: var(--primary-border-input-hover);
 }
 
 .explorer-panel-control-active {
-  color: var(--brand-secondary-amber);
-  background-color: var(--explorer-control-bg, rgba(6, 28, 64, 0.85));
-  border-color: var(--brand-secondary-amber);
-  box-shadow: 0 0 4px var(--explorer-input-focus-glow, rgba(248, 188, 9, 0.25));
+  color: var(--secondary-accent);
+  background-color: var(--primary-explorer-control-bg);
+  border-color: var(--secondary-accent);
+  box-shadow: var(--secondary-focus-ring);
 }
 
 .explorer-panel-disabled:disabled {
@@ -137,24 +137,24 @@
 }
 
 .explorer-filter-surface {
-  background-color: var(--explorer-filter-surface-bg, var(--popover-surface-bg));
-  border: 1px solid var(--panel-border-subtle);
+  background-color: var(--explorer-filter-surface-bg);
+  border: 1px solid var(--primary-border-subtle);
   box-shadow: var(--explorer-filter-inset-shadow);
 }
 
 .explorer-filter-pill {
-  background-color: var(--panel-surface-bg);
-  border: 1px solid var(--panel-border-subtle);
-  color: var(--text-primary);
+  background-color: var(--surface-panel);
+  border: 1px solid var(--primary-border-subtle);
+  color: var(--text-strong);
   box-shadow: var(--explorer-filter-pill-shadow);
 }
 
 .explorer-filter-pill:hover {
-  border-color: var(--brand-secondary-amber);
+  border-color: var(--secondary-accent);
 }
 
 .explorer-filter-remove {
-  color: var(--brand-secondary-amber);
+  color: var(--secondary-accent);
 }
 
 .explorer-filter-remove:hover {
@@ -162,26 +162,26 @@
 }
 
 .explorer-filter-name {
-  color: var(--text-primary);
+  color: var(--text-strong);
 }
 
 .explorer-filter-name:hover {
-  color: var(--brand-secondary-amber);
+  color: var(--secondary-accent);
 }
 
 .explorer-filter-option {
-  background: var(--explorer-filter-badge-bg, var(--panel-surface-bg));
-  border: 1px solid var(--explorer-filter-badge-border, var(--panel-border-subtle));
-  color: var(--explorer-filter-badge-text, var(--brand-secondary-amber));
-  box-shadow: var(--explorer-filter-badge-shadow, none);
+  background: var(--primary-explorer-filter-badge-bg);
+  border: 1px solid var(--primary-border-filter);
+  color: var(--secondary-explorer-menu-header-title);
+  box-shadow: var(--explorer-filter-badge-shadow);
 }
 
 .explorer-filter-option-label {
-  color: var(--explorer-filter-option-label, var(--text-secondary));
+  color: var(--explorer-filter-option-label);
 }
 
 .explorer-filter-icon {
-  color: var(--explorer-filter-icon-color, var(--brand-secondary-amber));
+  color: var(--secondary-explorer-menu-header-title);
 }
 
 .explorer-filter-clear {
@@ -193,30 +193,30 @@
 }
 
 .explorer-category-icon {
-  color: var(--brand-secondary-amber);
+  color: var(--secondary-accent);
 }
 
 .explorer-category-count {
-  background-color: var(--explorer-category-badge-bg, rgba(2, 14, 36, 0.90));
-  border: 1px solid var(--explorer-category-badge-border, rgba(0, 140, 255, 0.40));
-  color: var(--explorer-category-badge-text, var(--brand-secondary-amber));
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+  background-color: var(--primary-explorer-category-badge-bg);
+  border: 1px solid var(--primary-explorer-category-badge-border);
+  color: var(--secondary-explorer-menu-rename-save-text);
+  box-shadow: var(--shadow-badge);
 }
 
 .explorer-tree-badge {
-  background-color: var(--explorer-category-badge-bg, rgba(2, 14, 36, 0.90));
-  border: 1px solid var(--explorer-category-badge-border, rgba(0, 140, 255, 0.40));
-  color: var(--explorer-category-badge-text, var(--brand-secondary-amber));
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+  background-color: var(--primary-explorer-category-badge-bg);
+  border: 1px solid var(--primary-explorer-category-badge-border);
+  color: var(--secondary-explorer-menu-rename-save-text);
+  box-shadow: var(--shadow-badge);
   font-weight: 700;
 }
 
 .explorer-tree-action-icon {
-  color: var(--explorer-action-icon, rgba(109, 170, 209, 0.85));
+  color: var(--primary-explorer-action-icon);
 }
 
 .explorer-tree-branch {
-  border-color: var(--explorer-tree-branch, rgba(0, 180, 255, 0.30));
+  border-color: var(--primary-explorer-tree-branch);
 }
 
 .explorer-filter-checkbox-hidden {
@@ -228,27 +228,27 @@
 }
 
 .explorer-filter-nested {
-  border-color: var(--panel-border-subtle);
+  border-color: var(--primary-border-subtle);
 }
 
 .explorer-filter-shell {
-  background: var(--explorer-filter-surface-bg, var(--popover-surface-bg));
-  border: 1px solid var(--explorer-filter-shell-border, var(--panel-border-subtle));
+  background: var(--explorer-filter-surface-bg);
+  border: 1px solid var(--explorer-filter-shell-border);
   box-shadow: var(--explorer-filter-inset-shadow);
 }
 
 .explorer-filter-root-card {
-  background: var(--explorer-filter-card-bg, var(--panel-surface-bg));
-  border: 1.5px solid var(--explorer-filter-card-border, var(--panel-border-subtle));
+  background: var(--primary-explorer-filter-card-bg);
+  border: 1.5px solid var(--primary-border-filter);
   border-radius: 0.5rem;
-  box-shadow: var(--explorer-filter-card-shadow, none);
+  box-shadow: var(--explorer-filter-card-shadow);
   transition: border-color 150ms ease, background-color 150ms ease, box-shadow 150ms ease;
 }
 
 .explorer-filter-root-card:hover {
-  background: var(--explorer-filter-card-hover-bg, var(--card-surface-hover));
-  border-color: var(--explorer-filter-card-hover-border, var(--panel-border-strong));
-  box-shadow: var(--explorer-filter-card-hover-shadow, none);
+  background: var(--primary-explorer-filter-card-hover-bg);
+  border-color: var(--primary-explorer-filter-card-hover-border);
+  box-shadow: var(--explorer-filter-card-hover-shadow);
 }
 
 .explorer-tree-hidden {

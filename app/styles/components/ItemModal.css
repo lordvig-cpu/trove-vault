@@ -8,20 +8,20 @@
 
 .item-modal-dialog,
 .confirm-modal-dialog {
-  background-color: var(--modal-dialog-bg);
-  border: 1px solid var(--modal-dialog-border);
+  background-color: var(--surface-panel);
+  border: 1px solid var(--primary-border-strong);
   box-shadow: var(--modal-dialog-shadow);
 }
 
 .item-modal-header,
 .confirm-modal-header {
-  border-bottom: 1px solid var(--modal-header-border);
+  border-bottom: 1px solid var(--primary-border-subtle);
 }
 
 .item-modal-footer,
 .confirm-modal-footer {
-  background-color: var(--modal-footer-bg);
-  border-top: 1px solid var(--modal-footer-border);
+  background-color: var(--primary-modal-footer-bg);
+  border-top: 1px solid var(--primary-border-subtle);
 }
 
 .item-modal-error,
@@ -32,12 +32,12 @@
 }
 
 .item-modal-template-panel {
-  background-color: var(--item-template-bg, var(--modal-form-bg));
-  border: 1px solid var(--item-template-border, var(--modal-form-border));
+  background-color: var(--template-surface);
+  border: 1px solid var(--template-border);
 }
 
 .item-modal-label {
-  color: var(--text-secondary);
+  color: var(--text-soft);
 }
 
 .item-modal-muted {
@@ -45,13 +45,13 @@
 }
 
 .item-modal-primary-text {
-  color: var(--text-primary);
+  color: var(--text-strong);
 }
 
 .item-modal-input {
-  background-color: var(--modal-input-bg);
-  border: 1px solid var(--modal-input-border);
-  color: var(--text-primary);
+  background-color: var(--surface-canvas);
+  border: 1px solid var(--primary-border-subtle);
+  color: var(--text-strong);
 }
 
 .item-modal-input::placeholder {
@@ -59,12 +59,12 @@
 }
 
 .item-modal-input:focus {
-  border-color: var(--modal-input-focus-border);
+  border-color: var(--primary-accent);
   outline: none;
 }
 
 .item-modal-template-heading {
-  color: var(--item-template-heading, var(--brand-primary));
+  color: var(--template-text);
 }
 
 .item-modal-template-count {
@@ -86,13 +86,13 @@
 }
 
 .item-modal-primary-button {
-  background-color: var(--content-btn-primary-bg);
-  color: var(--content-btn-primary-text);
+  background-color: var(--primary-accent);
+  color: var(--text-on-primary);
   box-shadow: var(--content-btn-primary-shadow, none);
 }
 
 .item-modal-primary-button:hover {
-  background-color: var(--content-btn-primary-hover);
+  background-color: var(--primary-accent-hover);
 }
 
 .item-modal-primary-button:disabled,
@@ -105,17 +105,17 @@
 }
 
 .item-modal-cancel-button:hover {
-  color: var(--text-primary);
-  background-color: var(--card-surface-hover);
+  color: var(--text-strong);
+  background-color: var(--surface-primary-hover);
 }
 
 .item-modal-property-divider {
-  border-top: 1px solid var(--modal-header-border);
+  border-top: 1px solid var(--primary-border-subtle);
 }
 
 .item-modal-parent-select {
-  background-color: var(--modal-input-bg);
-  border: 1px solid var(--modal-input-border);
+  background-color: var(--surface-canvas);
+  border: 1px solid var(--primary-border-subtle);
   color: var(--text-muted);
   opacity: 0.6;
 }
@@ -127,8 +127,8 @@
 }
 
 .confirm-modal-danger-panel {
-  background-color: var(--confirm-danger-panel-bg, var(--modal-badge-req-bg));
-  border: 1px solid var(--confirm-danger-panel-border, var(--modal-badge-req-border));
+  background-color: var(--confirm-danger-panel-bg);
+  border: 1px solid var(--confirm-danger-panel-border);
 }
 
 .confirm-modal-danger-heading,
@@ -145,7 +145,7 @@
 .confirm-modal-list,
 .confirm-modal-empty,
 .confirm-modal-loading {
-  background-color: var(--modal-form-bg);
+  background-color: var(--primary-modal-form-bg);
   color: var(--text-muted);
 }
 
@@ -155,7 +155,7 @@
 
 .confirm-modal-item,
 .confirm-modal-item-name {
-  color: var(--text-secondary);
+  color: var(--text-soft);
 }
 
 .confirm-modal-item-id {

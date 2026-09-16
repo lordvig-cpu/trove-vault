@@ -6,8 +6,8 @@
 .tmpl-card {
   padding: 0.75rem;
   border-radius: 0.75rem;
-  border: 1px solid var(--tmpl-item-border);
-  background-color: var(--tmpl-item-bg);
+  border: 1px solid var(--primary-border-subtle);
+  background-color: var(--primary-tmpl-item-bg);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -16,12 +16,12 @@
 }
 
 .tmpl-card:hover {
-  border-color: var(--tmpl-item-hover-border);
+  border-color: var(--primary-border-strong);
 }
 
 .tmpl-card-selected {
-  background-color: var(--tmpl-item-selected-bg);
-  border-color: var(--tmpl-item-selected-border);
+  background-color: var(--primary-tmpl-item-selected-bg);
+  border-color: var(--primary-accent);
   box-shadow: var(--tmpl-item-selected-shadow);
 }
 
@@ -29,9 +29,9 @@
 .tmpl-badge-count {
   font-size: 10px;
   font-family: monospace;
-  color: var(--tmpl-badge-count-text);
-  background-color: var(--tmpl-badge-count-bg);
-  border: 1px solid var(--tmpl-badge-count-border);
+  color: var(--secondary-accent);
+  background-color: var(--primary-modal-badge-key-bg);
+  border: 1px solid var(--primary-modal-badge-key-border);
   padding: 0.125rem 0.5rem;
   border-radius: 0.25rem;
 }

@@ -15,7 +15,7 @@
   bottom: 0;
   /* Let inline style control width; remove fixed max-width constraint */
   max-width: none;
-  background: var(--explorer-panel-bg, var(--panel-surface-bg));
+  background: var(--primary-explorer-panel-bg);
   display: flex;
   flex-direction: column;
   gap: 0.625rem;
@@ -37,13 +37,9 @@
   pointer-events: none;
   z-index: 1;
   clip-path: inset(0);
-  background: var(--explorer-panel-flare-bg,
-    radial-gradient(ellipse 140% 120% at 50% -25%,
-      rgba(0, 180, 255, 0.22) 0%,
-      rgba(0, 110, 220, 0.10) 45%,
-      transparent 75%));
-  mix-blend-mode: var(--explorer-panel-flare-blend, normal);
-  opacity: var(--explorer-panel-flare-opacity, 0);
+  background: var(--explorer-panel-flare-bg);
+  mix-blend-mode: var(--explorer-panel-flare-blend);
+  opacity: var(--explorer-panel-flare-opacity);
 }
 
 /* Procedural surface texture overlay */
@@ -54,24 +50,15 @@
   pointer-events: none;
   z-index: 1;
   clip-path: inset(0);
-  background: var(--explorer-panel-texture-bg,
-    repeating-linear-gradient(90deg,
-      rgba(255, 255, 255, 0.012) 0px,
-      rgba(255, 255, 255, 0.012) 1px,
-      transparent 1px,
-      transparent 3px,
-      rgba(0, 0, 0, 0.02) 3px,
-      rgba(0, 0, 0, 0.02) 4px,
-      transparent 4px,
-      transparent 6px));
-  filter: var(--explorer-panel-texture-filter, url("#navigationBarTexture"));
-  opacity: var(--explorer-panel-texture-opacity, 0.11);
-  mix-blend-mode: var(--explorer-panel-texture-blend, overlay);
+  background: var(--explorer-panel-texture-bg);
+  filter: var(--explorer-panel-texture-filter);
+  opacity: var(--explorer-panel-texture-opacity);
+  mix-blend-mode: var(--explorer-panel-texture-blend);
 }
 
 /* Pinned layout mode: Statically locks the sidebar into the main content flow */
 .left-side-panel-pinned {
-  border-right: 1px solid var(--right-panel-border);
+  border-right: 1px solid var(--primary-border-strong);
   box-shadow: var(--panel-pinned-shadow);
   opacity: 1;
   transform: translateX(0);
@@ -95,7 +82,7 @@
   z-index: 10;
   display: flex;
   flex-direction: column;
-  border-bottom: 1px solid var(--explorer-tab-baseline);
+  border-bottom: 1px solid var(--secondary-explorer-menu-rename-input-focus);
   padding-bottom: 0;
   flex-shrink: 0;
 }
@@ -112,18 +99,18 @@
   justify-content: center;
   padding: 0.375rem;
   border-radius: 0.5rem;
-  border: 1px solid rgba(0, 0, 0, 0); /* transparent border placeholder */
-  background: rgba(0, 0, 0, 0);
-  color: var(--explorer-action-icon, rgba(109, 170, 209, 0.85));
+  border: 1px solid transparent; /* transparent border placeholder */
+  background: transparent;
+  color: var(--primary-explorer-action-icon);
   cursor: pointer;
   flex-shrink: 0;
   transition: all 150ms ease;
 }
 
 .left-side-panel-pin-btn:hover {
-  border-color: var(--panel-border-subtle);
-  background-color: var(--card-surface-hover);
-  color: var(--explorer-action-icon-hover, #ffffff);
+  border-color: var(--primary-border-subtle);
+  background-color: var(--surface-primary-hover);
+  color: var(--explorer-action-icon-hover);
 }
 
 /* Tab row action buttons (Contextual Add & Folder Accordion Toggle) */
@@ -135,25 +122,25 @@
   height: 1.375rem; /* 22px */
   padding: 0;
   border-radius: 0.375rem;
-  border: 1px solid rgba(0, 0, 0, 0);
-  background: rgba(0, 0, 0, 0);
-  color: var(--explorer-action-icon, rgba(109, 170, 209, 0.85));
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--primary-explorer-action-icon);
   cursor: pointer;
   flex-shrink: 0;
   transition: all 150ms ease;
 }
 
 .explorer-tab-action-btn:hover {
-  border-color: var(--panel-border-subtle);
-  background-color: var(--card-surface-hover);
-  color: var(--explorer-action-icon-hover, #ffffff);
+  border-color: var(--primary-border-subtle);
+  background-color: var(--surface-primary-hover);
+  color: var(--explorer-action-icon-hover);
 }
 
 /* --------------------------------------------------------------------------
    Explorer Folder Tabs (Paper Folder Style)
    -------------------------------------------------------------------------- */
 .explorer-tab-baseline {
-  border-color: var(--explorer-tab-baseline);
+  border-color: var(--secondary-explorer-menu-rename-input-focus);
 }
 
 .explorer-folder-tab {
@@ -176,15 +163,15 @@
 }
 
 .explorer-folder-tab-idle {
-  color: var(--explorer-tab-text-idle);
+  color: var(--primary-explorer-tab-text-idle);
 }
 
 .explorer-folder-tab-idle:hover {
-  color: var(--explorer-tab-text-hover);
+  color: var(--primary-explorer-tab-text-hover);
 }
 
 .explorer-folder-tab-active {
-  color: var(--explorer-tab-text-active);
+  color: var(--secondary-explorer-menu-rename-save-text);
   font-weight: 700;
 }
 
@@ -197,46 +184,44 @@
 }
 
 .explorer-folder-tab-idle .explorer-tab-svg-fill {
-  fill: var(--explorer-tab-bg-idle);
+  fill: var(--primary-explorer-tab-bg-idle);
 }
 
 .explorer-folder-tab-idle:hover .explorer-tab-svg-fill {
-  fill: var(--explorer-tab-bg-hover);
+  fill: var(--primary-explorer-tab-bg-hover);
 }
 
 .explorer-folder-tab-idle .explorer-tab-svg-stroke {
-  stroke: var(--explorer-tab-border-idle);
+  stroke: var(--primary-explorer-tab-border-idle);
 }
 
 .explorer-folder-tab-idle:hover .explorer-tab-svg-stroke {
-  stroke: var(--explorer-tab-border-hover);
+  stroke: var(--primary-explorer-tab-border-hover);
 }
 
 .explorer-folder-tab-active .explorer-tab-svg-fill {
-  fill: var(--explorer-tab-bg-active, #0a4070);
+  fill: var(--primary-explorer-tab-bg-active);
 }
 
 .tab-grad-top {
-  stop-color: var(--explorer-tab-active-top, #125e9e);
+  stop-color: var(--primary-explorer-tab-active-top);
 }
 
 .tab-grad-mid {
-  stop-color: var(--explorer-tab-active-mid, #0a4070);
+  stop-color: var(--primary-explorer-tab-bg-active);
 }
 
 .tab-grad-bottom {
-  stop-color: var(--explorer-tab-active-bottom, #052446);
+  stop-color: var(--primary-explorer-tab-active-bottom);
 }
 
 .explorer-folder-tab-active .explorer-tab-svg-stroke {
-  stroke: var(--explorer-tab-border-active);
+  stroke: var(--secondary-explorer-menu-rename-input-focus);
 }
 
 /* Cast luminous amber glow and 3D shadow on active tab */
 .explorer-folder-tab-active svg {
-  filter: var(--explorer-tab-glow-active,
-          drop-shadow(4px 1px 5px var(--explorer-tab-shadow-right))
-          drop-shadow(-1px 0px 2px rgba(0, 0, 0, 0.35)));
+  filter: var(--secondary-explorer-tab-glow-active);
 }
 
 /* --------------------------------------------------------------------------
@@ -247,9 +232,9 @@
   padding: 0.625rem;
   border-radius: 0.5rem;
   flex-shrink: 0;
-  background-color: var(--panel-notice-loading-bg);
-  border: 1px solid var(--panel-notice-loading-border);
-  color: var(--panel-notice-loading-text);
+  background-color: var(--primary-panel-notice-loading-bg);
+  border: 1px solid var(--primary-panel-notice-loading-border);
+  color: var(--secondary-explorer-menu-rename-save-text);
 }
 
 .left-side-panel-notice-error {
@@ -267,8 +252,8 @@
    (Inline popover variant used for quick node actions)
    -------------------------------------------------------------------------- */
 .explorer-action-popup {
-  background-color: var(--explorer-menu-bg);
-  border: 1px solid var(--explorer-menu-border);
+  background-color: var(--surface-popover);
+  border: 1px solid var(--primary-explorer-menu-border);
   border-radius: 0.375rem;
   box-shadow: var(--popover-elevation-shadow);
   padding: 0.25rem;
@@ -281,24 +266,24 @@
 /* Base button appearance inside popups */
 .explorer-action-btn {
   padding: 0.375rem;
-  color: var(--explorer-menu-btn-text);
+  color: var(--text-muted);
   border-radius: 0.25rem;
   font-size: 0.75rem;
   cursor: pointer;
   transition: all 150ms ease;
   white-space: nowrap;
-  background: rgba(0, 0, 0, 0);
+  background: transparent;
   border: none;
 }
 
 .explorer-action-btn:hover {
-  background-color: var(--explorer-menu-btn-hover-bg);
+  background-color: var(--primary-col-dropdown-btn-hover-bg);
   color: var(--explorer-menu-btn-hover-text);
 }
 
 .explorer-action-btn-accent:hover {
-  background-color: var(--explorer-menu-btn-hover-bg);
-  color: var(--explorer-menu-btn-accent-hover);
+  background-color: var(--primary-col-dropdown-btn-hover-bg);
+  color: var(--secondary-explorer-menu-rename-input-focus);
 }
 
 /* Destructive / Delete variant inside popups */
@@ -310,7 +295,7 @@
   cursor: pointer;
   transition: all 150ms ease;
   white-space: nowrap;
-  background: rgba(0, 0, 0, 0);
+  background: transparent;
   border: none;
 }
 
@@ -322,7 +307,7 @@
 /* Compact Search Input */
 .explorer-search-input {
   width: 100%;
-  background-color: var(--explorer-search-input-bg, rgba(4, 8, 17, 1.00));
+  background-color: var(--primary-explorer-search-input-bg);
   border-radius: 0.375rem;
   padding-left: 1.5rem;
   padding-right: 3rem;
@@ -330,27 +315,27 @@
   padding-bottom: 0.25rem;
   font-size: 0.75rem;
   line-height: 1rem;
-  color: var(--brand-secondary-amber, rgba(248, 188, 9, 1.00));
+  color: var(--secondary-accent);
   outline: none;
   transition: border-color 150ms ease, box-shadow 150ms ease;
-  border: 1px solid var(--explorer-search-input-border, rgba(0, 160, 255, 0.58));
+  border: 1px solid var(--primary-border-input);
 }
 
 .explorer-search-input:hover {
-  border-color: var(--explorer-input-border-hover, rgba(0, 190, 255, 0.80));
+  border-color: var(--primary-border-input-hover);
 }
 
 .explorer-search-input::placeholder {
-  color: var(--explorer-search-placeholder, rgba(105, 147, 185, 0.85));
+  color: var(--primary-explorer-search-placeholder);
 }
 
 .explorer-search-input:focus {
-  border-color: var(--brand-secondary-amber, rgba(248, 188, 9, 1.00));
-  box-shadow: 0 0 4px var(--explorer-input-focus-glow, rgba(248, 188, 9, 0.25));
+  border-color: var(--secondary-accent);
+  box-shadow: var(--secondary-focus-ring);
 }
 
 .explorer-search-input-active {
-  border-color: var(--brand-secondary-amber, rgba(248, 188, 9, 1.00));
+  border-color: var(--secondary-accent);
 }
 
 /* Keyboard Shortcut Badge */
@@ -367,10 +352,10 @@
   letter-spacing: -0.05em;
   padding: 2px 4px;
   border-radius: 3px;
-  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  color: var(--explorer-kbd-text, rgba(52, 211, 153, 1.00));
-  background-color: var(--explorer-kbd-bg, rgba(6, 78, 59, 0.80));
-  border: 1px solid var(--explorer-kbd-border, rgba(6, 95, 70, 0.60));
+  box-shadow: 0 1px 2px 0 var(--shadow-black-5);
+  color: var(--explorer-kbd-text);
+  background-color: var(--explorer-kbd-bg);
+  border: 1px solid var(--explorer-kbd-border);
 }
 
 /* --------------------------------------------------------------------------
@@ -379,8 +364,8 @@
 .search-result-card {
   padding: 0.5rem;
   border-radius: 0.5rem;
-  border: 1px solid var(--panel-border-subtle);
-  background-color: var(--panel-surface-bg);
+  border: 1px solid var(--primary-border-subtle);
+  background-color: var(--surface-panel);
   cursor: pointer;
   display: flex;
   flex-direction: column;
@@ -389,14 +374,14 @@
 }
 
 .search-result-card:hover {
-  border-color: var(--panel-border-strong);
-  background-color: var(--card-surface-hover);
+  border-color: var(--primary-border-strong);
+  background-color: var(--surface-primary-hover);
 }
 
 .search-result-card-selected {
-  background-color: var(--explorer-item-active-bg);
-  border-color: var(--brand-primary);
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+  background-color: var(--secondary-selection-bg);
+  border-color: var(--primary-accent);
+  box-shadow: 0 4px 6px -1px var(--shadow-black-30);
 }
 
 /* --------------------------------------------------------------------------
@@ -416,11 +401,9 @@
   position: sticky;
   top: 0;
   border-radius: 0.5rem;
-  background: var(--explorer-category-card-bg, var(--explorer-sticky-category-bg));
-  border: 1px solid var(--explorer-category-card-border, var(--panel-border-subtle));
-  box-shadow: var(--explorer-category-card-shadow,
-              inset 0 1px 0 rgba(255, 255, 255, 0.12),
-              0 2px 8px rgba(0, 0, 0, 0.45));
+  background: var(--primary-explorer-category-card-bg);
+  border: 1px solid var(--primary-explorer-category-card-border);
+  box-shadow: var(--explorer-category-card-shadow);
   backdrop-filter: blur(12px);
   margin-top: 0.25rem;
   margin-bottom: 0.25rem;
@@ -428,13 +411,13 @@
 }
 
 .explorer-category-sticky-header:hover {
-  background: var(--explorer-category-card-hover-bg, var(--card-surface-hover));
-  border-color: var(--explorer-category-card-hover-border, var(--panel-border-strong));
+  background: var(--primary-explorer-category-card-hover-bg);
+  border-color: var(--primary-explorer-category-card-hover-border);
 }
 
 .explorer-category-sticky-header.explorer-category-row-active {
-  background: var(--explorer-category-card-active-bg, var(--explorer-item-active-bg));
-  border-color: var(--explorer-category-card-active-border, var(--brand-secondary-amber));
+  background: var(--primary-explorer-category-card-active-bg);
+  border-color: var(--secondary-explorer-category-card-active-border);
 }
 
 /* Elevates the active/hovered tree row above sibling sticky stacking layers */

@@ -31,19 +31,19 @@
 
 /* Hover surface styling when inactive */
 .tree-gear-trigger:hover {
-  background-color: var(--tree-gear-bg-hover);
-  border-color: var(--panel-border-subtle);
+  background-color: var(--primary-tree-gear-bg-hover);
+  border-color: var(--primary-border-subtle);
 }
 
 /* Persistent active state when context menu popover is open */
 .tree-gear-trigger-active {
   opacity: 1;
-  background-color: var(--tree-gear-bg-hover);
-  border-color: var(--panel-border-subtle);
+  background-color: var(--primary-tree-gear-bg-hover);
+  border-color: var(--primary-border-subtle);
 }
 
 .tree-gear-icon-active {
-  color: var(--tree-gear-icon-active, var(--content-primary));
+  color: var(--tree-gear-icon-active);
 }
 
 /* --------------------------------------------------------------------------
@@ -64,7 +64,7 @@
 /* Context menu horizontal separator line */
 .tree-menu-divider {
   border-top-width: 1px;
-  border-color: var(--explorer-menu-divider);
+  border-color: var(--secondary-explorer-menu-divider);
 }
 
 /* Destructive context menu action button */

@@ -1,42 +1,42 @@
 /* Shared semantic visuals for content, admin, and navigation components. */
 
-.ui-primary { color: var(--text-primary); }
-.ui-secondary { color: var(--text-secondary); }
+.ui-primary { color: var(--text-strong); }
+.ui-secondary { color: var(--text-soft); }
 .ui-muted { color: var(--text-muted); }
-.ui-accent { color: var(--brand-secondary-amber); }
+.ui-accent { color: var(--secondary-accent); }
 .ui-danger { color: var(--content-btn-danger-text); }
-.ui-hover-primary:hover { color: var(--text-primary); }
-.ui-hover-accent:hover { color: var(--brand-secondary-amber); }
-.ui-surface { background-color: var(--panel-surface-bg); }
-.ui-surface-hover { background-color: var(--card-surface-hover); }
-.ui-border-subtle { border-color: var(--panel-border-subtle); }
-.ui-border-strong { border-color: var(--panel-border-strong); }
-.ui-border-top-subtle { border-top-color: var(--panel-border-subtle); }
-.ui-border-bottom-subtle { border-bottom-color: var(--panel-border-subtle); }
-.ui-hover-surface:hover { background-color: var(--card-surface-hover); }
+.ui-hover-primary:hover { color: var(--text-strong); }
+.ui-hover-accent:hover { color: var(--secondary-accent); }
+.ui-surface { background-color: var(--surface-panel); }
+.ui-surface-hover { background-color: var(--surface-primary-hover); }
+.ui-border-subtle { border-color: var(--primary-border-subtle); }
+.ui-border-strong { border-color: var(--primary-border-strong); }
+.ui-border-top-subtle { border-top-color: var(--primary-border-subtle); }
+.ui-border-bottom-subtle { border-bottom-color: var(--primary-border-subtle); }
+.ui-hover-surface:hover { background-color: var(--surface-primary-hover); }
 .ui-input {
-  background-color: var(--modal-input-bg);
-  border-color: var(--modal-input-border);
-  color: var(--text-primary);
+  background-color: var(--surface-canvas);
+  border-color: var(--primary-border-subtle);
+  color: var(--text-strong);
 }
 .ui-input::placeholder { color: var(--text-muted); }
-.ui-input:focus { border-color: var(--modal-input-focus-border); outline: none; }
+.ui-input:focus { border-color: var(--primary-accent); outline: none; }
 .ui-danger-surface { background-color: var(--content-btn-danger-bg); }
 .ui-danger-surface:hover { background-color: var(--content-btn-danger-hover); }
-.ui-primary-surface { background-color: var(--content-btn-primary-bg); color: var(--content-btn-primary-text); }
-.ui-primary-surface:hover { background-color: var(--content-btn-primary-hover); }
+.ui-primary-surface { background-color: var(--primary-accent); color: var(--text-on-primary); }
+.ui-primary-surface:hover { background-color: var(--primary-accent-hover); }
 .ui-disabled:disabled { opacity: 0.5; }
 .ui-invisible { opacity: 0; }
 .group:hover .ui-invisible { opacity: 1; }
 
 .detail-item-badge {
-  background-color: var(--explorer-item-active-bg);
-  border: 1px solid var(--explorer-item-active-border);
-  color: var(--brand-secondary-amber);
+  background-color: var(--secondary-selection-bg);
+  border: 1px solid var(--secondary-selection-border);
+  color: var(--secondary-accent);
 }
 .detail-parent-badge {
-  background-color: var(--card-surface-hover);
-  border: 1px solid var(--panel-border-subtle);
+  background-color: var(--surface-primary-hover);
+  border: 1px solid var(--primary-border-subtle);
   color: var(--text-muted);
 }
 .detail-standalone-badge {
@@ -44,60 +44,60 @@
   border: 1px solid var(--content-badge-root-border);
   color: var(--content-badge-root-text);
 }
-.detail-heading { color: var(--text-primary); }
+.detail-heading { color: var(--text-strong); }
 .detail-muted { color: var(--text-muted); }
-.detail-accent { color: var(--brand-secondary-amber); }
+.detail-accent { color: var(--secondary-accent); }
 .detail-action-secondary {
-  background-color: var(--card-surface-hover);
-  border: 1px solid var(--panel-border-subtle);
-  color: var(--text-secondary);
+  background-color: var(--surface-primary-hover);
+  border: 1px solid var(--primary-border-subtle);
+  color: var(--text-soft);
 }
-.detail-action-secondary:hover { color: var(--text-primary); background-color: var(--card-surface-hover); }
-.detail-image { border-color: var(--panel-border-subtle); box-shadow: var(--content-card-shadow); }
-.detail-empty-image { color: var(--text-muted); border-color: var(--panel-border-subtle); }
+.detail-action-secondary:hover { color: var(--text-strong); background-color: var(--surface-primary-hover); }
+.detail-image { border-color: var(--primary-border-subtle); box-shadow: var(--content-card-shadow); }
+.detail-empty-image { color: var(--text-muted); border-color: var(--primary-border-subtle); }
 .detail-empty-icon { opacity: 0.4; }
-.detail-divider { border-color: var(--panel-border-subtle); }
+.detail-divider { border-color: var(--primary-border-subtle); }
 
-.dropdown-icon { color: var(--brand-secondary-amber); }
+.dropdown-icon { color: var(--secondary-accent); }
 .dropdown-muted { color: var(--text-muted); }
-.dropdown-primary { color: var(--text-primary); }
-.dropdown-secondary { color: var(--text-secondary); }
-.dropdown-accent { color: var(--brand-secondary-amber); }
+.dropdown-primary { color: var(--text-strong); }
+.dropdown-secondary { color: var(--text-soft); }
+.dropdown-accent { color: var(--secondary-accent); }
 .dropdown-danger { color: var(--content-btn-danger-text); }
-.dropdown-control:hover { color: var(--text-primary); background-color: var(--card-surface-hover); }
-.dropdown-control-danger:hover { color: var(--content-btn-danger-text); background-color: var(--card-surface-hover); }
+.dropdown-control:hover { color: var(--text-strong); background-color: var(--surface-primary-hover); }
+.dropdown-control-danger:hover { color: var(--content-btn-danger-text); background-color: var(--surface-primary-hover); }
 .dropdown-input {
-  background-color: var(--canvas-bg-primary);
-  border-color: var(--panel-border-subtle);
-  color: var(--text-primary);
+  background-color: var(--surface-canvas);
+  border-color: var(--primary-border-subtle);
+  color: var(--text-strong);
 }
 .dropdown-input::placeholder { color: var(--text-muted); }
-.dropdown-input:focus { border-color: var(--brand-primary); outline: none; }
+.dropdown-input:focus { border-color: var(--primary-accent); outline: none; }
 .dropdown-error { color: var(--content-btn-danger-text); }
 .dropdown-disabled:disabled { opacity: 0.5; }
 
-.panel-grip-active { background-color: var(--brand-secondary-amber); opacity: 1; }
-.panel-grip-idle { background-color: var(--brand-secondary-amber); opacity: 0; }
+.panel-grip-active { background-color: var(--secondary-accent); opacity: 1; }
+.panel-grip-idle { background-color: var(--secondary-accent); opacity: 0; }
 .group:hover .panel-grip-idle { opacity: 1; }
 .panel-reset-button {
-  background-color: var(--panel-surface-bg);
-  border-color: var(--brand-secondary-amber);
+  background-color: var(--surface-panel);
+  border-color: var(--secondary-accent);
   box-shadow: var(--panel-reset-shadow);
 }
-.panel-reset-button:hover { background-color: var(--card-surface-hover); }
-.panel-reset-icon { color: var(--brand-secondary-amber); }
-.panel-reset-icon:hover { color: var(--text-primary); }
+.panel-reset-button:hover { background-color: var(--surface-primary-hover); }
+.panel-reset-icon { color: var(--secondary-accent); }
+.panel-reset-icon:hover { color: var(--text-strong); }
 .panel-shell { box-shadow: var(--panel-shell-shadow); backdrop-filter: blur(12px); }
-.icon-primary { color: var(--brand-primary); }
-.icon-primary-hover:hover { color: var(--text-primary); }
-.icon-pin-filled { color: var(--text-primary); }
+.icon-primary { color: var(--primary-accent); }
+.icon-primary-hover:hover { color: var(--text-strong); }
+.icon-pin-filled { color: var(--text-strong); }
 .icon-pin-filled:hover { color: var(--text-muted); }
 .icon-pin-filled:hover { fill: transparent; }
-.ui-hover-primary:hover { color: var(--text-primary); }
-.icon-pin-outline:hover { color: var(--text-primary); }
+.ui-hover-primary:hover { color: var(--text-strong); }
+.icon-pin-outline:hover { color: var(--text-strong); }
 .icon-gear-active { fill: currentColor; }
 .icon-gear-idle { fill: transparent; }
 .group:hover .icon-gear-idle { fill: currentColor; }
-.icon-pin-outline:hover { fill: var(--text-primary); stroke: var(--text-primary); }
+.icon-pin-outline:hover { fill: var(--text-strong); stroke: var(--text-strong); }
 .panel-notice-text { color: var(--text-muted); }
 .panel-overlay { background-color: transparent; }

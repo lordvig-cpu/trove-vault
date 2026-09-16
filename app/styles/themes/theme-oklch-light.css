@@ -1,0 +1,31 @@
+/* Derive light mode from the shared dark palette: preserve hue, invert
+   surface/ink lightness, and reduce chroma for pale sapphire/amber surfaces.
+   Accents darken to work on light backgrounds; shadows keep their purpose. */
+[data-theme='theme-oklch-light'] {
+  color-scheme: light;
+  --oklch-surface-offset: 1.08;
+  --oklch-surface-scale: -0.65;
+  --oklch-surface-chroma: 0.38;
+  --oklch-ink-offset: 0.85;
+  --oklch-ink-scale: -0.65;
+  --oklch-ink-chroma: 0.75;
+  --oklch-accent-offset: 0;
+  --oklch-accent-scale: 0.72;
+  --oklch-accent-chroma: 0.75;
+  --oklch-shadow-opacity: 0.18;
+  --oklch-glow-opacity: 0.55;
+
+  /* This accent also serves as small label text: use deeper ochre in light. */
+  --brand-secondary-amber: oklch(from var(--oklch-yellow) calc(l * 0.60) calc(c * 0.75) h);
+
+  --nav-header-flare-blend: multiply;
+  --nav-footer-flare-blend: multiply;
+  --right-panel-flare-blend: multiply;
+  --watermark-logo-opacity: 0.10;
+  --content-overlay-brightness-dim: 0.90;
+}
+
+/* These shared media glyphs otherwise use a literal white color. */
+[data-theme='theme-oklch-light'] .nav-toggle-icon {
+  color: var(--text-secondary);
+}

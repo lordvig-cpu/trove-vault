@@ -4,6 +4,11 @@
 @import "./styles/themes/theme-default-dark.css";
 @import "./styles/themes/theme-default-light.css";
 @import "./styles/themes/theme-premium-contrast.css";
+/* OKLCH: seeds and defaults, shared recipes, then light-mode overrides. */
+@import "./styles/themes/theme-oklch-dark.css";
+@import "./styles/themes/theme-oklch.css";
+@import "./styles/themes/theme-oklch-light.css";
+@import "./styles/themes/theme-semantic.css";
 
 /* 2. Functional Component Stylesheets */
 @import "./styles/components/ExplorerPrimitives.css";
