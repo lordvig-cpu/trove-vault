@@ -224,7 +224,7 @@
    --studio-grid-glow-top-left-edge: rgba(0, 70, 160, 0.08);
    --studio-grid-glow-bottom-right-core: rgba(217, 119, 6, 0.10);
    --studio-grid-glow-bottom-right-edge: rgba(217, 119, 6, 0.03);
-   --studio-grid-vignette: rgba(0, 2, 10, 0.55);
+   --studio-grid-vignette: rgba(0, 2, 10, 0.35);
    --studio-grid-line: rgba(100, 170, 240, 0.06);
    --studio-grid-cell-size: 32px;
 
@@ -266,9 +266,11 @@
 
    /* #region 4. LEFT SIDE PANEL & EXPLORER TREE */
    --panel-border-accent: rgba(0, 160, 255, 0.90);
-   --panel-pinned-shadow: 14px 0 35px -4px rgba(0, 0, 0, 0.85), 4px 0 20px rgba(0, 140, 255, 0.15);
+   --panel-pinned-shadow:
+     4px 0 14px -2px rgba(0, 0, 0, 0.55),
+     2px 0 5px 0 rgba(0, 0, 0, 0.35);
    --panel-reset-shadow: 4px 0 12px rgba(0, 0, 0, 0.60);
-   --panel-shell-shadow: 0 25px 50px rgba(0, 0, 0, 0.50);
+   --panel-shell-shadow: 0 12px 24px -4px rgba(0, 0, 0, 0.40);
 
    /* Explorer Panel Sapphire Chassis Surface, Flare & Texture (Calibrated to Target Image 2) */
    --explorer-panel-bg:
@@ -415,8 +417,8 @@
        #001124 100%);
    --right-panel-border: #02396c;
    --right-panel-shadow:
-     -14px 0 35px -4px rgba(0, 0, 0, 0.85),
-     -4px 0 20px rgba(0, 140, 255, 0.12),
+     -4px 0 14px -2px rgba(0, 0, 0, 0.55),
+     -2px 0 5px 0 rgba(0, 0, 0, 0.35),
      inset 1px 0 0 rgba(255, 255, 255, 0.08);
 
    /* Ambient Flare Highlight (::before) */

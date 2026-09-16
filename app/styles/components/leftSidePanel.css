@@ -36,6 +36,7 @@
   inset: 0;
   pointer-events: none;
   z-index: 1;
+  clip-path: inset(0);
   background: var(--explorer-panel-flare-bg,
     radial-gradient(ellipse 140% 120% at 50% -25%,
       rgba(0, 180, 255, 0.22) 0%,
@@ -52,6 +53,7 @@
   inset: 0;
   pointer-events: none;
   z-index: 1;
+  clip-path: inset(0);
   background: var(--explorer-panel-texture-bg,
     repeating-linear-gradient(90deg,
       rgba(255, 255, 255, 0.012) 0px,

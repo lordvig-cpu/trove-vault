@@ -46,10 +46,11 @@ export const SunIcon = ({ className = '' }: { className?: string }) => (
 /* NavigationHeaderTextureFilter: Defines an SVG filter for the navigation header, creating a subtle noise texture overlay. */
 export const NavigationBarTextureFilter = () => (
   <svg className="absolute w-0 h-0 pointer-events-none opacity-0 overflow-hidden" aria-hidden="true">
-    <filter id="navigationBarTexture">
+    <filter id="navigationBarTexture" x="0%" y="0%" width="100%" height="100%">
       <feTurbulence type="fractalNoise" baseFrequency="0.04 1.8" numOctaves="5" stitchTiles="stitch" result="noise" />
       <feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 0.85 0" in="noise" result="coloredNoise" />
-      <feBlend mode="overlay" in="SourceGraphic" in2="coloredNoise" />
+      <feComposite operator="in" in="coloredNoise" in2="SourceGraphic" result="clippedNoise" />
+      <feBlend mode="overlay" in="SourceGraphic" in2="clippedNoise" />
     </filter>
   </svg>
 );
