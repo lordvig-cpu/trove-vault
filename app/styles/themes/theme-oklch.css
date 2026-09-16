@@ -51,13 +51,14 @@
   --oklch-blue-16-185-129: oklch(from var(--oklch-blue) calc(l * 1.16628) calc(c * 0.67399) calc(h + -95.55071));
   --oklch-blue-244-63-94: oklch(from var(--oklch-blue) calc(l * 1.08107) calc(c * 0.97388) calc(h + -241.59101));
   --oklch-blue-253-164-175: oklch(from var(--oklch-blue) calc(l * 1.357) calc(c * 0.47974) calc(h + -246.39185));
-  --oklch-blue-0-24-54: oklch(from var(--oklch-blue) calc(l * 0.35306) calc(c * 0.30311) calc(h + -4.03869));
-  --oklch-blue-0-34-68: oklch(from var(--oklch-blue) calc(l * 0.42004) calc(c * 0.33842) calc(h + -6.09317));
-  --oklch-blue-0-43-82: oklch(from var(--oklch-blue) calc(l * 0.48008) calc(c * 0.37913) calc(h + -6.79257));
-  --oklch-blue-0-36-68: oklch(from var(--oklch-blue) calc(l * 0.42934) calc(c * 0.32635) calc(h + -8.20277));
-  --oklch-blue-0-31-62: oklch(from var(--oklch-blue) calc(l * 0.39768) calc(c * 0.31528) calc(h + -6.65545));
-  --oklch-blue-0-28-58: oklch(from var(--oklch-blue) calc(l * 0.37786) calc(c * 0.30591) calc(h + -5.92845));
-  --oklch-blue-0-20-43: oklch(from var(--oklch-blue) calc(l * 0.31722) calc(c * 0.24884) calc(h + -7.0334));
+  --oklch-blue-0-24-60: oklch(from var(--oklch-blue) calc(l * 0.36248) calc(c * 0.34657) calc(h + -1.06749));
+  --oklch-blue-0-26-56: oklch(from var(--oklch-blue) calc(l * 0.36549) calc(c * 0.30445) calc(h + -4.98468));
+  --oklch-blue-0-36-76: oklch(from var(--oklch-blue) calc(l * 0.44046) calc(c * 0.38114) calc(h + -3.79927));
+  --oklch-blue-0-44-88: oklch(from var(--oklch-blue) calc(l * 0.49263) calc(c * 0.41317) calc(h + -4.766));
+  --oklch-blue-0-38-75: oklch(from var(--oklch-blue) calc(l * 0.44803) calc(c * 0.36193) calc(h + -6.00256));
+  --oklch-blue-0-31-64: oklch(from var(--oklch-blue) calc(l * 0.40051) calc(c * 0.32927) calc(h + -5.41304));
+  --oklch-blue-0-23-50: oklch(from var(--oklch-blue) calc(l * 0.34229) calc(c * 0.28058) calc(h + -5.51077));
+  --oklch-blue-0-17-36: oklch(from var(--oklch-blue) calc(l * 0.29174) calc(c * 0.2164) calc(h + -9.16075));
   --oklch-blue-76-5-25: oklch(from var(--oklch-blue) calc(l * 0.45394) calc(c * 0.45601) calc(h + -245.93635));
   --oklch-blue-254-205-211: oklch(from var(--oklch-blue) calc(l * 1.49574) calc(c * 0.25278) calc(h + -248.02951));
   --oklch-blue-159-18-57: oklch(from var(--oklch-blue) calc(l * 0.76186) calc(c * 0.7744) calc(h + -244.33352));
@@ -90,14 +91,6 @@
   --oklch-blue-10-64-112: oklch(from var(--oklch-blue) calc(l * 0.61374) calc(c * 0.44354) calc(h + -7.10613));
   --oklch-blue-18-94-158: oklch(from var(--oklch-blue) calc(l * 0.79308) calc(c * 0.56206) calc(h + -8.09271));
   --oklch-blue-5-36-70: oklch(from var(--oklch-blue) calc(l * 0.43539) calc(c * 0.33027) calc(h + -4.23154));
-  --oklch-blue-0-24-60: oklch(from var(--oklch-blue) calc(l * 0.36248) calc(c * 0.34657) calc(h + -1.06749));
-  --oklch-blue-0-26-56: oklch(from var(--oklch-blue) calc(l * 0.36549) calc(c * 0.30445) calc(h + -4.98468));
-  --oklch-blue-0-36-76: oklch(from var(--oklch-blue) calc(l * 0.44046) calc(c * 0.38114) calc(h + -3.79927));
-  --oklch-blue-0-44-88: oklch(from var(--oklch-blue) calc(l * 0.49263) calc(c * 0.41317) calc(h + -4.766));
-  --oklch-blue-0-38-75: oklch(from var(--oklch-blue) calc(l * 0.44803) calc(c * 0.36193) calc(h + -6.00256));
-  --oklch-blue-0-31-64: oklch(from var(--oklch-blue) calc(l * 0.40051) calc(c * 0.32927) calc(h + -5.41304));
-  --oklch-blue-0-23-50: oklch(from var(--oklch-blue) calc(l * 0.34229) calc(c * 0.28058) calc(h + -5.51077));
-  --oklch-blue-0-17-36: oklch(from var(--oklch-blue) calc(l * 0.29174) calc(c * 0.2164) calc(h + -9.16075));
   --oklch-blue-6-26-60: oklch(from var(--oklch-blue) calc(l * 0.37694) calc(c * 0.31972) calc(h + 1.95831));
   --oklch-blue-2-57-108: oklch(from var(--oklch-blue) calc(l * 0.57613) calc(c * 0.46517) calc(h + -5.36472));
   --oklch-blue-2-14-36: oklch(from var(--oklch-blue) calc(l * 0.27968) calc(c * 0.22801) calc(h + -0.1996));
@@ -326,29 +319,32 @@
    --panel-reset-shadow: 4px 0 12px oklch(from var(--oklch-blue-0-0-0) l c h / calc(0.6 * var(--oklch-shadow-opacity)));
    --panel-shell-shadow: 0 12px 24px -4px oklch(from var(--oklch-blue-0-0-0) l c h / calc(0.4 * var(--oklch-shadow-opacity)));
    --explorer-panel-bg: linear-gradient(180deg,
-       oklch(from var(--oklch-blue-0-24-54) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 1) 0%,
-       oklch(from var(--oklch-blue-0-34-68) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 1) 10%,
-       oklch(from var(--oklch-blue-0-43-82) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 1) 24%,
-       oklch(from var(--oklch-blue-0-36-68) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 1) 42%,
-       oklch(from var(--oklch-blue-0-31-62) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 1) 60%,
-       oklch(from var(--oklch-blue-0-28-58) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 1) 80%,
-       oklch(from var(--oklch-blue-0-20-43) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 1) 100%);
+       oklch(from var(--oklch-blue-255-255-255) l c h / 0.07) 0%,
+       oklch(from var(--oklch-blue-255-255-255) l c h / 0.015) 14%,
+       transparent 36%),
+     linear-gradient(90deg,
+       oklch(from var(--oklch-blue-0-24-60) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.2) 0%,
+       transparent 60%,
+       oklch(from var(--oklch-blue-0-140-255) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 0.06) 100%),
+     linear-gradient(180deg,
+       oklch(from var(--oklch-blue-0-26-56) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.6) 0%,
+       oklch(from var(--oklch-blue-0-36-76) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.6) 12%,
+       oklch(from var(--oklch-blue-0-44-88) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.6) 28%,
+       oklch(from var(--oklch-blue-0-38-75) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.6) 48%,
+       oklch(from var(--oklch-blue-0-31-64) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.6) 68%,
+       oklch(from var(--oklch-blue-0-23-50) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.6) 86%,
+       oklch(from var(--oklch-blue-0-17-36) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.6) 100%);
    --explorer-panel-border: var(--panel-border-strong);
-   --explorer-panel-flare-bg: none;
-   --explorer-panel-flare-blend: normal;
-   --explorer-panel-flare-opacity: 0;
-   --explorer-panel-texture-bg: repeating-linear-gradient(90deg,
-       oklch(from var(--oklch-blue-255-255-255) l c h / 0.012) 0px,
-       oklch(from var(--oklch-blue-255-255-255) l c h / 0.012) 1px,
-       transparent 1px,
-       transparent 3px,
-       oklch(from var(--oklch-blue-0-0-0) l c h / calc(0.02 * var(--oklch-shadow-opacity))) 3px,
-       oklch(from var(--oklch-blue-0-0-0) l c h / calc(0.02 * var(--oklch-shadow-opacity))) 4px,
-       transparent 4px,
-       transparent 6px);
-   --explorer-panel-texture-filter: url("#navigationBarTexture");
-   --explorer-panel-texture-opacity: 0.11;
-   --explorer-panel-texture-blend: overlay;
+   --explorer-panel-flare-bg: radial-gradient(ellipse 130% 120% at 15% -20%,
+       oklch(from var(--oklch-blue-0-180-255) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / calc(0.18 * var(--oklch-glow-opacity))) 0%,
+       oklch(from var(--oklch-blue-0-110-220) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / calc(0.08 * var(--oklch-glow-opacity))) 45%,
+       transparent 75%);
+   --explorer-panel-flare-blend: screen;
+   --explorer-panel-flare-opacity: 0.70;
+   --explorer-panel-texture-bg: none;
+   --explorer-panel-texture-filter: none;
+   --explorer-panel-texture-opacity: 0;
+   --explorer-panel-texture-blend: normal;
    --panel-notice-loading-bg: oklch(from var(--oklch-blue-4-22-54) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 1);
    --panel-notice-loading-text: oklch(from var(--oklch-yellow-248-188-9) clamp(0, calc(var(--oklch-ink-offset) + l * var(--oklch-ink-scale)), 1) calc(c * var(--oklch-ink-chroma)) h / 1);
    --panel-notice-loading-border: oklch(from var(--oklch-blue-0-140-255) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 0.3);
@@ -426,17 +422,17 @@
        oklch(from var(--oklch-blue-255-255-255) l c h / 0.015) 14%,
        transparent 36%),
      linear-gradient(270deg,
-       oklch(from var(--oklch-blue-0-24-60) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.25) 0%,
+       oklch(from var(--oklch-blue-0-24-60) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.2) 0%,
        transparent 60%,
        oklch(from var(--oklch-blue-0-140-255) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 0.06) 100%),
      linear-gradient(180deg,
-       oklch(from var(--oklch-blue-0-26-56) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 1) 0%,
-       oklch(from var(--oklch-blue-0-36-76) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 1) 12%,
-       oklch(from var(--oklch-blue-0-44-88) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 1) 28%,
-       oklch(from var(--oklch-blue-0-38-75) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 1) 48%,
-       oklch(from var(--oklch-blue-0-31-64) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 1) 68%,
-       oklch(from var(--oklch-blue-0-23-50) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 1) 86%,
-       oklch(from var(--oklch-blue-0-17-36) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 1) 100%);
+       oklch(from var(--oklch-blue-0-26-56) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.6) 0%,
+       oklch(from var(--oklch-blue-0-36-76) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.6) 12%,
+       oklch(from var(--oklch-blue-0-44-88) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.6) 28%,
+       oklch(from var(--oklch-blue-0-38-75) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.6) 48%,
+       oklch(from var(--oklch-blue-0-31-64) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.6) 68%,
+       oklch(from var(--oklch-blue-0-23-50) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.6) 86%,
+       oklch(from var(--oklch-blue-0-17-36) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.6) 100%);
    --right-panel-border: var(--panel-border-strong);
    --right-panel-shadow: -4px 0 14px -2px oklch(from var(--oklch-blue-0-0-0) l c h / calc(0.55 * var(--oklch-shadow-opacity))),
      -2px 0 5px 0 oklch(from var(--oklch-blue-0-0-0) l c h / calc(0.35 * var(--oklch-shadow-opacity))),

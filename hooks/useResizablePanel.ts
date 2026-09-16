@@ -48,6 +48,7 @@ export function useResizablePanel({
   // without needing teardown and reattachment on every frame.
   const isDraggingRef = useRef<boolean>(false);
   const panelWidthRef = useRef<number>(panelWidth);
+  const reservedWidthRef = useRef<number>(reservedWidth);
 
   useEffect(() => {
     isDraggingRef.current = isDragging;
@@ -56,6 +57,10 @@ export function useResizablePanel({
   useEffect(() => {
     panelWidthRef.current = panelWidth;
   }, [panelWidth]);
+
+  useEffect(() => {
+    reservedWidthRef.current = reservedWidth;
+  }, [reservedWidth]);
 
   // ---------------------------------------------------------------------------
   // Dynamic Workspace Boundary Clamping
@@ -66,8 +71,14 @@ export function useResizablePanel({
 
     // Viewport minus opposite panel's footprint and buffer margin
     const dynamicMax = Math.max(minWidth, window.innerWidth - reservedWidth - minGap);
-    setPanelWidth((prev) => (prev > dynamicMax ? dynamicMax : prev));
-  }, [reservedWidth, minWidth, minGap]);
+    setPanelWidth((prev) => {
+      if (prev > dynamicMax) {
+        onWidthChange?.(dynamicMax);
+        return dynamicMax;
+      }
+      return prev;
+    });
+  }, [reservedWidth, minWidth, minGap, onWidthChange]);
 
   // ---------------------------------------------------------------------------
   // Global Pointer Listeners (Window Level)
@@ -81,11 +92,12 @@ export function useResizablePanel({
 
       // Left panel measures from screen left (0 -> X); right panel measures from screen right (innerWidth -> X)
       const rawWidth = direction === 'left' ? e.clientX : window.innerWidth - e.clientX;
-      const dynamicMax = Math.max(minWidth, window.innerWidth - reservedWidth - minGap);
+      const dynamicMax = Math.max(minWidth, window.innerWidth - reservedWidthRef.current - minGap);
       const clampedWidth = Math.min(Math.max(rawWidth, minWidth), dynamicMax);
 
       panelWidthRef.current = clampedWidth;
       setPanelWidth(clampedWidth);
+      onWidthChange?.(clampedWidth);
     };
 
     /**
@@ -111,7 +123,7 @@ export function useResizablePanel({
       window.removeEventListener('pointermove', handlePointerMove);
       window.removeEventListener('pointerup', handlePointerUp);
     };
-  }, [reservedWidth, minWidth, minGap, direction, onWidthChange]);
+  }, [minWidth, minGap, direction, onWidthChange]);
 
   // ---------------------------------------------------------------------------
   // Interaction Handlers

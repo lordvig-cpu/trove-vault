@@ -34,7 +34,7 @@ interface SecondarySidePanelProps {
 }
 
 const MIN_WIDTH = 260;
-const DEFAULT_WIDTH = 360;
+const DEFAULT_WIDTH = 304;
 const MIN_WORKSPACE_GAP = 48;
 
 /* ==========================================================================
@@ -76,7 +76,7 @@ export default function SecondarySidePanel({
 
   const transitionClass =
     !isDragging && animationsEnabled
-      ? 'transition-[width,transform,opacity] duration-500 ease-in-out'
+      ? 'transition-[width,left,transform,opacity,border-color] duration-500 ease-in-out'
       : 'transition-none';
 
   const positionClass = position === 'left' ? 'secondary-side-panel-left' : 'secondary-side-panel-right';
@@ -92,6 +92,9 @@ export default function SecondarySidePanel({
       <button
         type="button"
         onClick={onOpen}
+        style={{
+          left: position === 'left' ? '0px' : 'calc(100% - 1.75rem)',
+        }}
         className={[
           'secondary-panel-expand-tab group',
           tabPositionClass,
@@ -113,7 +116,10 @@ export default function SecondarySidePanel({
           2.3 DOCKED SECONDARY INSPECTOR PANEL CONTAINER
           -------------------------------------------------------------------- */}
       <aside
-        style={{ width: `${panelWidth}px` }}
+        style={{
+          width: `${panelWidth}px`,
+          left: position === 'left' ? '0px' : `calc(100% - ${panelWidth}px)`,
+        }}
         className={[
           'secondary-side-panel absolute top-0 bottom-0 z-30 flex flex-col',
           positionClass,

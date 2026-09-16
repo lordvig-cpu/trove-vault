@@ -114,6 +114,17 @@
   font-weight: 600;
 }
 
+.dock-cursor-badge-prohibited {
+  border-color: color-mix(in oklch, #ef4444 60%, transparent);
+  color: #f87171;
+  background-color: var(--panel-surface-bg);
+  box-shadow: 0 10px 25px -5px rgba(239, 68, 68, 0.3);
+}
+
+.dock-cursor-badge-prohibited .dock-cursor-badge-icon {
+  color: #ef4444;
+}
+
 /* --------------------------------------------------------------------------
    Center Canvas Outline & Bottom Drop Zone (Secondary OKLCH Hue)
    -------------------------------------------------------------------------- */
@@ -192,5 +203,52 @@
 .dock-zone-bottom-text-active {
   color: var(--brand-secondary-amber);
   font-weight: 600;
+}
+
+/* Prohibited / Disabled State (e.g. Explorer on Bottom) */
+.dock-zone-bottom-prohibited {
+  border-color: rgba(239, 68, 68, 0.35);
+  background-color: rgba(239, 68, 68, 0.05);
+  cursor: not-allowed;
+}
+
+.dock-zone-bottom-prohibited-active {
+  border-color: #ef4444;
+  background-color: rgba(239, 68, 68, 0.16);
+  box-shadow: 0 0 35px rgba(239, 68, 68, 0.35);
+  transform: scale(1.01);
+}
+
+.dock-zone-bottom-pill-prohibited {
+  border-color: rgba(239, 68, 68, 0.5);
+  background-color: var(--panel-surface-bg);
+  color: #f87171;
+}
+
+.dock-zone-bottom-pill-prohibited-active {
+  background-color: #dc2626;
+  color: #ffffff;
+  border-color: #fecaca;
+  box-shadow: 0 0 20px rgba(239, 68, 68, 0.6);
+  transform: scale(1.08);
+}
+
+.dock-zone-bottom-text-prohibited {
+  font-size: 0.75rem;
+  font-family: monospace;
+  color: var(--text-muted);
+  transition: color 200ms ease;
+}
+
+.dock-zone-bottom-text-prohibited-active {
+  color: #f87171;
+  font-weight: 600;
+}
+
+.dock-zone-prohibited-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: inherit;
 }
 

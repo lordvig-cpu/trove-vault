@@ -39,15 +39,11 @@ export default function BottomPanel({
   const [activeTab, setActiveTab] = useState<BottomTab>('diagnostics');
 
   const transitionClass = animationsEnabled
-    ? 'transition-[transform,opacity,left,right] duration-500 ease-in-out'
+    ? 'transition-[transform,opacity] duration-500 ease-in-out'
     : 'transition-none';
 
   return (
     <aside
-      style={{
-        left: `${reservedLeft}px`,
-        right: `${reservedRight}px`,
-      }}
       className={[
         'bottom-side-panel',
         transitionClass,

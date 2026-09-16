@@ -138,6 +138,8 @@
   width: 22rem; /* w-88 (352px) */
   max-height: 75vh;
   background: var(--primary-explorer-panel-bg);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
   border: 1px solid var(--primary-border-strong);
   border-radius: 0.75rem;
   border-top-left-radius: 0;

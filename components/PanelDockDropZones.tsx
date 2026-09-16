@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { DockablePanelId, DockDropTargetZone } from '@/hooks/usePanelDockDrag';
+import { DockablePanelId, DockDropTargetZone, isDockZoneAllowed } from '@/hooks/usePanelDockDrag';
 
 interface PanelDockDropZonesProps {
   isDragging: boolean;
@@ -32,6 +32,11 @@ export default function PanelDockDropZones({
   };
 
   const panelName = getPanelName(draggingPanel);
+  const isLeftAllowed = isDockZoneAllowed(draggingPanel, 'left');
+  const isRightAllowed = isDockZoneAllowed(draggingPanel, 'right');
+  const isBottomAllowed = isDockZoneAllowed(draggingPanel, 'bottom');
+
+  const isHoveredZoneAllowed = hoveredZone ? isDockZoneAllowed(draggingPanel, hoveredZone) : true;
 
   return (
     <div className="dock-drop-overlay">
@@ -42,10 +47,18 @@ export default function PanelDockDropZones({
         style={{
           transform: `translate3d(${cursorPos.x + 14}px, ${cursorPos.y + 14}px, 0)`,
         }}
-        className="dock-cursor-badge"
+        className={`dock-cursor-badge ${
+          hoveredZone && !isHoveredZoneAllowed ? 'dock-cursor-badge-prohibited' : ''
+        }`}
       >
-        <span className="dock-cursor-badge-icon">❖</span>
-        <span>Docking: {panelName}</span>
+        <span className="dock-cursor-badge-icon">
+          {hoveredZone && !isHoveredZoneAllowed ? '⃠' : '❖'}
+        </span>
+        <span>
+          {hoveredZone && !isHoveredZoneAllowed
+            ? `Cannot Dock ${panelName} Here`
+            : `Docking: ${panelName}`}
+        </span>
       </div>
 
       {/* --------------------------------------------------------------------
@@ -81,25 +94,67 @@ export default function PanelDockDropZones({
             Main Workspace Canvas
           </div>
 
+          {/* BOTTOM DOCK TARGET (Valid or Prohibited State) */}
           <div
             className={`dock-zone-bottom ${
-              hoveredZone === 'bottom' ? 'dock-zone-bottom-active' : ''
+              !isBottomAllowed
+                ? `dock-zone-bottom-prohibited ${
+                    hoveredZone === 'bottom' ? 'dock-zone-bottom-prohibited-active' : ''
+                  }`
+                : hoveredZone === 'bottom'
+                ? 'dock-zone-bottom-active'
+                : ''
             }`}
           >
             <div
               className={`dock-zone-bottom-pill ${
-                hoveredZone === 'bottom' ? 'dock-zone-bottom-pill-active' : ''
+                !isBottomAllowed
+                  ? `dock-zone-bottom-pill-prohibited ${
+                      hoveredZone === 'bottom' ? 'dock-zone-bottom-pill-prohibited-active' : ''
+                    }`
+                  : hoveredZone === 'bottom'
+                  ? 'dock-zone-bottom-pill-active'
+                  : ''
               }`}
             >
-              <span>⬕</span>
-              <span>Dock {panelName} Bottom</span>
+              {!isBottomAllowed ? (
+                /* Prohibited / Slashed NO Dock Icon */
+                <span className="dock-zone-prohibited-icon" aria-hidden="true">
+                  <svg className="w-3.5 h-3.5" viewBox="0 0 20 20" fill="currentColor">
+                    <path
+                      fillRule="evenodd"
+                      d="M13.477 14.89A6 6 0 015.11 6.524l8.367 8.366zm1.414-1.414L6.524 5.11a6 6 0 018.367 8.366zM18 10a8 8 0 11-16 0 8 8 0 0116 0z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                </span>
+              ) : (
+                <span>⬕</span>
+              )}
+              <span>
+                {!isBottomAllowed
+                  ? 'Cannot Dock Explorer Bottom'
+                  : `Dock ${panelName} Bottom`}
+              </span>
             </div>
             <span
               className={`dock-zone-bottom-text ${
-                hoveredZone === 'bottom' ? 'dock-zone-bottom-text-active' : ''
+                !isBottomAllowed
+                  ? `dock-zone-bottom-text-prohibited ${
+                      hoveredZone === 'bottom' ? 'dock-zone-bottom-text-prohibited-active' : ''
+                    }`
+                  : hoveredZone === 'bottom'
+                  ? 'dock-zone-bottom-text-active'
+                  : ''
               }`}
             >
-              {hoveredZone === 'bottom' ? 'Release mouse to dock here' : 'Drop Bottom'}
+              {!isBottomAllowed
+                ? hoveredZone === 'bottom'
+                  ? '🚫 Explorer requires a vertical side panel'
+                  : 'Not available for Explorer'
+                : hoveredZone === 'bottom'
+                ? 'Release mouse to dock here'
+                : 'Drop Bottom'}
             </span>
           </div>
         </div>

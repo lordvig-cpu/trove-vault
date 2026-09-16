@@ -118,7 +118,7 @@ export default function Home() {
   const [isBottomPanelOpen, setIsBottomPanelOpen] = useState<boolean>(false);
   const [isColDropdownOpen, setIsColDropdownOpen] = useState<boolean>(false);
   const [primaryPanelWidth, setPrimaryPanelWidth] = useState<number>(304);
-  const [secondaryPanelWidth, setSecondaryPanelWidth] = useState<number>(360);
+  const [secondaryPanelWidth, setSecondaryPanelWidth] = useState<number>(304);
 
   // Dynamic mutually exclusive positions
   const effectivePrimaryPosition = primaryPosition === 'right' ? 'right' : 'left';
@@ -153,9 +153,8 @@ export default function Home() {
           setPrimaryPosition('right');
           setSecondaryPosition('left');
           setIsPinned(true);
-        } else if (targetZone === 'bottom') {
-          setIsBottomPanelOpen(true);
         }
+        // Bottom is disallowed for Explorer (primary) panel
       } else if (panelId === 'secondary') {
         if (targetZone === 'left') {
           setSecondaryPosition('left');
@@ -377,23 +376,6 @@ export default function Home() {
   );
 
   /* ------------------------------------------------------------------------
-     11. DYNAMIC CLEARANCE & MARGIN GEOMETRY
-     ------------------------------------------------------------------------ */
-  const occupiedLeftWidth =
-    effectivePrimaryPosition === 'left' && isPinned
-      ? primaryPanelWidth
-      : effectiveSecondaryPosition === 'left' && isSecondarySidePanelOpen
-      ? secondaryPanelWidth
-      : 0;
-
-  const occupiedRightWidth =
-    effectivePrimaryPosition === 'right' && isPinned
-      ? primaryPanelWidth
-      : effectiveSecondaryPosition === 'right' && isSecondarySidePanelOpen
-      ? secondaryPanelWidth
-      : 0;
-
-  /* ------------------------------------------------------------------------
      12. VIEWPORT COMPOSITION & PRESENTATION SHELL
      ------------------------------------------------------------------------ */
   return (
@@ -456,10 +438,10 @@ export default function Home() {
             cursorPos={cursorPos}
           />
 
-          {/* Primary Side Panel (Explorer Tree) */}
+          {/* Primary Side Panel (Explorer Tree) - Sits Above Main Content (z-50) */}
           {explorerSidebarPanel}
 
-          {/* Center Main Stage / Detail Canvas */}
+          {/* Center Main Stage / Detail Canvas (Full-Width Base Layer z-10) */}
           <div className="w-full h-full flex-1 min-w-0 relative z-10">
             <MainContent
               selectedItem={selectedItem}
@@ -468,24 +450,19 @@ export default function Home() {
               onAddSubItem={openCreateItem}
               onEditItem={handleTriggerEditItem}
               onDeleteItem={handleTriggerDeleteItem}
-              occupiedRightWidth={occupiedRightWidth}
-              occupiedLeftWidth={occupiedLeftWidth}
-              bottomPanelHeight={isBottomPanelOpen ? 220 : 0}
             />
           </div>
 
-          {/* Collapsible Bottom Diagnostics Drawer */}
+          {/* Collapsible Bottom Diagnostics Drawer - Sits Above Main Content (z-35) */}
           <BottomPanel
             isOpen={isBottomPanelOpen}
             onClose={() => setIsBottomPanelOpen(false)}
-            reservedLeft={occupiedLeftWidth}
-            reservedRight={occupiedRightWidth}
             activeCollectionName={activeCollection?.name}
             totalItemsCount={allItems.length}
             onHandlePointerDown={(e) => startDockDrag('bottom', e)}
           />
 
-          {/* Secondary Side Panel (Details / Inspector Drawer) */}
+          {/* Secondary Side Panel (Details / Inspector Drawer) - Sits Above Main Content (z-40) */}
           <SecondarySidePanel
             isOpen={isSecondarySidePanelOpen}
             position={effectiveSecondaryPosition}

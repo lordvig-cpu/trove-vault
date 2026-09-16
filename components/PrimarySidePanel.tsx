@@ -115,7 +115,7 @@ export default function PrimarySidePanel({
 
   const transitionClass =
     !isDragging && animationsEnabled && isHydrated
-      ? 'transition-[width,transform,opacity] duration-500 ease-in-out'
+      ? 'transition-[width,left,transform,opacity,border-color] duration-500 ease-in-out'
       : 'transition-none';
 
   const handlePinAction = () => (onTogglePin ? onTogglePin() : togglePin());
@@ -274,11 +274,13 @@ export default function PrimarySidePanel({
 
   return (
     <aside
-      style={{ width: `${panelWidth}px` }}
+      style={{
+        width: `${panelWidth}px`,
+        left: position === 'left' ? '0px' : `calc(100% - ${panelWidth}px)`,
+      }}
       className={[
         'primary-side-panel absolute top-0 bottom-0 z-50',
         positionClass,
-        'panel-shell',
         transitionClass,
         stateClass,
       ]

@@ -59,23 +59,12 @@ export default function MainContent({
           trapped under the right-docked side panel.
           flex-1 and min-h-0 guarantee strict vertical bounds without collapsing.
           -------------------------------------------------------------------- */}
-      <div 
-        className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden main-content-scroll transition-[padding,margin] duration-500 ease-in-out"
-        style={{ 
-          marginRight: `${effectiveRightWidth}px`,
-          paddingBottom: `${bottomPanelHeight}px`,
-        }}
-      >
+      <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden main-content-scroll">
         {/* ------------------------------------------------------------------
-            2.2 CENTER RESTORATION WRAPPER
-            Expands width by (100% + effectiveRightWidth) to compensate for margin.
-            This ensures that mx-auto child blocks remain locked to the true
-            horizontal center of the viewport, even while panels resize.
+            2.2 CENTER CANVAS WRAPPER
+            Centers mx-auto child blocks on the main stage canvas.
             ------------------------------------------------------------------ */}
-        <div 
-          className="min-h-full flex flex-col"
-          style={{ width: `calc(100% + ${effectiveRightWidth}px)` }}
-        >
+        <div className="w-full min-h-full flex flex-col">
           {/* Main Stage Presentation Shell with Backdrop Filter Fades */}
           <main
             className={`flex-1 flex flex-col transition-[filter,brightness] duration-300 ease-out will-change-[filter] ${
