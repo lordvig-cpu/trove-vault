@@ -116,28 +116,24 @@ export default function LeftSidePanel({
      ------------------------------------------------------------------------ */
   const innerContent = (
     <>
-      {/* Seam Resize Handle (Pinned mode only) */}
+      {/* Seam Resize Handle (Pinned mode only: isolated to vertical center) */}
       {isPinned && (
         <div
           onPointerDown={handlePointerDown}
           onDoubleClick={handleResetWidth}
-          className="group/handle absolute top-0 -right-1.5 w-3 h-full cursor-col-resize z-50 flex items-center justify-center select-none"
-          title="Drag to resize panel"
+          className={`panel-resize-handle absolute top-1/2 -translate-y-1/2 -right-2 w-4 h-32 select-none group/resize ${
+            isDragging ? 'panel-resize-handle-active' : ''
+          }`}
+          title="Drag to resize panel (double-click to reset)"
         >
-          <div
-            className={`absolute top-0 bottom-0 left-1/2 -translate-x-1/2 w-[5px] transition-all duration-150 pointer-events-none ${
-              isDragging
-                ? 'panel-grip-active'
-                : 'panel-grip-idle'
-            }`}
-          />
-          <div
-            className={`relative z-10 w-1 h-12 rounded-full transition-all duration-200 pointer-events-none ${
-              isDragging
-                ? 'panel-grip-active w-1.5 h-20'
-                : 'panel-grip-idle group-hover/handle:h-16'
-            }`}
-          />
+          <div className="panel-resize-pill flex items-center justify-center">
+            {/* 3 tactile grip dots inside the pill */}
+            <div className="flex flex-col gap-1 items-center justify-center opacity-70">
+              <span className="w-1 h-1 rounded-full bg-black/60 dark:bg-black/80" />
+              <span className="w-1 h-1 rounded-full bg-black/60 dark:bg-black/80" />
+              <span className="w-1 h-1 rounded-full bg-black/60 dark:bg-black/80" />
+            </div>
+          </div>
         </div>
       )}
 
@@ -193,7 +189,7 @@ export default function LeftSidePanel({
       )}
 
       {/* Dedicated Scrollable Explorer Tree Viewport */}
-      <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden px-2 pb-6 min-w-0 left-panel-scroll">
+      <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden px-2.5 pt-0 pb-6 min-w-0 left-panel-scroll">
         {children}
       </div>
     </>

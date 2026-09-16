@@ -233,28 +233,26 @@ export default function ExplorerContent({
      3.3 TREE HIERARCHY RENDERING & EMPTY STATES
      ------------------------------------------------------------------------ */
   return (
-    <div className="flex flex-col h-full w-full min-w-0">
-      <div className="flex-1 overflow-y-auto px-2 py-1.5">
-        {/* Zero Results Feedback State */}
-        {filteredForest.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-32 text-center px-4 select-none">
-            <span className="text-xl mb-1">🔍</span>
-            <p className="text-xs ui-muted">No categories, collections, or items found</p>
-          </div>
-        ) : (
-          /* Forest Root Nodes (Categories & Collections) */
-          <ExplorerActionsProvider value={actionsValue}>
-            <ExplorerSelectionProvider value={selectionValue}>
-              {filteredForest.map((node) => (
-                <UnifiedExplorerTree
-                  key={`root-col-${node.id}`}
-                  collection={node}
-                />
-              ))}
-            </ExplorerSelectionProvider>
-          </ExplorerActionsProvider>
-        )}
-      </div>
+    <div className="flex flex-col w-full min-w-0">
+      {/* Zero Results Feedback State */}
+      {filteredForest.length === 0 ? (
+        <div className="flex flex-col items-center justify-center h-32 text-center px-4 select-none">
+          <span className="text-xl mb-1">🔍</span>
+          <p className="text-xs ui-muted">No categories, collections, or items found</p>
+        </div>
+      ) : (
+        /* Forest Root Nodes (Categories & Collections) */
+        <ExplorerActionsProvider value={actionsValue}>
+          <ExplorerSelectionProvider value={selectionValue}>
+            {filteredForest.map((node) => (
+              <UnifiedExplorerTree
+                key={`root-col-${node.id}`}
+                collection={node}
+              />
+            ))}
+          </ExplorerSelectionProvider>
+        </ExplorerActionsProvider>
+      )}
     </div>
   );
 }

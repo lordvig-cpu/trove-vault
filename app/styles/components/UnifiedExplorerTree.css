@@ -99,3 +99,35 @@
 .tree-menu-item-danger:hover .tree-menu-danger-subtext {
   color: var(--tree-menu-danger-subtext-hover);
 }
+
+/* --------------------------------------------------------------------------
+   Tree Load More Pagination Trigger
+   -------------------------------------------------------------------------- */
+.explorer-tree-load-more {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  height: 1.625rem;
+  padding: 0 0.5rem;
+  margin: 0.25rem 0;
+  border-radius: 0.375rem;
+  font-size: 0.6875rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-weight: 500;
+  letter-spacing: 0.025em;
+  color: var(--secondary-accent);
+  background: var(--surface-panel);
+  border: 1px dashed var(--secondary-selection-border);
+  cursor: pointer;
+  transition: all 150ms ease-in-out;
+  width: 100%;
+  text-align: left;
+}
+
+.explorer-tree-load-more:hover {
+  background: var(--secondary-selection-bg);
+  border-color: var(--secondary-accent);
+  color: var(--text-strong);
+  transform: translateX(2px);
+}
+

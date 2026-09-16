@@ -29,6 +29,8 @@ export interface UnifiedExplorerTreeProps {
    2. ITEM ROW
    ========================================================================== */
 
+const CHUNK_SIZE = 50;
+
 function getItemTypeIcon(item: ItemRecord): string {
   const attrs = item.attributes || {};
   if (attrs.cgc_grade || attrs.publisher || attrs.issue_number) return '📚';
@@ -37,6 +39,36 @@ function getItemTypeIcon(item: ItemRecord): string {
   if (attrs.designer || attrs.player_count || attrs.play_time) return '🎲';
   if (attrs.format || attrs.aspect_ratio) return '🎬';
   return '📄';
+}
+
+function ExplorerLoadMoreNode({
+  remainingCount,
+  onLoadMore,
+}: {
+  remainingCount: number;
+  onLoadMore: () => void;
+}) {
+  const nextCount = Math.min(CHUNK_SIZE, remainingCount);
+  return (
+    <button
+      type="button"
+      onClick={(e) => {
+        e.stopPropagation();
+        e.preventDefault();
+        onLoadMore();
+      }}
+      className="explorer-tree-load-more group"
+      title={`Load ${nextCount} more items (${remainingCount} remaining)`}
+    >
+      <span className="text-[11px] font-bold transition-transform duration-200 group-hover:translate-y-0.5 select-none">
+        ⇣
+      </span>
+      <span className="truncate">Load {nextCount} more...</span>
+      <span className="ml-auto text-[10px] opacity-75 font-mono shrink-0 select-none">
+        ({remainingCount} left)
+      </span>
+    </button>
+  );
 }
 
 function UnifiedExplorerTreeItem({
@@ -50,9 +82,13 @@ function UnifiedExplorerTreeItem({
 }) {
   const { selectedItemId, onSelectItem } = useExplorerSelection();
   const [isOpen, setIsOpen] = useState(true);
+  const [displayLimit, setDisplayLimit] = useState(CHUNK_SIZE);
   const menu = useExplorerActionMenu(`item-${item.id}`, 215);
   const isSelected = selectedItemId === item.id;
-  const hasSubItems = Boolean(item.children && item.children.length > 0);
+  const childrenList = item.children || [];
+  const hasSubItems = childrenList.length > 0;
+  const visibleChildren = childrenList.slice(0, displayLimit);
+  const remainingChildren = childrenList.length - visibleChildren.length;
   const typeIcon = getItemTypeIcon(item);
 
   return (
@@ -123,7 +159,7 @@ function UnifiedExplorerTreeItem({
 
       {isOpen && hasSubItems && (
         <div className="explorer-tree-branch border-l space-y-0.5 ml-[13.5px] pl-2.5 my-0.5 flex flex-col min-w-0">
-          {item.children?.map((child) => (
+          {visibleChildren.map((child) => (
             <UnifiedExplorerTreeItem
               key={`subitem-${child.id}`}
               item={child}
@@ -131,6 +167,12 @@ function UnifiedExplorerTreeItem({
               depth={depth + 1}
             />
           ))}
+          {remainingChildren > 0 && (
+            <ExplorerLoadMoreNode
+              remainingCount={remainingChildren}
+              onLoadMore={() => setDisplayLimit((prev) => prev + CHUNK_SIZE)}
+            />
+          )}
         </div>
       )}
     </div>
@@ -152,6 +194,7 @@ export default function UnifiedExplorerTree({
     onSelectCollection,
   } = useExplorerSelection();
   const menu = useExplorerActionMenu(`node-${collection.id}`, 240);
+  const [displayLimit, setDisplayLimit] = useState(CHUNK_SIZE);
 
   const isVirtualCategory = collection.id < 0;
   const effectiveCollectionId =
@@ -166,8 +209,12 @@ export default function UnifiedExplorerTree({
     }
   }, [expandedCategoryIds, collection.id]);
 
-  const hasChildren =
-    Boolean(collection.subCollections?.length) || Boolean(collection.items?.length);
+  const rawItems = collection.items || [];
+  const rawSubCollections = collection.subCollections || [];
+  const hasChildren = rawSubCollections.length > 0 || rawItems.length > 0;
+  const visibleItems = rawItems.slice(0, displayLimit);
+  const remainingItems = rawItems.length - visibleItems.length;
+
   const isActiveCollection = activeCollectionId === collection.id;
   const stickyTop = depth * 28;
   const stickyZIndex = 20 - depth;
@@ -258,14 +305,14 @@ export default function UnifiedExplorerTree({
 
       {localIsOpen && hasChildren && (
         <div className="explorer-tree-branch border-l space-y-0.5 ml-[13.5px] pl-2.5 my-0.5 flex flex-col min-w-0">
-          {collection.subCollections?.map((subCollection) => (
+          {rawSubCollections.map((subCollection) => (
             <UnifiedExplorerTree
               key={`col-${subCollection.id}`}
               collection={subCollection}
               depth={depth + 1}
             />
           ))}
-          {collection.items?.map((item) => (
+          {visibleItems.map((item) => (
             <UnifiedExplorerTreeItem
               key={`item-${item.id}`}
               item={item}
@@ -273,6 +320,12 @@ export default function UnifiedExplorerTree({
               depth={depth + 1}
             />
           ))}
+          {remainingItems > 0 && (
+            <ExplorerLoadMoreNode
+              remainingCount={remainingItems}
+              onLoadMore={() => setDisplayLimit((prev) => prev + CHUNK_SIZE)}
+            />
+          )}
         </div>
       )}
     </div>
