@@ -119,17 +119,17 @@
   /* Fixed neutral effects and the seed editor's intentionally stable colors. */
   --shadow-form-inset: inset 0 2px 4px 0 var(--shadow-black-25);
   --shadow-badge: 0 1px 2px var(--shadow-black-35);
-  --editor-border: #475569;
-  --editor-focus: #7dd3fc;
-  --editor-picker-black: #000;
+  --editor-border: rgba(71, 85, 105, 1);
+  --editor-focus: rgba(125, 211, 252, 1);
+  --editor-picker-black: rgba(0, 0, 0, 1);
   --editor-hue-spectrum: linear-gradient(to right,
     hsl(0 100% 50%), hsl(60 100% 50%), hsl(120 100% 50%),
     hsl(180 100% 50%), hsl(240 100% 50%), hsl(300 100% 50%), hsl(360 100% 50%));
-  --editor-input-text: #f8fafc;
-  --editor-invalid: #fb7185;
-  --editor-surface: #0f172a;
-  --editor-swatch-border: #94a3b8;
-  --editor-text: #e2e8f0;
+  --editor-input-text: rgba(248, 250, 252, 1);
+  --editor-invalid: rgba(251, 113, 133, 1);
+  --editor-surface: rgba(15, 23, 42, 1);
+  --editor-swatch-border: rgba(148, 163, 184, 1);
+  --editor-text: rgba(226, 232, 240, 1);
   --highlight-white-10: rgba(255, 255, 255, 0.1);
   --shadow-black-20: rgba(0, 0, 0, 0.2);
   --shadow-black-25: rgba(0, 0, 0, 0.25);

@@ -314,9 +314,9 @@ export default function LeftSidePanelHeader({
             >
               <defs>
                 <linearGradient id="explorerTabActiveGradient-items" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="var(--explorer-tab-active-top, #125e9e)" className="tab-grad-top" />
-                  <stop offset="45%" stopColor="var(--explorer-tab-active-mid, #0a4070)" className="tab-grad-mid" />
-                  <stop offset="100%" stopColor="var(--explorer-tab-active-bottom, #052446)" className="tab-grad-bottom" />
+                  <stop offset="0%" stopColor="var(--explorer-tab-active-top, rgba(18, 94, 158, 1))" className="tab-grad-top" />
+                  <stop offset="45%" stopColor="var(--explorer-tab-active-mid, rgba(10, 64, 112, 1))" className="tab-grad-mid" />
+                  <stop offset="100%" stopColor="var(--explorer-tab-active-bottom, rgba(5, 36, 70, 1))" className="tab-grad-bottom" />
                 </linearGradient>
               </defs>
               <path
@@ -355,9 +355,9 @@ export default function LeftSidePanelHeader({
             >
               <defs>
                 <linearGradient id="explorerTabActiveGradient-collections" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="var(--explorer-tab-active-top, #125e9e)" className="tab-grad-top" />
-                  <stop offset="45%" stopColor="var(--explorer-tab-active-mid, #0a4070)" className="tab-grad-mid" />
-                  <stop offset="100%" stopColor="var(--explorer-tab-active-bottom, #052446)" className="tab-grad-bottom" />
+                  <stop offset="0%" stopColor="var(--explorer-tab-active-top, rgba(18, 94, 158, 1))" className="tab-grad-top" />
+                  <stop offset="45%" stopColor="var(--explorer-tab-active-mid, rgba(10, 64, 112, 1))" className="tab-grad-mid" />
+                  <stop offset="100%" stopColor="var(--explorer-tab-active-bottom, rgba(5, 36, 70, 1))" className="tab-grad-bottom" />
                 </linearGradient>
               </defs>
               <path

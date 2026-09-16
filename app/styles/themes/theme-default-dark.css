@@ -170,7 +170,7 @@ Organized 1-to-1 with component stylesheets in styles/components/
    --content-badge-root-text: rgba(52, 211, 153, 1.00);
    --content-btn-primary-bg: var(--brand-primary);
    --content-btn-primary-hover: var(--brand-primary-hover);
-   --content-btn-primary-text: #ffffff;
+   --content-btn-primary-text: rgba(255, 255, 255, 1);
    --content-btn-danger-bg: rgba(244, 63, 94, 0.10);
    --content-btn-danger-hover: rgba(244, 63, 94, 0.20);
    --content-btn-danger-border: rgba(244, 63, 94, 0.30);
@@ -291,10 +291,10 @@ Organized 1-to-1 with component stylesheets in styles/components/
    --explorer-tab-glow-active: drop-shadow(4px 1px 5px var(--explorer-tab-shadow-right));
    --explorer-tab-bg-idle: rgba(4, 18, 33, 0.85);
    --explorer-tab-bg-hover: rgba(8, 38, 66, 0.95);
-   --explorer-tab-bg-active: #0a4070;
-   --explorer-tab-active-top: #105994;
-   --explorer-tab-active-mid: #0a3d6d;
-   --explorer-tab-active-bottom: #042244;
+   --explorer-tab-bg-active: rgba(10, 64, 112, 1);
+   --explorer-tab-active-top: rgba(16, 89, 148, 1);
+   --explorer-tab-active-mid: rgba(10, 61, 109, 1);
+   --explorer-tab-active-bottom: rgba(4, 34, 68, 1);
    --explorer-tab-shadow-right: rgba(0, 0, 0, 0.75);
    --explorer-tab-baseline: var(--nav-header-tab-indicator);
    /* #endregion */
@@ -429,31 +429,31 @@ Organized 1-to-1 with component stylesheets in styles/components/
    --explorer-menu-divider: rgba(248, 188, 9, 0.20);
 
    /* Menu Item Interactive States */
-   --explorer-menu-item-text: var(--content-primary, #e2e8f0);
+   --explorer-menu-item-text: var(--content-primary, rgba(226, 232, 240, 1));
    --explorer-menu-item-hover-bg:  rgba(248, 188, 9, 0.15);
-   --explorer-menu-item-hover-text: #ffffff;
-   --explorer-menu-item-subtext: var(--content-muted, #94a3b8);
-   --explorer-menu-item-hover-subtext: var(--content-secondary, #cbd5e1);
+   --explorer-menu-item-hover-text: rgba(255, 255, 255, 1);
+   --explorer-menu-item-subtext: var(--content-muted, rgba(148, 163, 184, 1));
+   --explorer-menu-item-hover-subtext: var(--content-secondary, rgba(203, 213, 225, 1));
 
    /* Menu Danger Item Interactive States */
-   --explorer-menu-danger-text: #fda4af;             /* rose-300 */
-   --explorer-menu-danger-icon: #fb7185;             /* rose-400 */
+   --explorer-menu-danger-text: rgba(253, 164, 175, 1);             /* rose-300 */
+   --explorer-menu-danger-icon: rgba(251, 113, 133, 1);             /* rose-400 */
    --explorer-menu-danger-subtext: rgba(251, 113, 133, 0.7); /* rose-400/70 */
    --explorer-menu-danger-hover-bg: rgba(76, 5, 25, 0.4);   /* rose-950/40 */
    --explorer-menu-danger-hover-border: rgba(136, 19, 55, 0.4); /* rose-900/40 */
-   --explorer-menu-danger-hover-text: #fecdd3;        /* rose-200 */
-   --explorer-menu-danger-hover-subtext: #fda4af;     /* rose-300 */
+   --explorer-menu-danger-hover-text: rgba(254, 205, 211, 1);        /* rose-200 */
+   --explorer-menu-danger-hover-subtext: rgba(253, 164, 175, 1);     /* rose-300 */
 
    /* Menu Rename Form Controls */
-   --explorer-menu-rename-input-bg: #040811;
-   --explorer-menu-rename-input-text: #ffffff;
+   --explorer-menu-rename-input-bg: rgba(4, 8, 17, 1);
+   --explorer-menu-rename-input-text: rgba(255, 255, 255, 1);
    --explorer-menu-rename-input-border: var(--explorer-input-border-idle, rgba(0, 160, 255, 0.55));
-   --explorer-menu-rename-input-focus: var(--accent-secondary, #F8BC09);
-   --explorer-menu-rename-cancel-text: var(--content-muted, #94a3b8);
-   --explorer-menu-rename-cancel-hover-text: #ffffff;
+   --explorer-menu-rename-input-focus: var(--accent-secondary, rgba(248, 188, 9, 1));
+   --explorer-menu-rename-cancel-text: var(--content-muted, rgba(148, 163, 184, 1));
+   --explorer-menu-rename-cancel-hover-text: rgba(255, 255, 255, 1);
    --explorer-menu-rename-save-bg: rgba(248, 188, 9, 0.2);
    --explorer-menu-rename-save-hover-bg: rgba(248, 188, 9, 0.3);
-   --explorer-menu-rename-save-text: var(--accent-secondary, #F8BC09);
+   --explorer-menu-rename-save-text: var(--accent-secondary, rgba(248, 188, 9, 1));
    
 /*   --explorer-menu-danger-hover-bg: rgba(244, 63, 94, 0.15);
    --explorer-menu-danger-label: rgba(251, 113, 133, 1.00);

@@ -42,12 +42,12 @@
        rgba(1, 28, 62, 0.20) 82%,
        rgba(1, 20, 48, 0.70) 100%),
      linear-gradient(180deg,
-       #023c7c 0%,
-       #003672 16%,
-       #013165 32%,
-       #00244b 55%,
-       #001f42 76%,
-       #001b3a 100%);
+       rgba(2, 60, 124, 1) 0%,
+       rgba(0, 54, 114, 1) 16%,
+       rgba(1, 49, 101, 1) 32%,
+       rgba(0, 36, 75, 1) 55%,
+       rgba(0, 31, 66, 1) 76%,
+       rgba(0, 27, 58, 1) 100%);
 
    --nav-header-border-bottom: var(--panel-border-strong);
    --nav-header-shadow:
@@ -152,12 +152,12 @@
        rgba(1, 28, 62, 0.20) 82%,
        rgba(1, 20, 48, 0.70) 100%),
      linear-gradient(0deg,
-       #023c7c 0%,
-       #003672 16%,
-       #013165 32%,
-       #00244b 55%,
-       #001f42 76%,
-       #001b3a 100%);
+       rgba(2, 60, 124, 1) 0%,
+       rgba(0, 54, 114, 1) 16%,
+       rgba(1, 49, 101, 1) 32%,
+       rgba(0, 36, 75, 1) 55%,
+       rgba(0, 31, 66, 1) 76%,
+       rgba(0, 27, 58, 1) 100%);
 
    --nav-footer-border-top: var(--panel-border-strong);
    --nav-footer-shadow:
@@ -257,7 +257,7 @@
    --content-badge-root-text: rgba(52, 211, 153, 1.00);
    --content-btn-primary-bg: var(--brand-primary);
    --content-btn-primary-hover: var(--brand-primary-hover);
-   --content-btn-primary-text: #ffffff;
+   --content-btn-primary-text: rgba(255, 255, 255, 1);
    --content-btn-danger-bg: rgba(244, 63, 94, 0.10);
    --content-btn-danger-hover: rgba(244, 63, 94, 0.20);
    --content-btn-danger-border: rgba(244, 63, 94, 0.30);
@@ -275,13 +275,13 @@
    /* Explorer Panel Sapphire Chassis Surface, Flare & Texture (Calibrated to Target Image 2) */
    --explorer-panel-bg:
      linear-gradient(180deg,
-       #001836 0%,
-       #002244 10%,
-       #002b52 24%,
-       #002444 42%,
-       #001f3e 60%,
-       #001c3a 80%,
-       #00142b 100%);
+       rgba(0, 24, 54, 1) 0%,
+       rgba(0, 34, 68, 1) 10%,
+       rgba(0, 43, 82, 1) 24%,
+       rgba(0, 36, 68, 1) 42%,
+       rgba(0, 31, 62, 1) 60%,
+       rgba(0, 28, 58, 1) 80%,
+       rgba(0, 20, 43, 1) 100%);
    --explorer-panel-border: var(--panel-border-strong);
    --explorer-panel-flare-bg: none;
    --explorer-panel-flare-blend: normal;
@@ -388,10 +388,10 @@
      drop-shadow(4px 1px 5px rgba(0, 0, 0, 0.75));
    --explorer-tab-bg-idle: rgba(2, 12, 30, 0.85);
    --explorer-tab-bg-hover: rgba(6, 28, 60, 0.95);
-   --explorer-tab-bg-active: #0a4070;
-   --explorer-tab-active-top: #125e9e;
-   --explorer-tab-active-mid: #0a4070;
-   --explorer-tab-active-bottom: #052446;
+   --explorer-tab-bg-active: rgba(10, 64, 112, 1);
+   --explorer-tab-active-top: rgba(18, 94, 158, 1);
+   --explorer-tab-active-mid: rgba(10, 64, 112, 1);
+   --explorer-tab-active-bottom: rgba(5, 36, 70, 1);
    --explorer-tab-shadow-right: rgba(0, 0, 0, 0.75);
    --explorer-tab-baseline: rgba(248, 188, 9, 1.00);
    /* #endregion */
@@ -408,13 +408,13 @@
        transparent 60%,
        rgba(0, 140, 255, 0.06) 100%),
      linear-gradient(180deg,
-       #001a38 0%,
-       #00244c 12%,
-       #002c58 28%,
-       #00264b 48%,
-       #001f40 68%,
-       #001732 86%,
-       #001124 100%);
+       rgba(0, 26, 56, 1) 0%,
+       rgba(0, 36, 76, 1) 12%,
+       rgba(0, 44, 88, 1) 28%,
+       rgba(0, 38, 75, 1) 48%,
+       rgba(0, 31, 64, 1) 68%,
+       rgba(0, 23, 50, 1) 86%,
+       rgba(0, 17, 36, 1) 100%);
    --right-panel-border: var(--panel-border-strong);
    --right-panel-shadow:
      -4px 0 14px -2px rgba(0, 0, 0, 0.55),
@@ -448,7 +448,7 @@
    /* Floating Expand Pull-Tab Trigger */
    --right-panel-tab-bg: rgba(6, 26, 60, 0.90);
    --right-panel-tab-hover-bg: rgba(14, 55, 115, 1.00);
-   --right-panel-tab-border: #02396c;
+   --right-panel-tab-border: rgba(2, 57, 108, 1);
    --right-panel-tab-hover-border: var(--panel-border-strong);
 
    /* Header & Action Controls */
@@ -527,12 +527,12 @@
        rgba(180, 83, 9, 0.20) 0%,
        transparent 70%),
      linear-gradient(180deg,
-       #381a04 0%,
-       #241002 18%,
-       #180b03 42%,
-       #100601 70%,
-       #0a0401 100%);
-   --explorer-menu-shell-border: #f59e0b;
+       rgba(56, 26, 4, 1) 0%,
+       rgba(36, 16, 2, 1) 18%,
+       rgba(24, 11, 3, 1) 42%,
+       rgba(16, 6, 1, 1) 70%,
+       rgba(10, 4, 1, 1) 100%);
+   --explorer-menu-shell-border: rgba(245, 158, 11, 1);
 
    --explorer-menu-shell-shadow:
      0 0 25px 0 rgba(245, 158, 11, 0.45),
@@ -546,37 +546,37 @@
        rgba(146, 64, 14, 0.50) 0%,
        rgba(69, 26, 3, 0.65) 100%);
    --explorer-menu-header-border: rgba(245, 158, 11, 0.45);
-   --explorer-menu-header-title: #fbbf24;
-   --explorer-menu-header-icon: #f59e0b;
+   --explorer-menu-header-title: rgba(251, 191, 36, 1);
+   --explorer-menu-header-icon: rgba(245, 158, 11, 1);
 
    --explorer-menu-form-bg: rgba(14, 8, 3, 0.95);
    --explorer-menu-input-bg: rgba(6, 4, 1, 1.00);
 
    --explorer-menu-divider: rgba(245, 158, 11, 0.28);
 
-   --explorer-menu-item-text: #f1f5f9;
+   --explorer-menu-item-text: rgba(241, 245, 249, 1);
    --explorer-menu-item-hover-bg: rgba(248, 188, 9, 0.20);
-   --explorer-menu-item-hover-text: #ffffff;
-   --explorer-menu-item-subtext: #cbd5e1;
-   --explorer-menu-item-hover-subtext: #ffffff;
+   --explorer-menu-item-hover-text: rgba(255, 255, 255, 1);
+   --explorer-menu-item-subtext: rgba(203, 213, 225, 1);
+   --explorer-menu-item-hover-subtext: rgba(255, 255, 255, 1);
 
-   --explorer-menu-danger-text: #fda4af;
-   --explorer-menu-danger-icon: #fb7185;
+   --explorer-menu-danger-text: rgba(253, 164, 175, 1);
+   --explorer-menu-danger-icon: rgba(251, 113, 133, 1);
    --explorer-menu-danger-subtext: rgba(251, 113, 133, 0.7);
    --explorer-menu-danger-hover-bg: rgba(76, 5, 25, 0.5);
    --explorer-menu-danger-hover-border: rgba(159, 18, 57, 0.6);
-   --explorer-menu-danger-hover-text: #fecdd3;
-   --explorer-menu-danger-hover-subtext: #fda4af;
+   --explorer-menu-danger-hover-text: rgba(254, 205, 211, 1);
+   --explorer-menu-danger-hover-subtext: rgba(253, 164, 175, 1);
 
-   --explorer-menu-rename-input-bg: #060401;
-   --explorer-menu-rename-input-text: #ffffff;
+   --explorer-menu-rename-input-bg: rgba(6, 4, 1, 1);
+   --explorer-menu-rename-input-text: rgba(255, 255, 255, 1);
    --explorer-menu-rename-input-border: var(--explorer-input-border-idle, rgba(0, 160, 255, 0.58));
-   --explorer-menu-rename-input-focus: #F8BC09;
-   --explorer-menu-rename-cancel-text: #94a3b8;
-   --explorer-menu-rename-cancel-hover-text: #ffffff;
+   --explorer-menu-rename-input-focus: rgba(248, 188, 9, 1);
+   --explorer-menu-rename-cancel-text: rgba(148, 163, 184, 1);
+   --explorer-menu-rename-cancel-hover-text: rgba(255, 255, 255, 1);
    --explorer-menu-rename-save-bg: rgba(248, 188, 9, 0.25);
    --explorer-menu-rename-save-hover-bg: rgba(248, 188, 9, 0.4);
-   --explorer-menu-rename-save-text: #F8BC09;
+   --explorer-menu-rename-save-text: rgba(248, 188, 9, 1);
 
    /* Filter Tree Shell & Capsule Cards in Search Menu (Image 2) */
    --explorer-filter-surface-bg: transparent;
@@ -604,13 +604,13 @@
    /* Sapphire count badge pill in search menu */
    --explorer-filter-badge-bg: rgba(0, 24, 60, 0.95);
    --explorer-filter-badge-border: rgba(0, 140, 255, 0.75);
-   --explorer-filter-badge-text: #fbbf24;
+   --explorer-filter-badge-text: rgba(251, 191, 36, 1);
    --explorer-filter-badge-shadow: 0 0 8px rgba(0, 140, 255, 0.25);
 
-   --explorer-filter-option-label: #ffffff;
-   --explorer-filter-checkbox-bg: #ffffff;
+   --explorer-filter-option-label: rgba(255, 255, 255, 1);
+   --explorer-filter-checkbox-bg: rgba(255, 255, 255, 1);
    --explorer-filter-checkbox-border: rgba(245, 158, 11, 0.80);
-   --explorer-filter-icon-color: #fbbf24;
+   --explorer-filter-icon-color: rgba(251, 191, 36, 1);
 
    --tree-gear-bg-hover: rgba(30, 58, 95, 0.80);
    --tree-gear-icon-active: var(--text-primary);
