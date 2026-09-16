@@ -71,7 +71,7 @@
   border-right: none;
   opacity: 0;
   pointer-events: none;
-  transform: translateX(11.5rem); /* translate-x-46 */
+  transform: translateX(-110%);
 }
 
 /* --------------------------------------------------------------------------

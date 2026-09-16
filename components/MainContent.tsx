@@ -17,6 +17,7 @@ import { ItemRecord } from '@/types/item';
  * @property onEditItem - Callback opening edit modal dialog for the selected record
  * @property onDeleteItem - Callback opening deletion confirmation dialog for the selected record
  * @property rightPanelWidth - Footprint of the right utility drawer in pixels (used for scroll clearance)
+ * @property bottomPanelHeight - Height clearance for the collapsible bottom drawer in pixels
  */
 interface MainContentProps {
   selectedItem: ItemRecord | null;
@@ -26,6 +27,7 @@ interface MainContentProps {
   onEditItem: (item: ItemRecord, collectionId: number | null) => void;
   onDeleteItem: (item: ItemRecord, collectionId: number | null) => void;
   rightPanelWidth?: number;
+  bottomPanelHeight?: number;
 }
 
 /* ==========================================================================
@@ -40,6 +42,7 @@ export default function MainContent({
   onEditItem,
   onDeleteItem,
   rightPanelWidth = 0,
+  bottomPanelHeight = 0,
 }: MainContentProps) {
   return (
     <div className="flex-1 h-full min-h-0 relative z-20 flex flex-col">
@@ -50,8 +53,11 @@ export default function MainContent({
           flex-1 and min-h-0 guarantee strict vertical bounds without collapsing.
           -------------------------------------------------------------------- */}
       <div 
-        className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden main-content-scroll"
-        style={{ marginRight: `${rightPanelWidth}px` }}
+        className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden main-content-scroll transition-[padding] duration-500 ease-in-out"
+        style={{ 
+          marginRight: `${rightPanelWidth}px`,
+          paddingBottom: `${bottomPanelHeight}px`,
+        }}
       >
         {/* ------------------------------------------------------------------
             2.2 CENTER RESTORATION WRAPPER

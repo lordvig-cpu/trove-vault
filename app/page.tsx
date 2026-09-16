@@ -12,6 +12,7 @@ import NavigationFooter from '@/components/NavigationFooter';
 import MainContent from '@/components/MainContent';
 import RightSidePanel from '@/components/RightSidePanel';
 import LeftSidePanel from '@/components/LeftSidePanel';
+import BottomPanel from '@/components/BottomPanel';
 import ExplorerContent from '@/components/ExplorerContent';
 import ModalContainers from '@/components/ModalContainers';
 import DynamicWatermark from '@/components/DynamicWatermark';
@@ -105,6 +106,7 @@ export default function Home() {
   const [isLogoHovered, setIsLogoHovered] = useState<boolean>(false);
   const [isRightPanelOpen, setIsRightPanelOpen] = useState<boolean>(false);
   const [isLeftSidePanelOpen, setIsLeftSidePanelOpen] = useState<boolean>(false);
+  const [isBottomPanelOpen, setIsBottomPanelOpen] = useState<boolean>(false);
   const [isColDropdownOpen, setIsColDropdownOpen] = useState<boolean>(false);
   const [leftPanelWidth, setLeftPanelWidth] = useState<number>(304);
   const [rightPanelWidth, setRightPanelWidth] = useState<number>(360);
@@ -351,8 +353,19 @@ export default function Home() {
               onEditItem={handleTriggerEditItem}
               onDeleteItem={handleTriggerDeleteItem}
               rightPanelWidth={isRightPanelOpen ? rightPanelWidth : 0}
+              bottomPanelHeight={isBottomPanelOpen ? 220 : 0}
             />
           </div>
+
+          {/* Collapsible Bottom Diagnostics Drawer */}
+          <BottomPanel
+            isOpen={isBottomPanelOpen}
+            onClose={() => setIsBottomPanelOpen(false)}
+            reservedLeft={isPinned ? leftPanelWidth : 0}
+            reservedRight={isRightPanelOpen ? rightPanelWidth : 0}
+            activeCollectionName={activeCollection?.name}
+            totalItemsCount={allItems.length}
+          />
 
           {/* Docked Right Utility & Actions Panel */}
           <RightSidePanel
@@ -369,6 +382,10 @@ export default function Home() {
           <NavigationFooter
             activeCollectionName={activeCollection?.name}
             totalItemsCount={allItems.length}
+            isLeftPanelPinned={isPinned}
+            onToggleLeftPanel={() => togglePin()}
+            isBottomPanelOpen={isBottomPanelOpen}
+            onToggleBottomPanel={() => setIsBottomPanelOpen(!isBottomPanelOpen)}
             isRightPanelOpen={isRightPanelOpen}
             onToggleRightPanel={() => setIsRightPanelOpen(!isRightPanelOpen)}
           />

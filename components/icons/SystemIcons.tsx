@@ -1,7 +1,43 @@
 import React from 'react';
 
-/* Dock Panel Icon: Represents an arrow inside a square, indicating docking or expanding a panel. */
-export const DockPanelIcon = ({ className = '', isOpen }: { className?: string; isOpen: boolean }) => (
+/* Dock Panel Icons (VS Code layout controls for Left, Bottom, and Right panels) */
+export const DockLeftPanelIcon = ({ className = '', isOpen }: { className?: string; isOpen: boolean }) => (
+  <svg 
+    className={`origin-center transition-transform duration-200 ease-out group-hover:scale-115 ${className}`} 
+    viewBox="0 0 24 24" 
+    fill="none" 
+    stroke="currentColor" 
+    strokeWidth="2"
+  >
+    <rect x="3" y="3" width="18" height="18" rx="2" />
+    <line x1="9" y1="3" x2="9" y2="21" />
+    <polygon
+      points={isOpen ? '8,9 4,12 8,15' : '5,9 9,12 5,15'}
+      fill="currentColor"
+      stroke="none"
+    />
+  </svg>
+);
+
+export const DockBottomPanelIcon = ({ className = '', isOpen }: { className?: string; isOpen: boolean }) => (
+  <svg 
+    className={`origin-center transition-transform duration-200 ease-out group-hover:scale-115 ${className}`} 
+    viewBox="0 0 24 24" 
+    fill="none" 
+    stroke="currentColor" 
+    strokeWidth="2"
+  >
+    <rect x="3" y="3" width="18" height="18" rx="2" />
+    <line x1="3" y1="15" x2="21" y2="15" />
+    <polygon
+      points={isOpen ? '9,16 12,20 15,16' : '9,19 12,15 15,19'}
+      fill="currentColor"
+      stroke="none"
+    />
+  </svg>
+);
+
+export const DockRightPanelIcon = ({ className = '', isOpen }: { className?: string; isOpen: boolean }) => (
   <svg 
     className={`origin-center transition-transform duration-200 ease-out group-hover:scale-115 ${className}`} 
     viewBox="0 0 24 24" 
@@ -18,6 +54,8 @@ export const DockPanelIcon = ({ className = '', isOpen }: { className?: string; 
     />
   </svg>
 );
+
+export const DockPanelIcon = DockRightPanelIcon;
 
 /* Moon Icon: Represents a crescent moon, used to indicate dark mode theme is enabled. */
 export const MoonIcon = ({ className = '' }: { className?: string }) => (
@@ -82,6 +120,21 @@ export const ChevronRightIcon = ({ className }: { className?: string }) => (
     strokeLinejoin="round"
   >
     <polyline points="9 18 15 12 9 6" />
+  </svg>
+);
+
+/* used for the bottom panel to collapse downward */
+export const ChevronDownIcon = ({ className }: { className?: string }) => (
+  <svg 
+    className={className} 
+    viewBox="0 0 24 24" 
+    fill="none" 
+    stroke="currentColor" 
+    strokeWidth="2.5" 
+    strokeLinecap="round" 
+    strokeLinejoin="round"
+  >
+    <polyline points="6 9 12 15 18 9" />
   </svg>
 );
 

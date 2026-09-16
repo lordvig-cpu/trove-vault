@@ -22,6 +22,7 @@
 @import "./styles/components/collectionDropdown.css";
 @import "./styles/components/TemplateManagerModal.css";
 @import "./styles/components/ItemModal.css";
+@import "./styles/components/BottomPanel.css";
 
 /* ==========================================================================
    GLOBAL VIEWPORT & RESET

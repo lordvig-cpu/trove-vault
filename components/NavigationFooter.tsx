@@ -8,7 +8,9 @@ import {
   AudioOffIcon 
 } from '@/components/icons/MediaIcons';
 import { 
-  DockPanelIcon, 
+  DockLeftPanelIcon,
+  DockBottomPanelIcon,
+  DockRightPanelIcon, 
   MoonIcon, 
   SunIcon 
 } from '@/components/icons/SystemIcons';
@@ -23,12 +25,20 @@ import OklchSeedControls from '@/components/OklchSeedControls';
  * Props for the NavigationFooter status bar.
  * @property activeCollectionName - Name of the currently selected collection (or undefined)
  * @property totalItemsCount - Total inventory count of records loaded across all collections
+ * @property isLeftPanelPinned - Boolean state tracking whether left primary sidebar is pinned
+ * @property onToggleLeftPanel - Handler toggling expansion/collapse of left pinned sidebar
+ * @property isBottomPanelOpen - Boolean state tracking whether bottom diagnostics drawer is open
+ * @property onToggleBottomPanel - Handler toggling expansion/collapse of bottom diagnostics drawer
  * @property isRightPanelOpen - Boolean state tracking whether the right utility panel is expanded
  * @property onToggleRightPanel - Handler toggling expansion/collapse of the right utility drawer
  */
 interface NavigationFooterProps {
   activeCollectionName?: string;
   totalItemsCount?: number;
+  isLeftPanelPinned?: boolean;
+  onToggleLeftPanel?: () => void;
+  isBottomPanelOpen?: boolean;
+  onToggleBottomPanel?: () => void;
   isRightPanelOpen: boolean;
   onToggleRightPanel: () => void;
 }
@@ -43,6 +53,10 @@ interface NavigationFooterProps {
 export default function NavigationFooter({
   activeCollectionName,
   totalItemsCount = 0,
+  isLeftPanelPinned = false,
+  onToggleLeftPanel,
+  isBottomPanelOpen = false,
+  onToggleBottomPanel,
   isRightPanelOpen,
   onToggleRightPanel,
 }: NavigationFooterProps) {
@@ -165,19 +179,49 @@ export default function NavigationFooter({
         <span className="text-border-subtle">|</span>
 
         {/* 
-          Right Side Panel Drawer Toggle:
-          Indicates open vs closed panel dock state using dynamic border classes.
+          Panel Dock Controls (VS Code Style):
+          Controls visibility for Left (Primary Sidebar), Bottom (Panel), and Right (Secondary Sidebar).
         */}
-        <button
-          type="button"
-          onClick={onToggleRightPanel}
-          title={isRightPanelOpen ? 'Close Side Panel' : 'Open Side Panel'}
-          className={`p-1.5 rounded-lg border transition cursor-pointer flex items-center justify-center ${
-            isRightPanelOpen ? 'nav-footer-dock-btn-open' : 'nav-footer-dock-btn-closed'
-          }`}
-        >
-          <DockPanelIcon className="w-4 h-4" isOpen={isRightPanelOpen} />
-        </button>
+        <div className="flex items-center gap-1.5">
+          {/* Toggle Left Sidebar (Pinned View) */}
+          <button
+            type="button"
+            onClick={onToggleLeftPanel}
+            title={isLeftPanelPinned ? 'Hide Primary Side Bar' : 'Show Primary Side Bar'}
+            aria-label={isLeftPanelPinned ? 'Hide Primary Side Bar' : 'Show Primary Side Bar'}
+            className={`p-1.5 rounded-lg border transition cursor-pointer flex items-center justify-center ${
+              isLeftPanelPinned ? 'nav-footer-dock-btn-open' : 'nav-footer-dock-btn-closed'
+            }`}
+          >
+            <DockLeftPanelIcon className="w-4 h-4" isOpen={isLeftPanelPinned} />
+          </button>
+
+          {/* Toggle Bottom Panel */}
+          <button
+            type="button"
+            onClick={onToggleBottomPanel}
+            title={isBottomPanelOpen ? 'Hide Panel' : 'Show Panel'}
+            aria-label={isBottomPanelOpen ? 'Hide Panel' : 'Show Panel'}
+            className={`p-1.5 rounded-lg border transition cursor-pointer flex items-center justify-center ${
+              isBottomPanelOpen ? 'nav-footer-dock-btn-open' : 'nav-footer-dock-btn-closed'
+            }`}
+          >
+            <DockBottomPanelIcon className="w-4 h-4" isOpen={isBottomPanelOpen} />
+          </button>
+
+          {/* Toggle Right Side Panel */}
+          <button
+            type="button"
+            onClick={onToggleRightPanel}
+            title={isRightPanelOpen ? 'Hide Secondary Side Bar' : 'Show Secondary Side Bar'}
+            aria-label={isRightPanelOpen ? 'Hide Secondary Side Bar' : 'Show Secondary Side Bar'}
+            className={`p-1.5 rounded-lg border transition cursor-pointer flex items-center justify-center ${
+              isRightPanelOpen ? 'nav-footer-dock-btn-open' : 'nav-footer-dock-btn-closed'
+            }`}
+          >
+            <DockRightPanelIcon className="w-4 h-4" isOpen={isRightPanelOpen} />
+          </button>
+        </div>
 
         {/* 
           Application Theme Toggle:
