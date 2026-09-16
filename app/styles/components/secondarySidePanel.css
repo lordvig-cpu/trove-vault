@@ -1,0 +1,182 @@
+/* ==========================================================================
+   SECONDARY SIDE PANEL & EXPAND TAB STYLES
+   Collapsible secondary inspector panel (right/left dockable) and floating expand tab.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   Floating Expand Tab
+   -------------------------------------------------------------------------- */
+.secondary-panel-expand-tab {
+  position: absolute;
+  top: 0.75rem;
+  height: 1.75rem;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+  background-color: var(--primary-right-panel-tab-bg);
+  border-top: 1px solid var(--primary-border-strong);
+  border-bottom: 1px solid var(--primary-border-strong);
+  color: var(--text-muted);
+  box-shadow: 0 10px 15px -3px var(--shadow-black-50);
+  backdrop-filter: blur(12px);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 30;
+  transition: all 150ms ease;
+}
+
+.secondary-panel-expand-tab-right {
+  right: 0;
+  border-left: 1px solid var(--primary-border-strong);
+  border-right: none;
+  border-top-left-radius: 0.375rem;
+  border-bottom-left-radius: 0.375rem;
+}
+
+.secondary-panel-expand-tab-left {
+  left: 0;
+  border-right: 1px solid var(--primary-border-strong);
+  border-left: none;
+  border-top-right-radius: 0.375rem;
+  border-bottom-right-radius: 0.375rem;
+}
+
+.secondary-panel-expand-tab:hover {
+  background-color: var(--primary-col-dropdown-btn-hover-bg);
+  border-color: var(--primary-border-strong);
+  color: var(--text-strong);
+}
+
+/* --------------------------------------------------------------------------
+   Docked Secondary Panel Aside
+   -------------------------------------------------------------------------- */
+.secondary-side-panel {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  max-width: none;
+  isolation: isolate;
+  background: var(--primary-right-panel-bg);
+  box-shadow: var(--right-panel-shadow);
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+  overflow: visible; 
+  will-change: width, transform, opacity;
+  backface-visibility: hidden;
+}
+
+.secondary-side-panel-right {
+  right: 0;
+  left: auto;
+  border-left: 1px solid var(--primary-border-strong);
+  border-right: none;
+}
+
+.secondary-side-panel-left {
+  left: 0;
+  right: auto;
+  border-right: 1px solid var(--primary-border-strong);
+  border-left: none;
+}
+
+/* Downward flare highlight */
+.secondary-side-panel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  clip-path: inset(0);
+  background: var(--primary-right-panel-flare-bg);
+  mix-blend-mode: var(--right-panel-flare-blend);
+  opacity: var(--right-panel-flare-opacity);
+}
+
+/* Procedural surface texture overlay */
+.secondary-side-panel::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  clip-path: inset(0);
+  background: var(--right-panel-texture-bg);
+  filter: var(--right-panel-texture-filter);
+  opacity: var(--right-panel-texture-opacity);
+  mix-blend-mode: var(--right-panel-texture-blend);
+}
+
+/* --------------------------------------------------------------------------
+   Header & Action Controls
+   -------------------------------------------------------------------------- */
+.secondary-side-panel-header {
+  position: relative;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--secondary-explorer-menu-rename-input-focus);
+  background: var(--primary-explorer-panel-bg);
+  flex-shrink: 0;
+}
+
+.secondary-side-panel-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.375rem;
+  border-radius: 0.5rem;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--primary-explorer-action-icon);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 150ms ease;
+}
+
+.secondary-side-panel-btn:hover {
+  border-color: var(--primary-border-subtle);
+  background-color: var(--surface-primary-hover);
+  color: var(--explorer-action-icon-hover);
+}
+
+/* --------------------------------------------------------------------------
+   Visibility States
+   -------------------------------------------------------------------------- */
+.secondary-panel-tab-hidden-right {
+  opacity: 0;
+  transform: translateX(100%);
+  pointer-events: none;
+}
+
+.secondary-panel-tab-hidden-left {
+  opacity: 0;
+  transform: translateX(-100%);
+  pointer-events: none;
+}
+
+.secondary-panel-tab-visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.secondary-panel-docked-open {
+  opacity: 1;
+  transform: translateX(0);
+  z-index: 90;
+}
+
+.secondary-panel-docked-closed-right {
+  opacity: 0;
+  transform: translateX(110%);
+  pointer-events: none;
+}
+
+.secondary-panel-docked-closed-left {
+  opacity: 0;
+  transform: translateX(-110%);
+  pointer-events: none;
+}
+

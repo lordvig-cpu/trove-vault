@@ -355,7 +355,7 @@
    --explorer-sticky-category-border: var(--panel-border-subtle);
    --explorer-sticky-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.65);
 
-   /* Search Bar & Shortcut Badge (LeftSidePanelHeader.tsx) */
+   /* Search Bar & Shortcut Badge (PrimarySidePanelHeader.tsx) */
    --explorer-search-input-bg: rgba(0, 20, 48, 0.88);
    --explorer-search-input-border: rgba(0, 160, 255, 0.58);
    --explorer-input-border-idle: rgba(0, 160, 255, 0.58);

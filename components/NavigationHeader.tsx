@@ -24,10 +24,9 @@ export type SearchScope = 'current' | 'all';
  * @property onRequestDeleteCollection - Trigger to launch delete collection confirmation modal
  * @property onOpenFieldManager - Optional callback to launch custom field settings
  * @property onOpenTemplateManager - Callback launching the schema template manager modal
- * @property isLeftSidePanelOpen - Whether the floating flyout panel is actively revealed
- * @property onToggleLeftSidePanel - Callback toggling the flyout panel visibility
- * @property onAddNewItem - Optional handler to launch create item dialog
- * @property unpinnedExplorerPanel - Pre-rendered LeftSidePanel (flyout variant) anchored under the tab
+ * @property isPrimarySidePanelOpen - Whether the floating flyout panel is actively revealed
+ * @property onTogglePrimarySidePanel - Callback toggling the flyout panel visibility
+ * @property unpinnedPrimaryPanel - Pre-rendered PrimarySidePanel (flyout variant) anchored under the tab
  */
 interface NavigationHeaderProps {
   activeCollectionName: string;
@@ -40,9 +39,14 @@ interface NavigationHeaderProps {
   onRequestDeleteCollection: (collection: CollectionRecord) => void;
   onOpenFieldManager?: () => void;
   onOpenTemplateManager: () => void;
-  isLeftSidePanelOpen: boolean;
-  onToggleLeftSidePanel: () => void;
+  isPrimarySidePanelOpen?: boolean;
+  onTogglePrimarySidePanel?: () => void;
+  unpinnedPrimaryPanel?: React.ReactNode;
   onAddNewItem?: () => void;
+
+  // Backward-compatibility aliases
+  isLeftSidePanelOpen?: boolean;
+  onToggleLeftSidePanel?: () => void;
   unpinnedExplorerPanel?: React.ReactNode;
 }
 
@@ -62,19 +66,23 @@ export default function NavigationHeader({
   setIsDropdownOpen,
   onRequestDeleteCollection,
   onOpenTemplateManager,
+  isPrimarySidePanelOpen,
+  onTogglePrimarySidePanel,
+  unpinnedPrimaryPanel,
   isLeftSidePanelOpen,
   onToggleLeftSidePanel,
   unpinnedExplorerPanel,
 }: NavigationHeaderProps) {
   /* ------------------------------------------------------------------------
      2.1 CONTEXT & ACTIVE TAB EVALUATION
-     Reads layout preferences to determine whether the Explorer tab displays
-     in its active highlighted state (docked/pinned or unpinned flyout open).
      ------------------------------------------------------------------------ */
   const { isPinned, animationsEnabled } = useUIPreferences();
 
-  const isTabActive = isPinned || isLeftSidePanelOpen;
+  const effectiveIsOpen = isPrimarySidePanelOpen ?? isLeftSidePanelOpen ?? false;
+  const effectiveToggle = onTogglePrimarySidePanel ?? onToggleLeftSidePanel ?? (() => {});
+  const effectiveUnpinnedPanel = unpinnedPrimaryPanel ?? unpinnedExplorerPanel;
 
+  const isTabActive = isPinned || effectiveIsOpen;
 
   return (
     <>
@@ -82,15 +90,12 @@ export default function NavigationHeader({
       <NavigationBarTextureFilter />
 
       <header className="navigation-header h-14 flex items-center justify-between shrink-0 relative z-[80]">
-        
         {/* ------------------------------------------------------------------
             2.2 LEFT SECTION: BRANDING & PRIMARY NAVIGATION
             ------------------------------------------------------------------ */}
         <div className="flex items-center h-full relative z-10">
-          
-          {/* Brand & Explorer Tab Cluster (Fixed w-76 aligns with docked sidebar seam) */}
+          {/* Brand & Explorer Tab Cluster */}
           <div className="flex items-center justify-between h-full w-76 shrink-0 relative">
-
             {/* Brand Logo Anchor */}
             <div className="flex items-center gap-2 pl-4 relative z-20">
               <img
@@ -106,7 +111,7 @@ export default function NavigationHeader({
                 type="button"
                 onClick={() => {
                   if (!isPinned) {
-                    onToggleLeftSidePanel();
+                    effectiveToggle();
                   }
                 }}
                 className={[
@@ -121,7 +126,7 @@ export default function NavigationHeader({
               >
                 <span>Explorer</span>
 
-                {/* Underline Track: Full-width barely-visible blue line with centered gold indicator */}
+                {/* Underline Track */}
                 <div className="absolute inset-x-0 bottom-[4px] flex items-center justify-center pointer-events-none">
                   <div
                     className={[
@@ -141,7 +146,7 @@ export default function NavigationHeader({
                   />
                 </div>
 
-                {/* Seamless Tab Extension (Blends tab bottom directly into the panel below) */}
+                {/* Seamless Tab Extension */}
                 <div
                   className={[
                     'nav-tab-extension transition-opacity ease-out',
@@ -153,7 +158,7 @@ export default function NavigationHeader({
               </button>
 
               {/* Unpinned Floating Flyout Mount Slot */}
-              {unpinnedExplorerPanel}
+              {effectiveUnpinnedPanel}
             </div>
           </div>
 

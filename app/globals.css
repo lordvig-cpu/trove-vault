@@ -16,13 +16,14 @@
 @import "./styles/components/NavigationHeader.css";
 @import "./styles/components/NavigationFooter.css";
 @import "./styles/components/MainContent.css";
-@import "./styles/components/LeftSidePanel.css";
+@import "./styles/components/primarySidePanel.css";
 @import "./styles/components/UnifiedExplorerTree.css";
-@import "./styles/components/RightSidePanel.css";
+@import "./styles/components/secondarySidePanel.css";
 @import "./styles/components/collectionDropdown.css";
 @import "./styles/components/TemplateManagerModal.css";
 @import "./styles/components/ItemModal.css";
 @import "./styles/components/BottomPanel.css";
+@import "./styles/components/PanelDockDropZones.css";
 
 /* ==========================================================================
    GLOBAL VIEWPORT & RESET

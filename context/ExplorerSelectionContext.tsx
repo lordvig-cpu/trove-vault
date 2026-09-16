@@ -10,6 +10,7 @@ export interface ExplorerSelectionContextValue {
   onToggleCategory?: (id: number, expand: boolean) => void;
   onSelectCollection: (id: number) => void;
   onSelectItem: (item: ItemRecord, collectionId: number | null) => void;
+  position?: 'left' | 'right';
 }
 
 const ExplorerSelectionContext = createContext<ExplorerSelectionContextValue | null>(null);

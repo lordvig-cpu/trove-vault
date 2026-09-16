@@ -12,11 +12,12 @@ import { ItemRecord } from '@/types/item';
  * Props for the MainContent viewport component.
  * @property selectedItem - Currently active item record to display inside ItemDetailView (or null for empty state)
  * @property activeCollectionId - ID of the collection enclosing the selected item (or null for standalone items)
- * @property isBlurred - Whether the canvas should apply backdrop blur (active when unpinned flyout is open
+ * @property isBlurred - Whether the canvas should apply backdrop blur (active when unpinned flyout is open)
  * @property onAddSubItem - Callback invoking modal creation for a child item
  * @property onEditItem - Callback opening edit modal dialog for the selected record
  * @property onDeleteItem - Callback opening deletion confirmation dialog for the selected record
- * @property rightPanelWidth - Footprint of the right utility drawer in pixels (used for scroll clearance)
+ * @property occupiedRightWidth - Width in px occupied by the right-docked panel (Primary or Secondary)
+ * @property occupiedLeftWidth - Width in px occupied by the left-docked panel (Primary or Secondary)
  * @property bottomPanelHeight - Height clearance for the collapsible bottom drawer in pixels
  */
 interface MainContentProps {
@@ -26,7 +27,9 @@ interface MainContentProps {
   onAddSubItem: (collectionId: number | null, parentItemId: number | null) => void;
   onEditItem: (item: ItemRecord, collectionId: number | null) => void;
   onDeleteItem: (item: ItemRecord, collectionId: number | null) => void;
-  rightPanelWidth?: number;
+  occupiedRightWidth?: number;
+  occupiedLeftWidth?: number;
+  rightPanelWidth?: number; // Backward compatibility alias
   bottomPanelHeight?: number;
 }
 
@@ -41,33 +44,37 @@ export default function MainContent({
   onAddSubItem,
   onEditItem,
   onDeleteItem,
+  occupiedRightWidth,
+  occupiedLeftWidth = 0,
   rightPanelWidth = 0,
   bottomPanelHeight = 0,
 }: MainContentProps) {
+  const effectiveRightWidth = occupiedRightWidth ?? rightPanelWidth;
+
   return (
     <div className="flex-1 h-full min-h-0 relative z-20 flex flex-col">
       {/* --------------------------------------------------------------------
           2.1 PRIMARY VERTICAL SCROLL CHASSIS
           Uses marginRight to pull the native scrollbar inward so it never sits
-          trapped under the right side panel.
+          trapped under the right-docked side panel.
           flex-1 and min-h-0 guarantee strict vertical bounds without collapsing.
           -------------------------------------------------------------------- */}
       <div 
-        className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden main-content-scroll transition-[padding] duration-500 ease-in-out"
+        className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden main-content-scroll transition-[padding,margin] duration-500 ease-in-out"
         style={{ 
-          marginRight: `${rightPanelWidth}px`,
+          marginRight: `${effectiveRightWidth}px`,
           paddingBottom: `${bottomPanelHeight}px`,
         }}
       >
         {/* ------------------------------------------------------------------
             2.2 CENTER RESTORATION WRAPPER
-            Expands width by (100% + rightPanelWidth) to compensate for the margin.
+            Expands width by (100% + effectiveRightWidth) to compensate for margin.
             This ensures that mx-auto child blocks remain locked to the true
             horizontal center of the viewport, even while panels resize.
             ------------------------------------------------------------------ */}
         <div 
           className="min-h-full flex flex-col"
-          style={{ width: `calc(100% + ${rightPanelWidth}px)` }}
+          style={{ width: `calc(100% + ${effectiveRightWidth}px)` }}
         >
           {/* Main Stage Presentation Shell with Backdrop Filter Fades */}
           <main

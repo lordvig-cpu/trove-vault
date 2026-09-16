@@ -23,7 +23,11 @@ const GLOBAL_MENU_OPEN_EVENT = 'explorer-action-menu-open';
  * @param id - Unique identifier representing the category, collection, or item instance
  * @param defaultMenuHeight - Base menu height (px) used to calculate upward clamping
  */
-export function useExplorerActionMenu(id: string, defaultMenuHeight: number = 215) {
+export function useExplorerActionMenu(
+  id: string,
+  defaultMenuHeight: number = 215,
+  position: 'left' | 'right' = 'left'
+) {
   /* ------------------------------------------------------------------------
      2.1 REFERENCES & TIMERS
      ------------------------------------------------------------------------ */
@@ -61,11 +65,13 @@ export function useExplorerActionMenu(id: string, defaultMenuHeight: number = 21
      2.4 VIEWPORT GEOMETRY & CLAMPING
      Calculates viewport top/left coordinates. Clamps upwards if the menu would
      otherwise clip underneath the bottom navigation bar.
+     Supports both Left and Right panel docking orientations.
      ------------------------------------------------------------------------ */
   const computeCoordinates = useCallback(
     (rect: DOMRect, menuHeight: number) => {
       const bottomNavReserve = 64; // Height of bottom status bar + padding buffer
       const maxAllowedTop = window.innerHeight - menuHeight - bottomNavReserve;
+      const MENU_WIDTH = 224; // 14rem width defined in ExplorerActionMenu.css
 
       // Align header slightly above trigger gear icon (-4px offset)
       let calculatedTop = Math.round(rect.top - 4);
@@ -75,12 +81,19 @@ export function useExplorerActionMenu(id: string, defaultMenuHeight: number = 21
         calculatedTop = Math.max(16, maxAllowedTop);
       }
 
+      // If docked on right (or in right half of screen), flyout opens to the left
+      const isRightDocked = position === 'right' || rect.left > window.innerWidth / 2;
+
+      const calculatedLeft = isRightDocked
+        ? Math.round(rect.left - MENU_WIDTH - 6) // Clear to the left of the gear trigger
+        : Math.round(rect.right + 6); // +6px horizontal clearance beyond scrollbar to the right
+
       return {
         top: calculatedTop,
-        left: Math.round(rect.right + 6), // +6px horizontal clearance beyond scrollbar
+        left: calculatedLeft,
       };
     },
-    []
+    [position]
   );
 
   /* ------------------------------------------------------------------------

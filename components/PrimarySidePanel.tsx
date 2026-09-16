@@ -5,17 +5,20 @@ import { createPortal } from 'react-dom';
 import { useUIPreferences } from '@/context/UIPreferencesContext';
 import { useResizablePanel } from '@/hooks/useResizablePanel';
 import { useFlyoutLifecycle } from '@/hooks/useFlyoutLifecycle';
-import LeftSidePanelHeader from '@/components/LeftSidePanelHeader';
+import PrimarySidePanelHeader from '@/components/PrimarySidePanelHeader';
 import { CollectionRecord } from '@/types/collection';
-import { ResetWidthIcon } from '@/components/icons/SystemIcons';
+import { ResetWidthIcon, ResetWidthRightIcon } from '@/components/icons/SystemIcons';
 import { ExplorerTab } from '@/lib/filterExplorerForest';
+import { PrimarySidebarPosition } from '@/types/layout';
 
 /* ==========================================================================
    1. TYPE DEFINITIONS & CONSTANTS
    ========================================================================== */
 
-interface LeftSidePanelProps {
+interface PrimarySidePanelProps {
   variant: 'flyout' | 'sidebar';
+  position?: PrimarySidebarPosition;
+  onTogglePosition?: () => void;
   isOpen: boolean;
   onClose: () => void;
   onTogglePin: () => void;
@@ -34,20 +37,24 @@ interface LeftSidePanelProps {
   onAddNewCollection?: () => void;
   collections: CollectionRecord[];
 
-  // New Multi-Select Array Props
+  // Multi-Select Array Props
   filterCollectionIds: number[];
   onToggleFilterCollection: (collectionId: number) => void;
   onClearCollectionFilters: () => void;
+
+  onHandlePointerDown?: (e: React.PointerEvent) => void;
 }
 
 const DEFAULT_WIDTH = 304;
 
 /* ==========================================================================
-   2. MAIN COMPONENT: LeftSidePanel
+   2. MAIN COMPONENT: PrimarySidePanel
    ========================================================================== */
 
-export default function LeftSidePanel({
+export default function PrimarySidePanel({
   variant,
+  position = 'left',
+  onTogglePosition,
   isOpen,
   onClose,
   onTogglePin,
@@ -68,8 +75,8 @@ export default function LeftSidePanel({
   filterCollectionIds = [],
   onToggleFilterCollection,
   onClearCollectionFilters,
-}: LeftSidePanelProps) {
-  // Resolve canonical category terminology
+  onHandlePointerDown,
+}: PrimarySidePanelProps) {
   const activeIsExpanded = isAnyCategoryExpanded;
   const activeToggleAll = onToggleAllCategories;
 
@@ -80,6 +87,7 @@ export default function LeftSidePanel({
 
   /* ------------------------------------------------------------------------
      2.2 RESIZING CONTROLLER HOOK
+     Direction dynamically matches docking side ('left' or 'right')
      ------------------------------------------------------------------------ */
   const {
     panelWidth,
@@ -91,7 +99,7 @@ export default function LeftSidePanel({
     minWidth: 304,
     minGap: 48,
     reservedWidth,
-    direction: 'left',
+    direction: position === 'right' ? 'right' : 'left',
     onWidthChange,
   });
 
@@ -105,9 +113,10 @@ export default function LeftSidePanel({
     variant
   );
 
-  const transitionClass = (!isDragging && animationsEnabled && isHydrated)
-    ? 'transition-[width,transform,opacity] duration-500 ease-in-out'
-    : 'transition-none';
+  const transitionClass =
+    !isDragging && animationsEnabled && isHydrated
+      ? 'transition-[width,transform,opacity] duration-500 ease-in-out'
+      : 'transition-none';
 
   const handlePinAction = () => (onTogglePin ? onTogglePin() : togglePin());
 
@@ -121,7 +130,9 @@ export default function LeftSidePanel({
         <div
           onPointerDown={handlePointerDown}
           onDoubleClick={handleResetWidth}
-          className={`panel-resize-handle absolute top-1/2 -translate-y-1/2 -right-2 w-4 h-32 select-none group/resize ${
+          className={`panel-resize-handle absolute top-1/2 -translate-y-1/2 ${
+            position === 'left' ? '-right-2' : '-left-2'
+          } w-4 h-32 select-none group/resize ${
             isDragging ? 'panel-resize-handle-active' : ''
           }`}
           title="Drag to resize panel (double-click to reset)"
@@ -143,21 +154,31 @@ export default function LeftSidePanel({
           type="button"
           onClick={handleResetWidth}
           className={[
-            'group absolute top-16 -right-7 w-7 h-8 z-40',
+            `group absolute top-16 ${
+              position === 'left'
+                ? '-right-7 border-l-0 rounded-r-md'
+                : '-left-7 border-r-0 rounded-l-md'
+            } w-7 h-8 z-40`,
             'flex items-center justify-center',
-            'panel-reset-button border border-l-0 rounded-r-md transition-colors',
+            'panel-reset-button border transition-colors',
             animationsEnabled ? 'animate-mount-fade' : '',
           ].join(' ')}
           title="Reset to default width"
         >
-          <ResetWidthIcon className="w-3.5 h-3.5 panel-reset-icon" />
+          {position === 'left' ? (
+            <ResetWidthIcon className="w-3.5 h-3.5 panel-reset-icon" />
+          ) : (
+            <ResetWidthRightIcon className="w-3.5 h-3.5 panel-reset-icon" />
+          )}
         </button>
       )}
 
       {/* Header with Search, Filter Button & Filter Tray */}
-      <LeftSidePanelHeader
+      <PrimarySidePanelHeader
         variant={variant}
         isPinned={isPinned}
+        position={position}
+        onTogglePosition={onTogglePosition}
         activeTab={activeTab}
         onTabChange={onTabChange}
         searchQuery={searchQuery}
@@ -172,24 +193,21 @@ export default function LeftSidePanel({
         filterCollectionIds={filterCollectionIds}
         onToggleFilterCollection={onToggleFilterCollection}
         onClearCollectionFilters={onClearCollectionFilters}
+        onHandlePointerDown={onHandlePointerDown}
       />
 
       {/* Syncing Progress Banner */}
       {loading && (
-        <div className="left-side-panel-notice-loading panel-notice-text animate-pulse shrink-0 px-3 py-1 text-xs mt-2 mx-2">
+        <div className="primary-side-panel-notice-loading panel-notice-text animate-pulse shrink-0 px-3 py-1 text-xs mt-2 mx-2">
           ⏳ Syncing hierarchy...
         </div>
       )}
 
       {/* Error Feedback Notice */}
-      {error && (
-        <div className="left-side-panel-notice-error mt-2 mx-2">
-          {error}
-        </div>
-      )}
+      {error && <div className="primary-side-panel-notice-error mt-2 mx-2">{error}</div>}
 
       {/* Dedicated Scrollable Explorer Tree Viewport */}
-      <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden px-2.5 pt-0 pb-6 min-w-0 left-panel-scroll">
+      <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden px-2.5 pt-0 pb-6 min-w-0 primary-panel-scroll">
         {children}
       </div>
     </>
@@ -245,14 +263,24 @@ export default function LeftSidePanel({
   /* ------------------------------------------------------------------------
      4. SIDEBAR VARIANT
      ------------------------------------------------------------------------ */
+  const positionClass = position === 'right' ? 'primary-side-panel-right' : 'primary-side-panel-left';
+  const stateClass = isPinned
+    ? position === 'right'
+      ? 'primary-side-panel-pinned-right'
+      : 'primary-side-panel-pinned-left'
+    : position === 'right'
+    ? 'primary-side-panel-unpinned-right pointer-events-none'
+    : 'primary-side-panel-unpinned-left pointer-events-none';
+
   return (
     <aside
       style={{ width: `${panelWidth}px` }}
       className={[
-        'left-side-panel absolute top-0 bottom-0 left-0 z-50',
+        'primary-side-panel absolute top-0 bottom-0 z-50',
+        positionClass,
         'panel-shell',
         transitionClass,
-        isPinned ? 'left-side-panel-pinned' : 'left-side-panel-unpinned pointer-events-none',
+        stateClass,
       ]
         .filter(Boolean)
         .join(' ')}
@@ -261,3 +289,4 @@ export default function LeftSidePanel({
     </aside>
   );
 }
+

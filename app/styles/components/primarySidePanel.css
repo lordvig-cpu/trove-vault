@@ -1,25 +1,22 @@
 /* ==========================================================================
-   LEFT SIDE PANEL & EXPLORER TREE STYLES
-   Orchestrates the collapsible left sidebar, pinned flyouts, search cards,
-   and sticky Category headers for the Explorer panel.
+   PRIMARY SIDE PANEL & EXPLORER TREE STYLES
+   Orchestrates the collapsible Primary Side Panel (left/right dockable),
+   pinned flyouts, search cards, and sticky Category headers for Explorer.
    ========================================================================== */
 
 /* --------------------------------------------------------------------------
    Main Aside Container
-   Anchored to the left margin; switches layout mode between pinned and flyout.
+   Switches docking between left and right margins, pinned and flyout modes.
    -------------------------------------------------------------------------- */
-.left-side-panel {
+.primary-side-panel {
   position: absolute;
-  left: 0;
   top: 0;
   bottom: 0;
-  /* Let inline style control width; remove fixed max-width constraint */
   max-width: none;
   background: var(--primary-explorer-panel-bg);
   display: flex;
   flex-direction: column;
   gap: 0;
-  /* Allow absolute children (like the reset tab) to hang outside the borders */
   overflow: visible;
   flex-shrink: 0;
   padding: 0;
@@ -29,8 +26,18 @@
   transform: translateX(0);
 }
 
+.primary-side-panel-left {
+  left: 0;
+  right: auto;
+}
+
+.primary-side-panel-right {
+  right: 0;
+  left: auto;
+}
+
 /* Downward flare highlight */
-.left-side-panel::before {
+.primary-side-panel::before {
   content: "";
   position: absolute;
   inset: 0;
@@ -43,7 +50,7 @@
 }
 
 /* Procedural surface texture overlay */
-.left-side-panel::after {
+.primary-side-panel::after {
   content: "";
   position: absolute;
   inset: 0;
@@ -56,28 +63,46 @@
   mix-blend-mode: var(--explorer-panel-texture-blend);
 }
 
-/* Pinned layout mode: Statically locks the sidebar into the main content flow */
-.left-side-panel-pinned {
+/* Pinned layout mode (Left docked): Statically locks sidebar into flow */
+.primary-side-panel-pinned-left {
   border-right: 1px solid var(--primary-border-strong);
+  border-left: none;
   box-shadow: var(--panel-pinned-shadow);
   opacity: 1;
   transform: translateX(0);
-  /* Keep the docked panel above the navigation bar's lower shadow layer */
   z-index: 90;
 }
 
-/* Unpinned / Collapsed layout mode: Translates out of the viewport */
-.left-side-panel-unpinned {
+/* Pinned layout mode (Right docked) */
+.primary-side-panel-pinned-right {
+  border-left: 1px solid var(--primary-border-strong);
+  border-right: none;
+  box-shadow: var(--right-panel-shadow);
+  opacity: 1;
+  transform: translateX(0);
+  z-index: 90;
+}
+
+/* Unpinned / Collapsed layout mode (Left docked): Translates left */
+.primary-side-panel-unpinned-left {
   border-right: none;
   opacity: 0;
   pointer-events: none;
   transform: translateX(-110%);
 }
 
+/* Unpinned / Collapsed layout mode (Right docked): Translates right */
+.primary-side-panel-unpinned-right {
+  border-left: none;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(110%);
+}
+
 /* --------------------------------------------------------------------------
    Header & Action Controls
    -------------------------------------------------------------------------- */
-.left-side-panel-header {
+.primary-side-panel-header {
   position: relative;
   z-index: 20;
   display: flex;
@@ -88,7 +113,7 @@
   flex-shrink: 0;
 }
 
-.left-panel-scroll {
+.primary-panel-scroll {
   position: relative;
   z-index: 5;
   overflow-y: auto;
@@ -97,13 +122,13 @@
 }
 
 /* Pinned state toggle trigger */
-.left-side-panel-pin-btn {
+.primary-side-panel-pin-btn {
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 0.375rem;
   border-radius: 0.5rem;
-  border: 1px solid transparent; /* transparent border placeholder */
+  border: 1px solid transparent;
   background: transparent;
   color: var(--primary-explorer-action-icon);
   cursor: pointer;
@@ -111,7 +136,28 @@
   transition: all 150ms ease;
 }
 
-.left-side-panel-pin-btn:hover {
+.primary-side-panel-pin-btn:hover {
+  border-color: var(--primary-border-subtle);
+  background-color: var(--surface-primary-hover);
+  color: var(--explorer-action-icon-hover);
+}
+
+/* Position swap button */
+.primary-side-panel-position-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.375rem;
+  border-radius: 0.5rem;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--primary-explorer-action-icon);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 150ms ease;
+}
+
+.primary-side-panel-position-btn:hover {
   border-color: var(--primary-border-subtle);
   background-color: var(--surface-primary-hover);
   color: var(--explorer-action-icon-hover);
@@ -122,8 +168,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 1.375rem; /* 22px */
-  height: 1.375rem; /* 22px */
+  width: 1.375rem;
+  height: 1.375rem;
   padding: 0;
   border-radius: 0.375rem;
   border: 1px solid transparent;
@@ -231,7 +277,7 @@
 /* --------------------------------------------------------------------------
    Notice / Status Banners
    -------------------------------------------------------------------------- */
-.left-side-panel-notice-loading {
+.primary-side-panel-notice-loading {
   font-size: 0.75rem;
   padding: 0.625rem;
   border-radius: 0.5rem;
@@ -241,7 +287,7 @@
   color: var(--secondary-explorer-menu-rename-save-text);
 }
 
-.left-side-panel-notice-error {
+.primary-side-panel-notice-error {
   font-size: 0.75rem;
   padding: 0.625rem;
   border-radius: 0.5rem;
@@ -253,7 +299,6 @@
 
 /* --------------------------------------------------------------------------
    Explorer Tree Action Menu Popup & Buttons
-   (Inline popover variant used for quick node actions)
    -------------------------------------------------------------------------- */
 .explorer-action-popup {
   background-color: var(--surface-popover);
@@ -267,7 +312,6 @@
   white-space: nowrap;
 }
 
-/* Base button appearance inside popups */
 .explorer-action-btn {
   padding: 0.375rem;
   color: var(--text-muted);
@@ -290,7 +334,6 @@
   color: var(--secondary-explorer-menu-rename-input-focus);
 }
 
-/* Destructive / Delete variant inside popups */
 .explorer-action-btn-danger {
   padding: 0.375rem;
   color: var(--explorer-menu-danger-text);
@@ -363,7 +406,7 @@
 }
 
 /* --------------------------------------------------------------------------
-   Universal Search Result Cards (Left Panel / Flyout)
+   Universal Search Result Cards
    -------------------------------------------------------------------------- */
 .search-result-card {
   padding: 0.5rem;
@@ -389,9 +432,8 @@
 }
 
 /* --------------------------------------------------------------------------
-   Sticky Tree Category Headers (Target Image 2 Rounded Glass Card)
+   Sticky Tree Category Headers
    -------------------------------------------------------------------------- */
-/* Scroll wrapper clipping upper bleed for child sticky rows */
 .explorer-tree-scroll-container {
   position: relative;
   overflow-y: auto;
@@ -400,7 +442,6 @@
   flex: 1;
 }
 
-/* Sticky Category header pinned to the scroll ceiling - Rounded Glass Card */
 .explorer-category-sticky-header {
   position: sticky;
   top: 0;
@@ -424,7 +465,7 @@
   border-color: var(--secondary-explorer-category-card-active-border);
 }
 
-/* Elevates the active/hovered tree row above sibling sticky stacking layers */
 .group:hover {
   z-index: 40 !important;
 }
+

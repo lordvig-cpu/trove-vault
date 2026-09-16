@@ -25,44 +25,57 @@ import OklchSeedControls from '@/components/OklchSeedControls';
  * Props for the NavigationFooter status bar.
  * @property activeCollectionName - Name of the currently selected collection (or undefined)
  * @property totalItemsCount - Total inventory count of records loaded across all collections
- * @property isLeftPanelPinned - Boolean state tracking whether left primary sidebar is pinned
- * @property onToggleLeftPanel - Handler toggling expansion/collapse of left pinned sidebar
- * @property isBottomPanelOpen - Boolean state tracking whether bottom diagnostics drawer is open
- * @property onToggleBottomPanel - Handler toggling expansion/collapse of bottom diagnostics drawer
- * @property isRightPanelOpen - Boolean state tracking whether the right utility panel is expanded
- * @property onToggleRightPanel - Handler toggling expansion/collapse of the right utility drawer
+ * @property isPrimaryPinned - Boolean state tracking whether primary sidebar is pinned
+ * @property onTogglePrimary - Handler toggling expansion/collapse of primary sidebar
+ * @property isBottomOpen - Boolean state tracking whether bottom diagnostics drawer is open
+ * @property onToggleBottom - Handler toggling expansion/collapse of bottom diagnostics drawer
+ * @property isSecondaryOpen - Boolean state tracking whether secondary utility panel is open
+ * @property onToggleSecondary - Handler toggling expansion/collapse of secondary utility drawer
  */
 interface NavigationFooterProps {
   activeCollectionName?: string;
   totalItemsCount?: number;
+  isPrimaryPinned?: boolean;
+  onTogglePrimary?: () => void;
+  isBottomOpen?: boolean;
+  onToggleBottom?: () => void;
+  isSecondaryOpen?: boolean;
+  onToggleSecondary?: () => void;
+  
+  // Backward-compatibility aliases
   isLeftPanelPinned?: boolean;
   onToggleLeftPanel?: () => void;
   isBottomPanelOpen?: boolean;
   onToggleBottomPanel?: () => void;
-  isRightPanelOpen: boolean;
-  onToggleRightPanel: () => void;
+  isRightPanelOpen?: boolean;
+  onToggleRightPanel?: () => void;
 }
 
 /* ==========================================================================
    2. MAIN COMPONENT: NavigationFooter
    Fixed-height (h-14) bottom status bar anchored at z-[60].
    Coordinates data metrics, operational readiness, sound/animation preferences,
-   docking toggles, and global color theme switching.
+   panel docking toggles, and global color theme switching.
    ========================================================================== */
 
 export default function NavigationFooter({
   activeCollectionName,
   totalItemsCount = 0,
-  isLeftPanelPinned = false,
+  isPrimaryPinned,
+  onTogglePrimary,
+  isBottomOpen,
+  onToggleBottom,
+  isSecondaryOpen,
+  onToggleSecondary,
+  isLeftPanelPinned,
   onToggleLeftPanel,
-  isBottomPanelOpen = false,
+  isBottomPanelOpen,
   onToggleBottomPanel,
   isRightPanelOpen,
   onToggleRightPanel,
 }: NavigationFooterProps) {
   /* ------------------------------------------------------------------------
      2.1 GLOBAL PREFERENCES CONTEXT
-     Consumes persisted UI toggles and themes directly from UIPreferencesContext.
      ------------------------------------------------------------------------ */
   const {
     animationsEnabled,
@@ -71,16 +84,29 @@ export default function NavigationFooter({
     toggleAudio,
     theme,
     toggleTheme,
+    primaryPosition,
   } = useUIPreferences();
 
   const isLightTheme = theme === 'theme-oklch-light';
 
+  const effectivePrimaryPinned = isPrimaryPinned ?? isLeftPanelPinned ?? false;
+  const effectiveTogglePrimary = onTogglePrimary ?? onToggleLeftPanel;
+  const effectiveBottomOpen = isBottomOpen ?? isBottomPanelOpen ?? false;
+  const effectiveToggleBottom = onToggleBottom ?? onToggleBottomPanel;
+  const effectiveSecondaryOpen = isSecondaryOpen ?? isRightPanelOpen ?? false;
+  const effectiveToggleSecondary = onToggleSecondary ?? onToggleRightPanel;
+
+  // Left vs Right icons match physical panel positions
+  const isLeftDockOpen = primaryPosition === 'left' ? effectivePrimaryPinned : effectiveSecondaryOpen;
+  const onToggleLeftDock = primaryPosition === 'left' ? effectiveTogglePrimary : effectiveToggleSecondary;
+
+  const isRightDockOpen = primaryPosition === 'right' ? effectivePrimaryPinned : effectiveSecondaryOpen;
+  const onToggleRightDock = primaryPosition === 'right' ? effectiveTogglePrimary : effectiveToggleSecondary;
+
   return (
     <footer className="navigation-footer h-14 flex items-center justify-between px-4 text-xs select-none shrink-0 z-[60]">
-      
       {/* --------------------------------------------------------------------
           2.2 LEFT: SYSTEM READINESS & ACTIVE CONTEXT
-          Displays live database status dot alongside the currently active collection.
           -------------------------------------------------------------------- */}
       <div className="flex items-center gap-3 relative z-10">
         <div className="flex items-center gap-2">
@@ -109,8 +135,6 @@ export default function NavigationFooter({
 
       {/* --------------------------------------------------------------------
           2.4 RIGHT: INVENTORY METRICS & SYSTEM TOGGLES
-          Item counters and interactive buttons for animations, sound FX,
-          right side panel docking, and theme switching.
           -------------------------------------------------------------------- */}
       <div className="flex items-center gap-3 relative z-10">
         {/* Total Aggregated Inventory Count */}
@@ -120,10 +144,7 @@ export default function NavigationFooter({
 
         <span className="ui-muted">|</span>
 
-        {/* 
-          Animated UI Transitions Toggle Button:
-          Dual-icon sliding track morphing between AnimationsOn and AnimationsOff.
-        */}
+        {/* Animated UI Transitions Toggle Button */}
         <button
           type="button"
           onClick={toggleAnimations}
@@ -148,10 +169,7 @@ export default function NavigationFooter({
           />
         </button>
 
-        {/* 
-          Animated Ambient Audio & Sound FX Toggle:
-          Dual-icon sliding track morphing between AudioOn and AudioOff.
-        */}
+        {/* Animated Ambient Audio & Sound FX Toggle */}
         <button
           type="button"
           onClick={toggleAudio}
@@ -178,55 +196,65 @@ export default function NavigationFooter({
 
         <span className="text-border-subtle">|</span>
 
-        {/* 
-          Panel Dock Controls (VS Code Style):
-          Controls visibility for Left (Primary Sidebar), Bottom (Panel), and Right (Secondary Sidebar).
-        */}
+        {/* Panel Dock Controls (VS Code Style) */}
         <div className="flex items-center gap-1.5">
-          {/* Toggle Left Sidebar (Pinned View) */}
+          {/* Toggle Left Sidebar */}
           <button
             type="button"
-            onClick={onToggleLeftPanel}
-            title={isLeftPanelPinned ? 'Hide Primary Side Bar' : 'Show Primary Side Bar'}
-            aria-label={isLeftPanelPinned ? 'Hide Primary Side Bar' : 'Show Primary Side Bar'}
+            onClick={onToggleLeftDock}
+            title={
+              primaryPosition === 'left'
+                ? isLeftDockOpen
+                  ? 'Hide Primary Side Bar'
+                  : 'Show Primary Side Bar'
+                : isLeftDockOpen
+                ? 'Hide Secondary Side Bar'
+                : 'Show Secondary Side Bar'
+            }
+            aria-label="Toggle Left Panel"
             className={`p-1.5 rounded-lg border transition cursor-pointer flex items-center justify-center ${
-              isLeftPanelPinned ? 'nav-footer-dock-btn-open' : 'nav-footer-dock-btn-closed'
+              isLeftDockOpen ? 'nav-footer-dock-btn-open' : 'nav-footer-dock-btn-closed'
             }`}
           >
-            <DockLeftPanelIcon className="w-4 h-4" isOpen={isLeftPanelPinned} />
+            <DockLeftPanelIcon className="w-4 h-4" isOpen={isLeftDockOpen} />
           </button>
 
           {/* Toggle Bottom Panel */}
           <button
             type="button"
-            onClick={onToggleBottomPanel}
-            title={isBottomPanelOpen ? 'Hide Panel' : 'Show Panel'}
-            aria-label={isBottomPanelOpen ? 'Hide Panel' : 'Show Panel'}
+            onClick={effectiveToggleBottom}
+            title={effectiveBottomOpen ? 'Hide Bottom Panel' : 'Show Bottom Panel'}
+            aria-label={effectiveBottomOpen ? 'Hide Bottom Panel' : 'Show Bottom Panel'}
             className={`p-1.5 rounded-lg border transition cursor-pointer flex items-center justify-center ${
-              isBottomPanelOpen ? 'nav-footer-dock-btn-open' : 'nav-footer-dock-btn-closed'
+              effectiveBottomOpen ? 'nav-footer-dock-btn-open' : 'nav-footer-dock-btn-closed'
             }`}
           >
-            <DockBottomPanelIcon className="w-4 h-4" isOpen={isBottomPanelOpen} />
+            <DockBottomPanelIcon className="w-4 h-4" isOpen={effectiveBottomOpen} />
           </button>
 
-          {/* Toggle Right Side Panel */}
+          {/* Toggle Right Sidebar */}
           <button
             type="button"
-            onClick={onToggleRightPanel}
-            title={isRightPanelOpen ? 'Hide Secondary Side Bar' : 'Show Secondary Side Bar'}
-            aria-label={isRightPanelOpen ? 'Hide Secondary Side Bar' : 'Show Secondary Side Bar'}
+            onClick={onToggleRightDock}
+            title={
+              primaryPosition === 'right'
+                ? isRightDockOpen
+                  ? 'Hide Primary Side Bar'
+                  : 'Show Primary Side Bar'
+                : isRightDockOpen
+                ? 'Hide Secondary Side Bar'
+                : 'Show Secondary Side Bar'
+            }
+            aria-label="Toggle Right Panel"
             className={`p-1.5 rounded-lg border transition cursor-pointer flex items-center justify-center ${
-              isRightPanelOpen ? 'nav-footer-dock-btn-open' : 'nav-footer-dock-btn-closed'
+              isRightDockOpen ? 'nav-footer-dock-btn-open' : 'nav-footer-dock-btn-closed'
             }`}
           >
-            <DockRightPanelIcon className="w-4 h-4" isOpen={isRightPanelOpen} />
+            <DockRightPanelIcon className="w-4 h-4" isOpen={isRightDockOpen} />
           </button>
         </div>
 
-        {/* 
-          Application Theme Toggle:
-          Smooth 500ms sliding transition between Dark Mode (Moon) and Light Mode (Sun).
-        */}
+        {/* Application Theme Toggle */}
         <button
           type="button"
           onClick={toggleTheme}
@@ -235,29 +263,20 @@ export default function NavigationFooter({
             'nav-footer-icon-btn group relative',
             'ui-muted ui-hover-primary',
           ].join(' ')}
-          title={
-            isLightTheme ? 'Switch to dark mode' : 'Switch to light mode'
-          }
+          title={isLightTheme ? 'Switch to dark mode' : 'Switch to light mode'}
         >
-          {/* Moon Icon (Dark Mode Active) */}
           <MoonIcon
             className={[
               'nav-theme-icon nav-theme-icon-moon nav-footer-icon-moon',
               'ui-hover-primary',
-              !isLightTheme
-                ? 'nav-theme-icon-active'
-                : 'nav-theme-icon-hidden-left',
+              !isLightTheme ? 'nav-theme-icon-active' : 'nav-theme-icon-hidden-left',
             ].join(' ')}
           />
-
-          {/* Sun Icon (Light Mode Active) */}
           <SunIcon
             className={[
               'nav-theme-icon nav-theme-icon-sun nav-footer-icon-sun',
               'ui-hover-primary',
-              isLightTheme
-                ? 'nav-theme-icon-active'
-                : 'nav-theme-icon-hidden-right',
+              isLightTheme ? 'nav-theme-icon-active' : 'nav-theme-icon-hidden-right',
             ].join(' ')}
           />
         </button>

@@ -4,7 +4,7 @@
    Rendered into document body via React Portal to escape panel clipping.
    ========================================================================== */
 
-/* Slide-in entrance animation (disabled when animationsEnabled=false) */
+/* Slide-in entrance animation (Left dock -> opening rightwards) */
 @keyframes explorerMenuSlideIn {
   0% {
     opacity: 0;
@@ -16,7 +16,7 @@
   }
 }
 
-/* Slide-out exit animation */
+/* Slide-out exit animation (Left dock -> closing leftwards) */
 @keyframes explorerMenuSlideOut {
   0% {
     opacity: 1;
@@ -28,12 +28,44 @@
   }
 }
 
+/* Slide-in entrance animation (Right dock -> opening leftwards) */
+@keyframes explorerMenuSlideInRight {
+  0% {
+    opacity: 0;
+    transform: translateX(300px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Slide-out exit animation (Right dock -> closing rightwards) */
+@keyframes explorerMenuSlideOutRight {
+  0% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(300px);
+  }
+}
+
 .menuSlideIn {
   animation: explorerMenuSlideIn 800ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .menuSlideOut {
   animation: explorerMenuSlideOut 350ms cubic-bezier(0.7, 0, 0.84, 0) forwards;
+}
+
+.menuSlideInRight {
+  animation: explorerMenuSlideInRight 800ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.menuSlideOutRight {
+  animation: explorerMenuSlideOutRight 350ms cubic-bezier(0.7, 0, 0.84, 0) forwards;
 }
 
 /* Disable animations when animationsEnabled is false */
@@ -77,16 +109,30 @@
   z-index: 1;
 }
 
-/* Compensates for wider gap offset when Explorer sidebar is pinned */
+/* Compensates for wider gap offset when Explorer sidebar is pinned (Left dock) */
 .bridgePinned {
   left: -4rem; /* -left-16 */
   width: 4rem;  /* w-16 */
 }
 
-/* Offset bridge geometry when sidebar is unpinned / collapsed */
+/* Offset bridge geometry when sidebar is unpinned / collapsed (Left dock) */
 .bridgeUnpinned {
   left: -4rem; /* -left-16 */
   width: 4rem;  /* w-16 */
+}
+
+/* Compensates for gap offset when Explorer sidebar is pinned (Right dock -> bridge spans right) */
+.bridgePinnedRight {
+  right: -4rem;
+  left: auto;
+  width: 4rem;
+}
+
+/* Offset bridge geometry when sidebar is unpinned / collapsed (Right dock -> bridge spans right) */
+.bridgeUnpinnedRight {
+  right: -4rem;
+  left: auto;
+  width: 4rem;
 }
 
 /* --------------------------------------------------------------------------

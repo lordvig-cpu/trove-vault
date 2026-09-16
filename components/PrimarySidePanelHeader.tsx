@@ -10,18 +10,25 @@ import {
   SlidersHorizontalIcon,
   SearchGlassIcon,
 } from '@/components/icons/ExplorerIcons';
+import {
+  DockLeftPanelIcon,
+  DockRightPanelIcon,
+} from '@/components/icons/SystemIcons';
 import ExplorerSearchMenu from '@/components/ExplorerSearchMenu';
 import CollectionFilterTree from '@/components/CollectionFilterTree';
 import { CollectionRecord } from '@/types/collection';
 import { ExplorerTab } from '@/lib/filterExplorerForest';
+import { PrimarySidebarPosition } from '@/types/layout';
 
 /* ==========================================================================
    1. TYPE DEFINITIONS & INTERFACES
    ========================================================================== */
 
-interface LeftSidePanelHeaderProps {
+interface PrimarySidePanelHeaderProps {
   variant: 'flyout' | 'sidebar';
   isPinned: boolean;
+  position?: PrimarySidebarPosition;
+  onTogglePosition?: () => void;
   activeTab?: ExplorerTab;
   onTabChange?: (tab: ExplorerTab) => void;
   searchQuery: string;
@@ -38,18 +45,22 @@ interface LeftSidePanelHeaderProps {
   filterCollectionIds: number[];
   onToggleFilterCollection: (collectionId: number) => void;
   onClearCollectionFilters: () => void;
-  
+
+  onHandlePointerDown?: (e: React.PointerEvent) => void;
+
   isAnyFolderExpanded?: boolean;
   onToggleAllFolders?: () => void;
 }
 
 /* ==========================================================================
-   2. MAIN COMPONENT: LeftSidePanelHeader
+   2. MAIN COMPONENT: PrimarySidePanelHeader
    ========================================================================== */
 
-export default function LeftSidePanelHeader({
+export default function PrimarySidePanelHeader({
   variant,
   isPinned,
+  position = 'left',
+  onTogglePosition,
   activeTab = 'items',
   onTabChange,
   searchQuery,
@@ -66,9 +77,10 @@ export default function LeftSidePanelHeader({
   filterCollectionIds = [],
   onToggleFilterCollection,
   onClearCollectionFilters,
-}: LeftSidePanelHeaderProps) {
+  onHandlePointerDown,
+}: PrimarySidePanelHeaderProps) {
   const [showAdvancedSearch, setShowAdvancedSearch] = useState(false);
-  const [showAppliedFilters, setShowAppliedFilters] = useState(false); // Controls pill section visibility
+  const [showAppliedFilters, setShowAppliedFilters] = useState(false);
   const [menuCoords, setMenuCoords] = useState({ top: 0, left: 0 });
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const triggerBtnRef = useRef<HTMLButtonElement>(null);
@@ -80,10 +92,14 @@ export default function LeftSidePanelHeader({
   const handleToggleAdvancedSearch = () => {
     if (!showAdvancedSearch && triggerBtnRef.current) {
       const rect = triggerBtnRef.current.getBoundingClientRect();
+      const isRightDocked = position === 'right' || rect.left > window.innerWidth / 2;
+      const SEARCH_MENU_WIDTH = 280; // 17.5rem = 280px
 
       setMenuCoords({
         top: Math.round(rect.top - 4),
-        left: Math.round(rect.right - 4),
+        left: isRightDocked
+          ? Math.round(rect.left - SEARCH_MENU_WIDTH + 4)
+          : Math.round(rect.right - 4),
       });
       setShowAdvancedSearch(true);
     } else {
@@ -92,22 +108,61 @@ export default function LeftSidePanelHeader({
   };
 
   return (
-    <div className="left-side-panel-header px-2.5 pt-2 pb-0 flex flex-col gap-2 shrink-0">
-      
+    <div className="primary-side-panel-header px-2.5 pt-2 pb-0 flex flex-col gap-2 shrink-0">
       {/* ------------------------------------------------------------------
-          ROW 1: Top Utility Bar: Explorer Title & Panel Controls
+          ROW 1: Top Utility Bar: Explorer Title & Panel Dock Controls
           ------------------------------------------------------------------ */}
-      <div className="flex items-center justify-between gap-1 w-full shrink-0 h-6">
-        <span className="text-xs font-bold uppercase tracking-wider explorer-panel-muted px-0.5 select-none">
-          Explorer
-        </span>
+      <div className="flex items-center justify-between gap-1 w-full shrink-0 h-6 select-none">
+        {/* Draggable Grip Handle & Title */}
+        <div
+          onPointerDown={isPinned ? onHandlePointerDown : undefined}
+          className={`flex items-center gap-1.5 flex-1 min-w-0 py-0.5 ${
+            isPinned ? 'cursor-grab active:cursor-grabbing hover:opacity-90' : ''
+          }`}
+          title={isPinned ? 'Drag to dock panel (Left, Right, Bottom)' : undefined}
+        >
+          {isPinned && (
+            <span className="text-[10px] text-muted opacity-60 flex gap-0.5 tracking-tighter shrink-0" aria-hidden="true">
+              ⋮⋮
+            </span>
+          )}
+          <span className="text-xs font-bold uppercase tracking-wider explorer-panel-muted px-0.5 truncate">
+            Primary Side Bar
+          </span>
+        </div>
 
         <div className="flex items-center gap-1 shrink-0">
+          {/* Move to Opposite Side Toggle Button (Pinned mode) */}
+          {isPinned && onTogglePosition && (
+            <button
+              type="button"
+              onClick={onTogglePosition}
+              className="primary-side-panel-position-btn group"
+              title={
+                position === 'left'
+                  ? 'Move Primary Side Bar to Right'
+                  : 'Move Primary Side Bar to Left'
+              }
+              aria-label={
+                position === 'left'
+                  ? 'Move Primary Side Bar to Right'
+                  : 'Move Primary Side Bar to Left'
+              }
+            >
+              {position === 'left' ? (
+                <DockRightPanelIcon className="w-3.5 h-3.5 text-[var(--explorer-action-icon,rgba(109,170,209,0.85))] group-hover:text-white" isOpen={true} />
+              ) : (
+                <DockLeftPanelIcon className="w-3.5 h-3.5 text-[var(--explorer-action-icon,rgba(109,170,209,0.85))] group-hover:text-white" isOpen={true} />
+              )}
+            </button>
+          )}
+
+          {/* Pin / Unpin Button */}
           <button
             type="button"
             onClick={onTogglePin}
-            className="left-side-panel-pin-btn group"
-            title={isPinned ? 'Unpin LeftSidePanel' : 'Pin LeftSidePanel'}
+            className="primary-side-panel-pin-btn group"
+            title={isPinned ? 'Unpin Primary Side Bar' : 'Pin Primary Side Bar'}
           >
             {variant === 'flyout' || !isPinned ? (
               <PinOutlineIcon className="w-3.5 h-3.5 text-[var(--explorer-action-icon,rgba(109,170,209,0.85))] group-hover:text-white" />
@@ -116,11 +171,12 @@ export default function LeftSidePanelHeader({
             )}
           </button>
 
+          {/* Close Button (Flyout mode) */}
           {variant === 'flyout' && (
             <button
               type="button"
               onClick={onClose}
-              className="left-side-panel-pin-btn group"
+              className="primary-side-panel-pin-btn group"
               title="Close Explorer"
             >
               <span className="inline-block origin-center transition-all duration-200 ease-out group-hover:scale-115 text-xs text-[var(--explorer-action-icon,rgba(109,170,209,0.85))] group-hover:text-white px-1 select-none">
@@ -136,7 +192,6 @@ export default function LeftSidePanelHeader({
           ------------------------------------------------------------------ */}
       <div className="flex items-center gap-1.5 w-full">
         <div className="relative flex-1 min-w-0 flex items-center">
-          
           {/* Left Magnifying Glass */}
           <span className="absolute left-2 top-1/2 -translate-y-1/2 pointer-events-none flex items-center justify-center select-none">
             <SearchGlassIcon
@@ -158,14 +213,14 @@ export default function LeftSidePanelHeader({
             placeholder={isFilterActive ? 'Search filtered collection...' : 'Search...'}
             className={[
               'explorer-search-input w-full !pl-8',
-              isFilterActive && searchQuery ? '!pr-14' : (isFilterActive || searchQuery ? '!pr-8' : '!pr-3'),
+              isFilterActive && searchQuery ? '!pr-14' : isFilterActive || searchQuery ? '!pr-8' : '!pr-3',
               searchQuery.length > 0 ? 'explorer-search-input-active' : '',
             ].join(' ')}
           />
 
           {/* Right-aligned Actions inside Search Input */}
           <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1.5">
-            {/* 1. Clear Search Text Button */}
+            {/* Clear Search Text Button */}
             {searchQuery && (
               <button
                 type="button"
@@ -179,22 +234,17 @@ export default function LeftSidePanelHeader({
               </button>
             )}
 
-            {/* 2. Filter Funnel Toggle Icon (Only shows when a filter is applied) */}
+            {/* Filter Funnel Toggle Icon */}
             {isFilterActive && (
               <button
                 type="button"
                 onClick={() => setShowAppliedFilters((prev) => !prev)}
                 className={`p-0.5 rounded transition-all cursor-pointer flex items-center justify-center ${
-                  showAppliedFilters
-                    ? 'explorer-panel-accent'
-                    : 'explorer-panel-primary'
+                  showAppliedFilters ? 'explorer-panel-accent' : 'explorer-panel-primary'
                 }`}
                 title={showAppliedFilters ? 'Hide applied filters' : 'Show applied filters'}
               >
-                <FilterIcon
-                  className="w-3.5 h-3.5"
-                  isActive={showAppliedFilters}
-                />
+                <FilterIcon className="w-3.5 h-3.5" isActive={showAppliedFilters} />
               </button>
             )}
           </div>
@@ -229,8 +279,6 @@ export default function LeftSidePanelHeader({
           ------------------------------------------------------------------ */}
       {isFilterActive && showAppliedFilters && (
         <div className="w-full flex flex-col gap-1.5 pt-1 animate-mount-fade">
-          
-          {/* Header row: Title on left, Clear all on right */}
           <div className="flex items-center justify-between px-1">
             <div className="flex items-center gap-1.5">
               <span className="text-[11px] font-semibold tracking-wider explorer-panel-muted uppercase">
@@ -251,11 +299,9 @@ export default function LeftSidePanelHeader({
             </button>
           </div>
 
-          {/* Subtle divider */}
           <div className="explorer-panel-divider border-t mx-0.5" />
 
-          {/* Darker Recessed Panel Container for Pills (matching Image 2) */}
-          <div className="explorer-filter-surface rounded-lg p-1.5 flex flex-wrap items-center gap-1.5 min-h-[36px] max-h-36 overflow-y-auto left-panel-scroll">
+          <div className="explorer-filter-surface rounded-lg p-1.5 flex flex-wrap items-center gap-1.5 min-h-[36px] max-h-36 overflow-y-auto primary-panel-scroll">
             {filterCollectionIds.map((id) => {
               const col = collections.find((c) => c.id === id);
               if (!col) return null;
@@ -265,7 +311,6 @@ export default function LeftSidePanelHeader({
                   key={id}
                   className="group explorer-filter-pill inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[11px] select-none transition-all"
                 >
-                  {/* '✕' Dismiss Button on Left */}
                   <button
                     type="button"
                     onClick={() => onToggleFilterCollection(id)}
@@ -274,8 +319,6 @@ export default function LeftSidePanelHeader({
                   >
                     ✕
                   </button>
-
-                  {/* Icon & Name */}
                   <span className="text-[11px] explorer-filter-indicator">{col.icon || '📁'}</span>
                   <span className="explorer-filter-name max-w-[110px] truncate font-medium transition-colors">
                     {col.name}
@@ -284,12 +327,11 @@ export default function LeftSidePanelHeader({
               );
             })}
           </div>
-
         </div>
       )}
 
       {/* ------------------------------------------------------------------
-          ROW 3: View Tabs & Contextual Create Action (Seated directly on baseline)
+          ROW 4: View Tabs & Contextual Create Action (Seated on baseline)
           ------------------------------------------------------------------ */}
       <div className="flex items-end justify-between gap-1 w-full shrink-0 -mb-[1px]">
         {/* Left: View Mode Paper Folder Tabs */}
@@ -313,7 +355,7 @@ export default function LeftSidePanelHeader({
               preserveAspectRatio="none"
             >
               <defs>
-                <linearGradient id="explorerTabActiveGradient-items" x1="0" y1="0" x2="0" y2="1">
+                <linearGradient id="primaryTabActiveGradient-items" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="0%" stopColor="var(--explorer-tab-active-top, rgba(18, 94, 158, 1))" className="tab-grad-top" />
                   <stop offset="45%" stopColor="var(--explorer-tab-active-mid, rgba(10, 64, 112, 1))" className="tab-grad-mid" />
                   <stop offset="100%" stopColor="var(--explorer-tab-active-bottom, rgba(5, 36, 70, 1))" className="tab-grad-bottom" />
@@ -322,7 +364,7 @@ export default function LeftSidePanelHeader({
               <path
                 d="M 0,28 L 8,3 C 9,1 11,0 14,0 L 86,0 C 89,0 91,1 92,3 L 100,28 Z"
                 className="explorer-tab-svg-fill"
-                style={activeTab === 'items' ? { fill: 'url(#explorerTabActiveGradient-items)' } : undefined}
+                style={activeTab === 'items' ? { fill: 'url(#primaryTabActiveGradient-items)' } : undefined}
               />
               <path
                 d="M 0,28 L 8,3 C 9,1 11,0 14,0 L 86,0 C 89,0 91,1 92,3 L 100,28"
@@ -354,7 +396,7 @@ export default function LeftSidePanelHeader({
               preserveAspectRatio="none"
             >
               <defs>
-                <linearGradient id="explorerTabActiveGradient-collections" x1="0" y1="0" x2="0" y2="1">
+                <linearGradient id="primaryTabActiveGradient-collections" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="0%" stopColor="var(--explorer-tab-active-top, rgba(18, 94, 158, 1))" className="tab-grad-top" />
                   <stop offset="45%" stopColor="var(--explorer-tab-active-mid, rgba(10, 64, 112, 1))" className="tab-grad-mid" />
                   <stop offset="100%" stopColor="var(--explorer-tab-active-bottom, rgba(5, 36, 70, 1))" className="tab-grad-bottom" />
@@ -363,7 +405,7 @@ export default function LeftSidePanelHeader({
               <path
                 d="M 0,28 L 8,3 C 9,1 11,0 14,0 L 86,0 C 89,0 91,1 92,3 L 100,28 Z"
                 className="explorer-tab-svg-fill"
-                style={activeTab === 'collections' ? { fill: 'url(#explorerTabActiveGradient-collections)' } : undefined}
+                style={activeTab === 'collections' ? { fill: 'url(#primaryTabActiveGradient-collections)' } : undefined}
               />
               <path
                 d="M 0,28 L 8,3 C 9,1 11,0 14,0 L 86,0 C 89,0 91,1 92,3 L 100,28"
@@ -379,7 +421,6 @@ export default function LeftSidePanelHeader({
 
         {/* Right: Actions Cluster (Contextual Add + Expand/Collapse) */}
         <div className="flex items-center gap-1 shrink-0 mb-1">
-          {/* Contextual Add Button */}
           {activeTab === 'collections' ? (
             onAddNewCollection && (
               <button
@@ -426,7 +467,6 @@ export default function LeftSidePanelHeader({
             )
           )}
 
-          {/* Bulk Expand / Collapse Accordion Toggle */}
           {activeToggleAll && (
             <button
               type="button"
@@ -459,6 +499,7 @@ export default function LeftSidePanelHeader({
         onClose={() => setShowAdvancedSearch(false)}
         top={menuCoords.top}
         left={menuCoords.left}
+        position={position}
         isPinned={isPinned}
         triggerRef={triggerBtnRef}
         title="Advanced Search"
@@ -467,16 +508,11 @@ export default function LeftSidePanelHeader({
         }
       >
         <div className="flex flex-col gap-1.5 px-1 py-1">
-          
-          {/* 1. Header Row: "Collection(s):" + Amber Number Count Badge */}
           <div className="flex items-center justify-between px-2 py-1">
             <div className="flex items-center gap-2">
-              <span className="w-4 shrink-0 flex items-center justify-center text-sm">
-                📁
-              </span>
+              <span className="w-4 shrink-0 flex items-center justify-center text-sm">📁</span>
               <span className="text-xs font-medium explorer-panel-primary">Collection(s):</span>
             </div>
-            
             <span
               title={`${collections.length} ${collections.length === 1 ? 'collection' : 'collections'}`}
               className="explorer-filter-option px-2 py-0.5 rounded-md text-[10px] font-mono font-bold shrink-0 select-none"
@@ -485,17 +521,13 @@ export default function LeftSidePanelHeader({
             </span>
           </div>
 
-          {/* 2. Horizontal Divider */}
           <div className="my-1 mx-2 tree-menu-divider" />
 
-          {/* 3. Select All / None Quick Toggle Row */}
           {collections.length > 0 && (() => {
             const allSelected =
               collections.length > 0 &&
               collections.every((col) => filterCollectionIds.includes(col.id));
-            const hasSome = collections.some((col) =>
-              filterCollectionIds.includes(col.id)
-            );
+            const hasSome = collections.some((col) => filterCollectionIds.includes(col.id));
             const isIndeterminate = hasSome && !allSelected;
 
             return (
@@ -505,17 +537,12 @@ export default function LeftSidePanelHeader({
                     type="checkbox"
                     checked={collections.length > 0 && allSelected}
                     ref={(input) => {
-                      if (input) {
-                        input.indeterminate = isIndeterminate;
-                      }
+                      if (input) input.indeterminate = isIndeterminate;
                     }}
                     onChange={() => {
-                      // If ALL are selected OR SOME are selected (indeterminate),
-                      // clicking it clears them all.
                       if (allSelected || isIndeterminate) {
                         onClearCollectionFilters();
                       } else {
-                        // If NONE are selected, select all available
                         collections.forEach((col) => {
                           if (!filterCollectionIds.includes(col.id)) {
                             onToggleFilterCollection(col.id);
@@ -538,15 +565,13 @@ export default function LeftSidePanelHeader({
               </div>
             );
           })()}
-          
-          {/* 4. Collection List with Nested Groups in Unified Cards */}
+
           <CollectionFilterTree
             collections={collections}
             filterCollectionIds={filterCollectionIds}
             onToggleFilterCollection={onToggleFilterCollection}
           />
 
-          {/* 5. Clear Filters Reset Action */}
           {isFilterActive && (
             <div className="border-t border-[var(--explorer-menu-divider,rgba(245,158,11,0.2))] mt-0.5 pt-1.5 px-2 pb-0.5">
               <button
@@ -561,9 +586,9 @@ export default function LeftSidePanelHeader({
               </button>
             </div>
           )}
-          
         </div>
       </ExplorerSearchMenu>
     </div>
   );
 }
+

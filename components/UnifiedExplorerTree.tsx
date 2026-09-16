@@ -80,16 +80,41 @@ function UnifiedExplorerTreeItem({
   collectionId: number | null;
   depth: number;
 }) {
-  const { selectedItemId, onSelectItem } = useExplorerSelection();
+  const { selectedItemId, onSelectItem, position = 'left' } = useExplorerSelection();
+  const isRightSide = position === 'right';
   const [isOpen, setIsOpen] = useState(true);
   const [displayLimit, setDisplayLimit] = useState(CHUNK_SIZE);
-  const menu = useExplorerActionMenu(`item-${item.id}`, 215);
+  const menu = useExplorerActionMenu(`item-${item.id}`, 215, position);
   const isSelected = selectedItemId === item.id;
   const childrenList = item.children || [];
   const hasSubItems = childrenList.length > 0;
   const visibleChildren = childrenList.slice(0, displayLimit);
   const remainingChildren = childrenList.length - visibleChildren.length;
   const typeIcon = getItemTypeIcon(item);
+
+  const gearElement = (
+    <div className={`relative transition shrink-0 ${isRightSide ? 'mr-0.5' : 'ml-auto'}`}>
+      <div
+        onMouseEnter={menu.handleGearMouseEnter}
+        onMouseLeave={menu.handleMouseLeave}
+        className={[
+          'group/gear flex items-center justify-center w-6 h-6 shrink-0',
+          'rounded border border-transparent cursor-pointer transition-colors',
+          menu.isMenuOpen ? 'tree-gear-trigger-active' : 'tree-gear-trigger',
+        ].join(' ')}
+      >
+        <GearIcon
+          isActive={menu.isMenuOpen}
+          className={[
+            'w-[15px] h-[15px] transition-all duration-300 ease-out',
+            menu.isMenuOpen
+              ? 'explorer-tree-gear-open rotate-90'
+              : 'explorer-tree-gear-closed',
+          ].join(' ')}
+        />
+      </div>
+    </div>
+  );
 
   return (
     <div className="select-none text-[13px] font-sans w-full min-w-0 flex flex-col">
@@ -103,6 +128,8 @@ function UnifiedExplorerTreeItem({
             : 'explorer-tree-item',
         ].join(' ')}
       >
+        {isRightSide && gearElement}
+
         <button
           type="button"
           onClick={(event) => {
@@ -132,30 +159,15 @@ function UnifiedExplorerTreeItem({
           {item.name}
         </span>
 
-        <div className="relative transition shrink-0 ml-auto">
-          <div
-            onMouseEnter={menu.handleGearMouseEnter}
-            onMouseLeave={menu.handleMouseLeave}
-            className={[
-              'group/gear flex items-center justify-center w-6 h-6 shrink-0',
-              'rounded border border-transparent cursor-pointer transition-colors',
-              menu.isMenuOpen ? 'tree-gear-trigger-active' : 'tree-gear-trigger',
-            ].join(' ')}
-          >
-            <GearIcon
-              isActive={menu.isMenuOpen}
-              className={[
-                'w-[15px] h-[15px] transition-all duration-300 ease-out',
-                menu.isMenuOpen
-                  ? 'explorer-tree-gear-open rotate-90'
-                  : 'explorer-tree-gear-closed',
-              ].join(' ')}
-            />
-          </div>
-        </div>
+        {!isRightSide && gearElement}
       </div>
 
-      <ExplorerItemActionMenu item={item} collectionId={collectionId} menu={menu} />
+      <ExplorerItemActionMenu
+        item={item}
+        collectionId={collectionId}
+        menu={menu}
+        position={position}
+      />
 
       {isOpen && hasSubItems && (
         <div className="explorer-tree-branch border-l space-y-0.5 ml-[13.5px] pl-2.5 my-0.5 flex flex-col min-w-0">
@@ -192,8 +204,10 @@ export default function UnifiedExplorerTree({
     expandedCategoryIds,
     onToggleCategory,
     onSelectCollection,
+    position = 'left',
   } = useExplorerSelection();
-  const menu = useExplorerActionMenu(`node-${collection.id}`, 240);
+  const isRightSide = position === 'right';
+  const menu = useExplorerActionMenu(`node-${collection.id}`, 240, position);
   const [displayLimit, setDisplayLimit] = useState(CHUNK_SIZE);
 
   const isVirtualCategory = collection.id < 0;
@@ -227,6 +241,30 @@ export default function UnifiedExplorerTree({
     onToggleCategory?.(collection.id, nextState);
   };
 
+  const gearElement = (
+    <div className={`relative transition shrink-0 ${isRightSide ? 'mr-0.5' : 'ml-auto'}`}>
+      <div
+        onMouseEnter={menu.handleGearMouseEnter}
+        onMouseLeave={menu.handleMouseLeave}
+        className={[
+          'group/gear flex items-center justify-center w-6 h-6 shrink-0',
+          'rounded border border-transparent cursor-pointer transition-colors',
+          menu.isMenuOpen ? 'tree-gear-trigger-active' : 'tree-gear-trigger',
+        ].join(' ')}
+      >
+        <GearIcon
+          isActive={menu.isMenuOpen}
+          className={[
+            'w-[15px] h-[15px] transition-all duration-300 ease-out',
+            menu.isMenuOpen
+              ? 'explorer-tree-primary rotate-90'
+              : 'explorer-tree-action-icon',
+          ].join(' ')}
+        />
+      </div>
+    </div>
+  );
+
   return (
     <div className="select-none text-[13px] font-sans w-full min-w-0 flex flex-col">
       <div
@@ -240,6 +278,8 @@ export default function UnifiedExplorerTree({
             : 'explorer-category-row',
         ].join(' ')}
       >
+        {isRightSide && gearElement}
+
         <button
           type="button"
           onClick={handleToggle}
@@ -268,39 +308,22 @@ export default function UnifiedExplorerTree({
         {collection.items?.length ? (
           <span
             title={`${collection.items.length} ${collection.items.length === 1 ? 'item' : 'items'}`}
-            className="explorer-tree-badge px-2 py-0.5 rounded-full text-[10.5px] font-mono shrink-0 select-none"
+            className={`explorer-tree-badge px-2 py-0.5 rounded-full text-[10.5px] font-mono shrink-0 select-none ${
+              isRightSide ? 'ml-auto' : ''
+            }`}
           >
             {collection.items.length}
           </span>
         ) : null}
 
-        <div className="relative transition shrink-0 ml-auto">
-          <div
-            onMouseEnter={menu.handleGearMouseEnter}
-            onMouseLeave={menu.handleMouseLeave}
-            className={[
-              'group/gear flex items-center justify-center w-6 h-6 shrink-0',
-              'rounded border border-transparent cursor-pointer transition-colors',
-              menu.isMenuOpen ? 'tree-gear-trigger-active' : 'tree-gear-trigger',
-            ].join(' ')}
-          >
-            <GearIcon
-              isActive={menu.isMenuOpen}
-              className={[
-                'w-[15px] h-[15px] transition-all duration-300 ease-out',
-                menu.isMenuOpen
-                  ? 'explorer-tree-primary rotate-90'
-                  : 'explorer-tree-action-icon',
-              ].join(' ')}
-            />
-          </div>
-        </div>
+        {!isRightSide && gearElement}
       </div>
 
       <ExplorerCollectionActionMenu
         collection={collection}
         isVirtualCategory={isVirtualCategory}
         menu={menu}
+        position={position}
       />
 
       {localIsOpen && hasChildren && (

@@ -15,6 +15,7 @@ interface BottomPanelProps {
   reservedRight?: number;
   activeCollectionName?: string;
   totalItemsCount?: number;
+  onHandlePointerDown?: (e: React.PointerEvent) => void;
 }
 
 type BottomTab = 'diagnostics' | 'output' | 'terminal';
@@ -32,6 +33,7 @@ export default function BottomPanel({
   reservedRight = 0,
   activeCollectionName,
   totalItemsCount = 0,
+  onHandlePointerDown,
 }: BottomPanelProps) {
   const { animationsEnabled, theme } = useUIPreferences();
   const [activeTab, setActiveTab] = useState<BottomTab>('diagnostics');
@@ -54,35 +56,53 @@ export default function BottomPanel({
       aria-hidden={!isOpen}
     >
       {/* Panel Header with Navigation Tabs & Collapse Control */}
-      <div className="bottom-side-panel-header">
-        <div className="flex items-center gap-1.5">
-          <button
-            type="button"
-            onClick={() => setActiveTab('diagnostics')}
-            className={`bottom-panel-tab ${
-              activeTab === 'diagnostics' ? 'bottom-panel-tab-active' : ''
+      <div className="bottom-side-panel-header select-none">
+        <div className="flex items-center gap-2">
+          {/* Draggable Grip Handle */}
+          <div
+            onPointerDown={isOpen ? onHandlePointerDown : undefined}
+            className={`flex items-center gap-1 px-1 py-0.5 ${
+              isOpen ? 'cursor-grab active:cursor-grabbing hover:opacity-90' : ''
             }`}
+            title={isOpen ? 'Drag to dock panel (Left, Right, Bottom)' : undefined}
           >
-            Diagnostics
-          </button>
-          <button
-            type="button"
-            onClick={() => setActiveTab('output')}
-            className={`bottom-panel-tab ${
-              activeTab === 'output' ? 'bottom-panel-tab-active' : ''
-            }`}
-          >
-            Output
-          </button>
-          <button
-            type="button"
-            onClick={() => setActiveTab('terminal')}
-            className={`bottom-panel-tab ${
-              activeTab === 'terminal' ? 'bottom-panel-tab-active' : ''
-            }`}
-          >
-            Terminal
-          </button>
+            <span className="text-[10px] text-muted opacity-60 flex gap-0.5 tracking-tighter" aria-hidden="true">
+              ⋮⋮
+            </span>
+            <span className="text-[10px] font-bold uppercase tracking-wider panel-notice-text hidden sm:inline">
+              Bottom Panel
+            </span>
+          </div>
+
+          <div className="flex items-center gap-1.5 ml-1">
+            <button
+              type="button"
+              onClick={() => setActiveTab('diagnostics')}
+              className={`bottom-panel-tab ${
+                activeTab === 'diagnostics' ? 'bottom-panel-tab-active' : ''
+              }`}
+            >
+              Diagnostics
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab('output')}
+              className={`bottom-panel-tab ${
+                activeTab === 'output' ? 'bottom-panel-tab-active' : ''
+              }`}
+            >
+              Output
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab('terminal')}
+              className={`bottom-panel-tab ${
+                activeTab === 'terminal' ? 'bottom-panel-tab-active' : ''
+              }`}
+            >
+              Terminal
+            </button>
+          </div>
         </div>
 
         {/* Header Right Action: Close Downward */}
@@ -150,4 +170,3 @@ export default function BottomPanel({
     </aside>
   );
 }
-

@@ -18,6 +18,7 @@ interface ExplorerActionMenuProps {
   left: number;
   title: string;
   titleIcon: string;
+  position?: 'left' | 'right';
   children: React.ReactNode;
 }
 
@@ -29,9 +30,11 @@ export default function ExplorerActionMenu({
   left,
   title,
   titleIcon,
+  position,
   children,
 }: ExplorerActionMenuProps) {
-  const { animationsEnabled, isPinned } = useUIPreferences();
+  const { animationsEnabled, isPinned, primaryPosition } = useUIPreferences();
+  const effectivePosition = position ?? (primaryPosition === 'right' ? 'right' : 'left');
 
   // Portals render into document.body, so wait until the browser has mounted.
   const [mounted, setMounted] = useState(false);
@@ -73,13 +76,33 @@ export default function ExplorerActionMenu({
   if (!shouldRender || !mounted || typeof document === 'undefined') return null;
 
   // Horizontal correction to clear the sidebar seam while maintaining overlap with the panel
-  const adjustedLeft = isPinned ? left + 25 : left + 15;
+  const adjustedLeft =
+    effectivePosition === 'right'
+      ? isPinned
+        ? left - 25
+        : left - 15
+      : isPinned
+      ? left + 25
+      : left + 15;
 
   const animationClass = !animationsEnabled
     ? 'menuNoAnimation'
+    : effectivePosition === 'right'
+    ? isClosing
+      ? 'menuSlideOutRight'
+      : 'menuSlideInRight'
     : isClosing
     ? 'menuSlideOut'
     : 'menuSlideIn';
+
+  const bridgeClass =
+    effectivePosition === 'right'
+      ? isPinned
+        ? 'bridgePinnedRight'
+        : 'bridgeUnpinnedRight'
+      : isPinned
+      ? 'bridgePinned'
+      : 'bridgeUnpinned';
 
   // Render outside the tree's overflow container so the menu can cross panel
   // boundaries and remain positioned against the viewport.
@@ -99,7 +122,7 @@ export default function ExplorerActionMenu({
       {/* Catchment Hover Bridge (disabled during exit to prevent sticking) */}
       {!isClosing && (
         <div
-          className={`bridge ${isPinned ? 'bridgePinned' : 'bridgeUnpinned'}`}
+          className={`bridge ${bridgeClass}`}
           aria-hidden="true"
         />
       )}

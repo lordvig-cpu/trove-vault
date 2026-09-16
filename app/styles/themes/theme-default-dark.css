@@ -178,10 +178,10 @@ Organized 1-to-1 with component stylesheets in styles/components/
    /* #endregion */
 
    /* #region 4. LEFT SIDE PANEL & EXPLORER TREE */
-   /* ======================================================================
-   4. LEFT SIDE PANEL & EXPLORER TREE
-   Mapped to: styles/components/LeftSidePanel.css
-   ------------------------------------------------------------------------- */
+   /* ==========================================================================
+   8. PRIMARY SIDE PANEL & TREE NAVIGATION
+   Mapped to: styles/components/primarySidePanel.css
+   ========================================================================== */
    /* Aside Container & Docking */
    --panel-border-accent: rgba(81, 155, 255, 0.85);
    --panel-pinned-shadow:
@@ -299,10 +299,10 @@ Organized 1-to-1 with component stylesheets in styles/components/
    --explorer-tab-baseline: var(--nav-header-tab-indicator);
    /* #endregion */
 
-   /* #region 5. RIGHT SIDE PANEL */
+   /* #region 5. SECONDARY SIDE PANEL */
    /* ======================================================================
-   5. RIGHT SIDE PANEL
-   Mapped to: styles/components/RightSidePanel.css
+   5. SECONDARY SIDE PANEL
+   Mapped to: styles/components/secondarySidePanel.css
    ------------------------------------------------------------------------- */
    /* Main Drawer Chassis */
    --right-panel-bg: var(--panel-surface-bg);

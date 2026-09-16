@@ -15,12 +15,14 @@ interface ExplorerCollectionActionMenuProps {
   collection: CollectionRecord;
   isVirtualCategory: boolean;
   menu: ReturnType<typeof useExplorerActionMenu>;
+  position?: 'left' | 'right';
 }
 
 export default function ExplorerCollectionActionMenu({
   collection,
   isVirtualCategory,
   menu,
+  position,
 }: ExplorerCollectionActionMenuProps) {
   const {
     onAddSubItem,
@@ -39,6 +41,7 @@ export default function ExplorerCollectionActionMenu({
         onMouseLeave={menu.handleMouseLeave}
         top={menu.menuCoords.top}
         left={menu.menuCoords.left}
+        position={position}
         title="Category Actions"
         titleIcon="🏷️"
       >
@@ -71,6 +74,7 @@ export default function ExplorerCollectionActionMenu({
       onMouseLeave={menu.handleMouseLeave}
       top={menu.menuCoords.top}
       left={menu.menuCoords.left}
+      position={position}
       title="Collection Actions"
       titleIcon="📁"
     >

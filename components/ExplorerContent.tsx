@@ -12,6 +12,7 @@ import {
 } from '@/context/ExplorerSelectionContext';
 import { ItemRecord } from '@/types/item';
 import { CollectionRecord } from '@/types/collection';
+import { useUIPreferences } from '@/context/UIPreferencesContext';
 
 /* ==========================================================================
    1. TYPE DEFINITIONS & INTERFACES
@@ -55,6 +56,7 @@ export interface ExplorerContentProps {
   onEditCollection?: (collection: CollectionRecord) => void;
   onRenameItem?: (id: number, nextName: string) => Promise<void> | void;
   onAddSubCollection?: (parentCollectionId: number) => void;
+  position?: 'left' | 'right';
 }
 
 /* ==========================================================================
@@ -173,7 +175,11 @@ export default function ExplorerContent({
   onRenameCollection,
   onEditCollection,
   onRenameItem,
+  position,
 }: ExplorerContentProps) {
+  const { primaryPosition } = useUIPreferences();
+  const effectivePosition = position ?? (primaryPosition === 'right' ? 'right' : 'left');
+
   // Support both canonical and legacy category prop naming
   const activeExpandedIds = expandedCategoryIds;
   const activeToggleHandler = onToggleCategory;
@@ -216,6 +222,7 @@ export default function ExplorerContent({
     onToggleCategory: activeToggleHandler,
     onSelectCollection,
     onSelectItem,
+    position: effectivePosition,
   };
 
   const actionsValue: ExplorerActionsContextValue = {

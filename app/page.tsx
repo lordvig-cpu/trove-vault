@@ -1,18 +1,20 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { useUIPreferences } from '@/context/UIPreferencesContext';
 import { ItemRecord } from '@/types/item';
 import { useCollections } from '@/hooks/useCollections';
 import { useModals } from '@/hooks/useModals';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 import { useExplorerCategories } from '@/hooks/useExplorerCategories';
+import { usePanelDockDrag, DockablePanelId, DockDropTargetZone } from '@/hooks/usePanelDockDrag';
 import NavigationHeader from '@/components/NavigationHeader';
 import NavigationFooter from '@/components/NavigationFooter';
 import MainContent from '@/components/MainContent';
-import RightSidePanel from '@/components/RightSidePanel';
-import LeftSidePanel from '@/components/LeftSidePanel';
+import PrimarySidePanel from '@/components/PrimarySidePanel';
+import SecondarySidePanel from '@/components/SecondarySidePanel';
 import BottomPanel from '@/components/BottomPanel';
+import PanelDockDropZones from '@/components/PanelDockDropZones';
 import ExplorerContent from '@/components/ExplorerContent';
 import ModalContainers from '@/components/ModalContainers';
 import DynamicWatermark from '@/components/DynamicWatermark';
@@ -60,7 +62,6 @@ export default function Home() {
 
   /* ------------------------------------------------------------------------
      3. EXPLORER TABS, FILTERS & TREE STATE
-     Pass filteredForest so virtual category nodes and collections can expand and collapse cleanly
      ------------------------------------------------------------------------ */
   const [activeExplorerTab, setActiveExplorerTab] = useState<ExplorerTab>('items');
   const [filterCollectionIds, setFilterCollectionIds] = useState<number[]>([]);
@@ -69,7 +70,6 @@ export default function Home() {
     setFilterCollectionIds((prev) => 
       prev.includes(id) ? prev.filter((colId) => colId !== id) : [...prev, id]
     );
-    // When advanced search filter is set to Collections, light up the Collections tab
     setActiveExplorerTab('collections');
   };
 
@@ -98,40 +98,127 @@ export default function Home() {
   /* ------------------------------------------------------------------------
      4. GLOBAL UI & LAYOUT PREFERENCES
      ------------------------------------------------------------------------ */
-  const { isPinned, togglePin, isAudioEnabled } = useUIPreferences();
+  const {
+    isPinned,
+    togglePin,
+    setIsPinned,
+    isAudioEnabled,
+    primaryPosition,
+    setPrimaryPosition,
+    secondaryPosition,
+    setSecondaryPosition,
+  } = useUIPreferences();
 
   /* ------------------------------------------------------------------------
      5. LOCAL VIEWPORT & INTERACTION STATES
      ------------------------------------------------------------------------ */
   const [isLogoHovered, setIsLogoHovered] = useState<boolean>(false);
-  const [isRightPanelOpen, setIsRightPanelOpen] = useState<boolean>(false);
-  const [isLeftSidePanelOpen, setIsLeftSidePanelOpen] = useState<boolean>(false);
+  const [isPrimarySidePanelOpen, setIsPrimarySidePanelOpen] = useState<boolean>(false);
+  const [isSecondarySidePanelOpen, setIsSecondarySidePanelOpen] = useState<boolean>(false);
   const [isBottomPanelOpen, setIsBottomPanelOpen] = useState<boolean>(false);
   const [isColDropdownOpen, setIsColDropdownOpen] = useState<boolean>(false);
-  const [leftPanelWidth, setLeftPanelWidth] = useState<number>(304);
-  const [rightPanelWidth, setRightPanelWidth] = useState<number>(360);
+  const [primaryPanelWidth, setPrimaryPanelWidth] = useState<number>(304);
+  const [secondaryPanelWidth, setSecondaryPanelWidth] = useState<number>(360);
+
+  // Dynamic mutually exclusive positions
+  const effectivePrimaryPosition = primaryPosition === 'right' ? 'right' : 'left';
+  const effectiveSecondaryPosition = effectivePrimaryPosition === 'left' ? 'right' : 'left';
 
   /* ------------------------------------------------------------------------
-     6. GLOBAL KEYBOARD SHORTCUTS
+     6. PANEL POSITION TOGGLES (Mutually Exclusive Clean Swapping)
+     ------------------------------------------------------------------------ */
+  const handleTogglePrimaryPosition = useCallback(() => {
+    const nextPrimary = effectivePrimaryPosition === 'left' ? 'right' : 'left';
+    setPrimaryPosition(nextPrimary);
+    setSecondaryPosition(nextPrimary === 'right' ? 'left' : 'right');
+  }, [effectivePrimaryPosition, setPrimaryPosition, setSecondaryPosition]);
+
+  const handleToggleSecondaryPosition = useCallback(() => {
+    const nextSecondary = effectiveSecondaryPosition === 'left' ? 'right' : 'left';
+    setSecondaryPosition(nextSecondary);
+    setPrimaryPosition(nextSecondary === 'right' ? 'left' : 'right');
+  }, [effectiveSecondaryPosition, setPrimaryPosition, setSecondaryPosition]);
+
+  /* ------------------------------------------------------------------------
+     7. PANEL DOCK DRAG & DROP ORCHESTRATION (Pointer Events API)
+     ------------------------------------------------------------------------ */
+  const handleDropPanel = useCallback(
+    (panelId: DockablePanelId, targetZone: DockDropTargetZone) => {
+      if (panelId === 'primary') {
+        if (targetZone === 'left') {
+          setPrimaryPosition('left');
+          setSecondaryPosition('right');
+          setIsPinned(true);
+        } else if (targetZone === 'right') {
+          setPrimaryPosition('right');
+          setSecondaryPosition('left');
+          setIsPinned(true);
+        } else if (targetZone === 'bottom') {
+          setIsBottomPanelOpen(true);
+        }
+      } else if (panelId === 'secondary') {
+        if (targetZone === 'left') {
+          setSecondaryPosition('left');
+          setPrimaryPosition('right');
+          setIsSecondarySidePanelOpen(true);
+        } else if (targetZone === 'right') {
+          setSecondaryPosition('right');
+          setPrimaryPosition('left');
+          setIsSecondarySidePanelOpen(true);
+        } else if (targetZone === 'bottom') {
+          setIsBottomPanelOpen(true);
+        }
+      } else if (panelId === 'bottom') {
+        if (targetZone === 'left') {
+          // Dragging bottom panel to Left docks Primary to left and opens it
+          setPrimaryPosition('left');
+          setSecondaryPosition('right');
+          setIsPinned(true);
+        } else if (targetZone === 'right') {
+          // Dragging bottom panel to Right docks Secondary to right and opens it
+          setSecondaryPosition('right');
+          setPrimaryPosition('left');
+          setIsSecondarySidePanelOpen(true);
+        } else if (targetZone === 'bottom') {
+          setIsBottomPanelOpen(true);
+        }
+      }
+    },
+    [setIsPinned, setPrimaryPosition, setSecondaryPosition]
+  );
+
+  const {
+    isDragging: isDraggingPanel,
+    draggingPanel,
+    hoveredZone,
+    cursorPos,
+    handlePointerDown: startDockDrag,
+    cancelDrag,
+  } = usePanelDockDrag({ onDropPanel: handleDropPanel });
+
+  /* ------------------------------------------------------------------------
+     8. GLOBAL KEYBOARD SHORTCUTS
      ------------------------------------------------------------------------ */
   useKeyboardShortcuts([
     {
       key: 'Escape',
       allowInInputs: true,
       action: () => {
-        // 1. Dismiss active modal if one is open
+        if (isDraggingPanel) {
+          cancelDrag();
+          return;
+        }
+
         if (activeModal) {
           closeModal();
           return;
         }
 
-        // 2. If search text is present, clear the search query first
         if (searchQuery.trim().length > 0) {
           setSearchQuery('');
           return;
         }
 
-        // 3. If focused inside an input/textarea without search text, blur focus
         if (
           document.activeElement instanceof HTMLInputElement ||
           document.activeElement instanceof HTMLTextAreaElement
@@ -140,15 +227,13 @@ export default function Home() {
           return;
         }
 
-        // 4. Dismiss unpinned floating flyout if open
-        if (isLeftSidePanelOpen && !isPinned) {
-          setIsLeftSidePanelOpen(false);
+        if (isPrimarySidePanelOpen && !isPinned) {
+          setIsPrimarySidePanelOpen(false);
           return;
         }
 
-        // 5. Dismiss open right utility drawer
-        if (isRightPanelOpen) {
-          setIsRightPanelOpen(false);
+        if (isSecondarySidePanelOpen) {
+          setIsSecondarySidePanelOpen(false);
         }
       },
     },
@@ -158,8 +243,8 @@ export default function Home() {
       action: (e) => {
         e.preventDefault();
 
-        if (!isPinned && !isLeftSidePanelOpen) {
-          setIsLeftSidePanelOpen(true);
+        if (!isPinned && !isPrimarySidePanelOpen) {
+          setIsPrimarySidePanelOpen(true);
         }
 
         const targetInputId = isPinned
@@ -178,17 +263,17 @@ export default function Home() {
   ]);
 
   /* ------------------------------------------------------------------------
-     7. EVENT HANDLERS & DELEGATION
+     9. EVENT HANDLERS & DELEGATION
      ------------------------------------------------------------------------ */
   const handleTogglePin = () => {
     togglePin();
-    setIsLeftSidePanelOpen(true);
+    setIsPrimarySidePanelOpen(true);
   };
 
   const handleTreeSelectItem = (item: ItemRecord, collectionId: number | null) => {
     selectItemWithChildren(item, collectionId);
     if (!isPinned) {
-      setIsLeftSidePanelOpen(false);
+      setIsPrimarySidePanelOpen(false);
     }
   };
 
@@ -203,9 +288,8 @@ export default function Home() {
   };
 
   /* ------------------------------------------------------------------------
-     8. MEMOIZED EXPLORER SUB-COMPONENTS
+     10. MEMOIZED EXPLORER SUB-COMPONENTS
      ------------------------------------------------------------------------ */
-
   const explorerTreeElement = (
     <ExplorerContent
       unifiedForest={filteredForest}
@@ -216,7 +300,7 @@ export default function Home() {
       onToggleCategory={handleToggleCategory}
       onSelectCollection={(colId) => {
         setActiveCollectionId(colId);
-        if (!isPinned) setIsLeftSidePanelOpen(false);
+        if (!isPinned) setIsPrimarySidePanelOpen(false);
       }}
       onSelectItem={handleTreeSelectItem}
       onAddSubItem={openCreateItem}
@@ -230,14 +314,17 @@ export default function Home() {
       onDeleteItem={handleTriggerDeleteItem}
       onRenameCollection={renameCollection}
       onRenameItem={renameItem}
+      position={effectivePrimaryPosition}
     />
   );
 
   const explorerFlyoutPanel = (
-    <LeftSidePanel
+    <PrimarySidePanel
       variant="flyout"
-      isOpen={isLeftSidePanelOpen}
-      onClose={() => setIsLeftSidePanelOpen(false)}
+      position={effectivePrimaryPosition}
+      onTogglePosition={handleTogglePrimaryPosition}
+      isOpen={isPrimarySidePanelOpen}
+      onClose={() => setIsPrimarySidePanelOpen(false)}
       onTogglePin={handleTogglePin}
       activeTab={activeExplorerTab}
       onTabChange={setActiveExplorerTab}
@@ -253,16 +340,19 @@ export default function Home() {
       filterCollectionIds={filterCollectionIds}
       onToggleFilterCollection={handleToggleFilterCollection}
       onClearCollectionFilters={handleClearCollectionFilters}
+      onHandlePointerDown={(e) => startDockDrag('primary', e)}
     >
       {explorerTreeElement}
-    </LeftSidePanel>
+    </PrimarySidePanel>
   );
 
   const explorerSidebarPanel = (
-    <LeftSidePanel
+    <PrimarySidePanel
       variant="sidebar"
-      isOpen={isLeftSidePanelOpen}
-      onClose={() => setIsLeftSidePanelOpen(false)}
+      position={effectivePrimaryPosition}
+      onTogglePosition={handleTogglePrimaryPosition}
+      isOpen={isPrimarySidePanelOpen}
+      onClose={() => setIsPrimarySidePanelOpen(false)}
       onTogglePin={handleTogglePin}
       activeTab={activeExplorerTab}
       onTabChange={setActiveExplorerTab}
@@ -270,8 +360,8 @@ export default function Home() {
       onToggleAllCategories={handleToggleAllCategories}
       searchQuery={searchQuery}
       onSearchChange={setSearchQuery}
-      reservedWidth={isRightPanelOpen ? rightPanelWidth : 0}
-      onWidthChange={setLeftPanelWidth}
+      reservedWidth={isSecondarySidePanelOpen ? secondaryPanelWidth : 0}
+      onWidthChange={setPrimaryPanelWidth}
       loading={loading}
       error={error}
       onAddNewItem={() => openCreateItem(null, null)}
@@ -280,13 +370,31 @@ export default function Home() {
       filterCollectionIds={filterCollectionIds}
       onToggleFilterCollection={handleToggleFilterCollection}
       onClearCollectionFilters={handleClearCollectionFilters}
+      onHandlePointerDown={(e) => startDockDrag('primary', e)}
     >
       {explorerTreeElement}
-    </LeftSidePanel>
+    </PrimarySidePanel>
   );
 
   /* ------------------------------------------------------------------------
-     9. VIEWPORT COMPOSITION & PRESENTATION SHELL
+     11. DYNAMIC CLEARANCE & MARGIN GEOMETRY
+     ------------------------------------------------------------------------ */
+  const occupiedLeftWidth =
+    effectivePrimaryPosition === 'left' && isPinned
+      ? primaryPanelWidth
+      : effectiveSecondaryPosition === 'left' && isSecondarySidePanelOpen
+      ? secondaryPanelWidth
+      : 0;
+
+  const occupiedRightWidth =
+    effectivePrimaryPosition === 'right' && isPinned
+      ? primaryPanelWidth
+      : effectiveSecondaryPosition === 'right' && isSecondarySidePanelOpen
+      ? secondaryPanelWidth
+      : 0;
+
+  /* ------------------------------------------------------------------------
+     12. VIEWPORT COMPOSITION & PRESENTATION SHELL
      ------------------------------------------------------------------------ */
   return (
     <div
@@ -312,7 +420,7 @@ export default function Home() {
             activeCollectionId={activeCollectionId}
             onSelectCollection={(newId) => {
               setActiveCollectionId(newId);
-              if (!isPinned) setIsLeftSidePanelOpen(false);
+              if (!isPinned) setIsPrimarySidePanelOpen(false);
             }}
             onCollectionsUpdated={() => fetchAllData()}
             isDropdownOpen={isColDropdownOpen}
@@ -323,16 +431,16 @@ export default function Home() {
                 openTemplateManager(activeCollection.id, activeCollection.name);
               }
             }}
-            isLeftSidePanelOpen={isLeftSidePanelOpen}
-            onToggleLeftSidePanel={() => setIsLeftSidePanelOpen(!isLeftSidePanelOpen)}
-            unpinnedExplorerPanel={explorerFlyoutPanel}
+            isPrimarySidePanelOpen={isPrimarySidePanelOpen}
+            onTogglePrimarySidePanel={() => setIsPrimarySidePanelOpen(!isPrimarySidePanelOpen)}
+            unpinnedPrimaryPanel={explorerFlyoutPanel}
             onAddNewItem={() => {
               openCreateItem(activeCollectionId, null);
             }}
           />
         </div>
 
-        {/* Tier 2: Center Workspace (Pinned Explorer, Canvas, and Right Panel) */}
+        {/* Tier 2: Center Workspace (Sidebars, Canvas, and Bottom Panel) */}
         <div
           className={[
             'flex flex-1 min-h-0 relative overflow-hidden',
@@ -340,7 +448,15 @@ export default function Home() {
             isLogoHovered ? 'opacity-0 pointer-events-none' : 'opacity-100',
           ].join(' ')}
         >
-          {/* Docked Explorer Sidebar */}
+          {/* Visual Dock Drop Targets (OKLCH Dynamic Palette) */}
+          <PanelDockDropZones
+            isDragging={isDraggingPanel}
+            draggingPanel={draggingPanel}
+            hoveredZone={hoveredZone}
+            cursorPos={cursorPos}
+          />
+
+          {/* Primary Side Panel (Explorer Tree) */}
           {explorerSidebarPanel}
 
           {/* Center Main Stage / Detail Canvas */}
@@ -348,11 +464,12 @@ export default function Home() {
             <MainContent
               selectedItem={selectedItem}
               activeCollectionId={activeCollectionId}
-              isBlurred={!isPinned && isLeftSidePanelOpen}
+              isBlurred={!isPinned && isPrimarySidePanelOpen}
               onAddSubItem={openCreateItem}
               onEditItem={handleTriggerEditItem}
               onDeleteItem={handleTriggerDeleteItem}
-              rightPanelWidth={isRightPanelOpen ? rightPanelWidth : 0}
+              occupiedRightWidth={occupiedRightWidth}
+              occupiedLeftWidth={occupiedLeftWidth}
               bottomPanelHeight={isBottomPanelOpen ? 220 : 0}
             />
           </div>
@@ -361,19 +478,23 @@ export default function Home() {
           <BottomPanel
             isOpen={isBottomPanelOpen}
             onClose={() => setIsBottomPanelOpen(false)}
-            reservedLeft={isPinned ? leftPanelWidth : 0}
-            reservedRight={isRightPanelOpen ? rightPanelWidth : 0}
+            reservedLeft={occupiedLeftWidth}
+            reservedRight={occupiedRightWidth}
             activeCollectionName={activeCollection?.name}
             totalItemsCount={allItems.length}
+            onHandlePointerDown={(e) => startDockDrag('bottom', e)}
           />
 
-          {/* Docked Right Utility & Actions Panel */}
-          <RightSidePanel
-            isOpen={isRightPanelOpen}
-            onOpen={() => setIsRightPanelOpen(true)}
-            onClose={() => setIsRightPanelOpen(false)}
-            reservedWidth={isPinned ? leftPanelWidth : 0}
-            onWidthChange={setRightPanelWidth}
+          {/* Secondary Side Panel (Details / Inspector Drawer) */}
+          <SecondarySidePanel
+            isOpen={isSecondarySidePanelOpen}
+            position={effectiveSecondaryPosition}
+            onTogglePosition={handleToggleSecondaryPosition}
+            onOpen={() => setIsSecondarySidePanelOpen(true)}
+            onClose={() => setIsSecondarySidePanelOpen(false)}
+            reservedWidth={isPinned ? primaryPanelWidth : 0}
+            onWidthChange={setSecondaryPanelWidth}
+            onHandlePointerDown={(e) => startDockDrag('secondary', e)}
           />
         </div>
 
@@ -382,12 +503,12 @@ export default function Home() {
           <NavigationFooter
             activeCollectionName={activeCollection?.name}
             totalItemsCount={allItems.length}
-            isLeftPanelPinned={isPinned}
-            onToggleLeftPanel={() => togglePin()}
-            isBottomPanelOpen={isBottomPanelOpen}
-            onToggleBottomPanel={() => setIsBottomPanelOpen(!isBottomPanelOpen)}
-            isRightPanelOpen={isRightPanelOpen}
-            onToggleRightPanel={() => setIsRightPanelOpen(!isRightPanelOpen)}
+            isPrimaryPinned={isPinned}
+            onTogglePrimary={() => togglePin()}
+            isBottomOpen={isBottomPanelOpen}
+            onToggleBottom={() => setIsBottomPanelOpen(!isBottomPanelOpen)}
+            isSecondaryOpen={isSecondarySidePanelOpen}
+            onToggleSecondary={() => setIsSecondarySidePanelOpen(!isSecondarySidePanelOpen)}
           />
         </div>
       </div>

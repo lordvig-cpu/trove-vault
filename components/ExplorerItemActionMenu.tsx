@@ -16,12 +16,14 @@ interface ExplorerItemActionMenuProps {
   item: ItemRecord;
   collectionId: number | null;
   menu: ReturnType<typeof useExplorerActionMenu>;
+  position?: 'left' | 'right';
 }
 
 export default function ExplorerItemActionMenu({
   item,
   collectionId,
   menu,
+  position,
 }: ExplorerItemActionMenuProps) {
   const { onAddSubItem, onEditItem, onRenameItem, onDeleteItem } = useExplorerActions();
 
@@ -32,6 +34,7 @@ export default function ExplorerItemActionMenu({
       onMouseLeave={menu.handleMouseLeave}
       top={menu.menuCoords.top}
       left={menu.menuCoords.left}
+      position={position}
       title="Item Actions"
       titleIcon="📄"
     >

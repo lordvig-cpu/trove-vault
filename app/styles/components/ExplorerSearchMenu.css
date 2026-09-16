@@ -1,10 +1,9 @@
 /* ==========================================================================
-   EXPLORER SEARCH MENU PORTAL DROP & FADE
-   Dropdown portal anchored below the LeftSidePanel search header.
-   Rendered into document body via React Portal to escape panel clipping.
+   EXPLORER ADVANCED SEARCH DROPDOWN MENU
+   Dropdown portal anchored below the PrimarySidePanel search header.
    ========================================================================== */
 
-/* Smooth horizontal slide-in matching ExplorerActionMenu */
+/* Smooth horizontal slide-in matching ExplorerActionMenu (Left dock) */
 @keyframes searchMenuSlideIn {
     0% {
         opacity: 0;
@@ -17,7 +16,7 @@
     }
 }
 
-/* Exit Animation: Slides left back behind panel */
+/* Exit Animation: Slides left back behind panel (Left dock) */
 @keyframes searchMenuSlideOut {
     0% {
         opacity: 1;
@@ -30,12 +29,46 @@
     }
 }
 
+/* Smooth horizontal slide-in matching ExplorerActionMenu (Right dock) */
+@keyframes searchMenuSlideInRight {
+    0% {
+        opacity: 0;
+        transform: translateX(300px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Exit Animation: Slides right back behind panel (Right dock) */
+@keyframes searchMenuSlideOutRight {
+    0% {
+        opacity: 1;
+        transform: translateX(0);
+    }
+
+    100% {
+        opacity: 0;
+        transform: translateX(300px);
+    }
+}
+
 .searchMenuSlideIn {
     animation: searchMenuSlideIn 800ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .searchMenuSlideOut {
     animation: searchMenuSlideOut 500ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.searchMenuSlideInRight {
+    animation: searchMenuSlideInRight 800ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.searchMenuSlideOutRight {
+    animation: searchMenuSlideOutRight 500ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .searchMenuNoAnimation {

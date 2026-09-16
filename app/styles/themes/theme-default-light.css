@@ -177,10 +177,10 @@ Organized 1-to-1 with component stylesheets in styles/components/
     --content-btn-danger-text: rgba(190, 18, 60, 1.00);  /* Rose-700 */
     /* #endregion */
 
-   /* #region 4. LEFT SIDE PANEL & EXPLORER TREE */
+   /* #region 4. PRIMARY SIDE PANEL & EXPLORER TREE */
     /* ======================================================================
-       4. LEFT SIDE PANEL & EXPLORER TREE
-       Mapped to: styles/components/LeftSidePanel.css
+       4. PRIMARY SIDE PANEL & EXPLORER TREE
+       Mapped to: styles/components/primarySidePanel.css
     ------------------------------------------------------------------------- */
     /* Aside Container & Docking */
     --panel-border-accent: rgba(2, 132, 199, 0.40);
@@ -299,10 +299,10 @@ Organized 1-to-1 with component stylesheets in styles/components/
      --explorer-tab-baseline: var(--nav-header-tab-indicator);
     /* #endregion */
 
-   /* #region 5. RIGHT SIDE PANEL */
+   /* #region 5. SECONDARY SIDE PANEL */
     /* ======================================================================
-       5. RIGHT SIDE PANEL
-       Mapped to: styles/components/RightSidePanel.css
+       5. SECONDARY SIDE PANEL
+       Mapped to: styles/components/secondarySidePanel.css
     ------------------------------------------------------------------------- */
     /* Main Drawer Chassis */
     --right-panel-bg: var(--panel-surface-bg);

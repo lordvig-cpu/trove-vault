@@ -14,6 +14,7 @@ interface ExplorerSearchMenuProps {
   titleIcon?: React.ReactNode;
   isPinned?: boolean;
   triggerRef?: React.RefObject<HTMLElement | null>;
+  position?: 'left' | 'right';
   children: React.ReactNode;
 }
 
@@ -26,9 +27,11 @@ export default function ExplorerSearchMenu({
   titleIcon,
   isPinned = true,
   triggerRef,
+  position,
   children,
 }: ExplorerSearchMenuProps) {
-  const { animationsEnabled } = useUIPreferences();
+  const { animationsEnabled, primaryPosition } = useUIPreferences();
+  const effectivePosition = position ?? (primaryPosition === 'right' ? 'right' : 'left');
   const [mounted, setMounted] = useState(false);
   const [renderMenu, setRenderMenu] = useState(isOpen);
   const [isClosing, setIsClosing] = useState(false);
@@ -99,14 +102,18 @@ export default function ExplorerSearchMenu({
 
   if (!renderMenu || !mounted || typeof document === 'undefined') return null;
 
-  const animationClass = !animationsEnabled 
-  ? 'searchMenuNoAnimation' 
-  : isClosing 
-  ? 'searchMenuSlideOut' 
-  : 'searchMenuSlideIn';
+  const animationClass = !animationsEnabled
+    ? 'searchMenuNoAnimation'
+    : effectivePosition === 'right'
+    ? isClosing
+      ? 'searchMenuSlideOutRight'
+      : 'searchMenuSlideInRight'
+    : isClosing
+    ? 'searchMenuSlideOut'
+    : 'searchMenuSlideIn';
 
   // Horizontal correction to clear the sidebar seam while maintaining overlap with the panel
-  const adjustedLeft = left + 15;
+  const adjustedLeft = effectivePosition === 'right' ? left - 15 : left + 15;
 
   return createPortal(
     <div
