@@ -43,6 +43,8 @@ interface NavigationHeaderProps {
   onTogglePrimarySidePanel?: () => void;
   unpinnedPrimaryPanel?: React.ReactNode;
   onAddNewItem?: () => void;
+  onStartGrabbedContentDrag?: (e: React.PointerEvent) => void;
+  onStartExplorerDrag?: (e: React.PointerEvent) => void;
 
   // Backward-compatibility aliases
   isLeftSidePanelOpen?: boolean;
@@ -69,6 +71,8 @@ export default function NavigationHeader({
   isPrimarySidePanelOpen,
   onTogglePrimarySidePanel,
   unpinnedPrimaryPanel,
+  onStartGrabbedContentDrag,
+  onStartExplorerDrag,
   isLeftSidePanelOpen,
   onToggleLeftSidePanel,
   unpinnedExplorerPanel,
@@ -82,7 +86,8 @@ export default function NavigationHeader({
   const effectiveToggle = onTogglePrimarySidePanel ?? onToggleLeftSidePanel ?? (() => {});
   const effectiveUnpinnedPanel = unpinnedPrimaryPanel ?? unpinnedExplorerPanel;
 
-  const isTabActive = isPinned || effectiveIsOpen;
+  // The top Explorer tab is ONLY active when the Explorer pull-down dropdown is open
+  const isTabActive = effectiveIsOpen;
 
   return (
     <>
@@ -110,17 +115,16 @@ export default function NavigationHeader({
               <button
                 type="button"
                 onClick={() => {
-                  if (!isPinned) {
-                    effectiveToggle();
-                  }
+                  effectiveToggle();
                 }}
+                onPointerDown={onStartExplorerDrag}
                 className={[
                   'relative w-[90px] py-1.5 flex flex-col items-center justify-center group',
                   'font-sans font-black tracking-wide text-sm',
                   'outline-none focus:outline-none focus-visible:outline-none',
                   'transition-[background,border-color,box-shadow] ease-out',
                   animationsEnabled ? 'duration-300' : 'duration-0',
-                  isPinned ? 'cursor-default' : 'cursor-pointer',
+                  'cursor-pointer',
                   isTabActive ? 'nav-tab-active' : 'nav-tab-inactive',
                 ].join(' ')}
               >
@@ -162,7 +166,7 @@ export default function NavigationHeader({
             </div>
           </div>
 
-          {/* Collection Selection & Schema Template Actions */}
+          {/* Collection Selection, Schema Templates & Draggable Test Item */}
           <div className="flex items-center gap-3 px-4 h-full">
             <CollectionDropdown
               collections={collections}
@@ -187,6 +191,26 @@ export default function NavigationHeader({
               <span>📑</span>
               <span>Templates</span>
             </button>
+
+            {/* Quick Grabbable Content Item */}
+            {onStartGrabbedContentDrag && (
+              <div
+                onPointerDown={onStartGrabbedContentDrag}
+                className={[
+                  'flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg select-none',
+                  'border border-dashed border-[color-mix(in_oklch,var(--brand-primary)_45%,transparent)]',
+                  'bg-[color-mix(in_oklch,var(--brand-primary)_10%,transparent)]',
+                  'hover:bg-[color-mix(in_oklch,var(--brand-primary)_20%,transparent)]',
+                  'hover:border-[var(--brand-primary)]',
+                  'text-xs font-semibold text-[var(--brand-primary)]',
+                  'cursor-grab active:cursor-grabbing transition-all duration-150',
+                ].join(' ')}
+                title="Drag and drop to dock into Primary or Secondary Side Bar"
+              >
+                <span className="text-[10px] opacity-60 tracking-tighter" aria-hidden="true">⋮⋮</span>
+                <span>📦 Grab Item</span>
+              </div>
+            )}
           </div>
         </div>
 

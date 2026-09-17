@@ -35,6 +35,7 @@ import OklchSeedControls from '@/components/OklchSeedControls';
 interface NavigationFooterProps {
   activeCollectionName?: string;
   totalItemsCount?: number;
+  isPrimaryOpen?: boolean;
   isPrimaryPinned?: boolean;
   onTogglePrimary?: () => void;
   isBottomOpen?: boolean;
@@ -61,6 +62,7 @@ interface NavigationFooterProps {
 export default function NavigationFooter({
   activeCollectionName,
   totalItemsCount = 0,
+  isPrimaryOpen,
   isPrimaryPinned,
   onTogglePrimary,
   isBottomOpen,
@@ -89,19 +91,19 @@ export default function NavigationFooter({
 
   const isLightTheme = theme === 'theme-oklch-light';
 
-  const effectivePrimaryPinned = isPrimaryPinned ?? isLeftPanelPinned ?? false;
+  const effectivePrimaryOpen = isPrimaryOpen ?? isPrimaryPinned ?? isLeftPanelPinned ?? false;
   const effectiveTogglePrimary = onTogglePrimary ?? onToggleLeftPanel;
   const effectiveBottomOpen = isBottomOpen ?? isBottomPanelOpen ?? false;
   const effectiveToggleBottom = onToggleBottom ?? onToggleBottomPanel;
   const effectiveSecondaryOpen = isSecondaryOpen ?? isRightPanelOpen ?? false;
   const effectiveToggleSecondary = onToggleSecondary ?? onToggleRightPanel;
 
-  // Left vs Right icons match physical panel positions
-  const isLeftDockOpen = primaryPosition === 'left' ? effectivePrimaryPinned : effectiveSecondaryOpen;
-  const onToggleLeftDock = primaryPosition === 'left' ? effectiveTogglePrimary : effectiveToggleSecondary;
+  // Left vs Right icons match physical panel positions (Left is Primary, Right is Secondary)
+  const isLeftDockOpen = effectivePrimaryOpen;
+  const onToggleLeftDock = effectiveTogglePrimary;
 
-  const isRightDockOpen = primaryPosition === 'right' ? effectivePrimaryPinned : effectiveSecondaryOpen;
-  const onToggleRightDock = primaryPosition === 'right' ? effectiveTogglePrimary : effectiveToggleSecondary;
+  const isRightDockOpen = effectiveSecondaryOpen;
+  const onToggleRightDock = effectiveToggleSecondary;
 
   return (
     <footer className="navigation-footer h-14 flex items-center justify-between px-4 text-xs select-none shrink-0 z-[60]">
@@ -202,15 +204,7 @@ export default function NavigationFooter({
           <button
             type="button"
             onClick={onToggleLeftDock}
-            title={
-              primaryPosition === 'left'
-                ? isLeftDockOpen
-                  ? 'Hide Primary Side Bar'
-                  : 'Show Primary Side Bar'
-                : isLeftDockOpen
-                ? 'Hide Secondary Side Bar'
-                : 'Show Secondary Side Bar'
-            }
+            title={isLeftDockOpen ? 'Hide Primary Side Bar' : 'Show Primary Side Bar'}
             aria-label="Toggle Left Panel"
             className={`p-1.5 rounded-lg border transition cursor-pointer flex items-center justify-center ${
               isLeftDockOpen ? 'nav-footer-dock-btn-open' : 'nav-footer-dock-btn-closed'
@@ -236,15 +230,7 @@ export default function NavigationFooter({
           <button
             type="button"
             onClick={onToggleRightDock}
-            title={
-              primaryPosition === 'right'
-                ? isRightDockOpen
-                  ? 'Hide Primary Side Bar'
-                  : 'Show Primary Side Bar'
-                : isRightDockOpen
-                ? 'Hide Secondary Side Bar'
-                : 'Show Secondary Side Bar'
-            }
+            title={isRightDockOpen ? 'Hide Secondary Side Bar' : 'Show Secondary Side Bar'}
             aria-label="Toggle Right Panel"
             className={`p-1.5 rounded-lg border transition cursor-pointer flex items-center justify-center ${
               isRightDockOpen ? 'nav-footer-dock-btn-open' : 'nav-footer-dock-btn-closed'

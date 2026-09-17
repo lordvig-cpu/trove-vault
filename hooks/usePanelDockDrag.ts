@@ -2,16 +2,26 @@
 
 import { useState, useRef, useEffect, useCallback } from 'react';
 
-export type DockablePanelId = 'primary' | 'secondary' | 'bottom';
-export type DockDropTargetZone = 'left' | 'right' | 'bottom';
+export type DockablePanelId = 'primary' | 'secondary' | 'bottom' | 'explorer' | 'grabbed_content';
+export type DockDropTargetZone = 'left' | 'right' | 'bottom' | 'remove';
 
 export function isDockZoneAllowed(
   panelId: DockablePanelId | null,
   targetZone: DockDropTargetZone | null
 ): boolean {
   if (!panelId || !targetZone) return false;
-  // Explorer (primary) side panel cannot be docked to the bottom
-  if (panelId === 'primary' && targetZone === 'bottom') {
+  // Side panel contents (Explorer and Grabbed Content) cannot be docked to bottom
+  if (
+    (panelId === 'primary' ||
+      panelId === 'secondary' ||
+      panelId === 'explorer' ||
+      panelId === 'grabbed_content') &&
+    targetZone === 'bottom'
+  ) {
+    return false;
+  }
+  // Bottom panel cannot be docked to left or right vertical sidebars
+  if (panelId === 'bottom' && (targetZone === 'left' || targetZone === 'right')) {
     return false;
   }
   return true;
@@ -79,6 +89,11 @@ export function usePanelDockDrag({ onDropPanel }: UsePanelDockDragOptions) {
       // Right Zone: Right 28% of workspace
       if (relX > 0.72) {
         return 'right';
+      }
+
+      // Remove / Trash Zone: Upper 35% of center workspace column
+      if (relY < 0.35) {
+        return 'remove';
       }
 
       // Bottom Zone: Lower 45% of workspace in the center column

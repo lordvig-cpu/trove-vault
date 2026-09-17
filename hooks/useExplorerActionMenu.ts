@@ -82,12 +82,12 @@ export function useExplorerActionMenu(
         calculatedTop = Math.max(16, maxAllowedTop);
       }
 
-      // Find the parent panel boundary for exact seam alignment (supports pinned sidebar and unpinned flyout)
+      // Find the parent panel boundary for exact seam alignment (supports pinned sidebar, secondary sidebar, and unpinned flyout)
       const panelEl =
-        targetEl?.closest?.('aside, .primary-side-panel, .nav-flyout-menu') ||
+        targetEl?.closest?.('aside, .primary-side-panel, .secondary-side-panel, .nav-flyout-menu') ||
         (typeof document !== 'undefined'
           ? (document.querySelector(
-              '.nav-flyout-menu, .primary-side-panel:not(.pointer-events-none), .primary-side-panel, aside'
+              '.nav-flyout-menu, .primary-side-panel:not(.pointer-events-none), .secondary-side-panel:not(.pointer-events-none), .primary-side-panel, .secondary-side-panel, aside'
             ) as HTMLElement | null)
           : null);
       const panelRect = panelEl ? panelEl.getBoundingClientRect() : gearRect;

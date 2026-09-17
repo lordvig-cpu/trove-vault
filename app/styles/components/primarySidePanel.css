@@ -64,42 +64,127 @@
   mix-blend-mode: var(--explorer-panel-texture-blend);
 }
 
-/* Pinned layout mode (Left docked): Statically locks sidebar into flow */
+/* Docked layout mode (Left docked) */
+.primary-side-panel-docked-left {
+  border-right: 1px solid var(--primary-border-strong);
+  border-left: 1px solid transparent;
+  box-shadow: var(--panel-pinned-shadow);
+}
+
+/* Docked layout mode (Right docked) */
+.primary-side-panel-docked-right {
+  border-left: 1px solid var(--primary-border-strong);
+  border-right: 1px solid transparent;
+  box-shadow: var(--right-panel-shadow);
+}
+
+.primary-panel-docked-open {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.primary-panel-docked-closed-left {
+  opacity: 0;
+  transform: translateX(-110%);
+  pointer-events: none;
+}
+
+.primary-panel-docked-closed-right {
+  opacity: 0;
+  transform: translateX(110%);
+  pointer-events: none;
+}
+
+/* Backward-compatibility classes */
 .primary-side-panel-pinned-left {
   border-right: 1px solid var(--primary-border-strong);
   border-left: 1px solid transparent;
   box-shadow: var(--panel-pinned-shadow);
   opacity: 1;
   transform: translateX(0);
-  z-index: 90;
 }
 
-/* Pinned layout mode (Right docked) */
 .primary-side-panel-pinned-right {
   border-left: 1px solid var(--primary-border-strong);
   border-right: 1px solid transparent;
   box-shadow: var(--right-panel-shadow);
   opacity: 1;
   transform: translateX(0);
-  z-index: 90;
 }
 
-/* Unpinned / Collapsed layout mode (Left docked): Translates left */
 .primary-side-panel-unpinned-left {
-  border-right: 1px solid transparent;
-  border-left: 1px solid transparent;
   opacity: 0;
   pointer-events: none;
   transform: translateX(-110%);
 }
 
-/* Unpinned / Collapsed layout mode (Right docked): Translates right */
 .primary-side-panel-unpinned-right {
-  border-left: 1px solid transparent;
-  border-right: 1px solid transparent;
   opacity: 0;
   pointer-events: none;
   transform: translateX(110%);
+}
+
+/* --------------------------------------------------------------------------
+   Floating Expand Tab (Visible When Primary Sidebar is Collapsed)
+   -------------------------------------------------------------------------- */
+.primary-panel-expand-tab {
+  position: absolute;
+  top: 0.75rem;
+  height: 1.75rem;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+  background-color: var(--primary-right-panel-tab-bg);
+  border-top: 1px solid var(--primary-border-strong);
+  border-bottom: 1px solid var(--primary-border-strong);
+  color: var(--text-muted);
+  box-shadow: 0 10px 15px -3px var(--shadow-black-50);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 30;
+  transition: all 150ms ease;
+}
+
+.primary-panel-expand-tab-left {
+  right: auto;
+  border-right: 1px solid var(--primary-border-strong);
+  border-left: none;
+  border-top-right-radius: 0.375rem;
+  border-bottom-right-radius: 0.375rem;
+}
+
+.primary-panel-expand-tab-right {
+  right: auto;
+  border-left: 1px solid var(--primary-border-strong);
+  border-right: none;
+  border-top-left-radius: 0.375rem;
+  border-bottom-left-radius: 0.375rem;
+}
+
+.primary-panel-expand-tab:hover {
+  background-color: var(--primary-col-dropdown-btn-hover-bg);
+  border-color: var(--primary-border-strong);
+  color: var(--text-strong);
+}
+
+.primary-panel-tab-hidden-left {
+  opacity: 0;
+  transform: translateX(-100%);
+  pointer-events: none;
+}
+
+.primary-panel-tab-hidden-right {
+  opacity: 0;
+  transform: translateX(100%);
+  pointer-events: none;
+}
+
+.primary-panel-tab-visible {
+  opacity: 1;
+  transform: translateX(0);
 }
 
 /* --------------------------------------------------------------------------

@@ -30,8 +30,8 @@ export default function ExplorerSearchMenu({
   position,
   children,
 }: ExplorerSearchMenuProps) {
-  const { animationsEnabled, primaryPosition } = useUIPreferences();
-  const effectivePosition = position ?? (primaryPosition === 'right' ? 'right' : 'left');
+  const { animationsEnabled } = useUIPreferences();
+  const effectivePosition = position ?? 'left';
   const [mounted, setMounted] = useState(false);
   const [renderMenu, setRenderMenu] = useState(isOpen);
   const [isClosing, setIsClosing] = useState(false);
@@ -123,7 +123,7 @@ export default function ExplorerSearchMenu({
         top: `${top}px`,
         left: `${adjustedLeft}px`,
         margin: 0,
-        zIndex: isPinned ? 30 : 70,
+        zIndex: isPinned ? 35 : 45,
       }}
       className={`searchMenuShell ${animationClass}`}
     >

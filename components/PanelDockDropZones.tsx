@@ -8,6 +8,8 @@ interface PanelDockDropZonesProps {
   draggingPanel: DockablePanelId | null;
   hoveredZone: DockDropTargetZone | null;
   cursorPos: { x: number; y: number };
+  primaryPanelContent?: 'empty' | 'explorer' | 'grabbed_content';
+  secondaryPanelContent?: 'empty' | 'explorer' | 'grabbed_content';
 }
 
 export default function PanelDockDropZones({
@@ -15,15 +17,24 @@ export default function PanelDockDropZones({
   draggingPanel,
   hoveredZone,
   cursorPos,
+  primaryPanelContent = 'empty',
+  secondaryPanelContent = 'empty',
 }: PanelDockDropZonesProps) {
   if (!isDragging || !draggingPanel) return null;
 
-  const getPanelName = (id: DockablePanelId) => {
+  const leftTargetName = 'Primary Side Bar';
+  const rightTargetName = 'Secondary Side Bar';
+
+  const getDraggedItemName = (id: DockablePanelId) => {
     switch (id) {
+      case 'explorer':
+        return 'Explorer';
+      case 'grabbed_content':
+        return 'Grabbed Content';
       case 'primary':
-        return 'Primary Side Bar';
+        return primaryPanelContent === 'grabbed_content' ? 'Grabbed Content' : 'Explorer';
       case 'secondary':
-        return 'Secondary Side Bar';
+        return secondaryPanelContent === 'grabbed_content' ? 'Grabbed Content' : 'Explorer';
       case 'bottom':
         return 'Bottom Panel';
       default:
@@ -31,7 +42,7 @@ export default function PanelDockDropZones({
     }
   };
 
-  const panelName = getPanelName(draggingPanel);
+  const draggedItemName = getDraggedItemName(draggingPanel);
   const isLeftAllowed = isDockZoneAllowed(draggingPanel, 'left');
   const isRightAllowed = isDockZoneAllowed(draggingPanel, 'right');
   const isBottomAllowed = isDockZoneAllowed(draggingPanel, 'bottom');
@@ -48,16 +59,38 @@ export default function PanelDockDropZones({
           transform: `translate3d(${cursorPos.x + 14}px, ${cursorPos.y + 14}px, 0)`,
         }}
         className={`dock-cursor-badge ${
-          hoveredZone && !isHoveredZoneAllowed ? 'dock-cursor-badge-prohibited' : ''
+          hoveredZone === 'remove'
+            ? 'dock-cursor-badge-remove'
+            : hoveredZone && !isHoveredZoneAllowed
+            ? 'dock-cursor-badge-prohibited'
+            : ''
         }`}
       >
         <span className="dock-cursor-badge-icon">
-          {hoveredZone && !isHoveredZoneAllowed ? '⃠' : '❖'}
+          {hoveredZone === 'remove' ? (
+            <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M3 6h18" />
+              <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+              <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+            </svg>
+          ) : hoveredZone && !isHoveredZoneAllowed ? (
+            '⃠'
+          ) : (
+            '❖'
+          )}
         </span>
         <span>
-          {hoveredZone && !isHoveredZoneAllowed
-            ? `Cannot Dock ${panelName} Here`
-            : `Docking: ${panelName}`}
+          {hoveredZone === 'remove'
+            ? `Remove ${draggedItemName} Content`
+            : hoveredZone && !isHoveredZoneAllowed
+            ? `Cannot Dock ${draggedItemName} Here`
+            : hoveredZone === 'left'
+            ? `Dock to ${leftTargetName}`
+            : hoveredZone === 'right'
+            ? `Dock to ${rightTargetName}`
+            : hoveredZone === 'bottom'
+            ? 'Dock to Bottom Panel'
+            : `Docking: ${draggedItemName}`}
         </span>
       </div>
 
@@ -65,7 +98,7 @@ export default function PanelDockDropZones({
           2. WORKSPACE BOUNDARY OVERLAY (Inset between Nav Header & Footer)
           -------------------------------------------------------------------- */}
       <div className="dock-drop-workspace-bounds animate-mount-fade">
-        {/* LEFT DOCK TARGET (Primary OKLCH Palette) */}
+        {/* LEFT DOCK TARGET (Matches sidebar currently on the Left) */}
         <div
           className={`dock-zone-side ${
             hoveredZone === 'left' ? 'dock-zone-side-active' : ''
@@ -77,7 +110,7 @@ export default function PanelDockDropZones({
             }`}
           >
             <span>◧</span>
-            <span>Dock {panelName} Left</span>
+            <span>Dock to {leftTargetName}</span>
           </div>
           <span
             className={`dock-zone-side-text ${
@@ -88,8 +121,37 @@ export default function PanelDockDropZones({
           </span>
         </div>
 
-        {/* CENTER COLUMN: CANVAS HINT & BOTTOM DOCK TARGET (Secondary OKLCH Palette) */}
+        {/* CENTER COLUMN: TRASH / REMOVE ZONE, CANVAS HINT & BOTTOM DOCK TARGET */}
         <div className="dock-zone-center-column">
+          {/* TRASH / REMOVE FROM SIDEBAR TARGET */}
+          <div
+            className={`dock-zone-remove ${
+              hoveredZone === 'remove' ? 'dock-zone-remove-active' : ''
+            }`}
+          >
+            <div
+              className={`dock-zone-remove-pill ${
+                hoveredZone === 'remove' ? 'dock-zone-remove-pill-active' : ''
+              }`}
+            >
+              <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M3 6h18" />
+                <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+                <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+                <line x1="10" y1="11" x2="10" y2="17" />
+                <line x1="14" y1="11" x2="14" y2="17" />
+              </svg>
+              <span>Remove Content & Empty Panel</span>
+            </div>
+            <span
+              className={`dock-zone-remove-text ${
+                hoveredZone === 'remove' ? 'dock-zone-remove-text-active' : ''
+              }`}
+            >
+              {hoveredZone === 'remove' ? 'Release mouse to empty this sidebar' : 'Drop here to remove docked content'}
+            </span>
+          </div>
+
           <div className="dock-zone-canvas-hint">
             Main Workspace Canvas
           </div>
@@ -134,7 +196,7 @@ export default function PanelDockDropZones({
               <span>
                 {!isBottomAllowed
                   ? 'Cannot Dock Explorer Bottom'
-                  : `Dock ${panelName} Bottom`}
+                  : 'Dock to Bottom Panel'}
               </span>
             </div>
             <span
@@ -159,7 +221,7 @@ export default function PanelDockDropZones({
           </div>
         </div>
 
-        {/* RIGHT DOCK TARGET (Primary OKLCH Palette) */}
+        {/* RIGHT DOCK TARGET (Matches sidebar currently on the Right) */}
         <div
           className={`dock-zone-side ${
             hoveredZone === 'right' ? 'dock-zone-side-active' : ''
@@ -171,7 +233,7 @@ export default function PanelDockDropZones({
             }`}
           >
             <span>◨</span>
-            <span>Dock {panelName} Right</span>
+            <span>Dock to {rightTargetName}</span>
           </div>
           <span
             className={`dock-zone-side-text ${

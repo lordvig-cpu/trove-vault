@@ -33,8 +33,8 @@ export default function ExplorerActionMenu({
   position,
   children,
 }: ExplorerActionMenuProps) {
-  const { animationsEnabled, isPinned, primaryPosition } = useUIPreferences();
-  const effectivePosition = position ?? (primaryPosition === 'right' ? 'right' : 'left');
+  const { animationsEnabled, isPinned } = useUIPreferences();
+  const effectivePosition = position ?? 'left';
 
   // Portals render into document.body, so wait until the browser has mounted.
   const [mounted, setMounted] = useState(false);
@@ -108,7 +108,7 @@ export default function ExplorerActionMenu({
         top: `${top}px`,
         left: `${adjustedLeft}px`,
         margin: 0,
-        zIndex: isPinned ? 30 : 70,
+        zIndex: isPinned ? 35 : 45,
       }}
       className={`menuShell ${animationClass}`}
     >

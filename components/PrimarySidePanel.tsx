@@ -7,40 +7,49 @@ import { useResizablePanel } from '@/hooks/useResizablePanel';
 import { useFlyoutLifecycle } from '@/hooks/useFlyoutLifecycle';
 import PrimarySidePanelHeader from '@/components/PrimarySidePanelHeader';
 import { CollectionRecord } from '@/types/collection';
-import { ResetWidthIcon, ResetWidthRightIcon } from '@/components/icons/SystemIcons';
+import { 
+  ResetWidthIcon, 
+  ResetWidthRightIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+} from '@/components/icons/SystemIcons';
 import { ExplorerTab } from '@/lib/filterExplorerForest';
 import { PrimarySidebarPosition } from '@/types/layout';
+import EmptyPanelDropZone from '@/components/EmptyPanelDropZone';
 
 /* ==========================================================================
    1. TYPE DEFINITIONS & CONSTANTS
    ========================================================================== */
 
 interface PrimarySidePanelProps {
+  title?: string;
+  showSearchFilter?: boolean;
   variant: 'flyout' | 'sidebar';
   position?: PrimarySidebarPosition;
   onTogglePosition?: () => void;
   isOpen: boolean;
+  onOpen?: () => void;
   onClose: () => void;
   onTogglePin: () => void;
   activeTab?: ExplorerTab;
   onTabChange?: (tab: ExplorerTab) => void;
   isAnyCategoryExpanded?: boolean;
   onToggleAllCategories?: () => void;
-  searchQuery: string;
-  onSearchChange: (query: string) => void;
+  searchQuery?: string;
+  onSearchChange?: (query: string) => void;
   reservedWidth?: number;
   onWidthChange?: (width: number) => void;
   loading?: boolean;
   error?: string | null;
-  children: React.ReactNode;
+  children?: React.ReactNode;
   onAddNewItem?: () => void;
   onAddNewCollection?: () => void;
-  collections: CollectionRecord[];
+  collections?: CollectionRecord[];
 
   // Multi-Select Array Props
-  filterCollectionIds: number[];
-  onToggleFilterCollection: (collectionId: number) => void;
-  onClearCollectionFilters: () => void;
+  filterCollectionIds?: number[];
+  onToggleFilterCollection?: (collectionId: number) => void;
+  onClearCollectionFilters?: () => void;
 
   onHandlePointerDown?: (e: React.PointerEvent) => void;
 }
@@ -52,10 +61,13 @@ const DEFAULT_WIDTH = 304;
    ========================================================================== */
 
 export default function PrimarySidePanel({
+  title,
+  showSearchFilter,
   variant,
   position = 'left',
   onTogglePosition,
   isOpen,
+  onOpen,
   onClose,
   onTogglePin,
   activeTab,
@@ -175,6 +187,8 @@ export default function PrimarySidePanel({
 
       {/* Header with Search, Filter Button & Filter Tray */}
       <PrimarySidePanelHeader
+        title={title}
+        showSearchFilter={showSearchFilter ?? (Boolean(children) || variant === 'flyout')}
         variant={variant}
         isPinned={isPinned}
         position={position}
@@ -206,9 +220,16 @@ export default function PrimarySidePanel({
       {/* Error Feedback Notice */}
       {error && <div className="primary-side-panel-notice-error mt-2 mx-2">{error}</div>}
 
-      {/* Dedicated Scrollable Explorer Tree Viewport */}
-      <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden px-2.5 pt-0 pb-6 min-w-0 primary-panel-scroll">
-        {children}
+      {/* Dedicated Scrollable Viewport or Empty Drop Zone Shell */}
+      <div className={`flex-1 min-h-0 overflow-y-auto overflow-x-hidden ${children ? 'px-2.5 pt-0 pb-6' : 'p-0'} min-w-0 primary-panel-scroll flex flex-col`}>
+        {children ? (
+          children
+        ) : (
+          <EmptyPanelDropZone
+            panelTitle={title || (variant === 'sidebar' ? 'Primary Side Panel' : 'Explorer')}
+            position={position}
+          />
+        )}
       </div>
     </>
   );
@@ -263,32 +284,64 @@ export default function PrimarySidePanel({
   /* ------------------------------------------------------------------------
      4. SIDEBAR VARIANT
      ------------------------------------------------------------------------ */
-  const positionClass = position === 'right' ? 'primary-side-panel-right' : 'primary-side-panel-left';
-  const stateClass = isPinned
-    ? position === 'right'
-      ? 'primary-side-panel-pinned-right'
-      : 'primary-side-panel-pinned-left'
-    : position === 'right'
-    ? 'primary-side-panel-unpinned-right pointer-events-none'
-    : 'primary-side-panel-unpinned-left pointer-events-none';
+  const isUnpinnedOpen = isOpen && !isPinned;
+  const asideZIndex = isUnpinnedOpen ? 50 : 40;
+
+  const positionClass = position === 'right' ? 'primary-side-panel-right primary-side-panel-docked-right' : 'primary-side-panel-left primary-side-panel-docked-left';
+  const dockedClosedClass = position === 'right' ? 'primary-panel-docked-closed-right' : 'primary-panel-docked-closed-left';
+  const tabPositionClass = position === 'left' ? 'primary-panel-expand-tab-left' : 'primary-panel-expand-tab-right';
+  const tabHiddenClass = position === 'left' ? 'primary-panel-tab-hidden-left' : 'primary-panel-tab-hidden-right';
 
   return (
-    <aside
-      style={{
-        width: `${panelWidth}px`,
-        left: position === 'left' ? '0px' : `calc(100% - ${panelWidth}px)`,
-      }}
-      className={[
-        'primary-side-panel absolute top-0 bottom-0 z-50',
-        positionClass,
-        transitionClass,
-        stateClass,
-      ]
-        .filter(Boolean)
-        .join(' ')}
-    >
-      {innerContent}
-    </aside>
+    <>
+      {/* --------------------------------------------------------------------
+          4.1 FLOATING EXPAND TAB (Visible When Primary Sidebar is Collapsed)
+          -------------------------------------------------------------------- */}
+      <button
+        type="button"
+        onClick={onOpen ?? handlePinAction}
+        style={{
+          left: position === 'left' ? '0px' : 'calc(100% - 1.75rem)',
+        }}
+        className={[
+          'primary-panel-expand-tab group',
+          tabPositionClass,
+          transitionClass,
+          isOpen ? tabHiddenClass : 'primary-panel-tab-visible',
+        ]
+          .filter(Boolean)
+          .join(' ')}
+        title={`Open Primary Side Bar (${position === 'left' ? 'Left' : 'Right'})`}
+        aria-label="Open Primary Side Bar"
+      >
+        {position === 'left' ? (
+          <ChevronRightIcon className="w-3.5 h-3.5 origin-center transition-transform duration-200 ease-out group-hover:translate-x-0.5 group-hover:scale-115" />
+        ) : (
+          <ChevronLeftIcon className="w-3.5 h-3.5 origin-center transition-transform duration-200 ease-out group-hover:-translate-x-0.5 group-hover:scale-115" />
+        )}
+      </button>
+
+      {/* --------------------------------------------------------------------
+          4.3 DOCKED PRIMARY EXPLORER PANEL CONTAINER
+          -------------------------------------------------------------------- */}
+      <aside
+        style={{
+          width: `${panelWidth}px`,
+          left: position === 'left' ? '0px' : `calc(100% - ${panelWidth}px)`,
+          zIndex: asideZIndex,
+        }}
+        className={[
+          'primary-side-panel absolute top-0 bottom-0 flex flex-col',
+          positionClass,
+          transitionClass,
+          isOpen ? 'primary-panel-docked-open' : `${dockedClosedClass} pointer-events-none`,
+        ]
+          .filter(Boolean)
+          .join(' ')}
+      >
+        {innerContent}
+      </aside>
+    </>
   );
 }
 

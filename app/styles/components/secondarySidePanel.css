@@ -164,7 +164,6 @@
 .secondary-panel-docked-open {
   opacity: 1;
   transform: translateX(0);
-  z-index: 90;
 }
 
 .secondary-panel-docked-closed-right {
@@ -178,4 +177,3 @@
   transform: translateX(-110%);
   pointer-events: none;
 }
-

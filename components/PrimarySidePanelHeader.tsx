@@ -27,26 +27,28 @@ import { useUIPreferences } from '@/context/UIPreferencesContext';
    ========================================================================== */
 
 interface PrimarySidePanelHeaderProps {
+  title?: string;
+  showSearchFilter?: boolean;
   variant: 'flyout' | 'sidebar';
   isPinned: boolean;
   position?: PrimarySidebarPosition;
   onTogglePosition?: () => void;
   activeTab?: ExplorerTab;
   onTabChange?: (tab: ExplorerTab) => void;
-  searchQuery: string;
-  onSearchChange: (val: string) => void;
+  searchQuery?: string;
+  onSearchChange?: (val: string) => void;
   isAnyCategoryExpanded?: boolean;
   onToggleAllCategories?: () => void;
   onTogglePin: () => void;
   onClose: () => void;
   onAddNewItem?: () => void;
   onAddNewCollection?: () => void;
-  collections: CollectionRecord[];
+  collections?: CollectionRecord[];
 
   // Multi-Select Array Props
-  filterCollectionIds: number[];
-  onToggleFilterCollection: (collectionId: number) => void;
-  onClearCollectionFilters: () => void;
+  filterCollectionIds?: number[];
+  onToggleFilterCollection?: (collectionId: number) => void;
+  onClearCollectionFilters?: () => void;
 
   onHandlePointerDown?: (e: React.PointerEvent) => void;
 
@@ -59,14 +61,16 @@ interface PrimarySidePanelHeaderProps {
    ========================================================================== */
 
 export default function PrimarySidePanelHeader({
+  title,
+  showSearchFilter = true,
   variant,
   isPinned,
   position = 'left',
   onTogglePosition,
   activeTab = 'items',
   onTabChange,
-  searchQuery,
-  onSearchChange,
+  searchQuery = '',
+  onSearchChange = () => {},
   isAnyCategoryExpanded,
   onToggleAllCategories,
   isAnyFolderExpanded = false,
@@ -77,8 +81,8 @@ export default function PrimarySidePanelHeader({
   onAddNewCollection,
   collections = [],
   filterCollectionIds = [],
-  onToggleFilterCollection,
-  onClearCollectionFilters,
+  onToggleFilterCollection = () => {},
+  onClearCollectionFilters = () => {},
   onHandlePointerDown,
 }: PrimarySidePanelHeaderProps) {
   const { animationsEnabled } = useUIPreferences();
@@ -146,26 +150,26 @@ export default function PrimarySidePanelHeader({
             ⋮⋮
           </span>
           <span className="explorer-header-title text-xs font-bold uppercase tracking-wider px-0.5 truncate">
-            EXPLORER
+            {title || (variant === 'sidebar' ? 'PRIMARY SIDE PANEL' : 'EXPLORER')}
           </span>
         </div>
 
         <div className="flex items-center gap-1 shrink-0">
-          {/* Move to Opposite Side Toggle Button (Pinned mode) */}
-          {isPinned && onTogglePosition && (
+          {/* Move to Opposite Side Toggle Button */}
+          {onTogglePosition && (
             <button
               type="button"
               onClick={onTogglePosition}
               className="primary-side-panel-position-btn group"
               title={
                 position === 'left'
-                  ? 'Move Primary Side Bar to Right'
-                  : 'Move Primary Side Bar to Left'
+                  ? `Move ${title || (variant === 'sidebar' ? 'Side Bar' : 'Explorer')} to Right`
+                  : `Move ${title || (variant === 'sidebar' ? 'Side Bar' : 'Explorer')} to Left`
               }
               aria-label={
                 position === 'left'
-                  ? 'Move Primary Side Bar to Right'
-                  : 'Move Primary Side Bar to Left'
+                  ? `Move ${title || (variant === 'sidebar' ? 'Side Bar' : 'Explorer')} to Right`
+                  : `Move ${title || (variant === 'sidebar' ? 'Side Bar' : 'Explorer')} to Left`
               }
             >
               {position === 'left' ? (
@@ -212,14 +216,18 @@ export default function PrimarySidePanelHeader({
         </div>
       </div>
 
-      {/* ------------------------------------------------------------------
-          ROW 2: Search Bar + Advanced Search Sliders Button
-          ------------------------------------------------------------------ */}
+      {/* Divider */}
       <hr className="explorer-header-divider" />
-      <div className="explorer-section-heading">
-        <hr aria-hidden="true" />
-        <h3>Search and Filter</h3>
-      </div>
+
+      {/* ------------------------------------------------------------------
+          ROW 2 & 3: Search Bar, Category Filters & Menus (Explorer Only)
+          ------------------------------------------------------------------ */}
+      {showSearchFilter && (
+        <>
+          <div className="explorer-section-heading">
+            <hr aria-hidden="true" />
+            <h3>Search and Filter</h3>
+          </div>
       <div className="flex items-center gap-1.5 w-full">
         <div className={`explorer-search-input explorer-search-shell relative flex-1 min-w-0 flex items-center ${searchQuery.length > 0 ? 'explorer-search-input-active' : ''}`}>
           {/* Left Magnifying Glass */}
@@ -636,6 +644,8 @@ export default function PrimarySidePanelHeader({
           )}
         </div>
       </ExplorerSearchMenu>
+        </>
+      )}
     </div>
   );
 }

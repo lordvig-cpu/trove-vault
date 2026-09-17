@@ -180,8 +180,7 @@ export default function ExplorerContent({
   onRenameItem,
   position,
 }: ExplorerContentProps) {
-  const { primaryPosition } = useUIPreferences();
-  const effectivePosition = position ?? (primaryPosition === 'right' ? 'right' : 'left');
+  const effectivePosition = position ?? 'left';
 
   // Support both canonical and legacy category prop naming
   const activeExpandedIds = expandedCategoryIds;

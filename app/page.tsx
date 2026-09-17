@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { useUIPreferences } from '@/context/UIPreferencesContext';
 import { ItemRecord } from '@/types/item';
 import { useCollections } from '@/hooks/useCollections';
@@ -12,6 +12,7 @@ import NavigationHeader from '@/components/NavigationHeader';
 import NavigationFooter from '@/components/NavigationFooter';
 import MainContent from '@/components/MainContent';
 import PrimarySidePanel from '@/components/PrimarySidePanel';
+import PrimarySidePanelHeader from '@/components/PrimarySidePanelHeader';
 import SecondarySidePanel from '@/components/SecondarySidePanel';
 import BottomPanel from '@/components/BottomPanel';
 import PanelDockDropZones from '@/components/PanelDockDropZones';
@@ -119,6 +120,7 @@ export default function Home() {
      5. LOCAL VIEWPORT & INTERACTION STATES
      ------------------------------------------------------------------------ */
   const [isLogoHovered, setIsLogoHovered] = useState<boolean>(false);
+  const [isPrimaryFlyoutOpen, setIsPrimaryFlyoutOpen] = useState<boolean>(false);
   const [isPrimarySidePanelOpen, setIsPrimarySidePanelOpen] = useState<boolean>(false);
   const [isSecondaryOpen, setIsSecondaryOpen] = useState<boolean>(false);
   const [isBottomPanelOpen, setIsBottomPanelOpen] = useState<boolean>(false);
@@ -126,84 +128,270 @@ export default function Home() {
   const [primaryPanelWidth, setPrimaryPanelWidth] = useState<number>(304);
   const [secondaryPanelWidth, setSecondaryPanelWidth] = useState<number>(304);
 
+  const [primaryPanelContent, setPrimaryPanelContent] = useState<'empty' | 'explorer' | 'grabbed_content'>('empty');
+  const [secondaryPanelContent, setSecondaryPanelContent] = useState<'empty' | 'explorer' | 'grabbed_content'>('empty');
+
+  const isPrimaryActive = isPinned || isPrimarySidePanelOpen;
   const isSecondaryActive = isSecondaryPinned || isSecondaryOpen;
 
-  // Dynamic mutually exclusive positions
-  const effectivePrimaryPosition = primaryPosition === 'right' ? 'right' : 'left';
-  const effectiveSecondaryPosition = effectivePrimaryPosition === 'left' ? 'right' : 'left';
+  // Fixed physical sidebar positions (Primary is Left, Secondary is Right)
+  const effectivePrimaryPosition = 'left' as const;
+  const effectiveSecondaryPosition = 'right' as const;
 
   // Dynamic occupied widths for main content margin adjustments (only when pinned)
-  const leftOccupiedWidth =
-    (isPinned && effectivePrimaryPosition === 'left' ? primaryPanelWidth : 0) +
-    (isSecondaryPinned && isSecondaryActive && effectiveSecondaryPosition === 'left' ? secondaryPanelWidth : 0);
-
-  const rightOccupiedWidth =
-    (isPinned && effectivePrimaryPosition === 'right' ? primaryPanelWidth : 0) +
-    (isSecondaryPinned && isSecondaryActive && effectiveSecondaryPosition === 'right' ? secondaryPanelWidth : 0);
+  const leftOccupiedWidth = isPinned && isPrimaryActive ? primaryPanelWidth : 0;
+  const rightOccupiedWidth = isSecondaryPinned && isSecondaryActive ? secondaryPanelWidth : 0;
 
   /* ------------------------------------------------------------------------
-     6. PANEL POSITION TOGGLES (Mutually Exclusive Clean Swapping)
+     6. PANEL CONTENT MOVING & SWAPPING (Smooth Fluid Slide Transition)
      ------------------------------------------------------------------------ */
-  const handleTogglePrimaryPosition = useCallback(() => {
-    const nextPrimary = effectivePrimaryPosition === 'left' ? 'right' : 'left';
-    setPrimaryPosition(nextPrimary);
-    setSecondaryPosition(nextPrimary === 'right' ? 'left' : 'right');
-  }, [effectivePrimaryPosition, setPrimaryPosition, setSecondaryPosition]);
+  interface SlidingContentState {
+    content: 'empty' | 'explorer' | 'grabbed_content';
+    secondaryContent?: 'empty' | 'explorer' | 'grabbed_content';
+    from: 'left' | 'right';
+    to: 'left' | 'right';
+    width: number;
+    secondaryWidth: number;
+    isMoving: boolean;
+  }
 
-  const handleToggleSecondaryPosition = useCallback(() => {
-    const nextSecondary = effectiveSecondaryPosition === 'left' ? 'right' : 'left';
-    setSecondaryPosition(nextSecondary);
-    setPrimaryPosition(nextSecondary === 'right' ? 'left' : 'right');
-  }, [effectiveSecondaryPosition, setPrimaryPosition, setSecondaryPosition]);
+  const [slidingState, setSlidingState] = useState<SlidingContentState | null>(null);
+  const slideTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (slideTimeoutRef.current) clearTimeout(slideTimeoutRef.current);
+    };
+  }, []);
+
+  const handleMovePrimaryContent = useCallback(() => {
+    if (primaryPanelContent === 'empty' || slidingState) return;
+
+    const currentPrimary = primaryPanelContent;
+    const currentSecondary = secondaryPanelContent;
+
+    if (!animationsEnabled) {
+      setSecondaryPanelContent(currentPrimary);
+      setPrimaryPanelContent(currentSecondary);
+      setIsSecondaryOpen(true);
+      return;
+    }
+
+    // Open destination sidebar to receive incoming content
+    setIsSecondaryOpen(true);
+    // Temporarily clear static contents while sliding clone animates across
+    setPrimaryPanelContent('empty');
+    setSecondaryPanelContent('empty');
+
+    setSlidingState({
+      content: currentPrimary,
+      secondaryContent: currentSecondary !== 'empty' ? currentSecondary : undefined,
+      from: 'left',
+      to: 'right',
+      width: primaryPanelWidth,
+      secondaryWidth: secondaryPanelWidth,
+      isMoving: false,
+    });
+
+    // Double-rAF ensures browser paints initial starting coordinates before initiating transition
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        setSlidingState((prev) => (prev ? { ...prev, isMoving: true } : null));
+      });
+    });
+
+    if (slideTimeoutRef.current) clearTimeout(slideTimeoutRef.current);
+    slideTimeoutRef.current = setTimeout(() => {
+      setSecondaryPanelContent(currentPrimary);
+      setPrimaryPanelContent(currentSecondary);
+      setSlidingState(null);
+    }, 500);
+  }, [primaryPanelContent, secondaryPanelContent, slidingState, animationsEnabled, primaryPanelWidth, secondaryPanelWidth]);
+
+  const handleMoveSecondaryContent = useCallback(() => {
+    if (secondaryPanelContent === 'empty' || slidingState) return;
+
+    const currentPrimary = primaryPanelContent;
+    const currentSecondary = secondaryPanelContent;
+
+    if (!animationsEnabled) {
+      setPrimaryPanelContent(currentSecondary);
+      setSecondaryPanelContent(currentPrimary);
+      setIsPrimarySidePanelOpen(true);
+      return;
+    }
+
+    // Open destination sidebar to receive incoming content
+    setIsPrimarySidePanelOpen(true);
+    setPrimaryPanelContent('empty');
+    setSecondaryPanelContent('empty');
+
+    setSlidingState({
+      content: currentSecondary,
+      secondaryContent: currentPrimary !== 'empty' ? currentPrimary : undefined,
+      from: 'right',
+      to: 'left',
+      width: secondaryPanelWidth,
+      secondaryWidth: primaryPanelWidth,
+      isMoving: false,
+    });
+
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        setSlidingState((prev) => (prev ? { ...prev, isMoving: true } : null));
+      });
+    });
+
+    if (slideTimeoutRef.current) clearTimeout(slideTimeoutRef.current);
+    slideTimeoutRef.current = setTimeout(() => {
+      setPrimaryPanelContent(currentSecondary);
+      setSecondaryPanelContent(currentPrimary);
+      setSlidingState(null);
+    }, 500);
+  }, [primaryPanelContent, secondaryPanelContent, slidingState, animationsEnabled, primaryPanelWidth, secondaryPanelWidth]);
 
   /* ------------------------------------------------------------------------
      7. PANEL DOCK DRAG & DROP ORCHESTRATION (Pointer Events API)
      ------------------------------------------------------------------------ */
   const handleDropPanel = useCallback(
     (panelId: DockablePanelId, targetZone: DockDropTargetZone) => {
-      if (panelId === 'primary') {
-        if (targetZone === 'left') {
-          setPrimaryPosition('left');
-          setSecondaryPosition('right');
-          setIsPinned(true);
-        } else if (targetZone === 'right') {
-          setPrimaryPosition('right');
-          setSecondaryPosition('left');
-          setIsPinned(true);
+      // 1. Remove from sidebar target
+      if (targetZone === 'remove') {
+        if (panelId === 'primary') {
+          setPrimaryPanelContent('empty');
+        } else if (panelId === 'secondary') {
+          setSecondaryPanelContent('empty');
+        } else if (panelId === 'explorer') {
+          if (primaryPanelContent === 'explorer') setPrimaryPanelContent('empty');
+          if (secondaryPanelContent === 'explorer') setSecondaryPanelContent('empty');
+          setIsPrimaryFlyoutOpen(false);
+        } else if (panelId === 'grabbed_content') {
+          if (primaryPanelContent === 'grabbed_content') setPrimaryPanelContent('empty');
+          if (secondaryPanelContent === 'grabbed_content') setSecondaryPanelContent('empty');
         }
-        // Bottom is disallowed for Explorer (primary) panel
-      } else if (panelId === 'secondary') {
-        if (targetZone === 'left') {
-          setSecondaryPosition('left');
-          setPrimaryPosition('right');
-          setIsSecondaryPinned(true);
-          setIsSecondaryOpen(true);
-        } else if (targetZone === 'right') {
-          setSecondaryPosition('right');
-          setPrimaryPosition('left');
-          setIsSecondaryPinned(true);
-          setIsSecondaryOpen(true);
-        } else if (targetZone === 'bottom') {
-          setIsBottomPanelOpen(true);
+        return;
+      }
+
+      // 2. Dock to Left (Primary Side Bar)
+      if (targetZone === 'left') {
+        const incomingContent: 'empty' | 'explorer' | 'grabbed_content' =
+          panelId === 'explorer'
+            ? 'explorer'
+            : panelId === 'grabbed_content'
+            ? 'grabbed_content'
+            : panelId === 'secondary'
+            ? secondaryPanelContent
+            : primaryPanelContent;
+
+        if (incomingContent === 'empty') {
+          setIsPrimarySidePanelOpen(true);
+          return;
         }
-      } else if (panelId === 'bottom') {
-        if (targetZone === 'left') {
-          // Dragging bottom panel to Left docks Primary to left and opens it
-          setPrimaryPosition('left');
-          setSecondaryPosition('right');
-          setIsPinned(true);
-        } else if (targetZone === 'right') {
-          // Dragging bottom panel to Right docks Secondary to right and opens it
-          setSecondaryPosition('right');
-          setPrimaryPosition('left');
-          setIsSecondaryPinned(true);
+
+        // Direct drag from secondary sidebar header (move / swap)
+        if (panelId === 'secondary') {
+          const currentSecondary = secondaryPanelContent;
+          const currentPrimary = primaryPanelContent;
+          setPrimaryPanelContent(currentSecondary);
+          setSecondaryPanelContent(currentPrimary);
+          setIsPrimarySidePanelOpen(true);
+          return;
+        }
+
+        if (panelId === 'primary') {
+          setIsPrimarySidePanelOpen(true);
+          return;
+        }
+
+        // Incoming is a new dockable item from header / flyout
+        if (
+          primaryPanelContent !== 'empty' &&
+          primaryPanelContent !== incomingContent &&
+          secondaryPanelContent === 'empty'
+        ) {
+          // User-friendly displacement: move existing primary content to empty secondary sidebar
+          const displacedContent = primaryPanelContent;
+          setSecondaryPanelContent(displacedContent);
           setIsSecondaryOpen(true);
-        } else if (targetZone === 'bottom') {
+          setPrimaryPanelContent(incomingContent);
+          setIsPrimarySidePanelOpen(true);
+          setIsPrimaryFlyoutOpen(false);
+        } else {
+          // Standard dock into primary
+          setPrimaryPanelContent(incomingContent);
+          if (secondaryPanelContent === incomingContent) {
+            setSecondaryPanelContent('empty');
+          }
+          setIsPrimarySidePanelOpen(true);
+          setIsPrimaryFlyoutOpen(false);
+        }
+        return;
+      }
+
+      // 3. Dock to Right (Secondary Side Bar)
+      if (targetZone === 'right') {
+        const incomingContent: 'empty' | 'explorer' | 'grabbed_content' =
+          panelId === 'explorer'
+            ? 'explorer'
+            : panelId === 'grabbed_content'
+            ? 'grabbed_content'
+            : panelId === 'primary'
+            ? primaryPanelContent
+            : secondaryPanelContent;
+
+        if (incomingContent === 'empty') {
+          setIsSecondaryOpen(true);
+          return;
+        }
+
+        // Direct drag from primary sidebar header (move / swap)
+        if (panelId === 'primary') {
+          const currentPrimary = primaryPanelContent;
+          const currentSecondary = secondaryPanelContent;
+          setSecondaryPanelContent(currentPrimary);
+          setPrimaryPanelContent(currentSecondary);
+          setIsSecondaryOpen(true);
+          return;
+        }
+
+        if (panelId === 'secondary') {
+          setIsSecondaryOpen(true);
+          return;
+        }
+
+        // Incoming is a new dockable item from header / flyout
+        if (
+          secondaryPanelContent !== 'empty' &&
+          secondaryPanelContent !== incomingContent &&
+          primaryPanelContent === 'empty'
+        ) {
+          // User-friendly displacement: move existing secondary content to empty primary sidebar
+          const displacedContent = secondaryPanelContent;
+          setPrimaryPanelContent(displacedContent);
+          setIsPrimarySidePanelOpen(true);
+          setSecondaryPanelContent(incomingContent);
+          setIsSecondaryOpen(true);
+          setIsPrimaryFlyoutOpen(false);
+        } else {
+          // Standard dock into secondary
+          setSecondaryPanelContent(incomingContent);
+          if (primaryPanelContent === incomingContent) {
+            setPrimaryPanelContent('empty');
+          }
+          setIsSecondaryOpen(true);
+          setIsPrimaryFlyoutOpen(false);
+        }
+        return;
+      }
+
+      // 4. Dock to Bottom Panel
+      if (targetZone === 'bottom') {
+        if (panelId === 'bottom') {
           setIsBottomPanelOpen(true);
         }
       }
     },
-    [setIsPinned, setIsSecondaryPinned, setPrimaryPosition, setSecondaryPosition]
+    [primaryPanelContent, secondaryPanelContent]
   );
 
   const {
@@ -246,6 +434,11 @@ export default function Home() {
           return;
         }
 
+        if (isPrimaryFlyoutOpen) {
+          setIsPrimaryFlyoutOpen(false);
+          return;
+        }
+
         if (isPrimarySidePanelOpen && !isPinned) {
           setIsPrimarySidePanelOpen(false);
           return;
@@ -253,6 +446,12 @@ export default function Home() {
 
         if (isSecondaryOpen && !isSecondaryPinned) {
           setIsSecondaryOpen(false);
+          return;
+        }
+
+        if (isPinned) {
+          setIsPinned(false);
+          setIsPrimarySidePanelOpen(false);
           return;
         }
 
@@ -266,24 +465,37 @@ export default function Home() {
     {
       key: 'k',
       ctrl: true,
+      allowInInputs: true,
       action: (e) => {
         e.preventDefault();
 
-        if (!isPinned && !isPrimarySidePanelOpen) {
-          setIsPrimarySidePanelOpen(true);
+        // Reveal the panel hosting Explorer if closed
+        if (primaryPanelContent === 'explorer') {
+          if (!isPrimaryActive) {
+            setIsPrimarySidePanelOpen(true);
+          }
+        } else if (secondaryPanelContent === 'explorer') {
+          if (!isSecondaryActive) {
+            setIsSecondaryOpen(true);
+          }
+        } else {
+          setIsPrimaryFlyoutOpen(true);
         }
 
-        const targetInputId = isPinned
-          ? 'explorer-search-input-sidebar'
-          : 'explorer-search-input-flyout';
-
-        setTimeout(() => {
-          const searchInput = document.getElementById(targetInputId) as HTMLInputElement | null;
-          if (searchInput) {
-            searchInput.focus();
-            searchInput.select();
+        // Focus the visible search input with retry logic
+        const attemptFocus = (retries = 4) => {
+          const visibleInput = document.querySelector(
+            '.explorer-search-query-input:not([disabled])'
+          ) as HTMLInputElement | null;
+          if (visibleInput) {
+            visibleInput.focus();
+            visibleInput.select();
+          } else if (retries > 0) {
+            setTimeout(() => attemptFocus(retries - 1), 50);
           }
-        }, 50);
+        };
+
+        setTimeout(() => attemptFocus(4), 50);
       },
     },
   ]);
@@ -304,6 +516,7 @@ export default function Home() {
     }
     selectItemWithChildren(item, collectionId);
     if (!isPinned) {
+      setIsPrimaryFlyoutOpen(false);
       setIsPrimarySidePanelOpen(false);
     }
   };
@@ -319,9 +532,9 @@ export default function Home() {
   };
 
   /* ------------------------------------------------------------------------
-     10. MEMOIZED EXPLORER SUB-COMPONENTS
+     10. MEMOIZED EXPLORER SUB-COMPONENTS & PANEL CONTENT RENDERERS
      ------------------------------------------------------------------------ */
-  const explorerTreeElement = (
+  const renderExplorerTree = (pos: 'left' | 'right') => (
     <ExplorerContent
       unifiedForest={filteredForest}
       searchQuery={searchQuery}
@@ -331,7 +544,10 @@ export default function Home() {
       onToggleCategory={handleToggleCategory}
       onSelectCollection={(colId) => {
         setActiveCollectionId(colId);
-        if (!isPinned) setIsPrimarySidePanelOpen(false);
+        if (!isPinned) {
+          setIsPrimaryFlyoutOpen(false);
+          setIsPrimarySidePanelOpen(false);
+        }
       }}
       onSelectItem={handleTreeSelectItem}
       onSelectSearchResult={selectItemWithChildren}
@@ -346,18 +562,53 @@ export default function Home() {
       onDeleteItem={handleTriggerDeleteItem}
       onRenameCollection={renameCollection}
       onRenameItem={renameItem}
-      position={effectivePrimaryPosition}
+      position={pos}
     />
   );
 
+  const renderPanelBody = (content: 'empty' | 'explorer' | 'grabbed_content', pos: 'left' | 'right') => {
+    if (content === 'explorer') {
+      return renderExplorerTree(pos);
+    }
+    if (content === 'grabbed_content') {
+      return (
+        <div className="p-4 flex flex-col items-center justify-center text-center gap-3 h-full min-h-[220px] select-none">
+          <div className="w-12 h-12 rounded-2xl bg-[color-mix(in_oklch,var(--brand-primary)_15%,transparent)] border border-[color-mix(in_oklch,var(--brand-primary)_35%,transparent)] flex items-center justify-center text-2xl shadow-sm">
+            📦
+          </div>
+          <div className="flex flex-col gap-1">
+            <div className="text-sm font-bold text-[var(--content-primary,#e2e8f0)] uppercase tracking-wider">
+              Grabbed Content
+            </div>
+            <p className="text-xs text-[var(--text-muted,#94a3b8)] max-w-[200px] leading-relaxed">
+              This is docked content.
+            </p>
+          </div>
+        </div>
+      );
+    }
+    return null;
+  };
+
+  const getPanelTitle = (content: 'empty' | 'explorer' | 'grabbed_content', defaultTitle: string) => {
+    if (content === 'explorer') return 'EXPLORER';
+    if (content === 'grabbed_content') return 'GRABBED CONTENT';
+    return defaultTitle;
+  };
+
   const explorerFlyoutPanel = (
     <PrimarySidePanel
+      title="EXPLORER"
       variant="flyout"
-      position={effectivePrimaryPosition}
-      onTogglePosition={handleTogglePrimaryPosition}
-      isOpen={isPrimarySidePanelOpen}
-      onClose={() => setIsPrimarySidePanelOpen(false)}
-      onTogglePin={handleTogglePin}
+      position="left"
+      isOpen={isPrimaryFlyoutOpen}
+      onClose={() => setIsPrimaryFlyoutOpen(false)}
+      onTogglePin={() => {
+        setIsPinned(true);
+        setIsPrimarySidePanelOpen(true);
+        setIsPrimaryFlyoutOpen(false);
+        setPrimaryPanelContent('explorer');
+      }}
       activeTab={activeExplorerTab}
       onTabChange={setActiveExplorerTab}
       isAnyCategoryExpanded={isAnyCategoryExpanded}
@@ -372,20 +623,34 @@ export default function Home() {
       filterCollectionIds={filterCollectionIds}
       onToggleFilterCollection={handleToggleFilterCollection}
       onClearCollectionFilters={handleClearCollectionFilters}
-      onHandlePointerDown={(e) => startDockDrag('primary', e)}
+      onHandlePointerDown={(e) => startDockDrag('explorer', e)}
     >
-      {explorerTreeElement}
+      {renderExplorerTree('left')}
     </PrimarySidePanel>
   );
 
   const explorerSidebarPanel = (
     <PrimarySidePanel
+      title={getPanelTitle(primaryPanelContent, 'PRIMARY SIDE PANEL')}
+      showSearchFilter={primaryPanelContent === 'explorer'}
       variant="sidebar"
-      position={effectivePrimaryPosition}
-      onTogglePosition={handleTogglePrimaryPosition}
-      isOpen={isPrimarySidePanelOpen}
-      onClose={() => setIsPrimarySidePanelOpen(false)}
-      onTogglePin={handleTogglePin}
+      position="left"
+      onTogglePosition={primaryPanelContent !== 'empty' ? handleMovePrimaryContent : undefined}
+      isOpen={isPrimaryActive}
+      onOpen={() => setIsPrimarySidePanelOpen(true)}
+      onClose={() => {
+        setIsPrimarySidePanelOpen(false);
+        setIsPinned(false);
+      }}
+      onTogglePin={() => {
+        if (!isPinned) {
+          setIsPinned(true);
+          setIsPrimarySidePanelOpen(true);
+        } else {
+          setIsPinned(false);
+          setIsPrimarySidePanelOpen(true);
+        }
+      }}
       activeTab={activeExplorerTab}
       onTabChange={setActiveExplorerTab}
       isAnyCategoryExpanded={isAnyCategoryExpanded}
@@ -404,7 +669,7 @@ export default function Home() {
       onClearCollectionFilters={handleClearCollectionFilters}
       onHandlePointerDown={(e) => startDockDrag('primary', e)}
     >
-      {explorerTreeElement}
+      {renderPanelBody(primaryPanelContent, 'left')}
     </PrimarySidePanel>
   );
 
@@ -435,7 +700,10 @@ export default function Home() {
             activeCollectionId={activeCollectionId}
             onSelectCollection={(newId) => {
               setActiveCollectionId(newId);
-              if (!isPinned) setIsPrimarySidePanelOpen(false);
+              if (!isPinned) {
+                setIsPrimaryFlyoutOpen(false);
+                setIsPrimarySidePanelOpen(false);
+              }
             }}
             onCollectionsUpdated={() => fetchAllData()}
             isDropdownOpen={isColDropdownOpen}
@@ -446,9 +714,11 @@ export default function Home() {
                 openTemplateManager(activeCollection.id, activeCollection.name);
               }
             }}
-            isPrimarySidePanelOpen={isPrimarySidePanelOpen}
-            onTogglePrimarySidePanel={() => setIsPrimarySidePanelOpen(!isPrimarySidePanelOpen)}
+            isPrimarySidePanelOpen={isPrimaryFlyoutOpen}
+            onTogglePrimarySidePanel={() => setIsPrimaryFlyoutOpen(!isPrimaryFlyoutOpen)}
             unpinnedPrimaryPanel={explorerFlyoutPanel}
+            onStartGrabbedContentDrag={(e) => startDockDrag('grabbed_content', e)}
+            onStartExplorerDrag={(e) => startDockDrag('explorer', e)}
             onAddNewItem={() => {
               openCreateItem(activeCollectionId, null);
             }}
@@ -469,9 +739,11 @@ export default function Home() {
             draggingPanel={draggingPanel}
             hoveredZone={hoveredZone}
             cursorPos={cursorPos}
+            primaryPanelContent={primaryPanelContent}
+            secondaryPanelContent={secondaryPanelContent}
           />
 
-          {/* Primary Side Panel (Explorer Tree) - Sits Above Main Content (z-50) */}
+          {/* Primary Side Panel (Explorer Tree / Grabbed Content) - Sits Above Main Content (z-50) */}
           {explorerSidebarPanel}
 
           {/* Center Main Stage / Detail Canvas (Full-Width Base Layer z-10) */}
@@ -488,7 +760,7 @@ export default function Home() {
             <MainContent
               selectedItem={selectedItem}
               activeCollectionId={activeCollectionId}
-              isBlurred={(!isPinned && isPrimarySidePanelOpen) || (!isSecondaryPinned && isSecondaryOpen)}
+              isBlurred={isPrimaryFlyoutOpen}
               onAddSubItem={openCreateItem}
               onEditItem={handleTriggerEditItem}
               onDeleteItem={handleTriggerDeleteItem}
@@ -504,12 +776,14 @@ export default function Home() {
             onHandlePointerDown={(e) => startDockDrag('bottom', e)}
           />
 
-          {/* Secondary Side Panel (Details / Inspector Drawer) - Sits Above Main Content (z-40) */}
+          {/* Secondary Side Panel (Details / Inspector Drawer / Grabbed Content) - Sits Above Main Content (z-40) */}
           <SecondarySidePanel
+            title={getPanelTitle(secondaryPanelContent, 'SECONDARY SIDE PANEL')}
+            showSearchFilter={secondaryPanelContent === 'explorer'}
             isOpen={isSecondaryActive}
             isPinned={isSecondaryPinned}
-            position={effectiveSecondaryPosition}
-            onTogglePosition={handleToggleSecondaryPosition}
+            position="right"
+            onTogglePosition={secondaryPanelContent !== 'empty' ? handleMoveSecondaryContent : undefined}
             onOpen={() => setIsSecondaryOpen(true)}
             onClose={() => {
               setIsSecondaryOpen(false);
@@ -521,13 +795,104 @@ export default function Home() {
                 setIsSecondaryOpen(true);
               } else {
                 setIsSecondaryPinned(false);
-                setIsSecondaryOpen(false);
+                setIsSecondaryOpen(true);
               }
             }}
+            activeTab={activeExplorerTab}
+            onTabChange={setActiveExplorerTab}
+            isAnyCategoryExpanded={isAnyCategoryExpanded}
+            onToggleAllCategories={handleToggleAllCategories}
+            searchQuery={searchQuery}
+            onSearchChange={setSearchQuery}
             reservedWidth={isPinned ? primaryPanelWidth : 0}
             onWidthChange={setSecondaryPanelWidth}
+            onAddNewItem={() => openCreateItem(null, null)}
+            onAddNewCollection={() => openCreateCollection(null)}
+            collections={allCollections}
+            filterCollectionIds={filterCollectionIds}
+            onToggleFilterCollection={handleToggleFilterCollection}
+            onClearCollectionFilters={handleClearCollectionFilters}
             onHandlePointerDown={(e) => startDockDrag('secondary', e)}
-          />
+          >
+            {renderPanelBody(secondaryPanelContent, 'right')}
+          </SecondarySidePanel>
+
+          {/* Smooth Sliding Content Transition Layer */}
+          {slidingState && (
+            <aside
+              style={{
+                width: `${slidingState.width}px`,
+                left: slidingState.isMoving
+                  ? slidingState.to === 'right'
+                    ? `calc(100% - ${slidingState.width}px)`
+                    : '0px'
+                  : slidingState.from === 'left'
+                  ? '0px'
+                  : `calc(100% - ${slidingState.width}px)`,
+                zIndex: 55,
+              }}
+              className={[
+                'primary-side-panel absolute top-0 bottom-0 flex flex-col pointer-events-none shadow-2xl',
+                slidingState.to === 'right' ? 'primary-side-panel-docked-right' : 'primary-side-panel-docked-left',
+                animationsEnabled
+                  ? 'transition-[left,transform] duration-500 ease-in-out'
+                  : 'transition-none',
+              ].join(' ')}
+            >
+              <PrimarySidePanelHeader
+                title={getPanelTitle(slidingState.content, 'SIDE PANEL')}
+                showSearchFilter={slidingState.content === 'explorer'}
+                variant="sidebar"
+                isPinned={slidingState.to === 'left' ? isPinned : isSecondaryPinned}
+                position={slidingState.to}
+                activeTab={activeExplorerTab}
+                searchQuery={searchQuery}
+                onTogglePin={() => {}}
+                onClose={() => {}}
+              />
+              <div className={`flex-1 min-h-0 overflow-hidden ${slidingState.content ? 'px-2.5 pt-0 pb-6' : 'p-0'} min-w-0 primary-panel-scroll flex flex-col`}>
+                {renderPanelBody(slidingState.content, slidingState.to)}
+              </div>
+            </aside>
+          )}
+
+          {slidingState?.secondaryContent && (
+            <aside
+              style={{
+                width: `${slidingState.secondaryWidth}px`,
+                left: slidingState.isMoving
+                  ? slidingState.to === 'right'
+                    ? '0px'
+                    : `calc(100% - ${slidingState.secondaryWidth}px)`
+                  : slidingState.from === 'left'
+                  ? `calc(100% - ${slidingState.secondaryWidth}px)`
+                  : '0px',
+                zIndex: 54,
+              }}
+              className={[
+                'secondary-side-panel absolute top-0 bottom-0 flex flex-col pointer-events-none shadow-2xl',
+                slidingState.to === 'right' ? 'secondary-side-panel-left' : 'secondary-side-panel-right',
+                animationsEnabled
+                  ? 'transition-[left,transform] duration-500 ease-in-out'
+                  : 'transition-none',
+              ].join(' ')}
+            >
+              <PrimarySidePanelHeader
+                title={getPanelTitle(slidingState.secondaryContent, 'SIDE PANEL')}
+                showSearchFilter={slidingState.secondaryContent === 'explorer'}
+                variant="sidebar"
+                isPinned={slidingState.to === 'right' ? isPinned : isSecondaryPinned}
+                position={slidingState.to === 'right' ? 'left' : 'right'}
+                activeTab={activeExplorerTab}
+                searchQuery={searchQuery}
+                onTogglePin={() => {}}
+                onClose={() => {}}
+              />
+              <div className={`flex-1 min-h-0 overflow-hidden ${slidingState.secondaryContent ? 'px-2.5 pt-0 pb-6' : 'p-0'} min-w-0 primary-panel-scroll flex flex-col`}>
+                {renderPanelBody(slidingState.secondaryContent, slidingState.to === 'right' ? 'left' : 'right')}
+              </div>
+            </aside>
+          )}
         </div>
 
         {/* Tier 3: Bottom Navigation Footer & Status */}
@@ -535,8 +900,15 @@ export default function Home() {
           <NavigationFooter
             activeCollectionName={activeCollection?.name}
             totalItemsCount={allItems.length}
-            isPrimaryPinned={isPinned}
-            onTogglePrimary={() => togglePin()}
+            isPrimaryOpen={isPrimaryActive}
+            onTogglePrimary={() => {
+              if (isPrimaryActive) {
+                setIsPrimarySidePanelOpen(false);
+                setIsPinned(false);
+              } else {
+                setIsPrimarySidePanelOpen(true);
+              }
+            }}
             isBottomOpen={isBottomPanelOpen}
             onToggleBottom={() => setIsBottomPanelOpen(!isBottomPanelOpen)}
             isSecondaryOpen={isSecondaryActive}
