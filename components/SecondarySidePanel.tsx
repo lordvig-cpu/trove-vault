@@ -1,6 +1,7 @@
 'use client';
 
 import React, { ReactNode } from 'react';
+import { createPortal } from 'react-dom';
 import {
   ChevronLeftIcon,
   ChevronRightIcon,
@@ -45,11 +46,12 @@ const MIN_WORKSPACE_GAP = 48;
    2. MAIN COMPONENT: SecondarySidePanel
    Collapsible drawer positioned along the right or left seam of the workspace.
    Features an animated pull-tab, tactile drag-to-resize seam, and width reset.
+   Supports both unpinned floating drawer and pinned layout docking.
    ========================================================================== */
 
 export default function SecondarySidePanel({
   isOpen,
-  isPinned,
+  isPinned = false,
   position = 'right',
   onTogglePosition,
   onOpen,
@@ -64,10 +66,9 @@ export default function SecondarySidePanel({
   /* ------------------------------------------------------------------------
      2.1 USER PREFERENCES & RESIZING HOOK
      ------------------------------------------------------------------------ */
-  const { animationsEnabled } = useUIPreferences();
+  const { animationsEnabled, isHydrated } = useUIPreferences();
 
-  const effectivePinned = isPinned ?? isOpen;
-  const handlePinAction = onTogglePin ?? onClose;
+  const isUnpinnedOpen = isOpen && !isPinned;
 
   const {
     panelWidth,
@@ -92,11 +93,28 @@ export default function SecondarySidePanel({
   const tabHiddenClass = position === 'left' ? 'secondary-panel-tab-hidden-left' : 'secondary-panel-tab-hidden-right';
   const tabPositionClass = position === 'left' ? 'secondary-panel-expand-tab-left' : 'secondary-panel-expand-tab-right';
   const dockedClosedClass = position === 'left' ? 'secondary-panel-docked-closed-left' : 'secondary-panel-docked-closed-right';
+  const asideZIndex = isUnpinnedOpen ? 50 : 30;
 
   return (
     <>
       {/* --------------------------------------------------------------------
-          2.2 FLOATING EXPAND TAB (Visible When Collapsed)
+          2.2 UNPINNED CLICK-OUTSIDE OVERLAY
+          -------------------------------------------------------------------- */}
+      {isHydrated && isUnpinnedOpen &&
+        createPortal(
+          <div
+            onClick={onClose}
+            className={[
+              'fixed inset-0 top-14 bottom-14 z-[35] panel-overlay',
+              animationsEnabled ? 'animate-mount-fade' : '',
+            ].join(' ')}
+            aria-hidden="true"
+          />,
+          document.body
+        )}
+
+      {/* --------------------------------------------------------------------
+          2.3 FLOATING EXPAND TAB (Visible When Collapsed)
           -------------------------------------------------------------------- */}
       <button
         type="button"
@@ -122,15 +140,16 @@ export default function SecondarySidePanel({
       </button>
 
       {/* --------------------------------------------------------------------
-          2.3 DOCKED SECONDARY INSPECTOR PANEL CONTAINER
+          2.4 DOCKED SECONDARY INSPECTOR PANEL CONTAINER
           -------------------------------------------------------------------- */}
       <aside
         style={{
           width: `${panelWidth}px`,
           left: position === 'left' ? '0px' : `calc(100% - ${panelWidth}px)`,
+          zIndex: asideZIndex,
         }}
         className={[
-          'secondary-side-panel absolute top-0 bottom-0 z-30 flex flex-col',
+          'secondary-side-panel absolute top-0 bottom-0 flex flex-col',
           positionClass,
           transitionClass,
           isOpen ? 'secondary-panel-docked-open' : `${dockedClosedClass} pointer-events-none`,
@@ -228,12 +247,12 @@ export default function SecondarySidePanel({
               {/* Pin / Unpin Button (replaces close X button to mirror primary sidebar) */}
               <button
                 type="button"
-                onClick={handlePinAction}
+                onClick={onTogglePin ?? onClose}
                 className="secondary-side-panel-btn group"
-                title={effectivePinned ? 'Unpin Secondary Side Bar' : 'Pin Secondary Side Bar'}
-                aria-label={effectivePinned ? 'Unpin Secondary Side Bar' : 'Pin Secondary Side Bar'}
+                title={isPinned ? 'Unpin Secondary Side Bar' : 'Pin Secondary Side Bar'}
+                aria-label={isPinned ? 'Unpin Secondary Side Bar' : 'Pin Secondary Side Bar'}
               >
-                {!effectivePinned ? (
+                {!isPinned ? (
                   <PinOutlineIcon
                     position={position}
                     className="w-3.5 h-3.5 text-[var(--explorer-action-icon,rgba(109,170,209,0.85))] group-hover:text-white"

@@ -107,6 +107,8 @@ export default function Home() {
     toggleSecondaryPin,
     setIsSecondaryPinned,
     isAudioEnabled,
+    animationsEnabled,
+    isHydrated,
     primaryPosition,
     setPrimaryPosition,
     secondaryPosition,
@@ -118,14 +120,26 @@ export default function Home() {
      ------------------------------------------------------------------------ */
   const [isLogoHovered, setIsLogoHovered] = useState<boolean>(false);
   const [isPrimarySidePanelOpen, setIsPrimarySidePanelOpen] = useState<boolean>(false);
+  const [isSecondaryOpen, setIsSecondaryOpen] = useState<boolean>(false);
   const [isBottomPanelOpen, setIsBottomPanelOpen] = useState<boolean>(false);
   const [isColDropdownOpen, setIsColDropdownOpen] = useState<boolean>(false);
   const [primaryPanelWidth, setPrimaryPanelWidth] = useState<number>(304);
   const [secondaryPanelWidth, setSecondaryPanelWidth] = useState<number>(304);
 
+  const isSecondaryActive = isSecondaryPinned || isSecondaryOpen;
+
   // Dynamic mutually exclusive positions
   const effectivePrimaryPosition = primaryPosition === 'right' ? 'right' : 'left';
   const effectiveSecondaryPosition = effectivePrimaryPosition === 'left' ? 'right' : 'left';
+
+  // Dynamic occupied widths for main content margin adjustments (only when pinned)
+  const leftOccupiedWidth =
+    (isPinned && effectivePrimaryPosition === 'left' ? primaryPanelWidth : 0) +
+    (isSecondaryPinned && isSecondaryActive && effectiveSecondaryPosition === 'left' ? secondaryPanelWidth : 0);
+
+  const rightOccupiedWidth =
+    (isPinned && effectivePrimaryPosition === 'right' ? primaryPanelWidth : 0) +
+    (isSecondaryPinned && isSecondaryActive && effectiveSecondaryPosition === 'right' ? secondaryPanelWidth : 0);
 
   /* ------------------------------------------------------------------------
      6. PANEL POSITION TOGGLES (Mutually Exclusive Clean Swapping)
@@ -163,10 +177,12 @@ export default function Home() {
           setSecondaryPosition('left');
           setPrimaryPosition('right');
           setIsSecondaryPinned(true);
+          setIsSecondaryOpen(true);
         } else if (targetZone === 'right') {
           setSecondaryPosition('right');
           setPrimaryPosition('left');
           setIsSecondaryPinned(true);
+          setIsSecondaryOpen(true);
         } else if (targetZone === 'bottom') {
           setIsBottomPanelOpen(true);
         }
@@ -181,6 +197,7 @@ export default function Home() {
           setSecondaryPosition('right');
           setPrimaryPosition('left');
           setIsSecondaryPinned(true);
+          setIsSecondaryOpen(true);
         } else if (targetZone === 'bottom') {
           setIsBottomPanelOpen(true);
         }
@@ -234,8 +251,15 @@ export default function Home() {
           return;
         }
 
+        if (isSecondaryOpen && !isSecondaryPinned) {
+          setIsSecondaryOpen(false);
+          return;
+        }
+
         if (isSecondaryPinned) {
           setIsSecondaryPinned(false);
+          setIsSecondaryOpen(false);
+          return;
         }
       },
     },
@@ -451,11 +475,20 @@ export default function Home() {
           {explorerSidebarPanel}
 
           {/* Center Main Stage / Detail Canvas (Full-Width Base Layer z-10) */}
-          <div className="w-full h-full flex-1 min-w-0 relative z-10">
+          <div
+            style={{
+              marginLeft: `${leftOccupiedWidth}px`,
+              marginRight: `${rightOccupiedWidth}px`,
+            }}
+            className={[
+              'w-full h-full flex-1 min-w-0 relative z-10',
+              animationsEnabled && isHydrated ? 'transition-[margin] duration-500 ease-in-out' : 'transition-none',
+            ].join(' ')}
+          >
             <MainContent
               selectedItem={selectedItem}
               activeCollectionId={activeCollectionId}
-              isBlurred={!isPinned && isPrimarySidePanelOpen}
+              isBlurred={(!isPinned && isPrimarySidePanelOpen) || (!isSecondaryPinned && isSecondaryOpen)}
               onAddSubItem={openCreateItem}
               onEditItem={handleTriggerEditItem}
               onDeleteItem={handleTriggerDeleteItem}
@@ -473,13 +506,24 @@ export default function Home() {
 
           {/* Secondary Side Panel (Details / Inspector Drawer) - Sits Above Main Content (z-40) */}
           <SecondarySidePanel
-            isOpen={isSecondaryPinned}
+            isOpen={isSecondaryActive}
             isPinned={isSecondaryPinned}
             position={effectiveSecondaryPosition}
             onTogglePosition={handleToggleSecondaryPosition}
-            onOpen={() => setIsSecondaryPinned(true)}
-            onClose={() => setIsSecondaryPinned(false)}
-            onTogglePin={toggleSecondaryPin}
+            onOpen={() => setIsSecondaryOpen(true)}
+            onClose={() => {
+              setIsSecondaryOpen(false);
+              setIsSecondaryPinned(false);
+            }}
+            onTogglePin={() => {
+              if (!isSecondaryPinned) {
+                setIsSecondaryPinned(true);
+                setIsSecondaryOpen(true);
+              } else {
+                setIsSecondaryPinned(false);
+                setIsSecondaryOpen(false);
+              }
+            }}
             reservedWidth={isPinned ? primaryPanelWidth : 0}
             onWidthChange={setSecondaryPanelWidth}
             onHandlePointerDown={(e) => startDockDrag('secondary', e)}
@@ -495,8 +539,15 @@ export default function Home() {
             onTogglePrimary={() => togglePin()}
             isBottomOpen={isBottomPanelOpen}
             onToggleBottom={() => setIsBottomPanelOpen(!isBottomPanelOpen)}
-            isSecondaryOpen={isSecondaryPinned}
-            onToggleSecondary={() => toggleSecondaryPin()}
+            isSecondaryOpen={isSecondaryActive}
+            onToggleSecondary={() => {
+              if (isSecondaryActive) {
+                setIsSecondaryOpen(false);
+                setIsSecondaryPinned(false);
+              } else {
+                setIsSecondaryOpen(true);
+              }
+            }}
           />
         </div>
       </div>
