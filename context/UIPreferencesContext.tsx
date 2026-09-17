@@ -41,6 +41,11 @@ interface UIPreferencesContextType {
   togglePrimaryPin: () => void;
   setIsPrimaryPinned: (val: boolean) => void;
 
+  // Secondary Side Panel: Tracks docked sidebar vs collapsed state
+  isSecondaryPinned: boolean;
+  toggleSecondaryPin: () => void;
+  setIsSecondaryPinned: (val: boolean) => void;
+
   // Workspace Layout Positions (VS Code-style panel docking)
   primaryPosition: PrimarySidebarPosition;
   setPrimaryPosition: (pos: PrimarySidebarPosition) => void;
@@ -70,6 +75,7 @@ const STORAGE_KEYS = {
   AUDIO: 'uc_audio_enabled',
   THEME: 'uc_theme_preset',
   PINNED: 'uc_primary_sidebar_pinned',
+  SECONDARY_PINNED: 'uc_secondary_sidebar_pinned',
   PRIMARY_POSITION: 'uc_primary_sidebar_position',
   SECONDARY_POSITION: 'uc_secondary_sidebar_position',
   BOTTOM_POSITION: 'uc_bottom_panel_position',
@@ -103,6 +109,11 @@ export function UIPreferencesProvider({ children }: { children: React.ReactNode 
 
   const [isPinned, setIsPinned] = useLocalStorage<boolean>(
     STORAGE_KEYS.PINNED,
+    false
+  );
+
+  const [isSecondaryPinned, setIsSecondaryPinned] = useLocalStorage<boolean>(
+    STORAGE_KEYS.SECONDARY_PINNED,
     false
   );
 
@@ -166,6 +177,10 @@ export function UIPreferencesProvider({ children }: { children: React.ReactNode 
     setIsPinned((prev) => !prev);
   };
 
+  const toggleSecondaryPin = () => {
+    setIsSecondaryPinned((prev) => !prev);
+  };
+
   const togglePrimaryPosition = () => {
     setPrimaryPosition((prev) => (prev === 'left' ? 'right' : 'left'));
   };
@@ -192,6 +207,9 @@ export function UIPreferencesProvider({ children }: { children: React.ReactNode 
         isPrimaryPinned: isPinned,
         togglePrimaryPin: togglePin,
         setIsPrimaryPinned: setIsPinned,
+        isSecondaryPinned,
+        toggleSecondaryPin,
+        setIsSecondaryPinned,
         primaryPosition,
         setPrimaryPosition,
         togglePrimaryPosition,

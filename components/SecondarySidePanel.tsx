@@ -8,6 +8,8 @@ import {
   ResetWidthRightIcon,
   DockLeftPanelIcon,
   DockRightPanelIcon,
+  PinOutlineIcon,
+  PinFilledIcon,
 } from '@/components/icons/SystemIcons';
 import { useUIPreferences } from '@/context/UIPreferencesContext';
 import { useResizablePanel } from '@/hooks/useResizablePanel';
@@ -22,10 +24,12 @@ import { SecondarySidebarPosition } from '@/types/layout';
  */
 interface SecondarySidePanelProps {
   isOpen: boolean;
+  isPinned?: boolean;
   position?: SecondarySidebarPosition;
   onTogglePosition?: () => void;
   onOpen?: () => void;
   onClose: () => void;
+  onTogglePin?: () => void;
   title?: string;
   reservedWidth?: number;
   onWidthChange?: (width: number) => void;
@@ -45,10 +49,12 @@ const MIN_WORKSPACE_GAP = 48;
 
 export default function SecondarySidePanel({
   isOpen,
+  isPinned,
   position = 'right',
   onTogglePosition,
   onOpen,
   onClose,
+  onTogglePin,
   title = "Secondary Side Bar",
   reservedWidth = 0,
   onWidthChange,
@@ -59,6 +65,9 @@ export default function SecondarySidePanel({
      2.1 USER PREFERENCES & RESIZING HOOK
      ------------------------------------------------------------------------ */
   const { animationsEnabled } = useUIPreferences();
+
+  const effectivePinned = isPinned ?? isOpen;
+  const handlePinAction = onTogglePin ?? onClose;
 
   const {
     panelWidth,
@@ -180,57 +189,64 @@ export default function SecondarySidePanel({
         {/* Top Header with Draggable Grip and Side Toggle */}
         <div className="secondary-side-panel-header px-2.5 pt-2 pb-0 gap-2 w-full shrink-0 select-none">
           <div className="explorer-header-toolbar flex items-center justify-between gap-1 w-full shrink-0">
-          {/* Draggable Grip Handle & Title */}
-          <div
-            onPointerDown={isOpen ? onHandlePointerDown : undefined}
-            className={`flex items-center gap-1.5 flex-1 min-w-0 py-0.5 ${
-              isOpen ? 'cursor-grab active:cursor-grabbing hover:opacity-90' : ''
-            }`}
-            title={isOpen ? 'Drag to dock panel (Left, Right, Bottom)' : undefined}
-          >
-            <span className="text-[10px] text-muted opacity-60 flex gap-0.5 tracking-tighter shrink-0" aria-hidden="true">
-              ⋮⋮
-            </span>
-            <span className="explorer-header-title text-xs font-bold uppercase tracking-wider px-0.5 truncate">
-              {title}
-            </span>
-          </div>
+            {/* Draggable Grip Handle & Title */}
+            <div
+              onPointerDown={onHandlePointerDown}
+              className="flex items-center gap-1.5 flex-1 min-w-0 py-0.5 cursor-grab active:cursor-grabbing hover:opacity-90"
+              title="Drag to dock panel (Left, Right, Bottom)"
+            >
+              <span className="text-[10px] text-muted opacity-60 flex gap-0.5 tracking-tighter shrink-0" aria-hidden="true">
+                ⋮⋮
+              </span>
+              <span className="explorer-header-title text-xs font-bold uppercase tracking-wider px-0.5 truncate">
+                {title}
+              </span>
+            </div>
 
-          <div className="flex items-center gap-1 shrink-0">
-            {/* Move to Opposite Side Toggle Button */}
-            {onTogglePosition && (
+            <div className="flex items-center gap-1 shrink-0">
+              {/* Move to Opposite Side Toggle Button */}
+              {onTogglePosition && (
+                <button
+                  type="button"
+                  onClick={onTogglePosition}
+                  className="secondary-side-panel-btn group"
+                  title={
+                    position === 'right'
+                      ? 'Move Secondary Side Bar to Left'
+                      : 'Move Secondary Side Bar to Right'
+                  }
+                  aria-label="Toggle panel side"
+                >
+                  {position === 'right' ? (
+                    <DockLeftPanelIcon className="w-3.5 h-3.5 text-[var(--explorer-action-icon,rgba(109,170,209,0.85))] group-hover:text-white" isOpen={true} />
+                  ) : (
+                    <DockRightPanelIcon className="w-3.5 h-3.5 text-[var(--explorer-action-icon,rgba(109,170,209,0.85))] group-hover:text-white" isOpen={true} />
+                  )}
+                </button>
+              )}
+
+              {/* Pin / Unpin Button (replaces close X button to mirror primary sidebar) */}
               <button
                 type="button"
-                onClick={onTogglePosition}
+                onClick={handlePinAction}
                 className="secondary-side-panel-btn group"
-                title={
-                  position === 'right'
-                    ? 'Move Secondary Side Bar to Left'
-                    : 'Move Secondary Side Bar to Right'
-                }
-                aria-label="Toggle panel side"
+                title={effectivePinned ? 'Unpin Secondary Side Bar' : 'Pin Secondary Side Bar'}
+                aria-label={effectivePinned ? 'Unpin Secondary Side Bar' : 'Pin Secondary Side Bar'}
               >
-                {position === 'right' ? (
-                  <DockLeftPanelIcon className="w-3.5 h-3.5 text-[var(--explorer-action-icon,rgba(109,170,209,0.85))] group-hover:text-white" isOpen={true} />
+                {!effectivePinned ? (
+                  <PinOutlineIcon
+                    position={position}
+                    className="w-3.5 h-3.5 text-[var(--explorer-action-icon,rgba(109,170,209,0.85))] group-hover:text-white"
+                  />
                 ) : (
-                  <DockRightPanelIcon className="w-3.5 h-3.5 text-[var(--explorer-action-icon,rgba(109,170,209,0.85))] group-hover:text-white" isOpen={true} />
+                  <PinFilledIcon
+                    position={position}
+                    className="w-3.5 h-3.5 text-[var(--explorer-action-icon,rgba(109,170,209,0.85))] group-hover:text-white"
+                  />
                 )}
               </button>
-            )}
-
-            {/* Collapse Trigger */}
-            <button
-              type="button"
-              onClick={onClose}
-              className="secondary-side-panel-btn group"
-              title="Close Secondary Side Bar"
-            >
-              <span className="inline-block origin-center transition-all duration-200 ease-out group-hover:scale-115 text-xs text-[var(--explorer-action-icon,rgba(109,170,209,0.85))] group-hover:text-white px-1 select-none">
-                ✕
-              </span>
-            </button>
+            </div>
           </div>
-        </div>
 
           <hr className="explorer-header-divider" />
         </div>

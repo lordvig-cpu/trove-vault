@@ -103,6 +103,9 @@ export default function Home() {
     isPinned,
     togglePin,
     setIsPinned,
+    isSecondaryPinned,
+    toggleSecondaryPin,
+    setIsSecondaryPinned,
     isAudioEnabled,
     primaryPosition,
     setPrimaryPosition,
@@ -115,7 +118,6 @@ export default function Home() {
      ------------------------------------------------------------------------ */
   const [isLogoHovered, setIsLogoHovered] = useState<boolean>(false);
   const [isPrimarySidePanelOpen, setIsPrimarySidePanelOpen] = useState<boolean>(false);
-  const [isSecondarySidePanelOpen, setIsSecondarySidePanelOpen] = useState<boolean>(false);
   const [isBottomPanelOpen, setIsBottomPanelOpen] = useState<boolean>(false);
   const [isColDropdownOpen, setIsColDropdownOpen] = useState<boolean>(false);
   const [primaryPanelWidth, setPrimaryPanelWidth] = useState<number>(304);
@@ -160,11 +162,11 @@ export default function Home() {
         if (targetZone === 'left') {
           setSecondaryPosition('left');
           setPrimaryPosition('right');
-          setIsSecondarySidePanelOpen(true);
+          setIsSecondaryPinned(true);
         } else if (targetZone === 'right') {
           setSecondaryPosition('right');
           setPrimaryPosition('left');
-          setIsSecondarySidePanelOpen(true);
+          setIsSecondaryPinned(true);
         } else if (targetZone === 'bottom') {
           setIsBottomPanelOpen(true);
         }
@@ -178,13 +180,13 @@ export default function Home() {
           // Dragging bottom panel to Right docks Secondary to right and opens it
           setSecondaryPosition('right');
           setPrimaryPosition('left');
-          setIsSecondarySidePanelOpen(true);
+          setIsSecondaryPinned(true);
         } else if (targetZone === 'bottom') {
           setIsBottomPanelOpen(true);
         }
       }
     },
-    [setIsPinned, setPrimaryPosition, setSecondaryPosition]
+    [setIsPinned, setIsSecondaryPinned, setPrimaryPosition, setSecondaryPosition]
   );
 
   const {
@@ -232,8 +234,8 @@ export default function Home() {
           return;
         }
 
-        if (isSecondarySidePanelOpen) {
-          setIsSecondarySidePanelOpen(false);
+        if (isSecondaryPinned) {
+          setIsSecondaryPinned(false);
         }
       },
     },
@@ -366,7 +368,7 @@ export default function Home() {
       onToggleAllCategories={handleToggleAllCategories}
       searchQuery={searchQuery}
       onSearchChange={setSearchQuery}
-      reservedWidth={isSecondarySidePanelOpen ? secondaryPanelWidth : 0}
+      reservedWidth={isSecondaryPinned ? secondaryPanelWidth : 0}
       onWidthChange={setPrimaryPanelWidth}
       loading={loading}
       error={error}
@@ -471,11 +473,13 @@ export default function Home() {
 
           {/* Secondary Side Panel (Details / Inspector Drawer) - Sits Above Main Content (z-40) */}
           <SecondarySidePanel
-            isOpen={isSecondarySidePanelOpen}
+            isOpen={isSecondaryPinned}
+            isPinned={isSecondaryPinned}
             position={effectiveSecondaryPosition}
             onTogglePosition={handleToggleSecondaryPosition}
-            onOpen={() => setIsSecondarySidePanelOpen(true)}
-            onClose={() => setIsSecondarySidePanelOpen(false)}
+            onOpen={() => setIsSecondaryPinned(true)}
+            onClose={() => setIsSecondaryPinned(false)}
+            onTogglePin={toggleSecondaryPin}
             reservedWidth={isPinned ? primaryPanelWidth : 0}
             onWidthChange={setSecondaryPanelWidth}
             onHandlePointerDown={(e) => startDockDrag('secondary', e)}
@@ -491,8 +495,8 @@ export default function Home() {
             onTogglePrimary={() => togglePin()}
             isBottomOpen={isBottomPanelOpen}
             onToggleBottom={() => setIsBottomPanelOpen(!isBottomPanelOpen)}
-            isSecondaryOpen={isSecondarySidePanelOpen}
-            onToggleSecondary={() => setIsSecondarySidePanelOpen(!isSecondarySidePanelOpen)}
+            isSecondaryOpen={isSecondaryPinned}
+            onToggleSecondary={() => toggleSecondaryPin()}
           />
         </div>
       </div>

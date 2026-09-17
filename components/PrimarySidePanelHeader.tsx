@@ -184,9 +184,15 @@ export default function PrimarySidePanelHeader({
             title={isPinned ? 'Unpin Primary Side Bar' : 'Pin Primary Side Bar'}
           >
             {variant === 'flyout' || !isPinned ? (
-              <PinOutlineIcon className="w-3.5 h-3.5 text-[var(--explorer-action-icon,rgba(109,170,209,0.85))] group-hover:text-white" />
+              <PinOutlineIcon
+                position={position}
+                className="w-3.5 h-3.5 text-[var(--explorer-action-icon,rgba(109,170,209,0.85))] group-hover:text-white"
+              />
             ) : (
-              <PinFilledIcon className="w-3.5 h-3.5 text-[var(--explorer-action-icon,rgba(109,170,209,0.85))] group-hover:text-white" />
+              <PinFilledIcon
+                position={position}
+                className="w-3.5 h-3.5 text-[var(--explorer-action-icon,rgba(109,170,209,0.85))] group-hover:text-white"
+              />
             )}
           </button>
 

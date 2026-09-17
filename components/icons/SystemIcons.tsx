@@ -141,7 +141,13 @@ export const ChevronDownIcon = ({ className }: { className?: string }) => (
 /* Pin Icons: Shared across side panels for docking and unpinning workflows */
 
 // Unpinned: Upright outline -> fills primary & rotates 45° to preview the pinned state
-export const PinOutlineIcon = ({ className = 'w-4 h-4' }: { className?: string }) => (
+interface PinIconProps {
+  className?: string;
+  position?: 'left' | 'right';
+}
+
+// Unpinned: upright outline pin -> rotates 45° to preview pinning
+export const PinOutlineIcon = ({ className = 'w-4 h-4', position = 'left' }: PinIconProps) => (
   <svg
     viewBox="0 0 24 24"
     fill="transparent"
@@ -149,14 +155,16 @@ export const PinOutlineIcon = ({ className = 'w-4 h-4' }: { className?: string }
     strokeWidth="1.8"
     strokeLinecap="round"
     strokeLinejoin="round"
-    className={`origin-center icon-pin-outline transition-all duration-300 ease-out group-hover:rotate-45 ${className}`}
+    className={`origin-center icon-pin-outline transition-all duration-300 ease-out ${
+      position === 'right' ? 'group-hover:-rotate-45' : 'group-hover:rotate-45'
+    } ${className}`}
   >
     <path d="M8 3H16L15 8L18 11V13H13V19L12 22L11 19V13H6V11L9 8L8 3Z" />
   </svg>
 );
 
 // Pinned: 45° solid pin -> clears fill to transparent outline & rotates upright to preview unpinning
-export const PinFilledIcon = ({ className = 'w-4 h-4' }: { className?: string }) => (
+export const PinFilledIcon = ({ className = 'w-4 h-4', position = 'left' }: PinIconProps) => (
   <svg
     viewBox="0 0 24 24"
     fill="currentColor"
@@ -164,7 +172,9 @@ export const PinFilledIcon = ({ className = 'w-4 h-4' }: { className?: string })
     strokeWidth="1.8"
     strokeLinecap="round"
     strokeLinejoin="round"
-    className={`origin-center icon-pin-filled rotate-45 transition-all duration-300 ease-out group-hover:rotate-0 ${className}`}
+    className={`origin-center icon-pin-filled ${
+      position === 'right' ? '-rotate-45' : 'rotate-45'
+    } transition-all duration-300 ease-out group-hover:rotate-0 ${className}`}
   >
     <path d="M8 3H16L15 8L18 11V13H13V19L12 22L11 19V13H6V11L9 8L8 3Z" />
   </svg>

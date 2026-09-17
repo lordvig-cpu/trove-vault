@@ -58,7 +58,6 @@ export function FilterIcon({ className = 'w-3.5 h-3.5', isActive = false }: Expl
       className={`origin-center transition-all duration-200 ${className}`}
     >
       <path d="M4 5h16l-6.5 7.5v5l-3 1.5v-6.5L4 5z"/>
-      {/*<polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />*/}
     </svg>
   );
 }
@@ -139,8 +138,12 @@ export function ChevronRightIcon({ className = 'w-[10px] h-[10px]' }: ExplorerIc
   );
 }
 
+interface ExplorerPinIconProps extends ExplorerIconProps {
+  position?: 'left' | 'right';
+}
+
 // Unpinned: Upright outline -> fills primary & rotates 45° to preview the pinned state
-export function PinOutlineIcon({ className = 'w-4 h-4' }: ExplorerIconProps) {
+export function PinOutlineIcon({ className = 'w-4 h-4', position = 'left' }: ExplorerPinIconProps) {
   return (
     <svg
       viewBox="0 0 24 24"
@@ -149,7 +152,9 @@ export function PinOutlineIcon({ className = 'w-4 h-4' }: ExplorerIconProps) {
       strokeWidth="1.8"
       strokeLinecap="round"
       strokeLinejoin="round"
-      className={`origin-center icon-pin-outline transition-all duration-300 ease-out group-hover:rotate-45 ${className}`}
+      className={`origin-center icon-pin-outline transition-all duration-300 ease-out ${
+        position === 'right' ? 'group-hover:-rotate-45' : 'group-hover:rotate-45'
+      } ${className}`}
     >
       <path d="M8 3H16L15 8L18 11V13H13V19L12 22L11 19V13H6V11L9 8L8 3Z" />
     </svg>
@@ -157,7 +162,7 @@ export function PinOutlineIcon({ className = 'w-4 h-4' }: ExplorerIconProps) {
 }
 
 // Pinned: 45° solid pin -> clears fill to transparent outline & rotates upright to preview unpinning
-export function PinFilledIcon({ className = 'w-4 h-4' }: ExplorerIconProps) {
+export function PinFilledIcon({ className = 'w-4 h-4', position = 'left' }: ExplorerPinIconProps) {
   return (
     <svg
       viewBox="0 0 24 24"
@@ -166,7 +171,9 @@ export function PinFilledIcon({ className = 'w-4 h-4' }: ExplorerIconProps) {
       strokeWidth="1.8"
       strokeLinecap="round"
       strokeLinejoin="round"
-      className={`origin-center icon-pin-filled rotate-45 transition-all duration-300 ease-out group-hover:rotate-0 ${className}`}
+      className={`origin-center icon-pin-filled ${
+        position === 'right' ? '-rotate-45' : 'rotate-45'
+      } transition-all duration-300 ease-out group-hover:rotate-0 ${className}`}
     >
       <path d="M8 3H16L15 8L18 11V13H13V19L12 22L11 19V13H6V11L9 8L8 3Z" />
     </svg>

@@ -76,8 +76,8 @@ export default function MainContent({
             {/* Sticky Upper Atmosphere Vignette */}
             {selectedItem && <div className="sticky-shadow-top" aria-hidden="true" />}
 
-            {/* Main Stage Record Canvas */}
-            <div className="max-w-5xl mx-auto p-6 w-full flex-1 pt-10 pb-10">
+            {/* Main Stage Record Canvas (100% Full Width) */}
+            <div className="w-full p-6 flex-1 pt-8 pb-10">
               <ItemDetailView
                 item={selectedItem}
                 onAddSubItem={(parent) => {
