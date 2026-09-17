@@ -9,6 +9,7 @@ import {
   FilterIcon,
   SlidersHorizontalIcon,
   SearchGlassIcon,
+  SearchClearIcon,
 } from '@/components/icons/ExplorerIcons';
 import {
   DockLeftPanelIcon,
@@ -86,6 +87,8 @@ export default function PrimarySidePanelHeader({
   const [menuCoords, setMenuCoords] = useState({ top: 0, left: 0 });
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const triggerBtnRef = useRef<HTMLButtonElement>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+  const headerContainerRef = useRef<HTMLDivElement>(null);
 
   const searchPattern = searchQuery.trim();
   const hasSearchFilter = searchPattern.length > 0;
@@ -101,15 +104,22 @@ export default function PrimarySidePanelHeader({
 
   const handleToggleAdvancedSearch = () => {
     if (!showAdvancedSearch && triggerBtnRef.current) {
-      const rect = triggerBtnRef.current.getBoundingClientRect();
-      const isRightDocked = position === 'right' || rect.left > window.innerWidth / 2;
+      const btnRect = triggerBtnRef.current.getBoundingClientRect();
+      const panelRect = headerContainerRef.current
+        ? headerContainerRef.current.getBoundingClientRect()
+        : btnRect;
+      const isRightDocked = position === 'right' || panelRect.left > window.innerWidth / 2;
       const SEARCH_MENU_WIDTH = 280; // 17.5rem = 280px
 
+      // Left Dock: overlap = 14px (menu left starts 14px inside panel's right border)
+      // Right Dock: overlap = 11px (menu right ends 11px inside panel's left border, moved out 3px as requested)
+      const calculatedLeft = isRightDocked
+        ? Math.round(panelRect.left + 11 - SEARCH_MENU_WIDTH)
+        : Math.round(panelRect.right - 14);
+
       setMenuCoords({
-        top: Math.round(rect.top - 4),
-        left: isRightDocked
-          ? Math.round(rect.left - SEARCH_MENU_WIDTH + 4)
-          : Math.round(rect.right - 4),
+        top: Math.round(btnRect.top - 4),
+        left: calculatedLeft,
       });
       setShowAdvancedSearch(true);
     } else {
@@ -118,11 +128,14 @@ export default function PrimarySidePanelHeader({
   };
 
   return (
-    <div className="primary-side-panel-header px-2.5 pt-2 pb-0 flex flex-col gap-2 shrink-0">
+    <div
+      ref={headerContainerRef}
+      className="primary-side-panel-header px-2.5 pt-2 pb-0 flex flex-col gap-2 shrink-0"
+    >
       {/* ------------------------------------------------------------------
           ROW 1: Top Utility Bar: Explorer Title & Panel Dock Controls
           ------------------------------------------------------------------ */}
-      <div className="flex items-center justify-between gap-1 w-full shrink-0 h-6 select-none">
+      <div className="explorer-header-toolbar flex items-center justify-between gap-1 w-full shrink-0 select-none">
         {/* Draggable Grip Handle & Title */}
         <div
           onPointerDown={isPinned ? onHandlePointerDown : undefined}
@@ -136,8 +149,8 @@ export default function PrimarySidePanelHeader({
               ⋮⋮
             </span>
           )}
-          <span className="text-xs font-bold uppercase tracking-wider explorer-panel-muted px-0.5 truncate">
-            Primary Side Bar
+          <span className="explorer-header-title text-xs font-bold uppercase tracking-wider px-0.5 truncate">
+            EXPLORER
           </span>
         </div>
 
@@ -200,8 +213,13 @@ export default function PrimarySidePanelHeader({
       {/* ------------------------------------------------------------------
           ROW 2: Search Bar + Advanced Search Sliders Button
           ------------------------------------------------------------------ */}
+      <hr className="explorer-header-divider" />
+      <div className="explorer-section-heading">
+        <hr aria-hidden="true" />
+        <h3>Search and Filter</h3>
+      </div>
       <div className="flex items-center gap-1.5 w-full">
-        <div className="relative flex-1 min-w-0 flex items-center">
+        <div className={`explorer-search-input explorer-search-shell relative flex-1 min-w-0 flex items-center ${searchQuery.length > 0 ? 'explorer-search-input-active' : ''}`}>
           {/* Left Magnifying Glass */}
           <span className="absolute left-2 top-1/2 -translate-y-1/2 pointer-events-none flex items-center justify-center select-none">
             <SearchGlassIcon
@@ -212,38 +230,36 @@ export default function PrimarySidePanelHeader({
             />
           </span>
 
-          <input
-            id={`explorer-search-input-${variant}`}
-            type="text"
-            value={searchQuery}
-            onChange={(e) => onSearchChange(e.target.value)}
-            onFocus={() => setIsSearchFocused(true)}
-            onBlur={() => setIsSearchFocused(false)}
-            title="Enter search [shortcut: Ctrl-K]"
-            placeholder={hasCollectionFilters ? 'Search filtered collection...' : 'Search...'}
-            className={[
-              'explorer-search-input w-full !pl-8',
-              isFilterActive && searchQuery ? '!pr-14' : isFilterActive || searchQuery ? '!pr-8' : '!pr-3',
-              searchQuery.length > 0 ? 'explorer-search-input-active' : '',
-            ].join(' ')}
-          />
-
-          {/* Right-aligned Actions inside Search Input */}
-          <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1.5">
-            {/* Clear Search Text Button */}
-            {searchQuery && (
+          <div className={searchQuery.length > 0 ? 'explorer-search-query explorer-search-query-pill' : 'explorer-search-query'}>
+            <input
+              ref={searchInputRef}
+              id={`explorer-search-input-${variant}`}
+              type="text"
+              aria-label="Search items"
+              value={searchQuery}
+              onChange={(e) => onSearchChange(e.target.value)}
+              onFocus={() => setIsSearchFocused(true)}
+              onBlur={() => setIsSearchFocused(false)}
+              title="Enter search [shortcut: Ctrl-K]"
+              placeholder={hasCollectionFilters ? 'Search filtered collection...' : 'Search...'}
+              className="explorer-search-query-input"
+              style={searchQuery.length > 0 ? { width: `${searchQuery.length + 0.5}ch` } : undefined}
+            />
+            {searchQuery.length > 0 && (
               <button
                 type="button"
-                onClick={() => onSearchChange('')}
-                className="explorer-panel-control !border-0 transition-colors text-xs cursor-pointer p-0.5"
-                title="Clear search text"
+                onClick={() => { onSearchChange(''); searchInputRef.current?.focus(); }}
+                className="explorer-search-query-clear"
+                aria-label="Clear search term"
+                title="Clear search term"
               >
-                <span className="inline-block origin-center transition-transform duration-200 hover:scale-115">
-                  ✕
-                </span>
+                <SearchClearIcon />
               </button>
             )}
+          </div>
 
+          {/* Applied-filter toggle stays beside the divided advanced controls. */}
+          <div className="ml-auto shrink-0 flex items-center">
             {/* Filter Funnel Toggle Icon */}
             {isFilterActive && (
               <button
@@ -253,35 +269,33 @@ export default function PrimarySidePanelHeader({
                   showAppliedFilters ? 'explorer-panel-accent' : 'explorer-panel-primary'
                 }`}
                 title={showAppliedFilters ? 'Hide applied filters' : 'Show applied filters'}
+                aria-label={showAppliedFilters ? 'Hide applied filters' : 'Show applied filters'}
+                aria-expanded={showAppliedFilters}
               >
                 <FilterIcon className="w-3.5 h-3.5" isActive={showAppliedFilters} />
               </button>
             )}
           </div>
-        </div>
-
-        {/* Sliders Button for Advanced Search Popup */}
+          {/* Advanced search sits inside the bar, after a subtle divider. */}
         <button
           ref={triggerBtnRef}
           type="button"
           onClick={handleToggleAdvancedSearch}
-          className={`p-1.5 rounded-lg border transition cursor-pointer relative shrink-0 flex items-center justify-center ${
-            showAdvancedSearch
-              ? 'explorer-panel-control-active'
-              : isFilterActive
-              ? 'explorer-panel-control-active'
-              : 'explorer-panel-control'
-          }`}
+          className="explorer-search-advanced relative shrink-0"
           title="Advanced Search & Filters"
+          aria-label="Advanced Search & Filters"
+          aria-expanded={showAdvancedSearch}
+          data-filter-active={isFilterActive}
         >
           <SlidersHorizontalIcon
-            className="w-3.5 h-3.5 text-[var(--brand-secondary-amber)]"
-            isActive={true}
+            className="w-3.5 h-3.5"
+            isActive={showAdvancedSearch || isFilterActive}
           />
           {isFilterActive && !showAdvancedSearch && (
             <span className="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-[var(--brand-secondary-amber)] animate-pulse" />
           )}
         </button>
+        </div>
       </div>
 
       {/* ------------------------------------------------------------------
@@ -361,6 +375,10 @@ export default function PrimarySidePanelHeader({
       {/* ------------------------------------------------------------------
           ROW 4: View Tabs & Contextual Create Action (Seated on baseline)
           ------------------------------------------------------------------ */}
+      <div className="explorer-section-heading">
+        <hr aria-hidden="true" />
+        <h3>{activeTab === 'items' ? 'Browse Items' : 'Browse Collections'}</h3>
+      </div>
       <div className="flex items-end justify-between gap-1 w-full shrink-0 -mb-[1px]">
         {/* Left: View Mode Paper Folder Tabs */}
         <div role="tablist" aria-label="Explorer views" className="flex items-center relative">
@@ -619,4 +637,3 @@ export default function PrimarySidePanelHeader({
     </div>
   );
 }
-

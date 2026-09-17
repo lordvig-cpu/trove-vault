@@ -33,6 +33,7 @@ export function useExplorerActionMenu(
      ------------------------------------------------------------------------ */
   const timeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
   const activeGearRectRef = useRef<DOMRect | null>(null);
+  const activeTargetElRef = useRef<HTMLElement | null>(null);
 
   /* ------------------------------------------------------------------------
      2.2 LOCAL MENU & INTERACTION STATES
@@ -65,28 +66,38 @@ export function useExplorerActionMenu(
      2.4 VIEWPORT GEOMETRY & CLAMPING
      Calculates viewport top/left coordinates. Clamps upwards if the menu would
      otherwise clip underneath the bottom navigation bar.
-     Supports both Left and Right panel docking orientations.
+     Aligns menu precisely to the panel seam with consistent tucked overlap.
      ------------------------------------------------------------------------ */
   const computeCoordinates = useCallback(
-    (rect: DOMRect, menuHeight: number) => {
+    (gearRect: DOMRect, menuHeight: number, targetEl?: HTMLElement | null) => {
       const bottomNavReserve = 64; // Height of bottom status bar + padding buffer
       const maxAllowedTop = window.innerHeight - menuHeight - bottomNavReserve;
       const MENU_WIDTH = 224; // 14rem width defined in ExplorerActionMenu.css
 
       // Align header slightly above trigger gear icon (-4px offset)
-      let calculatedTop = Math.round(rect.top - 4);
+      let calculatedTop = Math.round(gearRect.top - 4);
 
       // Clamp upwards if overflow would occur
       if (calculatedTop > maxAllowedTop) {
         calculatedTop = Math.max(16, maxAllowedTop);
       }
 
-      // If docked on right (or in right half of screen), flyout opens to the left
-      const isRightDocked = position === 'right' || rect.left > window.innerWidth / 2;
+      // Find the parent panel boundary for exact seam alignment
+      const panelEl =
+        targetEl?.closest?.('.primary-side-panel') ||
+        (typeof document !== 'undefined'
+          ? (document.querySelector('.primary-side-panel') as HTMLElement | null)
+          : null);
+      const panelRect = panelEl ? panelEl.getBoundingClientRect() : gearRect;
 
+      // If docked on right (or in right half of screen), flyout opens to the left
+      const isRightDocked = position === 'right' || panelRect.left > window.innerWidth / 2;
+
+      // Left Dock: overlap = 14px (menu left starts 14px inside panel's right border)
+      // Right Dock: overlap = 11px (menu right ends 11px inside panel's left border)
       const calculatedLeft = isRightDocked
-        ? Math.round(rect.left - MENU_WIDTH - 6) // Clear to the left of the gear trigger
-        : Math.round(rect.right + 6); // +6px horizontal clearance beyond scrollbar to the right
+        ? Math.round(panelRect.left + 11 - MENU_WIDTH)
+        : Math.round(panelRect.right - 14);
 
       return {
         top: calculatedTop,
@@ -109,9 +120,10 @@ export function useExplorerActionMenu(
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
       const rect = e.currentTarget.getBoundingClientRect();
       activeGearRectRef.current = rect;
+      activeTargetElRef.current = e.currentTarget;
 
       const height = customHeight ?? defaultMenuHeight;
-      setMenuCoords(computeCoordinates(rect, height));
+      setMenuCoords(computeCoordinates(rect, height, e.currentTarget));
 
       // Broadcast event so other tree rows close their open popovers
       window.dispatchEvent(
@@ -130,7 +142,13 @@ export function useExplorerActionMenu(
   useEffect(() => {
     if (!isMenuOpen || !activeGearRectRef.current) return;
     const expandedHeight = defaultMenuHeight + (isRenaming ? 42 : 0);
-    setMenuCoords(computeCoordinates(activeGearRectRef.current, expandedHeight));
+    setMenuCoords(
+      computeCoordinates(
+        activeGearRectRef.current,
+        expandedHeight,
+        activeTargetElRef.current
+      )
+    );
   }, [isRenaming, isMenuOpen, defaultMenuHeight, computeCoordinates]);
 
   /**

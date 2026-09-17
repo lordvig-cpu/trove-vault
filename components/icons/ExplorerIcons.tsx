@@ -5,6 +5,16 @@ interface ExplorerIconProps {
   isActive?: boolean;
 }
 
+// Clear the editable search pill.
+export function SearchClearIcon({ className = 'w-3 h-3' }: ExplorerIconProps) {
+  return (
+    <svg className={className} viewBox="0 0 12 12" fill="none" stroke="currentColor"
+      strokeWidth="1.5" strokeLinecap="round" aria-hidden="true" focusable="false">
+      <path d="M3 3l6 6M9 3l-6 6" />
+    </svg>
+  );
+}
+
 // Horizontal equalizer / tuning sliders (Advanced Search Trigger)
 export function SlidersHorizontalIcon({ className = 'w-3.5 h-3.5', isActive = false }: ExplorerIconProps) {
   return (

@@ -75,15 +75,8 @@ export default function ExplorerActionMenu({
   // Avoid rendering a portal during SSR or before document.body is available.
   if (!shouldRender || !mounted || typeof document === 'undefined') return null;
 
-  // Keep left-docked menus tucked 10px farther beneath the sidebar seam.
-  const adjustedLeft =
-    effectivePosition === 'right'
-      ? isPinned
-        ? left - 25
-        : left - 15
-      : isPinned
-      ? left + 15
-      : left + 5;
+  // Menu coordinates already compute exact seam positioning
+  const adjustedLeft = left;
 
   const animationClass = !animationsEnabled
     ? 'menuNoAnimation'

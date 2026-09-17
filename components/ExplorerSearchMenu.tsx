@@ -112,8 +112,8 @@ export default function ExplorerSearchMenu({
     ? 'searchMenuSlideOut'
     : 'searchMenuSlideIn';
 
-  // Match the action menu's overlap beneath the left sidebar seam.
-  const adjustedLeft = effectivePosition === 'right' ? left - 15 : left + 5;
+  // Menu coordinates already account for panel width and docking side
+  const adjustedLeft = left;
 
   return createPortal(
     <div

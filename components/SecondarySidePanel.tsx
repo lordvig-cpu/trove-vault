@@ -178,7 +178,8 @@ export default function SecondarySidePanel({
         )}
 
         {/* Top Header with Draggable Grip and Side Toggle */}
-        <div className="secondary-side-panel-header px-2.5 pt-2 pb-2 flex items-center justify-between gap-1 w-full shrink-0 h-10 select-none">
+        <div className="secondary-side-panel-header px-2.5 pt-2 pb-0 gap-2 w-full shrink-0 select-none">
+          <div className="explorer-header-toolbar flex items-center justify-between gap-1 w-full shrink-0">
           {/* Draggable Grip Handle & Title */}
           <div
             onPointerDown={isOpen ? onHandlePointerDown : undefined}
@@ -190,7 +191,7 @@ export default function SecondarySidePanel({
             <span className="text-[10px] text-muted opacity-60 flex gap-0.5 tracking-tighter shrink-0" aria-hidden="true">
               ⋮⋮
             </span>
-            <span className="text-xs font-bold uppercase tracking-wider explorer-panel-muted px-0.5 truncate">
+            <span className="explorer-header-title text-xs font-bold uppercase tracking-wider px-0.5 truncate">
               {title}
             </span>
           </div>
@@ -229,6 +230,9 @@ export default function SecondarySidePanel({
               </span>
             </button>
           </div>
+        </div>
+
+          <hr className="explorer-header-divider" />
         </div>
 
         {/* Panel Scrollable Body */}
