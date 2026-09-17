@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import UnifiedExplorerTree, { UnifiedCollectionNode } from '@/components/UnifiedExplorerTree';
 import {
   ExplorerActionsProvider,
@@ -13,6 +13,7 @@ import {
 import { ItemRecord } from '@/types/item';
 import { CollectionRecord } from '@/types/collection';
 import { useUIPreferences } from '@/context/UIPreferencesContext';
+import { getSingleSearchHighlight, STANDALONE_COLLECTION_ID } from '@/lib/explorerUtils';
 
 /* ==========================================================================
    1. TYPE DEFINITIONS & INTERFACES
@@ -47,6 +48,7 @@ export interface ExplorerContentProps {
   onToggleCategory?: (id: number, expand: boolean) => void;
   onSelectCollection: (id: number) => void;
   onSelectItem: (item: ItemRecord, collectionId: number | null) => void;
+  onSelectSearchResult?: (item: ItemRecord, collectionId: number | null) => void;
   onAddSubItem: (collectionId: number | null, parentItemId?: number | null) => void;
   onEditTemplate?: (categoryId: number) => void;
   onEditItem: (item: ItemRecord, collectionId: number | null) => void;
@@ -167,6 +169,7 @@ export default function ExplorerContent({
   onToggleCategory,
   onSelectCollection,
   onSelectItem,
+  onSelectSearchResult,
   onAddSubItem,
   onEditTemplate,
   onEditItem,
@@ -215,7 +218,24 @@ export default function ExplorerContent({
     ? new Set([...(activeExpandedIds || []), ...searchExpandedIds])
     : activeExpandedIds;
 
+  const searchHighlight = useMemo(
+    () => getSingleSearchHighlight(filteredForest, searchQuery),
+    [filteredForest, searchQuery]
+  );
+
+  // Load the sole match without invoking click behavior that closes the flyout.
+  useEffect(() => {
+    if (!searchHighlight || searchHighlight.itemId === selectedItemId || !onSelectSearchResult) return;
+
+    const collectionId = searchHighlight.collectionIds.values().next().value;
+    onSelectSearchResult(
+      searchHighlight.item,
+      collectionId === STANDALONE_COLLECTION_ID ? null : collectionId ?? null
+    );
+  }, [searchHighlight, selectedItemId, onSelectSearchResult]);
+
   const selectionValue: ExplorerSelectionContextValue = {
+    searchHighlight,
     activeCollectionId,
     selectedItemId,
     expandedCategoryIds: effectiveExpandedIds,

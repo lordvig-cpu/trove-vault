@@ -19,6 +19,7 @@ import ExplorerContent from '@/components/ExplorerContent';
 import ModalContainers from '@/components/ModalContainers';
 import DynamicWatermark from '@/components/DynamicWatermark';
 import { filterExplorerForest, ExplorerTab } from '@/lib/filterExplorerForest';
+import { itemMatchesQuery } from '@/lib/explorerUtils';
 
 export interface UniversalSearchResultItem extends ItemRecord {
   collection_name?: string;
@@ -270,6 +271,11 @@ export default function Home() {
   };
 
   const handleTreeSelectItem = (item: ItemRecord, collectionId: number | null) => {
+    // Clear the search in the same update so its sole match cannot override this click.
+    const pattern = searchQuery.trim();
+    if (pattern && !itemMatchesQuery(item, pattern)) {
+      setSearchQuery('');
+    }
     selectItemWithChildren(item, collectionId);
     if (!isPinned) {
       setIsPrimarySidePanelOpen(false);
@@ -302,6 +308,7 @@ export default function Home() {
         if (!isPinned) setIsPrimarySidePanelOpen(false);
       }}
       onSelectItem={handleTreeSelectItem}
+      onSelectSearchResult={selectItemWithChildren}
       onAddSubItem={openCreateItem}
       onEditTemplate={(categoryId: number) => {
         const templateId = Math.abs(categoryId);

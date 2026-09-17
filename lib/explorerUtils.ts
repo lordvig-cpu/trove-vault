@@ -6,6 +6,44 @@ import { SearchScope } from '@/components/NavigationHeader';
 
 export const STANDALONE_COLLECTION_ID = 0;
 
+export interface ExplorerSearchHighlight {
+  itemId: number;
+  item: ItemRecord;
+  collectionIds: Set<number>;
+  ancestorItemIds: Set<number>;
+}
+
+/** Count actual item matches, excluding ancestors retained only for context. */
+export function getSingleSearchHighlight(
+  forest: UnifiedCollectionNode[],
+  query: string
+): ExplorerSearchHighlight | null {
+  const trimmed = query.trim().toLowerCase();
+  if (!trimmed) return null;
+
+  const matches = new Map<number, ExplorerSearchHighlight>();
+  const visitItem = (item: ItemRecord, collectionId: number, ancestors: number[]) => {
+    if (itemMatchesQuery(item, trimmed)) {
+      const match = matches.get(item.id) ?? {
+        itemId: item.id,
+        item,
+        collectionIds: new Set<number>(),
+        ancestorItemIds: new Set<number>(),
+      };
+      match.collectionIds.add(collectionId);
+      ancestors.forEach((id) => match.ancestorItemIds.add(id));
+      matches.set(item.id, match);
+    }
+    item.children?.forEach((child) => visitItem(child, collectionId, [...ancestors, item.id]));
+  };
+  const visitCollection = (node: UnifiedCollectionNode) => {
+    node.items.forEach((item) => visitItem(item, node.id, []));
+    node.subCollections.forEach(visitCollection);
+  };
+  forest.forEach(visitCollection);
+  return matches.size === 1 ? matches.values().next().value! : null;
+}
+
 /**
  * Traverses parent item relationships upwards to determine all collections
  * an item belongs to (or inherits from parent ancestors).

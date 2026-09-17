@@ -80,15 +80,16 @@ function UnifiedExplorerTreeItem({
   collectionId: number | null;
   depth: number;
 }) {
-  const { selectedItemId, onSelectItem, position = 'left' } = useExplorerSelection();
+  const { selectedItemId, searchHighlight, onSelectItem, position = 'left' } = useExplorerSelection();
   const isRightSide = position === 'right';
   const [isOpen, setIsOpen] = useState(true);
   const [displayLimit, setDisplayLimit] = useState(CHUNK_SIZE);
   const menu = useExplorerActionMenu(`item-${item.id}`, 215, position);
-  const isSelected = selectedItemId === item.id;
+  const isSelected = (searchHighlight?.itemId ?? selectedItemId) === item.id;
+  const effectiveIsOpen = isOpen || !!searchHighlight?.ancestorItemIds.has(item.id);
   const childrenList = item.children || [];
   const hasSubItems = childrenList.length > 0;
-  const visibleChildren = childrenList.slice(0, displayLimit);
+  const visibleChildren = searchHighlight ? childrenList : childrenList.slice(0, displayLimit);
   const remainingChildren = childrenList.length - visibleChildren.length;
   const typeIcon = getItemTypeIcon(item);
 
@@ -142,7 +143,7 @@ function UnifiedExplorerTreeItem({
             !hasSubItems && 'tree-chevron-leaf',
           ].filter(Boolean).join(' ')}
         >
-          {isOpen ? <ChevronDownIcon /> : <ChevronRightIcon />}
+          {effectiveIsOpen ? <ChevronDownIcon /> : <ChevronRightIcon />}
         </button>
 
         <span className="w-4 h-4 flex items-center justify-center text-[13px] leading-none shrink-0 select-none">
@@ -169,7 +170,7 @@ function UnifiedExplorerTreeItem({
         position={position}
       />
 
-      {isOpen && hasSubItems && (
+      {effectiveIsOpen && hasSubItems && (
         <div className="explorer-tree-branch border-l space-y-0.5 ml-[13.5px] pl-2.5 my-0.5 flex flex-col min-w-0">
           {visibleChildren.map((child) => (
             <UnifiedExplorerTreeItem
@@ -201,6 +202,7 @@ export default function UnifiedExplorerTree({
 }: UnifiedExplorerTreeProps) {
   const {
     activeCollectionId,
+    searchHighlight,
     expandedCategoryIds,
     onToggleCategory,
     onSelectCollection,
@@ -226,10 +228,12 @@ export default function UnifiedExplorerTree({
   const rawItems = collection.items || [];
   const rawSubCollections = collection.subCollections || [];
   const hasChildren = rawSubCollections.length > 0 || rawItems.length > 0;
-  const visibleItems = rawItems.slice(0, displayLimit);
+  const visibleItems = searchHighlight ? rawItems : rawItems.slice(0, displayLimit);
   const remainingItems = rawItems.length - visibleItems.length;
 
-  const isActiveCollection = activeCollectionId === collection.id;
+  const isActiveCollection = searchHighlight
+    ? searchHighlight.collectionIds.has(collection.id)
+    : activeCollectionId === collection.id;
   const stickyTop = depth * 28;
   const stickyZIndex = 20 - depth;
 

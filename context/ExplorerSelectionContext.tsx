@@ -2,8 +2,10 @@
 
 import React, { createContext, useContext } from 'react';
 import { ItemRecord } from '@/types/item';
+import type { ExplorerSearchHighlight } from '@/lib/explorerUtils';
 
 export interface ExplorerSelectionContextValue {
+  searchHighlight?: ExplorerSearchHighlight | null;
   activeCollectionId: number | null;
   selectedItemId: number | null;
   expandedCategoryIds?: Set<number>;

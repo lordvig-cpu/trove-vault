@@ -75,15 +75,15 @@ export default function ExplorerActionMenu({
   // Avoid rendering a portal during SSR or before document.body is available.
   if (!shouldRender || !mounted || typeof document === 'undefined') return null;
 
-  // Horizontal correction to clear the sidebar seam while maintaining overlap with the panel
+  // Keep left-docked menus tucked 10px farther beneath the sidebar seam.
   const adjustedLeft =
     effectivePosition === 'right'
       ? isPinned
         ? left - 25
         : left - 15
       : isPinned
-      ? left + 25
-      : left + 15;
+      ? left + 15
+      : left + 5;
 
   const animationClass = !animationsEnabled
     ? 'menuNoAnimation'

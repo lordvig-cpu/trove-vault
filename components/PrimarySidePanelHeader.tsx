@@ -19,6 +19,7 @@ import CollectionFilterTree from '@/components/CollectionFilterTree';
 import { CollectionRecord } from '@/types/collection';
 import { ExplorerTab } from '@/lib/filterExplorerForest';
 import { PrimarySidebarPosition } from '@/types/layout';
+import { useUIPreferences } from '@/context/UIPreferencesContext';
 
 /* ==========================================================================
    1. TYPE DEFINITIONS & INTERFACES
@@ -79,13 +80,22 @@ export default function PrimarySidePanelHeader({
   onClearCollectionFilters,
   onHandlePointerDown,
 }: PrimarySidePanelHeaderProps) {
+  const { animationsEnabled } = useUIPreferences();
   const [showAdvancedSearch, setShowAdvancedSearch] = useState(false);
   const [showAppliedFilters, setShowAppliedFilters] = useState(false);
   const [menuCoords, setMenuCoords] = useState({ top: 0, left: 0 });
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const triggerBtnRef = useRef<HTMLButtonElement>(null);
 
-  const isFilterActive = filterCollectionIds.length > 0;
+  const searchPattern = searchQuery.trim();
+  const hasSearchFilter = searchPattern.length > 0;
+  const hasCollectionFilters = filterCollectionIds.length > 0;
+  const appliedFilterCount = filterCollectionIds.length + (hasSearchFilter ? 1 : 0);
+  const isFilterActive = appliedFilterCount > 0;
+  const clearAllFilters = () => {
+    onClearCollectionFilters();
+    onSearchChange('');
+  };
   const activeIsExpanded = isAnyCategoryExpanded ?? isAnyFolderExpanded;
   const activeToggleAll = onToggleAllCategories ?? onToggleAllFolders;
 
@@ -210,7 +220,7 @@ export default function PrimarySidePanelHeader({
             onFocus={() => setIsSearchFocused(true)}
             onBlur={() => setIsSearchFocused(false)}
             title="Enter search [shortcut: Ctrl-K]"
-            placeholder={isFilterActive ? 'Search filtered collection...' : 'Search...'}
+            placeholder={hasCollectionFilters ? 'Search filtered collection...' : 'Search...'}
             className={[
               'explorer-search-input w-full !pl-8',
               isFilterActive && searchQuery ? '!pr-14' : isFilterActive || searchQuery ? '!pr-8' : '!pr-3',
@@ -225,7 +235,7 @@ export default function PrimarySidePanelHeader({
               <button
                 type="button"
                 onClick={() => onSearchChange('')}
-                className="explorer-panel-control transition-colors text-xs cursor-pointer p-0.5"
+                className="explorer-panel-control !border-0 transition-colors text-xs cursor-pointer p-0.5"
                 title="Clear search text"
               >
                 <span className="inline-block origin-center transition-transform duration-200 hover:scale-115">
@@ -278,30 +288,48 @@ export default function PrimarySidePanelHeader({
           ROW 3: COLLAPSIBLE FILTERS APPLIED SECTION
           ------------------------------------------------------------------ */}
       {isFilterActive && showAppliedFilters && (
-        <div className="w-full flex flex-col gap-1.5 pt-1 animate-mount-fade">
-          <div className="flex items-center justify-between px-1">
+        <div className={`explorer-applied-filters w-full flex flex-col gap-1.5 ${animationsEnabled ? 'explorer-applied-filters-enter' : ''}`}>
+          <div className="explorer-applied-filters-header flex items-center justify-between gap-2">
             <div className="flex items-center gap-1.5">
-              <span className="text-[11px] font-semibold tracking-wider explorer-panel-muted uppercase">
+              <span className="text-[11px] font-semibold tracking-wider uppercase">
                 Filters Applied
               </span>
               <span className="text-[10px] font-mono font-bold explorer-panel-accent">
-                ({filterCollectionIds.length})
+                ({appliedFilterCount})
               </span>
             </div>
 
             <button
               type="button"
-              onClick={onClearCollectionFilters}
-              className="text-[10px] font-medium explorer-panel-muted transition-colors cursor-pointer"
-              title="Clear all collection filters"
+              onClick={clearAllFilters}
+              className="explorer-applied-filters-clear text-[10px] font-medium transition-colors cursor-pointer shrink-0"
+              title="Clear all search and collection filters"
             >
               Clear all
             </button>
           </div>
 
-          <div className="explorer-panel-divider border-t mx-0.5" />
-
-          <div className="explorer-filter-surface rounded-lg p-1.5 flex flex-wrap items-center gap-1.5 min-h-[36px] max-h-36 overflow-y-auto primary-panel-scroll">
+          <div className="flex flex-wrap items-center gap-1.5 px-0.5 py-1 min-h-[36px] max-h-36 overflow-y-auto primary-panel-scroll">
+            {hasSearchFilter && (
+              <span
+                className="group explorer-filter-pill inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[11px] select-none transition-all min-w-0 max-w-full"
+                title={`Item name contains "${searchPattern}"`}
+              >
+                <button
+                  type="button"
+                  onClick={() => onSearchChange('')}
+                  className="explorer-filter-remove font-bold text-[10px] leading-none cursor-pointer pr-0.5 transition-colors shrink-0"
+                  title="Remove search filter"
+                  aria-label="Remove search filter"
+                >
+                  &#10005;
+                </button>
+                <FilterIcon className="w-3.5 h-3.5 explorer-filter-indicator shrink-0" />
+                <span className="explorer-filter-name truncate font-medium transition-colors">
+                  Item name contains &quot;{searchPattern}&quot;
+                </span>
+              </span>
+            )}
             {filterCollectionIds.map((id) => {
               const col = collections.find((c) => c.id === id);
               if (!col) return null;
@@ -557,7 +585,7 @@ export default function PrimarySidePanelHeader({
                   </span>
                 </label>
 
-                {isFilterActive && (
+                {hasCollectionFilters && (
                   <span className="text-[10px] font-mono explorer-panel-accent">
                     {filterCollectionIds.length}/{collections.length}
                   </span>
@@ -577,7 +605,7 @@ export default function PrimarySidePanelHeader({
               <button
                 type="button"
                 onClick={() => {
-                  onClearCollectionFilters();
+                  clearAllFilters();
                   setShowAdvancedSearch(false);
                 }}
                 className="explorer-filter-clear text-[10px] w-full font-semibold transition text-right cursor-pointer"
