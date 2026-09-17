@@ -138,17 +138,13 @@ export default function PrimarySidePanelHeader({
       <div className="explorer-header-toolbar flex items-center justify-between gap-1 w-full shrink-0 select-none">
         {/* Draggable Grip Handle & Title */}
         <div
-          onPointerDown={isPinned ? onHandlePointerDown : undefined}
-          className={`flex items-center gap-1.5 flex-1 min-w-0 py-0.5 ${
-            isPinned ? 'cursor-grab active:cursor-grabbing hover:opacity-90' : ''
-          }`}
-          title={isPinned ? 'Drag to dock panel (Left, Right, Bottom)' : undefined}
+          onPointerDown={onHandlePointerDown}
+          className="flex items-center gap-1.5 flex-1 min-w-0 py-0.5 cursor-grab active:cursor-grabbing hover:opacity-90"
+          title="Drag to dock panel (Left, Right, Bottom)"
         >
-          {isPinned && (
-            <span className="text-[10px] text-muted opacity-60 flex gap-0.5 tracking-tighter shrink-0" aria-hidden="true">
-              ⋮⋮
-            </span>
-          )}
+          <span className="text-[10px] text-muted opacity-60 flex gap-0.5 tracking-tighter shrink-0" aria-hidden="true">
+            ⋮⋮
+          </span>
           <span className="explorer-header-title text-xs font-bold uppercase tracking-wider px-0.5 truncate">
             EXPLORER
           </span>
