@@ -148,7 +148,7 @@ export default function PanelDockDropZones({
                 hoveredZone === 'remove' ? 'dock-zone-remove-text-active' : ''
               }`}
             >
-              {hoveredZone === 'remove' ? 'Release mouse to empty this sidebar' : 'Drop here to remove docked content'}
+              {hoveredZone === 'remove' ? 'Release mouse to empty this panel' : 'Drop here to remove docked content'}
             </span>
           </div>
 

@@ -448,6 +448,19 @@
   height: 2rem;
 }
 
+/* Match the flyout's framed topper without clipping the sidebar resize handles. */
+.primary-side-panel,
+.secondary-side-panel {
+  border-top: 1px solid var(--primary-border-strong);
+  border-top-left-radius: 0.75rem;
+  border-top-right-radius: 0.75rem;
+}
+
+.primary-side-panel > .primary-side-panel-header,
+.secondary-side-panel > .primary-side-panel-header {
+  clip-path: inset(0 round 0.75rem 0.75rem 0 0);
+}
+
 .explorer-header-toolbar::before {
   content: '';
   position: absolute;
@@ -476,6 +489,21 @@
       color-mix(in oklch, var(--primary-accent) 12%, var(--surface-panel)),
       var(--surface-panel));
   pointer-events: none;
+}
+
+/* Use the scrollbar aqua, rather than the primary seed's deeper blue. */
+.explorer-header-empty .explorer-header-toolbar::before {
+  background: linear-gradient(to bottom,
+    color-mix(in oklch, var(--panel-border-strong) 75%, var(--surface-panel)),
+    color-mix(in oklch, var(--panel-border-strong) 45%, var(--surface-panel)));
+  box-shadow: none;
+}
+
+.explorer-header-occupied .explorer-header-toolbar::before {
+  background: linear-gradient(to bottom,
+    color-mix(in oklch, var(--panel-border-strong) 85%, var(--text-fixed-white)),
+    var(--panel-border-strong));
+  box-shadow: 0 1px 4px color-mix(in oklch, var(--panel-border-strong) 40%, transparent);
 }
 
 .explorer-header-title {

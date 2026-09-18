@@ -22,15 +22,17 @@ import EmptyPanelDropZone from '@/components/EmptyPanelDropZone';
    ========================================================================== */
 
 interface PrimarySidePanelProps {
+  hasDockedContent?: boolean;
   title?: string;
   showSearchFilter?: boolean;
   variant: 'flyout' | 'sidebar';
   position?: PrimarySidebarPosition;
   onTogglePosition?: () => void;
+  onDock?: (position: 'left' | 'right') => void;
   isOpen: boolean;
   onOpen?: () => void;
   onClose: () => void;
-  onTogglePin: () => void;
+  onTogglePin?: () => void;
   activeTab?: ExplorerTab;
   onTabChange?: (tab: ExplorerTab) => void;
   isAnyCategoryExpanded?: boolean;
@@ -61,11 +63,13 @@ const DEFAULT_WIDTH = 304;
    ========================================================================== */
 
 export default function PrimarySidePanel({
+  hasDockedContent = false,
   title,
   showSearchFilter,
   variant,
   position = 'left',
   onTogglePosition,
+  onDock,
   isOpen,
   onOpen,
   onClose,
@@ -137,8 +141,8 @@ export default function PrimarySidePanel({
      ------------------------------------------------------------------------ */
   const innerContent = (
     <>
-      {/* Seam Resize Handle (Pinned mode only: isolated to vertical center) */}
-      {isPinned && (
+      {/* Seam Resize Handle (Open sidebar, whether pinned or unpinned) */}
+      {variant === 'sidebar' && isOpen && (
         <div
           onPointerDown={handlePointerDown}
           onDoubleClick={handleResetWidth}
@@ -161,7 +165,7 @@ export default function PrimarySidePanel({
       )}
 
       {/* Reset Width Button */}
-      {isPinned && panelWidth !== DEFAULT_WIDTH && (
+      {variant === 'sidebar' && isOpen && panelWidth !== DEFAULT_WIDTH && (
         <button
           type="button"
           onClick={handleResetWidth}
@@ -187,12 +191,14 @@ export default function PrimarySidePanel({
 
       {/* Header with Search, Filter Button & Filter Tray */}
       <PrimarySidePanelHeader
+        hasDockedContent={hasDockedContent}
         title={title}
         showSearchFilter={showSearchFilter ?? (Boolean(children) || variant === 'flyout')}
         variant={variant}
         isPinned={isPinned}
         position={position}
         onTogglePosition={onTogglePosition}
+        onDock={onDock}
         activeTab={activeTab}
         onTabChange={onTabChange}
         searchQuery={searchQuery}
@@ -238,7 +244,7 @@ export default function PrimarySidePanel({
      3. FLYOUT VARIANT
      ------------------------------------------------------------------------ */
   if (variant === 'flyout') {
-    if (!renderMenu && !isPinned) return null;
+    if (!renderMenu) return null;
 
     return (
       <>
@@ -249,11 +255,10 @@ export default function PrimarySidePanel({
               className={[
                 'fixed inset-0 top-14 z-[60] panel-overlay',
                 animationsEnabled
-                  ? isClosing && !isPinned
+                  ? isClosing
                     ? 'animate-unmount-fade'
                     : 'animate-mount-fade'
                   : '',
-                isPinned ? 'nav-overlay-pinned' : 'nav-overlay-unpinned',
               ].join(' ')}
               aria-hidden="true"
             />,
@@ -265,12 +270,11 @@ export default function PrimarySidePanel({
           className={[
             'nav-flyout-menu',
             transitionClass,
-            animationsEnabled && !isPinned
+            animationsEnabled
               ? isClosing
                 ? 'animate-flyout-slide-out'
                 : 'animate-flyout-slide-in'
               : '',
-            isPinned ? 'nav-flyout-pinned' : 'nav-flyout-unpinned',
           ]
             .filter(Boolean)
             .join(' ')}

@@ -14,7 +14,26 @@
   overflow: visible;
   background: var(--primary-nav-header-background);
   border-bottom: 1px solid var(--primary-border-strong);
+}
+
+/* Keep inset lighting on the header; cast its outer shadow below sidebars. */
+.navigation-header-inset-shadow {
+  position: absolute;
+  inset: 0;
   box-shadow: var(--nav-header-shadow);
+  clip-path: inset(0);
+  pointer-events: none;
+}
+
+.navigation-workspace-shadow {
+  position: absolute;
+  top: -3.5rem;
+  left: 0;
+  right: 0;
+  height: 3.5rem;
+  z-index: 30;
+  box-shadow: var(--nav-header-shadow);
+  pointer-events: none;
 }
 
 /* Downward flare highlight */
@@ -112,12 +131,10 @@
   position: absolute;
   top: calc(100% - 1px);
   
-  /* 1. Anchor to the exact dead-center of the parent button */
+  /* Follow the tab width, including its border. */
   left: 50%;
-  margin-left: -45px; /* Exactly half of 90px */
-  
-  /* 2. Hard-lock the width to match the button's outer width */
-  width: 90px;
+  transform: translateX(-50%);
+  width: calc(100% + 2px);
   
   height: 0.75rem;
   background: var(--nav-header-tab-extension-bg, transparent);
@@ -134,7 +151,9 @@
 .nav-flyout-menu {
   position: absolute;
   left: 0;
-  margin-top: 11px;
+  /* Align the flyout with the navigation bar's bottom seam. */
+  top: 100%;
+  margin-top: 0;
   width: 22rem; /* w-88 (352px) */
   max-height: 75vh;
   background: var(--primary-explorer-panel-bg);

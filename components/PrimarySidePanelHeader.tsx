@@ -27,12 +27,14 @@ import { useUIPreferences } from '@/context/UIPreferencesContext';
    ========================================================================== */
 
 interface PrimarySidePanelHeaderProps {
+  hasDockedContent?: boolean;
   title?: string;
   showSearchFilter?: boolean;
   variant: 'flyout' | 'sidebar';
   isPinned: boolean;
   position?: PrimarySidebarPosition;
   onTogglePosition?: () => void;
+  onDock?: (position: 'left' | 'right') => void;
   activeTab?: ExplorerTab;
   onTabChange?: (tab: ExplorerTab) => void;
   searchQuery?: string;
@@ -61,12 +63,14 @@ interface PrimarySidePanelHeaderProps {
    ========================================================================== */
 
 export default function PrimarySidePanelHeader({
+  hasDockedContent = false,
   title,
   showSearchFilter = true,
   variant,
   isPinned,
   position = 'left',
   onTogglePosition,
+  onDock,
   activeTab = 'items',
   onTabChange,
   searchQuery = '',
@@ -134,7 +138,7 @@ export default function PrimarySidePanelHeader({
   return (
     <div
       ref={headerContainerRef}
-      className="primary-side-panel-header px-2.5 pt-2 pb-0 flex flex-col gap-2 shrink-0"
+      className={`primary-side-panel-header px-2.5 pt-2 pb-0 flex flex-col gap-2 shrink-0 ${variant === 'flyout' || hasDockedContent ? 'explorer-header-occupied' : 'explorer-header-empty'}`}
     >
       {/* ------------------------------------------------------------------
           ROW 1: Top Utility Bar: Explorer Title & Panel Dock Controls
@@ -180,14 +184,39 @@ export default function PrimarySidePanelHeader({
             </button>
           )}
 
+          {/* Explorer docks into either sidebar; pinning belongs to the sidebars. */}
+          {variant === 'flyout' && onDock && (
+            <>
+              <button
+                type="button"
+                onClick={() => onDock('left')}
+                className="primary-side-panel-position-btn group"
+                title="Dock Explorer to Left"
+                aria-label="Dock Explorer to Left"
+              >
+                <DockLeftPanelIcon className="w-3.5 h-3.5 text-[var(--explorer-action-icon,rgba(109,170,209,0.85))] group-hover:text-white" isOpen={true} />
+              </button>
+              <button
+                type="button"
+                onClick={() => onDock('right')}
+                className="primary-side-panel-position-btn group"
+                title="Dock Explorer to Right"
+                aria-label="Dock Explorer to Right"
+              >
+                <DockRightPanelIcon className="w-3.5 h-3.5 text-[var(--explorer-action-icon,rgba(109,170,209,0.85))] group-hover:text-white" isOpen={true} />
+              </button>
+            </>
+          )}
+
           {/* Pin / Unpin Button */}
+          {variant === 'sidebar' && (
           <button
             type="button"
             onClick={onTogglePin}
             className="primary-side-panel-pin-btn group"
             title={isPinned ? 'Unpin Primary Side Bar' : 'Pin Primary Side Bar'}
           >
-            {variant === 'flyout' || !isPinned ? (
+            {!isPinned ? (
               <PinOutlineIcon
                 position={position}
                 className="w-3.5 h-3.5 text-[var(--explorer-action-icon,rgba(109,170,209,0.85))] group-hover:text-white"
@@ -199,6 +228,7 @@ export default function PrimarySidePanelHeader({
               />
             )}
           </button>
+          )}
 
           {/* Close Button (Flyout mode) */}
           {variant === 'flyout' && (

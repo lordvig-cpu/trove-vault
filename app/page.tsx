@@ -603,12 +603,7 @@ export default function Home() {
       position="left"
       isOpen={isPrimaryFlyoutOpen}
       onClose={() => setIsPrimaryFlyoutOpen(false)}
-      onTogglePin={() => {
-        setIsPinned(true);
-        setIsPrimarySidePanelOpen(true);
-        setIsPrimaryFlyoutOpen(false);
-        setPrimaryPanelContent('explorer');
-      }}
+      onDock={(position) => handleDropPanel('explorer', position)}
       activeTab={activeExplorerTab}
       onTabChange={setActiveExplorerTab}
       isAnyCategoryExpanded={isAnyCategoryExpanded}
@@ -632,6 +627,7 @@ export default function Home() {
   const explorerSidebarPanel = (
     <PrimarySidePanel
       title={getPanelTitle(primaryPanelContent, 'PRIMARY SIDE PANEL')}
+      hasDockedContent={primaryPanelContent !== 'empty'}
       showSearchFilter={primaryPanelContent === 'explorer'}
       variant="sidebar"
       position="left"
@@ -717,6 +713,7 @@ export default function Home() {
             isPrimarySidePanelOpen={isPrimaryFlyoutOpen}
             onTogglePrimarySidePanel={() => setIsPrimaryFlyoutOpen(!isPrimaryFlyoutOpen)}
             unpinnedPrimaryPanel={explorerFlyoutPanel}
+            explorerDockedSide={primaryPanelContent === 'explorer' ? 'left' : secondaryPanelContent === 'explorer' ? 'right' : null}
             onStartGrabbedContentDrag={(e) => startDockDrag('grabbed_content', e)}
             onStartExplorerDrag={(e) => startDockDrag('explorer', e)}
             onAddNewItem={() => {
@@ -734,6 +731,7 @@ export default function Home() {
           ].join(' ')}
         >
           {/* Visual Dock Drop Targets (OKLCH Dynamic Palette) */}
+          <div className="navigation-workspace-shadow" aria-hidden="true" />
           <PanelDockDropZones
             isDragging={isDraggingPanel}
             draggingPanel={draggingPanel}
@@ -779,6 +777,7 @@ export default function Home() {
           {/* Secondary Side Panel (Details / Inspector Drawer / Grabbed Content) - Sits Above Main Content (z-40) */}
           <SecondarySidePanel
             title={getPanelTitle(secondaryPanelContent, 'SECONDARY SIDE PANEL')}
+            hasDockedContent={secondaryPanelContent !== 'empty'}
             showSearchFilter={secondaryPanelContent === 'explorer'}
             isOpen={isSecondaryActive}
             isPinned={isSecondaryPinned}
@@ -841,6 +840,7 @@ export default function Home() {
             >
               <PrimarySidePanelHeader
                 title={getPanelTitle(slidingState.content, 'SIDE PANEL')}
+                hasDockedContent={slidingState.content !== 'empty'}
                 showSearchFilter={slidingState.content === 'explorer'}
                 variant="sidebar"
                 isPinned={slidingState.to === 'left' ? isPinned : isSecondaryPinned}
@@ -879,6 +879,7 @@ export default function Home() {
             >
               <PrimarySidePanelHeader
                 title={getPanelTitle(slidingState.secondaryContent, 'SIDE PANEL')}
+                hasDockedContent={slidingState.secondaryContent !== 'empty'}
                 showSearchFilter={slidingState.secondaryContent === 'explorer'}
                 variant="sidebar"
                 isPinned={slidingState.to === 'right' ? isPinned : isSecondaryPinned}

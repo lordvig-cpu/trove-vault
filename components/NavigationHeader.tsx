@@ -45,6 +45,7 @@ interface NavigationHeaderProps {
   onAddNewItem?: () => void;
   onStartGrabbedContentDrag?: (e: React.PointerEvent) => void;
   onStartExplorerDrag?: (e: React.PointerEvent) => void;
+  explorerDockedSide?: 'left' | 'right' | null;
 
   // Backward-compatibility aliases
   isLeftSidePanelOpen?: boolean;
@@ -73,6 +74,7 @@ export default function NavigationHeader({
   unpinnedPrimaryPanel,
   onStartGrabbedContentDrag,
   onStartExplorerDrag,
+  explorerDockedSide = null,
   isLeftSidePanelOpen,
   onToggleLeftSidePanel,
   unpinnedExplorerPanel,
@@ -80,14 +82,17 @@ export default function NavigationHeader({
   /* ------------------------------------------------------------------------
      2.1 CONTEXT & ACTIVE TAB EVALUATION
      ------------------------------------------------------------------------ */
-  const { isPinned, animationsEnabled } = useUIPreferences();
+  const { animationsEnabled } = useUIPreferences();
 
   const effectiveIsOpen = isPrimarySidePanelOpen ?? isLeftSidePanelOpen ?? false;
   const effectiveToggle = onTogglePrimarySidePanel ?? onToggleLeftSidePanel ?? (() => {});
   const effectiveUnpinnedPanel = unpinnedPrimaryPanel ?? unpinnedExplorerPanel;
 
-  // The top Explorer tab is ONLY active when the Explorer pull-down dropdown is open
-  const isTabActive = effectiveIsOpen;
+  const isExplorerDocked = explorerDockedSide !== null;
+  const isTabActive = isExplorerDocked || effectiveIsOpen;
+  const explorerTabTitle = isExplorerDocked
+    ? `Explorer is already docked in the ${explorerDockedSide === 'left' ? 'primary (left)' : 'secondary (right)'} panel`
+    : 'Open Explorer or drag to dock in a sidebar';
 
   return (
     <>
@@ -95,6 +100,7 @@ export default function NavigationHeader({
       <NavigationBarTextureFilter />
 
       <header className="navigation-header h-14 flex items-center justify-between shrink-0 relative z-[80]">
+        <div className="navigation-header-inset-shadow" aria-hidden="true" />
         {/* ------------------------------------------------------------------
             2.2 LEFT SECTION: BRANDING & PRIMARY NAVIGATION
             ------------------------------------------------------------------ */}
@@ -111,24 +117,43 @@ export default function NavigationHeader({
             </div>
 
             {/* Explorer Mode Toggle Tab & Flyout Anchor */}
-            <div className="relative z-30">
+            <div className="relative z-30 h-full flex items-center">
               <button
                 type="button"
                 onClick={() => {
-                  effectiveToggle();
+                  if (!isExplorerDocked) effectiveToggle();
                 }}
-                onPointerDown={onStartExplorerDrag}
+                onPointerDown={isExplorerDocked ? undefined : onStartExplorerDrag}
+                title={explorerTabTitle}
+                aria-label={explorerTabTitle}
+                aria-disabled={isExplorerDocked}
+                aria-expanded={!isExplorerDocked && effectiveIsOpen}
                 className={[
-                  'relative w-[90px] py-1.5 flex flex-col items-center justify-center group',
-                  'font-sans font-black tracking-wide text-sm',
+                  'relative w-[104px] py-1.5 flex items-center justify-center gap-2 group',
+                  'font-sans text-xs font-bold uppercase tracking-wider',
                   'outline-none focus:outline-none focus-visible:outline-none',
                   'transition-[background,border-color,box-shadow] ease-out',
                   animationsEnabled ? 'duration-300' : 'duration-0',
-                  'cursor-pointer',
+                  isExplorerDocked ? 'cursor-not-allowed' : 'cursor-grab active:cursor-grabbing',
                   isTabActive ? 'nav-tab-active' : 'nav-tab-inactive',
                 ].join(' ')}
               >
-                <span>Explorer</span>
+                <span className="grid grid-cols-2 gap-[2px] opacity-60 shrink-0" aria-hidden="true">
+                  {Array.from({ length: 6 }, (_, index) => (
+                    <span key={index} className="w-[2px] h-[2px] rounded-full bg-current" />
+                  ))}
+                </span>
+                <span className="explorer-header-title relative">
+                  <span className="tracking-wider">EXPLORE<span className="tracking-normal">R</span></span>
+                  <span
+                    className={[
+                      'nav-tab-indicator absolute inset-x-0 -bottom-[2px] transition-opacity ease-out',
+                      animationsEnabled ? 'duration-300' : 'duration-0',
+                      isTabActive ? 'nav-tab-indicator-active' : 'nav-tab-indicator-inactive',
+                    ].join(' ')}
+                    aria-hidden="true"
+                  />
+                </span>
 
                 {/* Underline Track */}
                 <div className="absolute inset-x-0 bottom-[4px] flex items-center justify-center pointer-events-none">
@@ -137,14 +162,6 @@ export default function NavigationHeader({
                       'nav-tab-baseline transition-opacity ease-out',
                       animationsEnabled ? 'duration-300' : 'duration-0',
                       isTabActive ? 'opacity-100' : 'opacity-0',
-                    ].join(' ')}
-                    aria-hidden="true"
-                  />
-                  <div
-                    className={[
-                      'nav-tab-indicator relative w-[60px] transition-opacity ease-out',
-                      animationsEnabled ? 'duration-300' : 'duration-0',
-                      isTabActive ? 'nav-tab-indicator-active' : 'nav-tab-indicator-inactive',
                     ].join(' ')}
                     aria-hidden="true"
                   />
@@ -162,7 +179,7 @@ export default function NavigationHeader({
               </button>
 
               {/* Unpinned Floating Flyout Mount Slot */}
-              {effectiveUnpinnedPanel}
+              {!isExplorerDocked && effectiveUnpinnedPanel}
             </div>
           </div>
 

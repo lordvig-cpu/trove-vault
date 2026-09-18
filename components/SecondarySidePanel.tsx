@@ -23,6 +23,7 @@ import { CollectionRecord } from '@/types/collection';
  * Props for SecondarySidePanel utility & inspector drawer.
  */
 interface SecondarySidePanelProps {
+  hasDockedContent?: boolean;
   isOpen: boolean;
   isPinned?: boolean;
   position?: SecondarySidebarPosition;
@@ -66,6 +67,7 @@ const MIN_WORKSPACE_GAP = 48;
    ========================================================================== */
 
 export default function SecondarySidePanel({
+  hasDockedContent = false,
   isOpen,
   isPinned = false,
   position = 'right',
@@ -222,6 +224,7 @@ export default function SecondarySidePanel({
 
         {/* Top Header with Draggable Grip, Search and Controls */}
         <PrimarySidePanelHeader
+          hasDockedContent={hasDockedContent}
           title={title}
           showSearchFilter={showSearchFilter}
           variant="sidebar"

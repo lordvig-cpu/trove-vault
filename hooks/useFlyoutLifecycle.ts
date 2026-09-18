@@ -32,20 +32,10 @@ export function useFlyoutLifecycle(
   useEffect(() => {
     if (variant !== 'flyout') return;
 
-    // SCENARIO A: Opening the flyout
-    if (isOpen && !isPinned) {
+    if (isOpen) {
       setRenderMenu(true);
       setIsClosing(false);
-    } 
-    // SCENARIO B: Closing or Pinning an already-open flyout
-    else if (renderMenu) {
-      // 1. User clicked "Pin"
-      if (isPinned) {
-        const timer = setTimeout(() => setRenderMenu(false), 500);
-        return () => clearTimeout(timer);
-      }
-
-      // 2. User clicked "Close" or background overlay
+    } else if (renderMenu) {
       if (animationsEnabled) {
         setIsClosing(true);
         const timer = setTimeout(() => {
@@ -53,14 +43,11 @@ export function useFlyoutLifecycle(
           setIsClosing(false);
         }, 300);
         return () => clearTimeout(timer);
-      } 
-      
-      // 3. User closed with animations disabled
-      else {
+      } else {
         setRenderMenu(false);
       }
     }
-  }, [isOpen, renderMenu, animationsEnabled, isPinned, variant]);
+  }, [isOpen, renderMenu, animationsEnabled, variant]);
 
   return { renderMenu, isClosing };
 }
