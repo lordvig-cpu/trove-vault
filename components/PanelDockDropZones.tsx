@@ -27,30 +27,54 @@ export default function PanelDockDropZones({
   const leftTargetName = 'Primary Side Bar';
   const rightTargetName = 'Secondary Side Bar';
 
-  const getDraggedItemName = (id: DockablePanelId) => {
-    switch (id) {
+  const getPanelContentName = (content: 'empty' | 'explorer' | 'grabbed_content') => {
+    switch (content) {
       case 'explorer':
         return 'Explorer';
       case 'grabbed_content':
         return 'Grabbed Content';
-      case 'primary':
-        return primaryPanelContent === 'grabbed_content' ? 'Grabbed Content' : 'Explorer';
-      case 'secondary':
-        return secondaryPanelContent === 'grabbed_content' ? 'Grabbed Content' : 'Explorer';
-      case 'bottom':
-        return bottomPanelContent === 'grabbed_content' ? 'Grabbed Content' : 'Bottom Panel';
       default:
-        return 'Panel';
+        return 'Content';
     }
   };
 
-  const draggedItemName = getDraggedItemName(draggingPanel);
+  const getIncomingContent = (id: DockablePanelId): 'empty' | 'explorer' | 'grabbed_content' => {
+    switch (id) {
+      case 'explorer':
+        return 'explorer';
+      case 'grabbed_content':
+        return 'grabbed_content';
+      case 'primary':
+        return primaryPanelContent;
+      case 'secondary':
+        return secondaryPanelContent;
+      case 'bottom':
+        return bottomPanelContent;
+      default:
+        return 'empty';
+    }
+  };
+
+  const incomingContent = getIncomingContent(draggingPanel);
+  const draggedItemName = getPanelContentName(incomingContent);
   const contents = { primary: primaryPanelContent, secondary: secondaryPanelContent, bottom: bottomPanelContent };
   const isLeftAllowed = isDockZoneAllowed(draggingPanel, 'left', contents);
   const isRightAllowed = isDockZoneAllowed(draggingPanel, 'right', contents);
   const isBottomAllowed = isDockZoneAllowed(draggingPanel, 'bottom', contents);
 
   const isHoveredZoneAllowed = hoveredZone ? isDockZoneAllowed(draggingPanel, hoveredZone, contents) : true;
+
+  const isLeftDisplacing =
+    isLeftAllowed &&
+    primaryPanelContent !== 'empty' &&
+    primaryPanelContent !== incomingContent &&
+    draggingPanel !== 'primary';
+
+  const isRightDisplacing =
+    isRightAllowed &&
+    secondaryPanelContent !== 'empty' &&
+    secondaryPanelContent !== incomingContent &&
+    draggingPanel !== 'secondary';
 
   return (
     <div className="dock-drop-overlay">
@@ -94,11 +118,11 @@ export default function PanelDockDropZones({
           ) : hoveredZone && !isHoveredZoneAllowed ? (
             <>Cannot Dock <em>{draggedItemName}</em> Here</>
           ) : hoveredZone === 'left' ? (
-            <>Dock to {leftTargetName}</>
+            <>Dock <em>{draggedItemName}</em> to {leftTargetName}</>
           ) : hoveredZone === 'right' ? (
-            <>Dock to {rightTargetName}</>
+            <>Dock <em>{draggedItemName}</em> to {rightTargetName}</>
           ) : hoveredZone === 'bottom' ? (
-            <>Dock to Bottom Panel</>
+            <>Dock <em>{draggedItemName}</em> to Bottom Panel</>
           ) : (
             <>Docking: <em>{draggedItemName}</em></>
           )}
@@ -122,14 +146,28 @@ export default function PanelDockDropZones({
             }`}
           >
             <span>◧</span>
-            <span>{isLeftAllowed ? `Dock to ${leftTargetName}` : <>Cannot dock <em>{draggedItemName}</em> here</>}</span>
+            <span>
+              {isLeftAllowed ? (
+                <>Dock <em>{draggedItemName}</em> to {leftTargetName}</>
+              ) : (
+                <>Cannot dock <em>{draggedItemName}</em> here</>
+              )}
+            </span>
           </div>
           <span
             className={`dock-zone-side-text ${
               hoveredZone === 'left' ? 'dock-zone-side-text-active' : ''
             }`}
           >
-            {!isLeftAllowed ? 'No empty sidebar available for displaced content' : hoveredZone === 'left' ? 'Release mouse to dock here' : 'Drop Left'}
+            {!isLeftAllowed ? (
+              'No empty sidebar available for displaced content'
+            ) : isLeftDisplacing ? (
+              <><em>{getPanelContentName(primaryPanelContent)}</em> will be relocated to {rightTargetName}</>
+            ) : hoveredZone === 'left' ? (
+              'Release mouse to dock here'
+            ) : (
+              'Drop Left'
+            )}
           </span>
         </div>
 
@@ -153,7 +191,7 @@ export default function PanelDockDropZones({
                 <line x1="10" y1="11" x2="10" y2="17" />
                 <line x1="14" y1="11" x2="14" y2="17" />
               </svg>
-              <span>Remove Content & Empty Panel</span>
+              <span>Remove <em>{draggedItemName}</em> &amp; Empty Panel</span>
             </div>
             <span
               className={`dock-zone-remove-text ${
@@ -203,12 +241,14 @@ export default function PanelDockDropZones({
                   </svg>
                 </span>
               ) : (
-                <span>⬕</span>
+                <span>⬓</span>
               )}
               <span>
-                {!isBottomAllowed
-                  ? <>Cannot dock <em>{draggedItemName}</em> to Bottom Panel</>
-                  : 'Dock to Bottom Panel'}
+                {!isBottomAllowed ? (
+                  <>Cannot dock <em>{draggedItemName}</em> to Bottom Panel</>
+                ) : (
+                  <>Dock <em>{draggedItemName}</em> to Bottom Panel</>
+                )}
               </span>
             </div>
             <span
@@ -222,11 +262,13 @@ export default function PanelDockDropZones({
                   : ''
               }`}
             >
-              {!isBottomAllowed
-                ? <><em>{draggedItemName}</em> may only be docked to a Side Panel</>
-                : hoveredZone === 'bottom'
-                ? 'Release mouse to dock here'
-                : 'Drop Bottom'}
+              {!isBottomAllowed ? (
+                <><em>{draggedItemName}</em> may only be docked to a Side Panel</>
+              ) : hoveredZone === 'bottom' ? (
+                'Release mouse to dock here'
+              ) : (
+                'Drop Bottom'
+              )}
             </span>
           </div>
         </div>
@@ -244,14 +286,28 @@ export default function PanelDockDropZones({
             }`}
           >
             <span>◨</span>
-            <span>{isRightAllowed ? `Dock to ${rightTargetName}` : <>Cannot dock <em>{draggedItemName}</em> here</>}</span>
+            <span>
+              {isRightAllowed ? (
+                <>Dock <em>{draggedItemName}</em> to {rightTargetName}</>
+              ) : (
+                <>Cannot dock <em>{draggedItemName}</em> here</>
+              )}
+            </span>
           </div>
           <span
             className={`dock-zone-side-text ${
               hoveredZone === 'right' ? 'dock-zone-side-text-active' : ''
             }`}
           >
-            {!isRightAllowed ? 'No empty sidebar available for displaced content' : hoveredZone === 'right' ? 'Release mouse to dock here' : 'Drop Right'}
+            {!isRightAllowed ? (
+              'No empty sidebar available for displaced content'
+            ) : isRightDisplacing ? (
+              <><em>{getPanelContentName(secondaryPanelContent)}</em> will be relocated to {leftTargetName}</>
+            ) : hoveredZone === 'right' ? (
+              'Release mouse to dock here'
+            ) : (
+              'Drop Right'
+            )}
           </span>
         </div>
       </div>

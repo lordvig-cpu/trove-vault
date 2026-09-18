@@ -332,6 +332,17 @@
   color: inherit;
 }
 
+.dock-zone-side-text em,
+.dock-zone-bottom-text em,
+.dock-zone-remove-text em,
+.dock-zone-side-pill em,
+.dock-zone-bottom-pill em,
+.dock-zone-remove-pill em,
+.dock-cursor-badge em {
+  font-style: italic;
+  font-weight: inherit;
+}
+
 /* --------------------------------------------------------------------------
    Empty Panel Placeholder Drop Zone (Inside Primary / Secondary Shells)
    -------------------------------------------------------------------------- */
