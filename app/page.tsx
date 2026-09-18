@@ -7,7 +7,7 @@ import { useCollections } from '@/hooks/useCollections';
 import { useModals } from '@/hooks/useModals';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 import { useExplorerCategories } from '@/hooks/useExplorerCategories';
-import { usePanelDockDrag, DockablePanelId, DockDropTargetZone } from '@/hooks/usePanelDockDrag';
+import { usePanelDockDrag, DockablePanelId, DockDropTargetZone, isDockZoneAllowed } from '@/hooks/usePanelDockDrag';
 import NavigationHeader from '@/components/NavigationHeader';
 import NavigationFooter from '@/components/NavigationFooter';
 import MainContent from '@/components/MainContent';
@@ -107,6 +107,8 @@ export default function Home() {
     isSecondaryPinned,
     toggleSecondaryPin,
     setIsSecondaryPinned,
+    isBottomPinned,
+    setIsBottomPinned,
     isAudioEnabled,
     animationsEnabled,
     isHydrated,
@@ -124,15 +126,19 @@ export default function Home() {
   const [isPrimarySidePanelOpen, setIsPrimarySidePanelOpen] = useState<boolean>(false);
   const [isSecondaryOpen, setIsSecondaryOpen] = useState<boolean>(false);
   const [isBottomPanelOpen, setIsBottomPanelOpen] = useState<boolean>(false);
+  const [bottomPanelContent, setBottomPanelContent] = useState<'empty' | 'grabbed_content'>('empty');
+  const isBottomActive = isBottomPanelOpen || isBottomPinned;
   const [isColDropdownOpen, setIsColDropdownOpen] = useState<boolean>(false);
   const [primaryPanelWidth, setPrimaryPanelWidth] = useState<number>(304);
   const [secondaryPanelWidth, setSecondaryPanelWidth] = useState<number>(304);
+  const [bottomPanelHeight, setBottomPanelHeight] = useState<number>(220);
 
   const [primaryPanelContent, setPrimaryPanelContent] = useState<'empty' | 'explorer' | 'grabbed_content'>('empty');
   const [secondaryPanelContent, setSecondaryPanelContent] = useState<'empty' | 'explorer' | 'grabbed_content'>('empty');
 
   const isPrimaryActive = isPinned || isPrimarySidePanelOpen;
   const isSecondaryActive = isSecondaryPinned || isSecondaryOpen;
+  const dockContents = { primary: primaryPanelContent, secondary: secondaryPanelContent, bottom: bottomPanelContent };
 
   // Fixed physical sidebar positions (Primary is Left, Secondary is Right)
   const effectivePrimaryPosition = 'left' as const;
@@ -167,6 +173,14 @@ export default function Home() {
 
   const handleMovePrimaryContent = useCallback(() => {
     if (primaryPanelContent === 'empty' || slidingState) return;
+
+    // Check bottom panel routing: if bottom panel is active, empty, and primary content is allowed in bottom ('grabbed_content')
+    if (isBottomActive && bottomPanelContent === 'empty' && primaryPanelContent === 'grabbed_content') {
+      setBottomPanelContent('grabbed_content');
+      setPrimaryPanelContent('empty');
+      setIsBottomPanelOpen(true);
+      return;
+    }
 
     const currentPrimary = primaryPanelContent;
     const currentSecondary = secondaryPanelContent;
@@ -207,10 +221,18 @@ export default function Home() {
       setPrimaryPanelContent(currentSecondary);
       setSlidingState(null);
     }, 500);
-  }, [primaryPanelContent, secondaryPanelContent, slidingState, animationsEnabled, primaryPanelWidth, secondaryPanelWidth]);
+  }, [primaryPanelContent, secondaryPanelContent, bottomPanelContent, isBottomActive, slidingState, animationsEnabled, primaryPanelWidth, secondaryPanelWidth]);
 
   const handleMoveSecondaryContent = useCallback(() => {
     if (secondaryPanelContent === 'empty' || slidingState) return;
+
+    // Check bottom panel routing: if bottom panel is active, empty, and secondary content is allowed in bottom ('grabbed_content')
+    if (isBottomActive && bottomPanelContent === 'empty' && secondaryPanelContent === 'grabbed_content') {
+      setBottomPanelContent('grabbed_content');
+      setSecondaryPanelContent('empty');
+      setIsBottomPanelOpen(true);
+      return;
+    }
 
     const currentPrimary = primaryPanelContent;
     const currentSecondary = secondaryPanelContent;
@@ -249,7 +271,7 @@ export default function Home() {
       setSecondaryPanelContent(currentPrimary);
       setSlidingState(null);
     }, 500);
-  }, [primaryPanelContent, secondaryPanelContent, slidingState, animationsEnabled, primaryPanelWidth, secondaryPanelWidth]);
+  }, [primaryPanelContent, secondaryPanelContent, bottomPanelContent, isBottomActive, slidingState, animationsEnabled, primaryPanelWidth, secondaryPanelWidth]);
 
   /* ------------------------------------------------------------------------
      7. PANEL DOCK DRAG & DROP ORCHESTRATION (Pointer Events API)
@@ -290,15 +312,22 @@ export default function Home() {
     }));
   }, [primaryPanelContent, secondaryPanelContent, animationsEnabled, primaryPanelWidth, secondaryPanelWidth]);
 
+  const canMoveBottomLeft = !slidingState && isDockZoneAllowed('bottom', 'left', dockContents);
+  const canMoveBottomRight = !slidingState && isDockZoneAllowed('bottom', 'right', dockContents);
+
   const handleDropPanel = useCallback(
     (panelId: DockablePanelId, targetZone: DockDropTargetZone) => {
       if (slidingState) return;
+      if (!isDockZoneAllowed(panelId, targetZone, { primary: primaryPanelContent, secondary: secondaryPanelContent, bottom: bottomPanelContent })) return;
+
       // 1. Remove from sidebar target
       if (targetZone === 'remove') {
         if (panelId === 'primary') {
           setPrimaryPanelContent('empty');
         } else if (panelId === 'secondary') {
           setSecondaryPanelContent('empty');
+        } else if (panelId === 'bottom') {
+          setBottomPanelContent('empty');
         } else if (panelId === 'explorer') {
           if (primaryPanelContent === 'explorer') setPrimaryPanelContent('empty');
           if (secondaryPanelContent === 'explorer') setSecondaryPanelContent('empty');
@@ -306,6 +335,7 @@ export default function Home() {
         } else if (panelId === 'grabbed_content') {
           if (primaryPanelContent === 'grabbed_content') setPrimaryPanelContent('empty');
           if (secondaryPanelContent === 'grabbed_content') setSecondaryPanelContent('empty');
+          if (bottomPanelContent === 'grabbed_content') setBottomPanelContent('empty');
         }
         return;
       }
@@ -319,10 +349,24 @@ export default function Home() {
             ? 'grabbed_content'
             : panelId === 'secondary'
             ? secondaryPanelContent
+            : panelId === 'bottom'
+            ? bottomPanelContent
             : primaryPanelContent;
 
         if (incomingContent === 'empty') {
           setIsPrimarySidePanelOpen(true);
+          return;
+        }
+
+        if (panelId === 'bottom') {
+          if (primaryPanelContent === 'empty') {
+            setPrimaryPanelContent(incomingContent);
+            setBottomPanelContent('empty');
+            setIsPrimarySidePanelOpen(true);
+          } else if (secondaryPanelContent === 'empty') {
+            displacePanelContent('left', incomingContent);
+            setBottomPanelContent('empty');
+          }
           return;
         }
 
@@ -355,6 +399,9 @@ export default function Home() {
           if (secondaryPanelContent === incomingContent) {
             setSecondaryPanelContent('empty');
           }
+          if (bottomPanelContent === incomingContent) {
+            setBottomPanelContent('empty');
+          }
           setIsPrimarySidePanelOpen(true);
           setIsPrimaryFlyoutOpen(false);
         }
@@ -370,10 +417,24 @@ export default function Home() {
             ? 'grabbed_content'
             : panelId === 'primary'
             ? primaryPanelContent
+            : panelId === 'bottom'
+            ? bottomPanelContent
             : secondaryPanelContent;
 
         if (incomingContent === 'empty') {
           setIsSecondaryOpen(true);
+          return;
+        }
+
+        if (panelId === 'bottom') {
+          if (secondaryPanelContent === 'empty') {
+            setSecondaryPanelContent(incomingContent);
+            setBottomPanelContent('empty');
+            setIsSecondaryOpen(true);
+          } else if (primaryPanelContent === 'empty') {
+            displacePanelContent('right', incomingContent);
+            setBottomPanelContent('empty');
+          }
           return;
         }
 
@@ -406,6 +467,9 @@ export default function Home() {
           if (primaryPanelContent === incomingContent) {
             setPrimaryPanelContent('empty');
           }
+          if (bottomPanelContent === incomingContent) {
+            setBottomPanelContent('empty');
+          }
           setIsSecondaryOpen(true);
           setIsPrimaryFlyoutOpen(false);
         }
@@ -414,12 +478,26 @@ export default function Home() {
 
       // 4. Dock to Bottom Panel
       if (targetZone === 'bottom') {
-        if (panelId === 'bottom') {
+        const incomingContent: 'empty' | 'explorer' | 'grabbed_content' =
+          panelId === 'grabbed_content'
+            ? 'grabbed_content'
+            : panelId === 'primary'
+            ? primaryPanelContent
+            : panelId === 'secondary'
+            ? secondaryPanelContent
+            : bottomPanelContent;
+
+        if (incomingContent === 'grabbed_content') {
+          setBottomPanelContent('grabbed_content');
+          if (primaryPanelContent === 'grabbed_content') setPrimaryPanelContent('empty');
+          if (secondaryPanelContent === 'grabbed_content') setSecondaryPanelContent('empty');
+          setIsBottomPanelOpen(true);
+        } else if (panelId === 'bottom') {
           setIsBottomPanelOpen(true);
         }
       }
     },
-    [primaryPanelContent, secondaryPanelContent, slidingState, displacePanelContent]
+    [primaryPanelContent, secondaryPanelContent, bottomPanelContent, slidingState, displacePanelContent]
   );
 
   const {
@@ -429,7 +507,7 @@ export default function Home() {
     cursorPos,
     handlePointerDown: startDockDrag,
     cancelDrag,
-  } = usePanelDockDrag({ onDropPanel: handleDropPanel });
+  } = usePanelDockDrag({ onDropPanel: handleDropPanel, contents: dockContents });
 
   /* ------------------------------------------------------------------------
      8. GLOBAL KEYBOARD SHORTCUTS
@@ -652,6 +730,23 @@ export default function Home() {
     </PrimarySidePanel>
   );
 
+  const primaryMoveTooltip =
+    primaryPanelContent === 'empty'
+      ? 'Content must be docked first'
+      : isBottomActive && bottomPanelContent === 'empty' && primaryPanelContent === 'grabbed_content'
+      ? 'Move Grabbed Content to Bottom Panel'
+      : `Move ${getPanelTitle(primaryPanelContent, 'Content')} to Secondary Side Bar`;
+
+  const secondaryMoveTooltip =
+    secondaryPanelContent === 'empty'
+      ? 'Content must be docked first'
+      : isBottomActive && bottomPanelContent === 'empty' && secondaryPanelContent === 'grabbed_content'
+      ? 'Move Grabbed Content to Bottom Panel'
+      : `Move ${getPanelTitle(secondaryPanelContent, 'Content')} to Primary Side Bar`;
+
+  const canMovePrimary = primaryPanelContent !== 'empty' && !slidingState;
+  const canMoveSecondary = secondaryPanelContent !== 'empty' && !slidingState;
+
   const explorerSidebarPanel = (
     <PrimarySidePanel
       title={getPanelTitle(primaryPanelContent, 'PRIMARY SIDE PANEL')}
@@ -661,6 +756,8 @@ export default function Home() {
       variant="sidebar"
       position="left"
       onTogglePosition={primaryPanelContent !== 'empty' ? handleMovePrimaryContent : undefined}
+      moveTooltip={primaryMoveTooltip}
+      canMove={canMovePrimary}
       isOpen={isPrimaryActive}
       onOpen={() => setIsPrimarySidePanelOpen(true)}
       onClose={() => {
@@ -768,6 +865,7 @@ export default function Home() {
             cursorPos={cursorPos}
             primaryPanelContent={primaryPanelContent}
             secondaryPanelContent={secondaryPanelContent}
+            bottomPanelContent={bottomPanelContent}
           />
 
           {/* Primary Side Panel (Explorer Tree / Grabbed Content) - Sits Above Main Content (z-50) */}
@@ -778,10 +876,11 @@ export default function Home() {
             style={{
               marginLeft: `${leftOccupiedWidth}px`,
               marginRight: `${rightOccupiedWidth}px`,
+              height: isBottomPinned && isBottomActive ? `calc(100% - ${bottomPanelHeight}px)` : '100%',
             }}
             className={[
               'w-full h-full flex-1 min-w-0 relative z-10',
-              animationsEnabled && isHydrated ? 'transition-[margin] duration-500 ease-in-out' : 'transition-none',
+              animationsEnabled && isHydrated ? 'transition-[margin,height] duration-500 ease-in-out' : 'transition-none',
             ].join(' ')}
           >
             <MainContent
@@ -794,14 +893,29 @@ export default function Home() {
             />
           </div>
 
-          {/* Collapsible Bottom Diagnostics Drawer - Sits Above Main Content (z-35) */}
+          {/* Dockable Bottom Panel */}
           <BottomPanel
-            isOpen={isBottomPanelOpen}
-            onClose={() => setIsBottomPanelOpen(false)}
-            activeCollectionName={activeCollection?.name}
-            totalItemsCount={allItems.length}
+            isOpen={isBottomActive}
+            isPinned={isBottomPinned}
+            onClose={() => {
+              setIsBottomPanelOpen(false);
+              setIsBottomPinned(false);
+            }}
+            onTogglePin={() => {
+              setIsBottomPinned(!isBottomPinned);
+              setIsBottomPanelOpen(true);
+            }}
+            reservedLeft={leftOccupiedWidth}
+            reservedRight={rightOccupiedWidth}
+            canMoveLeft={canMoveBottomLeft}
+            canMoveRight={canMoveBottomRight}
+            onMoveLeft={() => handleDropPanel('bottom', 'left')}
+            onMoveRight={() => handleDropPanel('bottom', 'right')}
             onHandlePointerDown={(e) => startDockDrag('bottom', e)}
-          />
+            onHeightChange={setBottomPanelHeight}
+          >
+            {bottomPanelContent === 'grabbed_content' ? renderPanelBody('grabbed_content', 'left') : null}
+          </BottomPanel>
 
           {/* Secondary Side Panel (Details / Inspector Drawer / Grabbed Content) - Sits Above Main Content (z-40) */}
           <SecondarySidePanel
@@ -813,6 +927,8 @@ export default function Home() {
             isPinned={isSecondaryPinned}
             position="right"
             onTogglePosition={secondaryPanelContent !== 'empty' ? handleMoveSecondaryContent : undefined}
+            moveTooltip={secondaryMoveTooltip}
+            canMove={canMoveSecondary}
             onOpen={() => setIsSecondaryOpen(true)}
             onClose={() => {
               setIsSecondaryOpen(false);
@@ -940,8 +1056,15 @@ export default function Home() {
                 setIsPrimarySidePanelOpen(true);
               }
             }}
-            isBottomOpen={isBottomPanelOpen}
-            onToggleBottom={() => setIsBottomPanelOpen(!isBottomPanelOpen)}
+            isBottomOpen={isBottomActive}
+            onToggleBottom={() => {
+              if (isBottomActive) {
+                setIsBottomPanelOpen(false);
+                setIsBottomPinned(false);
+              } else {
+                setIsBottomPanelOpen(true);
+              }
+            }}
             isSecondaryOpen={isSecondaryActive}
             onToggleSecondary={() => {
               if (isSecondaryActive) {

@@ -1,168 +1,218 @@
 'use client';
 
-import React, { useState } from 'react';
-import { ChevronDownIcon } from '@/components/icons/SystemIcons';
+import React from 'react';
+import {
+  DockLeftPanelIcon,
+  DockRightPanelIcon,
+  DockBottomPanelIcon,
+  ResetHeightIcon,
+} from '@/components/icons/SystemIcons';
+import { PinFilledIcon, PinOutlineIcon } from '@/components/icons/ExplorerIcons';
 import { useUIPreferences } from '@/context/UIPreferencesContext';
+import { useResizableHeight } from '@/hooks/useResizableHeight';
+import EmptyPanelDropZone from '@/components/EmptyPanelDropZone';
+import PanelContentTransition from '@/components/PanelContentTransition';
 
-/* ==========================================================================
-   1. TYPE DEFINITIONS & INTERFACES
-   ========================================================================== */
+export const DEFAULT_BOTTOM_PANEL_HEIGHT = 220;
+export const BOTTOM_PANEL_HEIGHT = DEFAULT_BOTTOM_PANEL_HEIGHT;
 
 interface BottomPanelProps {
   isOpen: boolean;
+  isPinned?: boolean;
   onClose: () => void;
+  onTogglePin?: () => void;
+  onMoveLeft?: () => void;
+  onMoveRight?: () => void;
+  canMoveLeft?: boolean;
+  canMoveRight?: boolean;
   reservedLeft?: number;
   reservedRight?: number;
-  activeCollectionName?: string;
-  totalItemsCount?: number;
+  children?: React.ReactNode;
   onHandlePointerDown?: (e: React.PointerEvent) => void;
+  onHeightChange?: (height: number) => void;
 }
-
-type BottomTab = 'diagnostics' | 'output' | 'terminal';
-
-/* ==========================================================================
-   2. MAIN COMPONENT: BottomPanel
-   Collapsible bottom drawer anchored above the footer.
-   Controls visibility of workspace diagnostics and system output.
-   ========================================================================== */
 
 export default function BottomPanel({
   isOpen,
+  isPinned = false,
   onClose,
+  onTogglePin,
+  onMoveLeft,
+  onMoveRight,
+  canMoveLeft = false,
+  canMoveRight = false,
   reservedLeft = 0,
   reservedRight = 0,
-  activeCollectionName,
-  totalItemsCount = 0,
+  children,
   onHandlePointerDown,
+  onHeightChange,
 }: BottomPanelProps) {
-  const { animationsEnabled, theme } = useUIPreferences();
-  const [activeTab, setActiveTab] = useState<BottomTab>('diagnostics');
+  const { animationsEnabled, isHydrated } = useUIPreferences();
+  const occupied = Boolean(children);
 
-  const transitionClass = animationsEnabled
-    ? 'transition-[transform,opacity] duration-500 ease-in-out'
-    : 'transition-none';
+  const {
+    panelHeight,
+    isDragging,
+    handlePointerDown,
+    handleResetHeight,
+    panelElementRef,
+  } = useResizableHeight({
+    initialHeight: DEFAULT_BOTTOM_PANEL_HEIGHT,
+    minHeight: 140,
+    minGap: 48,
+    onHeightChange,
+  });
+
+  const transitionClass =
+    !isDragging && animationsEnabled && isHydrated
+      ? 'transition-[transform,opacity,height,left,right] duration-500 ease-in-out'
+      : 'transition-none';
 
   return (
     <aside
+      ref={panelElementRef}
+      style={{
+        height: `${panelHeight}px`,
+        left: reservedLeft,
+        right: reservedRight,
+      }}
       className={[
         'bottom-side-panel',
         transitionClass,
         isOpen ? 'bottom-panel-docked-open' : 'bottom-panel-docked-closed',
       ].join(' ')}
       aria-hidden={!isOpen}
+      inert={!isOpen}
     >
-      {/* Panel Header with Navigation Tabs & Collapse Control */}
-      <div className="bottom-side-panel-header select-none">
-        <div className="flex items-center gap-2">
-          {/* Draggable Grip Handle */}
+      {/* Seam Resize Handle (Top border) */}
+      {isOpen && (
+        <div
+          onPointerDown={handlePointerDown}
+          onDoubleClick={handleResetHeight}
+          className={`panel-resize-handle-horizontal absolute -top-2 left-1/2 -translate-x-1/2 w-32 h-4 select-none group/resize ${
+            isDragging ? 'panel-resize-handle-active' : ''
+          }`}
+          title="Drag to resize panel (double-click to reset)"
+        >
+          <div className="panel-resize-pill-horizontal flex items-center justify-center">
+            {/* 3 tactile grip dots inside the pill */}
+            <div className="flex flex-row gap-1 items-center justify-center opacity-70">
+              <span className="w-1 h-1 rounded-full bg-black/60 dark:bg-black/80" />
+              <span className="w-1 h-1 rounded-full bg-black/60 dark:bg-black/80" />
+              <span className="w-1 h-1 rounded-full bg-black/60 dark:bg-black/80" />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Reset Height Button */}
+      {isOpen && panelHeight !== DEFAULT_BOTTOM_PANEL_HEIGHT && (
+        <button
+          type="button"
+          onClick={handleResetHeight}
+          className={[
+            'group absolute -top-7 left-6 h-7 w-8 z-40',
+            'flex items-center justify-center cursor-pointer',
+            'panel-reset-button border border-b-0 rounded-t-md transition-colors',
+            animationsEnabled ? 'animate-mount-fade' : '',
+          ].join(' ')}
+          title="Reset to default height"
+        >
+          <ResetHeightIcon className="w-3.5 h-3.5 panel-reset-icon" />
+        </button>
+      )}
+
+      {/* Panel Header with Navigation Controls */}
+      <div
+        className={`primary-side-panel-header px-2.5 pt-2 pb-0 flex flex-col gap-2 shrink-0 ${
+          occupied ? 'explorer-header-occupied' : 'explorer-header-empty'
+        }`}
+      >
+        <div className="explorer-header-toolbar flex items-center justify-between gap-1 w-full shrink-0 select-none">
+          {/* Draggable Grip Handle & Title */}
           <div
-            onPointerDown={isOpen ? onHandlePointerDown : undefined}
-            className={`flex items-center gap-1 px-1 py-0.5 ${
-              isOpen ? 'cursor-grab active:cursor-grabbing hover:opacity-90' : ''
+            onPointerDown={occupied ? onHandlePointerDown : undefined}
+            className={`flex items-center gap-1.5 flex-1 min-w-0 py-0.5 ${
+              occupied ? 'cursor-grab active:cursor-grabbing' : ''
             }`}
-            title={isOpen ? 'Drag to dock panel (Left, Right, Bottom)' : undefined}
+            title={occupied ? 'Drag to dock content' : undefined}
           >
-            <span className="text-[10px] text-muted opacity-60 flex gap-0.5 tracking-tighter" aria-hidden="true">
-              ⋮⋮
-            </span>
-            <span className="text-[10px] font-bold uppercase tracking-wider panel-notice-text hidden sm:inline">
-              Bottom Panel
+            <span className="text-[10px] text-muted opacity-60 tracking-tighter" aria-hidden="true">&#8942;&#8942;</span>
+            <span className="explorer-header-title text-xs font-bold uppercase tracking-wider px-0.5 truncate">
+              {occupied ? 'Grabbed Content' : 'Bottom Panel'}
             </span>
           </div>
 
-          <div className="flex items-center gap-1.5 ml-1">
+          {/* Action buttons: Move Left, Close/Hide, Move Right, Pin */}
+          <div className="flex items-center gap-1 shrink-0">
             <button
               type="button"
-              onClick={() => setActiveTab('diagnostics')}
-              className={`bottom-panel-tab ${
-                activeTab === 'diagnostics' ? 'bottom-panel-tab-active' : ''
-              }`}
+              onClick={onMoveLeft}
+              disabled={!canMoveLeft}
+              className="primary-side-panel-position-btn group disabled:opacity-35 disabled:cursor-not-allowed"
+              title={
+                !occupied
+                  ? 'Content must be docked first'
+                  : !canMoveLeft
+                  ? 'No empty sidebar available for displaced content'
+                  : 'Move Grabbed Content to Primary Side Bar'
+              }
+              aria-label="Move content to Primary Side Bar"
             >
-              Diagnostics
+              <DockLeftPanelIcon className="w-3.5 h-3.5" isOpen={true} />
             </button>
             <button
               type="button"
-              onClick={() => setActiveTab('output')}
-              className={`bottom-panel-tab ${
-                activeTab === 'output' ? 'bottom-panel-tab-active' : ''
-              }`}
+              onClick={onClose}
+              title="Hide Bottom Panel"
+              aria-label="Hide Bottom Panel"
+              className="p-1.5 rounded-lg border transition cursor-pointer flex items-center justify-center nav-footer-dock-btn-open"
             >
-              Output
+              <DockBottomPanelIcon className="w-4 h-4" isOpen={true} />
             </button>
             <button
               type="button"
-              onClick={() => setActiveTab('terminal')}
-              className={`bottom-panel-tab ${
-                activeTab === 'terminal' ? 'bottom-panel-tab-active' : ''
-              }`}
+              onClick={onMoveRight}
+              disabled={!canMoveRight}
+              className="primary-side-panel-position-btn group disabled:opacity-35 disabled:cursor-not-allowed"
+              title={
+                !occupied
+                  ? 'Content must be docked first'
+                  : !canMoveRight
+                  ? 'No empty sidebar available for displaced content'
+                  : 'Move Grabbed Content to Secondary Side Bar'
+              }
+              aria-label="Move content to Secondary Side Bar"
             >
-              Terminal
+              <DockRightPanelIcon className="w-3.5 h-3.5" isOpen={true} />
+            </button>
+            <button
+              type="button"
+              onClick={onTogglePin}
+              className="primary-side-panel-pin-btn group"
+              title={isPinned ? 'Unpin Bottom Panel' : 'Pin Bottom Panel'}
+              aria-label={isPinned ? 'Unpin Bottom Panel' : 'Pin Bottom Panel'}
+              aria-pressed={isPinned}
+            >
+              {isPinned ? <PinFilledIcon className="w-3.5 h-3.5" /> : <PinOutlineIcon className="w-3.5 h-3.5" />}
             </button>
           </div>
         </div>
+        <hr className="explorer-header-divider" />
+      </div>
 
-        {/* Header Right Action: Close Downward */}
-        <div className="flex items-center gap-2">
-          <span className="text-[10px] font-mono ui-muted">
-            {activeCollectionName ? `Collection: ${activeCollectionName}` : 'All Collections'}
-          </span>
-          <button
-            type="button"
-            onClick={onClose}
-            className="bottom-side-panel-btn group"
-            title="Collapse Bottom Panel"
-          >
-            <ChevronDownIcon className="w-3.5 h-3.5 ui-muted origin-center transition-all duration-200 ease-out group-hover:translate-y-0.5 group-hover:scale-115" />
-          </button>
+      {/* Content Area - Help message drop zone when empty, or renders children when occupied */}
+      <PanelContentTransition contentKey={occupied ? 'grabbed_content' : 'empty'}>
+        <div className="bottom-panel-content flex-1 min-h-0 overflow-auto relative z-10 flex flex-col">
+          {children || (
+            <EmptyPanelDropZone
+              panelTitle="Bottom Panel"
+              position="bottom"
+              description="Please drag-and-drop to populate it"
+            />
+          )}
         </div>
-      </div>
-
-      {/* Panel Scrollable Content Body */}
-      <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden p-3 font-mono text-xs space-y-1 relative z-10 select-text">
-        {activeTab === 'diagnostics' && (
-          <div className="space-y-1 text-slate-400">
-            <div className="flex items-center gap-2">
-              <span className="text-emerald-400">● [ONLINE]</span>
-              <span>TroveVault Studio Core Engine v2.0</span>
-            </div>
-            <div className="text-slate-400">
-              <span className="text-sky-400">[DATABASE]</span> SQLite schema v2 connected &amp; synced
-            </div>
-            <div className="text-slate-400">
-              <span className="text-sky-400">[INVENTORY]</span> {totalItemsCount} total records loaded in memory
-            </div>
-            <div className="text-slate-400">
-              <span className="text-amber-400">[THEME]</span> Active preset: {theme} (OKLCH Color Space)
-            </div>
-            <div className="text-slate-500">
-              [LATENCY] Client-side layout engine: 60fps compositor layer
-            </div>
-          </div>
-        )}
-
-        {activeTab === 'output' && (
-          <div className="space-y-1 text-slate-400">
-            <div className="text-slate-500">&gt; Workspace viewports initialized successfully.</div>
-            <div className="text-slate-500">&gt; Pinned Explorer &amp; Detail Inspector channels synchronized.</div>
-            <div className="text-emerald-400/80">&gt; Ready for queries and taxonomy modifications.</div>
-          </div>
-        )}
-
-        {activeTab === 'terminal' && (
-          <div className="space-y-1 text-slate-400">
-            <div className="text-slate-400">
-              <span className="text-emerald-400">trove-vault:~$</span> status --all
-            </div>
-            <div className="text-slate-500 pl-4">
-              All services healthy. Pinned Sidebar: {reservedLeft > 0 ? `${reservedLeft}px` : 'hidden'}. Details Drawer: {reservedRight > 0 ? `${reservedRight}px` : 'hidden'}.
-            </div>
-            <div className="text-slate-400 flex items-center gap-1">
-              <span className="text-emerald-400">trove-vault:~$</span>
-              <span className="inline-block w-2 h-3.5 bg-sky-400 animate-pulse" />
-            </div>
-          </div>
-        )}
-      </div>
+      </PanelContentTransition>
     </aside>
   );
 }

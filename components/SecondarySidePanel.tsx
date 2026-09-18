@@ -26,19 +26,21 @@ import { CollectionRecord } from '@/types/collection';
 interface SecondarySidePanelProps {
   isContentSliding?: boolean;
   hasDockedContent?: boolean;
+  reservedWidth?: number;
+  onWidthChange?: (width: number) => void;
+  children?: ReactNode;
+  onHandlePointerDown?: (e: React.PointerEvent) => void;
   isOpen: boolean;
   isPinned?: boolean;
   position?: SecondarySidebarPosition;
   onTogglePosition?: () => void;
+  moveTooltip?: string;
+  canMove?: boolean;
   onOpen?: () => void;
   onClose: () => void;
   onTogglePin?: () => void;
   title?: string;
   showSearchFilter?: boolean;
-  reservedWidth?: number;
-  onWidthChange?: (width: number) => void;
-  children?: ReactNode;
-  onHandlePointerDown?: (e: React.PointerEvent) => void;
 
   // Header and Search Filter Props (active when Explorer is docked)
   activeTab?: ExplorerTab;
@@ -75,6 +77,8 @@ export default function SecondarySidePanel({
   isPinned = false,
   position = 'right',
   onTogglePosition,
+  moveTooltip,
+  canMove = true,
   onOpen,
   onClose,
   onTogglePin,
@@ -234,6 +238,8 @@ export default function SecondarySidePanel({
           isPinned={isPinned}
           position={position}
           onTogglePosition={onTogglePosition}
+          moveTooltip={moveTooltip}
+          canMove={canMove}
           activeTab={activeTab}
           onTabChange={onTabChange}
           searchQuery={searchQuery}

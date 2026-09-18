@@ -211,3 +211,19 @@ export const ResetWidthRightIcon = ({ className = 'w-3.5 h-3.5' }: { className?:
     <path d="M21 3v5h-5" />
   </svg>
 );
+
+/* ResetHeightIcon: Clockwise/counter-clockwise indicator used to restore default bottom panel height. */
+export const ResetHeightIcon = ({ className = 'w-3.5 h-3.5' }: { className?: string }) => (
+  <svg
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2.5"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className={`origin-center transition-colors ${className}`}
+  >
+    <path d="M12 21a9 9 0 1 0-9-9 9.75 9.75 0 0 0 2.74 6.74L8 21" />
+    <path d="M3 21h5v-5" />
+  </svg>
+);

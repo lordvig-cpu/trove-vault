@@ -34,6 +34,8 @@ interface PrimarySidePanelHeaderProps {
   isPinned: boolean;
   position?: PrimarySidebarPosition;
   onTogglePosition?: () => void;
+  moveTooltip?: string;
+  canMove?: boolean;
   onDock?: (position: 'left' | 'right') => void;
   activeTab?: ExplorerTab;
   onTabChange?: (tab: ExplorerTab) => void;
@@ -70,6 +72,8 @@ export default function PrimarySidePanelHeader({
   isPinned,
   position = 'left',
   onTogglePosition,
+  moveTooltip,
+  canMove = true,
   onDock,
   activeTab = 'items',
   onTabChange,
@@ -138,19 +142,23 @@ export default function PrimarySidePanelHeader({
   return (
     <div
       ref={headerContainerRef}
-      className={`primary-side-panel-header px-2.5 pt-2 pb-0 flex flex-col gap-2 shrink-0 ${variant === 'flyout' || hasDockedContent ? 'explorer-header-occupied' : 'explorer-header-empty'}`}
+      className={`primary-side-panel-header px-2.5 pt-2 pb-0 flex flex-col gap-2 shrink-0 ${
+        hasDockedContent ? 'explorer-header-occupied' : 'explorer-header-empty'
+      }`}
     >
-      {/* ------------------------------------------------------------------
-          ROW 1: Top Utility Bar: Explorer Title & Panel Dock Controls
-          ------------------------------------------------------------------ */}
+      {/* --------------------------------------------------------------------
+          2.1 TOP TOOLBAR ROW: Drag Grip, Title, and Action Controls
+          -------------------------------------------------------------------- */}
       <div className="explorer-header-toolbar flex items-center justify-between gap-1 w-full shrink-0 select-none">
-        {/* Draggable Grip Handle & Title */}
+        {/* Draggable Header Grip & Title */}
         <div
-          onPointerDown={onHandlePointerDown}
-          className="flex items-center gap-1.5 flex-1 min-w-0 py-0.5 cursor-grab active:cursor-grabbing hover:opacity-90"
-          title="Drag to dock panel (Left, Right, Bottom)"
+          onPointerDown={hasDockedContent ? onHandlePointerDown : undefined}
+          className={`flex items-center gap-1.5 flex-1 min-w-0 py-0.5 ${
+            hasDockedContent ? 'cursor-grab active:cursor-grabbing hover:opacity-90' : ''
+          }`}
+          title={hasDockedContent ? 'Drag to dock panel' : undefined}
         >
-          <span className="text-[10px] text-muted opacity-60 flex gap-0.5 tracking-tighter shrink-0" aria-hidden="true">
+          <span className="text-[10px] text-muted opacity-60 tracking-tighter" aria-hidden="true">
             ⋮⋮
           </span>
           <span className="explorer-header-title text-xs font-bold uppercase tracking-wider px-0.5 truncate">
@@ -181,19 +189,23 @@ export default function PrimarySidePanelHeader({
             <button
               type="button"
               onClick={onTogglePosition}
-              disabled={variant === 'sidebar' && (!hasDockedContent || !onTogglePosition)}
+              disabled={variant === 'sidebar' && (!hasDockedContent || !onTogglePosition || !canMove)}
               className={`primary-side-panel-position-btn group disabled:opacity-35 disabled:cursor-not-allowed ${variant === 'sidebar' && position === 'right' ? '-order-1' : ''}`}
               title={
                 variant === 'sidebar' && !hasDockedContent
                   ? 'Content must be docked first'
-                  : position === 'left'
-                  ? `Move ${title || (variant === 'sidebar' ? 'Side Bar' : 'Explorer')} to Right`
-                  : `Move ${title || (variant === 'sidebar' ? 'Side Bar' : 'Explorer')} to Left`
+                  : moveTooltip ||
+                    (position === 'left'
+                      ? `Move ${title || (variant === 'sidebar' ? 'Side Bar' : 'Explorer')} to Right`
+                      : `Move ${title || (variant === 'sidebar' ? 'Side Bar' : 'Explorer')} to Left`)
               }
               aria-label={
-                position === 'left'
-                  ? `Move ${title || (variant === 'sidebar' ? 'Side Bar' : 'Explorer')} to Right`
-                  : `Move ${title || (variant === 'sidebar' ? 'Side Bar' : 'Explorer')} to Left`
+                variant === 'sidebar' && !hasDockedContent
+                  ? 'Content must be docked first'
+                  : moveTooltip ||
+                    (position === 'left'
+                      ? `Move ${title || (variant === 'sidebar' ? 'Side Bar' : 'Explorer')} to Right`
+                      : `Move ${title || (variant === 'sidebar' ? 'Side Bar' : 'Explorer')} to Left`)
               }
             >
               {position === 'left' ? (

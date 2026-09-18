@@ -4,7 +4,7 @@ import React from 'react';
 
 interface EmptyPanelDropZoneProps {
   panelTitle: string;
-  position?: 'left' | 'right';
+  position?: 'left' | 'right' | 'bottom';
   description?: string;
   className?: string;
 }
@@ -20,7 +20,7 @@ export default function EmptyPanelDropZone({
       <div className="empty-panel-dropzone group">
         <div className="empty-panel-dropzone-badge">
           <span className="text-xl leading-none" aria-hidden="true">
-            {position === 'right' ? '◨' : '◧'}
+            {position === 'bottom' ? '⬓' : position === 'right' ? '◨' : '◧'}
           </span>
         </div>
         <div className="flex flex-col items-center gap-1 max-w-[220px]">

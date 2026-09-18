@@ -4,34 +4,37 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 
 export type DockablePanelId = 'primary' | 'secondary' | 'bottom' | 'explorer' | 'grabbed_content';
 export type DockDropTargetZone = 'left' | 'right' | 'bottom' | 'remove';
+export type DockContent = 'empty' | 'explorer' | 'grabbed_content';
+export interface DockContents {
+  primary?: DockContent;
+  secondary?: DockContent;
+  bottom?: DockContent;
+}
 
 export function isDockZoneAllowed(
   panelId: DockablePanelId | null,
-  targetZone: DockDropTargetZone | null
+  targetZone: DockDropTargetZone | null,
+  contents: DockContents = {}
 ): boolean {
   if (!panelId || !targetZone) return false;
-  // Side panel contents (Explorer and Grabbed Content) cannot be docked to bottom
-  if (
-    (panelId === 'primary' ||
-      panelId === 'secondary' ||
-      panelId === 'explorer' ||
-      panelId === 'grabbed_content') &&
-    targetZone === 'bottom'
-  ) {
-    return false;
-  }
-  // Bottom panel cannot be docked to left or right vertical sidebars
+  const content = panelId === 'explorer' || panelId === 'grabbed_content'
+    ? panelId : contents[panelId] ?? 'empty';
+  if (content === 'empty') return false;
+  if (targetZone === 'bottom') return content === 'grabbed_content';
   if (panelId === 'bottom' && (targetZone === 'left' || targetZone === 'right')) {
-    return false;
+    const target = contents[targetZone === 'left' ? 'primary' : 'secondary'] ?? 'empty';
+    const other = contents[targetZone === 'left' ? 'secondary' : 'primary'] ?? 'empty';
+    return target === 'empty' || target === content || other === 'empty';
   }
   return true;
 }
 
 interface UsePanelDockDragOptions {
   onDropPanel: (panelId: DockablePanelId, targetZone: DockDropTargetZone) => void;
+  contents?: DockContents;
 }
 
-export function usePanelDockDrag({ onDropPanel }: UsePanelDockDragOptions) {
+export function usePanelDockDrag({ onDropPanel, contents }: UsePanelDockDragOptions) {
   const [isDragging, setIsDragging] = useState<boolean>(false);
   const [draggingPanel, setDraggingPanel] = useState<DockablePanelId | null>(null);
   const [hoveredZone, setHoveredZone] = useState<DockDropTargetZone | null>(null);
@@ -126,7 +129,7 @@ export function usePanelDockDrag({ onDropPanel }: UsePanelDockDragOptions) {
         hoveredZoneRef.current = detectedZone;
         setHoveredZone(detectedZone);
 
-        const allowed = isDockZoneAllowed(panelId, detectedZone);
+        const allowed = isDockZoneAllowed(panelId, detectedZone, contents);
         if (detectedZone && !allowed) {
           document.body.style.cursor = 'not-allowed';
         } else {
@@ -144,7 +147,7 @@ export function usePanelDockDrag({ onDropPanel }: UsePanelDockDragOptions) {
       document.body.style.cursor = '';
 
       if (hasMovedRef.current && draggingPanelRef.current && hoveredZoneRef.current) {
-        if (isDockZoneAllowed(draggingPanelRef.current, hoveredZoneRef.current)) {
+        if (isDockZoneAllowed(draggingPanelRef.current, hoveredZoneRef.current, contents)) {
           onDropPanel(draggingPanelRef.current, hoveredZoneRef.current);
         }
       }
@@ -159,7 +162,7 @@ export function usePanelDockDrag({ onDropPanel }: UsePanelDockDragOptions) {
     window.addEventListener('pointermove', handlePointerMove);
     window.addEventListener('pointerup', handlePointerUp);
     window.addEventListener('pointercancel', handlePointerUp);
-  }, [onDropPanel]);
+  }, [onDropPanel, contents]);
 
   const cancelDrag = useCallback(() => {
     hasMovedRef.current = false;

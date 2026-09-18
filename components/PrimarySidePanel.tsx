@@ -30,6 +30,8 @@ interface PrimarySidePanelProps {
   variant: 'flyout' | 'sidebar';
   position?: PrimarySidebarPosition;
   onTogglePosition?: () => void;
+  moveTooltip?: string;
+  canMove?: boolean;
   onDock?: (position: 'left' | 'right') => void;
   isOpen: boolean;
   onOpen?: () => void;
@@ -72,6 +74,8 @@ export default function PrimarySidePanel({
   variant,
   position = 'left',
   onTogglePosition,
+  moveTooltip,
+  canMove = true,
   onDock,
   isOpen,
   onOpen,
@@ -201,6 +205,8 @@ export default function PrimarySidePanel({
         isPinned={isPinned}
         position={position}
         onTogglePosition={onTogglePosition}
+        moveTooltip={moveTooltip}
+        canMove={canMove}
         onDock={onDock}
         activeTab={activeTab}
         onTabChange={onTabChange}
@@ -353,4 +359,3 @@ export default function PrimarySidePanel({
     </>
   );
 }
-

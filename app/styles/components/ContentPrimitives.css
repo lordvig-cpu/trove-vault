@@ -120,6 +120,47 @@
   box-shadow: 0 0 14px var(--secondary-accent), 0 0 4px var(--secondary-accent);
 }
 
+/* --------------------------------------------------------------------------
+   Horizontal Top Seam Resize Handle (Bottom Panel)
+   -------------------------------------------------------------------------- */
+.panel-resize-handle-horizontal {
+  touch-action: none;
+  user-select: none;
+  cursor: row-resize;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.panel-resize-pill-horizontal {
+  height: 4px;
+  width: 48px;
+  border-radius: 9999px;
+  background-color: var(--secondary-accent);
+  opacity: 0.35;
+  transition: all 200ms cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.3);
+  position: relative;
+}
+
+.panel-resize-handle-horizontal:hover .panel-resize-pill-horizontal {
+  height: 5px;
+  width: 64px;
+  opacity: 1;
+  background-color: var(--secondary-accent);
+  box-shadow: 0 0 10px var(--secondary-accent), 0 0 2px var(--secondary-accent);
+}
+
+.panel-resize-handle-horizontal.panel-resize-handle-active .panel-resize-pill-horizontal,
+.panel-resize-handle-active .panel-resize-pill-horizontal {
+  height: 6px;
+  width: 80px;
+  opacity: 1;
+  background-color: var(--secondary-accent);
+  box-shadow: 0 0 14px var(--secondary-accent), 0 0 4px var(--secondary-accent);
+}
+
 .panel-reset-button {
   background-color: var(--surface-panel);
   border-color: var(--secondary-accent);

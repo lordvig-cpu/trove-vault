@@ -43,6 +43,8 @@ interface UIPreferencesContextType {
 
   // Secondary Side Panel: Tracks docked sidebar vs collapsed state
   isSecondaryPinned: boolean;
+  isBottomPinned: boolean;
+  setIsBottomPinned: (val: boolean) => void;
   toggleSecondaryPin: () => void;
   setIsSecondaryPinned: (val: boolean) => void;
 
@@ -76,6 +78,7 @@ const STORAGE_KEYS = {
   THEME: 'uc_theme_preset',
   PINNED: 'uc_primary_sidebar_pinned',
   SECONDARY_PINNED: 'uc_secondary_sidebar_pinned',
+  BOTTOM_PINNED: 'uc_bottom_panel_pinned',
   PRIMARY_POSITION: 'uc_primary_sidebar_position',
   SECONDARY_POSITION: 'uc_secondary_sidebar_position',
   BOTTOM_POSITION: 'uc_bottom_panel_position',
@@ -116,6 +119,8 @@ export function UIPreferencesProvider({ children }: { children: React.ReactNode 
     STORAGE_KEYS.SECONDARY_PINNED,
     false
   );
+
+  const [isBottomPinned, setIsBottomPinned] = useLocalStorage<boolean>(STORAGE_KEYS.BOTTOM_PINNED, false);
 
   const [primaryPosition, setPrimaryPosition] = useLocalStorage<PrimarySidebarPosition>(
     STORAGE_KEYS.PRIMARY_POSITION,
@@ -208,6 +213,8 @@ export function UIPreferencesProvider({ children }: { children: React.ReactNode 
         togglePrimaryPin: togglePin,
         setIsPrimaryPinned: setIsPinned,
         isSecondaryPinned,
+        isBottomPinned,
+        setIsBottomPinned,
         toggleSecondaryPin,
         setIsSecondaryPinned,
         primaryPosition,
