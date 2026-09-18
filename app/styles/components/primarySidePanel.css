@@ -448,12 +448,15 @@
   height: 2rem;
 }
 
-/* Match the flyout's framed topper without clipping the sidebar resize handles. */
+/* /* Match the flyout's framed topper and mirror to the bottom without clipping the sidebar resize handles. */
 .primary-side-panel,
 .secondary-side-panel {
   border-top: 1px solid var(--primary-border-strong);
+  border-bottom: 1px solid var(--primary-border-strong);
   border-top-left-radius: var(--panel-top-left-radius, 0);
   border-top-right-radius: var(--panel-top-right-radius, 0);
+  border-bottom-left-radius: var(--panel-bottom-left-radius, 0);
+  border-bottom-right-radius: var(--panel-bottom-right-radius, 0);
 }
 
 .primary-side-panel-left,
@@ -461,6 +464,8 @@
 .secondary-side-panel-left {
   --panel-top-left-radius: 0;
   --panel-top-right-radius: 0.75rem;
+  --panel-bottom-left-radius: 0;
+  --panel-bottom-right-radius: 0.75rem;
 }
 
 .primary-side-panel-right,
@@ -468,11 +473,66 @@
 .secondary-side-panel-right {
   --panel-top-left-radius: 0.75rem;
   --panel-top-right-radius: 0;
+  --panel-bottom-left-radius: 0.75rem;
+  --panel-bottom-right-radius: 0;
 }
 
 .primary-side-panel > .primary-side-panel-header,
 .secondary-side-panel > .primary-side-panel-header {
   clip-path: inset(0 round var(--panel-top-left-radius, 0) var(--panel-top-right-radius, 0) 0 0);
+}
+
+.panel-bottom-topper {
+  position: relative;
+  height: 0.75rem;
+  flex-shrink: 0;
+  background:
+    linear-gradient(to top,
+      color-mix(in oklch, var(--text-fixed-white) 8%, transparent),
+      transparent 75%),
+    linear-gradient(115deg,
+      color-mix(in oklch, var(--primary-accent) 12%, var(--surface-panel)),
+      var(--surface-panel));
+  clip-path: inset(0 round 0 0 var(--panel-bottom-right-radius, 0) var(--panel-bottom-left-radius, 0));
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 30;
+}
+
+.panel-bottom-topper::before {
+  content: none;
+}
+
+.panel-bottom-topper::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 0.3rem;
+  background: linear-gradient(to top,
+    color-mix(in oklch, var(--primary-accent-hover) 75%, var(--text-fixed-white)),
+    var(--primary-accent-hover));
+  box-shadow: 0 -1px 4px color-mix(in oklch, var(--primary-accent-hover) 40%, transparent);
+  pointer-events: none;
+}
+
+.panel-bottom-topper-empty::before {
+  display: none;
+}
+
+.panel-bottom-topper-empty::after {
+  background: linear-gradient(to top,
+    color-mix(in oklch, var(--panel-border-strong) 75%, var(--surface-panel)),
+    color-mix(in oklch, var(--panel-border-strong) 45%, var(--surface-panel)));
+  box-shadow: none;
+}
+
+.panel-bottom-topper-occupied::after {
+  background: linear-gradient(to top,
+    color-mix(in oklch, var(--primary-accent-hover) 75%, var(--text-fixed-white)),
+    var(--primary-accent-hover));
+  box-shadow: 0 -1px 4px color-mix(in oklch, var(--primary-accent-hover) 40%, transparent);
 }
 
 .explorer-header-toolbar::before {
@@ -515,9 +575,9 @@
 
 .explorer-header-occupied .explorer-header-toolbar::before {
   background: linear-gradient(to bottom,
-    color-mix(in oklch, var(--panel-border-strong) 85%, var(--text-fixed-white)),
-    var(--panel-border-strong));
-  box-shadow: 0 1px 4px color-mix(in oklch, var(--panel-border-strong) 40%, transparent);
+    color-mix(in oklch, var(--primary-accent-hover) 75%, var(--text-fixed-white)),
+    var(--primary-accent-hover));
+  box-shadow: 0 1px 4px color-mix(in oklch, var(--primary-accent-hover) 40%, transparent);
 }
 
 .explorer-header-title {

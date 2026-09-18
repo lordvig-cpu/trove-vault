@@ -996,9 +996,15 @@ export default function Home() {
                 onTogglePin={() => {}}
                 onClose={() => {}}
               />
-              <div className={`flex-1 min-h-0 overflow-hidden ${slidingState.content ? 'px-2.5 pt-0 pb-6' : 'p-0'} min-w-0 primary-panel-scroll flex flex-col`}>
+              <div className={`flex-1 min-h-0 overflow-hidden ${slidingState.content ? 'px-2.5 pt-0 pb-3' : 'p-0'} min-w-0 primary-panel-scroll flex flex-col`}>
                 {renderPanelBody(slidingState.content, slidingState.to)}
               </div>
+              <div
+                className={`panel-bottom-topper ${
+                  slidingState.content !== 'empty' ? 'panel-bottom-topper-occupied' : 'panel-bottom-topper-empty'
+                } shrink-0 select-none pointer-events-none`}
+                aria-hidden="true"
+              />
             </aside>
           )}
 
@@ -1035,9 +1041,15 @@ export default function Home() {
                 onTogglePin={() => {}}
                 onClose={() => {}}
               />
-              <div className={`flex-1 min-h-0 overflow-hidden ${slidingState.secondaryContent ? 'px-2.5 pt-0 pb-6' : 'p-0'} min-w-0 primary-panel-scroll flex flex-col`}>
+              <div className={`flex-1 min-h-0 overflow-hidden ${slidingState.secondaryContent ? 'px-2.5 pt-0 pb-3' : 'p-0'} min-w-0 primary-panel-scroll flex flex-col`}>
                 {renderPanelBody(slidingState.secondaryContent, slidingState.to === 'right' ? 'left' : 'right')}
               </div>
+              <div
+                className={`panel-bottom-topper ${
+                  slidingState.secondaryContent !== 'empty' ? 'panel-bottom-topper-occupied' : 'panel-bottom-topper-empty'
+                } shrink-0 select-none pointer-events-none`}
+                aria-hidden="true"
+              />
             </aside>
           )}
         </div>

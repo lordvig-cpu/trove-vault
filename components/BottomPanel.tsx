@@ -105,13 +105,30 @@ export default function BottomPanel({
         </div>
       )}
 
-      {/* Reset Height Button */}
+      {/* Reset Height Button (Left) */}
       {isOpen && panelHeight !== DEFAULT_BOTTOM_PANEL_HEIGHT && (
         <button
           type="button"
           onClick={handleResetHeight}
           className={[
             'group absolute -top-7 left-6 h-7 w-8 z-40',
+            'flex items-center justify-center cursor-pointer',
+            'panel-reset-button border border-b-0 rounded-t-md transition-colors',
+            animationsEnabled ? 'animate-mount-fade' : '',
+          ].join(' ')}
+          title="Reset to default height"
+        >
+          <ResetHeightIcon className="w-3.5 h-3.5 panel-reset-icon" />
+        </button>
+      )}
+
+      {/* Reset Height Button (Right) */}
+      {isOpen && panelHeight !== DEFAULT_BOTTOM_PANEL_HEIGHT && (
+        <button
+          type="button"
+          onClick={handleResetHeight}
+          className={[
+            'group absolute -top-7 right-6 h-7 w-8 z-40',
             'flex items-center justify-center cursor-pointer',
             'panel-reset-button border border-b-0 rounded-t-md transition-colors',
             animationsEnabled ? 'animate-mount-fade' : '',

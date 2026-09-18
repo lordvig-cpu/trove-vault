@@ -261,7 +261,7 @@ export default function SecondarySidePanel({
 
         {/* Panel Scrollable Body */}
         <PanelContentTransition contentKey={children ? title : 'empty'} suppressTransition={isContentSliding}>
-        <div className={`flex-1 min-h-0 overflow-y-auto overflow-x-hidden ${children ? 'px-2.5 pt-0 pb-6' : 'p-0'} min-w-0 primary-panel-scroll relative z-10 flex flex-col`}>
+        <div className={`flex-1 min-h-0 overflow-y-auto overflow-x-hidden ${children ? 'px-2.5 pt-0 pb-3' : 'p-0'} min-w-0 primary-panel-scroll relative z-10 flex flex-col`}>
           {children ? (
             children
           ) : (
@@ -269,6 +269,14 @@ export default function SecondarySidePanel({
           )}
         </div>
         </PanelContentTransition>
+
+        {/* Mirrored Bottom Topper */}
+        <div
+          className={`panel-bottom-topper ${
+            hasDockedContent ? 'panel-bottom-topper-occupied' : 'panel-bottom-topper-empty'
+          } shrink-0 select-none pointer-events-none`}
+          aria-hidden="true"
+        />
       </aside>
     </>
   );
