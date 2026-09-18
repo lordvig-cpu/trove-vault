@@ -159,14 +159,34 @@ export default function PrimarySidePanelHeader({
         </div>
 
         <div className="flex items-center gap-1 shrink-0">
+          {/* Close the sidebar with the same control used in the footer. */}
+          {variant === 'sidebar' && (
+            <button
+              type="button"
+              onClick={onClose}
+              title={position === 'left' ? 'Hide Primary Side Bar' : 'Hide Secondary Side Bar'}
+              aria-label={position === 'left' ? 'Hide Primary Side Bar' : 'Hide Secondary Side Bar'}
+              className="p-1.5 rounded-lg border transition cursor-pointer flex items-center justify-center nav-footer-dock-btn-open"
+            >
+              {position === 'left' ? (
+                <DockLeftPanelIcon className="w-4 h-4" isOpen={true} />
+              ) : (
+                <DockRightPanelIcon className="w-4 h-4" isOpen={true} />
+              )}
+            </button>
+          )}
+
           {/* Move to Opposite Side Toggle Button */}
-          {onTogglePosition && (
+          {(variant === 'sidebar' || onTogglePosition) && (
             <button
               type="button"
               onClick={onTogglePosition}
-              className="primary-side-panel-position-btn group"
+              disabled={variant === 'sidebar' && (!hasDockedContent || !onTogglePosition)}
+              className={`primary-side-panel-position-btn group disabled:opacity-35 disabled:cursor-not-allowed ${variant === 'sidebar' && position === 'right' ? '-order-1' : ''}`}
               title={
-                position === 'left'
+                variant === 'sidebar' && !hasDockedContent
+                  ? 'Content must be docked first'
+                  : position === 'left'
                   ? `Move ${title || (variant === 'sidebar' ? 'Side Bar' : 'Explorer')} to Right`
                   : `Move ${title || (variant === 'sidebar' ? 'Side Bar' : 'Explorer')} to Left`
               }

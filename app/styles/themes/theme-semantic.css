@@ -4,6 +4,8 @@
    Keep references one-way: semantic tokens -> theme recipe tokens.
    Geometry, blend modes and component-specific effects retain their own names. */
 :root, [data-theme] {
+  /* Legacy action labels share the mode-aware OKLCH danger text. */
+  --explorer-menu-danger-label: var(--explorer-menu-danger-text);
   --primary-accent: var(--brand-primary);
   --primary-accent-hover: var(--brand-primary-hover);
   --primary-border-input: var(--explorer-search-input-border);

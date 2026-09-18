@@ -153,6 +153,7 @@ export default function Home() {
     width: number;
     secondaryWidth: number;
     isMoving: boolean;
+    incomingContent?: 'explorer' | 'grabbed_content';
   }
 
   const [slidingState, setSlidingState] = useState<SlidingContentState | null>(null);
@@ -253,8 +254,45 @@ export default function Home() {
   /* ------------------------------------------------------------------------
      7. PANEL DOCK DRAG & DROP ORCHESTRATION (Pointer Events API)
      ------------------------------------------------------------------------ */
+  const displacePanelContent = useCallback((from: 'left' | 'right', incoming: 'explorer' | 'grabbed_content') => {
+    const displaced = from === 'left' ? primaryPanelContent : secondaryPanelContent;
+    setIsPrimarySidePanelOpen(true);
+    setIsSecondaryOpen(true);
+    setIsPrimaryFlyoutOpen(false);
+    if (!animationsEnabled || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      setPrimaryPanelContent(from === 'left' ? incoming : displaced);
+      setSecondaryPanelContent(from === 'right' ? incoming : displaced);
+      return;
+    }
+    setPrimaryPanelContent('empty');
+    setSecondaryPanelContent('empty');
+    setSlidingState({
+      content: displaced,
+      incomingContent: incoming,
+      from,
+      to: from === 'left' ? 'right' : 'left',
+      width: from === 'left' ? primaryPanelWidth : secondaryPanelWidth,
+      secondaryWidth: from === 'left' ? secondaryPanelWidth : primaryPanelWidth,
+      isMoving: false,
+    });
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      setSlidingState(prev => prev ? { ...prev, isMoving: true } : null);
+      // Release fade suppression before introducing the new content.
+      requestAnimationFrame(() => {
+        if (from === 'left') setPrimaryPanelContent(incoming);
+        else setSecondaryPanelContent(incoming);
+      });
+      slideTimeoutRef.current = setTimeout(() => {
+        if (from === 'left') setSecondaryPanelContent(displaced);
+        else setPrimaryPanelContent(displaced);
+        setSlidingState(null);
+      }, 500);
+    }));
+  }, [primaryPanelContent, secondaryPanelContent, animationsEnabled, primaryPanelWidth, secondaryPanelWidth]);
+
   const handleDropPanel = useCallback(
     (panelId: DockablePanelId, targetZone: DockDropTargetZone) => {
+      if (slidingState) return;
       // 1. Remove from sidebar target
       if (targetZone === 'remove') {
         if (panelId === 'primary') {
@@ -310,12 +348,7 @@ export default function Home() {
           secondaryPanelContent === 'empty'
         ) {
           // User-friendly displacement: move existing primary content to empty secondary sidebar
-          const displacedContent = primaryPanelContent;
-          setSecondaryPanelContent(displacedContent);
-          setIsSecondaryOpen(true);
-          setPrimaryPanelContent(incomingContent);
-          setIsPrimarySidePanelOpen(true);
-          setIsPrimaryFlyoutOpen(false);
+          displacePanelContent('left', incomingContent);
         } else {
           // Standard dock into primary
           setPrimaryPanelContent(incomingContent);
@@ -366,12 +399,7 @@ export default function Home() {
           primaryPanelContent === 'empty'
         ) {
           // User-friendly displacement: move existing secondary content to empty primary sidebar
-          const displacedContent = secondaryPanelContent;
-          setPrimaryPanelContent(displacedContent);
-          setIsPrimarySidePanelOpen(true);
-          setSecondaryPanelContent(incomingContent);
-          setIsSecondaryOpen(true);
-          setIsPrimaryFlyoutOpen(false);
+          displacePanelContent('right', incomingContent);
         } else {
           // Standard dock into secondary
           setSecondaryPanelContent(incomingContent);
@@ -391,7 +419,7 @@ export default function Home() {
         }
       }
     },
-    [primaryPanelContent, secondaryPanelContent]
+    [primaryPanelContent, secondaryPanelContent, slidingState, displacePanelContent]
   );
 
   const {
@@ -628,7 +656,7 @@ export default function Home() {
     <PrimarySidePanel
       title={getPanelTitle(primaryPanelContent, 'PRIMARY SIDE PANEL')}
       hasDockedContent={primaryPanelContent !== 'empty'}
-      isContentSliding={slidingState !== null}
+      isContentSliding={slidingState !== null && !(slidingState.incomingContent && slidingState.from === 'left' && slidingState.isMoving)}
       showSearchFilter={primaryPanelContent === 'explorer'}
       variant="sidebar"
       position="left"
@@ -779,7 +807,7 @@ export default function Home() {
           <SecondarySidePanel
             title={getPanelTitle(secondaryPanelContent, 'SECONDARY SIDE PANEL')}
             hasDockedContent={secondaryPanelContent !== 'empty'}
-            isContentSliding={slidingState !== null}
+            isContentSliding={slidingState !== null && !(slidingState.incomingContent && slidingState.from === 'right' && slidingState.isMoving)}
             showSearchFilter={secondaryPanelContent === 'explorer'}
             isOpen={isSecondaryActive}
             isPinned={isSecondaryPinned}

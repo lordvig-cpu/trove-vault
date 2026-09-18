@@ -39,8 +39,9 @@ labels and translucent highlights retain their purpose. These are design
 relationships, not a guarantee of contrast for arbitrary replacement seeds.
 
 Tune the coefficients in `theme-oklch-light.css` to adjust the derived light
-appearance without maintaining a second component palette. The original
-theme files are independent and unchanged.
+appearance without maintaining a second component palette. The legacy default
+theme registries have been removed; OKLCH and semantic tokens supply both modes.
+Premium Contrast is retained as generator input and is not imported at runtime.
 
 To recalibrate after deliberately changing Premium Contrast, run
 `node scripts/generate-oklch-theme.mjs`. This rewrites only `theme-oklch.css`;

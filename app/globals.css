@@ -1,9 +1,6 @@
 @import "tailwindcss";
 
 /* 1. Theme Token Registries */
-@import "./styles/themes/theme-default-dark.css";
-@import "./styles/themes/theme-default-light.css";
-@import "./styles/themes/theme-premium-contrast.css";
 /* OKLCH: seeds and defaults, shared recipes, then light-mode overrides. */
 @import "./styles/themes/theme-oklch-dark.css";
 @import "./styles/themes/theme-oklch.css";
