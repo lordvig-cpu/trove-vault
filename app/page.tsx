@@ -628,6 +628,7 @@ export default function Home() {
     <PrimarySidePanel
       title={getPanelTitle(primaryPanelContent, 'PRIMARY SIDE PANEL')}
       hasDockedContent={primaryPanelContent !== 'empty'}
+      isContentSliding={slidingState !== null}
       showSearchFilter={primaryPanelContent === 'explorer'}
       variant="sidebar"
       position="left"
@@ -653,7 +654,7 @@ export default function Home() {
       onToggleAllCategories={handleToggleAllCategories}
       searchQuery={searchQuery}
       onSearchChange={setSearchQuery}
-      reservedWidth={isSecondaryPinned ? secondaryPanelWidth : 0}
+      reservedWidth={isSecondaryActive ? secondaryPanelWidth : 0}
       onWidthChange={setPrimaryPanelWidth}
       loading={loading}
       error={error}
@@ -778,6 +779,7 @@ export default function Home() {
           <SecondarySidePanel
             title={getPanelTitle(secondaryPanelContent, 'SECONDARY SIDE PANEL')}
             hasDockedContent={secondaryPanelContent !== 'empty'}
+            isContentSliding={slidingState !== null}
             showSearchFilter={secondaryPanelContent === 'explorer'}
             isOpen={isSecondaryActive}
             isPinned={isSecondaryPinned}
@@ -803,7 +805,7 @@ export default function Home() {
             onToggleAllCategories={handleToggleAllCategories}
             searchQuery={searchQuery}
             onSearchChange={setSearchQuery}
-            reservedWidth={isPinned ? primaryPanelWidth : 0}
+            reservedWidth={isPrimaryActive ? primaryPanelWidth : 0}
             onWidthChange={setSecondaryPanelWidth}
             onAddNewItem={() => openCreateItem(null, null)}
             onAddNewCollection={() => openCreateCollection(null)}

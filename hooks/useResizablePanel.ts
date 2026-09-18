@@ -16,7 +16,7 @@ interface UseResizablePanelOptions {
   minWidth?: number;
   /** Minimum buffer space (in pixels) preserved between opposing workspace panels. Defaults to `48`. */
   minGap?: number;
-  /** Width claimed by an opposing docked/pinned panel (used to prevent collisions). Defaults to `0`. */
+  /** Width claimed by an opposing open panel, pinned or unpinned. Defaults to `0`. */
   reservedWidth?: number;
   /** Layout orientation: determines if width expands toward the right ('left') or left ('right'). Defaults to `'left'`. */
   direction?: 'left' | 'right';

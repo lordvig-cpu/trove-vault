@@ -11,6 +11,7 @@ import { useUIPreferences } from '@/context/UIPreferencesContext';
 import { useResizablePanel } from '@/hooks/useResizablePanel';
 import { SecondarySidebarPosition } from '@/types/layout';
 import EmptyPanelDropZone from '@/components/EmptyPanelDropZone';
+import PanelContentTransition from '@/components/PanelContentTransition';
 import PrimarySidePanelHeader from '@/components/PrimarySidePanelHeader';
 import { ExplorerTab } from '@/lib/filterExplorerForest';
 import { CollectionRecord } from '@/types/collection';
@@ -23,6 +24,7 @@ import { CollectionRecord } from '@/types/collection';
  * Props for SecondarySidePanel utility & inspector drawer.
  */
 interface SecondarySidePanelProps {
+  isContentSliding?: boolean;
   hasDockedContent?: boolean;
   isOpen: boolean;
   isPinned?: boolean;
@@ -67,6 +69,7 @@ const MIN_WORKSPACE_GAP = 48;
    ========================================================================== */
 
 export default function SecondarySidePanel({
+  isContentSliding = false,
   hasDockedContent = false,
   isOpen,
   isPinned = false,
@@ -251,6 +254,7 @@ export default function SecondarySidePanel({
         />
 
         {/* Panel Scrollable Body */}
+        <PanelContentTransition contentKey={children ? title : 'empty'} suppressTransition={isContentSliding}>
         <div className={`flex-1 min-h-0 overflow-y-auto overflow-x-hidden ${children ? 'px-2.5 pt-0 pb-6' : 'p-0'} min-w-0 primary-panel-scroll relative z-10 flex flex-col`}>
           {children ? (
             children
@@ -258,6 +262,7 @@ export default function SecondarySidePanel({
             <EmptyPanelDropZone panelTitle={title} position={position} />
           )}
         </div>
+        </PanelContentTransition>
       </aside>
     </>
   );

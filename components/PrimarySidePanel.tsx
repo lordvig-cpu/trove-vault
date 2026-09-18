@@ -16,12 +16,14 @@ import {
 import { ExplorerTab } from '@/lib/filterExplorerForest';
 import { PrimarySidebarPosition } from '@/types/layout';
 import EmptyPanelDropZone from '@/components/EmptyPanelDropZone';
+import PanelContentTransition from '@/components/PanelContentTransition';
 
 /* ==========================================================================
    1. TYPE DEFINITIONS & CONSTANTS
    ========================================================================== */
 
 interface PrimarySidePanelProps {
+  isContentSliding?: boolean;
   hasDockedContent?: boolean;
   title?: string;
   showSearchFilter?: boolean;
@@ -63,6 +65,7 @@ const DEFAULT_WIDTH = 304;
    ========================================================================== */
 
 export default function PrimarySidePanel({
+  isContentSliding = false,
   hasDockedContent = false,
   title,
   showSearchFilter,
@@ -227,6 +230,7 @@ export default function PrimarySidePanel({
       {error && <div className="primary-side-panel-notice-error mt-2 mx-2">{error}</div>}
 
       {/* Dedicated Scrollable Viewport or Empty Drop Zone Shell */}
+      <PanelContentTransition contentKey={children ? title || 'content' : 'empty'} suppressTransition={isContentSliding}>
       <div className={`flex-1 min-h-0 overflow-y-auto overflow-x-hidden ${children ? 'px-2.5 pt-0 pb-6' : 'p-0'} min-w-0 primary-panel-scroll flex flex-col`}>
         {children ? (
           children
@@ -237,6 +241,7 @@ export default function PrimarySidePanel({
           />
         )}
       </div>
+      </PanelContentTransition>
     </>
   );
 

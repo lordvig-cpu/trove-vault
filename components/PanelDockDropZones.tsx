@@ -74,23 +74,31 @@ export default function PanelDockDropZones({
               <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
             </svg>
           ) : hoveredZone && !isHoveredZoneAllowed ? (
-            '⃠'
+            <svg className="w-3.5 h-3.5" viewBox="0 0 20 20" fill="currentColor">
+              <path
+                fillRule="evenodd"
+                d="M13.477 14.89A6 6 0 015.11 6.524l8.367 8.366zm1.414-1.414L6.524 5.11a6 6 0 018.367 8.366zM18 10a8 8 0 11-16 0 8 8 0 0116 0z"
+                clipRule="evenodd"
+              />
+            </svg>
           ) : (
-            '❖'
+            <span>❖</span>
           )}
         </span>
         <span>
-          {hoveredZone === 'remove'
-            ? `Remove ${draggedItemName} Content`
-            : hoveredZone && !isHoveredZoneAllowed
-            ? `Cannot Dock ${draggedItemName} Here`
-            : hoveredZone === 'left'
-            ? `Dock to ${leftTargetName}`
-            : hoveredZone === 'right'
-            ? `Dock to ${rightTargetName}`
-            : hoveredZone === 'bottom'
-            ? 'Dock to Bottom Panel'
-            : `Docking: ${draggedItemName}`}
+          {hoveredZone === 'remove' ? (
+            <>Remove <em>{draggedItemName}</em> Content</>
+          ) : hoveredZone && !isHoveredZoneAllowed ? (
+            <>Cannot Dock <em>{draggedItemName}</em> Here</>
+          ) : hoveredZone === 'left' ? (
+            <>Dock to {leftTargetName}</>
+          ) : hoveredZone === 'right' ? (
+            <>Dock to {rightTargetName}</>
+          ) : hoveredZone === 'bottom' ? (
+            <>Dock to Bottom Panel</>
+          ) : (
+            <>Docking: <em>{draggedItemName}</em></>
+          )}
         </span>
       </div>
 
@@ -100,6 +108,7 @@ export default function PanelDockDropZones({
       <div className="dock-drop-workspace-bounds animate-mount-fade">
         {/* LEFT DOCK TARGET (Matches sidebar currently on the Left) */}
         <div
+          style={{ '--dock-target-color': isLeftAllowed ? 'var(--dock-valid-color)' : '#F8BC09' } as React.CSSProperties}
           className={`dock-zone-side ${
             hoveredZone === 'left' ? 'dock-zone-side-active' : ''
           }`}
@@ -110,14 +119,14 @@ export default function PanelDockDropZones({
             }`}
           >
             <span>◧</span>
-            <span>Dock to {leftTargetName}</span>
+            <span>{isLeftAllowed ? `Dock to ${leftTargetName}` : <>Cannot dock <em>{draggedItemName}</em> here</>}</span>
           </div>
           <span
             className={`dock-zone-side-text ${
               hoveredZone === 'left' ? 'dock-zone-side-text-active' : ''
             }`}
           >
-            {hoveredZone === 'left' ? 'Release mouse to dock here' : 'Drop Left'}
+            {!isLeftAllowed ? <><em>{draggedItemName}</em> cannot dock to a Side Panel</> : hoveredZone === 'left' ? 'Release mouse to dock here' : 'Drop Left'}
           </span>
         </div>
 
@@ -156,7 +165,7 @@ export default function PanelDockDropZones({
             Main Workspace Canvas
           </div>
 
-          {/* BOTTOM DOCK TARGET (Valid or Prohibited State) */}
+          {/* BOTTOM DOCK TARGET (Valid or Incompatible State) */}
           <div
             className={`dock-zone-bottom ${
               !isBottomAllowed
@@ -180,7 +189,7 @@ export default function PanelDockDropZones({
               }`}
             >
               {!isBottomAllowed ? (
-                /* Prohibited / Slashed NO Dock Icon */
+                /* Incompatible / Slashed NO Dock Icon */
                 <span className="dock-zone-prohibited-icon" aria-hidden="true">
                   <svg className="w-3.5 h-3.5" viewBox="0 0 20 20" fill="currentColor">
                     <path
@@ -195,7 +204,7 @@ export default function PanelDockDropZones({
               )}
               <span>
                 {!isBottomAllowed
-                  ? 'Cannot Dock Explorer Bottom'
+                  ? <>Cannot dock <em>{draggedItemName}</em> to Bottom Panel</>
                   : 'Dock to Bottom Panel'}
               </span>
             </div>
@@ -211,9 +220,7 @@ export default function PanelDockDropZones({
               }`}
             >
               {!isBottomAllowed
-                ? hoveredZone === 'bottom'
-                  ? '🚫 Explorer requires a vertical side panel'
-                  : 'Not available for Explorer'
+                ? <><em>{draggedItemName}</em> may only be docked to a Side Panel</>
                 : hoveredZone === 'bottom'
                 ? 'Release mouse to dock here'
                 : 'Drop Bottom'}
@@ -223,6 +230,7 @@ export default function PanelDockDropZones({
 
         {/* RIGHT DOCK TARGET (Matches sidebar currently on the Right) */}
         <div
+          style={{ '--dock-target-color': isRightAllowed ? 'var(--dock-valid-color)' : '#F8BC09' } as React.CSSProperties}
           className={`dock-zone-side ${
             hoveredZone === 'right' ? 'dock-zone-side-active' : ''
           }`}
@@ -233,14 +241,14 @@ export default function PanelDockDropZones({
             }`}
           >
             <span>◨</span>
-            <span>Dock to {rightTargetName}</span>
+            <span>{isRightAllowed ? `Dock to ${rightTargetName}` : <>Cannot dock <em>{draggedItemName}</em> here</>}</span>
           </div>
           <span
             className={`dock-zone-side-text ${
               hoveredZone === 'right' ? 'dock-zone-side-text-active' : ''
             }`}
           >
-            {hoveredZone === 'right' ? 'Release mouse to dock here' : 'Drop Right'}
+            {!isRightAllowed ? <><em>{draggedItemName}</em> cannot dock to a Side Panel</> : hoveredZone === 'right' ? 'Release mouse to dock here' : 'Drop Right'}
           </span>
         </div>
       </div>

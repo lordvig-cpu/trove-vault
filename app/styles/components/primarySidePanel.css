@@ -452,13 +452,27 @@
 .primary-side-panel,
 .secondary-side-panel {
   border-top: 1px solid var(--primary-border-strong);
-  border-top-left-radius: 0.75rem;
-  border-top-right-radius: 0.75rem;
+  border-top-left-radius: var(--panel-top-left-radius, 0);
+  border-top-right-radius: var(--panel-top-right-radius, 0);
+}
+
+.primary-side-panel-left,
+.primary-side-panel-docked-left,
+.secondary-side-panel-left {
+  --panel-top-left-radius: 0;
+  --panel-top-right-radius: 0.75rem;
+}
+
+.primary-side-panel-right,
+.primary-side-panel-docked-right,
+.secondary-side-panel-right {
+  --panel-top-left-radius: 0.75rem;
+  --panel-top-right-radius: 0;
 }
 
 .primary-side-panel > .primary-side-panel-header,
 .secondary-side-panel > .primary-side-panel-header {
-  clip-path: inset(0 round 0.75rem 0.75rem 0 0);
+  clip-path: inset(0 round var(--panel-top-left-radius, 0) var(--panel-top-right-radius, 0) 0 0);
 }
 
 .explorer-header-toolbar::before {
@@ -509,6 +523,30 @@
 .explorer-header-title {
   color: var(--text-strong);
   text-shadow: 0 1px 3px var(--shadow-black-35);
+}
+
+@keyframes panelContentEnter {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes panelContentExit {
+  from { opacity: 1; transform: translateY(0); }
+  to { opacity: 0; transform: translateY(4px); }
+}
+
+.panel-content-enter {
+  animation: panelContentEnter 220ms ease-out both;
+}
+
+.panel-content-exit {
+  animation: panelContentExit 160ms ease-in both;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .panel-content-enter,
+  .panel-content-exit { animation: none; }
 }
 
 /* Separate the panel controls from the search section. */
