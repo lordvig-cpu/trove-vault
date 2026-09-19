@@ -11,7 +11,7 @@ export interface ItemRecord {
   parent_id: number | null;
   image_url?: string | null;
   name: string;
-  attributes: Record<string, any>;
+  attributes: Record<string, unknown>;
   created_at?: string;
   children?: ItemRecord[];
 }

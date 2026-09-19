@@ -102,9 +102,9 @@ export default function CollectionDropdown({
         onSelectCollection(data.id);
       }
       setIsOpen(false);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Error creating collection in collections table:', err);
-      setError(err?.message || 'Failed to create collection');
+      setError(err instanceof Error ? err.message : 'Failed to create collection');
     } finally {
       setIsSaving(false);
     }
@@ -287,7 +287,7 @@ export default function CollectionDropdown({
             <div className="max-h-64 overflow-y-auto space-y-1 col-dropdown-scroll pr-1">
               {collections.length === 0 ? (
                 <div className="text-xs dropdown-muted text-center py-4">
-                  No collections yet. Click "+ New Root Collection" above.
+                  No collections yet. Click &quot;+ New Root Collection&quot; above.
                 </div>
               ) : (
                 renderTreeNodes(collectionTree)

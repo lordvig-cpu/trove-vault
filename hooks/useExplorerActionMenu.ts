@@ -59,6 +59,7 @@ export function useExplorerActionMenu(
     window.addEventListener(GLOBAL_MENU_OPEN_EVENT, handleGlobalMenuOpen);
     return () => {
       window.removeEventListener(GLOBAL_MENU_OPEN_EVENT, handleGlobalMenuOpen);
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
     };
   }, [id]);
 
@@ -118,7 +119,7 @@ export function useExplorerActionMenu(
    * Measures bounding rect, calculates coordinates, and broadcasts the open event.
    */
   const handleGearMouseEnter = useCallback(
-    (e: React.MouseEvent<HTMLDivElement>, customHeight?: number) => {
+    (e: React.SyntheticEvent<HTMLElement>, customHeight?: number) => {
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
       const rect = e.currentTarget.getBoundingClientRect();
       activeGearRectRef.current = rect;
@@ -170,6 +171,8 @@ export function useExplorerActionMenu(
     if (isRenaming) return;
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
     timeoutRef.current = setTimeout(() => {
+      const focused = document.activeElement;
+      if (focused === activeTargetElRef.current || (focused instanceof HTMLElement && focused.closest('[data-explorer-menu]'))) return;
       setIsMenuOpen(false);
       setIsRenaming(false);
     }, 350);
@@ -184,7 +187,28 @@ export function useExplorerActionMenu(
     setIsRenaming(false);
   }, []);
 
+  const handleGearKeyDown = useCallback((event: React.KeyboardEvent<HTMLElement>) => {
+    if (!['Enter', ' ', 'ArrowDown'].includes(event.key)) return;
+    event.preventDefault();
+    event.stopPropagation();
+    handleGearMouseEnter(event);
+    requestAnimationFrame(() => document.querySelector<HTMLElement>('[data-explorer-menu]:not([inert]) button')?.focus());
+  }, [handleGearMouseEnter]);
+
+  useEffect(() => {
+    if (!isMenuOpen) return;
+    const escape = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape' || event.defaultPrevented) return;
+      event.preventDefault();
+      closeMenu();
+      activeTargetElRef.current?.focus();
+    };
+    document.addEventListener('keydown', escape);
+    return () => document.removeEventListener('keydown', escape);
+  }, [isMenuOpen, closeMenu]);
+
   return {
+    handleGearKeyDown,
     isMenuOpen,
     menuCoords,
     isRenaming,

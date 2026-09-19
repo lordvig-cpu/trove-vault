@@ -1,6 +1,8 @@
 'use client';
 
 import React from 'react';
+import Image from 'next/image';
+import logo from '@/assets/images/nav_bar_website_logo.webp';
 import { CollectionRecord } from '@/types/collection';
 import CollectionDropdown from '@/components/CollectionDropdown';
 import { NavigationBarTextureFilter } from '@/components/icons/SystemIcons';
@@ -60,7 +62,6 @@ interface NavigationHeaderProps {
    ========================================================================== */
 
 export default function NavigationHeader({
-  activeCollectionName,
   collections,
   activeCollectionId,
   onSelectCollection,
@@ -109,8 +110,9 @@ export default function NavigationHeader({
           <div className="flex items-center justify-between h-full w-76 shrink-0 relative">
             {/* Brand Logo Anchor */}
             <div className="flex items-center gap-2 pl-4 relative z-20">
-              <img
-                src="/images/nav_bar_website_logo.png"
+              <Image
+                src={logo}
+                sizes="144px"
                 alt="TroveVault"
                 className="h-8 w-auto object-contain select-none"
               />

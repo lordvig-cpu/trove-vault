@@ -10,17 +10,52 @@
 /* 2. Functional Component Stylesheets */
 @import "./styles/components/ExplorerPrimitives.css";
 @import "./styles/components/ContentPrimitives.css";
-@import "./styles/components/NavigationHeader.css";
-@import "./styles/components/NavigationFooter.css";
-@import "./styles/components/MainContent.css";
+@import "./styles/components/navigationHeader.css";
+@import "./styles/components/navigationFooter.css";
+@import "./styles/components/mainContent.css";
 @import "./styles/components/primarySidePanel.css";
 @import "./styles/components/UnifiedExplorerTree.css";
 @import "./styles/components/secondarySidePanel.css";
-@import "./styles/components/collectionDropdown.css";
-@import "./styles/components/TemplateManagerModal.css";
+@import "./styles/components/collectionDropDown.css";
+@import "./styles/components/fieldManagerModal.css";
+@import "./styles/components/templateManagerModal.css";
 @import "./styles/components/ItemModal.css";
 @import "./styles/components/BottomPanel.css";
 @import "./styles/components/PanelDockDropZones.css";
+
+:root {
+  /* Dialogs clear every app overlay; Explorer menus intentionally sit below panels. */
+  --z-modal: 400;
+  --z-explorer-unpinned: 45;
+}
+
+/* Flyout menus clear its dismissal backdrop while staying beneath its edge. */
+body:has(.nav-flyout-menu:not([inert])) {
+  --z-explorer-unpinned: 70;
+}
+
+/* Apply the operating-system preference to all utility and component motion. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+.panel-resize-handle,
+.panel-resize-handle-horizontal { touch-action: none; }
+
+:where(button, [role='button'], [role='separator']):focus-visible {
+  outline: 2px solid var(--secondary-accent);
+  outline-offset: 2px;
+}
+
+label:has(input[type='file']:focus-visible) {
+  outline: 2px solid var(--secondary-accent);
+  outline-offset: 2px;
+}
 
 /* ==========================================================================
    GLOBAL VIEWPORT & RESET
@@ -41,23 +76,61 @@ body {
   color: var(--text-primary);
 }
 
-/* ===========================================================================================================================
-   | GLOBAL Z-INDEX HIERARCHY (Tiers in Multiples of 10)                                                                     |
-   ===========================================================================================================================
-   | Tier / Layer   | Target Elements                   | Description                      | Primary File(s)                 |
-   |----------------|-----------------------------------|----------------------------------|---------------------------------|
-   | z-[200]+       | Global Modals, DevTools           | Highest overlay plane            | *Modal.tsx (e.g. EditItemModal) |
-   | z-[100]        | Logo Hover Trigger Zone           | Invisible video trigger area     | page.tsx                        |
-   | z-[80]         | Top Nav Bar & Flyout Container    | Unpinned Explorer Flyout Menu    | page.tsx, NavigationHeader.tsx  |
-   | z-[70]         | Unpinned ExplorerActionMenu       | Floats over backdrop, under Nav  | ExplorerActionMenu.tsx          |
-   | z-[60]         | Flyout Backdrop & Bottom Nav      | Dimming overlay & Footer         | NavigationHeader.tsx, page.tsx  |
-   | z-50           | Left / Right Side Panels (aside)  | Pinned side panels               | LeftSidePanel.tsx, RightSide... |
-   | z-40           | Sticky Tree Headers, Hover Lift   | Active tree row elevation        | UnifiedExplorerTree*.tsx        |
-   | z-30           | Pinned ExplorerActionMenu         | Behind panel border, above canvas| ExplorerActionMenu.tsx          |
-   | z-20           | Main Content Canvas (<main>)      | Active workspace / content cards | MainContent.tsx                 |
-   | z-10           | Canvas Overlays / Blackout Masks  | Local dimming inside workspace   | MainContent.tsx, NavigationHead.|
-   | z-0            | Canvas Grid, Watermark, Video     | Lowest background plane          | page.tsx                        |
-   =========================================================================================================================== */
+/* =================================================================================================
+   CURRENT Z-INDEX MAP - declared values; stacking context determines their reach
+
+   | z-index    | Element / state                       | Placement / scope                                  | Source                                       |
+   |------------|---------------------------------------|----------------------------------------------------|----------------------------------------------|
+   | 400        | Modal backdrops                       | Shared --z-modal; overrides legacy utility classes | ItemModal.css; fieldManagerModal.css         |
+   | 300        | Seed color picker                     | Portal to document.body                            | SeedColorPicker.tsx; navigationFooter.css    |
+   | 150        | Dock drop-target overlay              | Fixed; rendered inside workspace                   | PanelDockDropZones.tsx / CSS                 |
+   | 100        | Logo introduction trigger             | Application shell                                  | DynamicWatermark.tsx                         |
+   | 80         | Header wrapper / navigation bar       | Contains local navigation and flyout layers        | page.tsx; NavigationHeader.tsx               |
+   | 70         | Explorer menus while flyout is open   | Above backdrop (60), beneath flyout panel (80)      | globals.css; Explorer*Menu.tsx               |
+   | 60         | Footer wrapper / navigation footer    | Contains local footer layers                       | page.tsx; NavigationFooter.tsx               |
+   | 60         | Explorer flyout backdrop              | Body portal; begins below navigation               | PrimarySidePanel.tsx                         |
+   | 55 / 54    | Moving / displaced panel content      | Workspace; transient swap animation                | page.tsx                                     |
+   | 50 / 40    | Primary / secondary sidebar asides    | 50: open + unpinned; 40: pinned or closed          | PrimarySidePanel.tsx; SecondarySidePanel.tsx |
+   | 45 / 35    | Explorer action / search menus        | Body portals; unpinned / pinned; under panel edge | Both Explorer*Menu.tsx components            |
+   | 35         | Bottom panel aside                    | Workspace; same value pinned or unpinned           | BottomPanel.css                              |
+   | 30         | Expand tabs / workspace header shadow | Workspace                                          | Panel CSS; navigationHeader.css              |
+   | 10         | Center canvas wrapper                 | Workspace; owns MainContent local layers           | page.tsx                                     |
+   | 0          | Watermark / intro video container     | Application shell; grid is root background         | DynamicWatermark.tsx; mainContent.css        |
+
+   NESTED / LOCAL LAYERS - local values cannot escape their parent stacking context
+
+   | z-index    | Element / state                       | Placement / scope                                  | Source                                       |
+   |------------|---------------------------------------|----------------------------------------------------|----------------------------------------------|
+   | 160        | Cursor-following drag badge           | LOCAL to the z=150 dock overlay                    | PanelDockDropZones.tsx / CSS                 |
+   | 80         | Explorer flyout aside                 | LOCAL to header / flyout containers                | PrimarySidePanel.tsx                         |
+   | 60 / 50    | Active / inactive navigation tab      | LOCAL to the header; stable on hover               | navigationHeader.css                         |
+   | 50 / 40    | Collection dropdown / dismissal cover | LOCAL to the header                                | CollectionDropdown.tsx / CSS                 |
+   | 50         | Panel resize handles                  | LOCAL to their isolated panel                      | ContentPrimitives.css                        |
+   | 40         | Panel reset buttons                   | LOCAL to their isolated panel                      | Side-panel and BottomPanel components        |
+   | 40         | Hovered sticky explorer category      | LOCAL to panel; scoped hover override              | primarySidePanel.css                         |
+   | 30         | Panel bottom topper / canvas fades    | LOCAL to panel / canvas respectively               | primarySidePanel.css; mainContent.css        |
+   | 20 - depth | Idle sticky explorer category headers | LOCAL to panel; hovered category uses 40           | UnifiedExplorerTree.tsx                      |
+   | 20         | MainContent wrapper                   | LOCAL to the z=10 center canvas wrapper            | MainContent.tsx                              |
+   | 20 / 10    | Selected / idle explorer folder tabs  | LOCAL to panel header                              | PrimarySidePanelHeader.tsx                   |
+   | 10 / 5 / 1 | Content / decoration / texture layers | LOCAL to header, footer or panel                   | Component CSS and TSX                        |
+   | -1         | Folder-tab decorative pseudo-element  | LOCAL to isolated tab                              | primarySidePanel.css                         |
+
+   CONTRACT:
+   - Explorer menus intentionally use 35 when pinned and 45 when unpinned,
+     beneath sidebar layers 40 / 50 so panel edges overlap the slide-out menus.
+     With the flyout open, unpinned menus use 70: above its dismissal backdrop
+     (60) for clicks, but beneath the flyout/header (80) for the same overlap.
+   - --z-modal (400) keeps all modal backdrops above menus, navigation, drag UI,
+     and the seed picker (300). Shared unlayered CSS overrides old z-50/z-[100]
+     utility classes; ModalContainers adds no portal or higher-z wrapper.
+   - Only .explorer-category-sticky-header:hover forces a local z-index of 40.
+     Navigation tabs, resize controls and unrelated .group elements keep their tiers.
+   - Header/footer/panel isolation, transforms, filters and opacity create nested
+     contexts. Equal-z siblings use DOM paint order; portals participate at their
+     DOM destination. Workspace opacity below 1 temporarily confines its drag UI.
+   - Browser and Next.js DevTools are outside this application's layer contract.
+   Reference: https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Positioned_layout/Stacking_context
+   ================================================================================================= */
 
 /* ==========================================================================
    TAILWIND V4 THEME TOKEN MAPPING

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, useEffect, useRef } from 'react';
+import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
 import { useUIPreferences } from '@/context/UIPreferencesContext';
 import { ItemRecord } from '@/types/item';
 import { useCollections } from '@/hooks/useCollections';
@@ -21,10 +21,6 @@ import ModalContainers from '@/components/ModalContainers';
 import DynamicWatermark from '@/components/DynamicWatermark';
 import { filterExplorerForest, ExplorerTab } from '@/lib/filterExplorerForest';
 import { itemMatchesQuery } from '@/lib/explorerUtils';
-
-export interface UniversalSearchResultItem extends ItemRecord {
-  collection_name?: string;
-}
 
 export default function Home() {
   /* ------------------------------------------------------------------------
@@ -79,14 +75,14 @@ export default function Home() {
     setFilterCollectionIds([]);
   };
 
-  const filteredForest = filterExplorerForest(
+  const filteredForest = useMemo(() => filterExplorerForest(
     unifiedForest,
     filterCollectionIds,
     activeExplorerTab,
     allItems,
     allCollections,
     templates
-  );
+  ), [unifiedForest, filterCollectionIds, activeExplorerTab, allItems, allCollections, templates]);
 
   const {
     searchQuery,
@@ -102,20 +98,14 @@ export default function Home() {
      ------------------------------------------------------------------------ */
   const {
     isPinned,
-    togglePin,
     setIsPinned,
     isSecondaryPinned,
-    toggleSecondaryPin,
     setIsSecondaryPinned,
     isBottomPinned,
     setIsBottomPinned,
     isAudioEnabled,
     animationsEnabled,
     isHydrated,
-    primaryPosition,
-    setPrimaryPosition,
-    secondaryPosition,
-    setSecondaryPosition,
   } = useUIPreferences();
 
   /* ------------------------------------------------------------------------
@@ -140,9 +130,6 @@ export default function Home() {
   const isSecondaryActive = isSecondaryPinned || isSecondaryOpen;
   const dockContents = { primary: primaryPanelContent, secondary: secondaryPanelContent, bottom: bottomPanelContent };
 
-  // Fixed physical sidebar positions (Primary is Left, Secondary is Right)
-  const effectivePrimaryPosition = 'left' as const;
-  const effectiveSecondaryPosition = 'right' as const;
 
   // Dynamic occupied widths for main content margin adjustments (only when pinned)
   const leftOccupiedWidth = isPinned && isPrimaryActive ? primaryPanelWidth : 0;
@@ -609,11 +596,6 @@ export default function Home() {
   /* ------------------------------------------------------------------------
      9. EVENT HANDLERS & DELEGATION
      ------------------------------------------------------------------------ */
-  const handleTogglePin = () => {
-    togglePin();
-    setIsPrimarySidePanelOpen(true);
-  };
-
   const handleTreeSelectItem = (item: ItemRecord, collectionId: number | null) => {
     // Clear the search in the same update so its sole match cannot override this click.
     const pattern = searchQuery.trim();
@@ -853,7 +835,7 @@ export default function Home() {
           className={[
             'flex flex-1 min-h-0 relative overflow-hidden',
             'transition-opacity duration-500 ease-in-out',
-            isLogoHovered ? 'opacity-0 pointer-events-none' : 'opacity-100',
+            isLogoHovered && animationsEnabled ? 'opacity-0 pointer-events-none' : 'opacity-100',
           ].join(' ')}
         >
           {/* Visual Dock Drop Targets (OKLCH Dynamic Palette) */}

@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
+import { usePresence } from '@/hooks/usePresence';
 import { createPortal } from 'react-dom';
 import '@/app/styles/components/ExplorerActionMenu.css';
 import { useUIPreferences } from '@/context/UIPreferencesContext';
@@ -36,44 +37,8 @@ export default function ExplorerActionMenu({
   const { animationsEnabled, isPinned } = useUIPreferences();
   const effectivePosition = position ?? 'left';
 
-  // Portals render into document.body, so wait until the browser has mounted.
-  const [mounted, setMounted] = useState(false);
-
-  // Keep the menu mounted during its closing animation before removing it.
-  const [shouldRender, setShouldRender] = useState(isOpen);
-  const [isClosing, setIsClosing] = useState(false);
-  const closeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  // Synchronize the rendered lifecycle with the requested open state. Closing
-  // is delayed so CSS can play the exit animation before unmounting the portal.
-  useEffect(() => {
-    if (isOpen) {
-      if (closeTimeoutRef.current) clearTimeout(closeTimeoutRef.current);
-      setShouldRender(true);
-      setIsClosing(false);
-    } else if (shouldRender) {
-      if (animationsEnabled) {
-        setIsClosing(true);
-        closeTimeoutRef.current = setTimeout(() => {
-          setShouldRender(false);
-          setIsClosing(false);
-        }, 340); // Matches menuSlideOut 350ms duration
-      } else {
-        setShouldRender(false);
-      }
-    }
-
-    return () => {
-      if (closeTimeoutRef.current) clearTimeout(closeTimeoutRef.current);
-    };
-  }, [isOpen, animationsEnabled, shouldRender]);
-
-  // Avoid rendering a portal during SSR or before document.body is available.
-  if (!shouldRender || !mounted || typeof document === 'undefined') return null;
+  const { mounted, renderMenu, isClosing } = usePresence(isOpen, 340, animationsEnabled);
+  if (!renderMenu || !mounted) return null;
 
   // Menu coordinates already compute exact seam positioning
   const adjustedLeft = left;
@@ -101,6 +66,10 @@ export default function ExplorerActionMenu({
   // boundaries and remain positioned against the viewport.
   return createPortal(
     <div
+      data-explorer-menu
+      inert={!isOpen}
+      aria-hidden={!isOpen}
+      onFocus={onMouseEnter}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
       style={{
@@ -108,7 +77,7 @@ export default function ExplorerActionMenu({
         top: `${top}px`,
         left: `${adjustedLeft}px`,
         margin: 0,
-        zIndex: isPinned ? 35 : 45,
+        zIndex: isPinned ? 35 : 'var(--z-explorer-unpinned)',
       }}
       className={`menuShell ${animationClass}`}
     >
@@ -250,7 +219,11 @@ export function ActionMenuRenameForm({
         value={val}
         onChange={(e) => setVal(e.target.value)}
         onKeyDown={(e) => {
-          if (e.key === 'Escape') onCancel();
+          if (e.key === 'Escape') {
+            e.preventDefault();
+            e.stopPropagation();
+            onCancel();
+          }
         }}
         className="actionMenuRenameInput"
       />

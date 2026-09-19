@@ -138,44 +138,4 @@ export function ChevronRightIcon({ className = 'w-[10px] h-[10px]' }: ExplorerIc
   );
 }
 
-interface ExplorerPinIconProps extends ExplorerIconProps {
-  position?: 'left' | 'right';
-}
-
-// Unpinned: Upright outline -> fills primary & rotates 45° to preview the pinned state
-export function PinOutlineIcon({ className = 'w-4 h-4', position = 'left' }: ExplorerPinIconProps) {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="transparent"
-      stroke="currentColor"
-      strokeWidth="1.8"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className={`origin-center icon-pin-outline transition-all duration-300 ease-out ${
-        position === 'right' ? 'group-hover:-rotate-45' : 'group-hover:rotate-45'
-      } ${className}`}
-    >
-      <path d="M8 3H16L15 8L18 11V13H13V19L12 22L11 19V13H6V11L9 8L8 3Z" />
-    </svg>
-  );
-}
-
-// Pinned: 45° solid pin -> clears fill to transparent outline & rotates upright to preview unpinning
-export function PinFilledIcon({ className = 'w-4 h-4', position = 'left' }: ExplorerPinIconProps) {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="currentColor"
-      stroke="currentColor"
-      strokeWidth="1.8"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className={`origin-center icon-pin-filled ${
-        position === 'right' ? '-rotate-45' : 'rotate-45'
-      } transition-all duration-300 ease-out group-hover:rotate-0 ${className}`}
-    >
-      <path d="M8 3H16L15 8L18 11V13H13V19L12 22L11 19V13H6V11L9 8L8 3Z" />
-    </svg>
-  );
-}
+export { PinOutlineIcon, PinFilledIcon } from './SystemIcons';

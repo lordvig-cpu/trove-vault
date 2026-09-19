@@ -112,8 +112,10 @@ export default function SecondarySidePanel({
 
   const {
     panelWidth,
+    maxWidth,
     isDragging,
     handlePointerDown,
+    handleKeyDown,
     handleResetWidth,
   } = useResizablePanel({
     initialWidth: DEFAULT_WIDTH,
@@ -142,6 +144,8 @@ export default function SecondarySidePanel({
           -------------------------------------------------------------------- */}
       <button
         type="button"
+        inert={isOpen}
+        aria-hidden={isOpen}
         onClick={onOpen}
         style={{
           left: position === 'left' ? '0px' : 'calc(100% - 1.75rem)',
@@ -167,6 +171,8 @@ export default function SecondarySidePanel({
           2.3 DOCKED SECONDARY INSPECTOR PANEL CONTAINER
           -------------------------------------------------------------------- */}
       <aside
+        inert={!isOpen}
+        aria-hidden={!isOpen}
         style={{
           width: `${panelWidth}px`,
           left: position === 'left' ? '0px' : `calc(100% - ${panelWidth}px)`,
@@ -185,6 +191,14 @@ export default function SecondarySidePanel({
         {isOpen && (
           <div
             onPointerDown={handlePointerDown}
+            onKeyDown={handleKeyDown}
+            role="separator"
+            tabIndex={0}
+            aria-label="Secondary panel width"
+            aria-orientation="vertical"
+            aria-valuemin={260}
+            aria-valuenow={panelWidth}
+            aria-valuemax={maxWidth}
             onDoubleClick={handleResetWidth}
             className={`panel-resize-handle absolute top-1/2 -translate-y-1/2 ${
               position === 'right' ? '-left-2' : '-right-2'

@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
+import { usePresence } from '@/hooks/usePresence';
 import '@/app/styles/components/ExplorerSearchMenu.css';
 import { useUIPreferences } from '@/context/UIPreferencesContext';
 
@@ -32,39 +33,8 @@ export default function ExplorerSearchMenu({
 }: ExplorerSearchMenuProps) {
   const { animationsEnabled } = useUIPreferences();
   const effectivePosition = position ?? 'left';
-  const [mounted, setMounted] = useState(false);
-  const [renderMenu, setRenderMenu] = useState(isOpen);
-  const [isClosing, setIsClosing] = useState(false);
+  const { mounted, renderMenu, isClosing } = usePresence(isOpen, 500, animationsEnabled);
   const menuRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  /* ------------------------------------------------------------------------ 
-  1. LIFECYCLE & UNMOUNT DELAY 
-  Keeps portal mounted for 500ms when isOpen turns false to play slide-out 
-  ------------------------------------------------------------------------ */
-
-  // Controls mounting and unmounting timer for exit slide transition 
-  useEffect(() => { 
-    if (isOpen) { 
-      setRenderMenu(true); 
-      setIsClosing(false); 
-    } 
-    else if (renderMenu) { 
-      if (animationsEnabled) { 
-        setIsClosing(true); 
-        const timer = setTimeout(() => { 
-          setRenderMenu(false); 
-          setIsClosing(false);
-         }, 500);
-        return () => clearTimeout(timer);
-       } else { 
-        setRenderMenu(false); 
-      } 
-    } 
-  }, [isOpen, renderMenu, animationsEnabled]);
 
   /* ------------------------------------------------------------------------ 
   2. CLICK-OUTSIDE & ESCAPE DISMISSAL 
@@ -85,7 +55,11 @@ export default function ExplorerSearchMenu({
     };
 
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
+      if (e.key === 'Escape' && !e.defaultPrevented) {
+        e.preventDefault();
+        onClose();
+        triggerRef?.current?.focus();
+      }
     };
 
     const timer = setTimeout(() => {
@@ -118,12 +92,14 @@ export default function ExplorerSearchMenu({
   return createPortal(
     <div
       ref={menuRef}
+      inert={!isOpen}
+      aria-hidden={!isOpen}
       style={{
         position: 'fixed',
         top: `${top}px`,
         left: `${adjustedLeft}px`,
         margin: 0,
-        zIndex: isPinned ? 35 : 45,
+        zIndex: isPinned ? 35 : 'var(--z-explorer-unpinned)',
       }}
       className={`searchMenuShell ${animationClass}`}
     >

@@ -2,6 +2,7 @@
 
 .item-modal-backdrop,
 .confirm-modal-backdrop {
+  z-index: var(--z-modal);
   background-color: var(--modal-overlay-bg);
   backdrop-filter: blur(4px);
 }

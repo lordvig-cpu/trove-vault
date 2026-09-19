@@ -86,7 +86,6 @@ export default function NavigationFooter({
     toggleAudio,
     theme,
     toggleTheme,
-    primaryPosition,
   } = useUIPreferences();
 
   const isLightTheme = theme === 'theme-oklch-light';

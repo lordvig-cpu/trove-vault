@@ -114,8 +114,10 @@ export default function PrimarySidePanel({
      ------------------------------------------------------------------------ */
   const {
     panelWidth,
+    maxWidth,
     isDragging,
     handlePointerDown,
+    handleKeyDown,
     handleResetWidth,
   } = useResizablePanel({
     initialWidth: DEFAULT_WIDTH,
@@ -152,6 +154,14 @@ export default function PrimarySidePanel({
       {variant === 'sidebar' && isOpen && (
         <div
           onPointerDown={handlePointerDown}
+            onKeyDown={handleKeyDown}
+            role="separator"
+            tabIndex={0}
+            aria-label="Primary panel width"
+            aria-orientation="vertical"
+            aria-valuemin={304}
+            aria-valuenow={panelWidth}
+            aria-valuemax={maxWidth}
           onDoubleClick={handleResetWidth}
           className={`panel-resize-handle absolute top-1/2 -translate-y-1/2 ${
             position === 'left' ? '-right-2' : '-left-2'
@@ -287,6 +297,8 @@ export default function PrimarySidePanel({
           )}
 
         <aside
+          inert={!isOpen}
+          aria-hidden={!isOpen}
           style={{ zIndex: 80 }}
           className={[
             'nav-flyout-menu',
@@ -324,6 +336,8 @@ export default function PrimarySidePanel({
           -------------------------------------------------------------------- */}
       <button
         type="button"
+        inert={isOpen}
+        aria-hidden={isOpen}
         onClick={onOpen ?? handlePinAction}
         style={{
           left: position === 'left' ? '0px' : 'calc(100% - 1.75rem)',
@@ -350,6 +364,8 @@ export default function PrimarySidePanel({
           4.3 DOCKED PRIMARY EXPLORER PANEL CONTAINER
           -------------------------------------------------------------------- */}
       <aside
+        inert={!isOpen}
+        aria-hidden={!isOpen}
         style={{
           width: `${panelWidth}px`,
           left: position === 'left' ? '0px' : `calc(100% - ${panelWidth}px)`,

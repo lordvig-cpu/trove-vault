@@ -52,8 +52,10 @@ export default function BottomPanel({
 
   const {
     panelHeight,
+    maxHeight,
     isDragging,
     handlePointerDown,
+    handleKeyDown,
     handleResetHeight,
     panelElementRef,
   } = useResizableHeight({
@@ -88,6 +90,14 @@ export default function BottomPanel({
       {isOpen && (
         <div
           onPointerDown={handlePointerDown}
+          onKeyDown={handleKeyDown}
+          role="separator"
+          tabIndex={0}
+          aria-label="Bottom panel height"
+          aria-orientation="horizontal"
+          aria-valuemin={140}
+          aria-valuenow={panelHeight}
+          aria-valuemax={maxHeight}
           onDoubleClick={handleResetHeight}
           className={`panel-resize-handle-horizontal absolute -top-2 left-1/2 -translate-x-1/2 w-32 h-4 select-none group/resize ${
             isDragging ? 'panel-resize-handle-active' : ''
@@ -174,7 +184,7 @@ export default function BottomPanel({
                   ? 'No empty sidebar available for displaced content'
                   : 'Move Grabbed Content to Primary Side Bar'
               }
-              aria-label="Move content to Primary Side Bar"
+            aria-label="Move content to Primary Side Bar"
             >
               <DockLeftPanelIcon className="w-3.5 h-3.5" isOpen={true} />
             </button>
@@ -182,7 +192,7 @@ export default function BottomPanel({
               type="button"
               onClick={onClose}
               title="Hide Bottom Panel"
-              aria-label="Hide Bottom Panel"
+            aria-label="Hide Bottom Panel"
               className="p-1.5 rounded-lg border transition cursor-pointer flex items-center justify-center nav-footer-dock-btn-open"
             >
               <DockBottomPanelIcon className="w-4 h-4" isOpen={true} />
@@ -199,7 +209,7 @@ export default function BottomPanel({
                   ? 'No empty sidebar available for displaced content'
                   : 'Move Grabbed Content to Secondary Side Bar'
               }
-              aria-label="Move content to Secondary Side Bar"
+            aria-label="Move content to Secondary Side Bar"
             >
               <DockRightPanelIcon className="w-3.5 h-3.5" isOpen={true} />
             </button>
@@ -208,7 +218,7 @@ export default function BottomPanel({
               onClick={onTogglePin}
               className="primary-side-panel-pin-btn group"
               title={isPinned ? 'Unpin Bottom Panel' : 'Pin Bottom Panel'}
-              aria-label={isPinned ? 'Unpin Bottom Panel' : 'Pin Bottom Panel'}
+            aria-label={isPinned ? 'Unpin Bottom Panel' : 'Pin Bottom Panel'}
               aria-pressed={isPinned}
             >
               {isPinned ? <PinFilledIcon className="w-3.5 h-3.5" /> : <PinOutlineIcon className="w-3.5 h-3.5" />}

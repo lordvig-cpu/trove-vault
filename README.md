@@ -1,36 +1,37 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# TroveVault
 
-## Getting Started
+A Next.js collection workspace backed by Supabase.
 
-First, run the development server:
+## Development
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+Install dependencies with `npm ci`, configure `NEXT_PUBLIC_SUPABASE_URL` and
+`NEXT_PUBLIC_SUPABASE_ANON_KEY` in `.env.local`, then run `npm run dev`.
+The `/test_connection` diagnostic is available only in development; production
+returns 404. A successful diagnostic means the collections query succeeded.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Checks
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- `npm run lint:workspace` checks everything except TSX files with Modal in their
+  names, which are deferred from the current cleanup. `npm run lint` checks all files.
+- `npm run build` validates types and builds the production app. Google Fonts
+  must be reachable during a cold build.
+- After building, `npm test` runs data and browser regressions against a temporary
+  production server on port 3100. Database requests are mocked; tests do not change
+  live Supabase data. Windows uses installed Edge. On other systems, first run
+  `npx playwright install chromium`.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Media and interaction
 
-## Learn More
+Brand images live in `assets/images` as lossless WebP files and use Next Image
+optimization. They are imported from outside `public` to avoid shipping duplicate
+public and bundled copies. Retired media remains available in Git history.
+The intro video loads on first interaction and respects reduced-motion preferences.
 
-To learn more about Next.js, take a look at the following resources:
+Panel separators support arrow keys (Shift for larger steps), Home for minimum
+size, and End for available space. Pointer cancellation and window blur restore
+cursor and selection styles. Explorer selection and action controls are keyboard
+accessible; Escape dismisses an action menu before its enclosing panel.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Data loading paginates every table, including item/collection links, and cancels
+outdated refreshes. Tree construction indexes parent and membership relationships;
+regressions cover missing parents, cycles, inherited membership, and row caps.

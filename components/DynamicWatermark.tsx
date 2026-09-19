@@ -1,6 +1,9 @@
 'use client';
 
 import React, { useRef, useEffect } from 'react';
+import Image from 'next/image';
+import watermark from '@/assets/images/web_background_trove_vault_logo.webp';
+import { useUIPreferences } from '@/context/UIPreferencesContext';
 
 /**
  * Props for DynamicWatermark
@@ -24,6 +27,8 @@ export default function DynamicWatermark({
      Maintains direct ref access to the native HTML5 <video> element.
      ------------------------------------------------------------------------ */
   const videoRef = useRef<HTMLVideoElement | null>(null);
+  const { animationsEnabled } = useUIPreferences();
+  const playing = isHovered && animationsEnabled;
 
   /* ------------------------------------------------------------------------
      2. PLAYBACK LIFECYCLE & RACE CONDITION HANDLING
@@ -37,7 +42,9 @@ export default function DynamicWatermark({
     // Ensure muted state is synchronized directly on the DOM element
     video.muted = !isAudioEnabled;
 
-    if (isHovered) {
+    let cancelled = false;
+    if (playing) {
+      if (!video.getAttribute('src')) video.src = '/videos/website_intro_video.mp4';
       try {
         video.currentTime = 0;
       } catch {}
@@ -45,6 +52,7 @@ export default function DynamicWatermark({
       const playPromise = video.play();
       if (playPromise !== undefined) {
         playPromise.catch((err) => {
+          if (cancelled) return;
           // If blocked by browser autoplay policy, retry muted so the visual still plays
           if (err.name === 'NotAllowedError') {
             video.muted = true;
@@ -57,7 +65,8 @@ export default function DynamicWatermark({
     } else {
       video.pause();
     }
-  }, [isHovered, isAudioEnabled]);
+    return () => { cancelled = true; video.pause(); };
+  }, [playing, isAudioEnabled]);
 
   return (
     <>
@@ -66,12 +75,16 @@ export default function DynamicWatermark({
           Anchored over the top-left navbar brand area (z-[100]) to intercept
           mouse interactions and drive presentation mode.
           -------------------------------------------------------------------- */}
-      <div
+      {animationsEnabled && <button
+        type="button"
+        aria-label="Play TroveVault introduction"
         className="absolute top-0 left-0 w-36 h-10 z-[100] cursor-pointer"
         onMouseEnter={() => onHoverChange(true)}
         onMouseLeave={() => onHoverChange(false)}
-        aria-hidden="true"
-      />
+        onFocus={() => onHoverChange(true)}
+        onBlur={() => onHoverChange(false)}
+        onClick={() => onHoverChange(!isHovered)}
+      />}
 
       {/* --------------------------------------------------------------------
           4. DYNAMIC BACKGROUND MEDIA LAYERS
@@ -87,24 +100,25 @@ export default function DynamicWatermark({
         ].join(' ')}
       >
         {/* Resting Fixed Watermark Brand Graphic */}
-        <img
-          src="/images/web_background_trove_vault_logo.png"
+        <Image
+          src={watermark}
+          loading="eager"
+          sizes="1250px"
           alt=""
           className={`watermark-logo-image ${
-            isHovered ? 'watermark-logo-image-hidden' : ''
+            playing ? 'watermark-logo-image-hidden' : ''
           }`}
         />
 
         {/* Cinematic Video Intro Layer (Plays on hover) */}
         <video
           ref={videoRef}
-          src="/videos/website_intro_video.mp4"
-          preload="auto"
+          preload="none"
           muted={!isAudioEnabled}
           playsInline
           disablePictureInPicture
           className={`watermark-video-player ${
-            isHovered ? 'watermark-video-active' : 'watermark-video-inactive'
+            playing ? 'watermark-video-active' : 'watermark-video-inactive'
           }`}
         />
       </div>

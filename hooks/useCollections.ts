@@ -1,16 +1,14 @@
 'use client';
 
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { supabase } from '@/lib/supabase';
 import { CollectionRecord } from '@/types/collection';
 import { ItemRecord } from '@/types/item';
-import { SearchScope } from '@/components/NavigationHeader';
 import {
-  itemMatchesQuery,
   buildItemHierarchy,
   buildFilteredUnifiedForest,
 } from '@/lib/explorerUtils';
-import { UniversalSearchResultItem } from '@/app/page';
+import { fetchAllPages } from '@/lib/fetchAllPages';
 import { ItemTemplate } from '@/types/template';
 
 /* ==========================================================================
@@ -35,13 +33,6 @@ export function useCollections() {
   const [selectedItem, setSelectedItem] = useState<ItemRecord | null>(null);
 
   /* ------------------------------------------------------------------------
-     3. SEARCH & FILTER STATE
-     ------------------------------------------------------------------------ */
-  const [searchQuery, setSearchQuery] = useState('');
-  const [searchScope, setSearchScope] = useState<SearchScope>('current');
-  const [universalResults, setUniversalResults] = useState<UniversalSearchResultItem[]>([]);
-
-  /* ------------------------------------------------------------------------
      4. UI FEEDBACK STATE
      Tracks loading and error states during async remote Supabase mutations.
      ------------------------------------------------------------------------ */
@@ -55,34 +46,33 @@ export function useCollections() {
   /**
    * Fetches all collections, items, and taxonomy templates concurrently.
    */
+  const requestRef = useRef<AbortController | null>(null);
+
   const fetchAllData = useCallback(
     async (preferredActiveCollectionId?: number | null) => {
+      requestRef.current?.abort();
+      const controller = new AbortController();
+      requestRef.current = controller;
+      const signal = controller.signal;
       try {
         setLoading(true);
         setError(null);
 
-        const [colsRes, itemsRes, tmplsRes, itemColsRes] = await Promise.all([
-          supabase.from('collections').select('*').order('id', { ascending: true }),
-          supabase.from('items').select('*').order('id', { ascending: true }),
-          supabase.from('item_templates').select('*').order('id', { ascending: true }),
-          supabase.from('item_collections').select('*'),
+        const [fetchedCollections, rawItems, fetchedTemplates, itemLinks] = await Promise.all([
+          fetchAllPages<CollectionRecord>((from, to) => supabase.from('collections').select('*').order('id').range(from, to).abortSignal(signal), signal),
+          fetchAllPages<ItemRecord>((from, to) => supabase.from('items').select('*').order('id').range(from, to).abortSignal(signal), signal),
+          fetchAllPages<ItemTemplate>((from, to) => supabase.from('item_templates').select('*').order('id').range(from, to).abortSignal(signal), signal),
+          fetchAllPages<{ item_id: number; collection_id: number }>((from, to) => supabase.from('item_collections').select('item_id, collection_id').order('item_id').order('collection_id').range(from, to).abortSignal(signal), signal),
         ]);
 
-        if (colsRes.error) throw colsRes.error;
-        if (itemsRes.error) throw itemsRes.error;
-        if (tmplsRes.error) throw tmplsRes.error;
-        if (itemColsRes.error) throw itemColsRes.error;
-
         const itemCollectionsMap = new Map<number, number[]>();
-        ((itemColsRes.data as { item_id: number; collection_id: number }[]) || []).forEach(
+        itemLinks.forEach(
           ({ item_id, collection_id }) => {
             if (!itemCollectionsMap.has(item_id)) itemCollectionsMap.set(item_id, []);
             itemCollectionsMap.get(item_id)!.push(collection_id);
           }
         );
 
-        const fetchedCollections = (colsRes.data as CollectionRecord[]) || [];
-        const rawItems = (itemsRes.data as ItemRecord[]) || [];
         const fetchedItems: ItemRecord[] = rawItems.map((it) => {
           const colIds = itemCollectionsMap.get(it.id) || [];
           return {
@@ -91,82 +81,45 @@ export function useCollections() {
             collection_id: colIds.length > 0 ? colIds[0] : null,
           };
         });
-        const fetchedTemplates = (tmplsRes.data as ItemTemplate[]) || [];
 
         setAllCollections(fetchedCollections);
         setAllItems(fetchedItems);
         setTemplates(fetchedTemplates);
 
 
-        // Auto-resolve active collection pointer using fresh data
-        if (fetchedCollections.length > 0) {
-          const targetId =
-            preferredActiveCollectionId !== undefined
-              ? preferredActiveCollectionId
-              : activeCollectionId;
-
-          const exists = fetchedCollections.some((c) => c.id === targetId);
-          const nextValidId = exists && targetId ? targetId : fetchedCollections[0].id;
-
-          setActiveCollectionId(nextValidId);
-
-          // Restore deeply-nested item selection using fresh data
-          if (selectedItem) {
-            const found = fetchedItems.find((i) => i.id === selectedItem.id);
-            if (found) {
-              setSelectedItem({
-                ...found,
-                children: buildItemHierarchy(fetchedItems, found.id),
-              });
-            }
-          }
-        } else {
-          setActiveCollectionId(null);
-          setSelectedItem(null);
-        }
-      } catch (err: any) {
-        console.error('Failed to load explorer data:', err);
-        setError(err?.message || 'Failed to load data');
+        setActiveCollectionId(current => {
+          const target = preferredActiveCollectionId === undefined ? current : preferredActiveCollectionId;
+          return fetchedCollections.some(collection => collection.id === target) ? target : fetchedCollections[0]?.id ?? null;
+        });
+        setSelectedItem(current => {
+          if (!current) return null;
+          const found = fetchedItems.find(item => item.id === current.id);
+          return found ? { ...found, children: buildItemHierarchy(fetchedItems, found.id) } : null;
+        });
+      } catch (error: unknown) {
+        if (signal.aborted) return;
+        controller.abort();
+        setError(error instanceof Error ? error.message : 'Failed to load data');
       } finally {
-        setLoading(false);
+        if (requestRef.current === controller) setLoading(false);
       }
     },
-    [activeCollectionId, selectedItem]
+    []
   );
 
-  // Initial mount fetch
   useEffect(() => {
-    fetchAllData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    // Defer startup so Strict Mode can cancel its throwaway mount before fetching.
+    const timer = setTimeout(() => { void fetchAllData(); }, 0);
+    return () => {
+      clearTimeout(timer);
+      requestRef.current?.abort();
+      requestRef.current = null;
+    };
+  }, [fetchAllData]);
 
   /* ==========================================================================
      SEARCH & TREE MEMOIZATION
      ========================================================================== */
-
-  /**
-   * Universal Search Resolution across all items
-   */
-  useEffect(() => {
-    if (searchScope === 'all' && searchQuery.trim()) {
-      const matches: UniversalSearchResultItem[] = allItems
-        .filter((it) => itemMatchesQuery(it, searchQuery))
-        .map((it) => ({
-          ...it,
-          collection_name:
-            it.collection_ids && it.collection_ids.length > 0
-              ? it.collection_ids
-                  .map((id) => allCollections.find((c) => c.id === id)?.name)
-                  .filter(Boolean)
-                  .join(', ')
-              : allCollections.find((c) => c.id === it.collection_id)?.name || 'Standalone Item',
-
-        }));
-      setUniversalResults(matches);
-    } else {
-      setUniversalResults([]);
-    }
-  }, [searchQuery, searchScope, allItems, allCollections]);
 
   /**
    * Memoized Unified Forest
@@ -178,11 +131,11 @@ export function useCollections() {
       allItems,
       null,
       activeCollectionId,
-      searchQuery,
-      searchScope,
+      '',
+      'current',
       templates
     );
-  }, [allCollections, allItems, activeCollectionId, searchQuery, searchScope, templates]);
+  }, [allCollections, allItems, activeCollectionId, templates]);
 
   const activeCollection = allCollections.find((c) => c.id === activeCollectionId) || null;
 
@@ -271,11 +224,6 @@ export function useCollections() {
     selectItemWithChildren,
     renameCollection,
     renameItem,
-    searchQuery,
-    setSearchQuery,
-    searchScope,
-    setSearchScope,
-    universalResults,
     unifiedForest,
     loading,
     error,

@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { normalizeTheme, ThemePreset } from '@/types/theme';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
+import { useReducedMotion } from '@/hooks/useReducedMotion';
 import {
   PrimarySidebarPosition,
   SecondarySidebarPosition,
@@ -94,10 +95,12 @@ export function UIPreferencesProvider({ children }: { children: React.ReactNode 
      3.1 PERSISTED PREFERENCES (useLocalStorage Hook)
      SSR-safe hooks that synchronize state with localStorage and window events.
      ------------------------------------------------------------------------ */
-  const [animationsEnabled, setAnimationsEnabled] = useLocalStorage<boolean>(
+  const [animationsPreferred, setAnimationsEnabled] = useLocalStorage<boolean>(
     STORAGE_KEYS.ANIMATIONS,
     true
   );
+  const reducedMotion = useReducedMotion();
+  const animationsEnabled = animationsPreferred && !reducedMotion;
 
   const [isAudioEnabled, setIsAudioEnabled] = useLocalStorage<boolean>(
     STORAGE_KEYS.AUDIO,
@@ -152,7 +155,8 @@ export function UIPreferencesProvider({ children }: { children: React.ReactNode 
 
   // Mark hydration complete on the next paint tick to allow clean initial renders
   useEffect(() => {
-    requestAnimationFrame(() => setIsHydrated(true));
+    const frame = requestAnimationFrame(() => setIsHydrated(true));
+    return () => cancelAnimationFrame(frame);
   }, []);
 
   /* ------------------------------------------------------------------------

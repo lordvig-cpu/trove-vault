@@ -48,22 +48,16 @@ export function getSingleSearchHighlight(
  * Traverses parent item relationships upwards to determine all collections
  * an item belongs to (or inherits from parent ancestors).
  */
-export function getItemRootCollectionIds(
-  item: ItemRecord,
-  allItems: ItemRecord[]
-): number[] {
-  if (item.collection_ids && item.collection_ids.length > 0) {
-    return item.collection_ids;
+export function getItemRootCollectionIds(item: ItemRecord, allItems: ItemRecord[], lookup = new Map(allItems.map(item => [item.id, item]))): number[] {
+  const visited = new Set<number>();
+  let current: ItemRecord | undefined = item;
+  while (current && !visited.has(current.id)) {
+    visited.add(current.id);
+    if (current.collection_ids?.length) return current.collection_ids;
+    if (current.collection_id != null) return [current.collection_id];
+    current = current.parent_id ? lookup.get(current.parent_id) : undefined;
   }
-  if (item.collection_id !== null && item.collection_id !== undefined) {
-    return [item.collection_id];
-  }
-  if (!item.parent_id) {
-    return [];
-  }
-  const parent = allItems.find((i) => i.id === item.parent_id);
-  if (!parent) return [];
-  return getItemRootCollectionIds(parent, allItems);
+  return [];
 }
 
 /**
@@ -82,14 +76,16 @@ export function getItemRootCollectionId(
 /**
  * Traverses upwards to find the top-level root ancestor item of a standalone item.
  */
-export function getStandaloneRootItem(
-  item: ItemRecord,
-  allItems: ItemRecord[]
-): ItemRecord {
-  if (!item.parent_id) return item;
-  const parent = allItems.find((i) => i.id === item.parent_id);
-  if (!parent) return item;
-  return getStandaloneRootItem(parent, allItems);
+export function getStandaloneRootItem(item: ItemRecord, allItems: ItemRecord[], lookup = new Map(allItems.map(item => [item.id, item]))): ItemRecord {
+  const visited = new Set<number>();
+  let current = item;
+  while (current.parent_id && !visited.has(current.id)) {
+    visited.add(current.id);
+    const parent = lookup.get(current.parent_id);
+    if (!parent || visited.has(parent.id)) break;
+    current = parent;
+  }
+  return current;
 }
 
 /**
@@ -110,7 +106,7 @@ export function detectItemCategory(
         icon: matchedTemplate.icon || '📦',
       };
     }
-    
+
     // Fallback if templates array is empty or still fetching
     return {
       id: -item.template_id,
@@ -173,31 +169,40 @@ export function filterItemHierarchy(items: ItemRecord[], query: string): ItemRec
 /**
  * Builds nested parent-child hierarchies of items based on parent_id.
  */
-export function buildItemHierarchy(
-  items: ItemRecord[],
-  parentId: number | null = null
-): ItemRecord[] {
-  return items
-    .filter((item) => (item.parent_id || null) === parentId)
-    .map((item) => ({
-      ...item,
-      children: buildItemHierarchy(items, item.id),
-    }));
+export function buildItemHierarchy(items: ItemRecord[], parentId: number | null = null, includeOrphans = false): ItemRecord[] {
+  const ids = new Set(items.map(item => item.id));
+  const children = new Map<number | null, ItemRecord[]>();
+  for (const item of items) {
+    const parent = includeOrphans && !ids.has(item.parent_id ?? 0) ? null : item.parent_id || null;
+    const group = children.get(parent) ?? [];
+    group.push(item);
+    children.set(parent, group);
+  }
+  const ancestors = new Set<number>();
+  if (parentId !== null) ancestors.add(parentId);
+  const build = (parent: number | null): ItemRecord[] => (children.get(parent) ?? []).flatMap(item => {
+    if (ancestors.has(item.id)) return [];
+    ancestors.add(item.id);
+    const nested = build(item.id);
+    ancestors.delete(item.id);
+    return [{ ...item, children: nested }];
+  });
+  return build(parentId);
 }
 
 /**
  * Checks if collection A is a descendant of collection B.
  */
-export function isDescendantOf(
-  collections: CollectionRecord[],
-  candidateId: number,
-  ancestorId: number | null
-): boolean {
+export function isDescendantOf(collections: CollectionRecord[], candidateId: number, ancestorId: number | null, lookup = new Map(collections.map(collection => [collection.id, collection]))): boolean {
   if (!ancestorId || candidateId <= 0) return false;
-  const current = collections.find((c) => c.id === candidateId);
-  if (!current || !current.parent_id) return false;
-  if (current.parent_id === ancestorId) return true;
-  return isDescendantOf(collections, current.parent_id, ancestorId);
+  const visited = new Set<number>();
+  let current = lookup.get(candidateId);
+  while (current?.parent_id && !visited.has(current.id)) {
+    visited.add(current.id);
+    if (current.parent_id === ancestorId) return true;
+    current = lookup.get(current.parent_id);
+  }
+  return false;
 }
 
 /**
@@ -227,66 +232,80 @@ export function buildFilteredUnifiedForest(
   templates: CollectionTemplate[] = []
 ): UnifiedCollectionNode[] {
   const isSearchingCurrent = searchScope === 'current' && searchQuery.trim() !== '';
+  const itemLookup = new Map(allItems.map(item => [item.id, item]));
+  const collectionLookup = new Map(collections.map(collection => [collection.id, collection]));
+  const collectionsByParent = new Map<number | null, CollectionRecord[]>();
+  const itemsByCollection = new Map<number, ItemRecord[]>();
+  const standaloneItems: ItemRecord[] = [];
+  for (const collection of collections) {
+    const parent = collection.parent_id || null;
+    const group = collectionsByParent.get(parent) ?? [];
+    group.push(collection);
+    collectionsByParent.set(parent, group);
+  }
+  for (const item of allItems) {
+    const memberships = getItemRootCollectionIds(item, allItems, itemLookup);
+    if (!memberships.length) standaloneItems.push(item);
+    for (const id of new Set(memberships)) {
+      const group = itemsByCollection.get(id) ?? [];
+      group.push(item);
+      itemsByCollection.set(id, group);
+    }
+  }
+  const ancestors = new Set<number>();
+  const buildCollections = (parent: number | null): UnifiedCollectionNode[] => {
 
-  // 1. Build nested user-defined collection branches
-  const forest: UnifiedCollectionNode[] = collections
-    .filter((col) => (col.parent_id || null) === parentCollectionId)
-    .map((col) => {
-      const collectionRawItems = allItems.filter((it) =>
-        getItemRootCollectionIds(it, allItems).includes(col.id)
-      );
-      const fullItemTree = buildItemHierarchy(collectionRawItems, null);
 
-      const childSubCols = buildFilteredUnifiedForest(
-        collections,
-        allItems,
-        col.id,
-        activeCollectionId,
-        searchQuery,
-        searchScope,
-        templates
-      );
+    // 1. Build nested user-defined collection branches
+    const forest: UnifiedCollectionNode[] = (collectionsByParent.get(parent) ?? [])
+      .filter(col => !ancestors.has(col.id))
+      .map((col) => {
+        ancestors.add(col.id);
+        const fullItemTree = buildItemHierarchy(itemsByCollection.get(col.id) ?? [], null);
 
-      let filteredItems = fullItemTree;
-      if (isSearchingCurrent) {
-        if (
-          col.id === activeCollectionId ||
-          isDescendantOf(collections, col.id, activeCollectionId)
-        ) {
-          filteredItems = filterItemHierarchy(fullItemTree, searchQuery);
-        } else {
-          filteredItems = [];
+        const childSubCols = buildCollections(col.id);
+        ancestors.delete(col.id);
+
+        let filteredItems = fullItemTree;
+        if (isSearchingCurrent) {
+          if (
+            col.id === activeCollectionId ||
+            isDescendantOf(collections, col.id, activeCollectionId, collectionLookup)
+          ) {
+            filteredItems = filterItemHierarchy(fullItemTree, searchQuery);
+          } else {
+            filteredItems = [];
+          }
         }
-      }
 
-      return {
-        ...col,
-        items: filteredItems,
-        subCollections: childSubCols,
-      };
-    })
-    .filter((colNode) => {
-      if (isSearchingCurrent) {
-        const belongsToActiveBranch =
-          colNode.id === activeCollectionId ||
-          isDescendantOf(collections, colNode.id, activeCollectionId) ||
-          isAncestorOf(collections, colNode.id, activeCollectionId);
+        return {
+          ...col,
+          items: filteredItems,
+          subCollections: childSubCols,
+        };
+      })
+      .filter((colNode) => {
+        if (isSearchingCurrent) {
+          const belongsToActiveBranch =
+            colNode.id === activeCollectionId ||
+            isDescendantOf(collections, colNode.id, activeCollectionId, collectionLookup) ||
+            isDescendantOf(collections, activeCollectionId ?? 0, colNode.id, collectionLookup);
 
-        if (!belongsToActiveBranch) return false;
+          if (!belongsToActiveBranch) return false;
 
-        const hasMatches =
-          colNode.items.length > 0 || colNode.subCollections.length > 0;
-        return hasMatches || colNode.id === activeCollectionId;
-      }
-      return true;
-    });
+          const hasMatches =
+            colNode.items.length > 0 || colNode.subCollections.length > 0;
+          return hasMatches || colNode.id === activeCollectionId;
+        }
+        return true;
+      });
+
+    return forest;
+  };
+  const forest = buildCollections(parentCollectionId);
 
   // 2. Synthesize dynamic category nodes for standalone items (no collection membership)
   if (parentCollectionId === null) {
-    const standaloneItems = allItems.filter(
-      (it) => getItemRootCollectionIds(it, allItems).length === 0
-    );
-
     if (standaloneItems.length > 0) {
       // Group items under their root ancestor's detected category
       const categoryMap = new Map<
@@ -295,7 +314,7 @@ export function buildFilteredUnifiedForest(
       >();
 
       for (const item of standaloneItems) {
-        const rootItem = getStandaloneRootItem(item, allItems);
+        const rootItem = getStandaloneRootItem(item, allItems, itemLookup);
         const categoryMeta = detectItemCategory(rootItem, templates);
 
         if (!categoryMap.has(categoryMeta.id)) {

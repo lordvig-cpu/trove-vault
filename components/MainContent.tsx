@@ -44,12 +44,7 @@ export default function MainContent({
   onAddSubItem,
   onEditItem,
   onDeleteItem,
-  occupiedRightWidth,
-  occupiedLeftWidth = 0,
-  rightPanelWidth = 0,
-  bottomPanelHeight = 0,
 }: MainContentProps) {
-  const effectiveRightWidth = occupiedRightWidth ?? rightPanelWidth;
 
   return (
     <div className="flex-1 h-full min-h-0 relative z-20 flex flex-col">

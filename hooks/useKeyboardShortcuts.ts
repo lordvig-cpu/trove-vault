@@ -24,7 +24,7 @@ export type KeyCombo = {
    ========================================================================== */
 
 /**
- * Registers global keyboard shortcuts with capture-phase event listeners.
+ * Registers global shortcuts after focused controls can handle their own keys.
  * Intercepts browser defaults (like Ctrl+K) and respects user typing focus.
  *
  * @param shortcuts - Array of keyboard combinations and their operational handlers
@@ -50,6 +50,7 @@ export function useKeyboardShortcuts(shortcuts: KeyCombo[], isEnabled: boolean =
     if (!isEnabled) return;
 
     const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.defaultPrevented) return;
       // 1. Assess Viewport Focus Context
       // Determine if the user is currently typing in an input field or text area
       const activeEl = document.activeElement;
@@ -89,11 +90,9 @@ export function useKeyboardShortcuts(shortcuts: KeyCombo[], isEnabled: boolean =
       }
     };
 
-    // 4. Bind listener using the capture phase.
-    // Setting { capture: true } ensures the application intercepts the keydown 
-    // at the top level BEFORE nested DOM elements can react and run stopPropagation().
-    window.addEventListener('keydown', handleKeyDown, { capture: true });
+    // Menus and inputs get first refusal, so Escape closes the innermost UI.
+    window.addEventListener('keydown', handleKeyDown);
     
-    return () => window.removeEventListener('keydown', handleKeyDown, { capture: true });
+    return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isEnabled]);
 }

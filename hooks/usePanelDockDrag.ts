@@ -40,28 +40,31 @@ export function usePanelDockDrag({ onDropPanel, contents }: UsePanelDockDragOpti
   const [hoveredZone, setHoveredZone] = useState<DockDropTargetZone | null>(null);
   const [cursorPos, setCursorPos] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
 
-  const isDraggingRef = useRef(false);
+  const cleanupRef = useRef<(() => void) | null>(null);
   const draggingPanelRef = useRef<DockablePanelId | null>(null);
   const hoveredZoneRef = useRef<DockDropTargetZone | null>(null);
   const startPosRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
   const hasMovedRef = useRef<boolean>(false);
 
-  useEffect(() => {
-    isDraggingRef.current = isDragging;
-  }, [isDragging]);
+  useEffect(() => () => cleanupRef.current?.(), []);
 
-  useEffect(() => {
-    draggingPanelRef.current = draggingPanel;
-  }, [draggingPanel]);
-
-  useEffect(() => {
-    hoveredZoneRef.current = hoveredZone;
-  }, [hoveredZone]);
+  const cancelDrag = useCallback(() => {
+    cleanupRef.current?.();
+    hasMovedRef.current = false;
+    draggingPanelRef.current = null;
+    hoveredZoneRef.current = null;
+    setIsDragging(false);
+    setDraggingPanel(null);
+    setHoveredZone(null);
+  }, []);
 
   const handlePointerDown = useCallback((panelId: DockablePanelId, e: React.PointerEvent) => {
     // Only primary mouse button
     if (e.button !== 0) return;
 
+    cancelDrag();
+    const pointerId = e.pointerId;
+    const { userSelect, cursor } = document.body.style;
     e.preventDefault();
     e.stopPropagation();
 
@@ -109,6 +112,7 @@ export function usePanelDockDrag({ onDropPanel, contents }: UsePanelDockDragOpti
     };
 
     const handlePointerMove = (moveEv: PointerEvent) => {
+      if (moveEv.pointerId !== pointerId) return;
       const dx = moveEv.clientX - startPosRef.current.x;
       const dy = moveEv.clientY - startPosRef.current.y;
       const distance = Math.sqrt(dx * dx + dy * dy);
@@ -116,7 +120,6 @@ export function usePanelDockDrag({ onDropPanel, contents }: UsePanelDockDragOpti
       // 4px movement threshold to begin drag
       if (!hasMovedRef.current && distance > 4) {
         hasMovedRef.current = true;
-        isDraggingRef.current = true;
         setIsDragging(true);
         setDraggingPanel(panelId);
         document.body.style.userSelect = 'none';
@@ -138,41 +141,36 @@ export function usePanelDockDrag({ onDropPanel, contents }: UsePanelDockDragOpti
       }
     };
 
-    const handlePointerUp = () => {
+    const handlePointerUp = (event: PointerEvent) => {
+      if (event.pointerId !== pointerId) return;
+      const panel = draggingPanelRef.current;
+      const zone = hoveredZoneRef.current;
+      const shouldDrop = hasMovedRef.current && panel && zone && isDockZoneAllowed(panel, zone, contents);
+      cancelDrag();
+      if (shouldDrop) onDropPanel(panel, zone);
+    };
+    const handleCancel = (event: PointerEvent) => {
+      if (event.pointerId === pointerId) cancelDrag();
+    };
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') cancelDrag();
+    };
+    cleanupRef.current = () => {
       window.removeEventListener('pointermove', handlePointerMove);
       window.removeEventListener('pointerup', handlePointerUp);
-      window.removeEventListener('pointercancel', handlePointerUp);
-
-      document.body.style.userSelect = '';
-      document.body.style.cursor = '';
-
-      if (hasMovedRef.current && draggingPanelRef.current && hoveredZoneRef.current) {
-        if (isDockZoneAllowed(draggingPanelRef.current, hoveredZoneRef.current, contents)) {
-          onDropPanel(draggingPanelRef.current, hoveredZoneRef.current);
-        }
-      }
-
-      hasMovedRef.current = false;
-      isDraggingRef.current = false;
-      setIsDragging(false);
-      setDraggingPanel(null);
-      setHoveredZone(null);
+      window.removeEventListener('pointercancel', handleCancel);
+      window.removeEventListener('blur', cancelDrag);
+      window.removeEventListener('keydown', handleKeyDown);
+      document.body.style.userSelect = userSelect;
+      document.body.style.cursor = cursor;
+      cleanupRef.current = null;
     };
-
     window.addEventListener('pointermove', handlePointerMove);
     window.addEventListener('pointerup', handlePointerUp);
-    window.addEventListener('pointercancel', handlePointerUp);
-  }, [onDropPanel, contents]);
-
-  const cancelDrag = useCallback(() => {
-    hasMovedRef.current = false;
-    isDraggingRef.current = false;
-    setIsDragging(false);
-    setDraggingPanel(null);
-    setHoveredZone(null);
-    document.body.style.userSelect = '';
-    document.body.style.cursor = '';
-  }, []);
+    window.addEventListener('pointercancel', handleCancel);
+    window.addEventListener('blur', cancelDrag);
+    window.addEventListener('keydown', handleKeyDown);
+  }, [onDropPanel, contents, cancelDrag]);
 
   return {
     isDragging,

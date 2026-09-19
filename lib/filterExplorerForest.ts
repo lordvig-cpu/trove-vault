@@ -6,7 +6,7 @@ import {
   detectItemCategory,
   getStandaloneRootItem,
   getItemRootCollectionIds,
-  getItemRootCollectionId,
+  buildItemHierarchy,
   isDescendantOf,
 } from '@/lib/explorerUtils';
 
@@ -16,27 +16,6 @@ export type ExplorerTab = 'items' | 'collections';
  * Builds nested parent-child hierarchies of items, safely handling any
  * items whose parent_id might not be present in the subset.
  */
-function buildSafeItemHierarchy(items: ItemRecord[]): ItemRecord[] {
-  const itemIds = new Set(items.map((i) => i.id));
-  const isRoot = (item: ItemRecord) => !item.parent_id || !itemIds.has(item.parent_id);
-
-  const buildSubtree = (parentId: number): ItemRecord[] => {
-    return items
-      .filter((it) => it.parent_id === parentId)
-      .map((it) => ({
-        ...it,
-        children: buildSubtree(it.id),
-      }));
-  };
-
-  return items
-    .filter(isRoot)
-    .map((root) => ({
-      ...root,
-      children: buildSubtree(root.id),
-    }));
-}
-
 /**
  * Synthesizes dynamic category nodes for a given list of items,
  * partitioned by each root item's template category.
@@ -46,13 +25,14 @@ function buildCategoryNodesFromItems(
   allItems: ItemRecord[],
   templates: CollectionTemplate[]
 ): UnifiedCollectionNode[] {
+  const itemLookup = new Map(allItems.map(item => [item.id, item]));
   const categoryMap = new Map<
     number,
     { meta: { id: number; name: string; icon: string }; items: ItemRecord[] }
   >();
 
   for (const item of items) {
-    const rootItem = getStandaloneRootItem(item, allItems);
+    const rootItem = getStandaloneRootItem(item, allItems, itemLookup);
     const categoryMeta = detectItemCategory(rootItem, templates);
 
     if (!categoryMap.has(categoryMeta.id)) {
@@ -67,7 +47,7 @@ function buildCategoryNodesFromItems(
   const result: UnifiedCollectionNode[] = [];
 
   categoryMap.forEach(({ meta, items: catItems }) => {
-    const categoryTree = buildSafeItemHierarchy(catItems);
+    const categoryTree = buildItemHierarchy(catItems, null, true);
     if (categoryTree.length > 0) {
       result.push({
         id: meta.id,
@@ -99,16 +79,18 @@ export function filterExplorerForest(
   templates: CollectionTemplate[] = []
 ): UnifiedCollectionNode[] {
   if (activeTab === 'items') {
+    const itemLookup = new Map(allItems.map(item => [item.id, item]));
+    const collectionLookup = new Map(collections.map(collection => [collection.id, collection]));
     // If specific collection filters are applied, only include items belonging to those collections
     const targetItems =
       filterCollectionIds.length > 0
         ? allItems.filter((item) => {
-            const colIds = getItemRootCollectionIds(item, allItems);
+            const colIds = getItemRootCollectionIds(item, allItems, itemLookup);
             if (colIds.length === 0) return false;
             return colIds.some(
               (colId) =>
                 filterCollectionIds.includes(colId) ||
-                filterCollectionIds.some((fId) => isDescendantOf(collections, colId, fId))
+                filterCollectionIds.some((fId) => isDescendantOf(collections, colId, fId, collectionLookup))
             );
           })
         : allItems;

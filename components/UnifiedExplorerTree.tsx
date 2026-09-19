@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { ItemRecord } from '@/types/item';
 import { GearIcon } from '@/components/icons/ActionIcons';
 import { ChevronDownIcon, ChevronRightIcon } from '@/components/icons/ExplorerIcons';
@@ -96,6 +96,12 @@ function UnifiedExplorerTreeItem({
   const gearElement = (
     <div className={`relative transition shrink-0 ${isRightSide ? 'mr-0.5' : 'ml-auto'}`}>
       <div
+        role="button"
+        tabIndex={0}
+        aria-label="Open actions"
+        aria-expanded={menu.isMenuOpen}
+        onKeyDown={menu.handleGearKeyDown}
+        onClick={event => { event.stopPropagation(); menu.handleGearMouseEnter(event); }}
         onMouseEnter={menu.handleGearMouseEnter}
         onMouseLeave={menu.handleMouseLeave}
         className={[
@@ -133,6 +139,9 @@ function UnifiedExplorerTreeItem({
 
         <button
           type="button"
+          aria-label={effectiveIsOpen ? "Collapse item" : "Expand item"}
+          aria-expanded={hasSubItems ? effectiveIsOpen : undefined}
+          disabled={!hasSubItems}
           onClick={(event) => {
             event.stopPropagation();
             setIsOpen(!isOpen);
@@ -150,15 +159,19 @@ function UnifiedExplorerTreeItem({
           {typeIcon}
         </span>
 
-        <span
+        <button
+          type="button"
+          aria-label={item.name}
+          aria-pressed={isSelected}
+          onClick={event => { event.stopPropagation(); onSelectItem(item, collectionId); }}
           title={item.name}
           className={[
-            'text-[13px] tracking-tight truncate shrink min-w-0',
+            'text-left cursor-pointer text-[13px] tracking-tight truncate shrink min-w-0',
             isSelected ? 'explorer-tree-item-selected-name font-medium' : '',
           ].join(' ')}
         >
           {item.name}
-        </span>
+        </button>
 
         {!isRightSide && gearElement}
       </div>
@@ -215,15 +228,8 @@ export default function UnifiedExplorerTree({
   const isVirtualCategory = collection.id < 0;
   const effectiveCollectionId =
     collection.id === STANDALONE_COLLECTION_ID ? null : collection.id;
-  const [localIsOpen, setLocalIsOpen] = useState(
-    expandedCategoryIds ? expandedCategoryIds.has(collection.id) : true
-  );
-
-  useEffect(() => {
-    if (expandedCategoryIds !== undefined) {
-      setLocalIsOpen(expandedCategoryIds.has(collection.id));
-    }
-  }, [expandedCategoryIds, collection.id]);
+  const [uncontrolledOpen, setUncontrolledOpen] = useState(true);
+  const localIsOpen = expandedCategoryIds?.has(collection.id) ?? uncontrolledOpen;
 
   const rawItems = collection.items || [];
   const rawSubCollections = collection.subCollections || [];
@@ -241,13 +247,19 @@ export default function UnifiedExplorerTree({
     event.stopPropagation();
     event.preventDefault();
     const nextState = !localIsOpen;
-    setLocalIsOpen(nextState);
+    setUncontrolledOpen(nextState);
     onToggleCategory?.(collection.id, nextState);
   };
 
   const gearElement = (
     <div className={`relative transition shrink-0 ${isRightSide ? 'mr-0.5' : 'ml-auto'}`}>
       <div
+        role="button"
+        tabIndex={0}
+        aria-label="Open actions"
+        aria-expanded={menu.isMenuOpen}
+        onKeyDown={menu.handleGearKeyDown}
+        onClick={event => { event.stopPropagation(); menu.handleGearMouseEnter(event); }}
         onMouseEnter={menu.handleGearMouseEnter}
         onMouseLeave={menu.handleMouseLeave}
         className={[
@@ -286,6 +298,8 @@ export default function UnifiedExplorerTree({
 
         <button
           type="button"
+          aria-expanded={hasChildren ? localIsOpen : undefined}
+          disabled={!hasChildren}
           onClick={handleToggle}
           className={[
             'flex items-center justify-center w-4 h-4 shrink-0',
@@ -302,12 +316,16 @@ export default function UnifiedExplorerTree({
           {collection.icon || (localIsOpen ? '📂' : '📁')}
         </span>
 
-        <span
+        <button
+          type="button"
+          aria-label={collection.name}
+          aria-pressed={isActiveCollection}
+          onClick={event => { event.stopPropagation(); onSelectCollection(collection.id); }}
           title={`${isVirtualCategory ? 'Category' : 'Collection'}: ${collection.name}`}
-          className="text-[13px] tracking-tight font-medium truncate shrink min-w-0"
+          className="text-left cursor-pointer text-[13px] tracking-tight font-medium truncate shrink min-w-0"
         >
           {collection.name}
-        </span>
+        </button>
 
         {collection.items?.length ? (
           <span

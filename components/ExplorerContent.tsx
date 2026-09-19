@@ -12,7 +12,6 @@ import {
 } from '@/context/ExplorerSelectionContext';
 import { ItemRecord } from '@/types/item';
 import { CollectionRecord } from '@/types/collection';
-import { useUIPreferences } from '@/context/UIPreferencesContext';
 import { getSingleSearchHighlight, STANDALONE_COLLECTION_ID } from '@/lib/explorerUtils';
 
 /* ==========================================================================

@@ -6,7 +6,7 @@
 .field-modal-backdrop {
   position: fixed;
   inset: 0;
-  z-index: 50;
+  z-index: var(--z-modal);
   background-color: var(--modal-overlay-bg);
   backdrop-filter: blur(4px);
   display: flex;

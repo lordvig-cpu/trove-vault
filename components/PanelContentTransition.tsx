@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useUIPreferences } from '@/context/UIPreferencesContext';
 
 /** Retain outgoing content briefly while the sidebar shell stays mounted. */
@@ -15,8 +15,7 @@ export default function PanelContentTransition({
 }) {
   const { animationsEnabled } = useUIPreferences();
   const [displayedKey, setDisplayedKey] = useState(contentKey);
-  const [reducedMotion, setReducedMotion] = useState(false);
-  const retainedContent = useRef(children);
+  const [retainedContent, setRetainedContent] = useState({ children });
   const [transitionContext, setTransitionContext] = useState({
     key: contentKey,
     suppressed: suppressTransition,
@@ -32,21 +31,11 @@ export default function PanelContentTransition({
         : suppressTransition || transitionContext.skip,
     });
   }
-  const animate = animationsEnabled && !reducedMotion && !suppressTransition && !transitionContext.skip;
+  const animate = animationsEnabled && !suppressTransition && !transitionContext.skip;
   if (!animate && displayedKey !== contentKey) setDisplayedKey(contentKey);
   const isExiting = animate && displayedKey !== contentKey;
 
-  useEffect(() => {
-    const media = window.matchMedia('(prefers-reduced-motion: reduce)');
-    const update = () => setReducedMotion(media.matches);
-    update();
-    media.addEventListener('change', update);
-    return () => media.removeEventListener('change', update);
-  }, []);
-
-  useEffect(() => {
-    if (!isExiting) retainedContent.current = children;
-  }, [children, isExiting]);
+  if (!isExiting && retainedContent.children !== children) setRetainedContent({ children });
 
   useEffect(() => {
     if (displayedKey === contentKey) return;
@@ -61,7 +50,7 @@ export default function PanelContentTransition({
       inert={isExiting}
       aria-hidden={isExiting || undefined}
     >
-      {isExiting ? retainedContent.current : children}
+      {isExiting ? retainedContent.children : children}
     </div>
   );
 }

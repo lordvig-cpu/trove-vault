@@ -1,96 +1,62 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useMemo, useSyncExternalStore } from 'react';
 
-/* ==========================================================================
-   CUSTOM HOOK: useLocalStorage
-   A robust, SSR-safe wrapper for localStorage that mimics the useState API.
-   ========================================================================== */
+const CHANGE_EVENT = 'uc-storage-change';
 
-/**
- * Persists state to the browser's localStorage while ensuring React hydration
- * remains perfectly matched between the server and client initial render.
- *
- * @param key - The unique string key used to set/get the localStorage item.
- * @param initialValue - The fallback value used during SSR and initial hydration.
- * @returns A tuple containing the current stored value and a setter function.
- */
-export function useLocalStorage<T>(
-  key: string,
-  initialValue: T
-): [T, (value: T | ((val: T) => T)) => void] {
-  
-  /* ------------------------------------------------------------------------
-     1. INITIALIZATION (SSR SAFE)
-     Always initialize with the static initialValue. If we read localStorage 
-     synchronously here, the client HTML would differ from the server HTML 
-     (which lacks window.localStorage), causing a fatal Hydration Mismatch.
-     ------------------------------------------------------------------------ */
-  const [storedValue, setStoredValue] = useState<T>(initialValue);
+/** SSR-safe preferences with pure React snapshots and cross-tab synchronization. */
+export function useLocalStorage<T>(key: string, initialValue: T): [T, (value: T | ((current: T) => T)) => void] {
+  const store = useMemo(() => createStore(key, initialValue), [key, initialValue]);
+  const value = useSyncExternalStore(store.subscribe, store.read, store.serverSnapshot);
+  return [value, store.set];
+}
 
-  /* ------------------------------------------------------------------------
-     2. CLIENT-SIDE HYDRATION
-     Once the component has safely mounted on the client, fetch the true
-     saved value from localStorage and update the state.
-     ------------------------------------------------------------------------ */
-  useEffect(() => {
+function createStore<T>(key: string, initialValue: T) {
+  let snapshot = initialValue;
+  let lastRaw: string | null | undefined;
+  const listeners = new Set<() => void>();
+  const read = () => {
     try {
-      if (typeof window === 'undefined') return;
-      const item = window.localStorage.getItem(key);
-      if (item !== null) {
-        setStoredValue(JSON.parse(item));
+      const raw = window.localStorage.getItem(key);
+      if (raw !== lastRaw) {
+        snapshot = raw === null ? initialValue : JSON.parse(raw) as T;
+        lastRaw = raw;
       }
-    } catch (error) {
-      console.warn(`Error reading localStorage key "${key}":`, error);
+    } catch {
+      // Keep preferences usable when storage is unavailable or malformed.
     }
-  }, [key]);
-
-  /* ------------------------------------------------------------------------
-     3. SETTER MUTATION & LOCALSTORAGE SYNC
-     Updates both the React state and the browser storage simultaneously.
-     Supports both direct values and functional state updaters (prev => next).
-     ------------------------------------------------------------------------ */
-  const setValue = useCallback(
-    (value: T | ((val: T) => T)) => {
-      try {
-        setStoredValue((current) => {
-          // Resolve functional updaters just like native useState does
-          const valueToStore = value instanceof Function ? value(current) : value;
-          
-          if (typeof window !== 'undefined') {
-            window.localStorage.setItem(key, JSON.stringify(valueToStore));
-          }
-          
-          return valueToStore;
-        });
-      } catch (error) {
-        console.warn(`Error setting localStorage key "${key}":`, error);
-      }
-    },
-    [key]
-  );
-
-  /* ------------------------------------------------------------------------
-     4. CROSS-TAB SYNCHRONIZATION
-     Listens for the browser's native 'storage' event. If the user changes 
-     a setting in Tab A, Tab B will automatically intercept the event and 
-     update its own React state in real-time.
-     ------------------------------------------------------------------------ */
-  useEffect(() => {
-    const handleStorageChange = (e: StorageEvent) => {
-      // Only react if the modified storage key matches THIS specific hook instance
-      if (e.key === key && e.newValue !== null) {
-        try {
-          setStoredValue(JSON.parse(e.newValue));
-        } catch (error) {
-          console.warn(`Error syncing localStorage key "${key}":`, error);
-        }
-      }
+    return snapshot;
+  };
+  const notify = () => listeners.forEach(listener => listener());
+  const subscribe = (listener: () => void) => {
+    listeners.add(listener);
+    const changed = (event: Event) => {
+      if (event instanceof StorageEvent && event.storageArea !== window.localStorage) return;
+      if (event instanceof StorageEvent && event.key !== null && event.key !== key) return;
+      if (event instanceof CustomEvent && event.detail !== key) return;
+      notify();
     };
-
-    window.addEventListener('storage', handleStorageChange);
-    return () => window.removeEventListener('storage', handleStorageChange);
-  }, [key]);
-
-  return [storedValue, setValue];
+    window.addEventListener('storage', changed);
+    window.addEventListener(CHANGE_EVENT, changed);
+    return () => {
+      listeners.delete(listener);
+      window.removeEventListener('storage', changed);
+      window.removeEventListener(CHANGE_EVENT, changed);
+    };
+  };
+  const set = (value: T | ((current: T) => T)) => {
+    const current = read();
+    const next = value instanceof Function ? value(current) : value;
+    try {
+      const raw = JSON.stringify(next);
+      window.localStorage.setItem(key, raw);
+      lastRaw = raw;
+    } catch {
+      // A failed write must not prevent the in-memory preference changing.
+    }
+    snapshot = next;
+    notify();
+    window.dispatchEvent(new CustomEvent(CHANGE_EVENT, { detail: key }));
+  };
+  return { read, subscribe, set, serverSnapshot: () => initialValue };
 }

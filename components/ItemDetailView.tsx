@@ -1,6 +1,7 @@
 'use client';
 
 import { ItemRecord } from '@/types/item';
+import Image from 'next/image';
 
 /* ==========================================================================
    1. TYPE DEFINITIONS & INTERFACES
@@ -84,7 +85,8 @@ export default function ItemDetailView({
 
   const attributes = item.attributes || {};
   const attributeEntries = Object.entries(attributes);
-  const imageUrl = (item as any).image_url || attributes.image_url || attributes.photo_url;
+  const imageUrl = [item.image_url, attributes.image_url, attributes.photo_url]
+    .find((value): value is string => typeof value === 'string' && value.length > 0);
 
   return (
     <div className="space-y-6">
@@ -155,8 +157,11 @@ export default function ItemDetailView({
         {/* Image Preview Card */}
         <div className="md:col-span-1 content-card p-5 flex flex-col items-center justify-center text-center min-h-[200px]">
           {imageUrl ? (
-            <img
+            <Image
               src={imageUrl}
+              width={400}
+              height={224}
+              unoptimized
               alt={item.name}
               className="detail-image max-h-56 w-auto rounded-lg object-contain border"
             />
