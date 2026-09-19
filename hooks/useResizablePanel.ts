@@ -71,13 +71,13 @@ export function useResizablePanel({
 
     // Viewport minus opposite panel's footprint and buffer margin
     const dynamicMax = Math.max(minWidth, window.innerWidth - reservedWidth - minGap);
-    setPanelWidth((prev) => {
-      if (prev > dynamicMax) {
-        onWidthChange?.(dynamicMax);
-        return dynamicMax;
-      }
-      return prev;
-    });
+    if (panelWidthRef.current > dynamicMax) {
+      // Notify the parent from the effect, never from a state updater that
+      // React may execute during render. Keep pointer listeners in sync too.
+      panelWidthRef.current = dynamicMax;
+      setPanelWidth(dynamicMax);
+      onWidthChange?.(dynamicMax);
+    }
   }, [reservedWidth, minWidth, minGap, onWidthChange]);
 
   // ---------------------------------------------------------------------------
