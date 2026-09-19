@@ -255,7 +255,7 @@ export default function PrimarySidePanel({
           children
         ) : (
           <EmptyPanelDropZone
-            panelTitle={title || (variant === 'sidebar' ? 'Primary Side Panel' : 'Explorer')}
+            panelTitle={title || (variant === 'sidebar' ? 'Primary Side Panel' : 'Items')}
             position={position}
           />
         )}

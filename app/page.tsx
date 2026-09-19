@@ -652,6 +652,7 @@ export default function Home() {
     return (
     <ExplorerPanelContext.Provider value={{ isFlyout, isPinned: !isFlyout && (pos === 'left' ? isPinned : isSecondaryPinned) }}>
     <ExplorerContent
+      treeView={content === 'collections' ? 'collections' : 'items'}
       unifiedForest={content === 'collections' ? collectionsForest : filteredForest}
       searchQuery={tree.searchQuery}
       activeCollectionId={activeCollectionId}
@@ -666,7 +667,6 @@ export default function Home() {
       onSelectItem={(item, collectionId) => {
         setActiveSearchPanel(content);
         if (content === 'collections') {
-          if (collectionsTree.searchQuery.trim() && !itemMatchesQuery(item, collectionsTree.searchQuery.trim())) collectionsTree.setSearchQuery('');
           selectItemWithChildren(item, collectionId);
           closeTreeFlyout(content);
         } else handleTreeSelectItem(item, collectionId);

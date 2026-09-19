@@ -13,6 +13,7 @@ import {
 import { ItemRecord } from '@/types/item';
 import { CollectionRecord } from '@/types/collection';
 import { getSingleSearchHighlight, STANDALONE_COLLECTION_ID } from '@/lib/explorerUtils';
+import { ExplorerTab } from '@/lib/filterExplorerForest';
 
 /* ==========================================================================
    1. TYPE DEFINITIONS & INTERFACES
@@ -37,6 +38,7 @@ import { getSingleSearchHighlight, STANDALONE_COLLECTION_ID } from '@/lib/explor
  * @property onEditItem - Callback opening edit-item modal dialog
  * @property onRenameItem - Inline item rename handler executed from action popover
  * @property onDeleteItem - Callback prompting item deletion modal confirmation
+ * @property treeView - Current view mode ('items' | 'collections')
  */
 export interface ExplorerContentProps {
   unifiedForest: UnifiedCollectionNode[];
@@ -58,6 +60,7 @@ export interface ExplorerContentProps {
   onRenameItem?: (id: number, nextName: string) => Promise<void> | void;
   onAddSubCollection?: (parentCollectionId: number) => void;
   position?: 'left' | 'right';
+  treeView?: ExplorerTab;
 }
 
 /* ==========================================================================
@@ -178,6 +181,7 @@ export default function ExplorerContent({
   onEditCollection,
   onRenameItem,
   position,
+  treeView,
 }: ExplorerContentProps) {
   const effectivePosition = position ?? 'left';
 

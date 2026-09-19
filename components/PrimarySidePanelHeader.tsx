@@ -96,7 +96,9 @@ export default function PrimarySidePanelHeader({
   onHandlePointerDown,
 }: PrimarySidePanelHeaderProps) {
   const headerId = useId();
-  const panelName = treeView === 'collections' ? 'Collections' : 'Items';
+  const isCollections = treeView === 'collections' || activeTab === 'collections' || title === 'COLLECTIONS';
+  const panelName = isCollections ? 'Collections' : 'Items';
+  const isRight = position === 'right';
   const { animationsEnabled } = useUIPreferences();
   const [showAdvancedSearch, setShowAdvancedSearch] = useState(false);
   const [showAppliedFilters, setShowAppliedFilters] = useState(false);
@@ -166,7 +168,7 @@ export default function PrimarySidePanelHeader({
             ⋮⋮
           </span>
           <span className="explorer-header-title text-xs font-bold uppercase tracking-wider px-0.5 truncate">
-            {title || (variant === 'sidebar' ? 'PRIMARY SIDE PANEL' : 'EXPLORER')}
+            {title || (variant === 'sidebar' ? 'PRIMARY SIDE PANEL' : 'ITEMS')}
           </span>
         </div>
 
@@ -200,16 +202,16 @@ export default function PrimarySidePanelHeader({
                   ? 'Content must be docked first'
                   : moveTooltip ||
                     (position === 'left'
-                      ? `Move ${title || (variant === 'sidebar' ? 'Side Bar' : 'Explorer')} to Right`
-                      : `Move ${title || (variant === 'sidebar' ? 'Side Bar' : 'Explorer')} to Left`)
+                      ? `Move ${title || (variant === 'sidebar' ? 'Side Bar' : 'Items')} to Right`
+                      : `Move ${title || (variant === 'sidebar' ? 'Side Bar' : 'Items')} to Left`)
               }
               aria-label={
                 variant === 'sidebar' && !hasDockedContent
                   ? 'Content must be docked first'
                   : moveTooltip ||
                     (position === 'left'
-                      ? `Move ${title || (variant === 'sidebar' ? 'Side Bar' : 'Explorer')} to Right`
-                      : `Move ${title || (variant === 'sidebar' ? 'Side Bar' : 'Explorer')} to Left`)
+                      ? `Move ${title || (variant === 'sidebar' ? 'Side Bar' : 'Items')} to Right`
+                      : `Move ${title || (variant === 'sidebar' ? 'Side Bar' : 'Items')} to Left`)
               }
             >
               {position === 'left' ? (
@@ -295,84 +297,170 @@ export default function PrimarySidePanelHeader({
             <h3>Search and Filter</h3>
           </div>
       <div className="flex items-center gap-1.5 w-full">
-        <div className={`explorer-search-input explorer-search-shell relative flex-1 min-w-0 flex items-center ${searchQuery.length > 0 ? 'explorer-search-input-active' : ''}`}>
-          {/* Left Magnifying Glass */}
-          <span className="absolute left-2 top-1/2 -translate-y-1/2 pointer-events-none flex items-center justify-center select-none">
-            <SearchGlassIcon
-              className={`w-3.5 h-3.5 transition-colors duration-200 ${
-                isSearchFocused ? 'explorer-panel-primary' : 'explorer-panel-muted'
-              }`}
-              isFocused={isSearchFocused}
-            />
-          </span>
-
-          <div className={searchQuery.length > 0 ? 'explorer-search-query explorer-search-query-pill' : 'explorer-search-query'}>
-            <input
-              ref={searchInputRef}
-              id={`${headerId}-search`}
-              type="text"
-              data-tree-search={treeView ?? activeTab}
-              aria-keyshortcuts={treeView === 'collections' ? 'Control+L Meta+L' : 'Control+K Meta+K'}
-              aria-label={treeView === 'collections' ? 'Search collections and items' : 'Search items'}
-              value={searchQuery}
-              onChange={(e) => onSearchChange(e.target.value)}
-              onFocus={() => setIsSearchFocused(true)}
-              onBlur={() => setIsSearchFocused(false)}
-              title={treeView === 'collections' ? 'Search Collections [shortcut: Ctrl-L]' : 'Search Items [shortcut: Ctrl-K]'}
-              placeholder={hasCollectionFilters ? 'Search filtered collection...' : 'Search...'}
-              className="explorer-search-query-input"
-              style={searchQuery.length > 0 ? { width: `${searchQuery.length + 0.5}ch` } : undefined}
-            />
-            {searchQuery.length > 0 && (
+        <div className={`explorer-search-input explorer-search-shell ${isRight ? 'explorer-search-shell-right' : ''} relative flex-1 min-w-0 flex items-center ${searchQuery.length > 0 ? 'explorer-search-input-active' : ''}`}>
+          {isRight ? (
+            <>
+              {/* Advanced search sits on the left in right-docked layout */}
               <button
+                ref={triggerBtnRef}
                 type="button"
-                onClick={() => { onSearchChange(''); searchInputRef.current?.focus(); }}
-                className="explorer-search-query-clear"
-                aria-label="Clear search term"
-                title="Clear search term"
+                onClick={handleToggleAdvancedSearch}
+                className="explorer-search-advanced explorer-search-advanced-left relative shrink-0"
+                title="Advanced Search & Filters"
+                aria-label="Advanced Search & Filters"
+                aria-expanded={showAdvancedSearch}
+                data-filter-active={isFilterActive}
               >
-                <SearchClearIcon />
+                <SlidersHorizontalIcon
+                  className="w-3.5 h-3.5"
+                  isActive={showAdvancedSearch || isFilterActive}
+                />
+                {isFilterActive && !showAdvancedSearch && (
+                  <span className="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-[var(--brand-secondary-amber)] animate-pulse" />
+                )}
               </button>
-            )}
-          </div>
 
-          {/* Applied-filter toggle stays beside the divided advanced controls. */}
-          <div className="ml-auto shrink-0 flex items-center">
-            {/* Filter Funnel Toggle Icon */}
-            {isFilterActive && (
+              {/* Applied-filter toggle beside advanced controls */}
+              {isFilterActive && (
+                <div className="shrink-0 flex items-center">
+                  <button
+                    type="button"
+                    onClick={() => setShowAppliedFilters((prev) => !prev)}
+                    className={`p-0.5 rounded transition-all cursor-pointer flex items-center justify-center ${
+                      showAppliedFilters ? 'explorer-panel-accent' : 'explorer-panel-primary'
+                    }`}
+                    title={showAppliedFilters ? 'Hide applied filters' : 'Show applied filters'}
+                    aria-label={showAppliedFilters ? 'Hide applied filters' : 'Show applied filters'}
+                    aria-expanded={showAppliedFilters}
+                  >
+                    <FilterIcon className="w-3.5 h-3.5" isActive={showAppliedFilters} />
+                  </button>
+                </div>
+              )}
+
+              {/* Search Query Input */}
+              <div className={searchQuery.length > 0 ? 'explorer-search-query explorer-search-query-pill' : 'explorer-search-query'}>
+                <input
+                  ref={searchInputRef}
+                  id={`${headerId}-search`}
+                  type="text"
+                  data-tree-search={treeView ?? activeTab}
+                  aria-keyshortcuts={isCollections ? 'Control+L Meta+L' : 'Control+K Meta+K'}
+                  aria-label={isCollections ? 'Search collections and items' : 'Search items'}
+                  value={searchQuery}
+                  onChange={(e) => onSearchChange(e.target.value)}
+                  onFocus={() => setIsSearchFocused(true)}
+                  onBlur={() => setIsSearchFocused(false)}
+                  title={isCollections ? 'Search Collections & Items [shortcut: Ctrl-L]' : 'Search Items [shortcut: Ctrl-K]'}
+                  placeholder={hasCollectionFilters ? 'Search filtered collection...' : 'Search...'}
+                  className="explorer-search-query-input"
+                  style={searchQuery.length > 0 ? { width: `${searchQuery.length + 0.5}ch` } : undefined}
+                />
+                {searchQuery.length > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => { onSearchChange(''); searchInputRef.current?.focus(); }}
+                    className="explorer-search-query-clear"
+                    aria-label="Clear search term"
+                    title="Clear search term"
+                  >
+                    <SearchClearIcon />
+                  </button>
+                )}
+              </div>
+
+              {/* Right Magnifying Glass */}
+              <span className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none flex items-center justify-center select-none">
+                <SearchGlassIcon
+                  className={`w-3.5 h-3.5 transition-colors duration-200 ${
+                    isSearchFocused ? 'explorer-panel-primary' : 'explorer-panel-muted'
+                  }`}
+                  isFocused={isSearchFocused}
+                />
+              </span>
+            </>
+          ) : (
+            <>
+              {/* Left Magnifying Glass */}
+              <span className="absolute left-2 top-1/2 -translate-y-1/2 pointer-events-none flex items-center justify-center select-none">
+                <SearchGlassIcon
+                  className={`w-3.5 h-3.5 transition-colors duration-200 ${
+                    isSearchFocused ? 'explorer-panel-primary' : 'explorer-panel-muted'
+                  }`}
+                  isFocused={isSearchFocused}
+                />
+              </span>
+
+              <div className={searchQuery.length > 0 ? 'explorer-search-query explorer-search-query-pill' : 'explorer-search-query'}>
+                <input
+                  ref={searchInputRef}
+                  id={`${headerId}-search`}
+                  type="text"
+                  data-tree-search={treeView ?? activeTab}
+                  aria-keyshortcuts={isCollections ? 'Control+L Meta+L' : 'Control+K Meta+K'}
+                  aria-label={isCollections ? 'Search collections and items' : 'Search items'}
+                  value={searchQuery}
+                  onChange={(e) => onSearchChange(e.target.value)}
+                  onFocus={() => setIsSearchFocused(true)}
+                  onBlur={() => setIsSearchFocused(false)}
+                  title={isCollections ? 'Search Collections & Items [shortcut: Ctrl-L]' : 'Search Items [shortcut: Ctrl-K]'}
+                  placeholder={hasCollectionFilters ? 'Search filtered collection...' : 'Search...'}
+                  className="explorer-search-query-input"
+                  style={searchQuery.length > 0 ? { width: `${searchQuery.length + 0.5}ch` } : undefined}
+                />
+                {searchQuery.length > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => { onSearchChange(''); searchInputRef.current?.focus(); }}
+                    className="explorer-search-query-clear"
+                    aria-label="Clear search term"
+                    title="Clear search term"
+                  >
+                    <SearchClearIcon />
+                  </button>
+                )}
+              </div>
+
+              {/* Applied-filter toggle stays beside the divided advanced controls. */}
+              <div className="ml-auto shrink-0 flex items-center">
+                {/* Filter Funnel Toggle Icon */}
+                {isFilterActive && (
+                  <button
+                    type="button"
+                    onClick={() => setShowAppliedFilters((prev) => !prev)}
+                    className={`p-0.5 rounded transition-all cursor-pointer flex items-center justify-center ${
+                      showAppliedFilters ? 'explorer-panel-accent' : 'explorer-panel-primary'
+                    }`}
+                    title={showAppliedFilters ? 'Hide applied filters' : 'Show applied filters'}
+                    aria-label={showAppliedFilters ? 'Hide applied filters' : 'Show applied filters'}
+                    aria-expanded={showAppliedFilters}
+                  >
+                    <FilterIcon className="w-3.5 h-3.5" isActive={showAppliedFilters} />
+                  </button>
+                )}
+              </div>
+
+              {/* Advanced search sits inside the bar, after a subtle divider. */}
               <button
+                ref={triggerBtnRef}
                 type="button"
-                onClick={() => setShowAppliedFilters((prev) => !prev)}
-                className={`p-0.5 rounded transition-all cursor-pointer flex items-center justify-center ${
-                  showAppliedFilters ? 'explorer-panel-accent' : 'explorer-panel-primary'
-                }`}
-                title={showAppliedFilters ? 'Hide applied filters' : 'Show applied filters'}
-                aria-label={showAppliedFilters ? 'Hide applied filters' : 'Show applied filters'}
-                aria-expanded={showAppliedFilters}
+                onClick={handleToggleAdvancedSearch}
+                className="explorer-search-advanced relative shrink-0"
+                title="Advanced Search & Filters"
+                aria-label="Advanced Search & Filters"
+                aria-expanded={showAdvancedSearch}
+                data-filter-active={isFilterActive}
               >
-                <FilterIcon className="w-3.5 h-3.5" isActive={showAppliedFilters} />
+                <SlidersHorizontalIcon
+                  className="w-3.5 h-3.5"
+                  isActive={showAdvancedSearch || isFilterActive}
+                />
+                {isFilterActive && !showAdvancedSearch && (
+                  <span className="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-[var(--brand-secondary-amber)] animate-pulse" />
+                )}
               </button>
-            )}
-          </div>
-          {/* Advanced search sits inside the bar, after a subtle divider. */}
-        <button
-          ref={triggerBtnRef}
-          type="button"
-          onClick={handleToggleAdvancedSearch}
-          className="explorer-search-advanced relative shrink-0"
-          title="Advanced Search & Filters"
-          aria-label="Advanced Search & Filters"
-          aria-expanded={showAdvancedSearch}
-          data-filter-active={isFilterActive}
-        >
-          <SlidersHorizontalIcon
-            className="w-3.5 h-3.5"
-            isActive={showAdvancedSearch || isFilterActive}
-          />
-          {isFilterActive && !showAdvancedSearch && (
-            <span className="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-[var(--brand-secondary-amber)] animate-pulse" />
+            </>
           )}
-        </button>
         </div>
       </div>
 
@@ -405,7 +493,7 @@ export default function PrimarySidePanelHeader({
             {hasSearchFilter && (
               <span
                 className="group explorer-filter-pill inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[11px] select-none transition-all min-w-0 max-w-full"
-                title={`Item name contains "${searchPattern}"`}
+                title={`Name contains "${searchPattern}"`}
               >
                 <button
                   type="button"
@@ -418,7 +506,7 @@ export default function PrimarySidePanelHeader({
                 </button>
                 <FilterIcon className="w-3.5 h-3.5 explorer-filter-indicator shrink-0" />
                 <span className="explorer-filter-name truncate font-medium transition-colors">
-                  Item name contains &quot;{searchPattern}&quot;
+                  Name contains &quot;{searchPattern}&quot;
                 </span>
               </span>
             )}
@@ -455,7 +543,7 @@ export default function PrimarySidePanelHeader({
           ------------------------------------------------------------------ */}
       <div className="explorer-section-heading">
         <hr aria-hidden="true" />
-        <h3>{activeTab === 'items' ? 'Browse Items' : 'Browse Collections'}</h3>
+        <h3>{isCollections ? 'Browse Collections' : 'Browse Items'}</h3>
       </div>
       <div className="flex items-end justify-between gap-1 w-full shrink-0 -mb-[1px]">
         {/* Left: View Mode Paper Folder Tabs */}
@@ -545,7 +633,7 @@ export default function PrimarySidePanelHeader({
 
         {/* Right: Actions Cluster (Contextual Add + Expand/Collapse) */}
         <div className="flex items-center gap-1 shrink-0 mb-1">
-          {activeTab === 'collections' ? (
+          {isCollections ? (
             onAddNewCollection && (
               <button
                 type="button"

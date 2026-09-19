@@ -693,6 +693,10 @@
   padding: 0.25rem 0.5rem 0.25rem 2rem;
 }
 
+.explorer-search-shell-right {
+  padding: 0.25rem 2rem 0.25rem 0.5rem;
+}
+
 .explorer-search-query {
   display: flex;
   align-items: center;
@@ -761,6 +765,13 @@
   color: var(--primary-explorer-action-icon);
   transition: color 150ms ease;
   cursor: pointer;
+}
+
+.explorer-search-advanced-left {
+  padding-left: 0;
+  padding-right: 0.5rem;
+  border-left: none;
+  border-right: 1px solid color-mix(in oklch, var(--text-soft) 35%, transparent);
 }
 
 .explorer-search-advanced:hover {

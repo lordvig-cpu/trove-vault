@@ -32,7 +32,7 @@ export default function PanelDockDropZones({
       case 'collections':
         return 'Collections';
       case 'explorer':
-        return 'Explorer';
+        return 'Items';
       case 'grabbed_content':
         return 'Grabbed Content';
       default:
