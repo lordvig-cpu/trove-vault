@@ -3,12 +3,24 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 
 export type DockablePanelId = 'primary' | 'secondary' | 'bottom' | 'explorer' | 'collections' | 'grabbed_content';
-export type DockDropTargetZone = 'left' | 'right' | 'bottom' | 'remove';
+export type DockDropTargetZone =
+  | 'left'
+  | 'left-tab'
+  | 'left-replace'
+  | 'right'
+  | 'right-tab'
+  | 'right-replace'
+  | 'bottom'
+  | 'remove';
 export type DockContent = 'empty' | 'explorer' | 'collections' | 'grabbed_content';
 export interface DockContents {
   primary?: DockContent;
   secondary?: DockContent;
   bottom?: DockContent;
+  primaryTabs?: DockContent[];
+  secondaryTabs?: DockContent[];
+  primaryActiveTab?: DockContent;
+  secondaryActiveTab?: DockContent;
 }
 
 export function isDockZoneAllowed(
@@ -17,15 +29,42 @@ export function isDockZoneAllowed(
   contents: DockContents = {}
 ): boolean {
   if (!panelId || !targetZone) return false;
-  const content = panelId === 'explorer' || panelId === 'collections' || panelId === 'grabbed_content'
-    ? panelId : contents[panelId] ?? 'empty';
+  const content =
+    panelId === 'explorer' || panelId === 'collections' || panelId === 'grabbed_content'
+      ? panelId
+      : panelId === 'primary'
+      ? (contents.primaryActiveTab ?? contents.primary ?? 'empty')
+      : panelId === 'secondary'
+      ? (contents.secondaryActiveTab ?? contents.secondary ?? 'empty')
+      : (contents[panelId] ?? 'empty');
+
   if (content === 'empty') return false;
   if (targetZone === 'bottom') return content === 'grabbed_content';
-  if (panelId === 'bottom' && (targetZone === 'left' || targetZone === 'right')) {
-    const target = contents[targetZone === 'left' ? 'primary' : 'secondary'] ?? 'empty';
-    const other = contents[targetZone === 'left' ? 'secondary' : 'primary'] ?? 'empty';
-    return target === 'empty' || target === content || other === 'empty';
+  if (targetZone === 'remove') return true;
+
+  const primaryTabs = contents.primaryTabs ?? (contents.primary && contents.primary !== 'empty' ? [contents.primary] : []);
+  const secondaryTabs = contents.secondaryTabs ?? (contents.secondary && contents.secondary !== 'empty' ? [contents.secondary] : []);
+
+  if (targetZone === 'left-tab') {
+    if (primaryTabs.length >= 3) return false;
+    if (primaryTabs.includes(content)) return false;
+    return true;
   }
+
+  if (targetZone === 'right-tab') {
+    if (secondaryTabs.length >= 3) return false;
+    if (secondaryTabs.includes(content)) return false;
+    return true;
+  }
+
+  if (targetZone === 'left-replace' || targetZone === 'left') {
+    return true;
+  }
+
+  if (targetZone === 'right-replace' || targetZone === 'right') {
+    return true;
+  }
+
   return true;
 }
 
@@ -87,13 +126,24 @@ export function usePanelDockDrag({ onDropPanel, contents }: UsePanelDockDragOpti
       const relX = clientX / vw;
       const relY = (clientY - topBoundary) / Math.max(1, bottomBoundary - topBoundary);
 
+      const primaryTabs = contents?.primaryTabs ?? (contents?.primary && contents?.primary !== 'empty' ? [contents.primary] : []);
+      const secondaryTabs = contents?.secondaryTabs ?? (contents?.secondary && contents?.secondary !== 'empty' ? [contents.secondary] : []);
+      const hasPrimaryTabs = primaryTabs.length > 0;
+      const hasSecondaryTabs = secondaryTabs.length > 0;
+
       // Left Zone: Left 28% of workspace
       if (relX < 0.28) {
+        if (hasPrimaryTabs) {
+          return relY < 0.38 ? 'left-tab' : 'left-replace';
+        }
         return 'left';
       }
 
       // Right Zone: Right 28% of workspace
       if (relX > 0.72) {
+        if (hasSecondaryTabs) {
+          return relY < 0.38 ? 'right-tab' : 'right-replace';
+        }
         return 'right';
       }
 
@@ -107,8 +157,18 @@ export function usePanelDockDrag({ onDropPanel, contents }: UsePanelDockDragOpti
         return 'bottom';
       }
 
-      // Upper center defaults to Left or Right based on closer edge
-      return relX <= 0.5 ? 'left' : 'right';
+      // Center area defaults to Left or Right based on closer edge
+      if (relX <= 0.5) {
+        if (hasPrimaryTabs) {
+          return relY < 0.38 ? 'left-tab' : 'left-replace';
+        }
+        return 'left';
+      } else {
+        if (hasSecondaryTabs) {
+          return relY < 0.38 ? 'right-tab' : 'right-replace';
+        }
+        return 'right';
+      }
     };
 
     const handlePointerMove = (moveEv: PointerEvent) => {

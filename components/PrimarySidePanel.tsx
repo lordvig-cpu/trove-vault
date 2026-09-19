@@ -17,6 +17,7 @@ import { ExplorerTab } from '@/lib/filterExplorerForest';
 import { PrimarySidebarPosition } from '@/types/layout';
 import EmptyPanelDropZone from '@/components/EmptyPanelDropZone';
 import PanelContentTransition from '@/components/PanelContentTransition';
+import { DockContent } from '@/hooks/usePanelDockDrag';
 
 /* ==========================================================================
    1. TYPE DEFINITIONS & CONSTANTS
@@ -38,8 +39,9 @@ interface PrimarySidePanelProps {
   onClose: () => void;
   onTogglePin?: () => void;
   treeView?: ExplorerTab;
-  activeTab?: ExplorerTab;
-  onTabChange?: (tab: ExplorerTab) => void;
+  activeTab?: ExplorerTab | DockContent;
+  onTabChange?: (tab: any) => void;
+  tabs?: DockContent[];
   isAnyCategoryExpanded?: boolean;
   onToggleAllCategories?: () => void;
   searchQuery?: string;
@@ -59,6 +61,7 @@ interface PrimarySidePanelProps {
   onClearCollectionFilters?: () => void;
 
   onHandlePointerDown?: (e: React.PointerEvent) => void;
+  onStartTabDrag?: (tab: Exclude<DockContent, 'empty'>, e: React.PointerEvent) => void;
 }
 
 const DEFAULT_WIDTH = 304;
@@ -85,6 +88,7 @@ export default function PrimarySidePanel({
   treeView,
   activeTab,
   onTabChange,
+  tabs,
   isAnyCategoryExpanded,
   onToggleAllCategories,
   searchQuery,
@@ -101,6 +105,7 @@ export default function PrimarySidePanel({
   onToggleFilterCollection,
   onClearCollectionFilters,
   onHandlePointerDown,
+  onStartTabDrag,
 }: PrimarySidePanelProps) {
   const activeIsExpanded = isAnyCategoryExpanded;
   const activeToggleAll = onToggleAllCategories;
@@ -223,6 +228,7 @@ export default function PrimarySidePanel({
         treeView={treeView}
         activeTab={activeTab}
         onTabChange={onTabChange}
+        tabs={tabs}
         searchQuery={searchQuery}
         onSearchChange={onSearchChange}
         isAnyCategoryExpanded={activeIsExpanded}
@@ -236,6 +242,7 @@ export default function PrimarySidePanel({
         onToggleFilterCollection={onToggleFilterCollection}
         onClearCollectionFilters={onClearCollectionFilters}
         onHandlePointerDown={onHandlePointerDown}
+        onStartTabDrag={onStartTabDrag}
       />
 
       {/* Syncing Progress Banner */}

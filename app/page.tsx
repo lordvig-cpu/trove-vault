@@ -7,7 +7,7 @@ import { useCollections } from '@/hooks/useCollections';
 import { useModals } from '@/hooks/useModals';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 import { useExplorerCategories } from '@/hooks/useExplorerCategories';
-import { usePanelDockDrag, DockablePanelId, DockDropTargetZone, isDockZoneAllowed, DockContent } from '@/hooks/usePanelDockDrag';
+import { usePanelDockDrag, DockablePanelId, DockDropTargetZone, isDockZoneAllowed, DockContent, DockContents } from '@/hooks/usePanelDockDrag';
 import NavigationHeader from '@/components/NavigationHeader';
 import NavigationFooter from '@/components/NavigationFooter';
 import MainContent from '@/components/MainContent';
@@ -133,13 +133,30 @@ export default function Home() {
   const [secondaryPanelWidth, setSecondaryPanelWidth] = useState<number>(304);
   const [bottomPanelHeight, setBottomPanelHeight] = useState<number>(220);
 
-  const [primaryPanelContent, setPrimaryPanelContent] = useState<DockContent>('empty');
-  const [secondaryPanelContent, setSecondaryPanelContent] = useState<DockContent>('empty');
+  const [primaryTabs, setPrimaryTabs] = useState<DockContent[]>([]);
+  const [primaryActiveTab, setPrimaryActiveTab] = useState<DockContent>('empty');
+  const [secondaryTabs, setSecondaryTabs] = useState<DockContent[]>([]);
+  const [secondaryActiveTab, setSecondaryActiveTab] = useState<DockContent>('empty');
 
   const isPrimaryActive = isPinned || isPrimarySidePanelOpen;
   const isSecondaryActive = isSecondaryPinned || isSecondaryOpen;
-  const dockContents = { primary: primaryPanelContent, secondary: secondaryPanelContent, bottom: bottomPanelContent };
+  const dockContents: DockContents = {
+    primary: primaryActiveTab,
+    secondary: secondaryActiveTab,
+    bottom: bottomPanelContent,
+    primaryTabs,
+    secondaryTabs,
+    primaryActiveTab,
+    secondaryActiveTab,
+  };
 
+  const handlePrimaryTabChange = useCallback((tab: DockContent) => {
+    setPrimaryActiveTab(tab);
+  }, []);
+
+  const handleSecondaryTabChange = useCallback((tab: DockContent) => {
+    setSecondaryActiveTab(tab);
+  }, []);
 
   // Dynamic occupied widths for main content margin adjustments (only when pinned)
   const leftOccupiedWidth = isPinned && isPrimaryActive ? primaryPanelWidth : 0;
@@ -149,8 +166,10 @@ export default function Home() {
      6. PANEL CONTENT MOVING & SWAPPING (Smooth Fluid Slide Transition)
      ------------------------------------------------------------------------ */
   interface SlidingContentState {
-    content: DockContent;
-    secondaryContent?: DockContent;
+    tabs: DockContent[];
+    activeTab: DockContent;
+    secondaryTabs?: DockContent[];
+    secondaryActiveTab?: DockContent;
     from: 'left' | 'right';
     to: 'left' | 'right';
     width: number;
@@ -169,35 +188,42 @@ export default function Home() {
   }, []);
 
   const handleMovePrimaryContent = useCallback(() => {
-    if (primaryPanelContent === 'empty' || slidingState) return;
+    if (primaryTabs.length === 0 || slidingState) return;
 
-    // Check bottom panel routing: if bottom panel is active, empty, and primary content is allowed in bottom ('grabbed_content')
-    if (isBottomActive && bottomPanelContent === 'empty' && primaryPanelContent === 'grabbed_content') {
+    // Check bottom panel routing: if bottom panel is active, empty, and primary has grabbed_content as only tab
+    if (isBottomActive && bottomPanelContent === 'empty' && primaryTabs.length === 1 && primaryTabs[0] === 'grabbed_content') {
       setBottomPanelContent('grabbed_content');
-      setPrimaryPanelContent('empty');
+      setPrimaryTabs([]);
+      setPrimaryActiveTab('empty');
       setIsBottomPanelOpen(true);
       return;
     }
 
-    const currentPrimary = primaryPanelContent;
-    const currentSecondary = secondaryPanelContent;
+    const currentPrimaryTabs = [...primaryTabs];
+    const currentPrimaryActive = primaryActiveTab;
+    const currentSecondaryTabs = [...secondaryTabs];
+    const currentSecondaryActive = secondaryActiveTab;
 
     if (!animationsEnabled) {
-      setSecondaryPanelContent(currentPrimary);
-      setPrimaryPanelContent(currentSecondary);
+      setSecondaryTabs(currentPrimaryTabs);
+      setSecondaryActiveTab(currentPrimaryActive);
+      setPrimaryTabs(currentSecondaryTabs);
+      setPrimaryActiveTab(currentSecondaryActive);
       setIsSecondaryOpen(true);
       return;
     }
 
-    // Open destination sidebar to receive incoming content
     setIsSecondaryOpen(true);
-    // Temporarily clear static contents while sliding clone animates across
-    setPrimaryPanelContent('empty');
-    setSecondaryPanelContent('empty');
+    setPrimaryTabs([]);
+    setPrimaryActiveTab('empty');
+    setSecondaryTabs([]);
+    setSecondaryActiveTab('empty');
 
     setSlidingState({
-      content: currentPrimary,
-      secondaryContent: currentSecondary !== 'empty' ? currentSecondary : undefined,
+      tabs: currentPrimaryTabs,
+      activeTab: currentPrimaryActive,
+      secondaryTabs: currentSecondaryTabs.length > 0 ? currentSecondaryTabs : undefined,
+      secondaryActiveTab: currentSecondaryTabs.length > 0 ? currentSecondaryActive : undefined,
       from: 'left',
       to: 'right',
       width: primaryPanelWidth,
@@ -205,7 +231,6 @@ export default function Home() {
       isMoving: false,
     });
 
-    // Double-rAF ensures browser paints initial starting coordinates before initiating transition
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
         setSlidingState((prev) => (prev ? { ...prev, isMoving: true } : null));
@@ -214,41 +239,50 @@ export default function Home() {
 
     if (slideTimeoutRef.current) clearTimeout(slideTimeoutRef.current);
     slideTimeoutRef.current = setTimeout(() => {
-      setSecondaryPanelContent(currentPrimary);
-      setPrimaryPanelContent(currentSecondary);
+      setSecondaryTabs(currentPrimaryTabs);
+      setSecondaryActiveTab(currentPrimaryActive);
+      setPrimaryTabs(currentSecondaryTabs);
+      setPrimaryActiveTab(currentSecondaryActive);
       setSlidingState(null);
     }, 500);
-  }, [primaryPanelContent, secondaryPanelContent, bottomPanelContent, isBottomActive, slidingState, animationsEnabled, primaryPanelWidth, secondaryPanelWidth]);
+  }, [primaryTabs, primaryActiveTab, secondaryTabs, secondaryActiveTab, bottomPanelContent, isBottomActive, slidingState, animationsEnabled, primaryPanelWidth, secondaryPanelWidth]);
 
   const handleMoveSecondaryContent = useCallback(() => {
-    if (secondaryPanelContent === 'empty' || slidingState) return;
+    if (secondaryTabs.length === 0 || slidingState) return;
 
-    // Check bottom panel routing: if bottom panel is active, empty, and secondary content is allowed in bottom ('grabbed_content')
-    if (isBottomActive && bottomPanelContent === 'empty' && secondaryPanelContent === 'grabbed_content') {
+    if (isBottomActive && bottomPanelContent === 'empty' && secondaryTabs.length === 1 && secondaryTabs[0] === 'grabbed_content') {
       setBottomPanelContent('grabbed_content');
-      setSecondaryPanelContent('empty');
+      setSecondaryTabs([]);
+      setSecondaryActiveTab('empty');
       setIsBottomPanelOpen(true);
       return;
     }
 
-    const currentPrimary = primaryPanelContent;
-    const currentSecondary = secondaryPanelContent;
+    const currentPrimaryTabs = [...primaryTabs];
+    const currentPrimaryActive = primaryActiveTab;
+    const currentSecondaryTabs = [...secondaryTabs];
+    const currentSecondaryActive = secondaryActiveTab;
 
     if (!animationsEnabled) {
-      setPrimaryPanelContent(currentSecondary);
-      setSecondaryPanelContent(currentPrimary);
+      setPrimaryTabs(currentSecondaryTabs);
+      setPrimaryActiveTab(currentSecondaryActive);
+      setSecondaryTabs(currentPrimaryTabs);
+      setSecondaryActiveTab(currentPrimaryActive);
       setIsPrimarySidePanelOpen(true);
       return;
     }
 
-    // Open destination sidebar to receive incoming content
     setIsPrimarySidePanelOpen(true);
-    setPrimaryPanelContent('empty');
-    setSecondaryPanelContent('empty');
+    setPrimaryTabs([]);
+    setPrimaryActiveTab('empty');
+    setSecondaryTabs([]);
+    setSecondaryActiveTab('empty');
 
     setSlidingState({
-      content: currentSecondary,
-      secondaryContent: currentPrimary !== 'empty' ? currentPrimary : undefined,
+      tabs: currentSecondaryTabs,
+      activeTab: currentSecondaryActive,
+      secondaryTabs: currentPrimaryTabs.length > 0 ? currentPrimaryTabs : undefined,
+      secondaryActiveTab: currentPrimaryTabs.length > 0 ? currentPrimaryActive : undefined,
       from: 'right',
       to: 'left',
       width: secondaryPanelWidth,
@@ -264,29 +298,49 @@ export default function Home() {
 
     if (slideTimeoutRef.current) clearTimeout(slideTimeoutRef.current);
     slideTimeoutRef.current = setTimeout(() => {
-      setPrimaryPanelContent(currentSecondary);
-      setSecondaryPanelContent(currentPrimary);
+      setPrimaryTabs(currentSecondaryTabs);
+      setPrimaryActiveTab(currentSecondaryActive);
+      setSecondaryTabs(currentPrimaryTabs);
+      setSecondaryActiveTab(currentPrimaryActive);
       setSlidingState(null);
     }, 500);
-  }, [primaryPanelContent, secondaryPanelContent, bottomPanelContent, isBottomActive, slidingState, animationsEnabled, primaryPanelWidth, secondaryPanelWidth]);
+  }, [primaryTabs, primaryActiveTab, secondaryTabs, secondaryActiveTab, bottomPanelContent, isBottomActive, slidingState, animationsEnabled, primaryPanelWidth, secondaryPanelWidth]);
 
   /* ------------------------------------------------------------------------
      7. PANEL DOCK DRAG & DROP ORCHESTRATION (Pointer Events API)
      ------------------------------------------------------------------------ */
   const displacePanelContent = useCallback((from: 'left' | 'right', incoming: Exclude<DockContent, 'empty'>) => {
-    const displaced = from === 'left' ? primaryPanelContent : secondaryPanelContent;
+    const displacedTabs = from === 'left' ? [...primaryTabs] : [...secondaryTabs];
+    const displacedActive = from === 'left' ? primaryActiveTab : secondaryActiveTab;
+
     setIsPrimarySidePanelOpen(true);
     setIsSecondaryOpen(true);
     setIsPrimaryFlyoutOpen(false);
+    setIsCollectionsFlyoutOpen(false);
+
     if (!animationsEnabled || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      setPrimaryPanelContent(from === 'left' ? incoming : displaced);
-      setSecondaryPanelContent(from === 'right' ? incoming : displaced);
+      if (from === 'left') {
+        setPrimaryTabs([incoming]);
+        setPrimaryActiveTab(incoming);
+        setSecondaryTabs(displacedTabs);
+        setSecondaryActiveTab(displacedActive);
+      } else {
+        setSecondaryTabs([incoming]);
+        setSecondaryActiveTab(incoming);
+        setPrimaryTabs(displacedTabs);
+        setPrimaryActiveTab(displacedActive);
+      }
       return;
     }
-    setPrimaryPanelContent('empty');
-    setSecondaryPanelContent('empty');
+
+    setPrimaryTabs([]);
+    setPrimaryActiveTab('empty');
+    setSecondaryTabs([]);
+    setSecondaryActiveTab('empty');
+
     setSlidingState({
-      content: displaced,
+      tabs: displacedTabs,
+      activeTab: displacedActive,
       incomingContent: incoming,
       from,
       to: from === 'left' ? 'right' : 'left',
@@ -294,20 +348,30 @@ export default function Home() {
       secondaryWidth: from === 'left' ? secondaryPanelWidth : primaryPanelWidth,
       isMoving: false,
     });
+
     requestAnimationFrame(() => requestAnimationFrame(() => {
       setSlidingState(prev => prev ? { ...prev, isMoving: true } : null);
-      // Release fade suppression before introducing the new content.
       requestAnimationFrame(() => {
-        if (from === 'left') setPrimaryPanelContent(incoming);
-        else setSecondaryPanelContent(incoming);
+        if (from === 'left') {
+          setPrimaryTabs([incoming]);
+          setPrimaryActiveTab(incoming);
+        } else {
+          setSecondaryTabs([incoming]);
+          setSecondaryActiveTab(incoming);
+        }
       });
       slideTimeoutRef.current = setTimeout(() => {
-        if (from === 'left') setSecondaryPanelContent(displaced);
-        else setPrimaryPanelContent(displaced);
+        if (from === 'left') {
+          setSecondaryTabs(displacedTabs);
+          setSecondaryActiveTab(displacedActive);
+        } else {
+          setPrimaryTabs(displacedTabs);
+          setPrimaryActiveTab(displacedActive);
+        }
         setSlidingState(null);
       }, 500);
     }));
-  }, [primaryPanelContent, secondaryPanelContent, animationsEnabled, primaryPanelWidth, secondaryPanelWidth]);
+  }, [primaryTabs, primaryActiveTab, secondaryTabs, secondaryActiveTab, animationsEnabled, primaryPanelWidth, secondaryPanelWidth]);
 
   const canMoveBottomLeft = !slidingState && isDockZoneAllowed('bottom', 'left', dockContents);
   const canMoveBottomRight = !slidingState && isDockZoneAllowed('bottom', 'right', dockContents);
@@ -315,65 +379,112 @@ export default function Home() {
   const handleDropPanel = useCallback(
     (panelId: DockablePanelId, targetZone: DockDropTargetZone) => {
       if (slidingState) return;
-      if (!isDockZoneAllowed(panelId, targetZone, { primary: primaryPanelContent, secondary: secondaryPanelContent, bottom: bottomPanelContent })) return;
+      if (!isDockZoneAllowed(panelId, targetZone, dockContents)) return;
 
       setIsCollectionsFlyoutOpen(false);
-      // 1. Remove from sidebar target
+      setIsPrimaryFlyoutOpen(false);
+
+      const getIncoming = (): DockContent => {
+        if (panelId === 'explorer' || panelId === 'collections' || panelId === 'grabbed_content') return panelId;
+        if (panelId === 'primary') return primaryActiveTab;
+        if (panelId === 'secondary') return secondaryActiveTab;
+        if (panelId === 'bottom') return bottomPanelContent;
+        return 'empty';
+      };
+
+      const incoming = getIncoming();
+      if (incoming === 'empty' && targetZone !== 'remove') return;
+
+      // Helper to remove a tab from a sidebar
+      const removeTabFromPrimary = (item: DockContent) => {
+        setPrimaryTabs((prev) => {
+          const updated = prev.filter((t) => t !== item);
+          setPrimaryActiveTab((curActive) => {
+            if (curActive === item) {
+              return updated.length > 0 ? updated[0] : 'empty';
+            }
+            return curActive;
+          });
+          return updated;
+        });
+      };
+
+      const removeTabFromSecondary = (item: DockContent) => {
+        setSecondaryTabs((prev) => {
+          const updated = prev.filter((t) => t !== item);
+          setSecondaryActiveTab((curActive) => {
+            if (curActive === item) {
+              return updated.length > 0 ? updated[0] : 'empty';
+            }
+            return curActive;
+          });
+          return updated;
+        });
+      };
+
+      // 1. Remove
       if (targetZone === 'remove') {
         if (panelId === 'primary') {
-          setPrimaryPanelContent('empty');
+          if (primaryActiveTab !== 'empty') removeTabFromPrimary(primaryActiveTab);
         } else if (panelId === 'secondary') {
-          setSecondaryPanelContent('empty');
+          if (secondaryActiveTab !== 'empty') removeTabFromSecondary(secondaryActiveTab);
         } else if (panelId === 'bottom') {
           setBottomPanelContent('empty');
-        } else if (panelId === 'explorer' || panelId === 'collections') {
-          if (primaryPanelContent === panelId) setPrimaryPanelContent('empty');
-          if (secondaryPanelContent === panelId) setSecondaryPanelContent('empty');
-          setIsPrimaryFlyoutOpen(false);
-        } else if (panelId === 'grabbed_content') {
-          if (primaryPanelContent === 'grabbed_content') setPrimaryPanelContent('empty');
-          if (secondaryPanelContent === 'grabbed_content') setSecondaryPanelContent('empty');
-          if (bottomPanelContent === 'grabbed_content') setBottomPanelContent('empty');
+        } else if (panelId === 'explorer' || panelId === 'collections' || panelId === 'grabbed_content') {
+          removeTabFromPrimary(panelId);
+          removeTabFromSecondary(panelId);
+          if (bottomPanelContent === panelId) setBottomPanelContent('empty');
         }
         return;
       }
 
-      // 2. Dock to Left (Primary Side Bar)
-      if (targetZone === 'left') {
-        const incomingContent: DockContent =
-          panelId === 'explorer' || panelId === 'collections'
-            ? panelId
-            : panelId === 'grabbed_content'
-            ? 'grabbed_content'
-            : panelId === 'secondary'
-            ? secondaryPanelContent
-            : panelId === 'bottom'
-            ? bottomPanelContent
-            : primaryPanelContent;
+      // 2. Add as tab to Left (Primary Side Bar)
+      if (targetZone === 'left-tab') {
+        if (incoming === 'empty') return;
+        removeTabFromSecondary(incoming);
+        if (bottomPanelContent === incoming) setBottomPanelContent('empty');
 
-        if (incomingContent === 'empty') {
+        setPrimaryTabs((prev) => {
+          if (prev.includes(incoming) || prev.length >= 3) return prev;
+          return [...prev, incoming];
+        });
+        setPrimaryActiveTab(incoming);
+        setIsPrimarySidePanelOpen(true);
+        return;
+      }
+
+      // 3. Add as tab to Right (Secondary Side Bar)
+      if (targetZone === 'right-tab') {
+        if (incoming === 'empty') return;
+        removeTabFromPrimary(incoming);
+        if (bottomPanelContent === incoming) setBottomPanelContent('empty');
+
+        setSecondaryTabs((prev) => {
+          if (prev.includes(incoming) || prev.length >= 3) return prev;
+          return [...prev, incoming];
+        });
+        setSecondaryActiveTab(incoming);
+        setIsSecondaryOpen(true);
+        return;
+      }
+
+      // 4. Replace Left (Primary Side Bar) or Dock to empty Left
+      if (targetZone === 'left-replace' || targetZone === 'left') {
+        if (incoming === 'empty') {
           setIsPrimarySidePanelOpen(true);
           return;
         }
 
-        if (panelId === 'bottom') {
-          if (primaryPanelContent === 'empty') {
-            setPrimaryPanelContent(incomingContent);
-            setBottomPanelContent('empty');
-            setIsPrimarySidePanelOpen(true);
-          } else if (secondaryPanelContent === 'empty') {
-            displacePanelContent('left', incomingContent);
-            setBottomPanelContent('empty');
-          }
-          return;
-        }
-
-        // Direct drag from secondary sidebar header (move / swap)
+        // Direct drag from secondary header (swap full panels)
         if (panelId === 'secondary') {
-          const currentSecondary = secondaryPanelContent;
-          const currentPrimary = primaryPanelContent;
-          setPrimaryPanelContent(currentSecondary);
-          setSecondaryPanelContent(currentPrimary);
+          const curSecTabs = [...secondaryTabs];
+          const curSecActive = secondaryActiveTab;
+          const curPriTabs = [...primaryTabs];
+          const curPriActive = primaryActiveTab;
+          setPrimaryTabs(curSecTabs);
+          setPrimaryActiveTab(curSecActive);
+          setSecondaryTabs(curPriTabs);
+          setSecondaryActiveTab(curPriActive);
           setIsPrimarySidePanelOpen(true);
           return;
         }
@@ -383,65 +494,42 @@ export default function Home() {
           return;
         }
 
-        // Incoming is a new dockable item from header / flyout
+        // Displace if primary has tabs and secondary is empty and incoming is not already there
         if (
-          primaryPanelContent !== 'empty' &&
-          primaryPanelContent !== incomingContent &&
-          secondaryPanelContent === 'empty'
+          primaryTabs.length > 0 &&
+          secondaryTabs.length === 0 &&
+          !primaryTabs.includes(incoming)
         ) {
-          // User-friendly displacement: move existing primary content to empty secondary sidebar
-          displacePanelContent('left', incomingContent);
+          displacePanelContent('left', incoming as Exclude<DockContent, 'empty'>);
+          if (bottomPanelContent === incoming) setBottomPanelContent('empty');
         } else {
-          // Standard dock into primary
-          setPrimaryPanelContent(incomingContent);
-          if (secondaryPanelContent === incomingContent) {
-            setSecondaryPanelContent('empty');
-          }
-          if (bottomPanelContent === incomingContent) {
-            setBottomPanelContent('empty');
-          }
+          // Standard replace
+          removeTabFromSecondary(incoming);
+          if (bottomPanelContent === incoming) setBottomPanelContent('empty');
+          setPrimaryTabs([incoming]);
+          setPrimaryActiveTab(incoming);
           setIsPrimarySidePanelOpen(true);
-          setIsPrimaryFlyoutOpen(false);
         }
         return;
       }
 
-      // 3. Dock to Right (Secondary Side Bar)
-      if (targetZone === 'right') {
-        const incomingContent: DockContent =
-          panelId === 'explorer' || panelId === 'collections'
-            ? panelId
-            : panelId === 'grabbed_content'
-            ? 'grabbed_content'
-            : panelId === 'primary'
-            ? primaryPanelContent
-            : panelId === 'bottom'
-            ? bottomPanelContent
-            : secondaryPanelContent;
-
-        if (incomingContent === 'empty') {
+      // 5. Replace Right (Secondary Side Bar) or Dock to empty Right
+      if (targetZone === 'right-replace' || targetZone === 'right') {
+        if (incoming === 'empty') {
           setIsSecondaryOpen(true);
           return;
         }
 
-        if (panelId === 'bottom') {
-          if (secondaryPanelContent === 'empty') {
-            setSecondaryPanelContent(incomingContent);
-            setBottomPanelContent('empty');
-            setIsSecondaryOpen(true);
-          } else if (primaryPanelContent === 'empty') {
-            displacePanelContent('right', incomingContent);
-            setBottomPanelContent('empty');
-          }
-          return;
-        }
-
-        // Direct drag from primary sidebar header (move / swap)
+        // Direct drag from primary header (swap full panels)
         if (panelId === 'primary') {
-          const currentPrimary = primaryPanelContent;
-          const currentSecondary = secondaryPanelContent;
-          setSecondaryPanelContent(currentPrimary);
-          setPrimaryPanelContent(currentSecondary);
+          const curPriTabs = [...primaryTabs];
+          const curPriActive = primaryActiveTab;
+          const curSecTabs = [...secondaryTabs];
+          const curSecActive = secondaryActiveTab;
+          setSecondaryTabs(curPriTabs);
+          setSecondaryActiveTab(curPriActive);
+          setPrimaryTabs(curSecTabs);
+          setPrimaryActiveTab(curSecActive);
           setIsSecondaryOpen(true);
           return;
         }
@@ -451,51 +539,47 @@ export default function Home() {
           return;
         }
 
-        // Incoming is a new dockable item from header / flyout
+        // Displace if secondary has tabs and primary is empty
         if (
-          secondaryPanelContent !== 'empty' &&
-          secondaryPanelContent !== incomingContent &&
-          primaryPanelContent === 'empty'
+          secondaryTabs.length > 0 &&
+          primaryTabs.length === 0 &&
+          !secondaryTabs.includes(incoming)
         ) {
-          // User-friendly displacement: move existing secondary content to empty primary sidebar
-          displacePanelContent('right', incomingContent);
+          displacePanelContent('right', incoming as Exclude<DockContent, 'empty'>);
+          if (bottomPanelContent === incoming) setBottomPanelContent('empty');
         } else {
-          // Standard dock into secondary
-          setSecondaryPanelContent(incomingContent);
-          if (primaryPanelContent === incomingContent) {
-            setPrimaryPanelContent('empty');
-          }
-          if (bottomPanelContent === incomingContent) {
-            setBottomPanelContent('empty');
-          }
+          // Standard replace
+          removeTabFromPrimary(incoming);
+          if (bottomPanelContent === incoming) setBottomPanelContent('empty');
+          setSecondaryTabs([incoming]);
+          setSecondaryActiveTab(incoming);
           setIsSecondaryOpen(true);
-          setIsPrimaryFlyoutOpen(false);
         }
         return;
       }
 
-      // 4. Dock to Bottom Panel
+      // 6. Dock to Bottom Panel
       if (targetZone === 'bottom') {
-        const incomingContent: DockContent =
-          panelId === 'grabbed_content'
-            ? 'grabbed_content'
-            : panelId === 'primary'
-            ? primaryPanelContent
-            : panelId === 'secondary'
-            ? secondaryPanelContent
-            : bottomPanelContent;
-
-        if (incomingContent === 'grabbed_content') {
+        if (incoming === 'grabbed_content') {
           setBottomPanelContent('grabbed_content');
-          if (primaryPanelContent === 'grabbed_content') setPrimaryPanelContent('empty');
-          if (secondaryPanelContent === 'grabbed_content') setSecondaryPanelContent('empty');
+          removeTabFromPrimary('grabbed_content');
+          removeTabFromSecondary('grabbed_content');
           setIsBottomPanelOpen(true);
         } else if (panelId === 'bottom') {
           setIsBottomPanelOpen(true);
         }
       }
     },
-    [primaryPanelContent, secondaryPanelContent, bottomPanelContent, slidingState, displacePanelContent]
+    [
+      primaryTabs,
+      primaryActiveTab,
+      secondaryTabs,
+      secondaryActiveTab,
+      bottomPanelContent,
+      slidingState,
+      displacePanelContent,
+      dockContents,
+    ]
   );
 
   const {
@@ -521,10 +605,17 @@ export default function Home() {
     setActiveSearchPanel(content);
     setIsPrimaryFlyoutOpen(false);
     setIsCollectionsFlyoutOpen(false);
-    if (primaryPanelContent === content) setIsPrimarySidePanelOpen(true);
-    else if (secondaryPanelContent === content) setIsSecondaryOpen(true);
-    else if (content === 'explorer') setIsPrimaryFlyoutOpen(true);
-    else setIsCollectionsFlyoutOpen(true);
+    if (primaryTabs.includes(content)) {
+      setPrimaryActiveTab(content);
+      setIsPrimarySidePanelOpen(true);
+    } else if (secondaryTabs.includes(content)) {
+      setSecondaryActiveTab(content);
+      setIsSecondaryOpen(true);
+    } else if (content === 'explorer') {
+      setIsPrimaryFlyoutOpen(true);
+    } else {
+      setIsCollectionsFlyoutOpen(true);
+    }
 
     const attemptFocus = (remaining: number) => {
       const inputs = document.querySelectorAll<HTMLInputElement>(
@@ -714,10 +805,16 @@ export default function Home() {
     return null;
   };
 
-  const getPanelTitle = (content: DockContent, defaultTitle: string) => {
-    if (content === 'explorer') return 'ITEMS';
-    if (content === 'collections') return 'COLLECTIONS';
-    if (content === 'grabbed_content') return 'GRABBED CONTENT';
+  const getPanelTitle = (tabs: DockContent[], activeTab: DockContent, defaultTitle: string) => {
+    if (tabs.length === 0) return defaultTitle;
+    if (tabs.length === 1) {
+      if (tabs[0] === 'explorer') return 'ITEMS';
+      if (tabs[0] === 'collections') return 'COLLECTIONS';
+      if (tabs[0] === 'grabbed_content') return 'GRABBED CONTENT';
+    }
+    if (activeTab === 'explorer') return 'ITEMS';
+    if (activeTab === 'collections') return 'COLLECTIONS';
+    if (activeTab === 'grabbed_content') return 'GRABBED CONTENT';
     return defaultTitle;
   };
 
@@ -756,6 +853,7 @@ export default function Home() {
       onAddNewCollection={() => openCreateCollection(null)}
       collections={allCollections}
       onHandlePointerDown={(e) => startDockDrag('explorer', e)}
+      onStartTabDrag={(tab, e) => startDockDrag(tab, e)}
     >
       {renderExplorerTree('left', 'explorer', true)}
     </PrimarySidePanel>
@@ -777,42 +875,46 @@ export default function Home() {
       onAddNewCollection={() => openCreateCollection(null)}
       collections={allCollections}
       onHandlePointerDown={(e) => startDockDrag('collections', e)}
+      onStartTabDrag={(tab, e) => startDockDrag(tab, e)}
     >
       {renderExplorerTree('left', 'collections', true)}
     </PrimarySidePanel>
   );
 
   const primaryMoveTooltip =
-    primaryPanelContent === 'empty'
+    primaryTabs.length === 0
       ? 'Content must be docked first'
-      : isBottomActive && bottomPanelContent === 'empty' && primaryPanelContent === 'grabbed_content'
+      : isBottomActive && bottomPanelContent === 'empty' && primaryTabs.length === 1 && primaryTabs[0] === 'grabbed_content'
       ? 'Move Grabbed Content to Bottom Panel'
-      : secondaryPanelContent !== 'empty'
-      ? `Swap ${getPanelTitle(primaryPanelContent, 'Content')} and ${getPanelTitle(secondaryPanelContent, 'Content')}`
-      : `Move ${getPanelTitle(primaryPanelContent, 'Content')} to Secondary Side Bar`;
+      : secondaryTabs.length > 0
+      ? `Swap ${getPanelTitle(primaryTabs, primaryActiveTab, 'Primary')} and ${getPanelTitle(secondaryTabs, secondaryActiveTab, 'Secondary')}`
+      : `Move ${getPanelTitle(primaryTabs, primaryActiveTab, 'Side Bar')} to Secondary Side Bar`;
 
   const secondaryMoveTooltip =
-    secondaryPanelContent === 'empty'
+    secondaryTabs.length === 0
       ? 'Content must be docked first'
-      : isBottomActive && bottomPanelContent === 'empty' && secondaryPanelContent === 'grabbed_content'
+      : isBottomActive && bottomPanelContent === 'empty' && secondaryTabs.length === 1 && secondaryTabs[0] === 'grabbed_content'
       ? 'Move Grabbed Content to Bottom Panel'
-      : primaryPanelContent !== 'empty'
-      ? `Swap ${getPanelTitle(secondaryPanelContent, 'Content')} and ${getPanelTitle(primaryPanelContent, 'Content')}`
-      : `Move ${getPanelTitle(secondaryPanelContent, 'Content')} to Primary Side Bar`;
+      : primaryTabs.length > 0
+      ? `Swap ${getPanelTitle(secondaryTabs, secondaryActiveTab, 'Secondary')} and ${getPanelTitle(primaryTabs, primaryActiveTab, 'Primary')}`
+      : `Move ${getPanelTitle(secondaryTabs, secondaryActiveTab, 'Side Bar')} to Primary Side Bar`;
 
-  const canMovePrimary = primaryPanelContent !== 'empty' && !slidingState;
-  const canMoveSecondary = secondaryPanelContent !== 'empty' && !slidingState;
+  const canMovePrimary = primaryTabs.length > 0 && !slidingState;
+  const canMoveSecondary = secondaryTabs.length > 0 && !slidingState;
 
   const explorerSidebarPanel = (
     <PrimarySidePanel
-      title={getPanelTitle(primaryPanelContent, 'PRIMARY SIDE PANEL')}
-      {...treeHeaderProps(primaryPanelContent)}
-      hasDockedContent={primaryPanelContent !== 'empty'}
+      title={getPanelTitle(primaryTabs, primaryActiveTab, 'PRIMARY SIDE PANEL')}
+      {...treeHeaderProps(primaryActiveTab)}
+      tabs={primaryTabs}
+      activeTab={primaryActiveTab}
+      onTabChange={handlePrimaryTabChange}
+      hasDockedContent={primaryTabs.length > 0}
       isContentSliding={slidingState !== null && !(slidingState.incomingContent && slidingState.from === 'left' && slidingState.isMoving)}
-      showSearchFilter={primaryPanelContent === 'explorer' || primaryPanelContent === 'collections'}
+      showSearchFilter={primaryActiveTab === 'explorer' || primaryActiveTab === 'collections'}
       variant="sidebar"
       position="left"
-      onTogglePosition={primaryPanelContent !== 'empty' ? handleMovePrimaryContent : undefined}
+      onTogglePosition={primaryTabs.length > 0 ? handleMovePrimaryContent : undefined}
       moveTooltip={primaryMoveTooltip}
       canMove={canMovePrimary}
       isOpen={isPrimaryActive}
@@ -838,8 +940,9 @@ export default function Home() {
       onAddNewCollection={() => openCreateCollection(null)}
       collections={allCollections}
       onHandlePointerDown={(e) => startDockDrag('primary', e)}
+      onStartTabDrag={(tab, e) => startDockDrag(tab, e)}
     >
-      {renderPanelBody(primaryPanelContent, 'left')}
+      {renderPanelBody(primaryActiveTab, 'left')}
     </PrimarySidePanel>
   );
 
@@ -877,9 +980,9 @@ export default function Home() {
             collectionsFlyoutPanel={collectionsFlyoutPanel}
             isCollectionsOpen={isCollectionsFlyoutOpen}
             onToggleCollections={() => { setIsPrimaryFlyoutOpen(false); setIsCollectionsFlyoutOpen(!isCollectionsFlyoutOpen); }}
-            collectionsDockedSide={primaryPanelContent === 'collections' ? 'left' : secondaryPanelContent === 'collections' ? 'right' : null}
+            collectionsDockedSide={primaryTabs.includes('collections') ? 'left' : secondaryTabs.includes('collections') ? 'right' : null}
             onStartCollectionsDrag={e => startDockDrag('collections', e)}
-            explorerDockedSide={primaryPanelContent === 'explorer' ? 'left' : secondaryPanelContent === 'explorer' ? 'right' : null}
+            explorerDockedSide={primaryTabs.includes('explorer') ? 'left' : secondaryTabs.includes('explorer') ? 'right' : null}
             onStartGrabbedContentDrag={(e) => startDockDrag('grabbed_content', e)}
             onStartExplorerDrag={(e) => startDockDrag('explorer', e)}
             onAddNewItem={() => {
@@ -903,9 +1006,13 @@ export default function Home() {
             draggingPanel={draggingPanel}
             hoveredZone={hoveredZone}
             cursorPos={cursorPos}
-            primaryPanelContent={primaryPanelContent}
-            secondaryPanelContent={secondaryPanelContent}
+            primaryPanelContent={primaryActiveTab}
+            secondaryPanelContent={secondaryActiveTab}
             bottomPanelContent={bottomPanelContent}
+            primaryTabs={primaryTabs}
+            secondaryTabs={secondaryTabs}
+            primaryActiveTab={primaryActiveTab}
+            secondaryActiveTab={secondaryActiveTab}
           />
 
           {/* Primary Side Panel (Explorer Tree / Grabbed Content) - Sits Above Main Content (z-50) */}
@@ -959,15 +1066,18 @@ export default function Home() {
 
           {/* Secondary Side Panel (Details / Inspector Drawer / Grabbed Content) - Sits Above Main Content (z-40) */}
           <SecondarySidePanel
-            title={getPanelTitle(secondaryPanelContent, 'SECONDARY SIDE PANEL')}
-            {...treeHeaderProps(secondaryPanelContent)}
-            hasDockedContent={secondaryPanelContent !== 'empty'}
+            title={getPanelTitle(secondaryTabs, secondaryActiveTab, 'SECONDARY SIDE PANEL')}
+            {...treeHeaderProps(secondaryActiveTab)}
+            tabs={secondaryTabs}
+            activeTab={secondaryActiveTab}
+            onTabChange={handleSecondaryTabChange}
+            hasDockedContent={secondaryTabs.length > 0}
             isContentSliding={slidingState !== null && !(slidingState.incomingContent && slidingState.from === 'right' && slidingState.isMoving)}
-            showSearchFilter={secondaryPanelContent === 'explorer' || secondaryPanelContent === 'collections'}
+            showSearchFilter={secondaryActiveTab === 'explorer' || secondaryActiveTab === 'collections'}
             isOpen={isSecondaryActive}
             isPinned={isSecondaryPinned}
             position="right"
-            onTogglePosition={secondaryPanelContent !== 'empty' ? handleMoveSecondaryContent : undefined}
+            onTogglePosition={secondaryTabs.length > 0 ? handleMoveSecondaryContent : undefined}
             moveTooltip={secondaryMoveTooltip}
             canMove={canMoveSecondary}
             onOpen={() => setIsSecondaryOpen(true)}
@@ -990,8 +1100,9 @@ export default function Home() {
             onAddNewCollection={() => openCreateCollection(null)}
             collections={allCollections}
             onHandlePointerDown={(e) => startDockDrag('secondary', e)}
+            onStartTabDrag={(tab, e) => startDockDrag(tab, e)}
           >
-            {renderPanelBody(secondaryPanelContent, 'right')}
+            {renderPanelBody(secondaryActiveTab, 'right')}
           </SecondarySidePanel>
 
           {/* Smooth Sliding Content Transition Layer */}
@@ -1017,29 +1128,31 @@ export default function Home() {
               ].join(' ')}
             >
               <PrimarySidePanelHeader
-                title={getPanelTitle(slidingState.content, 'SIDE PANEL')}
-                {...treeHeaderProps(slidingState.content)}
-                hasDockedContent={slidingState.content !== 'empty'}
-                showSearchFilter={slidingState.content === 'explorer' || slidingState.content === 'collections'}
+                title={getPanelTitle(slidingState.tabs, slidingState.activeTab, 'SIDE PANEL')}
+                {...treeHeaderProps(slidingState.activeTab)}
+                tabs={slidingState.tabs}
+                activeTab={slidingState.activeTab}
+                hasDockedContent={slidingState.tabs.length > 0}
+                showSearchFilter={slidingState.activeTab === 'explorer' || slidingState.activeTab === 'collections'}
                 variant="sidebar"
                 isPinned={slidingState.to === 'left' ? isPinned : isSecondaryPinned}
                 position={slidingState.to}
                 onTogglePin={() => {}}
                 onClose={() => {}}
               />
-              <div className={`flex-1 min-h-0 overflow-hidden ${slidingState.content ? 'px-2.5 pt-0 pb-3' : 'p-0'} min-w-0 primary-panel-scroll flex flex-col`}>
-                {renderPanelBody(slidingState.content, slidingState.to)}
+              <div className={`flex-1 min-h-0 overflow-hidden ${slidingState.activeTab !== 'empty' ? 'px-2.5 pt-0 pb-3' : 'p-0'} min-w-0 primary-panel-scroll flex flex-col`}>
+                {renderPanelBody(slidingState.activeTab, slidingState.to)}
               </div>
               <div
                 className={`panel-bottom-topper ${
-                  slidingState.content !== 'empty' ? 'panel-bottom-topper-occupied' : 'panel-bottom-topper-empty'
+                  slidingState.tabs.length > 0 ? 'panel-bottom-topper-occupied' : 'panel-bottom-topper-empty'
                 } shrink-0 select-none pointer-events-none`}
                 aria-hidden="true"
               />
             </aside>
           )}
 
-          {slidingState?.secondaryContent && (
+          {slidingState?.secondaryTabs && (
             <aside
               style={{
                 width: `${slidingState.secondaryWidth}px`,
@@ -1061,22 +1174,24 @@ export default function Home() {
               ].join(' ')}
             >
               <PrimarySidePanelHeader
-                title={getPanelTitle(slidingState.secondaryContent, 'SIDE PANEL')}
-                hasDockedContent={slidingState.secondaryContent !== 'empty'}
-                showSearchFilter={slidingState.secondaryContent === 'explorer' || slidingState.secondaryContent === 'collections'}
+                title={getPanelTitle(slidingState.secondaryTabs, slidingState.secondaryActiveTab ?? 'empty', 'SIDE PANEL')}
+                hasDockedContent={slidingState.secondaryTabs.length > 0}
+                showSearchFilter={slidingState.secondaryActiveTab === 'explorer' || slidingState.secondaryActiveTab === 'collections'}
                 variant="sidebar"
                 isPinned={slidingState.to === 'right' ? isPinned : isSecondaryPinned}
                 position={slidingState.to === 'right' ? 'left' : 'right'}
-                {...treeHeaderProps(slidingState.secondaryContent)}
+                {...treeHeaderProps(slidingState.secondaryActiveTab ?? 'empty')}
+                tabs={slidingState.secondaryTabs}
+                activeTab={slidingState.secondaryActiveTab}
                 onTogglePin={() => {}}
                 onClose={() => {}}
               />
-              <div className={`flex-1 min-h-0 overflow-hidden ${slidingState.secondaryContent ? 'px-2.5 pt-0 pb-3' : 'p-0'} min-w-0 primary-panel-scroll flex flex-col`}>
-                {renderPanelBody(slidingState.secondaryContent, slidingState.to === 'right' ? 'left' : 'right')}
+              <div className={`flex-1 min-h-0 overflow-hidden ${slidingState.secondaryActiveTab !== 'empty' ? 'px-2.5 pt-0 pb-3' : 'p-0'} min-w-0 primary-panel-scroll flex flex-col`}>
+                {renderPanelBody(slidingState.secondaryActiveTab ?? 'empty', slidingState.to === 'right' ? 'left' : 'right')}
               </div>
               <div
                 className={`panel-bottom-topper ${
-                  slidingState.secondaryContent !== 'empty' ? 'panel-bottom-topper-occupied' : 'panel-bottom-topper-empty'
+                  slidingState.secondaryTabs.length > 0 ? 'panel-bottom-topper-occupied' : 'panel-bottom-topper-empty'
                 } shrink-0 select-none pointer-events-none`}
                 aria-hidden="true"
               />

@@ -15,6 +15,7 @@ import PanelContentTransition from '@/components/PanelContentTransition';
 import PrimarySidePanelHeader from '@/components/PrimarySidePanelHeader';
 import { ExplorerTab } from '@/lib/filterExplorerForest';
 import { CollectionRecord } from '@/types/collection';
+import { DockContent } from '@/hooks/usePanelDockDrag';
 
 /* ==========================================================================
    1. TYPE DEFINITIONS & CONSTANTS
@@ -44,8 +45,9 @@ interface SecondarySidePanelProps {
 
   // Header and Search Filter Props (active when Explorer is docked)
   treeView?: ExplorerTab;
-  activeTab?: ExplorerTab;
-  onTabChange?: (tab: ExplorerTab) => void;
+  activeTab?: ExplorerTab | DockContent;
+  onTabChange?: (tab: any) => void;
+  tabs?: DockContent[];
   searchQuery?: string;
   onSearchChange?: (query: string) => void;
   isAnyCategoryExpanded?: boolean;
@@ -58,6 +60,7 @@ interface SecondarySidePanelProps {
   filterCollectionIds?: number[];
   onToggleFilterCollection?: (collectionId: number) => void;
   onClearCollectionFilters?: () => void;
+  onStartTabDrag?: (tab: Exclude<DockContent, 'empty'>, e: React.PointerEvent) => void;
 }
 
 const MIN_WIDTH = 260;
@@ -92,6 +95,7 @@ export default function SecondarySidePanel({
   treeView,
   activeTab,
   onTabChange,
+  tabs,
   searchQuery,
   onSearchChange,
   isAnyCategoryExpanded,
@@ -104,6 +108,7 @@ export default function SecondarySidePanel({
   filterCollectionIds = [],
   onToggleFilterCollection,
   onClearCollectionFilters,
+  onStartTabDrag,
 }: SecondarySidePanelProps) {
   /* ------------------------------------------------------------------------
      2.1 USER PREFERENCES & RESIZING HOOK
@@ -257,8 +262,9 @@ export default function SecondarySidePanel({
           moveTooltip={moveTooltip}
           canMove={canMove}
           treeView={treeView}
-        activeTab={activeTab}
+          activeTab={activeTab}
           onTabChange={onTabChange}
+          tabs={tabs}
           searchQuery={searchQuery}
           onSearchChange={onSearchChange}
           isAnyCategoryExpanded={isAnyCategoryExpanded}
@@ -274,6 +280,7 @@ export default function SecondarySidePanel({
           onToggleFilterCollection={onToggleFilterCollection}
           onClearCollectionFilters={onClearCollectionFilters}
           onHandlePointerDown={onHandlePointerDown}
+          onStartTabDrag={onStartTabDrag}
         />
 
         {/* Panel Scrollable Body */}

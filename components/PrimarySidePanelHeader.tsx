@@ -21,6 +21,7 @@ import { CollectionRecord } from '@/types/collection';
 import { ExplorerTab } from '@/lib/filterExplorerForest';
 import { PrimarySidebarPosition } from '@/types/layout';
 import { useUIPreferences } from '@/context/UIPreferencesContext';
+import { DockContent } from '@/hooks/usePanelDockDrag';
 
 /* ==========================================================================
    1. TYPE DEFINITIONS & INTERFACES
@@ -38,8 +39,9 @@ interface PrimarySidePanelHeaderProps {
   canMove?: boolean;
   onDock?: (position: 'left' | 'right') => void;
   treeView?: ExplorerTab;
-  activeTab?: ExplorerTab;
-  onTabChange?: (tab: ExplorerTab) => void;
+  activeTab?: ExplorerTab | DockContent;
+  onTabChange?: (tab: any) => void;
+  tabs?: DockContent[];
   searchQuery?: string;
   onSearchChange?: (val: string) => void;
   isAnyCategoryExpanded?: boolean;
@@ -56,6 +58,7 @@ interface PrimarySidePanelHeaderProps {
   onClearCollectionFilters?: () => void;
 
   onHandlePointerDown?: (e: React.PointerEvent) => void;
+  onStartTabDrag?: (tab: Exclude<DockContent, 'empty'>, e: React.PointerEvent) => void;
 
   isAnyFolderExpanded?: boolean;
   onToggleAllFolders?: () => void;
@@ -79,6 +82,7 @@ export default function PrimarySidePanelHeader({
   treeView,
   activeTab = 'items',
   onTabChange,
+  tabs,
   searchQuery = '',
   onSearchChange = () => {},
   isAnyCategoryExpanded,
@@ -94,12 +98,22 @@ export default function PrimarySidePanelHeader({
   onToggleFilterCollection = () => {},
   onClearCollectionFilters = () => {},
   onHandlePointerDown,
+  onStartTabDrag,
 }: PrimarySidePanelHeaderProps) {
   const headerId = useId();
   const isCollections = treeView === 'collections' || activeTab === 'collections' || title === 'COLLECTIONS';
-  const panelName = isCollections ? 'Collections' : 'Items';
+  const isGrabbed = activeTab === 'grabbed_content' || title === 'GRABBED CONTENT';
+  const panelName = isCollections ? 'Collections' : isGrabbed ? 'Grabbed Content' : 'Items';
   const isRight = position === 'right';
   const { animationsEnabled } = useUIPreferences();
+
+  const displayedTabs: DockContent[] = tabs && tabs.length > 0
+    ? tabs
+    : treeView === 'collections'
+    ? ['collections']
+    : treeView === 'items'
+    ? ['explorer']
+    : ['explorer', 'collections'];
   const [showAdvancedSearch, setShowAdvancedSearch] = useState(false);
   const [showAppliedFilters, setShowAppliedFilters] = useState(false);
   const [menuCoords, setMenuCoords] = useState({ top: 0, left: 0 });
@@ -290,11 +304,11 @@ export default function PrimarySidePanelHeader({
       {/* ------------------------------------------------------------------
           ROW 2 & 3: Search Bar, Category Filters & Menus (Explorer Only)
           ------------------------------------------------------------------ */}
-      {showSearchFilter && (
+      {showSearchFilter && !isGrabbed && (
         <>
           <div className="explorer-section-heading">
             <hr aria-hidden="true" />
-            <h3>Search and Filter</h3>
+            <h3>Search and Filter ({isCollections ? 'Collections' : 'Items'})</h3>
           </div>
       <div className="flex items-center gap-1.5 w-full">
         <div className={`explorer-search-input explorer-search-shell ${isRight ? 'explorer-search-shell-right' : ''} relative flex-1 min-w-0 flex items-center ${searchQuery.length > 0 ? 'explorer-search-input-active' : ''}`}>
@@ -543,164 +557,159 @@ export default function PrimarySidePanelHeader({
           ------------------------------------------------------------------ */}
       <div className="explorer-section-heading">
         <hr aria-hidden="true" />
-        <h3>{isCollections ? 'Browse Collections' : 'Browse Items'}</h3>
+        <h3>
+          {isCollections
+            ? 'Browse Collections'
+            : isGrabbed
+            ? 'Grabbed Content'
+            : 'Browse Items'}
+        </h3>
       </div>
       <div className="flex items-end justify-between gap-1 w-full shrink-0 -mb-[1px]">
         {/* Left: View Mode Paper Folder Tabs */}
         <div role="tablist" aria-label={`${panelName} views`} className="flex items-center relative">
-          {/* Tab 1: Items */}
-          {treeView !== 'collections' && <button
-            type="button"
-            role="tab"
-            aria-selected={activeTab === 'items'}
-            onClick={() => onTabChange?.('items')}
-            className={`explorer-folder-tab ${
-              activeTab === 'items'
-                ? 'explorer-folder-tab-active z-20'
-                : 'explorer-folder-tab-idle z-10'
-            }`}
-            title="Show Items organized by Category"
-          >
-            <svg
-              className="absolute inset-0 w-full h-full pointer-events-none"
-              viewBox="0 0 100 28"
-              preserveAspectRatio="none"
-            >
-              <defs>
-                <linearGradient id={`${headerId}-items`} x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="var(--explorer-tab-active-top, rgba(18, 94, 158, 1))" className="tab-grad-top" />
-                  <stop offset="45%" stopColor="var(--explorer-tab-active-mid, rgba(10, 64, 112, 1))" className="tab-grad-mid" />
-                  <stop offset="100%" stopColor="var(--explorer-tab-active-bottom, rgba(5, 36, 70, 1))" className="tab-grad-bottom" />
-                </linearGradient>
-              </defs>
-              <path
-                d="M 0,28 L 8,3 C 9,1 11,0 14,0 L 86,0 C 89,0 91,1 92,3 L 100,28 Z"
-                className="explorer-tab-svg-fill"
-                style={activeTab === 'items' ? { fill: `url(#${headerId}-items)` } : undefined}
-              />
-              <path
-                d="M 0,28 L 8,3 C 9,1 11,0 14,0 L 86,0 C 89,0 91,1 92,3 L 100,28"
-                className="explorer-tab-svg-stroke"
-                fill="none"
-                strokeWidth="1.5"
-                vectorEffect="non-scaling-stroke"
-              />
-            </svg>
-            <span className="relative z-10 px-0.5">Items</span>
-          </button>}
+          {displayedTabs.map((tab, idx) => {
+            const isTabActive =
+              activeTab === tab ||
+              (activeTab === 'items' && tab === 'explorer') ||
+              (activeTab === 'collections' && tab === 'collections');
+            const tabLabel =
+              tab === 'explorer' ? 'Items' : tab === 'collections' ? 'Collections' : 'Grabbed Content';
+            const tabTitle =
+              tab === 'explorer'
+                ? 'Show Items organized by Category (drag to move tab)'
+                : tab === 'collections'
+                ? 'Show Collections hierarchy (drag to move tab)'
+                : 'Show Grabbed Content (drag to move tab)';
 
-          {/* Tab 2: Collections (Overlaps Tab 1 with diagonal left edge) */}
-          {treeView !== 'items' && <button
-            type="button"
-            role="tab"
-            aria-selected={activeTab === 'collections'}
-            onClick={() => onTabChange?.('collections')}
-            className={`explorer-folder-tab ${!treeView ? '-ml-3.5' : ''} ${
-              activeTab === 'collections'
-                ? 'explorer-folder-tab-active z-20'
-                : 'explorer-folder-tab-idle z-10'
-            }`}
-            title="Show Collections hierarchy"
-          >
-            <svg
-              className="absolute inset-0 w-full h-full pointer-events-none"
-              viewBox="0 0 100 28"
-              preserveAspectRatio="none"
-            >
-              <defs>
-                <linearGradient id={`${headerId}-collections`} x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="var(--explorer-tab-active-top, rgba(18, 94, 158, 1))" className="tab-grad-top" />
-                  <stop offset="45%" stopColor="var(--explorer-tab-active-mid, rgba(10, 64, 112, 1))" className="tab-grad-mid" />
-                  <stop offset="100%" stopColor="var(--explorer-tab-active-bottom, rgba(5, 36, 70, 1))" className="tab-grad-bottom" />
-                </linearGradient>
-              </defs>
-              <path
-                d="M 0,28 L 8,3 C 9,1 11,0 14,0 L 86,0 C 89,0 91,1 92,3 L 100,28 Z"
-                className="explorer-tab-svg-fill"
-                style={activeTab === 'collections' ? { fill: `url(#${headerId}-collections)` } : undefined}
-              />
-              <path
-                d="M 0,28 L 8,3 C 9,1 11,0 14,0 L 86,0 C 89,0 91,1 92,3 L 100,28"
-                className="explorer-tab-svg-stroke"
-                fill="none"
-                strokeWidth="1.5"
-                vectorEffect="non-scaling-stroke"
-              />
-            </svg>
-            <span className="relative z-10 px-0.5">Collections</span>
-          </button>}
+            return (
+              <button
+                key={tab}
+                type="button"
+                role="tab"
+                aria-selected={isTabActive}
+                onClick={() => onTabChange?.(tab as any)}
+                onPointerDown={(e) => {
+                  if (tab !== 'empty') onStartTabDrag?.(tab, e);
+                }}
+                className={`explorer-folder-tab group/tab cursor-grab active:cursor-grabbing ${idx > 0 ? '-ml-3.5' : ''} ${
+                  isTabActive
+                    ? 'explorer-folder-tab-active z-20'
+                    : 'explorer-folder-tab-idle z-10'
+                }`}
+                title={tabTitle}
+              >
+                <svg
+                  className="absolute inset-0 w-full h-full pointer-events-none"
+                  viewBox="0 0 100 28"
+                  preserveAspectRatio="none"
+                >
+                  <defs>
+                    <linearGradient id={`${headerId}-${tab}`} x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="var(--explorer-tab-active-top, rgba(18, 94, 158, 1))" className="tab-grad-top" />
+                      <stop offset="45%" stopColor="var(--explorer-tab-active-mid, rgba(10, 64, 112, 1))" className="tab-grad-mid" />
+                      <stop offset="100%" stopColor="var(--explorer-tab-active-bottom, rgba(5, 36, 70, 1))" className="tab-grad-bottom" />
+                    </linearGradient>
+                  </defs>
+                  <path
+                    d="M 0,28 L 8,3 C 9,1 11,0 14,0 L 86,0 C 89,0 91,1 92,3 L 100,28 Z"
+                    className="explorer-tab-svg-fill"
+                    style={isTabActive ? { fill: `url(#${headerId}-${tab})` } : undefined}
+                  />
+                  <path
+                    d="M 0,28 L 8,3 C 9,1 11,0 14,0 L 86,0 C 89,0 91,1 92,3 L 100,28"
+                    className="explorer-tab-svg-stroke"
+                    fill="none"
+                    strokeWidth="1.5"
+                    vectorEffect="non-scaling-stroke"
+                  />
+                </svg>
+                <span className="relative z-10 flex items-center gap-1 px-0.5 select-none">
+                  <span
+                    className="text-[9px] opacity-40 group-hover/tab:opacity-90 transition-opacity tracking-tighter"
+                    aria-hidden="true"
+                  >
+                    ⋮⋮
+                  </span>
+                  <span>{tabLabel}</span>
+                </span>
+              </button>
+            );
+          })}
         </div>
 
         {/* Right: Actions Cluster (Contextual Add + Expand/Collapse) */}
-        <div className="flex items-center gap-1 shrink-0 mb-1">
-          {isCollections ? (
-            onAddNewCollection && (
-              <button
-                type="button"
-                onClick={onAddNewCollection}
-                className="explorer-tab-action-btn group"
-                title="Create New Collection"
-              >
-                <svg
-                  className="w-2.5 h-2.5 origin-center transition-transform duration-150 ease-out group-hover:scale-110 text-[var(--explorer-action-icon,rgba(109,170,209,0.85))] group-hover:text-white"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
+        {!isGrabbed && (
+          <div className="flex items-center gap-1 shrink-0 mb-1">
+            {isCollections ? (
+              onAddNewCollection && (
+                <button
+                  type="button"
+                  onClick={onAddNewCollection}
+                  className="explorer-tab-action-btn group"
+                  title="Create New Collection"
                 >
-                  <line x1="12" y1="5" x2="12" y2="19" />
-                  <line x1="5" y1="12" x2="19" y2="12" />
-                </svg>
-              </button>
-            )
-          ) : (
-            onAddNewItem && (
-              <button
-                type="button"
-                onClick={onAddNewItem}
-                className="explorer-tab-action-btn group"
-                title="Create New Item"
-              >
-                <svg
-                  className="w-2.5 h-2.5 origin-center transition-transform duration-150 ease-out group-hover:scale-110 text-[var(--explorer-action-icon,rgba(109,170,209,0.85))] group-hover:text-white"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
+                  <svg
+                    className="w-2.5 h-2.5 origin-center transition-transform duration-150 ease-out group-hover:scale-110 text-[var(--explorer-action-icon,rgba(109,170,209,0.85))] group-hover:text-white"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <line x1="12" y1="5" x2="12" y2="19" />
+                    <line x1="5" y1="12" x2="19" y2="12" />
+                  </svg>
+                </button>
+              )
+            ) : (
+              onAddNewItem && (
+                <button
+                  type="button"
+                  onClick={onAddNewItem}
+                  className="explorer-tab-action-btn group"
+                  title="Create New Item"
                 >
-                  <line x1="12" y1="5" x2="12" y2="19" />
-                  <line x1="5" y1="12" x2="19" y2="12" />
-                </svg>
-              </button>
-            )
-          )}
+                  <svg
+                    className="w-2.5 h-2.5 origin-center transition-transform duration-150 ease-out group-hover:scale-110 text-[var(--explorer-action-icon,rgba(109,170,209,0.85))] group-hover:text-white"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <line x1="12" y1="5" x2="12" y2="19" />
+                    <line x1="5" y1="12" x2="19" y2="12" />
+                  </svg>
+                </button>
+              )
+            )}
 
-          {activeToggleAll && (
-            <button
-              type="button"
-              onClick={activeToggleAll}
-              disabled={searchQuery.trim().length > 0}
-              className="explorer-tab-action-btn explorer-panel-disabled group disabled:pointer-events-none disabled:cursor-not-allowed"
-              title={
-                searchQuery.trim().length > 0
-                  ? 'Tree expansion disabled during search'
-                  : activeIsExpanded
-                  ? 'Collapse all'
-                  : 'Expand all'
-              }
-            >
-              {activeIsExpanded ? (
-                <FolderCollapseIcon className="w-3 h-3 text-[var(--explorer-action-icon,rgba(109,170,209,0.85))] group-hover:text-white" />
-              ) : (
-                <FolderExpandIcon className="w-3 h-3 text-[var(--explorer-action-icon,rgba(109,170,209,0.85))] group-hover:text-white" />
-              )}
-            </button>
-          )}
-        </div>
+            {activeToggleAll && (
+              <button
+                type="button"
+                onClick={activeToggleAll}
+                disabled={searchQuery.trim().length > 0}
+                className="explorer-tab-action-btn explorer-panel-disabled group disabled:pointer-events-none disabled:cursor-not-allowed"
+                title={
+                  searchQuery.trim().length > 0
+                    ? 'Tree expansion disabled during search'
+                    : activeIsExpanded
+                    ? 'Collapse all'
+                    : 'Expand all'
+                }
+              >
+                {activeIsExpanded ? (
+                  <FolderCollapseIcon className="w-3 h-3 text-[var(--explorer-action-icon,rgba(109,170,209,0.85))] group-hover:text-white" />
+                ) : (
+                  <FolderExpandIcon className="w-3 h-3 text-[var(--explorer-action-icon,rgba(109,170,209,0.85))] group-hover:text-white" />
+                )}
+              </button>
+            )}
+          </div>
+        )}
       </div>
 
       {/* ------------------------------------------------------------------
