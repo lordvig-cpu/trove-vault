@@ -530,8 +530,9 @@
 }
 
 .primary-side-panel > .primary-side-panel-header,
-.secondary-side-panel > .primary-side-panel-header {
-  clip-path: inset(0 round var(--panel-top-left-radius, 0) var(--panel-top-right-radius, 0) 0 0);
+.secondary-side-panel > .primary-side-panel-header,
+.bottom-side-panel > .primary-side-panel-header {
+  clip-path: inset(0 round var(--panel-top-left-radius, 0.75rem) var(--panel-top-right-radius, 0.75rem) 0 0);
 }
 
 .panel-bottom-topper {

@@ -327,13 +327,13 @@
        transparent 60%,
        oklch(from var(--oklch-blue-0-140-255) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 0.06) 100%),
      linear-gradient(180deg,
-       oklch(from var(--oklch-blue-0-26-56) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.6) 0%,
-       oklch(from var(--oklch-blue-0-36-76) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.6) 12%,
-       oklch(from var(--oklch-blue-0-44-88) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.6) 28%,
-       oklch(from var(--oklch-blue-0-38-75) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.6) 48%,
-       oklch(from var(--oklch-blue-0-31-64) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.6) 68%,
-       oklch(from var(--oklch-blue-0-23-50) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.6) 86%,
-       oklch(from var(--oklch-blue-0-17-36) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.6) 100%);
+       oklch(from var(--oklch-blue-0-26-56) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.90) 0%,
+       oklch(from var(--oklch-blue-0-36-76) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.90) 12%,
+       oklch(from var(--oklch-blue-0-44-88) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.90) 28%,
+       oklch(from var(--oklch-blue-0-38-75) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.90) 48%,
+       oklch(from var(--oklch-blue-0-31-64) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.90) 68%,
+       oklch(from var(--oklch-blue-0-23-50) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.90) 86%,
+       oklch(from var(--oklch-blue-0-17-36) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.90) 100%);
    --explorer-panel-border: var(--panel-border-strong);
    --explorer-panel-flare-bg: radial-gradient(ellipse 130% 120% at 15% -20%,
        oklch(from var(--oklch-blue-0-180-255) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / calc(0.18 * var(--oklch-glow-opacity))) 0%,
@@ -426,17 +426,20 @@
        transparent 60%,
        oklch(from var(--oklch-blue-0-140-255) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 0.06) 100%),
      linear-gradient(180deg,
-       oklch(from var(--oklch-blue-0-26-56) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.6) 0%,
-       oklch(from var(--oklch-blue-0-36-76) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.6) 12%,
-       oklch(from var(--oklch-blue-0-44-88) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.6) 28%,
-       oklch(from var(--oklch-blue-0-38-75) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.6) 48%,
-       oklch(from var(--oklch-blue-0-31-64) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.6) 68%,
-       oklch(from var(--oklch-blue-0-23-50) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.6) 86%,
-       oklch(from var(--oklch-blue-0-17-36) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.6) 100%);
+       oklch(from var(--oklch-blue-0-26-56) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.90) 0%,
+       oklch(from var(--oklch-blue-0-36-76) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.90) 12%,
+       oklch(from var(--oklch-blue-0-44-88) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.90) 28%,
+       oklch(from var(--oklch-blue-0-38-75) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.90) 48%,
+       oklch(from var(--oklch-blue-0-31-64) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.90) 68%,
+       oklch(from var(--oklch-blue-0-23-50) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.90) 86%,
+       oklch(from var(--oklch-blue-0-17-36) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.90) 100%);
    --right-panel-border: var(--panel-border-strong);
    --right-panel-shadow: -4px 0 14px -2px oklch(from var(--oklch-blue-0-0-0) l c h / calc(0.55 * var(--oklch-shadow-opacity))),
      -2px 0 5px 0 oklch(from var(--oklch-blue-0-0-0) l c h / calc(0.35 * var(--oklch-shadow-opacity))),
      inset 1px 0 0 oklch(from var(--oklch-blue-255-255-255) l c h / 0.08);
+   --bottom-panel-shadow: 0 -4px 14px -2px oklch(from var(--oklch-blue-0-0-0) l c h / calc(0.55 * var(--oklch-shadow-opacity))),
+     0 -2px 5px 0 oklch(from var(--oklch-blue-0-0-0) l c h / calc(0.35 * var(--oklch-shadow-opacity))),
+     inset 0 1px 0 oklch(from var(--oklch-blue-255-255-255) l c h / 0.08);
    --right-panel-flare-bg: radial-gradient(ellipse 130% 120% at 85% -20%,
        oklch(from var(--oklch-blue-0-180-255) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / calc(0.18 * var(--oklch-glow-opacity))) 0%,
        oklch(from var(--oklch-blue-0-110-220) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / calc(0.08 * var(--oklch-glow-opacity))) 45%,

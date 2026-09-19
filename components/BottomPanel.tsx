@@ -240,6 +240,14 @@ export default function BottomPanel({
           )}
         </div>
       </PanelContentTransition>
+
+      {/* Mirrored Bottom Topper */}
+      <div
+        className={`panel-bottom-topper ${
+          occupied ? 'panel-bottom-topper-occupied' : 'panel-bottom-topper-empty'
+        } shrink-0 select-none pointer-events-none`}
+        aria-hidden="true"
+      />
     </aside>
   );
 }

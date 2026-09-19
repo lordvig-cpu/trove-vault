@@ -15,6 +15,11 @@
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border-top: 1px solid var(--primary-border-strong);
+  border-left: 1px solid var(--primary-border-strong);
+  border-right: 1px solid var(--primary-border-strong);
+  border-bottom: 1px solid var(--primary-border-strong);
+  border-top-left-radius: 0.75rem;
+  border-top-right-radius: 0.75rem;
   box-shadow: var(--bottom-panel-shadow, 0 -4px 14px -2px rgba(0, 0, 0, 0.55));
   z-index: 35;
   display: flex;

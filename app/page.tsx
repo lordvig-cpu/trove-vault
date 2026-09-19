@@ -1070,6 +1070,7 @@ export default function Home() {
             onStartTemplatesDrag={e => startDockDrag('templates', e)}
             explorerDockedSide={primaryTabs.includes('explorer') ? 'left' : secondaryTabs.includes('explorer') ? 'right' : null}
             onStartExplorerDrag={(e) => startDockDrag('explorer', e)}
+            onStartGrabbedContentDrag={(e) => startDockDrag('grabbed_content', e)}
             onAddNewItem={() => {
               openCreateItem(activeCollectionId, null);
             }}
