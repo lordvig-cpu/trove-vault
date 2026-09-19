@@ -683,10 +683,10 @@ export default function Home() {
             📦
           </div>
           <div className="flex flex-col gap-1">
-            <div className="text-sm font-bold text-[var(--content-primary,#e2e8f0)] uppercase tracking-wider">
+            <div className="text-sm font-bold text-[var(--content-primary,rgba(226,232,240,1))] uppercase tracking-wider">
               Grabbed Content
             </div>
-            <p className="text-xs text-[var(--text-muted,#94a3b8)] max-w-[200px] leading-relaxed">
+            <p className="text-xs text-[var(--text-muted,rgba(148,163,184,1))] max-w-[200px] leading-relaxed">
               This is docked content.
             </p>
           </div>

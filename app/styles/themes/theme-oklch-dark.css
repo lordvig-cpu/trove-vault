@@ -2,8 +2,8 @@
    Defaults correspond to Premium Contrast's rgba(0, 119, 255, 1) and rgba(248, 188, 9, 1).
    Light mode transforms the same dark recipe through role coefficients. */
 :is([data-theme='theme-oklch-dark'], [data-theme='theme-oklch-light']) {
-  --oklch-blue: oklch(0.596659 0.221181 258.03031);
-  --oklch-yellow: oklch(0.827324 0.16838 85.08092);
+  --oklch-blue: rgba(0, 119, 255, 1);
+  --oklch-yellow: rgba(248, 188, 9, 1);
 
   /* L_out = offset + L_dark * scale; C_out = C_dark * chroma. */
   --oklch-surface-offset: 0;

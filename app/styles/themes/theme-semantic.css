@@ -118,20 +118,20 @@
   --text-soft: var(--text-secondary);
   --text-strong: var(--text-primary);
 
-  /* Fixed neutral effects and the seed editor's intentionally stable colors. */
+  /* Theme-aware seed editor chrome and fixed neutral picker effects. */
   --shadow-form-inset: inset 0 2px 4px 0 var(--shadow-black-25);
   --shadow-badge: 0 1px 2px var(--shadow-black-35);
-  --editor-border: rgba(71, 85, 105, 1);
-  --editor-focus: rgba(125, 211, 252, 1);
+  --editor-border: var(--secondary-accent);
+  --editor-focus: var(--secondary-accent);
   --editor-picker-black: rgba(0, 0, 0, 1);
   --editor-hue-spectrum: linear-gradient(to right,
-    hsl(0 100% 50%), hsl(60 100% 50%), hsl(120 100% 50%),
-    hsl(180 100% 50%), hsl(240 100% 50%), hsl(300 100% 50%), hsl(360 100% 50%));
-  --editor-input-text: rgba(248, 250, 252, 1);
-  --editor-invalid: rgba(251, 113, 133, 1);
-  --editor-surface: rgba(15, 23, 42, 1);
-  --editor-swatch-border: rgba(148, 163, 184, 1);
-  --editor-text: rgba(226, 232, 240, 1);
+    rgba(255, 0, 0, 1), rgba(255, 255, 0, 1), rgba(0, 255, 0, 1),
+    rgba(0, 255, 255, 1), rgba(0, 0, 255, 1), rgba(255, 0, 255, 1), rgba(255, 0, 0, 1));
+  --editor-input-text: var(--text-strong);
+  --editor-invalid: var(--explorer-menu-danger-text);
+  --editor-surface: var(--primary-explorer-search-input-bg);
+  --editor-swatch-border: var(--primary-accent);
+  --editor-text: var(--text-strong);
   --highlight-white-10: rgba(255, 255, 255, 0.1);
   --shadow-black-20: rgba(0, 0, 0, 0.2);
   --shadow-black-25: rgba(0, 0, 0, 0.25);

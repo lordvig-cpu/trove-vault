@@ -2,6 +2,7 @@
 
 import { useEffect, useId, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
+import { hexToRgba } from '@/lib/color';
 
 type Hsv = { h: number; s: number; v: number };
 const clamp = (value: number) => Math.max(0, Math.min(100, value));
@@ -51,7 +52,7 @@ export default function SeedColorPicker({ label, value, onChange }: {
         ref={trigger}
         className="oklch-seed-picker"
         type="button"
-        style={{ backgroundColor: value }}
+        style={{ backgroundColor: hexToRgba(value) }}
         aria-label={`Choose ${label.toLowerCase()} color`}
         title={`Choose ${label.toLowerCase()} color`}
         aria-expanded={!!position}
@@ -118,7 +119,7 @@ function ColorPlane({ label, value, onChange }: { label: string; value: string; 
       <div
         ref={plane}
         className="seed-color-plane"
-        style={{ backgroundColor: `hsl(${hsv.h} 100% 50%)` }}
+        style={{ backgroundColor: hexToRgba(toHex({ h: hsv.h, s: 100, v: 100 })) }}
         tabIndex={0}
         role="slider"
         aria-label={`${label} saturation and brightness`}

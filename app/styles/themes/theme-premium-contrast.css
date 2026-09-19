@@ -230,8 +230,8 @@
 
    --watermark-logo-opacity: 0.18;
    --watermark-logo-brightness: 0.82;
-   --watermark-logo-shadow: 0 25px 30px rgb(0 0 0 / 0.25);
-   --video-bg-shadow: 0 25px 30px rgb(0 0 0 / 0.30);
+   --watermark-logo-shadow: 0 25px 30px rgba(0, 0, 0, 0.25);
+   --video-bg-shadow: 0 25px 30px rgba(0, 0, 0, 0.30);
    --video-bg-opacity: 1.00;
 
    --content-overlay-blur: 3.5px;
@@ -243,7 +243,7 @@
    /* ItemDetailView Display Cards */
    --content-card-bg: rgba(6, 22, 44, 0.80);
    --content-card-border: rgba(0, 140, 255, 0.40);
-   --content-card-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.5), 0 0 16px rgba(0, 140, 255, 0.12);
+   --content-card-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 0 16px rgba(0, 140, 255, 0.12);
 
    /* Attribute & Nested Item Pills */
    --content-pill-bg: rgba(10, 17, 28, 0.60);

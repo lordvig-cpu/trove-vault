@@ -174,7 +174,7 @@
   align-items: center;
   gap: 0.5rem;
   flex-shrink: 0;
-  /* Keep the editor legible even when testing extreme seed colors. */
+  /* Follow the primary surface and secondary border in both theme modes. */
   color: var(--editor-text);
   background: var(--editor-surface);
   border: 1px solid var(--editor-border);
@@ -237,7 +237,7 @@
 }
 
 .oklch-seed-reset:hover {
-  color: var(--text-fixed-white);
+  color: var(--secondary-accent);
   text-decoration: underline;
 }
 

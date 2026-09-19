@@ -3,6 +3,7 @@
 import { useEffect, useId, useState } from 'react';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import SeedColorPicker from '@/components/SeedColorPicker';
+import { DEFAULT_PRIMARY_COLOR, DEFAULT_SECONDARY_COLOR, hexToRgba, rgbaToHex } from '@/lib/color';
 
 function normalizeHex(value: unknown): string | null {
   if (typeof value !== 'string') return null;
@@ -71,11 +72,11 @@ export default function OklchSeedControls() {
 
   useEffect(() => {
     const style = document.documentElement.style;
-    // Relative OKLCH expressions accept HEX seeds directly; the browser performs
+    // Relative OKLCH expressions accept RGBA seeds directly; the browser performs
     // conversion and recalculates the entire recipe, including light mode.
-    if (primaryHex) style.setProperty('--oklch-blue', primaryHex);
+    if (primaryHex) style.setProperty('--oklch-blue', hexToRgba(primaryHex));
     else style.removeProperty('--oklch-blue');
-    if (secondaryHex) style.setProperty('--oklch-yellow', secondaryHex);
+    if (secondaryHex) style.setProperty('--oklch-yellow', hexToRgba(secondaryHex));
     else style.removeProperty('--oklch-yellow');
     return () => {
       style.removeProperty('--oklch-blue');
@@ -85,10 +86,10 @@ export default function OklchSeedControls() {
 
   return (
     <div className="oklch-seed-controls" role="group" aria-label="OKLCH seed colors">
-      <HexSeedInput label="Primary" value={primaryHex ?? '#0077FF'} onChange={value => {
+      <HexSeedInput label="Primary" value={primaryHex ?? rgbaToHex(DEFAULT_PRIMARY_COLOR)} onChange={value => {
         setPrimary(value);
       }} />
-      <HexSeedInput label="Secondary" value={secondaryHex ?? '#F8BC09'} onChange={value => {
+      <HexSeedInput label="Secondary" value={secondaryHex ?? rgbaToHex(DEFAULT_SECONDARY_COLOR)} onChange={value => {
         setSecondary(value);
       }} />
       <button

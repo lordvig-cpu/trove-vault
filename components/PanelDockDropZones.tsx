@@ -135,7 +135,7 @@ export default function PanelDockDropZones({
       <div className="dock-drop-workspace-bounds animate-mount-fade">
         {/* LEFT DOCK TARGET (Matches sidebar currently on the Left) */}
         <div
-          style={{ '--dock-target-color': isLeftAllowed ? 'var(--dock-valid-color)' : '#F8BC09' } as React.CSSProperties}
+          style={{ '--dock-target-color': isLeftAllowed ? 'var(--dock-valid-color)' : 'rgba(248,188,9,1)' } as React.CSSProperties}
           className={`dock-zone-side ${
             hoveredZone === 'left' ? 'dock-zone-side-active' : ''
           }`}
@@ -275,7 +275,7 @@ export default function PanelDockDropZones({
 
         {/* RIGHT DOCK TARGET (Matches sidebar currently on the Right) */}
         <div
-          style={{ '--dock-target-color': isRightAllowed ? 'var(--dock-valid-color)' : '#F8BC09' } as React.CSSProperties}
+          style={{ '--dock-target-color': isRightAllowed ? 'var(--dock-valid-color)' : 'rgba(248,188,9,1)' } as React.CSSProperties}
           className={`dock-zone-side ${
             hoveredZone === 'right' ? 'dock-zone-side-active' : ''
           }`}
