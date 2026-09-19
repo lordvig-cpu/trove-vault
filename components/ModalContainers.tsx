@@ -65,6 +65,7 @@ export default function ModalContainers({
           onClose={closeModal}
           collectionId={activeModal.collectionId}
           collectionName={activeModal.collectionName}
+          initialTemplateId={activeModal.templateId}
           onTemplateApplied={() => fetchAllData()}
         />
       )}

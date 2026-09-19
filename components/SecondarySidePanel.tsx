@@ -15,7 +15,7 @@ import PanelContentTransition from '@/components/PanelContentTransition';
 import PrimarySidePanelHeader from '@/components/PrimarySidePanelHeader';
 import { ExplorerTab } from '@/lib/filterExplorerForest';
 import { CollectionRecord } from '@/types/collection';
-import { DockContent } from '@/hooks/usePanelDockDrag';
+import { DockContent, TabReorderInfo } from '@/hooks/usePanelDockDrag';
 
 /* ==========================================================================
    1. TYPE DEFINITIONS & CONSTANTS
@@ -56,11 +56,14 @@ interface SecondarySidePanelProps {
   onToggleAllFolders?: () => void;
   onAddNewItem?: () => void;
   onAddNewCollection?: () => void;
+  onAddNewTemplate?: () => void;
   collections?: CollectionRecord[];
   filterCollectionIds?: number[];
   onToggleFilterCollection?: (collectionId: number) => void;
   onClearCollectionFilters?: () => void;
   onStartTabDrag?: (tab: Exclude<DockContent, 'empty'>, e: React.PointerEvent) => void;
+  isDragging?: boolean;
+  reorderInfo?: TabReorderInfo | null;
 }
 
 const MIN_WIDTH = 260;
@@ -104,11 +107,14 @@ export default function SecondarySidePanel({
   onToggleAllFolders,
   onAddNewItem,
   onAddNewCollection,
+  onAddNewTemplate,
   collections = [],
   filterCollectionIds = [],
   onToggleFilterCollection,
   onClearCollectionFilters,
   onStartTabDrag,
+  isDragging: isDockDragging = false,
+  reorderInfo = null,
 }: SecondarySidePanelProps) {
   /* ------------------------------------------------------------------------
      2.1 USER PREFERENCES & RESIZING HOOK
@@ -275,12 +281,15 @@ export default function SecondarySidePanel({
           onClose={onClose}
           onAddNewItem={onAddNewItem}
           onAddNewCollection={onAddNewCollection}
+          onAddNewTemplate={onAddNewTemplate}
           collections={collections}
           filterCollectionIds={filterCollectionIds}
           onToggleFilterCollection={onToggleFilterCollection}
           onClearCollectionFilters={onClearCollectionFilters}
           onHandlePointerDown={onHandlePointerDown}
           onStartTabDrag={onStartTabDrag}
+          isDragging={isDockDragging}
+          reorderInfo={reorderInfo}
         />
 
         {/* Panel Scrollable Body */}

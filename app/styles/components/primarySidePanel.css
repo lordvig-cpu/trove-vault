@@ -364,6 +364,58 @@
   filter: var(--secondary-explorer-tab-glow-active);
 }
 
+/* Tab Reordering Drag and Drop Feedback */
+.explorer-folder-tab-dragging {
+  opacity: 0.45;
+  filter: grayscale(40%);
+}
+
+.explorer-folder-tab-reorder-target {
+  position: relative;
+  z-index: 35 !important;
+}
+
+.explorer-folder-tab-reorder-target .explorer-tab-svg-stroke {
+  stroke: rgba(255, 255, 255, 0.95) !important;
+  stroke-width: 2px !important;
+}
+
+.explorer-folder-tab-reorder-target svg {
+  filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.7)) drop-shadow(0 0 3px rgba(56, 189, 248, 0.9)) !important;
+}
+
+.explorer-tab-insert-marker {
+  position: absolute;
+  top: 1px;
+  bottom: 1px;
+  width: 3px;
+  background: #ffffff;
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.95), 0 0 14px rgba(56, 189, 248, 0.9);
+  border-radius: 9999px;
+  z-index: 45;
+  pointer-events: none;
+  animation: tabMarkerPulse 800ms ease-in-out infinite alternate;
+}
+
+.explorer-tab-insert-marker-left {
+  left: -2px;
+}
+
+.explorer-tab-insert-marker-right {
+  right: -2px;
+}
+
+@keyframes tabMarkerPulse {
+  0% {
+    opacity: 0.75;
+    transform: scaleY(0.92);
+  }
+  100% {
+    opacity: 1;
+    transform: scaleY(1.04);
+  }
+}
+
 /* --------------------------------------------------------------------------
    Notice / Status Banners
    -------------------------------------------------------------------------- */

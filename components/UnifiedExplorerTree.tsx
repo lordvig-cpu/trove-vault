@@ -3,10 +3,10 @@
 import React, { useState } from 'react';
 import { ItemRecord } from '@/types/item';
 import { GearIcon } from '@/components/icons/ActionIcons';
-import { ChevronDownIcon, ChevronRightIcon } from '@/components/icons/ExplorerIcons';
 import { useExplorerActionMenu } from '@/hooks/useExplorerActionMenu';
 import { useExplorerSelection } from '@/context/ExplorerSelectionContext';
 import ExplorerCollectionActionMenu from '@/components/ExplorerCollectionActionMenu';
+import ExplorerTemplateActionMenu from '@/components/ExplorerTemplateActionMenu';
 import ExplorerItemActionMenu from '@/components/ExplorerItemActionMenu';
 import { STANDALONE_COLLECTION_ID } from '@/lib/explorerUtils';
 import { CollectionRecord } from '@/types/collection';
@@ -23,6 +23,7 @@ export interface UnifiedCollectionNode extends CollectionRecord {
 export interface UnifiedExplorerTreeProps {
   collection: UnifiedCollectionNode;
   depth?: number;
+  treeType?: 'items' | 'collections' | 'templates';
 }
 
 /* ==========================================================================
@@ -148,31 +149,34 @@ function UnifiedExplorerTreeItem({
             setIsOpen(!isOpen);
           }}
           className={[
-            'flex items-center justify-center w-4 h-4 shrink-0',
-            'explorer-tree-muted transition',
-            !hasSubItems && 'tree-chevron-leaf',
+            'flex items-center justify-center w-3.5 h-3.5 shrink-0',
+            'text-[9px] explorer-tree-muted',
+            'cursor-pointer transition select-none',
+            !hasSubItems && 'explorer-tree-hidden pointer-events-none cursor-default',
           ].filter(Boolean).join(' ')}
+          title={effectiveIsOpen ? 'Collapse item' : 'Expand item'}
         >
-          {effectiveIsOpen ? <ChevronDownIcon /> : <ChevronRightIcon />}
+          {effectiveIsOpen ? '▼' : '▶\uFE0E'}
         </button>
 
-        <span className="w-4 h-4 flex items-center justify-center text-[13px] leading-none shrink-0 select-none">
+        <span className="w-4 h-4 flex items-center justify-center text-xs opacity-80 shrink-0 select-none">
           {typeIcon}
         </span>
 
-        <button
-          type="button"
-          aria-label={item.name}
-          aria-pressed={isSelected}
-          onClick={event => { event.stopPropagation(); onSelectItem(item, collectionId); }}
-          title={item.name}
-          className={[
-            'text-left cursor-pointer text-[13px] tracking-tight truncate shrink min-w-0',
-            isSelected ? 'explorer-tree-item-selected-name font-medium' : '',
-          ].join(' ')}
-        >
+        <span className="text-[13px] tracking-tight truncate flex-1 min-w-0">
           {item.name}
-        </button>
+        </span>
+
+        {childrenList.length > 0 && (
+          <span
+            title={`${childrenList.length} sub-items`}
+            className={`explorer-tree-badge px-1.5 py-0.2 rounded text-[10px] font-mono shrink-0 select-none ${
+              isRightSide ? 'ml-auto' : ''
+            }`}
+          >
+            {childrenList.length}
+          </span>
+        )}
 
         {!isRightSide && gearElement}
       </div>
@@ -207,12 +211,13 @@ function UnifiedExplorerTreeItem({
 }
 
 /* ==========================================================================
-   3. COLLECTION / CATEGORY ROW
+   3. COLLECTION / CATEGORY / TEMPLATE ROW
    ========================================================================== */
 
 export default function UnifiedExplorerTree({
   collection,
   depth = 0,
+  treeType = 'items',
 }: UnifiedExplorerTreeProps) {
   const {
     activeCollectionId,
@@ -286,7 +291,7 @@ export default function UnifiedExplorerTree({
     <div className="select-none text-[13px] font-sans w-full min-w-0 flex flex-col">
       <div
         onClick={() => onSelectCollection(collection.id)}
-        title={`${isVirtualCategory ? 'Category' : 'Collection'}: ${collection.name}`}
+        title={`${treeType === 'templates' ? 'Template' : isVirtualCategory ? 'Category' : 'Collection'}: ${collection.name}`}
         style={{ top: `${stickyTop}px`, zIndex: stickyZIndex, ...(isRightSide ? { paddingLeft: depth * 24.5 + 44 } : {}) }}
         className={[
           'group flex items-center h-8 px-2 gap-1.5 cursor-pointer transition w-full min-w-0 explorer-category-sticky-header',
@@ -322,7 +327,7 @@ export default function UnifiedExplorerTree({
           aria-label={collection.name}
           aria-pressed={isActiveCollection}
           onClick={event => { event.stopPropagation(); onSelectCollection(collection.id); }}
-          title={`${isVirtualCategory ? 'Category' : 'Collection'}: ${collection.name}`}
+          title={`${treeType === 'templates' ? 'Template' : isVirtualCategory ? 'Category' : 'Collection'}: ${collection.name}`}
           className="text-left cursor-pointer text-[13px] tracking-tight font-medium truncate shrink min-w-0"
         >
           {collection.name}
@@ -342,12 +347,20 @@ export default function UnifiedExplorerTree({
         {!isRightSide && gearElement}
       </div>
 
-      <ExplorerCollectionActionMenu
-        collection={collection}
-        isVirtualCategory={isVirtualCategory}
-        menu={menu}
-        position={position}
-      />
+      {treeType === 'templates' ? (
+        <ExplorerTemplateActionMenu
+          template={collection}
+          menu={menu}
+          position={position}
+        />
+      ) : (
+        <ExplorerCollectionActionMenu
+          collection={collection}
+          isVirtualCategory={isVirtualCategory}
+          menu={menu}
+          position={position}
+        />
+      )}
 
       {localIsOpen && hasChildren && (
         <div className={`explorer-tree-branch space-y-0.5 my-0.5 flex flex-col min-w-0 ${isRightSide ? '' : 'border-l ml-[13.5px] pl-2.5'}`}>
@@ -356,6 +369,7 @@ export default function UnifiedExplorerTree({
               key={`col-${subCollection.id}`}
               collection={subCollection}
               depth={depth + 1}
+              treeType={treeType}
             />
           ))}
           {visibleItems.map((item) => (

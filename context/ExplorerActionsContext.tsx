@@ -11,7 +11,9 @@ export interface ExplorerActionsContextValue {
   onDeleteItem: (item: ItemRecord, collectionId: number | null) => void;
   onRenameItem?: (id: number, nextName: string) => Promise<void> | void;
   onRenameCollection?: (id: number, nextName: string) => Promise<void> | void;
+  onRenameTemplate?: (id: number, nextName: string) => Promise<void> | void;
   onDeleteCollection?: (collection: CollectionRecord) => void;
+  onDeleteTemplate?: (id: number) => Promise<void> | void;
   onEditCollection?: (collection: CollectionRecord) => void;
   onAddSubCollection?: (parentCollectionId: number) => void;
 }

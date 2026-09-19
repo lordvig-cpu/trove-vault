@@ -8,8 +8,9 @@ interface PanelDockDropZonesProps {
   draggingPanel: DockablePanelId | null;
   hoveredZone: DockDropTargetZone | null;
   cursorPos: { x: number; y: number };
-  primaryPanelContent?: 'empty' | 'explorer' | 'collections' | 'grabbed_content';
-  secondaryPanelContent?: 'empty' | 'explorer' | 'collections' | 'grabbed_content';
+  isTabReorder?: boolean;
+  primaryPanelContent?: DockContent;
+  secondaryPanelContent?: DockContent;
   bottomPanelContent?: 'empty' | 'grabbed_content';
   primaryTabs?: DockContent[];
   secondaryTabs?: DockContent[];
@@ -22,6 +23,7 @@ export default function PanelDockDropZones({
   draggingPanel,
   hoveredZone,
   cursorPos,
+  isTabReorder = false,
   primaryPanelContent = 'empty',
   secondaryPanelContent = 'empty',
   bottomPanelContent = 'empty',
@@ -30,7 +32,7 @@ export default function PanelDockDropZones({
   primaryActiveTab,
   secondaryActiveTab,
 }: PanelDockDropZonesProps) {
-  if (!isDragging || !draggingPanel) return null;
+  if (!isDragging || !draggingPanel || isTabReorder) return null;
 
   const leftTargetName = 'Primary Side Bar';
   const rightTargetName = 'Secondary Side Bar';
@@ -38,12 +40,14 @@ export default function PanelDockDropZones({
   const pTabs = primaryTabs ?? (primaryPanelContent !== 'empty' ? [primaryPanelContent] : []);
   const sTabs = secondaryTabs ?? (secondaryPanelContent !== 'empty' ? [secondaryPanelContent] : []);
 
-  const getPanelContentName = (content: 'empty' | 'explorer' | 'collections' | 'grabbed_content') => {
+  const getPanelContentName = (content: DockContent) => {
     switch (content) {
       case 'collections':
         return 'Collections';
       case 'explorer':
         return 'Items';
+      case 'templates':
+        return 'Templates';
       case 'grabbed_content':
         return 'Grabbed Content';
       default:
@@ -51,12 +55,14 @@ export default function PanelDockDropZones({
     }
   };
 
-  const getIncomingContent = (id: DockablePanelId): 'empty' | 'explorer' | 'collections' | 'grabbed_content' => {
+  const getIncomingContent = (id: DockablePanelId): DockContent => {
     switch (id) {
       case 'collections':
         return 'collections';
       case 'explorer':
         return 'explorer';
+      case 'templates':
+        return 'templates';
       case 'grabbed_content':
         return 'grabbed_content';
       case 'primary':
@@ -139,13 +145,21 @@ export default function PanelDockDropZones({
               <>Cannot Dock <em>{draggedItemName}</em> Here</>
             )
           ) : hoveredZone === 'left-tab' ? (
-            <>Dock <em>{draggedItemName}</em> as Tab to {leftTargetName}</>
+            pTabs.includes(incomingContent) ? (
+              <>Reorder <em>{draggedItemName}</em> in {leftTargetName}</>
+            ) : (
+              <>Dock <em>{draggedItemName}</em> as Tab to {leftTargetName}</>
+            )
           ) : hoveredZone === 'left-replace' ? (
             <>Replace {leftTargetName} with <em>{draggedItemName}</em></>
           ) : hoveredZone === 'left' ? (
             <>Dock <em>{draggedItemName}</em> to {leftTargetName}</>
           ) : hoveredZone === 'right-tab' ? (
-            <>Dock <em>{draggedItemName}</em> as Tab to {rightTargetName}</>
+            sTabs.includes(incomingContent) ? (
+              <>Reorder <em>{draggedItemName}</em> in {rightTargetName}</>
+            ) : (
+              <>Dock <em>{draggedItemName}</em> as Tab to {rightTargetName}</>
+            )
           ) : hoveredZone === 'right-replace' ? (
             <>Replace {rightTargetName} with <em>{draggedItemName}</em></>
           ) : hoveredZone === 'right' ? (
@@ -194,11 +208,11 @@ export default function PanelDockDropZones({
                   {!isLeftTabAllowed ? (
                     pTabs.length >= 3 ? (
                       <>Max 3 tabs in {leftTargetName}</>
-                    ) : pTabs.includes(incomingContent) ? (
-                      <>Already docked as tab</>
                     ) : (
                       <>Cannot add tab here</>
                     )
+                  ) : pTabs.includes(incomingContent) ? (
+                    <>Reorder <em>{draggedItemName}</em> in {leftTargetName}</>
                   ) : (
                     <>Dock <em>{draggedItemName}</em> as Tab</>
                   )}
@@ -216,11 +230,11 @@ export default function PanelDockDropZones({
                 {!isLeftTabAllowed ? (
                   pTabs.length >= 3
                     ? 'Maximum limit reached (3 tabs)'
-                    : 'Tab already present in panel'
+                    : 'Cannot dock here'
                 ) : hoveredZone === 'left-tab' ? (
-                  'Release mouse to add as tab'
+                  pTabs.includes(incomingContent) ? 'Release mouse to reorder tab' : 'Release mouse to add as tab'
                 ) : (
-                  'Drop here to add as tab'
+                  pTabs.includes(incomingContent) ? 'Drop here to reorder tab' : 'Drop here to add as tab'
                 )}
               </span>
             </div>
@@ -420,11 +434,11 @@ export default function PanelDockDropZones({
                   {!isRightTabAllowed ? (
                     sTabs.length >= 3 ? (
                       <>Max 3 tabs in {rightTargetName}</>
-                    ) : sTabs.includes(incomingContent) ? (
-                      <>Already docked as tab</>
                     ) : (
                       <>Cannot add tab here</>
                     )
+                  ) : sTabs.includes(incomingContent) ? (
+                    <>Reorder <em>{draggedItemName}</em> in {rightTargetName}</>
                   ) : (
                     <>Dock <em>{draggedItemName}</em> as Tab</>
                   )}
@@ -442,11 +456,11 @@ export default function PanelDockDropZones({
                 {!isRightTabAllowed ? (
                   sTabs.length >= 3
                     ? 'Maximum limit reached (3 tabs)'
-                    : 'Tab already present in panel'
+                    : 'Cannot dock here'
                 ) : hoveredZone === 'right-tab' ? (
-                  'Release mouse to add as tab'
+                  sTabs.includes(incomingContent) ? 'Release mouse to reorder tab' : 'Release mouse to add as tab'
                 ) : (
-                  'Drop here to add as tab'
+                  sTabs.includes(incomingContent) ? 'Drop here to reorder tab' : 'Drop here to add as tab'
                 )}
               </span>
             </div>

@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect, useCallback } from 'react';
 
-export type DockablePanelId = 'primary' | 'secondary' | 'bottom' | 'explorer' | 'collections' | 'grabbed_content';
+export type DockablePanelId = 'primary' | 'secondary' | 'bottom' | 'explorer' | 'collections' | 'templates' | 'grabbed_content';
 export type DockDropTargetZone =
   | 'left'
   | 'left-tab'
@@ -12,7 +12,7 @@ export type DockDropTargetZone =
   | 'right-replace'
   | 'bottom'
   | 'remove';
-export type DockContent = 'empty' | 'explorer' | 'collections' | 'grabbed_content';
+export type DockContent = 'empty' | 'explorer' | 'collections' | 'templates' | 'grabbed_content';
 export interface DockContents {
   primary?: DockContent;
   secondary?: DockContent;
@@ -23,6 +23,13 @@ export interface DockContents {
   secondaryActiveTab?: DockContent;
 }
 
+export interface TabReorderInfo {
+  side: 'left' | 'right';
+  draggingTab: DockContent;
+  targetIndex: number;
+  isAfter: boolean;
+}
+
 export function isDockZoneAllowed(
   panelId: DockablePanelId | null,
   targetZone: DockDropTargetZone | null,
@@ -30,7 +37,7 @@ export function isDockZoneAllowed(
 ): boolean {
   if (!panelId || !targetZone) return false;
   const content =
-    panelId === 'explorer' || panelId === 'collections' || panelId === 'grabbed_content'
+    panelId === 'explorer' || panelId === 'collections' || panelId === 'templates' || panelId === 'grabbed_content'
       ? panelId
       : panelId === 'primary'
       ? (contents.primaryActiveTab ?? contents.primary ?? 'empty')
@@ -46,14 +53,14 @@ export function isDockZoneAllowed(
   const secondaryTabs = contents.secondaryTabs ?? (contents.secondary && contents.secondary !== 'empty' ? [contents.secondary] : []);
 
   if (targetZone === 'left-tab') {
+    if (primaryTabs.includes(content)) return true;
     if (primaryTabs.length >= 3) return false;
-    if (primaryTabs.includes(content)) return false;
     return true;
   }
 
   if (targetZone === 'right-tab') {
+    if (secondaryTabs.includes(content)) return true;
     if (secondaryTabs.length >= 3) return false;
-    if (secondaryTabs.includes(content)) return false;
     return true;
   }
 
@@ -69,7 +76,7 @@ export function isDockZoneAllowed(
 }
 
 interface UsePanelDockDragOptions {
-  onDropPanel: (panelId: DockablePanelId, targetZone: DockDropTargetZone) => void;
+  onDropPanel: (panelId: DockablePanelId, targetZone: DockDropTargetZone, dropIndex?: number) => void;
   contents?: DockContents;
 }
 
@@ -78,10 +85,12 @@ export function usePanelDockDrag({ onDropPanel, contents }: UsePanelDockDragOpti
   const [draggingPanel, setDraggingPanel] = useState<DockablePanelId | null>(null);
   const [hoveredZone, setHoveredZone] = useState<DockDropTargetZone | null>(null);
   const [cursorPos, setCursorPos] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
+  const [tabReorderInfo, setTabReorderInfo] = useState<TabReorderInfo | null>(null);
 
   const cleanupRef = useRef<(() => void) | null>(null);
   const draggingPanelRef = useRef<DockablePanelId | null>(null);
   const hoveredZoneRef = useRef<DockDropTargetZone | null>(null);
+  const tabReorderInfoRef = useRef<TabReorderInfo | null>(null);
   const startPosRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
   const hasMovedRef = useRef<boolean>(false);
 
@@ -92,6 +101,8 @@ export function usePanelDockDrag({ onDropPanel, contents }: UsePanelDockDragOpti
     hasMovedRef.current = false;
     draggingPanelRef.current = null;
     hoveredZoneRef.current = null;
+    tabReorderInfoRef.current = null;
+    setTabReorderInfo(null);
     setIsDragging(false);
     setDraggingPanel(null);
     setHoveredZone(null);
@@ -188,15 +199,73 @@ export function usePanelDockDrag({ onDropPanel, contents }: UsePanelDockDragOpti
 
       if (hasMovedRef.current) {
         setCursorPos({ x: moveEv.clientX, y: moveEv.clientY });
-        const detectedZone = computeZone(moveEv.clientX, moveEv.clientY);
-        hoveredZoneRef.current = detectedZone;
-        setHoveredZone(detectedZone);
 
-        const allowed = isDockZoneAllowed(panelId, detectedZone, contents);
-        if (detectedZone && !allowed) {
-          document.body.style.cursor = 'not-allowed';
-        } else {
+        // Detect if dragging a tab and cursor is currently over a tab strip area
+        let currentReorderInfo: TabReorderInfo | null = null;
+        if (
+          panelId === 'explorer' ||
+          panelId === 'collections' ||
+          panelId === 'templates' ||
+          panelId === 'grabbed_content'
+        ) {
+          const elements = document.elementsFromPoint(moveEv.clientX, moveEv.clientY);
+          const tabEl = elements.find((el) => el.hasAttribute('data-tab-name'));
+          const tabListEl = elements.find(
+            (el) => el.getAttribute('role') === 'tablist' || el.closest('[role="tablist"]')
+          );
+
+          if (tabEl) {
+            const side = (tabEl.getAttribute('data-panel-side') || 'left') as 'left' | 'right';
+            const targetIndex = parseInt(tabEl.getAttribute('data-tab-index') || '0', 10);
+            const rect = tabEl.getBoundingClientRect();
+            const isAfter = moveEv.clientX > rect.left + rect.width / 2;
+            currentReorderInfo = {
+              side,
+              draggingTab: panelId,
+              targetIndex,
+              isAfter,
+            };
+          } else if (tabListEl) {
+            const tabList = (
+              tabListEl.getAttribute('role') === 'tablist'
+                ? tabListEl
+                : tabListEl.closest('[role="tablist"]')
+            ) as HTMLElement;
+            const sideEl = tabList?.closest('[data-panel-side]') || tabList?.closest('.primary-side-panel');
+            const side = (sideEl?.classList.contains('primary-side-panel-docked-right') ? 'right' : 'left') as 'left' | 'right';
+            const tabButtons = tabList ? Array.from(tabList.querySelectorAll('[data-tab-index]')) : [];
+            if (tabButtons.length > 0) {
+              const lastBtn = tabButtons[tabButtons.length - 1];
+              const lastIndex = parseInt(lastBtn.getAttribute('data-tab-index') || '0', 10);
+              currentReorderInfo = {
+                side,
+                draggingTab: panelId,
+                targetIndex: lastIndex,
+                isAfter: true,
+              };
+            }
+          }
+        }
+
+        setTabReorderInfo(currentReorderInfo);
+        tabReorderInfoRef.current = currentReorderInfo;
+
+        if (currentReorderInfo) {
+          const zone: DockDropTargetZone = currentReorderInfo.side === 'left' ? 'left-tab' : 'right-tab';
+          hoveredZoneRef.current = zone;
+          setHoveredZone(zone);
           document.body.style.cursor = 'grabbing';
+        } else {
+          const detectedZone = computeZone(moveEv.clientX, moveEv.clientY);
+          hoveredZoneRef.current = detectedZone;
+          setHoveredZone(detectedZone);
+
+          const allowed = isDockZoneAllowed(panelId, detectedZone, contents);
+          if (detectedZone && !allowed) {
+            document.body.style.cursor = 'not-allowed';
+          } else {
+            document.body.style.cursor = 'grabbing';
+          }
         }
       }
     };
@@ -205,9 +274,25 @@ export function usePanelDockDrag({ onDropPanel, contents }: UsePanelDockDragOpti
       if (event.pointerId !== pointerId) return;
       const panel = draggingPanelRef.current;
       const zone = hoveredZoneRef.current;
+      const reorder = tabReorderInfoRef.current;
+
+      let dropIndex: number | undefined;
+      if (reorder) {
+        dropIndex = reorder.isAfter ? reorder.targetIndex + 1 : reorder.targetIndex;
+      } else if (zone === 'left-tab' || zone === 'right-tab') {
+        const elements = document.elementsFromPoint(event.clientX, event.clientY);
+        const tabEl = elements.find(el => el.hasAttribute('data-tab-index'));
+        if (tabEl) {
+          const targetIndex = parseInt(tabEl.getAttribute('data-tab-index') || '0', 10);
+          const rect = tabEl.getBoundingClientRect();
+          const isAfter = event.clientX > rect.left + rect.width / 2;
+          dropIndex = isAfter ? targetIndex + 1 : targetIndex;
+        }
+      }
+
       const shouldDrop = hasMovedRef.current && panel && zone && isDockZoneAllowed(panel, zone, contents);
       cancelDrag();
-      if (shouldDrop) onDropPanel(panel, zone);
+      if (shouldDrop) onDropPanel(panel, zone, dropIndex);
     };
     const handleCancel = (event: PointerEvent) => {
       if (event.pointerId === pointerId) cancelDrag();
@@ -237,6 +322,8 @@ export function usePanelDockDrag({ onDropPanel, contents }: UsePanelDockDragOpti
     draggingPanel,
     hoveredZone,
     cursorPos,
+    tabReorderInfo,
+    isTabReorder: tabReorderInfo !== null,
     handlePointerDown,
     cancelDrag,
   };

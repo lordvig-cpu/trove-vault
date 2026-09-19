@@ -14,6 +14,7 @@ export interface TemplateManagerModalProps {
   onClose: () => void;
   collectionId?: number | null;
   collectionName?: string;
+  initialTemplateId?: number | null;
   onTemplateApplied?: () => void;
 }
 
@@ -27,10 +28,11 @@ export default function TemplateManagerModal({
   isOpen,
   onClose,
   collectionName,
+  initialTemplateId,
   onTemplateApplied,
 }: TemplateManagerModalProps) {
   const [templates, setTemplates] = useState<ItemTemplate[]>([]);
-  const [selectedTemplateId, setSelectedTemplateId] = useState<number | null>(null);
+  const [selectedTemplateId, setSelectedTemplateId] = useState<number | null>(initialTemplateId || null);
   const [loading, setLoading] = useState(false);
   const [savingCustom, setSavingCustom] = useState(false);
   const [newTemplateName, setNewTemplateName] = useState('');
@@ -52,7 +54,9 @@ export default function TemplateManagerModal({
       const fullTemplates = await fetchTemplateCatalog();
 
       setTemplates(fullTemplates);
-      if (fullTemplates.length > 0 && !selectedTemplateId) {
+      if (initialTemplateId && fullTemplates.some((t) => t.id === initialTemplateId)) {
+        setSelectedTemplateId(initialTemplateId);
+      } else if (fullTemplates.length > 0 && !selectedTemplateId) {
         setSelectedTemplateId(fullTemplates[0].id);
       }
     } catch (err: any) {

@@ -55,7 +55,9 @@ export interface ExplorerContentProps {
   onEditItem: (item: ItemRecord, collectionId: number | null) => void;
   onDeleteItem: (item: ItemRecord, collectionId: number | null) => void;
   onRenameCollection?: (id: number, nextName: string) => Promise<void> | void;
+  onRenameTemplate?: (id: number, nextName: string) => Promise<void> | void;
   onDeleteCollection?: (collection: CollectionRecord) => void;
+  onDeleteTemplate?: (id: number) => Promise<void> | void;
   onEditCollection?: (collection: CollectionRecord) => void;
   onRenameItem?: (id: number, nextName: string) => Promise<void> | void;
   onAddSubCollection?: (parentCollectionId: number) => void;
@@ -178,6 +180,8 @@ export default function ExplorerContent({
   onDeleteItem,
   onDeleteCollection,
   onRenameCollection,
+  onRenameTemplate,
+  onDeleteTemplate,
   onEditCollection,
   onRenameItem,
   position,
@@ -253,7 +257,9 @@ export default function ExplorerContent({
     onEditItem,
     onDeleteItem,
     onRenameCollection,
+    onRenameTemplate,
     onDeleteCollection,
+    onDeleteTemplate,
     onEditCollection,
     onRenameItem,
   };
@@ -267,16 +273,17 @@ export default function ExplorerContent({
       {filteredForest.length === 0 ? (
         <div className="flex flex-col items-center justify-center h-32 text-center px-4 select-none">
           <span className="text-xl mb-1">🔍</span>
-          <p className="text-xs ui-muted">No categories, collections, or items found</p>
+          <p className="text-xs ui-muted">No categories, collections, templates, or items found</p>
         </div>
       ) : (
-        /* Forest Root Nodes (Categories & Collections) */
+        /* Forest Root Nodes (Categories & Collections & Templates) */
         <ExplorerActionsProvider value={actionsValue}>
           <ExplorerSelectionProvider value={selectionValue}>
             {filteredForest.map((node) => (
               <UnifiedExplorerTree
                 key={`root-col-${node.id}`}
                 collection={node}
+                treeType={treeView}
               />
             ))}
           </ExplorerSelectionProvider>

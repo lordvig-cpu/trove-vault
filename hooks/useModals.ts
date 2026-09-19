@@ -19,7 +19,7 @@ import { ItemRecord } from '@/types/item';
  * - `null`: All modals are closed.
  */
 export type ActiveModal =
-  | { type: 'template_manager'; collectionId: number; collectionName: string }
+  | { type: 'template_manager'; collectionId?: number | null; collectionName?: string; templateId?: number | null }
   | { type: 'delete_collection'; collection: CollectionRecord }
   | { type: 'create_collection'; parentCollectionId?: number | null }
   | { type: 'create_item'; collectionId: number | null; parentItemId?: number | null }
@@ -43,10 +43,10 @@ export function useModals() {
   }, []);
 
   /**
-   * Opens the Template Manager dialog for managing collection schemas/presets.
+   * Opens the Template Manager dialog for managing collection schemas/presets or viewing templates.
    */
-  const openTemplateManager = useCallback((collectionId: number, collectionName: string) => {
-    setActiveModal({ type: 'template_manager', collectionId, collectionName });
+  const openTemplateManager = useCallback((collectionId?: number | null, collectionName?: string, templateId?: number | null) => {
+    setActiveModal({ type: 'template_manager', collectionId: collectionId ?? null, collectionName, templateId: templateId ?? null });
   }, []);
 
   /**

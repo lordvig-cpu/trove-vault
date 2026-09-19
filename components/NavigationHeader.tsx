@@ -24,12 +24,11 @@ export type SearchScope = 'current' | 'all';
 interface NavigationHeaderProps {
   activeCollectionName: string;
   onOpenFieldManager?: () => void;
-  onOpenTemplateManager: () => void;
+  onOpenTemplateManager?: () => void;
   isPrimarySidePanelOpen?: boolean;
   onTogglePrimarySidePanel?: () => void;
   unpinnedPrimaryPanel?: React.ReactNode;
   onAddNewItem?: () => void;
-  onStartGrabbedContentDrag?: (e: React.PointerEvent) => void;
   onStartExplorerDrag?: (e: React.PointerEvent) => void;
   explorerDockedSide?: 'left' | 'right' | null;
   collectionsDockedSide?: 'left' | 'right' | null;
@@ -37,6 +36,11 @@ interface NavigationHeaderProps {
   onToggleCollections?: () => void;
   onStartCollectionsDrag?: (e: React.PointerEvent) => void;
   collectionsFlyoutPanel?: React.ReactNode;
+  templatesDockedSide?: 'left' | 'right' | null;
+  isTemplatesOpen?: boolean;
+  onToggleTemplates?: () => void;
+  onStartTemplatesDrag?: (e: React.PointerEvent) => void;
+  templatesFlyoutPanel?: React.ReactNode;
 
   // Backward-compatibility aliases
   isLeftSidePanelOpen?: boolean;
@@ -55,7 +59,6 @@ export default function NavigationHeader({
   isPrimarySidePanelOpen,
   onTogglePrimarySidePanel,
   unpinnedPrimaryPanel,
-  onStartGrabbedContentDrag,
   onStartExplorerDrag,
   explorerDockedSide = null,
   collectionsDockedSide = null,
@@ -63,6 +66,11 @@ export default function NavigationHeader({
   onToggleCollections,
   onStartCollectionsDrag,
   collectionsFlyoutPanel,
+  templatesDockedSide = null,
+  isTemplatesOpen = false,
+  onToggleTemplates,
+  onStartTemplatesDrag,
+  templatesFlyoutPanel,
   isLeftSidePanelOpen,
   onToggleLeftSidePanel,
   unpinnedExplorerPanel,
@@ -79,6 +87,7 @@ export default function NavigationHeader({
   const treePanels = [
     { name: 'Items', dockedSide: explorerDockedSide, isOpen: effectiveIsOpen, toggle: effectiveToggle, drag: onStartExplorerDrag, flyout: effectiveUnpinnedPanel },
     { name: 'Collections', dockedSide: collectionsDockedSide, isOpen: isCollectionsOpen, toggle: onToggleCollections, drag: onStartCollectionsDrag, flyout: collectionsFlyoutPanel },
+    { name: 'Templates', dockedSide: templatesDockedSide, isOpen: isTemplatesOpen, toggle: onToggleTemplates, drag: onStartTemplatesDrag, flyout: templatesFlyoutPanel },
   ];
 
   return (
@@ -176,44 +185,6 @@ export default function NavigationHeader({
               {!isDocked && panel.flyout}
             </div>;
             })}
-          </div>
-
-          {/* Schema Templates & Draggable Test Item */}
-          <div className="flex items-center gap-3 px-4 h-full">
-
-            <button
-              type="button"
-              onClick={onOpenTemplateManager}
-              className={[
-                'flex items-center gap-1.5 px-3 py-1.5',
-                'text-xs font-semibold ui-secondary ui-hover-primary',
-                'ui-surface-hover ui-border-subtle border rounded-lg',
-                'cursor-pointer transition',
-              ].join(' ')}
-            >
-              <span>📑</span>
-              <span>Templates</span>
-            </button>
-
-            {/* Quick Grabbable Content Item */}
-            {onStartGrabbedContentDrag && (
-              <div
-                onPointerDown={onStartGrabbedContentDrag}
-                className={[
-                  'flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg select-none',
-                  'border border-dashed border-[color-mix(in_oklch,var(--brand-primary)_45%,transparent)]',
-                  'bg-[color-mix(in_oklch,var(--brand-primary)_10%,transparent)]',
-                  'hover:bg-[color-mix(in_oklch,var(--brand-primary)_20%,transparent)]',
-                  'hover:border-[var(--brand-primary)]',
-                  'text-xs font-semibold text-[var(--brand-primary)]',
-                  'cursor-grab active:cursor-grabbing transition-all duration-150',
-                ].join(' ')}
-                title="Drag and drop to dock into Primary or Secondary Side Bar"
-              >
-                <span className="text-[10px] opacity-60 tracking-tighter" aria-hidden="true">⋮⋮</span>
-                <span>📦 Grab Item</span>
-              </div>
-            )}
           </div>
         </div>
 

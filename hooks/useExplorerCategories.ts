@@ -17,7 +17,7 @@ export interface ExplorerNodeLike {
    Manages tree node expansion state, bulk expand/collapse operations,
    and local query state for the explorer sidebar.
    ========================================================================== */
-export function useExplorerCategories(nodes: ExplorerNodeLike[] = []) {
+export function useExplorerCategories(nodes: ExplorerNodeLike[] = [], initialExpanded: boolean = true) {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [expandedCategoryIds, setExpandedCategoryIds] = useState<Set<number>>(new Set());
 
@@ -35,7 +35,7 @@ export function useExplorerCategories(nodes: ExplorerNodeLike[] = []) {
   const hasInitialized = useRef(false);
   const prevIdsRef = useRef<number[]>([]);
 
-  // Automatically expand all tree nodes on initial load or when view transitions across forests
+  // Automatically expand all tree nodes on initial load or when view transitions across forests (unless initialExpanded is false)
   useEffect(() => {
     if (allNodeIds.length === 0) return;
 
@@ -43,11 +43,15 @@ export function useExplorerCategories(nodes: ExplorerNodeLike[] = []) {
     const isNewForest = prevIds.length === 0 || !allNodeIds.some((id) => prevIds.includes(id));
 
     if (!hasInitialized.current || isNewForest) {
-      setExpandedCategoryIds(new Set(allNodeIds));
+      if (initialExpanded) {
+        setExpandedCategoryIds(new Set(allNodeIds));
+      } else {
+        setExpandedCategoryIds(new Set());
+      }
       hasInitialized.current = true;
     }
     prevIdsRef.current = allNodeIds;
-  }, [allNodeIds]);
+  }, [allNodeIds, initialExpanded]);
 
   const isAnyCategoryExpanded = useMemo(() => {
     return expandedCategoryIds.size > 0;

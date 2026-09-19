@@ -21,18 +21,18 @@ import { CollectionRecord } from '@/types/collection';
 import { ExplorerTab } from '@/lib/filterExplorerForest';
 import { PrimarySidebarPosition } from '@/types/layout';
 import { useUIPreferences } from '@/context/UIPreferencesContext';
-import { DockContent } from '@/hooks/usePanelDockDrag';
+import { DockContent, TabReorderInfo } from '@/hooks/usePanelDockDrag';
 
 /* ==========================================================================
    1. TYPE DEFINITIONS & INTERFACES
    ========================================================================== */
 
-interface PrimarySidePanelHeaderProps {
+export interface PrimarySidePanelHeaderProps {
   hasDockedContent?: boolean;
   title?: string;
   showSearchFilter?: boolean;
   variant: 'flyout' | 'sidebar';
-  isPinned: boolean;
+  isPinned?: boolean;
   position?: PrimarySidebarPosition;
   onTogglePosition?: () => void;
   moveTooltip?: string;
@@ -46,10 +46,11 @@ interface PrimarySidePanelHeaderProps {
   onSearchChange?: (val: string) => void;
   isAnyCategoryExpanded?: boolean;
   onToggleAllCategories?: () => void;
-  onTogglePin: () => void;
+  onTogglePin?: () => void;
   onClose: () => void;
   onAddNewItem?: () => void;
   onAddNewCollection?: () => void;
+  onAddNewTemplate?: () => void;
   collections?: CollectionRecord[];
 
   // Multi-Select Array Props
@@ -59,6 +60,8 @@ interface PrimarySidePanelHeaderProps {
 
   onHandlePointerDown?: (e: React.PointerEvent) => void;
   onStartTabDrag?: (tab: Exclude<DockContent, 'empty'>, e: React.PointerEvent) => void;
+  isDragging?: boolean;
+  reorderInfo?: TabReorderInfo | null;
 
   isAnyFolderExpanded?: boolean;
   onToggleAllFolders?: () => void;
@@ -93,17 +96,21 @@ export default function PrimarySidePanelHeader({
   onClose,
   onAddNewItem,
   onAddNewCollection,
+  onAddNewTemplate,
   collections = [],
   filterCollectionIds = [],
   onToggleFilterCollection = () => {},
   onClearCollectionFilters = () => {},
   onHandlePointerDown,
   onStartTabDrag,
+  isDragging = false,
+  reorderInfo = null,
 }: PrimarySidePanelHeaderProps) {
   const headerId = useId();
   const isCollections = treeView === 'collections' || activeTab === 'collections' || title === 'COLLECTIONS';
+  const isTemplates = treeView === 'templates' || activeTab === 'templates' || title === 'TEMPLATES';
   const isGrabbed = activeTab === 'grabbed_content' || title === 'GRABBED CONTENT';
-  const panelName = isCollections ? 'Collections' : isGrabbed ? 'Grabbed Content' : 'Items';
+  const panelName = isCollections ? 'Collections' : isTemplates ? 'Templates' : isGrabbed ? 'Grabbed Content' : 'Items';
   const isRight = position === 'right';
   const { animationsEnabled } = useUIPreferences();
 
@@ -111,6 +118,8 @@ export default function PrimarySidePanelHeader({
     ? tabs
     : treeView === 'collections'
     ? ['collections']
+    : treeView === 'templates'
+    ? ['templates']
     : treeView === 'items'
     ? ['explorer']
     : ['explorer', 'collections'];
@@ -308,7 +317,7 @@ export default function PrimarySidePanelHeader({
         <>
           <div className="explorer-section-heading">
             <hr aria-hidden="true" />
-            <h3>Search and Filter ({isCollections ? 'Collections' : 'Items'})</h3>
+            <h3>Search and Filter ({isCollections ? 'Collections' : isTemplates ? 'Templates' : 'Items'})</h3>
           </div>
       <div className="flex items-center gap-1.5 w-full">
         <div className={`explorer-search-input explorer-search-shell ${isRight ? 'explorer-search-shell-right' : ''} relative flex-1 min-w-0 flex items-center ${searchQuery.length > 0 ? 'explorer-search-input-active' : ''}`}>
@@ -359,13 +368,13 @@ export default function PrimarySidePanelHeader({
                   id={`${headerId}-search`}
                   type="text"
                   data-tree-search={treeView ?? activeTab}
-                  aria-keyshortcuts={isCollections ? 'Control+L Meta+L' : 'Control+K Meta+K'}
-                  aria-label={isCollections ? 'Search collections and items' : 'Search items'}
+                  aria-keyshortcuts={isTemplates ? 'Control+; Meta+;' : isCollections ? 'Control+L Meta+L' : 'Control+K Meta+K'}
+                  aria-label={isTemplates ? 'Search templates and items' : isCollections ? 'Search collections and items' : 'Search items'}
                   value={searchQuery}
                   onChange={(e) => onSearchChange(e.target.value)}
                   onFocus={() => setIsSearchFocused(true)}
                   onBlur={() => setIsSearchFocused(false)}
-                  title={isCollections ? 'Search Collections & Items [shortcut: Ctrl-L]' : 'Search Items [shortcut: Ctrl-K]'}
+                  title={isTemplates ? 'Search Templates & Items [shortcut: Ctrl-;]' : isCollections ? 'Search Collections & Items [shortcut: Ctrl-L]' : 'Search Items [shortcut: Ctrl-K]'}
                   placeholder={hasCollectionFilters ? 'Search filtered collection...' : 'Search...'}
                   className="explorer-search-query-input"
                   style={searchQuery.length > 0 ? { width: `${searchQuery.length + 0.5}ch` } : undefined}
@@ -411,13 +420,13 @@ export default function PrimarySidePanelHeader({
                   id={`${headerId}-search`}
                   type="text"
                   data-tree-search={treeView ?? activeTab}
-                  aria-keyshortcuts={isCollections ? 'Control+L Meta+L' : 'Control+K Meta+K'}
-                  aria-label={isCollections ? 'Search collections and items' : 'Search items'}
+                  aria-keyshortcuts={isTemplates ? 'Control+; Meta+;' : isCollections ? 'Control+L Meta+L' : 'Control+K Meta+K'}
+                  aria-label={isTemplates ? 'Search templates and items' : isCollections ? 'Search collections and items' : 'Search items'}
                   value={searchQuery}
                   onChange={(e) => onSearchChange(e.target.value)}
                   onFocus={() => setIsSearchFocused(true)}
                   onBlur={() => setIsSearchFocused(false)}
-                  title={isCollections ? 'Search Collections & Items [shortcut: Ctrl-L]' : 'Search Items [shortcut: Ctrl-K]'}
+                  title={isTemplates ? 'Search Templates & Items [shortcut: Ctrl-;]' : isCollections ? 'Search Collections & Items [shortcut: Ctrl-L]' : 'Search Items [shortcut: Ctrl-K]'}
                   placeholder={hasCollectionFilters ? 'Search filtered collection...' : 'Search...'}
                   className="explorer-search-query-input"
                   style={searchQuery.length > 0 ? { width: `${searchQuery.length + 0.5}ch` } : undefined}
@@ -560,6 +569,8 @@ export default function PrimarySidePanelHeader({
         <h3>
           {isCollections
             ? 'Browse Collections'
+            : isTemplates
+            ? 'Browse Templates'
             : isGrabbed
             ? 'Grabbed Content'
             : 'Browse Items'}
@@ -572,68 +583,88 @@ export default function PrimarySidePanelHeader({
             const isTabActive =
               activeTab === tab ||
               (activeTab === 'items' && tab === 'explorer') ||
-              (activeTab === 'collections' && tab === 'collections');
+              (activeTab === 'collections' && tab === 'collections') ||
+              (activeTab === 'templates' && tab === 'templates');
             const tabLabel =
-              tab === 'explorer' ? 'Items' : tab === 'collections' ? 'Collections' : 'Grabbed Content';
+              tab === 'explorer' ? 'Items' : tab === 'collections' ? 'Collections' : tab === 'templates' ? 'Templates' : 'Grabbed Content';
             const tabTitle =
               tab === 'explorer'
                 ? 'Show Items organized by Category (drag to move tab)'
                 : tab === 'collections'
                 ? 'Show Collections hierarchy (drag to move tab)'
+                : tab === 'templates'
+                ? 'Show Templates blueprint tree (drag to move tab)'
                 : 'Show Grabbed Content (drag to move tab)';
 
+            const isThisTabDragging = isDragging && reorderInfo?.draggingTab === tab && reorderInfo?.side === position;
+            const isThisTabTarget = isDragging && reorderInfo?.side === position && reorderInfo?.targetIndex === idx;
+            const showInsertBefore = isThisTabTarget && !reorderInfo?.isAfter;
+            const showInsertAfter = isThisTabTarget && reorderInfo?.isAfter;
+
             return (
-              <button
-                key={tab}
-                type="button"
-                role="tab"
-                aria-selected={isTabActive}
-                onClick={() => onTabChange?.(tab as any)}
-                onPointerDown={(e) => {
-                  if (tab !== 'empty') onStartTabDrag?.(tab, e);
-                }}
-                className={`explorer-folder-tab group/tab cursor-grab active:cursor-grabbing ${idx > 0 ? '-ml-3.5' : ''} ${
-                  isTabActive
-                    ? 'explorer-folder-tab-active z-20'
-                    : 'explorer-folder-tab-idle z-10'
-                }`}
-                title={tabTitle}
-              >
-                <svg
-                  className="absolute inset-0 w-full h-full pointer-events-none"
-                  viewBox="0 0 100 28"
-                  preserveAspectRatio="none"
+              <div key={tab} className="relative flex items-center">
+                {showInsertBefore && (
+                  <div className="explorer-tab-insert-marker explorer-tab-insert-marker-left" />
+                )}
+                <button
+                  data-tab-name={tab}
+                  data-tab-index={idx}
+                  data-panel-side={position}
+                  type="button"
+                  role="tab"
+                  aria-selected={isTabActive}
+                  onClick={() => onTabChange?.(tab as any)}
+                  onPointerDown={(e) => {
+                    if (tab !== 'empty') onStartTabDrag?.(tab, e);
+                  }}
+                  className={`explorer-folder-tab group/tab cursor-grab active:cursor-grabbing ${idx > 0 ? '-ml-3.5' : ''} ${
+                    isThisTabTarget
+                      ? 'explorer-folder-tab-reorder-target z-30'
+                      : isTabActive
+                      ? 'explorer-folder-tab-active z-20'
+                      : 'explorer-folder-tab-idle z-10'
+                  } ${isThisTabDragging ? 'explorer-folder-tab-dragging' : ''}`}
+                  title={tabTitle}
                 >
-                  <defs>
-                    <linearGradient id={`${headerId}-${tab}`} x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="var(--explorer-tab-active-top, rgba(18, 94, 158, 1))" className="tab-grad-top" />
-                      <stop offset="45%" stopColor="var(--explorer-tab-active-mid, rgba(10, 64, 112, 1))" className="tab-grad-mid" />
-                      <stop offset="100%" stopColor="var(--explorer-tab-active-bottom, rgba(5, 36, 70, 1))" className="tab-grad-bottom" />
-                    </linearGradient>
-                  </defs>
-                  <path
-                    d="M 0,28 L 8,3 C 9,1 11,0 14,0 L 86,0 C 89,0 91,1 92,3 L 100,28 Z"
-                    className="explorer-tab-svg-fill"
-                    style={isTabActive ? { fill: `url(#${headerId}-${tab})` } : undefined}
-                  />
-                  <path
-                    d="M 0,28 L 8,3 C 9,1 11,0 14,0 L 86,0 C 89,0 91,1 92,3 L 100,28"
-                    className="explorer-tab-svg-stroke"
-                    fill="none"
-                    strokeWidth="1.5"
-                    vectorEffect="non-scaling-stroke"
-                  />
-                </svg>
-                <span className="relative z-10 flex items-center gap-1 px-0.5 select-none">
-                  <span
-                    className="text-[9px] opacity-40 group-hover/tab:opacity-90 transition-opacity tracking-tighter"
-                    aria-hidden="true"
+                  <svg
+                    className="absolute inset-0 w-full h-full pointer-events-none"
+                    viewBox="0 0 100 28"
+                    preserveAspectRatio="none"
                   >
-                    ⋮⋮
+                    <defs>
+                      <linearGradient id={`${headerId}-${tab}`} x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="var(--explorer-tab-active-top, rgba(18, 94, 158, 1))" className="tab-grad-top" />
+                        <stop offset="45%" stopColor="var(--explorer-tab-active-mid, rgba(10, 64, 112, 1))" className="tab-grad-mid" />
+                        <stop offset="100%" stopColor="var(--explorer-tab-active-bottom, rgba(5, 36, 70, 1))" className="tab-grad-bottom" />
+                      </linearGradient>
+                    </defs>
+                    <path
+                      d="M 0,28 L 8,3 C 9,1 11,0 14,0 L 86,0 C 89,0 91,1 92,3 L 100,28 Z"
+                      className="explorer-tab-svg-fill"
+                      style={isTabActive || isThisTabTarget ? { fill: `url(#${headerId}-${tab})` } : undefined}
+                    />
+                    <path
+                      d="M 0,28 L 8,3 C 9,1 11,0 14,0 L 86,0 C 89,0 91,1 92,3 L 100,28"
+                      className="explorer-tab-svg-stroke"
+                      fill="none"
+                      strokeWidth={isThisTabTarget ? '2' : '1.5'}
+                      vectorEffect="non-scaling-stroke"
+                    />
+                  </svg>
+                  <span className="relative z-10 flex items-center gap-1 px-0.5 select-none">
+                    <span
+                      className="text-[9px] opacity-40 group-hover/tab:opacity-90 transition-opacity tracking-tighter"
+                      aria-hidden="true"
+                    >
+                      ⋮⋮
+                    </span>
+                    <span>{tabLabel}</span>
                   </span>
-                  <span>{tabLabel}</span>
-                </span>
-              </button>
+                </button>
+                {showInsertAfter && (
+                  <div className="explorer-tab-insert-marker explorer-tab-insert-marker-right" />
+                )}
+              </div>
             );
           })}
         </div>
@@ -641,7 +672,29 @@ export default function PrimarySidePanelHeader({
         {/* Right: Actions Cluster (Contextual Add + Expand/Collapse) */}
         {!isGrabbed && (
           <div className="flex items-center gap-1 shrink-0 mb-1">
-            {isCollections ? (
+            {isTemplates ? (
+              onAddNewTemplate && (
+                <button
+                  type="button"
+                  onClick={onAddNewTemplate}
+                  className="explorer-tab-action-btn group"
+                  title="Create New Item Template"
+                >
+                  <svg
+                    className="w-2.5 h-2.5 origin-center transition-transform duration-150 ease-out group-hover:scale-110 text-[var(--explorer-action-icon,rgba(109,170,209,0.85))] group-hover:text-white"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <line x1="12" y1="5" x2="12" y2="19" />
+                    <line x1="5" y1="12" x2="19" y2="12" />
+                  </svg>
+                </button>
+              )
+            ) : isCollections ? (
               onAddNewCollection && (
                 <button
                   type="button"

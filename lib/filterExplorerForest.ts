@@ -10,7 +10,43 @@ import {
   isDescendantOf,
 } from '@/lib/explorerUtils';
 
-export type ExplorerTab = 'items' | 'collections';
+export type ExplorerTab = 'items' | 'collections' | 'templates';
+
+/**
+ * Synthesizes dynamic template nodes for a given list of items,
+ * partitioned by each item's assigned template blueprint.
+ */
+function buildTemplateNodesFromItems(
+  items: ItemRecord[],
+  templates: CollectionTemplate[]
+): UnifiedCollectionNode[] {
+  const templateMap = new Map<number, ItemRecord[]>();
+  for (const item of items) {
+    if (item.template_id) {
+      if (!templateMap.has(item.template_id)) {
+        templateMap.set(item.template_id, []);
+      }
+      templateMap.get(item.template_id)!.push(item);
+    }
+  }
+
+  const result: UnifiedCollectionNode[] = [];
+  for (const tmpl of templates) {
+    const tmplItems = templateMap.get(tmpl.id) || [];
+    if (tmplItems.length > 0) {
+      const itemTree = buildItemHierarchy(tmplItems, null, true);
+      result.push({
+        id: -tmpl.id,
+        name: tmpl.name,
+        description: tmpl.description || `All ${tmpl.name}`,
+        icon: tmpl.icon || '📦',
+        items: itemTree,
+        subCollections: [],
+      });
+    }
+  }
+  return result;
+}
 
 /**
  * Builds nested parent-child hierarchies of items, safely handling any
@@ -69,6 +105,8 @@ function buildCategoryNodesFromItems(
  *   includes items existing within those filtered collection sets.
  * - Collections tab: returns collection hierarchies, pruning down to selected collections
  *   or showing all collections if no specific filter is checked.
+ * - Templates tab: returns template hierarchies, pruning down to templates used by
+ *   the selected collections or showing all active templates in use.
  */
 export function filterExplorerForest(
   forest: UnifiedCollectionNode[],
@@ -78,6 +116,25 @@ export function filterExplorerForest(
   collections: CollectionRecord[] = [],
   templates: CollectionTemplate[] = []
 ): UnifiedCollectionNode[] {
+  if (activeTab === 'templates') {
+    const itemLookup = new Map(allItems.map(item => [item.id, item]));
+    const collectionLookup = new Map(collections.map(collection => [collection.id, collection]));
+    const targetItems =
+      filterCollectionIds.length > 0
+        ? allItems.filter((item) => {
+            const colIds = getItemRootCollectionIds(item, allItems, itemLookup);
+            if (colIds.length === 0) return false;
+            return colIds.some(
+              (colId) =>
+                filterCollectionIds.includes(colId) ||
+                filterCollectionIds.some((fId) => isDescendantOf(collections, colId, fId, collectionLookup))
+            );
+          })
+        : allItems;
+
+    return buildTemplateNodesFromItems(targetItems, templates);
+  }
+
   if (activeTab === 'items') {
     const itemLookup = new Map(allItems.map(item => [item.id, item]));
     const collectionLookup = new Map(collections.map(collection => [collection.id, collection]));

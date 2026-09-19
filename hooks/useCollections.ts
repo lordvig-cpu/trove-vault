@@ -212,6 +212,51 @@ export function useCollections() {
     []
   );
 
+  /**
+   * Inline Template Rename
+   */
+  const renameTemplate = useCallback(
+    async (id: number, nextName: string) => {
+      const trimmed = nextName.trim();
+      if (!trimmed) return;
+
+      const { error: updateError } = await supabase
+        .from('item_templates')
+        .update({ name: trimmed })
+        .eq('id', id);
+
+      if (updateError) {
+        console.error('Failed to rename template:', updateError);
+        throw updateError;
+      }
+
+      setTemplates((prev) =>
+        prev.map((t) => (t.id === id ? { ...t, name: trimmed } : t))
+      );
+    },
+    []
+  );
+
+  /**
+   * Delete Template
+   */
+  const deleteTemplate = useCallback(
+    async (id: number) => {
+      const { error: deleteError } = await supabase
+        .from('item_templates')
+        .delete()
+        .eq('id', id);
+
+      if (deleteError) {
+        console.error('Failed to delete template:', deleteError);
+        throw deleteError;
+      }
+
+      setTemplates((prev) => prev.filter((t) => t.id !== id));
+    },
+    []
+  );
+
   return {
     allCollections,
     allItems,
@@ -224,6 +269,8 @@ export function useCollections() {
     selectItemWithChildren,
     renameCollection,
     renameItem,
+    renameTemplate,
+    deleteTemplate,
     unifiedForest,
     loading,
     error,

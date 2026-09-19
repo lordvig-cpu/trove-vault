@@ -17,7 +17,7 @@ import { ExplorerTab } from '@/lib/filterExplorerForest';
 import { PrimarySidebarPosition } from '@/types/layout';
 import EmptyPanelDropZone from '@/components/EmptyPanelDropZone';
 import PanelContentTransition from '@/components/PanelContentTransition';
-import { DockContent } from '@/hooks/usePanelDockDrag';
+import { DockContent, TabReorderInfo } from '@/hooks/usePanelDockDrag';
 
 /* ==========================================================================
    1. TYPE DEFINITIONS & CONSTANTS
@@ -53,6 +53,7 @@ interface PrimarySidePanelProps {
   children?: React.ReactNode;
   onAddNewItem?: () => void;
   onAddNewCollection?: () => void;
+  onAddNewTemplate?: () => void;
   collections?: CollectionRecord[];
 
   // Multi-Select Array Props
@@ -62,6 +63,8 @@ interface PrimarySidePanelProps {
 
   onHandlePointerDown?: (e: React.PointerEvent) => void;
   onStartTabDrag?: (tab: Exclude<DockContent, 'empty'>, e: React.PointerEvent) => void;
+  isDragging?: boolean;
+  reorderInfo?: TabReorderInfo | null;
 }
 
 const DEFAULT_WIDTH = 304;
@@ -100,12 +103,15 @@ export default function PrimarySidePanel({
   children,
   onAddNewItem,
   onAddNewCollection,
+  onAddNewTemplate,
   collections = [],
   filterCollectionIds = [],
   onToggleFilterCollection,
   onClearCollectionFilters,
   onHandlePointerDown,
   onStartTabDrag,
+  isDragging: isDockDragging = false,
+  reorderInfo = null,
 }: PrimarySidePanelProps) {
   const activeIsExpanded = isAnyCategoryExpanded;
   const activeToggleAll = onToggleAllCategories;
@@ -237,12 +243,15 @@ export default function PrimarySidePanel({
         onClose={onClose}
         onAddNewItem={onAddNewItem}
         onAddNewCollection={onAddNewCollection}
+        onAddNewTemplate={onAddNewTemplate}
         collections={collections}
         filterCollectionIds={filterCollectionIds}
         onToggleFilterCollection={onToggleFilterCollection}
         onClearCollectionFilters={onClearCollectionFilters}
         onHandlePointerDown={onHandlePointerDown}
         onStartTabDrag={onStartTabDrag}
+        isDragging={isDockDragging}
+        reorderInfo={reorderInfo}
       />
 
       {/* Syncing Progress Banner */}
