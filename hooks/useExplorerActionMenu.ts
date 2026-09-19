@@ -26,7 +26,8 @@ const GLOBAL_MENU_OPEN_EVENT = 'explorer-action-menu-open';
 export function useExplorerActionMenu(
   rowId: string,
   defaultMenuHeight: number = 215,
-  position: 'left' | 'right' = 'left'
+  position: 'left' | 'right' = 'left',
+  menuWidth: number = 224
 ) {
   /* ------------------------------------------------------------------------
      2.1 REFERENCES & TIMERS
@@ -75,7 +76,7 @@ export function useExplorerActionMenu(
     (gearRect: DOMRect, menuHeight: number, targetEl?: HTMLElement | null) => {
       const bottomNavReserve = 64; // Height of bottom status bar + padding buffer
       const maxAllowedTop = window.innerHeight - menuHeight - bottomNavReserve;
-      const MENU_WIDTH = 224; // 14rem width defined in ExplorerActionMenu.css
+      const MENU_WIDTH = menuWidth;
 
       // Align header slightly above trigger gear icon (-4px offset)
       let calculatedTop = Math.round(gearRect.top - 4);
@@ -109,7 +110,7 @@ export function useExplorerActionMenu(
         left: calculatedLeft,
       };
     },
-    [position]
+    [position, menuWidth]
   );
 
   /* ------------------------------------------------------------------------

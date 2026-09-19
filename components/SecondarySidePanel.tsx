@@ -61,6 +61,11 @@ interface SecondarySidePanelProps {
   filterCollectionIds?: number[];
   onToggleFilterCollection?: (collectionId: number) => void;
   onClearCollectionFilters?: () => void;
+  filterFieldTypes?: import('@/types/field').FieldType[];
+  onToggleFilterFieldType?: (type: import('@/types/field').FieldType) => void;
+  onClearFieldTypeFilters?: () => void;
+  fieldTypeCounts?: Record<string, number>;
+  onAddNewField?: () => void;
   onStartTabDrag?: (tab: Exclude<DockContent, 'empty'>, e: React.PointerEvent) => void;
   isDragging?: boolean;
   reorderInfo?: TabReorderInfo | null;
@@ -112,6 +117,11 @@ export default function SecondarySidePanel({
   filterCollectionIds = [],
   onToggleFilterCollection,
   onClearCollectionFilters,
+  filterFieldTypes,
+  onToggleFilterFieldType,
+  onClearFieldTypeFilters,
+  fieldTypeCounts,
+  onAddNewField,
   onStartTabDrag,
   isDragging: isDockDragging = false,
   reorderInfo = null,
@@ -286,6 +296,11 @@ export default function SecondarySidePanel({
           filterCollectionIds={filterCollectionIds}
           onToggleFilterCollection={onToggleFilterCollection}
           onClearCollectionFilters={onClearCollectionFilters}
+          filterFieldTypes={filterFieldTypes}
+          onToggleFilterFieldType={onToggleFilterFieldType}
+          onClearFieldTypeFilters={onClearFieldTypeFilters}
+          fieldTypeCounts={fieldTypeCounts}
+          onAddNewField={onAddNewField}
           onHandlePointerDown={onHandlePointerDown}
           onStartTabDrag={onStartTabDrag}
           isDragging={isDockDragging}

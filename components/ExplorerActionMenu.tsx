@@ -21,6 +21,7 @@ interface ExplorerActionMenuProps {
   title: string;
   titleIcon: string;
   position?: 'left' | 'right';
+  className?: string;
   children: React.ReactNode;
 }
 
@@ -33,6 +34,7 @@ export default function ExplorerActionMenu({
   title,
   titleIcon,
   position,
+  className,
   children,
 }: ExplorerActionMenuProps) {
   const { animationsEnabled, isPinned: primaryPinned } = useUIPreferences();
@@ -41,9 +43,25 @@ export default function ExplorerActionMenu({
   const effectivePosition = position ?? 'left';
 
   const { mounted, renderMenu, isClosing } = usePresence(isOpen, 340, animationsEnabled);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const [adjustedTop, setAdjustedTop] = useState(top);
+
+  useEffect(() => {
+    setAdjustedTop(top);
+  }, [top]);
+
+  useEffect(() => {
+    if (!menuRef.current || !isOpen) return;
+    const rect = menuRef.current.getBoundingClientRect();
+    const bottomNavReserve = 64; // Reserve space for bottom navigation footer + status bar
+    const maxAllowedTop = window.innerHeight - rect.height - bottomNavReserve;
+    if (top > maxAllowedTop) {
+      setAdjustedTop(Math.max(16, Math.round(maxAllowedTop)));
+    }
+  }, [top, isOpen, children]);
+
   if (!renderMenu || !mounted) return null;
 
-  // Menu coordinates already compute exact seam positioning
   const adjustedLeft = left;
 
   const animationClass = !animationsEnabled
@@ -54,7 +72,7 @@ export default function ExplorerActionMenu({
       : 'menuSlideInRight'
     : isClosing
     ? 'menuSlideOut'
-    : 'menuSlideIn';
+      : 'menuSlideIn';
 
   const bridgeClass =
     effectivePosition === 'right'
@@ -69,6 +87,7 @@ export default function ExplorerActionMenu({
   // boundaries and remain positioned against the viewport.
   return createPortal(
     <div
+      ref={menuRef}
       data-explorer-menu
       inert={!isOpen}
       aria-hidden={!isOpen}
@@ -77,12 +96,12 @@ export default function ExplorerActionMenu({
       onMouseLeave={onMouseLeave}
       style={{
         position: 'fixed',
-        top: `${top}px`,
+        top: `${adjustedTop}px`,
         left: `${adjustedLeft}px`,
         margin: 0,
         zIndex: panel?.isFlyout ? 70 : isPinned ? 35 : 45,
       }}
-      className={`menuShell ${animationClass}`}
+      className={`menuShell ${animationClass} ${className || ''}`}
     >
       {/* Catchment Hover Bridge (disabled during exit to prevent sticking) */}
       {!isClosing && (

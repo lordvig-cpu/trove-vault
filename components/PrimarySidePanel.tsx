@@ -55,12 +55,14 @@ interface PrimarySidePanelProps {
   onAddNewCollection?: () => void;
   onAddNewTemplate?: () => void;
   collections?: CollectionRecord[];
-
-  // Multi-Select Array Props
   filterCollectionIds?: number[];
   onToggleFilterCollection?: (collectionId: number) => void;
   onClearCollectionFilters?: () => void;
-
+  filterFieldTypes?: import('@/types/field').FieldType[];
+  onToggleFilterFieldType?: (type: import('@/types/field').FieldType) => void;
+  onClearFieldTypeFilters?: () => void;
+  fieldTypeCounts?: Record<string, number>;
+  onAddNewField?: () => void;
   onHandlePointerDown?: (e: React.PointerEvent) => void;
   onStartTabDrag?: (tab: Exclude<DockContent, 'empty'>, e: React.PointerEvent) => void;
   isDragging?: boolean;
@@ -108,6 +110,11 @@ export default function PrimarySidePanel({
   filterCollectionIds = [],
   onToggleFilterCollection,
   onClearCollectionFilters,
+  filterFieldTypes,
+  onToggleFilterFieldType,
+  onClearFieldTypeFilters,
+  fieldTypeCounts,
+  onAddNewField,
   onHandlePointerDown,
   onStartTabDrag,
   isDragging: isDockDragging = false,
@@ -248,6 +255,11 @@ export default function PrimarySidePanel({
         filterCollectionIds={filterCollectionIds}
         onToggleFilterCollection={onToggleFilterCollection}
         onClearCollectionFilters={onClearCollectionFilters}
+        filterFieldTypes={filterFieldTypes}
+        onToggleFilterFieldType={onToggleFilterFieldType}
+        onClearFieldTypeFilters={onClearFieldTypeFilters}
+        fieldTypeCounts={fieldTypeCounts}
+        onAddNewField={onAddNewField}
         onHandlePointerDown={onHandlePointerDown}
         onStartTabDrag={onStartTabDrag}
         isDragging={isDockDragging}

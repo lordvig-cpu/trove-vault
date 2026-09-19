@@ -73,8 +73,8 @@ export default function ExplorerTemplateActionMenu({
       {onEditTemplate && (
         <ActionMenuItem
           icon={<span>⚙️</span>}
-          label="Template Settings"
-          subtext="Manage template schema & metadata"
+          label="Edit Template"
+          subtext="Configure blueprint & fields schema"
           onClick={() => {
             onEditTemplate(rawTemplateId);
             menu.closeMenu();

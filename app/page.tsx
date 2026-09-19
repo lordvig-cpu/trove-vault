@@ -20,6 +20,8 @@ import { ExplorerPanelContext } from '@/context/ExplorerPanelContext';
 import ExplorerContent from '@/components/ExplorerContent';
 import ModalContainers from '@/components/ModalContainers';
 import DynamicWatermark from '@/components/DynamicWatermark';
+import TemplateFieldInspector from '@/components/TemplateFieldInspector';
+import { useTemplateEditor } from '@/hooks/useTemplateEditor';
 import { filterExplorerForest, ExplorerTab } from '@/lib/filterExplorerForest';
 import { itemMatchesQuery } from '@/lib/explorerUtils';
 
@@ -173,6 +175,44 @@ export default function Home() {
   // Dynamic occupied widths for main content margin adjustments (only when pinned)
   const leftOccupiedWidth = isPinned && isPrimaryActive ? primaryPanelWidth : 0;
   const rightOccupiedWidth = isSecondaryPinned && isSecondaryActive ? secondaryPanelWidth : 0;
+
+  /* ------------------------------------------------------------------------
+     5.1 TEMPLATE BLUEPRINT EDITOR & TAB PRESERVATION
+     ------------------------------------------------------------------------ */
+  const templateEditor = useTemplateEditor({
+    onRefreshData: fetchAllData,
+    getTabSnapshot: () => ({
+      primaryTabs,
+      primaryActiveTab,
+      secondaryTabs,
+      secondaryActiveTab,
+      isPrimarySidePanelOpen,
+      isSecondaryOpen,
+      isPinned,
+      isSecondaryPinned,
+      bottomPanelContent,
+      isBottomPanelOpen,
+      isBottomPinned,
+    }),
+    onRestoreTabs: (snapshot) => {
+      setPrimaryTabs(snapshot.primaryTabs);
+      setPrimaryActiveTab(snapshot.primaryActiveTab);
+      setSecondaryTabs(snapshot.secondaryTabs);
+      setSecondaryActiveTab(snapshot.secondaryActiveTab);
+      setIsPrimarySidePanelOpen(snapshot.isPrimarySidePanelOpen);
+      setIsSecondaryOpen(snapshot.isSecondaryOpen);
+      setIsPinned(snapshot.isPinned);
+      setIsSecondaryPinned(snapshot.isSecondaryPinned);
+      setBottomPanelContent(snapshot.bottomPanelContent);
+      setIsBottomPanelOpen(snapshot.isBottomPanelOpen);
+      setIsBottomPinned(snapshot.isBottomPinned);
+    },
+    onOpenSecondaryPanel: (tab) => {
+      setSecondaryTabs((prev) => (prev.includes(tab) ? prev : [tab]));
+      setSecondaryActiveTab(tab);
+      setIsSecondaryOpen(true);
+    },
+  });
 
   /* ------------------------------------------------------------------------
      6. PANEL CONTENT MOVING & SWAPPING (Smooth Fluid Slide Transition)
@@ -398,7 +438,14 @@ export default function Home() {
       setIsPrimaryFlyoutOpen(false);
 
       const getIncoming = (): DockContent => {
-        if (panelId === 'explorer' || panelId === 'collections' || panelId === 'templates' || panelId === 'grabbed_content') return panelId;
+        if (
+          panelId === 'explorer' ||
+          panelId === 'collections' ||
+          panelId === 'templates' ||
+          panelId === 'grabbed_content' ||
+          panelId === 'template_editor'
+        )
+          return panelId;
         if (panelId === 'primary') return primaryActiveTab;
         if (panelId === 'secondary') return secondaryActiveTab;
         if (panelId === 'bottom') return bottomPanelContent;
@@ -443,7 +490,13 @@ export default function Home() {
           if (secondaryActiveTab !== 'empty') removeTabFromSecondary(secondaryActiveTab);
         } else if (panelId === 'bottom') {
           setBottomPanelContent('empty');
-        } else if (panelId === 'explorer' || panelId === 'collections' || panelId === 'templates' || panelId === 'grabbed_content') {
+        } else if (
+          panelId === 'explorer' ||
+          panelId === 'collections' ||
+          panelId === 'templates' ||
+          panelId === 'grabbed_content' ||
+          panelId === 'template_editor'
+        ) {
           removeTabFromPrimary(panelId);
           removeTabFromSecondary(panelId);
           if (bottomPanelContent === panelId) setBottomPanelContent('empty');
@@ -812,7 +865,7 @@ export default function Home() {
       onAddSubItem={openCreateItem}
       onAddSubCollection={openCreateCollection}
       onEditTemplate={(templateId: number) => {
-        openTemplateManager(null, undefined, templateId);
+        templateEditor.startEditing(templateId);
       }}
       onEditCollection={(col) => openTemplateManager(col.id, col.name)}
       onDeleteCollection={openDeleteCollection}
@@ -831,6 +884,30 @@ export default function Home() {
   const renderPanelBody = (content: DockContent, pos: 'left' | 'right') => {
     if (content === 'explorer' || content === 'collections' || content === 'templates') {
       return renderExplorerTree(pos, content);
+    }
+    if (content === 'template_editor') {
+      return (
+        <TemplateFieldInspector
+          template={templateEditor.activeTemplate}
+          selectedFieldId={templateEditor.selectedFieldId}
+          isRootSelected={templateEditor.isRootSelected}
+          searchQuery={templateEditor.fieldSearchQuery}
+          filterFieldTypes={templateEditor.filterFieldTypes}
+          onSelectField={templateEditor.setSelectedFieldId}
+          onSelectRoot={templateEditor.selectRoot}
+          onUpdateField={templateEditor.updateField}
+          onAddField={templateEditor.addField}
+          onDeleteField={templateEditor.deleteField}
+          onReorderFields={templateEditor.reorderFields}
+          onUpdateTemplateMeta={templateEditor.updateTemplateMetadata}
+          onCloseEditor={templateEditor.stopEditing}
+          isLoading={templateEditor.isLoading}
+          isSaving={templateEditor.isSaving}
+          error={templateEditor.error}
+          successMsg={templateEditor.successMsg}
+          position={pos}
+        />
+      );
     }
     if (content === 'grabbed_content') {
       return (
@@ -858,11 +935,13 @@ export default function Home() {
       if (tabs[0] === 'explorer') return 'ITEMS';
       if (tabs[0] === 'collections') return 'COLLECTIONS';
       if (tabs[0] === 'templates') return 'TEMPLATES';
+      if (tabs[0] === 'template_editor') return 'TEMPLATE INSPECTOR';
       if (tabs[0] === 'grabbed_content') return 'GRABBED CONTENT';
     }
     if (activeTab === 'explorer') return 'ITEMS';
     if (activeTab === 'collections') return 'COLLECTIONS';
     if (activeTab === 'templates') return 'TEMPLATES';
+    if (activeTab === 'template_editor') return 'TEMPLATE INSPECTOR';
     if (activeTab === 'grabbed_content') return 'GRABBED CONTENT';
     return defaultTitle;
   };
@@ -870,21 +949,46 @@ export default function Home() {
   const treeHeaderProps = (content: DockContent) => {
     const isCollections = content === 'collections';
     const isTemplates = content === 'templates';
+    const isInspector = content === 'template_editor';
+
+    // Calculate field type counts for template editor
+    const fieldTypeCounts: Record<string, number> = {};
+    if (templateEditor.activeTemplate?.fields) {
+      for (const f of templateEditor.activeTemplate.fields) {
+        fieldTypeCounts[f.field_type] = (fieldTypeCounts[f.field_type] || 0) + 1;
+      }
+    }
+
     return {
       treeView: (isCollections ? 'collections' : isTemplates ? 'templates' : 'items') as ExplorerTab,
-      activeTab: (isCollections ? 'collections' : isTemplates ? 'templates' : 'items') as ExplorerTab,
-      searchQuery: isCollections ? collectionsTree.searchQuery : isTemplates ? templatesTree.searchQuery : searchQuery,
+      activeTab: (isInspector ? 'template_editor' : isCollections ? 'collections' : isTemplates ? 'templates' : 'items') as ExplorerTab | DockContent,
+      searchQuery: isInspector
+        ? templateEditor.fieldSearchQuery
+        : isCollections
+        ? collectionsTree.searchQuery
+        : isTemplates
+        ? templatesTree.searchQuery
+        : searchQuery,
       onSearchChange: (query: string) => {
-        setActiveSearchPanel(isCollections ? 'collections' : isTemplates ? 'templates' : 'explorer');
-        if (isCollections) collectionsTree.setSearchQuery(query);
-        else if (isTemplates) templatesTree.setSearchQuery(query);
-        else setSearchQuery(query);
+        if (isInspector) {
+          templateEditor.setFieldSearchQuery(query);
+        } else {
+          setActiveSearchPanel(isCollections ? 'collections' : isTemplates ? 'templates' : 'explorer');
+          if (isCollections) collectionsTree.setSearchQuery(query);
+          else if (isTemplates) templatesTree.setSearchQuery(query);
+          else setSearchQuery(query);
+        }
       },
       isAnyCategoryExpanded: isCollections ? collectionsTree.isAnyCategoryExpanded : isTemplates ? templatesTree.isAnyCategoryExpanded : isAnyCategoryExpanded,
       onToggleAllCategories: isCollections ? collectionsTree.handleToggleAllCategories : isTemplates ? templatesTree.handleToggleAllCategories : handleToggleAllCategories,
       filterCollectionIds: isCollections ? collectionsFilterIds : isTemplates ? templatesFilterIds : filterCollectionIds,
       onToggleFilterCollection: isCollections ? handleToggleCollectionsFilter : isTemplates ? handleToggleTemplatesFilter : handleToggleFilterCollection,
       onClearCollectionFilters: isCollections ? () => setCollectionsFilterIds([]) : isTemplates ? () => setTemplatesFilterIds([]) : handleClearCollectionFilters,
+      filterFieldTypes: templateEditor.filterFieldTypes,
+      onToggleFilterFieldType: templateEditor.toggleFieldTypeFilter,
+      onClearFieldTypeFilters: templateEditor.clearFieldTypeFilters,
+      fieldTypeCounts,
+      onAddNewField: () => templateEditor.addField('text'),
     };
   };
 
@@ -987,7 +1091,7 @@ export default function Home() {
       onTabChange={handlePrimaryTabChange}
       hasDockedContent={primaryTabs.length > 0}
       isContentSliding={slidingState !== null && !(slidingState.incomingContent && slidingState.from === 'left' && slidingState.isMoving)}
-      showSearchFilter={primaryActiveTab === 'explorer' || primaryActiveTab === 'collections' || primaryActiveTab === 'templates'}
+      showSearchFilter={primaryActiveTab === 'explorer' || primaryActiveTab === 'collections' || primaryActiveTab === 'templates' || primaryActiveTab === 'template_editor'}
       variant="sidebar"
       position="left"
       onTogglePosition={primaryTabs.length > 0 ? handleMovePrimaryContent : undefined}
@@ -1124,6 +1228,11 @@ export default function Home() {
               onAddSubItem={openCreateItem}
               onEditItem={handleTriggerEditItem}
               onDeleteItem={handleTriggerDeleteItem}
+              editingTemplate={templateEditor.isEditing ? templateEditor.activeTemplate : null}
+              selectedFieldId={templateEditor.selectedFieldId}
+              onSelectField={templateEditor.setSelectedFieldId}
+              onDoneEditingTemplate={templateEditor.stopEditing}
+              onAddFieldToTemplate={() => templateEditor.addField('text')}
             />
           </div>
 
@@ -1160,7 +1269,7 @@ export default function Home() {
             onTabChange={handleSecondaryTabChange}
             hasDockedContent={secondaryTabs.length > 0}
             isContentSliding={slidingState !== null && !(slidingState.incomingContent && slidingState.from === 'right' && slidingState.isMoving)}
-            showSearchFilter={secondaryActiveTab === 'explorer' || secondaryActiveTab === 'collections' || secondaryActiveTab === 'templates'}
+            showSearchFilter={secondaryActiveTab === 'explorer' || secondaryActiveTab === 'collections' || secondaryActiveTab === 'templates' || secondaryActiveTab === 'template_editor'}
             isOpen={isSecondaryActive}
             isPinned={isSecondaryPinned}
             position="right"

@@ -2,24 +2,14 @@
 
 import React from 'react';
 import ItemDetailView from './ItemDetailView';
+import TemplateEditorStage from './TemplateEditorStage';
 import { ItemRecord } from '@/types/item';
+import { ItemTemplate } from '@/types/template';
 
 /* ==========================================================================
    1. TYPE DEFINITIONS & INTERFACES
    ========================================================================== */
 
-/**
- * Props for the MainContent viewport component.
- * @property selectedItem - Currently active item record to display inside ItemDetailView (or null for empty state)
- * @property activeCollectionId - ID of the collection enclosing the selected item (or null for standalone items)
- * @property isBlurred - Whether the canvas should apply backdrop blur (active when unpinned flyout is open)
- * @property onAddSubItem - Callback invoking modal creation for a child item
- * @property onEditItem - Callback opening edit modal dialog for the selected record
- * @property onDeleteItem - Callback opening deletion confirmation dialog for the selected record
- * @property occupiedRightWidth - Width in px occupied by the right-docked panel (Primary or Secondary)
- * @property occupiedLeftWidth - Width in px occupied by the left-docked panel (Primary or Secondary)
- * @property bottomPanelHeight - Height clearance for the collapsible bottom drawer in pixels
- */
 interface MainContentProps {
   selectedItem: ItemRecord | null;
   activeCollectionId: number | null;
@@ -27,6 +17,11 @@ interface MainContentProps {
   onAddSubItem: (collectionId: number | null, parentItemId: number | null) => void;
   onEditItem: (item: ItemRecord, collectionId: number | null) => void;
   onDeleteItem: (item: ItemRecord, collectionId: number | null) => void;
+  editingTemplate?: ItemTemplate | null;
+  selectedFieldId?: number | null;
+  onSelectField?: (fieldId: number | null) => void;
+  onDoneEditingTemplate?: () => void;
+  onAddFieldToTemplate?: () => void;
   occupiedRightWidth?: number;
   occupiedLeftWidth?: number;
   rightPanelWidth?: number; // Backward compatibility alias
@@ -44,20 +39,21 @@ export default function MainContent({
   onAddSubItem,
   onEditItem,
   onDeleteItem,
+  editingTemplate,
+  selectedFieldId = null,
+  onSelectField,
+  onDoneEditingTemplate,
+  onAddFieldToTemplate,
 }: MainContentProps) {
 
   return (
     <div className="flex-1 h-full min-h-0 relative z-20 flex flex-col">
       {/* --------------------------------------------------------------------
           2.1 PRIMARY VERTICAL SCROLL CHASSIS
-          Uses marginRight to pull the native scrollbar inward so it never sits
-          trapped under the right-docked side panel.
-          flex-1 and min-h-0 guarantee strict vertical bounds without collapsing.
           -------------------------------------------------------------------- */}
       <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden main-content-scroll">
         {/* ------------------------------------------------------------------
             2.2 CENTER CANVAS WRAPPER
-            Centers mx-auto child blocks on the main stage canvas.
             ------------------------------------------------------------------ */}
         <div className="w-full min-h-full flex flex-col">
           {/* Main Stage Presentation Shell with Backdrop Filter Fades */}
@@ -68,27 +64,41 @@ export default function MainContent({
                 : 'filter-none brightness-[var(--content-overlay-brightness-default)]'
             }`}
           >
-            {/* Sticky Upper Atmosphere Vignette */}
-            {selectedItem && <div className="sticky-shadow-top" aria-hidden="true" />}
+            {editingTemplate ? (
+              <div className="w-full p-6 flex-1 pt-8 pb-10">
+                <TemplateEditorStage
+                  template={editingTemplate}
+                  selectedFieldId={selectedFieldId}
+                  onSelectField={onSelectField || (() => {})}
+                  onDoneEditing={onDoneEditingTemplate || (() => {})}
+                  onAddField={onAddFieldToTemplate || (() => {})}
+                />
+              </div>
+            ) : (
+              <>
+                {/* Sticky Upper Atmosphere Vignette */}
+                {selectedItem && <div className="sticky-shadow-top" aria-hidden="true" />}
 
-            {/* Main Stage Record Canvas (100% Full Width) */}
-            <div className="w-full p-6 flex-1 pt-8 pb-10">
-              <ItemDetailView
-                item={selectedItem}
-                onAddSubItem={(parent) => {
-                  onAddSubItem(activeCollectionId, parent.id);
-                }}
-                onEditItem={() => {
-                  if (selectedItem) onEditItem(selectedItem, activeCollectionId);
-                }}
-                onDeleteItem={() => {
-                  if (selectedItem) onDeleteItem(selectedItem, activeCollectionId);
-                }}
-              />
-            </div>
+                {/* Main Stage Record Canvas (100% Full Width) */}
+                <div className="w-full p-6 flex-1 pt-8 pb-10">
+                  <ItemDetailView
+                    item={selectedItem}
+                    onAddSubItem={(parent) => {
+                      onAddSubItem(activeCollectionId, parent.id);
+                    }}
+                    onEditItem={() => {
+                      if (selectedItem) onEditItem(selectedItem, activeCollectionId);
+                    }}
+                    onDeleteItem={() => {
+                      if (selectedItem) onDeleteItem(selectedItem, activeCollectionId);
+                    }}
+                  />
+                </div>
 
-            {/* Sticky Lower Atmosphere Vignette */}
-            {selectedItem && <div className="sticky-shadow-bottom" aria-hidden="true" />}
+                {/* Sticky Lower Atmosphere Vignette */}
+                {selectedItem && <div className="sticky-shadow-bottom" aria-hidden="true" />}
+              </>
+            )}
           </main>
         </div>
       </div>

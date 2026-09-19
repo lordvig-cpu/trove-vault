@@ -22,6 +22,15 @@ import { ExplorerTab } from '@/lib/filterExplorerForest';
 import { PrimarySidebarPosition } from '@/types/layout';
 import { useUIPreferences } from '@/context/UIPreferencesContext';
 import { DockContent, TabReorderInfo } from '@/hooks/usePanelDockDrag';
+import { FieldType } from '@/types/field';
+
+export const FIELD_TYPE_METAS: { type: FieldType; label: string; icon: string }[] = [
+  { type: 'text', label: 'Text', icon: '📝' },
+  { type: 'number', label: 'Number', icon: '🔢' },
+  { type: 'select', label: 'Dropdown / Select', icon: '📋' },
+  { type: 'boolean', label: 'Boolean (Yes/No)', icon: '🔘' },
+  { type: 'date', label: 'Date', icon: '📅' },
+];
 
 /* ==========================================================================
    1. TYPE DEFINITIONS & INTERFACES
@@ -57,6 +66,13 @@ export interface PrimarySidePanelHeaderProps {
   filterCollectionIds?: number[];
   onToggleFilterCollection?: (collectionId: number) => void;
   onClearCollectionFilters?: () => void;
+
+  // Field Type Filter Props (Template Inspector Mode)
+  filterFieldTypes?: FieldType[];
+  onToggleFilterFieldType?: (type: FieldType) => void;
+  onClearFieldTypeFilters?: () => void;
+  fieldTypeCounts?: Record<string, number>;
+  onAddNewField?: () => void;
 
   onHandlePointerDown?: (e: React.PointerEvent) => void;
   onStartTabDrag?: (tab: Exclude<DockContent, 'empty'>, e: React.PointerEvent) => void;
@@ -101,6 +117,11 @@ export default function PrimarySidePanelHeader({
   filterCollectionIds = [],
   onToggleFilterCollection = () => {},
   onClearCollectionFilters = () => {},
+  filterFieldTypes = [],
+  onToggleFilterFieldType = () => {},
+  onClearFieldTypeFilters = () => {},
+  fieldTypeCounts = {},
+  onAddNewField,
   onHandlePointerDown,
   onStartTabDrag,
   isDragging = false,
@@ -110,7 +131,8 @@ export default function PrimarySidePanelHeader({
   const isCollections = treeView === 'collections' || activeTab === 'collections' || title === 'COLLECTIONS';
   const isTemplates = treeView === 'templates' || activeTab === 'templates' || title === 'TEMPLATES';
   const isGrabbed = activeTab === 'grabbed_content' || title === 'GRABBED CONTENT';
-  const panelName = isCollections ? 'Collections' : isTemplates ? 'Templates' : isGrabbed ? 'Grabbed Content' : 'Items';
+  const isInspector = activeTab === 'template_editor' || title === 'TEMPLATE INSPECTOR';
+  const panelName = isCollections ? 'Collections' : isTemplates ? 'Templates' : isGrabbed ? 'Grabbed Content' : isInspector ? 'Template Inspector' : 'Items';
   const isRight = position === 'right';
   const { animationsEnabled } = useUIPreferences();
 
@@ -134,10 +156,17 @@ export default function PrimarySidePanelHeader({
   const searchPattern = searchQuery.trim();
   const hasSearchFilter = searchPattern.length > 0;
   const hasCollectionFilters = filterCollectionIds.length > 0;
-  const appliedFilterCount = filterCollectionIds.length + (hasSearchFilter ? 1 : 0);
+  const hasFieldTypeFilters = filterFieldTypes.length > 0;
+  const appliedFilterCount = isInspector
+    ? filterFieldTypes.length + (hasSearchFilter ? 1 : 0)
+    : filterCollectionIds.length + (hasSearchFilter ? 1 : 0);
   const isFilterActive = appliedFilterCount > 0;
   const clearAllFilters = () => {
-    onClearCollectionFilters();
+    if (isInspector) {
+      onClearFieldTypeFilters();
+    } else {
+      onClearCollectionFilters();
+    }
     onSearchChange('');
   };
   const activeIsExpanded = isAnyCategoryExpanded ?? isAnyFolderExpanded;
@@ -317,7 +346,7 @@ export default function PrimarySidePanelHeader({
         <>
           <div className="explorer-section-heading">
             <hr aria-hidden="true" />
-            <h3>Search and Filter ({isCollections ? 'Collections' : isTemplates ? 'Templates' : 'Items'})</h3>
+            <h3>Search and Filter ({isInspector ? 'Template Fields' : isCollections ? 'Collections' : isTemplates ? 'Templates' : 'Items'})</h3>
           </div>
       <div className="flex items-center gap-1.5 w-full">
         <div className={`explorer-search-input explorer-search-shell ${isRight ? 'explorer-search-shell-right' : ''} relative flex-1 min-w-0 flex items-center ${searchQuery.length > 0 ? 'explorer-search-input-active' : ''}`}>
@@ -369,13 +398,21 @@ export default function PrimarySidePanelHeader({
                   type="text"
                   data-tree-search={treeView ?? activeTab}
                   aria-keyshortcuts={isTemplates ? 'Control+; Meta+;' : isCollections ? 'Control+L Meta+L' : 'Control+K Meta+K'}
-                  aria-label={isTemplates ? 'Search templates and items' : isCollections ? 'Search collections and items' : 'Search items'}
+                  aria-label={isInspector ? 'Search template fields' : isTemplates ? 'Search templates and items' : isCollections ? 'Search collections and items' : 'Search items'}
                   value={searchQuery}
                   onChange={(e) => onSearchChange(e.target.value)}
                   onFocus={() => setIsSearchFocused(true)}
                   onBlur={() => setIsSearchFocused(false)}
-                  title={isTemplates ? 'Search Templates & Items [shortcut: Ctrl-;]' : isCollections ? 'Search Collections & Items [shortcut: Ctrl-L]' : 'Search Items [shortcut: Ctrl-K]'}
-                  placeholder={hasCollectionFilters ? 'Search filtered collection...' : 'Search...'}
+                  title={isInspector ? 'Search Template Fields' : isTemplates ? 'Search Templates & Items [shortcut: Ctrl-;]' : isCollections ? 'Search Collections & Items [shortcut: Ctrl-L]' : 'Search Items [shortcut: Ctrl-K]'}
+                  placeholder={
+                    isInspector
+                      ? hasFieldTypeFilters
+                        ? 'Search filtered types...'
+                        : 'Search fields...'
+                      : hasCollectionFilters
+                      ? 'Search filtered collection...'
+                      : 'Search...'
+                  }
                   className="explorer-search-query-input"
                   style={searchQuery.length > 0 ? { width: `${searchQuery.length + 0.5}ch` } : undefined}
                 />
@@ -421,13 +458,21 @@ export default function PrimarySidePanelHeader({
                   type="text"
                   data-tree-search={treeView ?? activeTab}
                   aria-keyshortcuts={isTemplates ? 'Control+; Meta+;' : isCollections ? 'Control+L Meta+L' : 'Control+K Meta+K'}
-                  aria-label={isTemplates ? 'Search templates and items' : isCollections ? 'Search collections and items' : 'Search items'}
+                  aria-label={isInspector ? 'Search template fields' : isTemplates ? 'Search templates and items' : isCollections ? 'Search collections and items' : 'Search items'}
                   value={searchQuery}
                   onChange={(e) => onSearchChange(e.target.value)}
                   onFocus={() => setIsSearchFocused(true)}
                   onBlur={() => setIsSearchFocused(false)}
-                  title={isTemplates ? 'Search Templates & Items [shortcut: Ctrl-;]' : isCollections ? 'Search Collections & Items [shortcut: Ctrl-L]' : 'Search Items [shortcut: Ctrl-K]'}
-                  placeholder={hasCollectionFilters ? 'Search filtered collection...' : 'Search...'}
+                  title={isInspector ? 'Search Template Fields' : isTemplates ? 'Search Templates & Items [shortcut: Ctrl-;]' : isCollections ? 'Search Collections & Items [shortcut: Ctrl-L]' : 'Search Items [shortcut: Ctrl-K]'}
+                  placeholder={
+                    isInspector
+                      ? hasFieldTypeFilters
+                        ? 'Search filtered types...'
+                        : 'Search fields...'
+                      : hasCollectionFilters
+                      ? 'Search filtered collection...'
+                      : 'Search...'
+                  }
                   className="explorer-search-query-input"
                   style={searchQuery.length > 0 ? { width: `${searchQuery.length + 0.5}ch` } : undefined}
                 />
@@ -506,7 +551,7 @@ export default function PrimarySidePanelHeader({
               type="button"
               onClick={clearAllFilters}
               className="explorer-applied-filters-clear text-[10px] font-medium transition-colors cursor-pointer shrink-0"
-              title="Clear all search and collection filters"
+              title="Clear all search and filters"
             >
               Clear all
             </button>
@@ -533,30 +578,57 @@ export default function PrimarySidePanelHeader({
                 </span>
               </span>
             )}
-            {filterCollectionIds.map((id) => {
-              const col = collections.find((c) => c.id === id);
-              if (!col) return null;
+            {isInspector ? (
+              filterFieldTypes.map((ft) => {
+                const meta = FIELD_TYPE_METAS.find((m) => m.type === ft);
+                if (!meta) return null;
 
-              return (
-                <span
-                  key={id}
-                  className="group explorer-filter-pill inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[11px] select-none transition-all"
-                >
-                  <button
-                    type="button"
-                    onClick={() => onToggleFilterCollection(id)}
-                    className="explorer-filter-remove font-bold text-[10px] leading-none cursor-pointer pr-0.5 transition-colors"
-                    title={`Remove filter: ${col.name}`}
+                return (
+                  <span
+                    key={ft}
+                    className="group explorer-filter-pill inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[11px] select-none transition-all"
                   >
-                    ✕
-                  </button>
-                  <span className="text-[11px] explorer-filter-indicator">{col.icon || '📁'}</span>
-                  <span className="explorer-filter-name max-w-[110px] truncate font-medium transition-colors">
-                    {col.name}
+                    <button
+                      type="button"
+                      onClick={() => onToggleFilterFieldType?.(ft)}
+                      className="explorer-filter-remove font-bold text-[10px] leading-none cursor-pointer pr-0.5 transition-colors"
+                      title={`Remove filter: ${meta.label}`}
+                    >
+                      ✕
+                    </button>
+                    <span className="text-[11px] explorer-filter-indicator">{meta.icon}</span>
+                    <span className="explorer-filter-name max-w-[110px] truncate font-medium transition-colors">
+                      {meta.label}
+                    </span>
                   </span>
-                </span>
-              );
-            })}
+                );
+              })
+            ) : (
+              filterCollectionIds.map((id) => {
+                const col = collections.find((c) => c.id === id);
+                if (!col) return null;
+
+                return (
+                  <span
+                    key={id}
+                    className="group explorer-filter-pill inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[11px] select-none transition-all"
+                  >
+                    <button
+                      type="button"
+                      onClick={() => onToggleFilterCollection(id)}
+                      className="explorer-filter-remove font-bold text-[10px] leading-none cursor-pointer pr-0.5 transition-colors"
+                      title={`Remove filter: ${col.name}`}
+                    >
+                      ✕
+                    </button>
+                    <span className="text-[11px] explorer-filter-indicator">{col.icon || '📁'}</span>
+                    <span className="explorer-filter-name max-w-[110px] truncate font-medium transition-colors">
+                      {col.name}
+                    </span>
+                  </span>
+                );
+              })
+            )}
           </div>
         </div>
       )}
@@ -586,7 +658,15 @@ export default function PrimarySidePanelHeader({
               (activeTab === 'collections' && tab === 'collections') ||
               (activeTab === 'templates' && tab === 'templates');
             const tabLabel =
-              tab === 'explorer' ? 'Items' : tab === 'collections' ? 'Collections' : tab === 'templates' ? 'Templates' : 'Grabbed Content';
+              tab === 'explorer'
+                ? 'Items'
+                : tab === 'collections'
+                ? 'Collections'
+                : tab === 'templates'
+                ? 'Templates'
+                : tab === 'template_editor'
+                ? 'Inspector'
+                : 'Grabbed Content';
             const tabTitle =
               tab === 'explorer'
                 ? 'Show Items organized by Category (drag to move tab)'
@@ -594,6 +674,8 @@ export default function PrimarySidePanelHeader({
                 ? 'Show Collections hierarchy (drag to move tab)'
                 : tab === 'templates'
                 ? 'Show Templates blueprint tree (drag to move tab)'
+                : tab === 'template_editor'
+                ? 'Show Template Field Inspector (drag to move tab)'
                 : 'Show Grabbed Content (drag to move tab)';
 
             const isThisTabDragging = isDragging && reorderInfo?.draggingTab === tab && reorderInfo?.side === position;
@@ -672,7 +754,29 @@ export default function PrimarySidePanelHeader({
         {/* Right: Actions Cluster (Contextual Add + Expand/Collapse) */}
         {!isGrabbed && (
           <div className="flex items-center gap-1 shrink-0 mb-1">
-            {isTemplates ? (
+            {isInspector ? (
+              onAddNewField && (
+                <button
+                  type="button"
+                  onClick={onAddNewField}
+                  className="explorer-tab-action-btn group"
+                  title="Create New Item Template Field"
+                >
+                  <svg
+                    className="w-2.5 h-2.5 origin-center transition-transform duration-150 ease-out group-hover:scale-110 text-[var(--explorer-action-icon,rgba(109,170,209,0.85))] group-hover:text-white"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <line x1="12" y1="5" x2="12" y2="19" />
+                    <line x1="5" y1="12" x2="19" y2="12" />
+                  </svg>
+                </button>
+              )
+            ) : isTemplates ? (
               onAddNewTemplate && (
                 <button
                   type="button"
@@ -777,91 +881,201 @@ export default function PrimarySidePanelHeader({
         position={position}
         isPinned={isPinned}
         triggerRef={triggerBtnRef}
-        title="Advanced Search"
+        title={isInspector ? 'Filter Field Types' : 'Advanced Search'}
         titleIcon={
           <SlidersHorizontalIcon className="w-3.5 h-3.5 text-[var(--brand-secondary-amber)]" isActive={true} />
         }
       >
-        <div className="flex flex-col gap-1.5 px-1 py-1">
-          <div className="flex items-center justify-between px-2 py-1">
-            <div className="flex items-center gap-2">
-              <span className="w-4 shrink-0 flex items-center justify-center text-sm">📁</span>
-              <span className="text-xs font-medium explorer-panel-primary">Collection(s):</span>
-            </div>
-            <span
-              title={`${collections.length} ${collections.length === 1 ? 'collection' : 'collections'}`}
-              className="explorer-filter-option px-2 py-0.5 rounded-md text-[10px] font-mono font-bold shrink-0 select-none"
-            >
-              {collections.length}
-            </span>
-          </div>
-
-          <div className="my-1 mx-2 tree-menu-divider" />
-
-          {collections.length > 0 && (() => {
-            const allSelected =
-              collections.length > 0 &&
-              collections.every((col) => filterCollectionIds.includes(col.id));
-            const hasSome = collections.some((col) => filterCollectionIds.includes(col.id));
-            const isIndeterminate = hasSome && !allSelected;
-
-            return (
-              <div className="mx-2 px-1 py-1 flex items-center justify-between">
-                <label className="flex items-center gap-2 cursor-pointer select-none">
-                  <input
-                    type="checkbox"
-                    checked={collections.length > 0 && allSelected}
-                    ref={(input) => {
-                      if (input) input.indeterminate = isIndeterminate;
-                    }}
-                    onChange={() => {
-                      if (allSelected || isIndeterminate) {
-                        onClearCollectionFilters();
-                      } else {
-                        collections.forEach((col) => {
-                          if (!filterCollectionIds.includes(col.id)) {
-                            onToggleFilterCollection(col.id);
-                          }
-                        });
-                      }
-                    }}
-                    className="explorer-filter-checkbox w-3.5 h-3.5 rounded cursor-pointer shrink-0"
-                  />
-                  <span className="text-[11px] font-semibold explorer-filter-option-label transition-colors">
-                    {allSelected || isIndeterminate ? 'Deselect All' : 'Select All'}
-                  </span>
-                </label>
-
-                {hasCollectionFilters && (
-                  <span className="text-[10px] font-mono explorer-panel-accent">
-                    {filterCollectionIds.length}/{collections.length}
-                  </span>
-                )}
+        {isInspector ? (
+          <div className="flex flex-col gap-1.5 px-1 py-1">
+            <div className="flex items-center justify-between px-2 py-1">
+              <div className="flex items-center gap-2">
+                <span className="w-4 shrink-0 flex items-center justify-center text-sm">🎛️</span>
+                <span className="text-xs font-medium explorer-panel-primary">Field Type(s):</span>
               </div>
-            );
-          })()}
-
-          <CollectionFilterTree
-            collections={collections}
-            filterCollectionIds={filterCollectionIds}
-            onToggleFilterCollection={onToggleFilterCollection}
-          />
-
-          {isFilterActive && (
-            <div className="border-t border-[var(--explorer-menu-divider,rgba(245,158,11,0.2))] mt-0.5 pt-1.5 px-2 pb-0.5">
-              <button
-                type="button"
-                onClick={() => {
-                  clearAllFilters();
-                  setShowAdvancedSearch(false);
-                }}
-                className="explorer-filter-clear text-[10px] w-full font-semibold transition text-right cursor-pointer"
+              <span
+                title={`${FIELD_TYPE_METAS.length} field types available`}
+                className="explorer-filter-option px-2 py-0.5 rounded-md text-[10px] font-mono font-bold shrink-0 select-none"
               >
-                ✕ Clear Filters
-              </button>
+                {FIELD_TYPE_METAS.length}
+              </span>
             </div>
-          )}
-        </div>
+
+            <div className="my-1 mx-2 tree-menu-divider" />
+
+            {/* Select All / Deselect All Toggle */}
+            {(() => {
+              const allSelected =
+                FIELD_TYPE_METAS.length > 0 &&
+                FIELD_TYPE_METAS.every((m) => filterFieldTypes.includes(m.type));
+              const hasSome = filterFieldTypes.length > 0;
+              const isIndeterminate = hasSome && !allSelected;
+
+              return (
+                <div className="mx-2 px-1 py-1 flex items-center justify-between">
+                  <label className="flex items-center gap-2 cursor-pointer select-none">
+                    <input
+                      type="checkbox"
+                      checked={allSelected}
+                      ref={(input) => {
+                        if (input) input.indeterminate = isIndeterminate;
+                      }}
+                      onChange={() => {
+                        if (allSelected || isIndeterminate) {
+                          onClearFieldTypeFilters();
+                        } else {
+                          FIELD_TYPE_METAS.forEach((m) => {
+                            if (!filterFieldTypes.includes(m.type)) {
+                              onToggleFilterFieldType(m.type);
+                            }
+                          });
+                        }
+                      }}
+                      className="explorer-filter-checkbox w-3.5 h-3.5 rounded cursor-pointer shrink-0"
+                    />
+                    <span className="text-[11px] font-semibold explorer-filter-option-label transition-colors">
+                      {allSelected || isIndeterminate ? 'Deselect All' : 'Select All'}
+                    </span>
+                  </label>
+
+                  {hasFieldTypeFilters && (
+                    <span className="text-[10px] font-mono explorer-panel-accent">
+                      {filterFieldTypes.length}/{FIELD_TYPE_METAS.length}
+                    </span>
+                  )}
+                </div>
+              );
+            })()}
+
+            {/* Field Types List */}
+            <div className="flex flex-col gap-0.5 max-h-56 overflow-y-auto px-1">
+              {FIELD_TYPE_METAS.map(({ type, label, icon }) => {
+                const isChecked = filterFieldTypes.includes(type);
+                const count = fieldTypeCounts[type] ?? 0;
+
+                return (
+                  <div
+                    key={type}
+                    onClick={() => onToggleFilterFieldType(type)}
+                    className={`explorer-filter-row flex items-center justify-between px-2 py-1.5 rounded-lg text-xs cursor-pointer select-none transition ${
+                      isChecked ? 'explorer-filter-row-selected' : ''
+                    }`}
+                  >
+                    <div className="flex items-center gap-2 min-w-0">
+                      <input
+                        type="checkbox"
+                        checked={isChecked}
+                        onChange={() => {}} // handled by parent div onClick
+                        className="explorer-filter-checkbox w-3.5 h-3.5 rounded cursor-pointer shrink-0"
+                      />
+                      <span className="text-sm shrink-0">{icon}</span>
+                      <span className="font-medium text-xs truncate">{label}</span>
+                    </div>
+                    <span className="text-[10px] font-mono explorer-panel-muted shrink-0 ml-2">
+                      ({count})
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+
+            {isFilterActive && (
+              <div className="border-t border-[var(--explorer-menu-divider,rgba(245,158,11,0.2))] mt-0.5 pt-1.5 px-2 pb-0.5">
+                <button
+                  type="button"
+                  onClick={() => {
+                    clearAllFilters();
+                    setShowAdvancedSearch(false);
+                  }}
+                  className="explorer-filter-clear text-[10px] w-full font-semibold transition text-right cursor-pointer"
+                >
+                  ✕ Clear Filters
+                </button>
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className="flex flex-col gap-1.5 px-1 py-1">
+            <div className="flex items-center justify-between px-2 py-1">
+              <div className="flex items-center gap-2">
+                <span className="w-4 shrink-0 flex items-center justify-center text-sm">📁</span>
+                <span className="text-xs font-medium explorer-panel-primary">Collection(s):</span>
+              </div>
+              <span
+                title={`${collections.length} ${collections.length === 1 ? 'collection' : 'collections'}`}
+                className="explorer-filter-option px-2 py-0.5 rounded-md text-[10px] font-mono font-bold shrink-0 select-none"
+              >
+                {collections.length}
+              </span>
+            </div>
+
+            <div className="my-1 mx-2 tree-menu-divider" />
+
+            {collections.length > 0 && (() => {
+              const allSelected =
+                collections.length > 0 &&
+                collections.every((col) => filterCollectionIds.includes(col.id));
+              const hasSome = collections.some((col) => filterCollectionIds.includes(col.id));
+              const isIndeterminate = hasSome && !allSelected;
+
+              return (
+                <div className="mx-2 px-1 py-1 flex items-center justify-between">
+                  <label className="flex items-center gap-2 cursor-pointer select-none">
+                    <input
+                      type="checkbox"
+                      checked={collections.length > 0 && allSelected}
+                      ref={(input) => {
+                        if (input) input.indeterminate = isIndeterminate;
+                      }}
+                      onChange={() => {
+                        if (allSelected || isIndeterminate) {
+                          onClearCollectionFilters();
+                        } else {
+                          collections.forEach((col) => {
+                            if (!filterCollectionIds.includes(col.id)) {
+                              onToggleFilterCollection(col.id);
+                            }
+                          });
+                        }
+                      }}
+                      className="explorer-filter-checkbox w-3.5 h-3.5 rounded cursor-pointer shrink-0"
+                    />
+                    <span className="text-[11px] font-semibold explorer-filter-option-label transition-colors">
+                      {allSelected || isIndeterminate ? 'Deselect All' : 'Select All'}
+                    </span>
+                  </label>
+
+                  {hasCollectionFilters && (
+                    <span className="text-[10px] font-mono explorer-panel-accent">
+                      {filterCollectionIds.length}/{collections.length}
+                    </span>
+                  )}
+                </div>
+              );
+            })()}
+
+            <CollectionFilterTree
+              collections={collections}
+              filterCollectionIds={filterCollectionIds}
+              onToggleFilterCollection={onToggleFilterCollection}
+            />
+
+            {isFilterActive && (
+              <div className="border-t border-[var(--explorer-menu-divider,rgba(245,158,11,0.2))] mt-0.5 pt-1.5 px-2 pb-0.5">
+                <button
+                  type="button"
+                  onClick={() => {
+                    clearAllFilters();
+                    setShowAdvancedSearch(false);
+                  }}
+                  className="explorer-filter-clear text-[10px] w-full font-semibold transition text-right cursor-pointer"
+                >
+                  ✕ Clear Filters
+                </button>
+              </div>
+            )}
+          </div>
+        )}
       </ExplorerSearchMenu>
         </>
       )}
