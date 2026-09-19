@@ -37,6 +37,7 @@ interface PrimarySidePanelProps {
   onOpen?: () => void;
   onClose: () => void;
   onTogglePin?: () => void;
+  treeView?: ExplorerTab;
   activeTab?: ExplorerTab;
   onTabChange?: (tab: ExplorerTab) => void;
   isAnyCategoryExpanded?: boolean;
@@ -81,6 +82,7 @@ export default function PrimarySidePanel({
   onOpen,
   onClose,
   onTogglePin,
+  treeView,
   activeTab,
   onTabChange,
   isAnyCategoryExpanded,
@@ -212,12 +214,13 @@ export default function PrimarySidePanel({
         title={title}
         showSearchFilter={showSearchFilter ?? (Boolean(children) || variant === 'flyout')}
         variant={variant}
-        isPinned={isPinned}
+        isPinned={variant === 'sidebar' && isPinned}
         position={position}
         onTogglePosition={onTogglePosition}
         moveTooltip={moveTooltip}
         canMove={canMove}
         onDock={onDock}
+        treeView={treeView}
         activeTab={activeTab}
         onTabChange={onTabChange}
         searchQuery={searchQuery}

@@ -8,8 +8,8 @@ interface PanelDockDropZonesProps {
   draggingPanel: DockablePanelId | null;
   hoveredZone: DockDropTargetZone | null;
   cursorPos: { x: number; y: number };
-  primaryPanelContent?: 'empty' | 'explorer' | 'grabbed_content';
-  secondaryPanelContent?: 'empty' | 'explorer' | 'grabbed_content';
+  primaryPanelContent?: 'empty' | 'explorer' | 'collections' | 'grabbed_content';
+  secondaryPanelContent?: 'empty' | 'explorer' | 'collections' | 'grabbed_content';
   bottomPanelContent?: 'empty' | 'grabbed_content';
 }
 
@@ -27,8 +27,10 @@ export default function PanelDockDropZones({
   const leftTargetName = 'Primary Side Bar';
   const rightTargetName = 'Secondary Side Bar';
 
-  const getPanelContentName = (content: 'empty' | 'explorer' | 'grabbed_content') => {
+  const getPanelContentName = (content: 'empty' | 'explorer' | 'collections' | 'grabbed_content') => {
     switch (content) {
+      case 'collections':
+        return 'Collections';
       case 'explorer':
         return 'Explorer';
       case 'grabbed_content':
@@ -38,8 +40,10 @@ export default function PanelDockDropZones({
     }
   };
 
-  const getIncomingContent = (id: DockablePanelId): 'empty' | 'explorer' | 'grabbed_content' => {
+  const getIncomingContent = (id: DockablePanelId): 'empty' | 'explorer' | 'collections' | 'grabbed_content' => {
     switch (id) {
+      case 'collections':
+        return 'collections';
       case 'explorer':
         return 'explorer';
       case 'grabbed_content':

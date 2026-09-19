@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useId } from 'react';
 import {
   FolderCollapseIcon,
   FolderExpandIcon,
@@ -37,6 +37,7 @@ interface PrimarySidePanelHeaderProps {
   moveTooltip?: string;
   canMove?: boolean;
   onDock?: (position: 'left' | 'right') => void;
+  treeView?: ExplorerTab;
   activeTab?: ExplorerTab;
   onTabChange?: (tab: ExplorerTab) => void;
   searchQuery?: string;
@@ -75,6 +76,7 @@ export default function PrimarySidePanelHeader({
   moveTooltip,
   canMove = true,
   onDock,
+  treeView,
   activeTab = 'items',
   onTabChange,
   searchQuery = '',
@@ -93,6 +95,8 @@ export default function PrimarySidePanelHeader({
   onClearCollectionFilters = () => {},
   onHandlePointerDown,
 }: PrimarySidePanelHeaderProps) {
+  const headerId = useId();
+  const panelName = treeView === 'collections' ? 'Collections' : 'Items';
   const { animationsEnabled } = useUIPreferences();
   const [showAdvancedSearch, setShowAdvancedSearch] = useState(false);
   const [showAppliedFilters, setShowAppliedFilters] = useState(false);
@@ -223,8 +227,8 @@ export default function PrimarySidePanelHeader({
                 type="button"
                 onClick={() => onDock('left')}
                 className="primary-side-panel-position-btn group"
-                title="Dock Explorer to Left"
-                aria-label="Dock Explorer to Left"
+                title={`Dock ${panelName} to Left`}
+                aria-label={`Dock ${panelName} to Left`}
               >
                 <DockLeftPanelIcon className="w-3.5 h-3.5 text-[var(--explorer-action-icon,rgba(109,170,209,0.85))] group-hover:text-white" isOpen={true} />
               </button>
@@ -232,8 +236,8 @@ export default function PrimarySidePanelHeader({
                 type="button"
                 onClick={() => onDock('right')}
                 className="primary-side-panel-position-btn group"
-                title="Dock Explorer to Right"
-                aria-label="Dock Explorer to Right"
+                title={`Dock ${panelName} to Right`}
+                aria-label={`Dock ${panelName} to Right`}
               >
                 <DockRightPanelIcon className="w-3.5 h-3.5 text-[var(--explorer-action-icon,rgba(109,170,209,0.85))] group-hover:text-white" isOpen={true} />
               </button>
@@ -268,7 +272,7 @@ export default function PrimarySidePanelHeader({
               type="button"
               onClick={onClose}
               className="primary-side-panel-pin-btn group"
-              title="Close Explorer"
+              title={`Close ${panelName}`}
             >
               <span className="inline-block origin-center transition-all duration-200 ease-out group-hover:scale-115 text-xs text-[var(--explorer-action-icon,rgba(109,170,209,0.85))] group-hover:text-white px-1 select-none">
                 ✕
@@ -305,14 +309,16 @@ export default function PrimarySidePanelHeader({
           <div className={searchQuery.length > 0 ? 'explorer-search-query explorer-search-query-pill' : 'explorer-search-query'}>
             <input
               ref={searchInputRef}
-              id={`explorer-search-input-${variant}`}
+              id={`${headerId}-search`}
               type="text"
-              aria-label="Search items"
+              data-tree-search={treeView ?? activeTab}
+              aria-keyshortcuts={treeView === 'collections' ? 'Control+L Meta+L' : 'Control+K Meta+K'}
+              aria-label={treeView === 'collections' ? 'Search collections and items' : 'Search items'}
               value={searchQuery}
               onChange={(e) => onSearchChange(e.target.value)}
               onFocus={() => setIsSearchFocused(true)}
               onBlur={() => setIsSearchFocused(false)}
-              title="Enter search [shortcut: Ctrl-K]"
+              title={treeView === 'collections' ? 'Search Collections [shortcut: Ctrl-L]' : 'Search Items [shortcut: Ctrl-K]'}
               placeholder={hasCollectionFilters ? 'Search filtered collection...' : 'Search...'}
               className="explorer-search-query-input"
               style={searchQuery.length > 0 ? { width: `${searchQuery.length + 0.5}ch` } : undefined}
@@ -453,9 +459,9 @@ export default function PrimarySidePanelHeader({
       </div>
       <div className="flex items-end justify-between gap-1 w-full shrink-0 -mb-[1px]">
         {/* Left: View Mode Paper Folder Tabs */}
-        <div role="tablist" aria-label="Explorer views" className="flex items-center relative">
+        <div role="tablist" aria-label={`${panelName} views`} className="flex items-center relative">
           {/* Tab 1: Items */}
-          <button
+          {treeView !== 'collections' && <button
             type="button"
             role="tab"
             aria-selected={activeTab === 'items'}
@@ -473,7 +479,7 @@ export default function PrimarySidePanelHeader({
               preserveAspectRatio="none"
             >
               <defs>
-                <linearGradient id="primaryTabActiveGradient-items" x1="0" y1="0" x2="0" y2="1">
+                <linearGradient id={`${headerId}-items`} x1="0" y1="0" x2="0" y2="1">
                   <stop offset="0%" stopColor="var(--explorer-tab-active-top, rgba(18, 94, 158, 1))" className="tab-grad-top" />
                   <stop offset="45%" stopColor="var(--explorer-tab-active-mid, rgba(10, 64, 112, 1))" className="tab-grad-mid" />
                   <stop offset="100%" stopColor="var(--explorer-tab-active-bottom, rgba(5, 36, 70, 1))" className="tab-grad-bottom" />
@@ -482,7 +488,7 @@ export default function PrimarySidePanelHeader({
               <path
                 d="M 0,28 L 8,3 C 9,1 11,0 14,0 L 86,0 C 89,0 91,1 92,3 L 100,28 Z"
                 className="explorer-tab-svg-fill"
-                style={activeTab === 'items' ? { fill: 'url(#primaryTabActiveGradient-items)' } : undefined}
+                style={activeTab === 'items' ? { fill: `url(#${headerId}-items)` } : undefined}
               />
               <path
                 d="M 0,28 L 8,3 C 9,1 11,0 14,0 L 86,0 C 89,0 91,1 92,3 L 100,28"
@@ -493,15 +499,15 @@ export default function PrimarySidePanelHeader({
               />
             </svg>
             <span className="relative z-10 px-0.5">Items</span>
-          </button>
+          </button>}
 
           {/* Tab 2: Collections (Overlaps Tab 1 with diagonal left edge) */}
-          <button
+          {treeView !== 'items' && <button
             type="button"
             role="tab"
             aria-selected={activeTab === 'collections'}
             onClick={() => onTabChange?.('collections')}
-            className={`explorer-folder-tab -ml-3.5 ${
+            className={`explorer-folder-tab ${!treeView ? '-ml-3.5' : ''} ${
               activeTab === 'collections'
                 ? 'explorer-folder-tab-active z-20'
                 : 'explorer-folder-tab-idle z-10'
@@ -514,7 +520,7 @@ export default function PrimarySidePanelHeader({
               preserveAspectRatio="none"
             >
               <defs>
-                <linearGradient id="primaryTabActiveGradient-collections" x1="0" y1="0" x2="0" y2="1">
+                <linearGradient id={`${headerId}-collections`} x1="0" y1="0" x2="0" y2="1">
                   <stop offset="0%" stopColor="var(--explorer-tab-active-top, rgba(18, 94, 158, 1))" className="tab-grad-top" />
                   <stop offset="45%" stopColor="var(--explorer-tab-active-mid, rgba(10, 64, 112, 1))" className="tab-grad-mid" />
                   <stop offset="100%" stopColor="var(--explorer-tab-active-bottom, rgba(5, 36, 70, 1))" className="tab-grad-bottom" />
@@ -523,7 +529,7 @@ export default function PrimarySidePanelHeader({
               <path
                 d="M 0,28 L 8,3 C 9,1 11,0 14,0 L 86,0 C 89,0 91,1 92,3 L 100,28 Z"
                 className="explorer-tab-svg-fill"
-                style={activeTab === 'collections' ? { fill: 'url(#primaryTabActiveGradient-collections)' } : undefined}
+                style={activeTab === 'collections' ? { fill: `url(#${headerId}-collections)` } : undefined}
               />
               <path
                 d="M 0,28 L 8,3 C 9,1 11,0 14,0 L 86,0 C 89,0 91,1 92,3 L 100,28"
@@ -534,7 +540,7 @@ export default function PrimarySidePanelHeader({
               />
             </svg>
             <span className="relative z-10 px-0.5">Collections</span>
-          </button>
+          </button>}
         </div>
 
         {/* Right: Actions Cluster (Contextual Add + Expand/Collapse) */}
@@ -613,6 +619,7 @@ export default function PrimarySidePanelHeader({
           ADVANCED SEARCH ACTION MENU PORTAL
           ------------------------------------------------------------------ */}
       <ExplorerSearchMenu
+        isFlyout={variant === 'flyout'}
         isOpen={showAdvancedSearch}
         onClose={() => setShowAdvancedSearch(false)}
         top={menuCoords.top}

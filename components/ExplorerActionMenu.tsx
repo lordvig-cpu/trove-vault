@@ -5,6 +5,7 @@ import { usePresence } from '@/hooks/usePresence';
 import { createPortal } from 'react-dom';
 import '@/app/styles/components/ExplorerActionMenu.css';
 import { useUIPreferences } from '@/context/UIPreferencesContext';
+import { useExplorerPanel } from '@/context/ExplorerPanelContext';
 
 /* --------------------------------------------------------------------------
   ACTION MENU CONTRACT
@@ -34,7 +35,9 @@ export default function ExplorerActionMenu({
   position,
   children,
 }: ExplorerActionMenuProps) {
-  const { animationsEnabled, isPinned } = useUIPreferences();
+  const { animationsEnabled, isPinned: primaryPinned } = useUIPreferences();
+  const panel = useExplorerPanel();
+  const isPinned = panel?.isPinned ?? primaryPinned;
   const effectivePosition = position ?? 'left';
 
   const { mounted, renderMenu, isClosing } = usePresence(isOpen, 340, animationsEnabled);
@@ -77,7 +80,7 @@ export default function ExplorerActionMenu({
         top: `${top}px`,
         left: `${adjustedLeft}px`,
         margin: 0,
-        zIndex: isPinned ? 35 : 'var(--z-explorer-unpinned)',
+        zIndex: panel?.isFlyout ? 70 : isPinned ? 35 : 45,
       }}
       className={`menuShell ${animationClass}`}
     >

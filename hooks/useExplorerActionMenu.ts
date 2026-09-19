@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useCallback, useEffect } from 'react';
+import { useState, useRef, useId, useCallback, useEffect } from 'react';
 
 /* ==========================================================================
    1. CUSTOM EVENT DEFINITIONS
@@ -24,13 +24,15 @@ const GLOBAL_MENU_OPEN_EVENT = 'explorer-action-menu-open';
  * @param defaultMenuHeight - Base menu height (px) used to calculate upward clamping
  */
 export function useExplorerActionMenu(
-  id: string,
+  rowId: string,
   defaultMenuHeight: number = 215,
   position: 'left' | 'right' = 'left'
 ) {
   /* ------------------------------------------------------------------------
      2.1 REFERENCES & TIMERS
      ------------------------------------------------------------------------ */
+  const instanceId = useId();
+  const id = `${rowId}-${instanceId}`;
   const timeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
   const activeGearRectRef = useRef<DOMRect | null>(null);
   const activeTargetElRef = useRef<HTMLElement | null>(null);

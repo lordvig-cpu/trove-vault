@@ -43,6 +43,7 @@ interface SecondarySidePanelProps {
   showSearchFilter?: boolean;
 
   // Header and Search Filter Props (active when Explorer is docked)
+  treeView?: ExplorerTab;
   activeTab?: ExplorerTab;
   onTabChange?: (tab: ExplorerTab) => void;
   searchQuery?: string;
@@ -88,6 +89,7 @@ export default function SecondarySidePanel({
   onWidthChange,
   children,
   onHandlePointerDown,
+  treeView,
   activeTab,
   onTabChange,
   searchQuery,
@@ -254,7 +256,8 @@ export default function SecondarySidePanel({
           onTogglePosition={onTogglePosition}
           moveTooltip={moveTooltip}
           canMove={canMove}
-          activeTab={activeTab}
+          treeView={treeView}
+        activeTab={activeTab}
           onTabChange={onTabChange}
           searchQuery={searchQuery}
           onSearchChange={onSearchChange}

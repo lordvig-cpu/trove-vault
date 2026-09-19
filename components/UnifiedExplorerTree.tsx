@@ -94,7 +94,7 @@ function UnifiedExplorerTreeItem({
   const typeIcon = getItemTypeIcon(item);
 
   const gearElement = (
-    <div className={`relative transition shrink-0 ${isRightSide ? 'mr-0.5' : 'ml-auto'}`}>
+    <div className={`transition shrink-0 ${isRightSide ? 'absolute left-2' : 'relative ml-auto'}`}>
       <div
         role="button"
         tabIndex={0}
@@ -128,8 +128,9 @@ function UnifiedExplorerTreeItem({
       <div
         onClick={() => onSelectItem(item, collectionId)}
         title={item.name}
+        style={isRightSide ? { paddingLeft: depth * 24.5 + 44 } : undefined}
         className={[
-          'group flex items-center h-7 px-1.5 gap-1.5 rounded-md cursor-pointer transition w-full min-w-0',
+          'group relative flex items-center h-7 px-1.5 gap-1.5 rounded-md cursor-pointer transition w-full min-w-0',
           isSelected
             ? 'explorer-tree-item-selected font-medium'
             : 'explorer-tree-item',
@@ -184,7 +185,7 @@ function UnifiedExplorerTreeItem({
       />
 
       {effectiveIsOpen && hasSubItems && (
-        <div className="explorer-tree-branch border-l space-y-0.5 ml-[13.5px] pl-2.5 my-0.5 flex flex-col min-w-0">
+        <div className={`explorer-tree-branch space-y-0.5 my-0.5 flex flex-col min-w-0 ${isRightSide ? '' : 'border-l ml-[13.5px] pl-2.5'}`}>
           {visibleChildren.map((child) => (
             <UnifiedExplorerTreeItem
               key={`subitem-${child.id}`}
@@ -252,7 +253,7 @@ export default function UnifiedExplorerTree({
   };
 
   const gearElement = (
-    <div className={`relative transition shrink-0 ${isRightSide ? 'mr-0.5' : 'ml-auto'}`}>
+    <div className={`transition shrink-0 ${isRightSide ? 'absolute left-2' : 'relative ml-auto'}`}>
       <div
         role="button"
         tabIndex={0}
@@ -286,7 +287,7 @@ export default function UnifiedExplorerTree({
       <div
         onClick={() => onSelectCollection(collection.id)}
         title={`${isVirtualCategory ? 'Category' : 'Collection'}: ${collection.name}`}
-        style={{ top: `${stickyTop}px`, zIndex: stickyZIndex }}
+        style={{ top: `${stickyTop}px`, zIndex: stickyZIndex, ...(isRightSide ? { paddingLeft: depth * 24.5 + 44 } : {}) }}
         className={[
           'group flex items-center h-8 px-2 gap-1.5 cursor-pointer transition w-full min-w-0 explorer-category-sticky-header',
           isActiveCollection
@@ -349,7 +350,7 @@ export default function UnifiedExplorerTree({
       />
 
       {localIsOpen && hasChildren && (
-        <div className="explorer-tree-branch border-l space-y-0.5 ml-[13.5px] pl-2.5 my-0.5 flex flex-col min-w-0">
+        <div className={`explorer-tree-branch space-y-0.5 my-0.5 flex flex-col min-w-0 ${isRightSide ? '' : 'border-l ml-[13.5px] pl-2.5'}`}>
           {rawSubCollections.map((subCollection) => (
             <UnifiedExplorerTree
               key={`col-${subCollection.id}`}

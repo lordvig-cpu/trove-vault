@@ -32,6 +32,14 @@ size, and End for available space. Pointer cancellation and window blur restore
 cursor and selection styles. Explorer selection and action controls are keyboard
 accessible; Escape dismisses an action menu before its enclosing panel.
 
+Items shows items by category; Collections shows collection hierarchies with
+their nested items. Each has its own search, filters, and expansion state. Drag
+either navigation tab or panel header into the left or right sidebar, or use the
+flyout's docking buttons. Occupied sidebars can swap their contents. Both trees
+share the same item and collection action menus; neither docks in the bottom panel.
+Ctrl+K targets Items search and Ctrl+L targets Collections search, opening the
+appropriate sidebar or flyout when needed (Command on macOS).
+
 Data loading paginates every table, including item/collection links, and cancels
 outdated refreshes. Tree construction indexes parent and membership relationships;
 regressions cover missing parents, cycles, inherited membership, and row caps.

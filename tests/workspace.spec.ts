@@ -84,13 +84,13 @@ test('explorer rows and action menus are usable from the keyboard', async ({ pag
     return route.fulfill({ json: from ? [] : rows });
   });
   await page.goto('/');
-  await page.getByRole('button', { name: 'Open Explorer or drag to dock in a sidebar', exact: true }).click();
+  await page.getByRole('button', { name: 'Open Items or drag to dock in a sidebar', exact: true }).click();
   const row = page.getByRole('button', { name: 'Keyboard item', exact: true });
   await row.focus();
   await page.keyboard.press('Enter');
   await expect(page.getByRole('heading', { name: 'Keyboard item', exact: true })).toBeVisible();
   // Selecting an item intentionally closes the unpinned explorer flyout.
-  await page.getByRole('button', { name: 'Open Explorer or drag to dock in a sidebar', exact: true }).click();
+  await page.getByRole('button', { name: 'Open Items or drag to dock in a sidebar', exact: true }).click();
   await expect(row).toHaveAttribute('aria-pressed', 'true');
   const actions = row.locator('..').getByRole('button', { name: 'Open actions' });
   await actions.focus();

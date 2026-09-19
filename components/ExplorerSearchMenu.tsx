@@ -14,6 +14,7 @@ interface ExplorerSearchMenuProps {
   title?: string;
   titleIcon?: React.ReactNode;
   isPinned?: boolean;
+  isFlyout?: boolean;
   triggerRef?: React.RefObject<HTMLElement | null>;
   position?: 'left' | 'right';
   children: React.ReactNode;
@@ -27,6 +28,7 @@ export default function ExplorerSearchMenu({
   title = 'Advanced Search',
   titleIcon,
   isPinned = true,
+  isFlyout = false,
   triggerRef,
   position,
   children,
@@ -99,7 +101,7 @@ export default function ExplorerSearchMenu({
         top: `${top}px`,
         left: `${adjustedLeft}px`,
         margin: 0,
-        zIndex: isPinned ? 35 : 'var(--z-explorer-unpinned)',
+        zIndex: isFlyout ? 70 : isPinned ? 35 : 45,
       }}
       className={`searchMenuShell ${animationClass}`}
     >

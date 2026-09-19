@@ -22,7 +22,7 @@ test.beforeEach(async ({ page }) => {
 
 for (const location of ['flyout', 'left', 'right'] as const) {
   test(`menus retain their lower layer beside the ${location} explorer`, async ({ page }) => {
-    const trigger = page.getByRole('button', { name: 'Open Explorer or drag to dock in a sidebar', exact: true });
+    const trigger = page.getByRole('button', { name: 'Open Items or drag to dock in a sidebar', exact: true });
     if (location === 'flyout') {
       await trigger.click();
     } else {
@@ -56,7 +56,7 @@ for (const location of ['flyout', 'left', 'right'] as const) {
 }
 
 test('hover lifts only sticky categories and leaves navigation / handles stable', async ({ page }) => {
-  const trigger = page.getByRole('button', { name: 'Open Explorer or drag to dock in a sidebar', exact: true });
+  const trigger = page.getByRole('button', { name: 'Open Items or drag to dock in a sidebar', exact: true });
   await expect(trigger).toHaveCSS('z-index', '50');
   await trigger.hover();
   await expect(trigger).toHaveCSS('z-index', '50');
@@ -72,7 +72,7 @@ test('hover lifts only sticky categories and leaves navigation / handles stable'
 });
 
 test('item and template modals cover navigation and all overlay tiers', async ({ page }) => {
-  await page.getByRole('button', { name: 'Open Explorer or drag to dock in a sidebar', exact: true }).click();
+  await page.getByRole('button', { name: 'Open Items or drag to dock in a sidebar', exact: true }).click();
   const row = page.getByRole('button', { name: 'Stacking item', exact: true });
   await row.locator('..').getByRole('button', { name: 'Open actions' }).hover();
   await page.locator('[data-explorer-menu]').getByRole('button', { name: /Edit Item/ }).click();
@@ -94,8 +94,8 @@ test('item and template modals cover navigation and all overlay tiers', async ({
   })).toEqual([300, 150]);
   await page.keyboard.press('Escape');
   await expect(backdrop).toHaveCount(0);
-  await page.locator('.col-dropdown-trigger').click();
-  await page.locator('.col-dropdown-item').filter({ hasText: 'Test collection' }).click();
+  await page.getByRole('button', { name: 'Open Collections or drag to dock in a sidebar', exact: true }).click();
+  await page.locator('aside.nav-flyout-menu').getByRole('button', { name: 'Test collection', exact: true }).click();
   await page.getByRole('button', { name: /Templates/ }).click();
   await expect(page.locator('.field-modal-backdrop')).toHaveCSS('z-index', '400');
   expect(await page.locator('.field-modal-backdrop').evaluate(element => element.contains(document.elementFromPoint(25, 25)))).toBe(true);

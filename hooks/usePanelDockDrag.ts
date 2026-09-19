@@ -2,9 +2,9 @@
 
 import { useState, useRef, useEffect, useCallback } from 'react';
 
-export type DockablePanelId = 'primary' | 'secondary' | 'bottom' | 'explorer' | 'grabbed_content';
+export type DockablePanelId = 'primary' | 'secondary' | 'bottom' | 'explorer' | 'collections' | 'grabbed_content';
 export type DockDropTargetZone = 'left' | 'right' | 'bottom' | 'remove';
-export type DockContent = 'empty' | 'explorer' | 'grabbed_content';
+export type DockContent = 'empty' | 'explorer' | 'collections' | 'grabbed_content';
 export interface DockContents {
   primary?: DockContent;
   secondary?: DockContent;
@@ -17,7 +17,7 @@ export function isDockZoneAllowed(
   contents: DockContents = {}
 ): boolean {
   if (!panelId || !targetZone) return false;
-  const content = panelId === 'explorer' || panelId === 'grabbed_content'
+  const content = panelId === 'explorer' || panelId === 'collections' || panelId === 'grabbed_content'
     ? panelId : contents[panelId] ?? 'empty';
   if (content === 'empty') return false;
   if (targetZone === 'bottom') return content === 'grabbed_content';

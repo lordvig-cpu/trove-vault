@@ -3,8 +3,6 @@
 import React from 'react';
 import Image from 'next/image';
 import logo from '@/assets/images/nav_bar_website_logo.webp';
-import { CollectionRecord } from '@/types/collection';
-import CollectionDropdown from '@/components/CollectionDropdown';
 import { NavigationBarTextureFilter } from '@/components/icons/SystemIcons';
 import { useUIPreferences } from '@/context/UIPreferencesContext';
 
@@ -17,13 +15,6 @@ export type SearchScope = 'current' | 'all';
 /**
  * Props for NavigationHeader.
  * @property activeCollectionName - Name of the collection currently open in the workspace
- * @property collections - Full list of collections for the dropdown selector
- * @property activeCollectionId - ID of current collection (or null if none selected)
- * @property onSelectCollection - Callback when switching active collection
- * @property onCollectionsUpdated - Trigger to refetch collections after mutations
- * @property isDropdownOpen - Controlled open state of the collection switcher dropdown
- * @property setIsDropdownOpen - State setter for the collection switcher dropdown
- * @property onRequestDeleteCollection - Trigger to launch delete collection confirmation modal
  * @property onOpenFieldManager - Optional callback to launch custom field settings
  * @property onOpenTemplateManager - Callback launching the schema template manager modal
  * @property isPrimarySidePanelOpen - Whether the floating flyout panel is actively revealed
@@ -32,13 +23,6 @@ export type SearchScope = 'current' | 'all';
  */
 interface NavigationHeaderProps {
   activeCollectionName: string;
-  collections: CollectionRecord[];
-  activeCollectionId: number | null;
-  onSelectCollection: (id: number) => void;
-  onCollectionsUpdated: () => void;
-  isDropdownOpen: boolean;
-  setIsDropdownOpen: (open: boolean) => void;
-  onRequestDeleteCollection: (collection: CollectionRecord) => void;
   onOpenFieldManager?: () => void;
   onOpenTemplateManager: () => void;
   isPrimarySidePanelOpen?: boolean;
@@ -48,6 +32,11 @@ interface NavigationHeaderProps {
   onStartGrabbedContentDrag?: (e: React.PointerEvent) => void;
   onStartExplorerDrag?: (e: React.PointerEvent) => void;
   explorerDockedSide?: 'left' | 'right' | null;
+  collectionsDockedSide?: 'left' | 'right' | null;
+  isCollectionsOpen?: boolean;
+  onToggleCollections?: () => void;
+  onStartCollectionsDrag?: (e: React.PointerEvent) => void;
+  collectionsFlyoutPanel?: React.ReactNode;
 
   // Backward-compatibility aliases
   isLeftSidePanelOpen?: boolean;
@@ -62,13 +51,6 @@ interface NavigationHeaderProps {
    ========================================================================== */
 
 export default function NavigationHeader({
-  collections,
-  activeCollectionId,
-  onSelectCollection,
-  onCollectionsUpdated,
-  isDropdownOpen,
-  setIsDropdownOpen,
-  onRequestDeleteCollection,
   onOpenTemplateManager,
   isPrimarySidePanelOpen,
   onTogglePrimarySidePanel,
@@ -76,6 +58,11 @@ export default function NavigationHeader({
   onStartGrabbedContentDrag,
   onStartExplorerDrag,
   explorerDockedSide = null,
+  collectionsDockedSide = null,
+  isCollectionsOpen = false,
+  onToggleCollections,
+  onStartCollectionsDrag,
+  collectionsFlyoutPanel,
   isLeftSidePanelOpen,
   onToggleLeftSidePanel,
   unpinnedExplorerPanel,
@@ -89,11 +76,10 @@ export default function NavigationHeader({
   const effectiveToggle = onTogglePrimarySidePanel ?? onToggleLeftSidePanel ?? (() => {});
   const effectiveUnpinnedPanel = unpinnedPrimaryPanel ?? unpinnedExplorerPanel;
 
-  const isExplorerDocked = explorerDockedSide !== null;
-  const isTabActive = isExplorerDocked || effectiveIsOpen;
-  const explorerTabTitle = isExplorerDocked
-    ? `Explorer is already docked in the ${explorerDockedSide === 'left' ? 'primary (left)' : 'secondary (right)'} panel`
-    : 'Open Explorer or drag to dock in a sidebar';
+  const treePanels = [
+    { name: 'Items', dockedSide: explorerDockedSide, isOpen: effectiveIsOpen, toggle: effectiveToggle, drag: onStartExplorerDrag, flyout: effectiveUnpinnedPanel },
+    { name: 'Collections', dockedSide: collectionsDockedSide, isOpen: isCollectionsOpen, toggle: onToggleCollections, drag: onStartCollectionsDrag, flyout: collectionsFlyoutPanel },
+  ];
 
   return (
     <>
@@ -107,36 +93,42 @@ export default function NavigationHeader({
             ------------------------------------------------------------------ */}
         <div className="flex items-center h-full relative z-10">
           {/* Brand & Explorer Tab Cluster */}
-          <div className="flex items-center justify-between h-full w-76 shrink-0 relative">
+          <div className="flex items-center gap-2 h-full min-w-76 shrink-0 relative">
             {/* Brand Logo Anchor */}
-            <div className="flex items-center gap-2 pl-4 relative z-20">
+            <div className="flex items-center gap-2 pl-4 shrink-0 relative z-20">
               <Image
                 src={logo}
                 sizes="144px"
                 alt="TroveVault"
-                className="h-8 w-auto object-contain select-none"
+                className="h-8 w-auto max-w-none shrink-0 object-contain select-none"
               />
             </div>
 
             {/* Explorer Mode Toggle Tab & Flyout Anchor */}
-            <div className="relative z-30 h-full flex items-center">
+            {treePanels.map(panel => {
+              const isDocked = panel.dockedSide !== null;
+              const isTabActive = isDocked || panel.isOpen;
+              const tabTitle = isDocked
+                ? panel.name + ' is already docked in the ' + (panel.dockedSide === 'left' ? 'primary (left)' : 'secondary (right)') + ' panel'
+                : 'Open ' + panel.name + ' or drag to dock in a sidebar';
+              return <div key={panel.name} className="relative z-30 h-full flex items-center shrink-0">
               <button
                 type="button"
                 onClick={() => {
-                  if (!isExplorerDocked) effectiveToggle();
+                  if (!isDocked) panel.toggle?.();
                 }}
-                onPointerDown={isExplorerDocked ? undefined : onStartExplorerDrag}
-                title={explorerTabTitle}
-                aria-label={explorerTabTitle}
-                aria-disabled={isExplorerDocked}
-                aria-expanded={!isExplorerDocked && effectiveIsOpen}
+                onPointerDown={isDocked ? undefined : panel.drag}
+                title={tabTitle}
+                aria-label={tabTitle}
+                aria-disabled={isDocked}
+                aria-expanded={!isDocked && panel.isOpen}
                 className={[
-                  'relative w-[104px] py-1.5 flex items-center justify-center gap-2 group',
+                  'relative min-w-[104px] px-3 py-1.5 flex items-center justify-center gap-2 group',
                   'font-sans text-xs font-bold uppercase tracking-wider',
                   'outline-none focus:outline-none focus-visible:outline-none',
                   'transition-[background,border-color,box-shadow] ease-out',
                   animationsEnabled ? 'duration-300' : 'duration-0',
-                  isExplorerDocked ? 'cursor-not-allowed' : 'cursor-grab active:cursor-grabbing',
+                  isDocked ? 'cursor-not-allowed' : 'cursor-grab active:cursor-grabbing',
                   isTabActive ? 'nav-tab-active' : 'nav-tab-inactive',
                 ].join(' ')}
               >
@@ -146,7 +138,7 @@ export default function NavigationHeader({
                   ))}
                 </span>
                 <span className="explorer-header-title relative">
-                  <span className="tracking-wider">EXPLORE<span className="tracking-normal">R</span></span>
+                  <span className="tracking-wider">{panel.name}</span>
                   <span
                     className={[
                       'nav-tab-indicator absolute inset-x-0 -bottom-[2px] transition-opacity ease-out',
@@ -181,21 +173,13 @@ export default function NavigationHeader({
               </button>
 
               {/* Unpinned Floating Flyout Mount Slot */}
-              {!isExplorerDocked && effectiveUnpinnedPanel}
-            </div>
+              {!isDocked && panel.flyout}
+            </div>;
+            })}
           </div>
 
-          {/* Collection Selection, Schema Templates & Draggable Test Item */}
+          {/* Schema Templates & Draggable Test Item */}
           <div className="flex items-center gap-3 px-4 h-full">
-            <CollectionDropdown
-              collections={collections}
-              activeCollectionId={activeCollectionId}
-              onSelectCollection={onSelectCollection}
-              onCollectionsUpdated={onCollectionsUpdated}
-              isOpen={isDropdownOpen}
-              setIsOpen={setIsDropdownOpen}
-              onRequestDelete={onRequestDeleteCollection}
-            />
 
             <button
               type="button"

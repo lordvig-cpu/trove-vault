@@ -7,7 +7,7 @@ import { useCollections } from '@/hooks/useCollections';
 import { useModals } from '@/hooks/useModals';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 import { useExplorerCategories } from '@/hooks/useExplorerCategories';
-import { usePanelDockDrag, DockablePanelId, DockDropTargetZone, isDockZoneAllowed } from '@/hooks/usePanelDockDrag';
+import { usePanelDockDrag, DockablePanelId, DockDropTargetZone, isDockZoneAllowed, DockContent } from '@/hooks/usePanelDockDrag';
 import NavigationHeader from '@/components/NavigationHeader';
 import NavigationFooter from '@/components/NavigationFooter';
 import MainContent from '@/components/MainContent';
@@ -16,6 +16,7 @@ import PrimarySidePanelHeader from '@/components/PrimarySidePanelHeader';
 import SecondarySidePanel from '@/components/SecondarySidePanel';
 import BottomPanel from '@/components/BottomPanel';
 import PanelDockDropZones from '@/components/PanelDockDropZones';
+import { ExplorerPanelContext } from '@/context/ExplorerPanelContext';
 import ExplorerContent from '@/components/ExplorerContent';
 import ModalContainers from '@/components/ModalContainers';
 import DynamicWatermark from '@/components/DynamicWatermark';
@@ -61,14 +62,15 @@ export default function Home() {
   /* ------------------------------------------------------------------------
      3. EXPLORER TABS, FILTERS & TREE STATE
      ------------------------------------------------------------------------ */
-  const [activeExplorerTab, setActiveExplorerTab] = useState<ExplorerTab>('items');
+  const activeExplorerTab: ExplorerTab = 'items';
+  const [activeSearchPanel, setActiveSearchPanel] = useState<'explorer' | 'collections'>('explorer');
+  const [collectionsFilterIds, setCollectionsFilterIds] = useState<number[]>([]);
   const [filterCollectionIds, setFilterCollectionIds] = useState<number[]>([]);
 
   const handleToggleFilterCollection = (id: number) => {
     setFilterCollectionIds((prev) => 
       prev.includes(id) ? prev.filter((colId) => colId !== id) : [...prev, id]
     );
-    setActiveExplorerTab('collections');
   };
 
   const handleClearCollectionFilters = () => {
@@ -93,6 +95,14 @@ export default function Home() {
     handleToggleAllCategories,
   } = useExplorerCategories(filteredForest);
 
+  const collectionsForest = useMemo(() => filterExplorerForest(
+    unifiedForest, collectionsFilterIds, 'collections', allItems, allCollections, templates
+  ), [unifiedForest, collectionsFilterIds, allItems, allCollections, templates]);
+  const collectionsTree = useExplorerCategories(collectionsForest);
+  const handleToggleCollectionsFilter = (id: number) => {
+    setCollectionsFilterIds(prev => prev.includes(id) ? prev.filter(value => value !== id) : [...prev, id]);
+  };
+
   /* ------------------------------------------------------------------------
      4. GLOBAL UI & LAYOUT PREFERENCES
      ------------------------------------------------------------------------ */
@@ -112,19 +122,19 @@ export default function Home() {
      5. LOCAL VIEWPORT & INTERACTION STATES
      ------------------------------------------------------------------------ */
   const [isLogoHovered, setIsLogoHovered] = useState<boolean>(false);
+  const [isCollectionsFlyoutOpen, setIsCollectionsFlyoutOpen] = useState(false);
   const [isPrimaryFlyoutOpen, setIsPrimaryFlyoutOpen] = useState<boolean>(false);
   const [isPrimarySidePanelOpen, setIsPrimarySidePanelOpen] = useState<boolean>(false);
   const [isSecondaryOpen, setIsSecondaryOpen] = useState<boolean>(false);
   const [isBottomPanelOpen, setIsBottomPanelOpen] = useState<boolean>(false);
   const [bottomPanelContent, setBottomPanelContent] = useState<'empty' | 'grabbed_content'>('empty');
   const isBottomActive = isBottomPanelOpen || isBottomPinned;
-  const [isColDropdownOpen, setIsColDropdownOpen] = useState<boolean>(false);
   const [primaryPanelWidth, setPrimaryPanelWidth] = useState<number>(304);
   const [secondaryPanelWidth, setSecondaryPanelWidth] = useState<number>(304);
   const [bottomPanelHeight, setBottomPanelHeight] = useState<number>(220);
 
-  const [primaryPanelContent, setPrimaryPanelContent] = useState<'empty' | 'explorer' | 'grabbed_content'>('empty');
-  const [secondaryPanelContent, setSecondaryPanelContent] = useState<'empty' | 'explorer' | 'grabbed_content'>('empty');
+  const [primaryPanelContent, setPrimaryPanelContent] = useState<DockContent>('empty');
+  const [secondaryPanelContent, setSecondaryPanelContent] = useState<DockContent>('empty');
 
   const isPrimaryActive = isPinned || isPrimarySidePanelOpen;
   const isSecondaryActive = isSecondaryPinned || isSecondaryOpen;
@@ -139,14 +149,14 @@ export default function Home() {
      6. PANEL CONTENT MOVING & SWAPPING (Smooth Fluid Slide Transition)
      ------------------------------------------------------------------------ */
   interface SlidingContentState {
-    content: 'empty' | 'explorer' | 'grabbed_content';
-    secondaryContent?: 'empty' | 'explorer' | 'grabbed_content';
+    content: DockContent;
+    secondaryContent?: DockContent;
     from: 'left' | 'right';
     to: 'left' | 'right';
     width: number;
     secondaryWidth: number;
     isMoving: boolean;
-    incomingContent?: 'explorer' | 'grabbed_content';
+    incomingContent?: Exclude<DockContent, 'empty'>;
   }
 
   const [slidingState, setSlidingState] = useState<SlidingContentState | null>(null);
@@ -263,7 +273,7 @@ export default function Home() {
   /* ------------------------------------------------------------------------
      7. PANEL DOCK DRAG & DROP ORCHESTRATION (Pointer Events API)
      ------------------------------------------------------------------------ */
-  const displacePanelContent = useCallback((from: 'left' | 'right', incoming: 'explorer' | 'grabbed_content') => {
+  const displacePanelContent = useCallback((from: 'left' | 'right', incoming: Exclude<DockContent, 'empty'>) => {
     const displaced = from === 'left' ? primaryPanelContent : secondaryPanelContent;
     setIsPrimarySidePanelOpen(true);
     setIsSecondaryOpen(true);
@@ -307,6 +317,7 @@ export default function Home() {
       if (slidingState) return;
       if (!isDockZoneAllowed(panelId, targetZone, { primary: primaryPanelContent, secondary: secondaryPanelContent, bottom: bottomPanelContent })) return;
 
+      setIsCollectionsFlyoutOpen(false);
       // 1. Remove from sidebar target
       if (targetZone === 'remove') {
         if (panelId === 'primary') {
@@ -315,9 +326,9 @@ export default function Home() {
           setSecondaryPanelContent('empty');
         } else if (panelId === 'bottom') {
           setBottomPanelContent('empty');
-        } else if (panelId === 'explorer') {
-          if (primaryPanelContent === 'explorer') setPrimaryPanelContent('empty');
-          if (secondaryPanelContent === 'explorer') setSecondaryPanelContent('empty');
+        } else if (panelId === 'explorer' || panelId === 'collections') {
+          if (primaryPanelContent === panelId) setPrimaryPanelContent('empty');
+          if (secondaryPanelContent === panelId) setSecondaryPanelContent('empty');
           setIsPrimaryFlyoutOpen(false);
         } else if (panelId === 'grabbed_content') {
           if (primaryPanelContent === 'grabbed_content') setPrimaryPanelContent('empty');
@@ -329,9 +340,9 @@ export default function Home() {
 
       // 2. Dock to Left (Primary Side Bar)
       if (targetZone === 'left') {
-        const incomingContent: 'empty' | 'explorer' | 'grabbed_content' =
-          panelId === 'explorer'
-            ? 'explorer'
+        const incomingContent: DockContent =
+          panelId === 'explorer' || panelId === 'collections'
+            ? panelId
             : panelId === 'grabbed_content'
             ? 'grabbed_content'
             : panelId === 'secondary'
@@ -397,9 +408,9 @@ export default function Home() {
 
       // 3. Dock to Right (Secondary Side Bar)
       if (targetZone === 'right') {
-        const incomingContent: 'empty' | 'explorer' | 'grabbed_content' =
-          panelId === 'explorer'
-            ? 'explorer'
+        const incomingContent: DockContent =
+          panelId === 'explorer' || panelId === 'collections'
+            ? panelId
             : panelId === 'grabbed_content'
             ? 'grabbed_content'
             : panelId === 'primary'
@@ -465,7 +476,7 @@ export default function Home() {
 
       // 4. Dock to Bottom Panel
       if (targetZone === 'bottom') {
-        const incomingContent: 'empty' | 'explorer' | 'grabbed_content' =
+        const incomingContent: DockContent =
           panelId === 'grabbed_content'
             ? 'grabbed_content'
             : panelId === 'primary'
@@ -499,6 +510,37 @@ export default function Home() {
   /* ------------------------------------------------------------------------
      8. GLOBAL KEYBOARD SHORTCUTS
      ------------------------------------------------------------------------ */
+  const searchFocusTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => () => {
+    if (searchFocusTimer.current) clearTimeout(searchFocusTimer.current);
+  }, []);
+
+  const focusTreeSearch = (content: 'explorer' | 'collections') => {
+    if (activeModal) return;
+    if (searchFocusTimer.current) clearTimeout(searchFocusTimer.current);
+    setActiveSearchPanel(content);
+    setIsPrimaryFlyoutOpen(false);
+    setIsCollectionsFlyoutOpen(false);
+    if (primaryPanelContent === content) setIsPrimarySidePanelOpen(true);
+    else if (secondaryPanelContent === content) setIsSecondaryOpen(true);
+    else if (content === 'explorer') setIsPrimaryFlyoutOpen(true);
+    else setIsCollectionsFlyoutOpen(true);
+
+    const attemptFocus = (remaining: number) => {
+      const inputs = document.querySelectorAll<HTMLInputElement>(
+        '[data-tree-search="' + (content === 'explorer' ? 'items' : 'collections') + '"]'
+      );
+      const input = Array.from(inputs).find(element => !element.closest('[inert]') && element.getClientRects().length > 0);
+      if (input) {
+        input.focus();
+        input.select();
+      } else if (remaining > 0) {
+        searchFocusTimer.current = setTimeout(() => attemptFocus(remaining - 1), 50);
+      }
+    };
+    searchFocusTimer.current = setTimeout(() => attemptFocus(10), 50);
+  };
+
   useKeyboardShortcuts([
     {
       key: 'Escape',
@@ -511,6 +553,11 @@ export default function Home() {
 
         if (activeModal) {
           closeModal();
+          return;
+        }
+
+        if (isCollectionsFlyoutOpen) {
+          setIsCollectionsFlyoutOpen(false);
           return;
         }
 
@@ -559,37 +606,13 @@ export default function Home() {
       key: 'k',
       ctrl: true,
       allowInInputs: true,
-      action: (e) => {
-        e.preventDefault();
-
-        // Reveal the panel hosting Explorer if closed
-        if (primaryPanelContent === 'explorer') {
-          if (!isPrimaryActive) {
-            setIsPrimarySidePanelOpen(true);
-          }
-        } else if (secondaryPanelContent === 'explorer') {
-          if (!isSecondaryActive) {
-            setIsSecondaryOpen(true);
-          }
-        } else {
-          setIsPrimaryFlyoutOpen(true);
-        }
-
-        // Focus the visible search input with retry logic
-        const attemptFocus = (retries = 4) => {
-          const visibleInput = document.querySelector(
-            '.explorer-search-query-input:not([disabled])'
-          ) as HTMLInputElement | null;
-          if (visibleInput) {
-            visibleInput.focus();
-            visibleInput.select();
-          } else if (retries > 0) {
-            setTimeout(() => attemptFocus(retries - 1), 50);
-          }
-        };
-
-        setTimeout(() => attemptFocus(4), 50);
-      },
+      action: () => focusTreeSearch('explorer'),
+    },
+    {
+      key: 'l',
+      ctrl: true,
+      allowInInputs: true,
+      action: () => focusTreeSearch('collections'),
     },
   ]);
 
@@ -603,10 +626,7 @@ export default function Home() {
       setSearchQuery('');
     }
     selectItemWithChildren(item, collectionId);
-    if (!isPinned) {
-      setIsPrimaryFlyoutOpen(false);
-      setIsPrimarySidePanelOpen(false);
-    }
+    setIsPrimaryFlyoutOpen(false);
   };
 
   const handleTriggerEditItem = (item: ItemRecord, collectionId: number | null) => {
@@ -622,24 +642,38 @@ export default function Home() {
   /* ------------------------------------------------------------------------
      10. MEMOIZED EXPLORER SUB-COMPONENTS & PANEL CONTENT RENDERERS
      ------------------------------------------------------------------------ */
-  const renderExplorerTree = (pos: 'left' | 'right') => (
+  const closeTreeFlyout = (content: 'explorer' | 'collections') => {
+    if (content === 'collections') setIsCollectionsFlyoutOpen(false);
+    else setIsPrimaryFlyoutOpen(false);
+  };
+
+  const renderExplorerTree = (pos: 'left' | 'right', content: 'explorer' | 'collections' = 'explorer', isFlyout = false) => {
+    const tree = content === 'collections' ? collectionsTree : { searchQuery, expandedCategoryIds, handleToggleCategory };
+    return (
+    <ExplorerPanelContext.Provider value={{ isFlyout, isPinned: !isFlyout && (pos === 'left' ? isPinned : isSecondaryPinned) }}>
     <ExplorerContent
-      unifiedForest={filteredForest}
-      searchQuery={searchQuery}
+      unifiedForest={content === 'collections' ? collectionsForest : filteredForest}
+      searchQuery={tree.searchQuery}
       activeCollectionId={activeCollectionId}
       selectedItemId={selectedItem?.id || null}
-      expandedCategoryIds={expandedCategoryIds}
-      onToggleCategory={handleToggleCategory}
+      expandedCategoryIds={tree.expandedCategoryIds}
+      onToggleCategory={tree.handleToggleCategory}
       onSelectCollection={(colId) => {
+        setActiveSearchPanel(content);
         setActiveCollectionId(colId);
-        if (!isPinned) {
-          setIsPrimaryFlyoutOpen(false);
-          setIsPrimarySidePanelOpen(false);
-        }
+        closeTreeFlyout(content);
       }}
-      onSelectItem={handleTreeSelectItem}
-      onSelectSearchResult={selectItemWithChildren}
+      onSelectItem={(item, collectionId) => {
+        setActiveSearchPanel(content);
+        if (content === 'collections') {
+          if (collectionsTree.searchQuery.trim() && !itemMatchesQuery(item, collectionsTree.searchQuery.trim())) collectionsTree.setSearchQuery('');
+          selectItemWithChildren(item, collectionId);
+          closeTreeFlyout(content);
+        } else handleTreeSelectItem(item, collectionId);
+      }}
+      onSelectSearchResult={activeSearchPanel === content ? selectItemWithChildren : undefined}
       onAddSubItem={openCreateItem}
+      onAddSubCollection={openCreateCollection}
       onEditTemplate={(categoryId: number) => {
         const templateId = Math.abs(categoryId);
         console.log('Open Template Editor for Template ID:', templateId);
@@ -652,11 +686,13 @@ export default function Home() {
       onRenameItem={renameItem}
       position={pos}
     />
+    </ExplorerPanelContext.Provider>
   );
+  };
 
-  const renderPanelBody = (content: 'empty' | 'explorer' | 'grabbed_content', pos: 'left' | 'right') => {
-    if (content === 'explorer') {
-      return renderExplorerTree(pos);
+  const renderPanelBody = (content: DockContent, pos: 'left' | 'right') => {
+    if (content === 'explorer' || content === 'collections') {
+      return renderExplorerTree(pos, content);
     }
     if (content === 'grabbed_content') {
       return (
@@ -678,37 +714,71 @@ export default function Home() {
     return null;
   };
 
-  const getPanelTitle = (content: 'empty' | 'explorer' | 'grabbed_content', defaultTitle: string) => {
-    if (content === 'explorer') return 'EXPLORER';
+  const getPanelTitle = (content: DockContent, defaultTitle: string) => {
+    if (content === 'explorer') return 'ITEMS';
+    if (content === 'collections') return 'COLLECTIONS';
     if (content === 'grabbed_content') return 'GRABBED CONTENT';
     return defaultTitle;
   };
 
+  const treeHeaderProps = (content: DockContent) => {
+    const isCollections = content === 'collections';
+    return {
+      treeView: (isCollections ? 'collections' : 'items') as ExplorerTab,
+      activeTab: (isCollections ? 'collections' : 'items') as ExplorerTab,
+      searchQuery: isCollections ? collectionsTree.searchQuery : searchQuery,
+      onSearchChange: (query: string) => {
+        setActiveSearchPanel(isCollections ? 'collections' : 'explorer');
+        if (isCollections) collectionsTree.setSearchQuery(query);
+        else setSearchQuery(query);
+      },
+      isAnyCategoryExpanded: isCollections ? collectionsTree.isAnyCategoryExpanded : isAnyCategoryExpanded,
+      onToggleAllCategories: isCollections ? collectionsTree.handleToggleAllCategories : handleToggleAllCategories,
+      filterCollectionIds: isCollections ? collectionsFilterIds : filterCollectionIds,
+      onToggleFilterCollection: isCollections ? handleToggleCollectionsFilter : handleToggleFilterCollection,
+      onClearCollectionFilters: isCollections ? () => setCollectionsFilterIds([]) : handleClearCollectionFilters,
+    };
+  };
+
   const explorerFlyoutPanel = (
     <PrimarySidePanel
-      title="EXPLORER"
+      title="ITEMS"
+      {...treeHeaderProps('explorer')}
+      hasDockedContent
       variant="flyout"
       position="left"
       isOpen={isPrimaryFlyoutOpen}
       onClose={() => setIsPrimaryFlyoutOpen(false)}
       onDock={(position) => handleDropPanel('explorer', position)}
-      activeTab={activeExplorerTab}
-      onTabChange={setActiveExplorerTab}
-      isAnyCategoryExpanded={isAnyCategoryExpanded}
-      onToggleAllCategories={handleToggleAllCategories}
-      searchQuery={searchQuery}
-      onSearchChange={setSearchQuery}
       loading={loading}
       error={error}
       onAddNewItem={() => openCreateItem(null, null)}
       onAddNewCollection={() => openCreateCollection(null)}
       collections={allCollections}
-      filterCollectionIds={filterCollectionIds}
-      onToggleFilterCollection={handleToggleFilterCollection}
-      onClearCollectionFilters={handleClearCollectionFilters}
       onHandlePointerDown={(e) => startDockDrag('explorer', e)}
     >
-      {renderExplorerTree('left')}
+      {renderExplorerTree('left', 'explorer', true)}
+    </PrimarySidePanel>
+  );
+
+  const collectionsFlyoutPanel = (
+    <PrimarySidePanel
+      title="COLLECTIONS"
+      {...treeHeaderProps('collections')}
+      hasDockedContent
+      variant="flyout"
+      position="left"
+      isOpen={isCollectionsFlyoutOpen}
+      onClose={() => setIsCollectionsFlyoutOpen(false)}
+      onDock={(position) => handleDropPanel('collections', position)}
+      loading={loading}
+      error={error}
+      onAddNewItem={() => openCreateItem(null, null)}
+      onAddNewCollection={() => openCreateCollection(null)}
+      collections={allCollections}
+      onHandlePointerDown={(e) => startDockDrag('collections', e)}
+    >
+      {renderExplorerTree('left', 'collections', true)}
     </PrimarySidePanel>
   );
 
@@ -717,6 +787,8 @@ export default function Home() {
       ? 'Content must be docked first'
       : isBottomActive && bottomPanelContent === 'empty' && primaryPanelContent === 'grabbed_content'
       ? 'Move Grabbed Content to Bottom Panel'
+      : secondaryPanelContent !== 'empty'
+      ? `Swap ${getPanelTitle(primaryPanelContent, 'Content')} and ${getPanelTitle(secondaryPanelContent, 'Content')}`
       : `Move ${getPanelTitle(primaryPanelContent, 'Content')} to Secondary Side Bar`;
 
   const secondaryMoveTooltip =
@@ -724,6 +796,8 @@ export default function Home() {
       ? 'Content must be docked first'
       : isBottomActive && bottomPanelContent === 'empty' && secondaryPanelContent === 'grabbed_content'
       ? 'Move Grabbed Content to Bottom Panel'
+      : primaryPanelContent !== 'empty'
+      ? `Swap ${getPanelTitle(secondaryPanelContent, 'Content')} and ${getPanelTitle(primaryPanelContent, 'Content')}`
       : `Move ${getPanelTitle(secondaryPanelContent, 'Content')} to Primary Side Bar`;
 
   const canMovePrimary = primaryPanelContent !== 'empty' && !slidingState;
@@ -732,9 +806,10 @@ export default function Home() {
   const explorerSidebarPanel = (
     <PrimarySidePanel
       title={getPanelTitle(primaryPanelContent, 'PRIMARY SIDE PANEL')}
+      {...treeHeaderProps(primaryPanelContent)}
       hasDockedContent={primaryPanelContent !== 'empty'}
       isContentSliding={slidingState !== null && !(slidingState.incomingContent && slidingState.from === 'left' && slidingState.isMoving)}
-      showSearchFilter={primaryPanelContent === 'explorer'}
+      showSearchFilter={primaryPanelContent === 'explorer' || primaryPanelContent === 'collections'}
       variant="sidebar"
       position="left"
       onTogglePosition={primaryPanelContent !== 'empty' ? handleMovePrimaryContent : undefined}
@@ -755,12 +830,6 @@ export default function Home() {
           setIsPrimarySidePanelOpen(true);
         }
       }}
-      activeTab={activeExplorerTab}
-      onTabChange={setActiveExplorerTab}
-      isAnyCategoryExpanded={isAnyCategoryExpanded}
-      onToggleAllCategories={handleToggleAllCategories}
-      searchQuery={searchQuery}
-      onSearchChange={setSearchQuery}
       reservedWidth={isSecondaryActive ? secondaryPanelWidth : 0}
       onWidthChange={setPrimaryPanelWidth}
       loading={loading}
@@ -768,9 +837,6 @@ export default function Home() {
       onAddNewItem={() => openCreateItem(null, null)}
       onAddNewCollection={() => openCreateCollection(null)}
       collections={allCollections}
-      filterCollectionIds={filterCollectionIds}
-      onToggleFilterCollection={handleToggleFilterCollection}
-      onClearCollectionFilters={handleClearCollectionFilters}
       onHandlePointerDown={(e) => startDockDrag('primary', e)}
     >
       {renderPanelBody(primaryPanelContent, 'left')}
@@ -800,27 +866,19 @@ export default function Home() {
         <div className="shrink-0 relative z-[80]">
           <NavigationHeader
             activeCollectionName={activeCollection ? activeCollection.name : 'Select Collection'}
-            collections={allCollections}
-            activeCollectionId={activeCollectionId}
-            onSelectCollection={(newId) => {
-              setActiveCollectionId(newId);
-              if (!isPinned) {
-                setIsPrimaryFlyoutOpen(false);
-                setIsPrimarySidePanelOpen(false);
-              }
-            }}
-            onCollectionsUpdated={() => fetchAllData()}
-            isDropdownOpen={isColDropdownOpen}
-            setIsDropdownOpen={setIsColDropdownOpen}
-            onRequestDeleteCollection={openDeleteCollection}
             onOpenTemplateManager={() => {
               if (activeCollection) {
                 openTemplateManager(activeCollection.id, activeCollection.name);
               }
             }}
             isPrimarySidePanelOpen={isPrimaryFlyoutOpen}
-            onTogglePrimarySidePanel={() => setIsPrimaryFlyoutOpen(!isPrimaryFlyoutOpen)}
+            onTogglePrimarySidePanel={() => { setIsCollectionsFlyoutOpen(false); setIsPrimaryFlyoutOpen(!isPrimaryFlyoutOpen); }}
             unpinnedPrimaryPanel={explorerFlyoutPanel}
+            collectionsFlyoutPanel={collectionsFlyoutPanel}
+            isCollectionsOpen={isCollectionsFlyoutOpen}
+            onToggleCollections={() => { setIsPrimaryFlyoutOpen(false); setIsCollectionsFlyoutOpen(!isCollectionsFlyoutOpen); }}
+            collectionsDockedSide={primaryPanelContent === 'collections' ? 'left' : secondaryPanelContent === 'collections' ? 'right' : null}
+            onStartCollectionsDrag={e => startDockDrag('collections', e)}
             explorerDockedSide={primaryPanelContent === 'explorer' ? 'left' : secondaryPanelContent === 'explorer' ? 'right' : null}
             onStartGrabbedContentDrag={(e) => startDockDrag('grabbed_content', e)}
             onStartExplorerDrag={(e) => startDockDrag('explorer', e)}
@@ -902,9 +960,10 @@ export default function Home() {
           {/* Secondary Side Panel (Details / Inspector Drawer / Grabbed Content) - Sits Above Main Content (z-40) */}
           <SecondarySidePanel
             title={getPanelTitle(secondaryPanelContent, 'SECONDARY SIDE PANEL')}
+            {...treeHeaderProps(secondaryPanelContent)}
             hasDockedContent={secondaryPanelContent !== 'empty'}
             isContentSliding={slidingState !== null && !(slidingState.incomingContent && slidingState.from === 'right' && slidingState.isMoving)}
-            showSearchFilter={secondaryPanelContent === 'explorer'}
+            showSearchFilter={secondaryPanelContent === 'explorer' || secondaryPanelContent === 'collections'}
             isOpen={isSecondaryActive}
             isPinned={isSecondaryPinned}
             position="right"
@@ -925,20 +984,11 @@ export default function Home() {
                 setIsSecondaryOpen(true);
               }
             }}
-            activeTab={activeExplorerTab}
-            onTabChange={setActiveExplorerTab}
-            isAnyCategoryExpanded={isAnyCategoryExpanded}
-            onToggleAllCategories={handleToggleAllCategories}
-            searchQuery={searchQuery}
-            onSearchChange={setSearchQuery}
             reservedWidth={isPrimaryActive ? primaryPanelWidth : 0}
             onWidthChange={setSecondaryPanelWidth}
             onAddNewItem={() => openCreateItem(null, null)}
             onAddNewCollection={() => openCreateCollection(null)}
             collections={allCollections}
-            filterCollectionIds={filterCollectionIds}
-            onToggleFilterCollection={handleToggleFilterCollection}
-            onClearCollectionFilters={handleClearCollectionFilters}
             onHandlePointerDown={(e) => startDockDrag('secondary', e)}
           >
             {renderPanelBody(secondaryPanelContent, 'right')}
@@ -968,13 +1018,12 @@ export default function Home() {
             >
               <PrimarySidePanelHeader
                 title={getPanelTitle(slidingState.content, 'SIDE PANEL')}
+                {...treeHeaderProps(slidingState.content)}
                 hasDockedContent={slidingState.content !== 'empty'}
-                showSearchFilter={slidingState.content === 'explorer'}
+                showSearchFilter={slidingState.content === 'explorer' || slidingState.content === 'collections'}
                 variant="sidebar"
                 isPinned={slidingState.to === 'left' ? isPinned : isSecondaryPinned}
                 position={slidingState.to}
-                activeTab={activeExplorerTab}
-                searchQuery={searchQuery}
                 onTogglePin={() => {}}
                 onClose={() => {}}
               />
@@ -1014,12 +1063,11 @@ export default function Home() {
               <PrimarySidePanelHeader
                 title={getPanelTitle(slidingState.secondaryContent, 'SIDE PANEL')}
                 hasDockedContent={slidingState.secondaryContent !== 'empty'}
-                showSearchFilter={slidingState.secondaryContent === 'explorer'}
+                showSearchFilter={slidingState.secondaryContent === 'explorer' || slidingState.secondaryContent === 'collections'}
                 variant="sidebar"
                 isPinned={slidingState.to === 'right' ? isPinned : isSecondaryPinned}
                 position={slidingState.to === 'right' ? 'left' : 'right'}
-                activeTab={activeExplorerTab}
-                searchQuery={searchQuery}
+                {...treeHeaderProps(slidingState.secondaryContent)}
                 onTogglePin={() => {}}
                 onClose={() => {}}
               />

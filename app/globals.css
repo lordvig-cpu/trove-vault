@@ -16,7 +16,6 @@
 @import "./styles/components/primarySidePanel.css";
 @import "./styles/components/UnifiedExplorerTree.css";
 @import "./styles/components/secondarySidePanel.css";
-@import "./styles/components/collectionDropDown.css";
 @import "./styles/components/fieldManagerModal.css";
 @import "./styles/components/templateManagerModal.css";
 @import "./styles/components/ItemModal.css";
@@ -26,12 +25,6 @@
 :root {
   /* Dialogs clear every app overlay; Explorer menus intentionally sit below panels. */
   --z-modal: 400;
-  --z-explorer-unpinned: 45;
-}
-
-/* Flyout menus clear its dismissal backdrop while staying beneath its edge. */
-body:has(.nav-flyout-menu:not([inert])) {
-  --z-explorer-unpinned: 70;
 }
 
 /* Apply the operating-system preference to all utility and component motion. */
@@ -104,7 +97,6 @@ body {
    | 160        | Cursor-following drag badge           | LOCAL to the z=150 dock overlay                    | PanelDockDropZones.tsx / CSS                 |
    | 80         | Explorer flyout aside                 | LOCAL to header / flyout containers                | PrimarySidePanel.tsx                         |
    | 60 / 50    | Active / inactive navigation tab      | LOCAL to the header; stable on hover               | navigationHeader.css                         |
-   | 50 / 40    | Collection dropdown / dismissal cover | LOCAL to the header                                | CollectionDropdown.tsx / CSS                 |
    | 50         | Panel resize handles                  | LOCAL to their isolated panel                      | ContentPrimitives.css                        |
    | 40         | Panel reset buttons                   | LOCAL to their isolated panel                      | Side-panel and BottomPanel components        |
    | 40         | Hovered sticky explorer category      | LOCAL to panel; scoped hover override              | primarySidePanel.css                         |
@@ -116,9 +108,10 @@ body {
    | -1         | Folder-tab decorative pseudo-element  | LOCAL to isolated tab                              | primarySidePanel.css                         |
 
    CONTRACT:
-   - Explorer menus intentionally use 35 when pinned and 45 when unpinned,
+   - Explorer and Collections menus use their owning panel's layer: 35 when pinned
+     and 45 when unpinned,
      beneath sidebar layers 40 / 50 so panel edges overlap the slide-out menus.
-     With the flyout open, unpinned menus use 70: above its dismissal backdrop
+     Menus belonging to a flyout use 70: above its dismissal backdrop
      (60) for clicks, but beneath the flyout/header (80) for the same overlap.
    - --z-modal (400) keeps all modal backdrops above menus, navigation, drag UI,
      and the seed picker (300). Shared unlayered CSS overrides old z-50/z-[100]
