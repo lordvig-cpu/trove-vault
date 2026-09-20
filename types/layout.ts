@@ -182,3 +182,102 @@ export function migrateGridToFlexLayout(config: any): TemplateFlexLayoutConfig {
     },
   };
 }
+
+/**
+ * Creates a sensible default Flexbox Container Layout from an array of field definitions.
+ */
+export function createDefaultFlexLayout(fields: any[] = []): TemplateFlexLayoutConfig {
+  const componentChildren: FlexComponentNode[] = fields.map((f) => ({
+    id: `comp-${f.id}`,
+    nodeType: 'component' as const,
+    componentType: 'field' as const,
+    field_id: f.id,
+    label: f.label,
+    variant: 'standard' as const,
+    sizing: { type: 'fixed' as const, value: '48%' },
+  }));
+
+  return {
+    version: 2,
+    root: {
+      id: 'root-container',
+      nodeType: 'container',
+      label: 'Page Layout',
+      direction: 'column',
+      gap: 16,
+      wrap: false,
+      align: 'stretch',
+      justify: 'start',
+      padding: 0,
+      sizing: { type: 'fill' },
+      children: [
+        {
+          id: 'container-general',
+          nodeType: 'container',
+          label: 'General Information',
+          direction: 'row',
+          gap: 12,
+          wrap: true,
+          align: 'stretch',
+          justify: 'start',
+          padding: 16,
+          isCard: true,
+          sizing: { type: 'fill' },
+          children: componentChildren,
+        },
+      ],
+    },
+  };
+}
+
+/**
+ * Recursively searches a container tree for a container or component node by ID.
+ */
+export function findFlexNode(
+  node: FlexContainerNode,
+  id: string
+): FlexLayoutNode | null {
+  if (node.id === id) return node;
+  for (const child of node.children) {
+    if (child.id === id) return child;
+    if (child.nodeType === 'container') {
+      const found = findFlexNode(child, id);
+      if (found) return found;
+    }
+  }
+  return null;
+}
+
+/**
+ * Finds the parent container node of a target child node ID.
+ */
+export function findParentFlexContainer(
+  root: FlexContainerNode,
+  childId: string
+): FlexContainerNode | null {
+  for (const child of root.children) {
+    if (child.id === childId) return root;
+    if (child.nodeType === 'container') {
+      const parent = findParentFlexContainer(child, childId);
+      if (parent) return parent;
+    }
+  }
+  return null;
+}
+
+/**
+ * Recursively collects all field IDs bound to components in the container tree.
+ */
+export function collectPlacedFieldIds(node: FlexContainerNode): number[] {
+  const ids: number[] = [];
+  function traverse(n: FlexLayoutNode) {
+    if (n.nodeType === 'component') {
+      if (typeof n.field_id === 'number') ids.push(n.field_id);
+      if (Array.isArray(n.field_ids)) ids.push(...n.field_ids);
+    } else if (n.nodeType === 'container') {
+      n.children.forEach(traverse);
+    }
+  }
+  traverse(node);
+  return ids;
+}
