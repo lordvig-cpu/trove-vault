@@ -45,6 +45,7 @@ interface UseTemplateEditorOptions {
   onRefreshData?: () => Promise<void> | void;
   getTabSnapshot?: () => WorkspaceTabSnapshot;
   onRestoreTabs?: (snapshot: WorkspaceTabSnapshot) => void;
+  onOpenPrimaryPanel?: (tabs: DockContent[], activeTab: DockContent) => void;
   onOpenSecondaryPanel?: (tabs: DockContent[], activeTab: DockContent) => void;
   onOpenBottomPanel?: (content: 'template_builder') => void;
 }
@@ -77,6 +78,7 @@ export function useTemplateEditor({
   onRefreshData,
   getTabSnapshot,
   onRestoreTabs,
+  onOpenPrimaryPanel,
   onOpenSecondaryPanel,
   onOpenBottomPanel,
 }: UseTemplateEditorOptions = {}) {
@@ -275,20 +277,25 @@ export function useTemplateEditor({
       setSuccessMsg(null);
       setCanvasMode('edit');
 
-      // 2. Open right panel with Template Inspector & Properties
+      // 2. Open left panel with Content (Hierarchy)
+      if (onOpenPrimaryPanel) {
+        onOpenPrimaryPanel(['template_hierarchy'], 'template_hierarchy');
+      }
+
+      // 3. Open right panel with Template Inspector & Properties
       if (onOpenSecondaryPanel) {
         onOpenSecondaryPanel(['template_editor', 'template_properties'], 'template_editor');
       }
 
-      // 3. Open bottom panel with Builder (Layout & Components tabs)
+      // 4. Open bottom panel with Builder (Layout & Components tabs)
       if (onOpenBottomPanel) {
         onOpenBottomPanel('template_builder');
       }
 
-      // 4. Load the template
+      // 5. Load the template
       await loadTemplate(templateId);
     },
-    [getTabSnapshot, loadTemplate, onOpenSecondaryPanel, onOpenBottomPanel]
+    [getTabSnapshot, loadTemplate, onOpenPrimaryPanel, onOpenSecondaryPanel, onOpenBottomPanel]
   );
 
   /**

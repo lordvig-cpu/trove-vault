@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect, useCallback } from 'react';
 
-export type DockablePanelId = 'primary' | 'secondary' | 'bottom' | 'explorer' | 'collections' | 'templates' | 'grabbed_content' | 'template_editor' | 'template_builder' | 'template_properties';
+export type DockablePanelId = 'primary' | 'secondary' | 'bottom' | 'explorer' | 'collections' | 'templates' | 'grabbed_content' | 'template_editor' | 'template_builder' | 'template_properties' | 'template_hierarchy';
 export type DockDropTargetZone =
   | 'left'
   | 'left-tab'
@@ -12,7 +12,7 @@ export type DockDropTargetZone =
   | 'right-replace'
   | 'bottom'
   | 'remove';
-export type DockContent = 'empty' | 'explorer' | 'collections' | 'templates' | 'grabbed_content' | 'template_editor' | 'template_builder' | 'template_properties';
+export type DockContent = 'empty' | 'explorer' | 'collections' | 'templates' | 'grabbed_content' | 'template_editor' | 'template_builder' | 'template_properties' | 'template_hierarchy';
 export interface DockContents {
   primary?: DockContent;
   secondary?: DockContent;
@@ -43,7 +43,8 @@ export function isDockZoneAllowed(
     panelId === 'grabbed_content' ||
     panelId === 'template_editor' ||
     panelId === 'template_builder' ||
-    panelId === 'template_properties'
+    panelId === 'template_properties' ||
+    panelId === 'template_hierarchy'
       ? panelId
       : panelId === 'primary'
       ? (contents.primaryActiveTab ?? contents.primary ?? 'empty')

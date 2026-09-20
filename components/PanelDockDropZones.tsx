@@ -54,6 +54,8 @@ export default function PanelDockDropZones({
         return 'Layout Builder';
       case 'template_properties':
         return 'Properties';
+      case 'template_hierarchy':
+        return 'Content Hierarchy';
       case 'grabbed_content':
         return 'Grabbed Content';
       default:
@@ -75,6 +77,8 @@ export default function PanelDockDropZones({
         return 'template_builder';
       case 'template_properties':
         return 'template_properties';
+      case 'template_hierarchy':
+        return 'template_hierarchy';
       case 'grabbed_content':
         return 'grabbed_content';
       case 'primary':

@@ -24,6 +24,7 @@ import TemplateFieldInspector from '@/components/TemplateFieldInspector';
 import TemplateLayoutBuilder from '@/components/TemplateLayoutBuilder';
 import TemplateLayoutPalette from '@/components/TemplateLayoutPalette';
 import TemplatePropertiesInspector from '@/components/TemplatePropertiesInspector';
+import TemplateHierarchyTree from '@/components/TemplateHierarchyTree';
 import { useTemplateEditor } from '@/hooks/useTemplateEditor';
 import { filterExplorerForest, ExplorerTab } from '@/lib/filterExplorerForest';
 import { itemMatchesQuery } from '@/lib/explorerUtils';
@@ -209,6 +210,11 @@ export default function Home() {
       setBottomPanelContent(snapshot.bottomPanelContent);
       setIsBottomPanelOpen(snapshot.isBottomPanelOpen);
       setIsBottomPinned(snapshot.isBottomPinned);
+    },
+    onOpenPrimaryPanel: (tabs, activeTab) => {
+      setPrimaryTabs(tabs);
+      setPrimaryActiveTab(activeTab);
+      setIsPrimarySidePanelOpen(true);
     },
     onOpenSecondaryPanel: (tabs, activeTab) => {
       setSecondaryTabs(tabs);
@@ -955,6 +961,19 @@ export default function Home() {
         />
       );
     }
+    if (content === 'template_hierarchy') {
+      return (
+        <TemplateHierarchyTree
+          flexLayoutConfig={templateEditor.flexLayoutConfig}
+          selectedNodeId={templateEditor.selectedNodeId}
+          activeContainerId={templateEditor.activeContainerId}
+          fields={templateEditor.activeTemplate?.fields || []}
+          onSelectNode={templateEditor.selectNode}
+          onRemoveContainer={templateEditor.removeFlexContainer}
+          onRemoveComponent={templateEditor.removeFlexComponent}
+        />
+      );
+    }
     if (content === 'grabbed_content') {
       return (
         <div className="p-4 flex flex-col items-center justify-center text-center gap-3 h-full min-h-[220px] select-none">
@@ -984,6 +1003,7 @@ export default function Home() {
       if (tabs[0] === 'template_editor') return 'TEMPLATE INSPECTOR';
       if (tabs[0] === 'template_properties') return 'PROPERTIES';
       if (tabs[0] === 'template_builder') return 'LAYOUT BUILDER';
+      if (tabs[0] === 'template_hierarchy') return 'CONTENT';
       if (tabs[0] === 'grabbed_content') return 'GRABBED CONTENT';
     }
     if (activeTab === 'explorer') return 'ITEMS';
@@ -992,6 +1012,7 @@ export default function Home() {
     if (activeTab === 'template_editor') return 'TEMPLATE INSPECTOR';
     if (activeTab === 'template_properties') return 'PROPERTIES';
     if (activeTab === 'template_builder') return 'LAYOUT BUILDER';
+    if (activeTab === 'template_hierarchy') return 'CONTENT';
     if (activeTab === 'grabbed_content') return 'GRABBED CONTENT';
     return defaultTitle;
   };

@@ -238,4 +238,14 @@ test.describe('Template Layout Engine & Grid System', () => {
     // template_properties belongs in sidebars, not bottom panel
     expect(isDockZoneAllowed('template_properties', 'bottom')).toBe(false);
   });
+
+  test('docking engine allows template_hierarchy in side panels but forbids bottom panel', () => {
+    // Docking template_hierarchy to sidebars (left and right)
+    expect(isDockZoneAllowed('template_hierarchy', 'left')).toBe(true);
+    expect(isDockZoneAllowed('template_hierarchy', 'right')).toBe(true);
+    expect(isDockZoneAllowed('template_hierarchy', 'left-tab', { primaryTabs: ['explorer'] })).toBe(true);
+
+    // template_hierarchy is a tree/sidebar panel, forbidden from bottom panel
+    expect(isDockZoneAllowed('template_hierarchy', 'bottom')).toBe(false);
+  });
 });
