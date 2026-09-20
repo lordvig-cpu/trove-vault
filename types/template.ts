@@ -1,4 +1,5 @@
 import { FieldDefinition } from './field';
+import { TemplateLayoutConfig } from './layout';
 
 /* ==========================================================================
    TYPE DEFINITIONS: ItemTemplate
@@ -12,6 +13,7 @@ export interface ItemTemplate {
   icon: string;
   is_system_preset: boolean;
   fields?: FieldDefinition[];
+  layout_config?: TemplateLayoutConfig | null;
 }
 
 /**

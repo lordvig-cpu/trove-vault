@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect, useCallback } from 'react';
 
-export type DockablePanelId = 'primary' | 'secondary' | 'bottom' | 'explorer' | 'collections' | 'templates' | 'grabbed_content' | 'template_editor';
+export type DockablePanelId = 'primary' | 'secondary' | 'bottom' | 'explorer' | 'collections' | 'templates' | 'grabbed_content' | 'template_editor' | 'template_builder';
 export type DockDropTargetZone =
   | 'left'
   | 'left-tab'
@@ -12,7 +12,7 @@ export type DockDropTargetZone =
   | 'right-replace'
   | 'bottom'
   | 'remove';
-export type DockContent = 'empty' | 'explorer' | 'collections' | 'templates' | 'grabbed_content' | 'template_editor';
+export type DockContent = 'empty' | 'explorer' | 'collections' | 'templates' | 'grabbed_content' | 'template_editor' | 'template_builder';
 export interface DockContents {
   primary?: DockContent;
   secondary?: DockContent;
@@ -37,7 +37,12 @@ export function isDockZoneAllowed(
 ): boolean {
   if (!panelId || !targetZone) return false;
   const content =
-    panelId === 'explorer' || panelId === 'collections' || panelId === 'templates' || panelId === 'grabbed_content' || panelId === 'template_editor'
+    panelId === 'explorer' ||
+    panelId === 'collections' ||
+    panelId === 'templates' ||
+    panelId === 'grabbed_content' ||
+    panelId === 'template_editor' ||
+    panelId === 'template_builder'
       ? panelId
       : panelId === 'primary'
       ? (contents.primaryActiveTab ?? contents.primary ?? 'empty')
@@ -207,7 +212,8 @@ export function usePanelDockDrag({ onDropPanel, contents }: UsePanelDockDragOpti
           panelId === 'collections' ||
           panelId === 'templates' ||
           panelId === 'grabbed_content' ||
-          panelId === 'template_editor'
+          panelId === 'template_editor' ||
+          panelId === 'template_builder'
         ) {
           const elements = document.elementsFromPoint(moveEv.clientX, moveEv.clientY);
           const tabEl = elements.find((el) => el.hasAttribute('data-tab-name'));

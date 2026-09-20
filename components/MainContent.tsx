@@ -5,6 +5,7 @@ import ItemDetailView from './ItemDetailView';
 import TemplateEditorStage from './TemplateEditorStage';
 import { ItemRecord } from '@/types/item';
 import { ItemTemplate } from '@/types/template';
+import { TemplateLayoutConfig, LayoutSection, LayoutBlock } from '@/types/layout';
 
 /* ==========================================================================
    1. TYPE DEFINITIONS & INTERFACES
@@ -22,6 +23,20 @@ interface MainContentProps {
   onSelectField?: (fieldId: number | null) => void;
   onDoneEditingTemplate?: () => void;
   onAddFieldToTemplate?: () => void;
+  // Layout Builder Props
+  layoutConfig?: TemplateLayoutConfig | null;
+  selectedBlockId?: string | null;
+  canvasMode?: 'edit' | 'preview';
+  onSelectBlock?: (blockId: string | null) => void;
+  onAddSection?: (title?: string) => void;
+  onRemoveSection?: (sectionId: string) => void;
+  onUpdateSection?: (sectionId: string, partial: Partial<LayoutSection>) => void;
+  onAddBlock?: (sectionId: string, block: Omit<LayoutBlock, 'id'>) => void;
+  onUpdateBlock?: (sectionId: string, blockId: string, partial: Partial<LayoutBlock>) => void;
+  onRemoveBlock?: (sectionId: string, blockId: string) => void;
+  onMoveBlock?: (fromSectionId: string, toSectionId: string, blockId: string, toIndex?: number) => void;
+  onResetLayout?: () => void;
+  onToggleCanvasMode?: () => void;
   occupiedRightWidth?: number;
   occupiedLeftWidth?: number;
   rightPanelWidth?: number; // Backward compatibility alias
@@ -44,6 +59,19 @@ export default function MainContent({
   onSelectField,
   onDoneEditingTemplate,
   onAddFieldToTemplate,
+  layoutConfig = null,
+  selectedBlockId = null,
+  canvasMode = 'edit',
+  onSelectBlock,
+  onAddSection,
+  onRemoveSection,
+  onUpdateSection,
+  onAddBlock,
+  onUpdateBlock,
+  onRemoveBlock,
+  onMoveBlock,
+  onResetLayout,
+  onToggleCanvasMode,
 }: MainContentProps) {
 
   return (
@@ -68,10 +96,23 @@ export default function MainContent({
               <div className="w-full p-6 flex-1 pt-8 pb-10">
                 <TemplateEditorStage
                   template={editingTemplate}
+                  layoutConfig={layoutConfig}
+                  selectedBlockId={selectedBlockId}
                   selectedFieldId={selectedFieldId}
+                  canvasMode={canvasMode}
+                  onSelectBlock={onSelectBlock || (() => {})}
                   onSelectField={onSelectField || (() => {})}
                   onDoneEditing={onDoneEditingTemplate || (() => {})}
                   onAddField={onAddFieldToTemplate || (() => {})}
+                  onAddSection={onAddSection || (() => {})}
+                  onRemoveSection={onRemoveSection || (() => {})}
+                  onUpdateSection={onUpdateSection || (() => {})}
+                  onAddBlock={onAddBlock || (() => {})}
+                  onUpdateBlock={onUpdateBlock || (() => {})}
+                  onRemoveBlock={onRemoveBlock || (() => {})}
+                  onMoveBlock={onMoveBlock || (() => {})}
+                  onResetLayout={onResetLayout || (() => {})}
+                  onToggleCanvasMode={onToggleCanvasMode || (() => {})}
                 />
               </div>
             ) : (

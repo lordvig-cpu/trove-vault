@@ -21,6 +21,7 @@ import ExplorerContent from '@/components/ExplorerContent';
 import ModalContainers from '@/components/ModalContainers';
 import DynamicWatermark from '@/components/DynamicWatermark';
 import TemplateFieldInspector from '@/components/TemplateFieldInspector';
+import TemplateLayoutBuilder from '@/components/TemplateLayoutBuilder';
 import { useTemplateEditor } from '@/hooks/useTemplateEditor';
 import { filterExplorerForest, ExplorerTab } from '@/lib/filterExplorerForest';
 import { itemMatchesQuery } from '@/lib/explorerUtils';
@@ -207,9 +208,9 @@ export default function Home() {
       setIsBottomPanelOpen(snapshot.isBottomPanelOpen);
       setIsBottomPinned(snapshot.isBottomPinned);
     },
-    onOpenSecondaryPanel: (tab) => {
-      setSecondaryTabs((prev) => (prev.includes(tab) ? prev : [tab]));
-      setSecondaryActiveTab(tab);
+    onOpenSecondaryPanel: (tabs, activeTab) => {
+      setSecondaryTabs(tabs);
+      setSecondaryActiveTab(activeTab);
       setIsSecondaryOpen(true);
     },
   });
@@ -443,7 +444,8 @@ export default function Home() {
           panelId === 'collections' ||
           panelId === 'templates' ||
           panelId === 'grabbed_content' ||
-          panelId === 'template_editor'
+          panelId === 'template_editor' ||
+          panelId === 'template_builder'
         )
           return panelId;
         if (panelId === 'primary') return primaryActiveTab;
@@ -495,7 +497,8 @@ export default function Home() {
           panelId === 'collections' ||
           panelId === 'templates' ||
           panelId === 'grabbed_content' ||
-          panelId === 'template_editor'
+          panelId === 'template_editor' ||
+          panelId === 'template_builder'
         ) {
           removeTabFromPrimary(panelId);
           removeTabFromSecondary(panelId);
@@ -909,6 +912,25 @@ export default function Home() {
         />
       );
     }
+    if (content === 'template_builder') {
+      return (
+        <TemplateLayoutBuilder
+          template={templateEditor.activeTemplate}
+          layoutConfig={templateEditor.layoutConfig}
+          selectedBlockId={templateEditor.selectedBlockId}
+          onSelectBlock={templateEditor.setSelectedBlockId}
+          onAddSection={templateEditor.addSection}
+          onRemoveSection={templateEditor.removeSection}
+          onUpdateSection={templateEditor.updateSection}
+          onAddBlock={templateEditor.addBlock}
+          onUpdateBlock={templateEditor.updateBlock}
+          onRemoveBlock={templateEditor.removeBlock}
+          onMoveBlock={templateEditor.moveBlock}
+          onResetLayout={templateEditor.resetLayoutToDefault}
+          position={pos}
+        />
+      );
+    }
     if (content === 'grabbed_content') {
       return (
         <div className="p-4 flex flex-col items-center justify-center text-center gap-3 h-full min-h-[220px] select-none">
@@ -936,12 +958,14 @@ export default function Home() {
       if (tabs[0] === 'collections') return 'COLLECTIONS';
       if (tabs[0] === 'templates') return 'TEMPLATES';
       if (tabs[0] === 'template_editor') return 'TEMPLATE INSPECTOR';
+      if (tabs[0] === 'template_builder') return 'LAYOUT BUILDER';
       if (tabs[0] === 'grabbed_content') return 'GRABBED CONTENT';
     }
     if (activeTab === 'explorer') return 'ITEMS';
     if (activeTab === 'collections') return 'COLLECTIONS';
     if (activeTab === 'templates') return 'TEMPLATES';
     if (activeTab === 'template_editor') return 'TEMPLATE INSPECTOR';
+    if (activeTab === 'template_builder') return 'LAYOUT BUILDER';
     if (activeTab === 'grabbed_content') return 'GRABBED CONTENT';
     return defaultTitle;
   };
@@ -950,6 +974,7 @@ export default function Home() {
     const isCollections = content === 'collections';
     const isTemplates = content === 'templates';
     const isInspector = content === 'template_editor';
+    const isBuilder = content === 'template_builder';
 
     // Calculate field type counts for template editor
     const fieldTypeCounts: Record<string, number> = {};
@@ -961,7 +986,7 @@ export default function Home() {
 
     return {
       treeView: (isCollections ? 'collections' : isTemplates ? 'templates' : 'items') as ExplorerTab,
-      activeTab: (isInspector ? 'template_editor' : isCollections ? 'collections' : isTemplates ? 'templates' : 'items') as ExplorerTab | DockContent,
+      activeTab: (isInspector ? 'template_editor' : isBuilder ? 'template_builder' : isCollections ? 'collections' : isTemplates ? 'templates' : 'items') as ExplorerTab | DockContent,
       searchQuery: isInspector
         ? templateEditor.fieldSearchQuery
         : isCollections
@@ -1233,6 +1258,19 @@ export default function Home() {
               onSelectField={templateEditor.setSelectedFieldId}
               onDoneEditingTemplate={templateEditor.stopEditing}
               onAddFieldToTemplate={() => templateEditor.addField('text')}
+              layoutConfig={templateEditor.layoutConfig}
+              selectedBlockId={templateEditor.selectedBlockId}
+              canvasMode={templateEditor.canvasMode}
+              onSelectBlock={templateEditor.setSelectedBlockId}
+              onAddSection={templateEditor.addSection}
+              onRemoveSection={templateEditor.removeSection}
+              onUpdateSection={templateEditor.updateSection}
+              onAddBlock={templateEditor.addBlock}
+              onUpdateBlock={templateEditor.updateBlock}
+              onRemoveBlock={templateEditor.removeBlock}
+              onMoveBlock={templateEditor.moveBlock}
+              onResetLayout={templateEditor.resetLayoutToDefault}
+              onToggleCanvasMode={templateEditor.toggleCanvasMode}
             />
           </div>
 

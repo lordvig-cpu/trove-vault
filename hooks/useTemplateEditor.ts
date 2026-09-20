@@ -4,6 +4,7 @@ import { useState, useCallback, useRef } from 'react';
 import { supabase } from '@/lib/supabase';
 import { ItemTemplate } from '@/types/template';
 import { FieldDefinition, FieldType } from '@/types/field';
+import { TemplateLayoutConfig, LayoutSection, LayoutBlock } from '@/types/layout';
 import { DockContent } from '@/hooks/usePanelDockDrag';
 
 export interface WorkspaceTabSnapshot {
@@ -24,7 +25,31 @@ interface UseTemplateEditorOptions {
   onRefreshData?: () => Promise<void> | void;
   getTabSnapshot?: () => WorkspaceTabSnapshot;
   onRestoreTabs?: (snapshot: WorkspaceTabSnapshot) => void;
-  onOpenSecondaryPanel?: (tab: DockContent) => void;
+  onOpenSecondaryPanel?: (tabs: DockContent[], activeTab: DockContent) => void;
+}
+
+export function createDefaultLayout(fields: FieldDefinition[]): TemplateLayoutConfig {
+  const blocks: LayoutBlock[] = fields.map((f) => ({
+    id: `block-${f.id}`,
+    type: 'field',
+    field_id: f.id,
+    label: f.label,
+    col_span: 6,
+    row_span: 1,
+    variant: 'standard',
+  }));
+
+  return {
+    version: 1,
+    sections: [
+      {
+        id: 'sec-general',
+        title: 'General Information',
+        columns: 12,
+        blocks,
+      },
+    ],
+  };
 }
 
 export function useTemplateEditor({
@@ -44,6 +69,11 @@ export function useTemplateEditor({
   const [error, setError] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
+  // Layout Engine States
+  const [layoutConfig, setLayoutConfigState] = useState<TemplateLayoutConfig | null>(null);
+  const [selectedBlockId, setSelectedBlockId] = useState<string | null>(null);
+  const [canvasMode, setCanvasMode] = useState<'edit' | 'preview'>('edit');
+
   const toggleFieldTypeFilter = useCallback((type: FieldType) => {
     setFilterFieldTypes((prev) =>
       prev.includes(type) ? prev.filter((t) => t !== type) : [...prev, type]
@@ -54,11 +84,47 @@ export function useTemplateEditor({
     setFilterFieldTypes([]);
   }, []);
 
+  const toggleCanvasMode = useCallback(() => {
+    setCanvasMode((prev) => (prev === 'edit' ? 'preview' : 'edit'));
+  }, []);
+
   // Tab snapshot saved when entering edit mode
   const tabSnapshotRef = useRef<WorkspaceTabSnapshot | null>(null);
 
   /**
-   * Fetch full template data (including fields) for a given template ID
+   * Save layout configuration to state, localStorage, and attempt remote save
+   */
+  const saveLayoutConfig = useCallback(
+    async (nextLayout: TemplateLayoutConfig) => {
+      setLayoutConfigState(nextLayout);
+      if (editingTemplateId) {
+        if (typeof window !== 'undefined') {
+          try {
+            localStorage.setItem(
+              `trovevault_template_layout_${editingTemplateId}`,
+              JSON.stringify(nextLayout)
+            );
+          } catch (e) {
+            console.warn('Could not cache layout in localStorage:', e);
+          }
+        }
+
+        // Attempt remote save in Supabase if column is available
+        try {
+          await supabase
+            .from('item_templates')
+            .update({ layout_config: nextLayout } as any)
+            .eq('id', editingTemplateId);
+        } catch {
+          // Non-fatal if column does not yet exist
+        }
+      }
+    },
+    [editingTemplateId]
+  );
+
+  /**
+   * Fetch full template data (including fields and layout) for a given template ID
    */
   const loadTemplate = useCallback(async (templateId: number) => {
     try {
@@ -86,8 +152,29 @@ export function useTemplateEditor({
         })),
       };
 
+      // Resolve Layout: Check localStorage -> tmplData.layout_config -> generate default
+      let resolvedLayout: TemplateLayoutConfig | null = null;
+      if (typeof window !== 'undefined') {
+        try {
+          const cached = localStorage.getItem(`trovevault_template_layout_${templateId}`);
+          if (cached) resolvedLayout = JSON.parse(cached);
+        } catch {
+          // Ignore
+        }
+      }
+
+      if (!resolvedLayout && tmplData.layout_config) {
+        resolvedLayout = tmplData.layout_config;
+      }
+
+      if (!resolvedLayout) {
+        resolvedLayout = createDefaultLayout(loadedTemplate.fields || []);
+      }
+
       setActiveTemplate(loadedTemplate);
-      // If no field is selected and fields exist, optionally select root or first field
+      setLayoutConfigState(resolvedLayout);
+
+      // Select first field if available
       if (loadedTemplate.fields && loadedTemplate.fields.length > 0) {
         setSelectedFieldId(loadedTemplate.fields[0].id);
         setIsRootSelected(false);
@@ -110,8 +197,8 @@ export function useTemplateEditor({
    * Start editing a template:
    * 1. Takes snapshot of existing docked tabs
    * 2. Sets editingTemplateId
-   * 3. Loads template & fields
-   * 4. Focuses template_editor in right sidebar
+   * 3. Loads template & fields & layout
+   * 4. Focuses both Inspector and Builder tabs in right sidebar
    */
   const startEditing = useCallback(
     async (templateId: number) => {
@@ -125,10 +212,11 @@ export function useTemplateEditor({
       setFieldSearchQuery('');
       setFilterFieldTypes([]);
       setSuccessMsg(null);
+      setCanvasMode('edit');
 
-      // 2. Open right panel with template_editor
+      // 2. Open right panel with both template_editor and template_builder docked!
       if (onOpenSecondaryPanel) {
-        onOpenSecondaryPanel('template_editor');
+        onOpenSecondaryPanel(['template_editor', 'template_builder'], 'template_builder');
       }
 
       // 3. Load the template
@@ -409,6 +497,148 @@ export function useTemplateEditor({
     [editingTemplateId, activeTemplate, onRefreshData, loadTemplate]
   );
 
+  /* ------------------------------------------------------------------------
+     LAYOUT ENGINE MUTATIONS
+     ------------------------------------------------------------------------ */
+
+  const addSection = useCallback(
+    (title: string = 'New Section') => {
+      const newSec: LayoutSection = {
+        id: `sec-${Date.now()}`,
+        title,
+        columns: 12,
+        blocks: [],
+      };
+      const nextLayout: TemplateLayoutConfig = {
+        version: 1,
+        sections: [...(layoutConfig?.sections || []), newSec],
+      };
+      saveLayoutConfig(nextLayout);
+    },
+    [layoutConfig, saveLayoutConfig]
+  );
+
+  const removeSection = useCallback(
+    (sectionId: string) => {
+      if (!layoutConfig) return;
+      const nextSections = layoutConfig.sections.filter((s) => s.id !== sectionId);
+      saveLayoutConfig({ ...layoutConfig, sections: nextSections });
+    },
+    [layoutConfig, saveLayoutConfig]
+  );
+
+  const updateSection = useCallback(
+    (sectionId: string, partial: Partial<LayoutSection>) => {
+      if (!layoutConfig) return;
+      const nextSections = layoutConfig.sections.map((s) =>
+        s.id === sectionId ? { ...s, ...partial } : s
+      );
+      saveLayoutConfig({ ...layoutConfig, sections: nextSections });
+    },
+    [layoutConfig, saveLayoutConfig]
+  );
+
+  const reorderSections = useCallback(
+    (orderedIds: string[]) => {
+      if (!layoutConfig) return;
+      const secMap = new Map(layoutConfig.sections.map((s) => [s.id, s]));
+      const nextSections = orderedIds.map((id) => secMap.get(id)).filter(Boolean) as LayoutSection[];
+      saveLayoutConfig({ ...layoutConfig, sections: nextSections });
+    },
+    [layoutConfig, saveLayoutConfig]
+  );
+
+  const addBlock = useCallback(
+    (sectionId: string, block: Omit<LayoutBlock, 'id'>) => {
+      if (!layoutConfig) return;
+      const newBlock: LayoutBlock = {
+        ...block,
+        id: `block-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
+      };
+      const nextSections = layoutConfig.sections.map((sec) => {
+        if (sec.id === sectionId) {
+          return { ...sec, blocks: [...sec.blocks, newBlock] };
+        }
+        return sec;
+      });
+      saveLayoutConfig({ ...layoutConfig, sections: nextSections });
+      setSelectedBlockId(newBlock.id);
+    },
+    [layoutConfig, saveLayoutConfig]
+  );
+
+  const updateBlock = useCallback(
+    (sectionId: string, blockId: string, partial: Partial<LayoutBlock>) => {
+      if (!layoutConfig) return;
+      const nextSections = layoutConfig.sections.map((sec) => {
+        if (sec.id === sectionId) {
+          const nextBlocks = sec.blocks.map((b) => (b.id === blockId ? { ...b, ...partial } : b));
+          return { ...sec, blocks: nextBlocks };
+        }
+        return sec;
+      });
+      saveLayoutConfig({ ...layoutConfig, sections: nextSections });
+    },
+    [layoutConfig, saveLayoutConfig]
+  );
+
+  const removeBlock = useCallback(
+    (sectionId: string, blockId: string) => {
+      if (!layoutConfig) return;
+      const nextSections = layoutConfig.sections.map((sec) => {
+        if (sec.id === sectionId) {
+          return { ...sec, blocks: sec.blocks.filter((b) => b.id !== blockId) };
+        }
+        return sec;
+      });
+      saveLayoutConfig({ ...layoutConfig, sections: nextSections });
+      if (selectedBlockId === blockId) {
+        setSelectedBlockId(null);
+      }
+    },
+    [layoutConfig, selectedBlockId, saveLayoutConfig]
+  );
+
+  const moveBlock = useCallback(
+    (fromSectionId: string, toSectionId: string, blockId: string, toIndex?: number) => {
+      if (!layoutConfig) return;
+      let targetBlock: LayoutBlock | undefined;
+      // Extract block
+      const sectionsAfterExtract = layoutConfig.sections.map((sec) => {
+        if (sec.id === fromSectionId) {
+          targetBlock = sec.blocks.find((b) => b.id === blockId);
+          return { ...sec, blocks: sec.blocks.filter((b) => b.id !== blockId) };
+        }
+        return sec;
+      });
+
+      if (!targetBlock) return;
+
+      // Insert into destination
+      const nextSections = sectionsAfterExtract.map((sec) => {
+        if (sec.id === toSectionId) {
+          const list = [...sec.blocks];
+          if (typeof toIndex === 'number') {
+            list.splice(toIndex, 0, targetBlock!);
+          } else {
+            list.push(targetBlock!);
+          }
+          return { ...sec, blocks: list };
+        }
+        return sec;
+      });
+
+      saveLayoutConfig({ ...layoutConfig, sections: nextSections });
+    },
+    [layoutConfig, saveLayoutConfig]
+  );
+
+  const resetLayoutToDefault = useCallback(() => {
+    if (!activeTemplate) return;
+    const defaultLayout = createDefaultLayout(activeTemplate.fields || []);
+    saveLayoutConfig(defaultLayout);
+  }, [activeTemplate, saveLayoutConfig]);
+
   const selectedField = activeTemplate?.fields?.find((f) => f.id === selectedFieldId) || null;
 
   return {
@@ -449,6 +679,22 @@ export function useTemplateEditor({
     updateField,
     deleteField,
     reorderFields,
+    // Layout Engine APIs
+    layoutConfig,
+    selectedBlockId,
+    setSelectedBlockId,
+    canvasMode,
+    setCanvasMode,
+    toggleCanvasMode,
+    addSection,
+    removeSection,
+    updateSection,
+    reorderSections,
+    addBlock,
+    updateBlock,
+    removeBlock,
+    moveBlock,
+    resetLayoutToDefault,
   };
 }
 

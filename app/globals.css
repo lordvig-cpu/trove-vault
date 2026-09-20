@@ -19,6 +19,7 @@
 @import "./styles/components/fieldManagerModal.css";
 @import "./styles/components/templateManagerModal.css";
 @import "./styles/components/templateFieldInspector.css";
+@import "./styles/components/templateLayoutBuilder.css";
 @import "./styles/components/ItemModal.css";
 @import "./styles/components/BottomPanel.css";
 @import "./styles/components/PanelDockDropZones.css";

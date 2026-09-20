@@ -50,6 +50,8 @@ export default function PanelDockDropZones({
         return 'Templates';
       case 'template_editor':
         return 'Template Inspector';
+      case 'template_builder':
+        return 'Layout Builder';
       case 'grabbed_content':
         return 'Grabbed Content';
       default:
@@ -67,6 +69,8 @@ export default function PanelDockDropZones({
         return 'templates';
       case 'template_editor':
         return 'template_editor';
+      case 'template_builder':
+        return 'template_builder';
       case 'grabbed_content':
         return 'grabbed_content';
       case 'primary':
