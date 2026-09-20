@@ -16,7 +16,7 @@ export interface WorkspaceTabSnapshot {
   isSecondaryOpen: boolean;
   isPinned: boolean;
   isSecondaryPinned: boolean;
-  bottomPanelContent: 'empty' | 'grabbed_content';
+  bottomPanelContent: 'empty' | 'grabbed_content' | 'template_builder';
   isBottomPanelOpen: boolean;
   isBottomPinned: boolean;
 }
@@ -26,6 +26,7 @@ interface UseTemplateEditorOptions {
   getTabSnapshot?: () => WorkspaceTabSnapshot;
   onRestoreTabs?: (snapshot: WorkspaceTabSnapshot) => void;
   onOpenSecondaryPanel?: (tabs: DockContent[], activeTab: DockContent) => void;
+  onOpenBottomPanel?: (content: 'template_builder') => void;
 }
 
 export function createDefaultLayout(fields: FieldDefinition[]): TemplateLayoutConfig {
@@ -57,6 +58,7 @@ export function useTemplateEditor({
   getTabSnapshot,
   onRestoreTabs,
   onOpenSecondaryPanel,
+  onOpenBottomPanel,
 }: UseTemplateEditorOptions = {}) {
   const [editingTemplateId, setEditingTemplateId] = useState<number | null>(null);
   const [activeTemplate, setActiveTemplate] = useState<ItemTemplate | null>(null);
@@ -214,15 +216,20 @@ export function useTemplateEditor({
       setSuccessMsg(null);
       setCanvasMode('edit');
 
-      // 2. Open right panel with both template_editor and template_builder docked!
+      // 2. Open right panel with Template Inspector
       if (onOpenSecondaryPanel) {
-        onOpenSecondaryPanel(['template_editor', 'template_builder'], 'template_builder');
+        onOpenSecondaryPanel(['template_editor'], 'template_editor');
       }
 
-      // 3. Load the template
+      // 3. Open bottom panel with Builder
+      if (onOpenBottomPanel) {
+        onOpenBottomPanel('template_builder');
+      }
+
+      // 4. Load the template
       await loadTemplate(templateId);
     },
-    [getTabSnapshot, loadTemplate, onOpenSecondaryPanel]
+    [getTabSnapshot, loadTemplate, onOpenSecondaryPanel, onOpenBottomPanel]
   );
 
   /**

@@ -19,6 +19,9 @@ export const BOTTOM_PANEL_HEIGHT = DEFAULT_BOTTOM_PANEL_HEIGHT;
 interface BottomPanelProps {
   isOpen: boolean;
   isPinned?: boolean;
+  title?: string;
+  tabLabel?: string;
+  tabTitle?: string;
   onClose: () => void;
   onTogglePin?: () => void;
   onMoveLeft?: () => void;
@@ -29,12 +32,16 @@ interface BottomPanelProps {
   reservedRight?: number;
   children?: React.ReactNode;
   onHandlePointerDown?: (e: React.PointerEvent) => void;
+  onStartTabDrag?: (e: React.PointerEvent) => void;
   onHeightChange?: (height: number) => void;
 }
 
 export default function BottomPanel({
   isOpen,
   isPinned = false,
+  title,
+  tabLabel,
+  tabTitle,
   onClose,
   onTogglePin,
   onMoveLeft,
@@ -45,6 +52,7 @@ export default function BottomPanel({
   reservedRight = 0,
   children,
   onHandlePointerDown,
+  onStartTabDrag,
   onHeightChange,
 }: BottomPanelProps) {
   const { animationsEnabled, isHydrated } = useUIPreferences();
@@ -69,6 +77,8 @@ export default function BottomPanel({
     !isDragging && animationsEnabled && isHydrated
       ? 'transition-[transform,opacity,height,left,right] duration-500 ease-in-out'
       : 'transition-none';
+
+  const panelHeading = title || (occupied ? 'Grabbed Content' : 'Bottom Panel');
 
   return (
     <aside
@@ -160,13 +170,13 @@ export default function BottomPanel({
           <div
             onPointerDown={occupied ? onHandlePointerDown : undefined}
             className={`flex items-center gap-1.5 flex-1 min-w-0 py-0.5 ${
-              occupied ? 'cursor-grab active:cursor-grabbing' : ''
+              occupied ? 'cursor-grab active:cursor-grabbing hover:opacity-90' : ''
             }`}
             title={occupied ? 'Drag to dock content' : undefined}
           >
             <span className="text-[10px] text-muted opacity-60 tracking-tighter" aria-hidden="true">&#8942;&#8942;</span>
             <span className="explorer-header-title text-xs font-bold uppercase tracking-wider px-0.5 truncate">
-              {occupied ? 'Grabbed Content' : 'Bottom Panel'}
+              {panelHeading}
             </span>
           </div>
 
@@ -182,9 +192,9 @@ export default function BottomPanel({
                   ? 'Content must be docked first'
                   : !canMoveLeft
                   ? 'No empty sidebar available for displaced content'
-                  : 'Move Grabbed Content to Primary Side Bar'
+                  : `Move ${tabLabel || panelHeading} to Primary Side Bar`
               }
-            aria-label="Move content to Primary Side Bar"
+              aria-label="Move content to Primary Side Bar"
             >
               <DockLeftPanelIcon className="w-3.5 h-3.5" isOpen={true} />
             </button>
@@ -192,7 +202,7 @@ export default function BottomPanel({
               type="button"
               onClick={onClose}
               title="Hide Bottom Panel"
-            aria-label="Hide Bottom Panel"
+              aria-label="Hide Bottom Panel"
               className="p-1.5 rounded-lg border transition cursor-pointer flex items-center justify-center nav-footer-dock-btn-open"
             >
               <DockBottomPanelIcon className="w-4 h-4" isOpen={true} />
@@ -207,9 +217,9 @@ export default function BottomPanel({
                   ? 'Content must be docked first'
                   : !canMoveRight
                   ? 'No empty sidebar available for displaced content'
-                  : 'Move Grabbed Content to Secondary Side Bar'
+                  : `Move ${tabLabel || panelHeading} to Secondary Side Bar`
               }
-            aria-label="Move content to Secondary Side Bar"
+              aria-label="Move content to Secondary Side Bar"
             >
               <DockRightPanelIcon className="w-3.5 h-3.5" isOpen={true} />
             </button>
@@ -218,18 +228,60 @@ export default function BottomPanel({
               onClick={onTogglePin}
               className="primary-side-panel-pin-btn group"
               title={isPinned ? 'Unpin Bottom Panel' : 'Pin Bottom Panel'}
-            aria-label={isPinned ? 'Unpin Bottom Panel' : 'Pin Bottom Panel'}
+              aria-label={isPinned ? 'Unpin Bottom Panel' : 'Pin Bottom Panel'}
               aria-pressed={isPinned}
             >
               {isPinned ? <PinFilledIcon className="w-3.5 h-3.5" /> : <PinOutlineIcon className="w-3.5 h-3.5" />}
             </button>
           </div>
         </div>
+
+        {/* Paper Folder Tab Row (when occupied with a tab) */}
+        {occupied && tabLabel && (
+          <div className="flex items-end justify-between gap-1 w-full shrink-0 -mb-[1px]">
+            <div role="tablist" aria-label="Bottom panel views" className="flex items-center relative">
+              <button
+                type="button"
+                role="tab"
+                aria-selected={true}
+                onPointerDown={onStartTabDrag}
+                className="explorer-folder-tab explorer-folder-tab-active z-20 group/tab cursor-grab active:cursor-grabbing"
+                title={tabTitle || `${tabLabel} (drag to move tab)`}
+              >
+                <svg
+                  className="absolute inset-0 w-full h-full pointer-events-none"
+                  viewBox="0 0 100 28"
+                  preserveAspectRatio="none"
+                >
+                  <defs>
+                    <linearGradient id="bottom-panel-tab-grad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="var(--explorer-tab-active-top, rgba(18, 94, 158, 1))" className="tab-grad-top" />
+                      <stop offset="45%" stopColor="var(--explorer-tab-active-mid, rgba(10, 64, 112, 1))" className="tab-grad-mid" />
+                      <stop offset="100%" stopColor="var(--explorer-tab-active-bot, rgba(7, 47, 85, 1))" className="tab-grad-bot" />
+                    </linearGradient>
+                  </defs>
+                  <polygon
+                    points="0,28 7,0 93,0 100,28"
+                    fill="url(#bottom-panel-tab-grad)"
+                    className="tab-polygon"
+                  />
+                  <line x1="7" y1="0" x2="93" y2="0" className="tab-border-top" />
+                  <line x1="0" y1="28" x2="7" y2="0" className="tab-border-left" />
+                  <line x1="93" y1="0" x2="100" y2="28" className="tab-border-right" />
+                </svg>
+                <span className="relative z-10 font-bold select-none text-[12px] tracking-tight whitespace-nowrap">
+                  {tabLabel}
+                </span>
+              </button>
+            </div>
+          </div>
+        )}
+
         <hr className="explorer-header-divider" />
       </div>
 
-      {/* Content Area - Help message drop zone when empty, or renders children when occupied */}
-      <PanelContentTransition contentKey={occupied ? 'grabbed_content' : 'empty'}>
+      {/* Content Area */}
+      <PanelContentTransition contentKey={occupied ? (tabLabel || 'occupied') : 'empty'}>
         <div className="bottom-panel-content flex-1 min-h-0 overflow-auto relative z-10 flex flex-col">
           {children || (
             <EmptyPanelDropZone

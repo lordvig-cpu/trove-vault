@@ -11,7 +11,7 @@ interface PanelDockDropZonesProps {
   isTabReorder?: boolean;
   primaryPanelContent?: DockContent;
   secondaryPanelContent?: DockContent;
-  bottomPanelContent?: 'empty' | 'grabbed_content';
+  bottomPanelContent?: 'empty' | 'grabbed_content' | 'template_builder';
   primaryTabs?: DockContent[];
   secondaryTabs?: DockContent[];
   primaryActiveTab?: DockContent;

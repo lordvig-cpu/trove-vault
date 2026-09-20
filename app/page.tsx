@@ -142,7 +142,7 @@ export default function Home() {
   const [isPrimarySidePanelOpen, setIsPrimarySidePanelOpen] = useState<boolean>(false);
   const [isSecondaryOpen, setIsSecondaryOpen] = useState<boolean>(false);
   const [isBottomPanelOpen, setIsBottomPanelOpen] = useState<boolean>(false);
-  const [bottomPanelContent, setBottomPanelContent] = useState<'empty' | 'grabbed_content'>('empty');
+  const [bottomPanelContent, setBottomPanelContent] = useState<'empty' | 'grabbed_content' | 'template_builder'>('empty');
   const isBottomActive = isBottomPanelOpen || isBottomPinned;
   const [primaryPanelWidth, setPrimaryPanelWidth] = useState<number>(304);
   const [secondaryPanelWidth, setSecondaryPanelWidth] = useState<number>(304);
@@ -212,6 +212,10 @@ export default function Home() {
       setSecondaryTabs(tabs);
       setSecondaryActiveTab(activeTab);
       setIsSecondaryOpen(true);
+    },
+    onOpenBottomPanel: (content) => {
+      setBottomPanelContent(content);
+      setIsBottomPanelOpen(true);
     },
   });
 
@@ -641,10 +645,10 @@ export default function Home() {
 
       // 6. Dock to Bottom Panel
       if (targetZone === 'bottom') {
-        if (incoming === 'grabbed_content') {
-          setBottomPanelContent('grabbed_content');
-          removeTabFromPrimary('grabbed_content');
-          removeTabFromSecondary('grabbed_content');
+        if (incoming === 'grabbed_content' || incoming === 'template_builder') {
+          setBottomPanelContent(incoming);
+          removeTabFromPrimary(incoming);
+          removeTabFromSecondary(incoming);
           setIsBottomPanelOpen(true);
         } else if (panelId === 'bottom') {
           setIsBottomPanelOpen(true);
@@ -884,9 +888,9 @@ export default function Home() {
   );
   };
 
-  const renderPanelBody = (content: DockContent, pos: 'left' | 'right') => {
+  const renderPanelBody = (content: DockContent, pos: 'left' | 'right' | 'bottom') => {
     if (content === 'explorer' || content === 'collections' || content === 'templates') {
-      return renderExplorerTree(pos, content);
+      return renderExplorerTree(pos === 'bottom' ? 'left' : pos, content);
     }
     if (content === 'template_editor') {
       return (
@@ -908,7 +912,7 @@ export default function Home() {
           isSaving={templateEditor.isSaving}
           error={templateEditor.error}
           successMsg={templateEditor.successMsg}
-          position={pos}
+          position={pos === 'bottom' ? 'right' : pos}
         />
       );
     }
@@ -1278,6 +1282,32 @@ export default function Home() {
           <BottomPanel
             isOpen={isBottomActive}
             isPinned={isBottomPinned}
+            title={
+              bottomPanelContent === 'template_builder'
+                ? 'LAYOUT BUILDER'
+                : bottomPanelContent === 'grabbed_content'
+                ? 'GRABBED CONTENT'
+                : 'BOTTOM PANEL'
+            }
+            tabLabel={
+              bottomPanelContent === 'template_builder'
+                ? 'Builder'
+                : bottomPanelContent === 'grabbed_content'
+                ? 'Grabbed Content'
+                : undefined
+            }
+            tabTitle={
+              bottomPanelContent === 'template_builder'
+                ? 'Template Layout Builder (drag to move tab)'
+                : bottomPanelContent === 'grabbed_content'
+                ? 'Grabbed Content (drag to move tab)'
+                : undefined
+            }
+            onStartTabDrag={(e) => {
+              if (bottomPanelContent !== 'empty') {
+                startDockDrag(bottomPanelContent, e);
+              }
+            }}
             onClose={() => {
               setIsBottomPanelOpen(false);
               setIsBottomPinned(false);
@@ -1295,7 +1325,7 @@ export default function Home() {
             onHandlePointerDown={(e) => startDockDrag('bottom', e)}
             onHeightChange={setBottomPanelHeight}
           >
-            {bottomPanelContent === 'grabbed_content' ? renderPanelBody('grabbed_content', 'left') : null}
+            {bottomPanelContent !== 'empty' ? renderPanelBody(bottomPanelContent, 'bottom') : null}
           </BottomPanel>
 
           {/* Secondary Side Panel (Details / Inspector Drawer / Grabbed Content) - Sits Above Main Content (z-40) */}

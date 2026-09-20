@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { createDefaultLayout } from '../hooks/useTemplateEditor';
+import { isDockZoneAllowed } from '../hooks/usePanelDockDrag';
 import { FieldDefinition } from '../types/field';
 import { TemplateLayoutConfig, LayoutBlock, LayoutSection } from '../types/layout';
 
@@ -126,5 +127,16 @@ test.describe('Template Layout Engine & Grid System', () => {
     expect(layout.sections[0].blocks).toHaveLength(3);
     expect(layout.sections[1].blocks).toHaveLength(1);
     expect(layout.sections[1].blocks[0].row_span).toBe(4);
+  });
+
+  test('docking engine permits template_builder to dock to bottom panel and side panels', () => {
+    // Docking to bottom is allowed for template_builder
+    expect(isDockZoneAllowed('template_builder', 'bottom')).toBe(true);
+    expect(isDockZoneAllowed('template_editor', 'bottom')).toBe(false);
+
+    // Docking from bottom to sidebars is allowed
+    expect(isDockZoneAllowed('bottom', 'left', { bottom: 'template_builder' })).toBe(true);
+    expect(isDockZoneAllowed('bottom', 'right', { bottom: 'template_builder' })).toBe(true);
+    expect(isDockZoneAllowed('bottom', 'left-tab', { bottom: 'template_builder', primaryTabs: ['explorer'] })).toBe(true);
   });
 });

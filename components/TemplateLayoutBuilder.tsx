@@ -19,7 +19,7 @@ interface TemplateLayoutBuilderProps {
   onRemoveBlock: (sectionId: string, blockId: string) => void;
   onMoveBlock: (fromSectionId: string, toSectionId: string, blockId: string, toIndex?: number) => void;
   onResetLayout: () => void;
-  position?: 'left' | 'right';
+  position?: 'left' | 'right' | 'bottom';
 }
 
 const BLOCK_PRESETS: {
@@ -81,6 +81,7 @@ export default function TemplateLayoutBuilder({
   onUpdateBlock,
   onRemoveBlock,
   onResetLayout,
+  position = 'right',
 }: TemplateLayoutBuilderProps) {
   const [activeTab, setActiveTab] = useState<'palette' | 'tree' | 'block'>('palette');
   const [newSectionTitle, setNewSectionTitle] = useState('');
@@ -163,46 +164,71 @@ export default function TemplateLayoutBuilder({
       {/* --------------------------------------------------------------------
           1. BUILDER NAVIGATION SEGMENT
           -------------------------------------------------------------------- */}
-      <div className="flex items-center gap-1 p-1 bg-slate-900/40 border-b border-subtle shrink-0">
-        <button
-          type="button"
-          onClick={() => setActiveTab('palette')}
-          className={`flex-1 py-1 px-2 rounded-md text-[11px] font-semibold transition cursor-pointer flex items-center justify-center gap-1.5 ${
-            activeTab === 'palette'
-              ? 'bg-blue-500/20 text-white border border-blue-500/40'
-              : 'text-muted hover:text-strong hover:bg-slate-800/60'
-          }`}
-        >
-          <span>🎨</span>
-          <span>Palette</span>
-        </button>
-
-        <button
-          type="button"
-          onClick={() => setActiveTab('tree')}
-          className={`flex-1 py-1 px-2 rounded-md text-[11px] font-semibold transition cursor-pointer flex items-center justify-center gap-1.5 ${
-            activeTab === 'tree'
-              ? 'bg-blue-500/20 text-white border border-blue-500/40'
-              : 'text-muted hover:text-strong hover:bg-slate-800/60'
-          }`}
-        >
-          <span>📑</span>
-          <span>Outline ({sections.length})</span>
-        </button>
-
-        {selectedInfo && (
+      <div className="flex items-center justify-between gap-1 p-1 bg-slate-900/40 border-b border-subtle shrink-0">
+        <div className="flex items-center gap-1 flex-1 min-w-0">
           <button
             type="button"
-            onClick={() => setActiveTab('block')}
-            className={`flex-1 py-1 px-2 rounded-md text-[11px] font-semibold transition cursor-pointer flex items-center justify-center gap-1.5 ${
-              activeTab === 'block'
+            onClick={() => setActiveTab('palette')}
+            className={`py-1 px-2.5 rounded-md text-[11px] font-semibold transition cursor-pointer flex items-center justify-center gap-1.5 ${
+              activeTab === 'palette'
                 ? 'bg-blue-500/20 text-white border border-blue-500/40'
                 : 'text-muted hover:text-strong hover:bg-slate-800/60'
             }`}
           >
-            <span>⚙️</span>
-            <span>Block</span>
+            <span>🎨</span>
+            <span>Palette</span>
           </button>
+
+          <button
+            type="button"
+            onClick={() => setActiveTab('tree')}
+            className={`py-1 px-2.5 rounded-md text-[11px] font-semibold transition cursor-pointer flex items-center justify-center gap-1.5 ${
+              activeTab === 'tree'
+                ? 'bg-blue-500/20 text-white border border-blue-500/40'
+                : 'text-muted hover:text-strong hover:bg-slate-800/60'
+            }`}
+          >
+            <span>📑</span>
+            <span>Outline ({sections.length})</span>
+          </button>
+
+          {selectedInfo && (
+            <button
+              type="button"
+              onClick={() => setActiveTab('block')}
+              className={`py-1 px-2.5 rounded-md text-[11px] font-semibold transition cursor-pointer flex items-center justify-center gap-1.5 ${
+                activeTab === 'block'
+                  ? 'bg-blue-500/20 text-white border border-blue-500/40'
+                  : 'text-muted hover:text-strong hover:bg-slate-800/60'
+              }`}
+            >
+              <span>⚙️</span>
+              <span>Block: {selectedInfo.block.label || selectedInfo.block.type}</span>
+            </button>
+          )}
+        </div>
+
+        {position === 'bottom' && (
+          <div className="flex items-center gap-1 shrink-0 pr-1">
+            <button
+              type="button"
+              onClick={() => onAddSection('New Section')}
+              className="py-1 px-2.5 rounded-md text-[10.5px] font-semibold bg-blue-600/20 text-blue-300 hover:bg-blue-600/30 border border-blue-500/30 transition cursor-pointer flex items-center gap-1"
+              title="Add a new layout section"
+            >
+              <span>➕</span>
+              <span>Add Section</span>
+            </button>
+            <button
+              type="button"
+              onClick={onResetLayout}
+              className="py-1 px-2.5 rounded-md text-[10.5px] font-semibold text-muted hover:text-rose-300 hover:bg-rose-500/10 transition cursor-pointer flex items-center gap-1"
+              title="Reset layout to default grid"
+            >
+              <span>↺</span>
+              <span>Reset</span>
+            </button>
+          </div>
         )}
       </div>
 
@@ -212,9 +238,9 @@ export default function TemplateLayoutBuilder({
       <div className="flex-1 min-h-0 overflow-y-auto primary-panel-scroll p-2 flex flex-col gap-3">
         {/* PALETTE VIEW */}
         {activeTab === 'palette' && (
-          <>
+          <div className={position === 'bottom' ? 'grid grid-cols-1 md:grid-cols-2 gap-4 h-full' : 'flex flex-col gap-3'}>
             {/* Quick Component Presets */}
-            <div className="flex flex-col gap-1.5">
+            <div className="flex flex-col gap-1.5 min-w-0">
               <span className="text-[10px] font-bold text-muted uppercase tracking-wider">
                 Layout Blocks
               </span>
@@ -239,10 +265,29 @@ export default function TemplateLayoutBuilder({
                   </button>
                 ))}
               </div>
+
+              {/* Add Section Quick Bar (sidebar position) */}
+              {position !== 'bottom' && (
+                <form onSubmit={handleCreateSection} className="flex gap-1 pt-2 border-t border-subtle">
+                  <input
+                    type="text"
+                    value={newSectionTitle}
+                    onChange={(e) => setNewSectionTitle(e.target.value)}
+                    placeholder="New section title..."
+                    className="flex-1 min-w-0 px-2 py-1 text-xs bg-surface-panel border border-subtle rounded-md text-strong focus:outline-none focus:border-blue-400"
+                  />
+                  <button
+                    type="submit"
+                    className="px-2.5 py-1 text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-white rounded-md border border-subtle cursor-pointer transition"
+                  >
+                    + Section
+                  </button>
+                </form>
+              )}
             </div>
 
             {/* Template Fields to Place */}
-            <div className="flex flex-col gap-1.5 pt-2 border-t border-subtle">
+            <div className={`flex flex-col gap-1.5 min-w-0 ${position === 'bottom' ? 'border-l border-subtle pl-4' : 'pt-2 border-t border-subtle'}`}>
               <div className="flex items-center justify-between">
                 <span className="text-[10px] font-bold text-muted uppercase tracking-wider">
                   Template Fields ({fields.length})
@@ -252,7 +297,7 @@ export default function TemplateLayoutBuilder({
                 </span>
               </div>
 
-              <div className="flex flex-col gap-1">
+              <div className={`flex flex-col gap-1 ${position === 'bottom' ? 'overflow-y-auto primary-panel-scroll max-h-[160px]' : ''}`}>
                 {fields.map((field) => {
                   const isPlaced = placedFieldIds.has(field.id);
                   return (
@@ -303,24 +348,7 @@ export default function TemplateLayoutBuilder({
                 })}
               </div>
             </div>
-
-            {/* Add Section Quick Bar */}
-            <form onSubmit={handleCreateSection} className="flex gap-1 pt-2 border-t border-subtle">
-              <input
-                type="text"
-                value={newSectionTitle}
-                onChange={(e) => setNewSectionTitle(e.target.value)}
-                placeholder="New section title..."
-                className="flex-1 min-w-0 px-2 py-1 text-xs bg-surface-panel border border-subtle rounded-md text-strong focus:outline-none focus:border-blue-400"
-              />
-              <button
-                type="submit"
-                className="px-2.5 py-1 text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-white rounded-md border border-subtle cursor-pointer transition"
-              >
-                + Section
-              </button>
-            </form>
-          </>
+          </div>
         )}
 
         {/* OUTLINE / TREE VIEW */}
@@ -571,3 +599,4 @@ export default function TemplateLayoutBuilder({
     </div>
   );
 }
+

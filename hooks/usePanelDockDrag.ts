@@ -51,7 +51,7 @@ export function isDockZoneAllowed(
       : (contents[panelId] ?? 'empty');
 
   if (content === 'empty') return false;
-  if (targetZone === 'bottom') return content === 'grabbed_content';
+  if (targetZone === 'bottom') return content === 'grabbed_content' || content === 'template_builder';
   if (targetZone === 'remove') return true;
 
   const primaryTabs = contents.primaryTabs ?? (contents.primary && contents.primary !== 'empty' ? [contents.primary] : []);
