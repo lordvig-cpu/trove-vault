@@ -336,4 +336,37 @@ test.describe('Template Layout Engine & Grid System', () => {
       fullPage: true,
     });
   });
+
+  test('empty primary side panel renders empty drop zone without phantom items tab or section header', async ({ page }) => {
+    await page.goto('/');
+    await page.waitForLoadState('networkidle');
+
+    // Toggle open the Primary Side Panel via bottom navigation bar
+    const toggleLeftBtn = page.locator('button[aria-label="Toggle Left Panel"]');
+    await toggleLeftBtn.click();
+    await page.waitForTimeout(600);
+
+    // Primary Side Panel should be visible
+    const primaryPanel = page.locator('.primary-side-panel');
+    await expect(primaryPanel).toBeVisible();
+
+    // Verify empty state drop zone is visible
+    await expect(primaryPanel).toContainText(/PRIMARY SIDE PANEL is empty/i);
+    await expect(primaryPanel).toContainText('Please drag-and-drop to populate it');
+
+    // Verify there are NO phantom tabs (e.g. Items) rendered
+    const tabs = primaryPanel.locator('button[role="tab"]');
+    await expect(tabs).toHaveCount(0);
+
+    // Verify there is NO section heading (e.g. "Browse Items")
+    const sectionHeadings = primaryPanel.locator('.explorer-section-heading');
+    await expect(sectionHeadings).toHaveCount(0);
+
+    // Take screenshot of empty side panel for visual verification
+    await page.screenshot({
+      path: 'C:/Users/mc_cl/.gemini/antigravity/brain/31bae76a-fe56-4a8b-b91e-7d916ddebf78/empty_primary_side_panel_no_phantom_tabs.png',
+      fullPage: true,
+    });
+  });
 });
+

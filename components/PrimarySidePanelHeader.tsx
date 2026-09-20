@@ -155,23 +155,30 @@ export default function PrimarySidePanelHeader({
   const isRight = position === 'right';
   const { animationsEnabled } = useUIPreferences();
 
-  const displayedTabs: DockContent[] = tabs && tabs.length > 0
-    ? tabs
-    : activeTab === 'template_hierarchy'
-    ? ['template_hierarchy']
-    : activeTab === 'template_properties'
-    ? ['template_properties']
-    : activeTab === 'template_editor'
-    ? ['template_editor']
-    : activeTab === 'template_builder'
-    ? ['template_builder']
-    : treeView === 'collections'
-    ? ['collections']
-    : treeView === 'templates'
-    ? ['templates']
-    : treeView === 'items'
-    ? ['explorer']
-    : ['explorer', 'collections'];
+  const displayedTabs: DockContent[] =
+    tabs !== undefined
+      ? tabs
+      : variant === 'sidebar' && !hasDockedContent
+      ? []
+      : activeTab === 'empty'
+      ? []
+      : activeTab === 'template_hierarchy'
+      ? ['template_hierarchy']
+      : activeTab === 'template_properties'
+      ? ['template_properties']
+      : activeTab === 'template_editor'
+      ? ['template_editor']
+      : activeTab === 'template_builder'
+      ? ['template_builder']
+      : treeView === 'collections'
+      ? ['collections']
+      : treeView === 'templates'
+      ? ['templates']
+      : treeView === 'items'
+      ? ['explorer']
+      : variant === 'flyout'
+      ? ['explorer', 'collections']
+      : [];
   const [showAdvancedSearch, setShowAdvancedSearch] = useState(false);
   const [showAppliedFilters, setShowAppliedFilters] = useState(false);
   const [menuCoords, setMenuCoords] = useState({ top: 0, left: 0 });
@@ -364,7 +371,7 @@ export default function PrimarySidePanelHeader({
       </div>
 
       {/* Divider */}
-      <hr className="explorer-header-divider" />
+      {hasDockedContent && <hr className="explorer-header-divider" />}
 
       {/* ------------------------------------------------------------------
           ROW 2 & 3: Search Bar, Category Filters & Menus (Explorer Only)
@@ -874,258 +881,237 @@ export default function PrimarySidePanelHeader({
       {/* ------------------------------------------------------------------
           ROW 4: View Tabs & Contextual Create Action (Seated on baseline)
           ------------------------------------------------------------------ */}
-      <div className="explorer-section-heading">
-        <hr aria-hidden="true" />
-        <h3>
-          {isCollections
-            ? 'Browse Collections'
-            : isTemplates
-            ? 'Browse Templates'
-            : isGrabbed
-            ? 'Grabbed Content'
-            : isInspector
-            ? 'Field Schema Hierarchy'
-            : isBuilder
-            ? 'Layout & Palette'
-            : isProperties
-            ? 'Properties'
-            : isHierarchy
-            ? (hierarchyNodeCount !== undefined ? `Layout & Content (${hierarchyNodeCount})` : 'Layout & Content')
-            : 'Browse Items'}
-        </h3>
-      </div>
-      <div className="flex items-end justify-between gap-1 w-full shrink-0 -mb-[1px]">
-        {/* Left: View Mode Paper Folder Tabs */}
-        <div role="tablist" aria-label={`${panelName} views`} className="flex items-center relative">
-          {displayedTabs.map((tab, idx) => {
-            const isTabActive =
-              activeTab === tab ||
-              (activeTab === 'items' && tab === 'explorer');
-            const tabLabel =
-              tab === 'explorer'
-                ? 'Items'
-                : tab === 'collections'
-                ? 'Collections'
-                : tab === 'templates'
-                ? 'Templates'
-                : tab === 'template_editor'
-                ? 'Inspector'
-                : tab === 'template_builder'
-                ? 'Builder'
-                : tab === 'template_properties'
+      {displayedTabs.length > 0 && (
+        <>
+          <div className="explorer-section-heading">
+            <hr aria-hidden="true" />
+            <h3>
+              {isCollections
+                ? 'Browse Collections'
+                : isTemplates
+                ? 'Browse Templates'
+                : isGrabbed
+                ? 'Grabbed Content'
+                : isInspector
+                ? 'Field Schema Hierarchy'
+                : isBuilder
+                ? 'Layout & Palette'
+                : isProperties
                 ? 'Properties'
-                : tab === 'template_hierarchy'
-                ? 'Structure'
-                : 'Grabbed Content';
-            const tabTitle =
-              tab === 'explorer'
-                ? 'Show Items organized by Category (drag to move tab)'
-                : tab === 'collections'
-                ? 'Show Collections hierarchy (drag to move tab)'
-                : tab === 'templates'
-                ? 'Show Templates blueprint tree (drag to move tab)'
-                : tab === 'template_editor'
-                ? 'Show Template Field Inspector (drag to move tab)'
-                : tab === 'template_builder'
-                ? 'Show Template Layout Builder (drag to move tab)'
-                : tab === 'template_properties'
-                ? 'Show Element Properties (drag to move tab)'
-                : tab === 'template_hierarchy'
-                ? 'Show Layout Structure (drag to move tab)'
-                : 'Show Grabbed Content (drag to move tab)';
+                : isHierarchy
+                ? (hierarchyNodeCount !== undefined ? `Layout & Content (${hierarchyNodeCount})` : 'Layout & Content')
+                : 'Browse Items'}
+            </h3>
+          </div>
+          <div className="flex items-end justify-between gap-1 w-full shrink-0 -mb-[1px]">
+            {/* Left: View Mode Paper Folder Tabs */}
+            <div role="tablist" aria-label={`${panelName} views`} className="flex items-center relative">
+              {displayedTabs.map((tab, idx) => {
+                const isTabActive =
+                  activeTab === tab ||
+                  (activeTab === 'items' && tab === 'explorer');
+                const tabLabel =
+                  tab === 'explorer'
+                    ? 'Items'
+                    : tab === 'collections'
+                    ? 'Collections'
+                    : tab === 'templates'
+                    ? 'Templates'
+                    : tab === 'template_editor'
+                    ? 'Inspector'
+                    : tab === 'template_builder'
+                    ? 'Builder'
+                    : tab === 'template_properties'
+                    ? 'Properties'
+                    : tab === 'template_hierarchy'
+                    ? 'Structure'
+                    : 'Grabbed Content';
+                const tabTitle =
+                  tab === 'explorer'
+                    ? 'Show Items organized by Category (drag to move tab)'
+                    : tab === 'collections'
+                    ? 'Show Collections hierarchy (drag to move tab)'
+                    : tab === 'templates'
+                    ? 'Show Templates blueprint tree (drag to move tab)'
+                    : tab === 'template_editor'
+                    ? 'Show Template Field Inspector (drag to move tab)'
+                    : tab === 'template_builder'
+                    ? 'Show Template Layout Builder (drag to move tab)'
+                    : tab === 'template_properties'
+                    ? 'Show Element Properties (drag to move tab)'
+                    : tab === 'template_hierarchy'
+                    ? 'Show Layout Structure (drag to move tab)'
+                    : 'Show Grabbed Content (drag to move tab)';
 
-            const isThisTabDragging = isDragging && reorderInfo?.draggingTab === tab && reorderInfo?.side === position;
-            const isThisTabTarget = isDragging && reorderInfo?.side === position && reorderInfo?.targetIndex === idx;
-            const showInsertBefore = isThisTabTarget && !reorderInfo?.isAfter;
-            const showInsertAfter = isThisTabTarget && reorderInfo?.isAfter;
+                const isThisTabDragging = isDragging && reorderInfo?.draggingTab === tab && reorderInfo?.side === position;
+                const isThisTabTarget = isDragging && reorderInfo?.side === position && reorderInfo?.targetIndex === idx;
+                const showInsertBefore = isThisTabTarget && !reorderInfo?.isAfter;
+                const showInsertAfter = isThisTabTarget && reorderInfo?.isAfter;
 
-            return (
-              <div key={tab} className="relative flex items-center">
-                {showInsertBefore && (
-                  <div className="explorer-tab-insert-marker explorer-tab-insert-marker-left" />
-                )}
-                <button
-                  data-tab-name={tab}
-                  data-tab-index={idx}
-                  data-panel-side={position}
-                  type="button"
-                  role="tab"
-                  aria-selected={isTabActive}
-                  onClick={() => onTabChange?.(tab as any)}
-                  onPointerDown={(e) => {
-                    if (tab !== 'empty') onStartTabDrag?.(tab, e);
-                  }}
-                  className={`explorer-folder-tab group/tab cursor-grab active:cursor-grabbing ${idx > 0 ? '-ml-3.5' : ''} ${
-                    isThisTabTarget
-                      ? 'explorer-folder-tab-reorder-target z-30'
-                      : isTabActive
-                      ? 'explorer-folder-tab-active z-20'
-                      : 'explorer-folder-tab-idle z-10'
-                  } ${isThisTabDragging ? 'explorer-folder-tab-dragging' : ''}`}
-                  title={tabTitle}
-                >
-                  <svg
-                    className="absolute inset-0 w-full h-full pointer-events-none"
-                    viewBox="0 0 100 28"
-                    preserveAspectRatio="none"
-                  >
-                    <defs>
-                      <linearGradient id={`${headerId}-${tab}`} x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="var(--explorer-tab-active-top, rgba(18, 94, 158, 1))" className="tab-grad-top" />
-                        <stop offset="45%" stopColor="var(--explorer-tab-active-mid, rgba(10, 64, 112, 1))" className="tab-grad-mid" />
-                        <stop offset="100%" stopColor="var(--explorer-tab-active-bottom, rgba(5, 36, 70, 1))" className="tab-grad-bottom" />
-                      </linearGradient>
-                    </defs>
-                    <path
-                      d="M 0,28 L 8,3 C 9,1 11,0 14,0 L 86,0 C 89,0 91,1 92,3 L 100,28 Z"
-                      className="explorer-tab-svg-fill"
-                      style={isTabActive || isThisTabTarget ? { fill: `url(#${headerId}-${tab})` } : undefined}
-                    />
-                    <path
-                      d="M 0,28 L 8,3 C 9,1 11,0 14,0 L 86,0 C 89,0 91,1 92,3 L 100,28"
-                      className="explorer-tab-svg-stroke"
-                      fill="none"
-                      strokeWidth={isThisTabTarget ? '2' : '1.5'}
-                      vectorEffect="non-scaling-stroke"
-                    />
-                  </svg>
-                  <span className="relative z-10 flex items-center gap-1 px-0.5 select-none">
-                    <span
-                      className="text-[9px] opacity-40 group-hover/tab:opacity-90 transition-opacity tracking-tighter"
-                      aria-hidden="true"
+                return (
+                  <div key={tab} className="relative flex items-center">
+                    {showInsertBefore && (
+                      <div className="explorer-tab-insert-marker explorer-tab-insert-marker-left" />
+                    )}
+                    <button
+                      data-tab-name={tab}
+                      data-tab-index={idx}
+                      data-panel-side={position}
+                      role="tab"
+                      aria-selected={isTabActive}
+                      title={tabTitle}
+                      onClick={() => onTabChange?.(tab === 'explorer' ? 'items' : tab)}
+                      className={`explorer-tab explorer-tab-drop-target group ${
+                        isTabActive
+                          ? 'explorer-tab-active font-bold text-white'
+                          : 'explorer-tab-idle text-muted hover:text-white'
+                      }`}
                     >
-                      ⋮⋮
-                    </span>
-                    <span>{tabLabel}</span>
-                  </span>
-                </button>
-                {showInsertAfter && (
-                  <div className="explorer-tab-insert-marker explorer-tab-insert-marker-right" />
+                      {/* Drag Handle Gripper Dots */}
+                      <span
+                        onPointerDown={(e) => {
+                          e.stopPropagation();
+                          if (tab !== 'empty') {
+                            onStartTabDrag?.(tab as Exclude<DockContent, 'empty'>, e);
+                          }
+                        }}
+                        className="explorer-tab-grip cursor-grab active:cursor-grabbing mr-1 opacity-40 hover:opacity-100 text-[10px] select-none tracking-tighter"
+                        title="Drag to undock or move tab"
+                        aria-label="Drag to undock or move tab"
+                      >
+                        ⋮⋮
+                      </span>
+                      <span>{tabLabel}</span>
+                    </button>
+                    {showInsertAfter && (
+                      <div className="explorer-tab-insert-marker explorer-tab-insert-marker-right" />
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Right: Contextual Add Action & Folder Toggle */}
+            {activeTab !== 'empty' && (
+              <div className="flex items-center gap-1.5 shrink-0 pr-1 pb-1">
+                {isInspector ? (
+                  onAddNewField && (
+                    <button
+                      type="button"
+                      onClick={onAddNewField}
+                      className="explorer-tab-action-btn group"
+                      title="Add New Field Definition"
+                    >
+                      <svg
+                        className="w-2.5 h-2.5 origin-center transition-transform duration-150 ease-out group-hover:scale-110 text-[var(--explorer-action-icon,rgba(109,170,209,0.85))] group-hover:text-white"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <line x1="12" y1="5" x2="12" y2="19" />
+                        <line x1="5" y1="12" x2="19" y2="12" />
+                      </svg>
+                    </button>
+                  )
+                ) : isTemplates ? (
+                  onAddNewTemplate && (
+                    <button
+                      type="button"
+                      onClick={onAddNewTemplate}
+                      className="explorer-tab-action-btn group"
+                      title="Create New Item Template"
+                    >
+                      <svg
+                        className="w-2.5 h-2.5 origin-center transition-transform duration-150 ease-out group-hover:scale-110 text-[var(--explorer-action-icon,rgba(109,170,209,0.85))] group-hover:text-white"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <line x1="12" y1="5" x2="12" y2="19" />
+                        <line x1="5" y1="12" x2="19" y2="12" />
+                      </svg>
+                    </button>
+                  )
+                ) : isCollections ? (
+                  onAddNewCollection && (
+                    <button
+                      type="button"
+                      onClick={onAddNewCollection}
+                      className="explorer-tab-action-btn group"
+                      title="Create New Collection"
+                    >
+                      <svg
+                        className="w-2.5 h-2.5 origin-center transition-transform duration-150 ease-out group-hover:scale-110 text-[var(--explorer-action-icon,rgba(109,170,209,0.85))] group-hover:text-white"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <line x1="12" y1="5" x2="12" y2="19" />
+                        <line x1="5" y1="12" x2="19" y2="12" />
+                      </svg>
+                    </button>
+                  )
+                ) : isHierarchy || isProperties ? (
+                  null
+                ) : (
+                  onAddNewItem && (
+                    <button
+                      type="button"
+                      onClick={onAddNewItem}
+                      className="explorer-tab-action-btn group"
+                      title="Create New Item"
+                    >
+                      <svg
+                        className="w-2.5 h-2.5 origin-center transition-transform duration-150 ease-out group-hover:scale-110 text-[var(--explorer-action-icon,rgba(109,170,209,0.85))] group-hover:text-white"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <line x1="12" y1="5" x2="12" y2="19" />
+                        <line x1="5" y1="12" x2="19" y2="12" />
+                      </svg>
+                    </button>
+                  )
+                )}
+
+                {activeToggleAll && (
+                  <button
+                    type="button"
+                    onClick={activeToggleAll}
+                    disabled={searchQuery.trim().length > 0}
+                    className="explorer-tab-action-btn explorer-panel-disabled group disabled:pointer-events-none disabled:cursor-not-allowed"
+                    title={
+                      searchQuery.trim().length > 0
+                        ? 'Tree expansion disabled during search'
+                        : activeIsExpanded
+                        ? 'Collapse all'
+                        : 'Expand all'
+                    }
+                  >
+                    {activeIsExpanded ? (
+                      <FolderCollapseIcon className="w-3 h-3 text-[var(--explorer-action-icon,rgba(109,170,209,0.85))] group-hover:text-white" />
+                    ) : (
+                      <FolderExpandIcon className="w-3 h-3 text-[var(--explorer-action-icon,rgba(109,170,209,0.85))] group-hover:text-white" />
+                    )}
+                  </button>
                 )}
               </div>
-            );
-          })}
-        </div>
-
-        {/* Right: Actions Cluster (Contextual Add + Expand/Collapse) */}
-        {!isGrabbed && (
-          <div className="flex items-center gap-1 shrink-0 mb-1">
-            {isInspector ? (
-              onAddNewField && (
-                <button
-                  type="button"
-                  onClick={onAddNewField}
-                  className="explorer-tab-action-btn group"
-                  title="Create New Item Template Field"
-                >
-                  <svg
-                    className="w-2.5 h-2.5 origin-center transition-transform duration-150 ease-out group-hover:scale-110 text-[var(--explorer-action-icon,rgba(109,170,209,0.85))] group-hover:text-white"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <line x1="12" y1="5" x2="12" y2="19" />
-                    <line x1="5" y1="12" x2="19" y2="12" />
-                  </svg>
-                </button>
-              )
-            ) : isTemplates ? (
-              onAddNewTemplate && (
-                <button
-                  type="button"
-                  onClick={onAddNewTemplate}
-                  className="explorer-tab-action-btn group"
-                  title="Create New Item Template"
-                >
-                  <svg
-                    className="w-2.5 h-2.5 origin-center transition-transform duration-150 ease-out group-hover:scale-110 text-[var(--explorer-action-icon,rgba(109,170,209,0.85))] group-hover:text-white"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <line x1="12" y1="5" x2="12" y2="19" />
-                    <line x1="5" y1="12" x2="19" y2="12" />
-                  </svg>
-                </button>
-              )
-            ) : isCollections ? (
-              onAddNewCollection && (
-                <button
-                  type="button"
-                  onClick={onAddNewCollection}
-                  className="explorer-tab-action-btn group"
-                  title="Create New Collection"
-                >
-                  <svg
-                    className="w-2.5 h-2.5 origin-center transition-transform duration-150 ease-out group-hover:scale-110 text-[var(--explorer-action-icon,rgba(109,170,209,0.85))] group-hover:text-white"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <line x1="12" y1="5" x2="12" y2="19" />
-                    <line x1="5" y1="12" x2="19" y2="12" />
-                  </svg>
-                </button>
-              )
-            ) : isHierarchy || isProperties ? (
-              null
-            ) : (
-              onAddNewItem && (
-                <button
-                  type="button"
-                  onClick={onAddNewItem}
-                  className="explorer-tab-action-btn group"
-                  title="Create New Item"
-                >
-                  <svg
-                    className="w-2.5 h-2.5 origin-center transition-transform duration-150 ease-out group-hover:scale-110 text-[var(--explorer-action-icon,rgba(109,170,209,0.85))] group-hover:text-white"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <line x1="12" y1="5" x2="12" y2="19" />
-                    <line x1="5" y1="12" x2="19" y2="12" />
-                  </svg>
-                </button>
-              )
-            )}
-
-            {activeToggleAll && (
-              <button
-                type="button"
-                onClick={activeToggleAll}
-                disabled={searchQuery.trim().length > 0}
-                className="explorer-tab-action-btn explorer-panel-disabled group disabled:pointer-events-none disabled:cursor-not-allowed"
-                title={
-                  searchQuery.trim().length > 0
-                    ? 'Tree expansion disabled during search'
-                    : activeIsExpanded
-                    ? 'Collapse all'
-                    : 'Expand all'
-                }
-              >
-                {activeIsExpanded ? (
-                  <FolderCollapseIcon className="w-3 h-3 text-[var(--explorer-action-icon,rgba(109,170,209,0.85))] group-hover:text-white" />
-                ) : (
-                  <FolderExpandIcon className="w-3 h-3 text-[var(--explorer-action-icon,rgba(109,170,209,0.85))] group-hover:text-white" />
-                )}
-              </button>
             )}
           </div>
-        )}
-      </div>
+        </>
+      )}
     </div>
   );
 }

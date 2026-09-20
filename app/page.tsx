@@ -1100,9 +1100,13 @@ export default function Home() {
       }
     }
 
+    const isEmpty = content === 'empty';
+
     return {
-      treeView: (isCollections ? 'collections' : isTemplates ? 'templates' : 'items') as ExplorerTab,
-      activeTab: (isInspector
+      treeView: (isEmpty ? undefined : isCollections ? 'collections' : isTemplates ? 'templates' : 'items') as ExplorerTab,
+      activeTab: (isEmpty
+        ? 'empty'
+        : isInspector
         ? 'template_editor'
         : isBuilder
         ? 'template_builder'
@@ -1114,7 +1118,7 @@ export default function Home() {
         ? 'collections'
         : isTemplates
         ? 'templates'
-        : 'items') as ExplorerTab | DockContent,
+        : content) as ExplorerTab | DockContent,
       searchQuery: isInspector
         ? templateEditor.fieldSearchQuery
         : isCollections
