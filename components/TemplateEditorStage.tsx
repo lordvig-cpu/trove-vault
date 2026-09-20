@@ -5,35 +5,503 @@ import { ItemTemplate } from '@/types/template';
 import { FieldDefinition } from '@/types/field';
 import {
   TemplateLayoutConfig,
+  TemplateFlexLayoutConfig,
+  FlexContainerNode,
+  FlexComponentNode,
   LayoutSection,
   LayoutBlock,
-  LayoutBlockType,
-  LayoutVariant,
 } from '@/types/layout';
+
+/* ==========================================================================
+   1. PROPS INTERFACE
+   ========================================================================== */
 
 interface TemplateEditorStageProps {
   template: ItemTemplate;
-  layoutConfig: TemplateLayoutConfig | null;
-  selectedBlockId: string | null;
-  selectedFieldId: number | null;
+  // Modern Flexbox Layout Engine Props
+  flexLayoutConfig?: TemplateFlexLayoutConfig | null;
+  selectedNodeId?: string | null;
+  activeContainerId?: string;
+  onSelectNode?: (nodeId: string | null) => void;
+  onAddPrimitive?: (
+    primitiveType: 'row' | 'column' | 'split-2' | 'split-3' | 'card',
+    targetContainerId?: string
+  ) => string;
+  onAddFlexContainer?: (
+    targetContainerId: string,
+    options?: Partial<FlexContainerNode>
+  ) => string;
+  onUpdateFlexContainer?: (
+    containerId: string,
+    partial: Partial<FlexContainerNode>
+  ) => void;
+  onRemoveFlexContainer?: (containerId: string) => void;
+  onAddFlexComponent?: (
+    targetContainerId: string,
+    options: Omit<FlexComponentNode, 'id' | 'nodeType'>
+  ) => string;
+  onUpdateFlexComponent?: (
+    componentId: string,
+    partial: Partial<FlexComponentNode>
+  ) => void;
+  onRemoveFlexComponent?: (componentId: string) => void;
+  onPlaceField?: (fieldId: number, targetContainerId?: string) => void;
+  onResetFlexLayout?: () => void;
+
+  // Legacy / fallback props
+  layoutConfig?: TemplateLayoutConfig | null;
+  selectedBlockId?: string | null;
+  selectedFieldId?: number | null;
   canvasMode: 'edit' | 'preview';
-  onSelectBlock: (blockId: string | null) => void;
-  onSelectField: (fieldId: number | null) => void;
+  onSelectBlock?: (blockId: string | null) => void;
+  onSelectField?: (fieldId: number | null) => void;
   onDoneEditing: () => void;
-  onAddField: () => void;
-  onAddSection: (title?: string) => void;
-  onRemoveSection: (sectionId: string) => void;
-  onUpdateSection: (sectionId: string, partial: Partial<LayoutSection>) => void;
-  onAddBlock: (sectionId: string, block: Omit<LayoutBlock, 'id'>) => void;
-  onUpdateBlock: (sectionId: string, blockId: string, partial: Partial<LayoutBlock>) => void;
-  onRemoveBlock: (sectionId: string, blockId: string) => void;
-  onMoveBlock: (fromSectionId: string, toSectionId: string, blockId: string, toIndex?: number) => void;
-  onResetLayout: () => void;
+  onAddField?: () => void;
+  onAddSection?: (title?: string) => void;
+  onRemoveSection?: (sectionId: string) => void;
+  onUpdateSection?: (sectionId: string, partial: Partial<LayoutSection>) => void;
+  onAddBlock?: (sectionId: string, block: Omit<LayoutBlock, 'id'>) => void;
+  onUpdateBlock?: (
+    sectionId: string,
+    blockId: string,
+    partial: Partial<LayoutBlock>
+  ) => void;
+  onRemoveBlock?: (sectionId: string, blockId: string) => void;
+  onMoveBlock?: (
+    fromSectionId: string,
+    toSectionId: string,
+    blockId: string,
+    toIndex?: number
+  ) => void;
+  onResetLayout?: () => void;
   onToggleCanvasMode: () => void;
 }
 
+/* ==========================================================================
+   2. RECURSIVE FLEX CONTAINER RENDERER
+   ========================================================================== */
+
+function FlexContainerRenderer({
+  container,
+  isRoot,
+  selectedNodeId,
+  activeContainerId,
+  canvasMode,
+  fields,
+  onSelectNode,
+  onAddPrimitive,
+  onUpdateContainer,
+  onRemoveContainer,
+  onUpdateComponent,
+  onRemoveComponent,
+}: {
+  container: FlexContainerNode;
+  isRoot?: boolean;
+  selectedNodeId?: string | null;
+  activeContainerId?: string;
+  canvasMode: 'edit' | 'preview';
+  fields: FieldDefinition[];
+  onSelectNode?: (id: string | null) => void;
+  onAddPrimitive?: (
+    type: 'row' | 'column' | 'split-2' | 'split-3' | 'card',
+    targetId?: string
+  ) => void;
+  onUpdateContainer?: (id: string, partial: Partial<FlexContainerNode>) => void;
+  onRemoveContainer?: (id: string) => void;
+  onUpdateComponent?: (id: string, partial: Partial<FlexComponentNode>) => void;
+  onRemoveComponent?: (id: string) => void;
+}) {
+  const isSelected = selectedNodeId === container.id;
+  const isActive = activeContainerId === container.id;
+
+  const justifyStyle =
+    container.justify === 'between'
+      ? 'space-between'
+      : container.justify === 'around'
+      ? 'space-around'
+      : container.justify === 'center'
+      ? 'center'
+      : container.justify === 'end'
+      ? 'flex-end'
+      : 'flex-start';
+
+  const flexStyle: React.CSSProperties = {
+    display: 'flex',
+    flexDirection: container.direction,
+    gap: `${container.gap}px`,
+    flexWrap: container.wrap ? 'wrap' : 'nowrap',
+    alignItems: container.align,
+    justifyContent: justifyStyle,
+    padding:
+      container.padding !== undefined
+        ? `${container.padding}px`
+        : isRoot
+        ? '0px'
+        : '12px',
+    flex:
+      container.sizing?.type === 'fixed'
+        ? `0 0 ${container.sizing.value || 'auto'}`
+        : container.sizing?.type === 'auto'
+        ? '0 0 auto'
+        : '1 1 0%',
+    width:
+      container.sizing?.type === 'fixed' && container.sizing.value
+        ? container.sizing.value
+        : undefined,
+    minWidth: 0,
+  };
+
+  const isCard = container.isCard;
+
+  return (
+    <div
+      onClick={(e) => {
+        e.stopPropagation();
+        if (canvasMode === 'edit') onSelectNode?.(container.id);
+      }}
+      className={`transition-all duration-150 relative ${
+        canvasMode === 'preview'
+          ? isCard
+            ? 'rounded-2xl bg-slate-900/60 border border-slate-800/80 shadow-md backdrop-blur-sm'
+            : ''
+          : isSelected
+          ? 'rounded-2xl ring-2 ring-blue-500/90 bg-blue-950/20 shadow-xl shadow-blue-500/10 border border-blue-400/60 p-1.5'
+          : isActive
+          ? 'rounded-2xl border border-blue-500/40 bg-slate-900/30 p-1.5'
+          : isCard
+          ? 'rounded-2xl border border-slate-800 bg-slate-900/50 hover:border-slate-700/80 p-1.5'
+          : 'rounded-2xl border border-dashed border-slate-800/70 bg-slate-950/20 hover:border-slate-700/70 p-1.5'
+      }`}
+    >
+      {/* Container Header Bar in Edit Mode */}
+      {canvasMode === 'edit' && !isRoot && (
+        <div className="flex items-center justify-between px-2 py-1 mb-1 border-b border-slate-800/60 select-none">
+          <div className="flex items-center gap-1.5 min-w-0">
+            <span className="text-xs">📁</span>
+            <span className="text-[11px] font-bold text-slate-200 tracking-wide truncate">
+              {container.label || 'Container'}
+            </span>
+            <span className="text-[9.5px] font-mono px-1.5 py-0.5 rounded bg-slate-800/90 text-blue-300 border border-slate-700/60">
+              {container.direction === 'row' ? '➡ Row' : '⬇ Col'}
+            </span>
+            <span className="text-[9px] font-mono text-slate-400">
+              {container.gap}px gap
+            </span>
+            {isCard && (
+              <span className="text-[9px] font-bold text-emerald-400 px-1 rounded bg-emerald-500/10 border border-emerald-500/20">
+                Card
+              </span>
+            )}
+          </div>
+
+          <div className="flex items-center gap-1 shrink-0">
+            {container.id !== 'root-container' && (
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onRemoveContainer?.(container.id);
+                }}
+                className="text-xs text-red-400 hover:text-red-300 p-0.5 rounded hover:bg-red-500/10 transition cursor-pointer"
+                title="Delete Container"
+              >
+                🗑️
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Children or Empty State */}
+      <div style={flexStyle} className="w-full">
+        {container.children.length === 0 ? (
+          canvasMode === 'edit' ? (
+            <div className="w-full py-6 border border-dashed border-slate-800/80 rounded-xl flex flex-col items-center justify-center text-center gap-2 select-none bg-slate-900/10">
+              <span className="text-[11px] text-slate-400 italic">
+                Empty container. Drop or add layout primitives or components from the bottom panel.
+              </span>
+              <div className="flex items-center gap-1.5 mt-1">
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onAddPrimitive?.('row', container.id);
+                  }}
+                  className="px-2 py-0.5 text-[10.5px] font-semibold text-blue-300 bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/20 rounded-md transition cursor-pointer"
+                >
+                  + Row
+                </button>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onAddPrimitive?.('column', container.id);
+                  }}
+                  className="px-2 py-0.5 text-[10.5px] font-semibold text-purple-300 bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/20 rounded-md transition cursor-pointer"
+                >
+                  + Column
+                </button>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onAddPrimitive?.('card', container.id);
+                  }}
+                  className="px-2 py-0.5 text-[10.5px] font-semibold text-emerald-300 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 rounded-md transition cursor-pointer"
+                >
+                  + Card Frame
+                </button>
+              </div>
+            </div>
+          ) : null
+        ) : (
+          container.children.map((child) => {
+            if (child.nodeType === 'container') {
+              return (
+                <FlexContainerRenderer
+                  key={child.id}
+                  container={child}
+                  selectedNodeId={selectedNodeId}
+                  activeContainerId={activeContainerId}
+                  canvasMode={canvasMode}
+                  fields={fields}
+                  onSelectNode={onSelectNode}
+                  onAddPrimitive={onAddPrimitive}
+                  onUpdateContainer={onUpdateContainer}
+                  onRemoveContainer={onRemoveContainer}
+                  onUpdateComponent={onUpdateComponent}
+                  onRemoveComponent={onRemoveComponent}
+                />
+              );
+            }
+            return (
+              <FlexComponentRenderer
+                key={child.id}
+                component={child}
+                selectedNodeId={selectedNodeId}
+                canvasMode={canvasMode}
+                fields={fields}
+                onSelectNode={onSelectNode}
+                onRemoveComponent={onRemoveComponent}
+              />
+            );
+          })
+        )}
+      </div>
+    </div>
+  );
+}
+
+/* ==========================================================================
+   3. FLEX COMPONENT RENDERER
+   ========================================================================== */
+
+function FlexComponentRenderer({
+  component,
+  selectedNodeId,
+  canvasMode,
+  fields,
+  onSelectNode,
+  onRemoveComponent,
+}: {
+  component: FlexComponentNode;
+  selectedNodeId?: string | null;
+  canvasMode: 'edit' | 'preview';
+  fields: FieldDefinition[];
+  onSelectNode?: (id: string | null) => void;
+  onRemoveComponent?: (id: string) => void;
+}) {
+  const isSelected = selectedNodeId === component.id;
+  const boundField = component.field_id
+    ? fields.find((f) => f.id === component.field_id)
+    : undefined;
+  const label = component.label || boundField?.label || component.componentType;
+
+  const componentStyle: React.CSSProperties = {
+    flex:
+      component.sizing?.type === 'fixed'
+        ? `0 0 ${component.sizing.value || 'auto'}`
+        : component.sizing?.type === 'auto'
+        ? '0 0 auto'
+        : '1 1 0%',
+    width:
+      component.sizing?.type === 'fixed' && component.sizing.value
+        ? component.sizing.value
+        : undefined,
+    minWidth: 0,
+  };
+
+  return (
+    <div
+      style={componentStyle}
+      onClick={(e) => {
+        e.stopPropagation();
+        if (canvasMode === 'edit') onSelectNode?.(component.id);
+      }}
+      className={`transition-all duration-150 relative ${
+        canvasMode === 'preview'
+          ? 'rounded-xl bg-slate-900/40 border border-slate-800/80 p-3'
+          : isSelected
+          ? 'rounded-xl ring-2 ring-amber-500/90 bg-amber-950/20 shadow-lg shadow-amber-500/10 border border-amber-500/60 p-3 cursor-pointer'
+          : 'rounded-xl border border-slate-800 bg-slate-900/50 hover:border-slate-700/80 p-3 cursor-pointer'
+      }`}
+    >
+      {/* Component Header / Chip in Edit Mode */}
+      {canvasMode === 'edit' && (
+        <div className="flex items-center justify-between mb-2 pb-1 border-b border-slate-800/60 select-none">
+          <div className="flex items-center gap-1.5 min-w-0">
+            <span className="text-[9.5px] font-mono uppercase font-bold px-1.5 py-0.5 rounded bg-slate-800 text-amber-300 border border-slate-700/50">
+              {component.componentType}
+            </span>
+            <span className="text-xs font-semibold text-slate-300 truncate">
+              {label}
+            </span>
+          </div>
+          <div className="flex items-center gap-1">
+            <span className="text-[9px] font-mono text-slate-400">
+              {component.sizing.type === 'fill'
+                ? 'Fill'
+                : component.sizing.value || 'Fixed'}
+            </span>
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onRemoveComponent?.(component.id);
+              }}
+              className="text-[11px] text-red-400 hover:text-red-200 ml-1 p-0.5 cursor-pointer leading-none"
+              title="Remove Component"
+            >
+              ✕
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Render Component Content by Type */}
+      {component.componentType === 'table' ? (
+        <div className="flex flex-col gap-2">
+          <div className="flex items-center justify-between border-b border-slate-800 pb-1.5">
+            <span className="text-xs font-bold text-slate-200 flex items-center gap-1.5">
+              <span>📊</span>
+              <span>{label}</span>
+            </span>
+            <span className="text-[10px] font-mono text-blue-400">
+              Specifications Table
+            </span>
+          </div>
+          <div className="flex flex-col gap-1 text-xs text-slate-300">
+            <div className="flex justify-between py-1 border-b border-slate-800/60">
+              <span className="text-slate-400">Rating:</span>
+              <span className="font-semibold text-slate-200">4.8 / 5.0</span>
+            </div>
+            <div className="flex justify-between py-1 border-b border-slate-800/60">
+              <span className="text-slate-400">Target Audience:</span>
+              <span className="font-semibold text-slate-200">
+                Collectors & Enthusiasts
+              </span>
+            </div>
+            <div className="flex justify-between py-1">
+              <span className="text-slate-400">Condition Grade:</span>
+              <span className="font-semibold text-slate-200">
+                Mint / Near Mint
+              </span>
+            </div>
+          </div>
+        </div>
+      ) : component.componentType === 'media' ? (
+        <div className="flex flex-col gap-2 h-full min-h-[140px] justify-between">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold text-slate-200 flex items-center gap-1.5">
+              <span>🖼️</span>
+              <span>{label}</span>
+            </span>
+            <span className="text-[9.5px] font-mono text-amber-400">
+              Media Gallery
+            </span>
+          </div>
+          <div className="flex-1 flex flex-col items-center justify-center py-4 bg-slate-950/40 rounded-lg border border-dashed border-slate-800 text-center">
+            <span className="text-2xl opacity-60">📷</span>
+            <span className="text-[11px] text-slate-400 mt-1">
+              High-Resolution Photo
+            </span>
+          </div>
+          <div className="flex justify-between items-center text-[10px] text-slate-400 pt-1 border-t border-slate-800/60">
+            <span>Aspect: 16:9 Banner</span>
+            <span className="font-mono">Fill Box</span>
+          </div>
+        </div>
+      ) : component.componentType === 'stat' ? (
+        <div className="flex flex-col items-center justify-center p-3 gap-1 text-center">
+          <span className="text-[10px] uppercase font-bold tracking-wider text-slate-400">
+            {label}
+          </span>
+          <span className="text-2xl font-extrabold text-blue-400 font-mono tracking-tight">
+            98.5%
+          </span>
+          <span className="text-[9.5px] text-emerald-400 font-medium">
+            ★ Verified Rank
+          </span>
+        </div>
+      ) : component.componentType === 'note' ? (
+        <div className="p-3 rounded-lg bg-amber-500/10 border border-amber-500/20 text-xs text-amber-200 flex flex-col gap-1">
+          <div className="font-bold flex items-center gap-1.5 text-amber-300">
+            <span>📝</span>
+            <span>{label}</span>
+          </div>
+          <p className="text-[11px] text-amber-200/80 leading-relaxed">
+            {canvasMode === 'preview'
+              ? 'Condition verified by official registry. Stored in temperature-controlled archive.'
+              : 'Add curator remarks, notes, or grading certificates.'}
+          </p>
+        </div>
+      ) : (
+        /* Field Attribute Component */
+        <div className="flex flex-col gap-1.5 min-w-0">
+          <div className="flex items-center justify-between gap-1">
+            <span className="text-xs font-bold text-slate-200 truncate">
+              {label}
+            </span>
+            {boundField && (
+              <span className="text-[9px] font-mono font-bold uppercase px-1 py-0.5 rounded bg-slate-800 text-blue-400 border border-slate-700/60 shrink-0">
+                {boundField.field_type}
+              </span>
+            )}
+          </div>
+          <div className="text-xs text-slate-300 bg-slate-950/60 px-2.5 py-1.5 rounded-lg border border-slate-800/80 truncate">
+            {canvasMode === 'preview'
+              ? boundField?.options?.[0] || 'Sample attribute value'
+              : boundField?.is_required
+              ? 'Required Field *'
+              : 'Value placeholder...'}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ==========================================================================
+   4. MAIN EXPORT: TemplateEditorStage
+   ========================================================================== */
+
 export default function TemplateEditorStage({
   template,
+  flexLayoutConfig,
+  selectedNodeId,
+  activeContainerId,
+  onSelectNode,
+  onAddPrimitive,
+  onAddFlexContainer,
+  onUpdateFlexContainer,
+  onRemoveFlexContainer,
+  onAddFlexComponent,
+  onUpdateFlexComponent,
+  onRemoveFlexComponent,
+  onPlaceField,
+  onResetFlexLayout,
+
+  // Legacy / fallback props
   layoutConfig,
   selectedBlockId,
   selectedFieldId,
@@ -56,11 +524,12 @@ export default function TemplateEditorStage({
 
   const [editingSectionId, setEditingSectionId] = useState<string | null>(null);
 
-  // Helper to find field definition for a block
   const getFieldForBlock = (block: LayoutBlock): FieldDefinition | undefined => {
     if (!block.field_id) return undefined;
     return fields.find((f) => f.id === block.field_id);
   };
+
+  const isFlexActive = Boolean(flexLayoutConfig?.root);
 
   return (
     <div className="w-full max-w-6xl mx-auto p-4 sm:p-6 flex flex-col gap-6 select-none">
@@ -78,7 +547,7 @@ export default function TemplateEditorStage({
                 {template.name}
               </h1>
               <span className="px-2 py-0.5 rounded-full text-[9.5px] font-bold tracking-wider uppercase bg-blue-500/20 text-blue-300 border border-blue-500/30 shrink-0">
-                12-Col Grid Builder
+                {isFlexActive ? 'Auto-Layout Builder' : '12-Col Grid Builder'}
               </span>
             </div>
             <p className="text-xs text-slate-400 mt-0.5 line-clamp-1">
@@ -134,35 +603,57 @@ export default function TemplateEditorStage({
       </div>
 
       {/* --------------------------------------------------------------------
-          2. VISUAL CANVAS STAGE (12-Column Grid Layout)
+          2. VISUAL CANVAS STAGE (Flexbox Engine or Legacy Grid Fallback)
           -------------------------------------------------------------------- */}
-      {sections.length === 0 ? (
+      {isFlexActive && flexLayoutConfig?.root ? (
+        <div className="flex flex-col gap-6">
+          <FlexContainerRenderer
+            container={flexLayoutConfig.root}
+            isRoot
+            selectedNodeId={selectedNodeId}
+            activeContainerId={activeContainerId}
+            canvasMode={canvasMode}
+            fields={fields}
+            onSelectNode={onSelectNode}
+            onAddPrimitive={onAddPrimitive}
+            onUpdateContainer={onUpdateFlexContainer}
+            onRemoveContainer={onRemoveFlexContainer}
+            onUpdateComponent={onUpdateFlexComponent}
+            onRemoveComponent={onRemoveFlexComponent}
+          />
+        </div>
+      ) : sections.length === 0 ? (
         <div className="py-16 flex flex-col items-center justify-center text-center gap-3 border-2 border-dashed border-slate-800 rounded-2xl bg-slate-900/20">
           <span className="text-4xl">📐</span>
-          <span className="text-sm font-bold text-slate-300">No Layout Sections Created</span>
+          <span className="text-sm font-bold text-slate-300">
+            No Layout Sections Created
+          </span>
           <p className="text-xs text-slate-500 max-w-sm">
-            Generate a starter layout based on template fields or add custom sections to begin visual design.
+            Generate a starter layout based on template fields or add custom
+            sections to begin visual design.
           </p>
           <div className="flex gap-2 mt-2">
             <button
               type="button"
-              onClick={onResetLayout}
+              onClick={onResetFlexLayout || onResetLayout}
               className="px-4 py-2 text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white rounded-xl transition cursor-pointer"
             >
               Auto-Generate Layout
             </button>
-            <button
-              type="button"
-              onClick={() => onAddSection('General Information')}
-              className="px-4 py-2 text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl border border-subtle transition cursor-pointer"
-            >
-              + Add First Section
-            </button>
+            {onAddSection && (
+              <button
+                type="button"
+                onClick={() => onAddSection('General Information')}
+                className="px-4 py-2 text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl border border-subtle transition cursor-pointer"
+              >
+                + Add First Section
+              </button>
+            )}
           </div>
         </div>
       ) : (
         <div className="flex flex-col gap-6">
-          {sections.map((sec, secIdx) => (
+          {sections.map((sec) => (
             <div
               key={sec.id}
               className="flex flex-col gap-3 p-4 sm:p-5 rounded-2xl bg-slate-900/40 border border-slate-800/80 backdrop-blur-sm"
@@ -171,19 +662,25 @@ export default function TemplateEditorStage({
               <div className="flex items-center justify-between border-b border-slate-800/80 pb-2.5">
                 <div className="flex items-center gap-2 flex-1 min-w-0">
                   <span className="text-sm select-none">📁</span>
-                  {editingSectionId === sec.id && canvasMode === 'edit' ? (
+                  {editingSectionId === sec.id &&
+                  canvasMode === 'edit' &&
+                  onUpdateSection ? (
                     <input
                       type="text"
                       autoFocus
                       defaultValue={sec.title}
                       onBlur={(e) => {
-                        onUpdateSection(sec.id, { title: e.target.value.trim() || sec.title });
+                        onUpdateSection(sec.id, {
+                          title: e.target.value.trim() || sec.title,
+                        });
                         setEditingSectionId(null);
                       }}
                       onKeyDown={(e) => {
                         if (e.key === 'Enter') {
                           onUpdateSection(sec.id, {
-                            title: (e.target as HTMLInputElement).value.trim() || sec.title,
+                            title:
+                              (e.target as HTMLInputElement).value.trim() ||
+                              sec.title,
                           });
                           setEditingSectionId(null);
                         }
@@ -192,23 +689,31 @@ export default function TemplateEditorStage({
                     />
                   ) : (
                     <h2
-                      onClick={() => canvasMode === 'edit' && setEditingSectionId(sec.id)}
+                      onClick={() =>
+                        canvasMode === 'edit' && setEditingSectionId(sec.id)
+                      }
                       className={`text-xs font-bold text-slate-200 uppercase tracking-wider truncate ${
-                        canvasMode === 'edit' ? 'cursor-pointer hover:text-blue-300' : ''
+                        canvasMode === 'edit'
+                          ? 'cursor-pointer hover:text-blue-300'
+                          : ''
                       }`}
-                      title={canvasMode === 'edit' ? 'Click to rename section' : undefined}
+                      title={
+                        canvasMode === 'edit'
+                          ? 'Click to rename section'
+                          : undefined
+                      }
                     >
                       {sec.title}
                     </h2>
                   )}
 
-                  <span className="text-[10px] font-mono text-muted bg-slate-800/80 px-1.5 py-0.5 rounded border border-slate-700/50">
+                  <span className="text-[10px] font-mono text-slate-400 bg-slate-800/80 px-1.5 py-0.5 rounded border border-slate-700/50">
                     {sec.blocks.length} blocks
                   </span>
                 </div>
 
                 {/* Section Controls (Edit Mode Only) */}
-                {canvasMode === 'edit' && (
+                {canvasMode === 'edit' && onAddBlock && (
                   <div className="flex items-center gap-1 shrink-0">
                     <button
                       type="button"
@@ -246,11 +751,15 @@ export default function TemplateEditorStage({
                       <span>+ Media Box (4x)</span>
                     </button>
 
-                    {sections.length > 1 && (
+                    {sections.length > 1 && onRemoveSection && (
                       <button
                         type="button"
                         onClick={() => {
-                          if (confirm(`Delete section "${sec.title}" and its blocks?`)) {
+                          if (
+                            confirm(
+                              `Delete section "${sec.title}" and its blocks?`
+                            )
+                          ) {
                             onRemoveSection(sec.id);
                           }
                         }}
@@ -264,39 +773,21 @@ export default function TemplateEditorStage({
                 )}
               </div>
 
-              {/* 12-Column Responsive Grid Canvas for Blocks */}
+              {/* 12-Column Grid Canvas */}
               {sec.blocks.length === 0 ? (
                 <div className="py-8 border-2 border-dashed border-slate-800/80 rounded-xl flex flex-col items-center justify-center text-center gap-2">
-                  <span className="text-xs text-muted italic">
-                    This section is empty. Place template fields or layout components from the Builder tab.
+                  <span className="text-xs text-slate-400 italic">
+                    This section is empty.
                   </span>
-                  {canvasMode === 'edit' && (
-                    <button
-                      type="button"
-                      onClick={() =>
-                        onAddBlock(sec.id, {
-                          type: 'field',
-                          label: fields[0]?.label || 'Field Attribute',
-                          field_id: fields[0]?.id,
-                          col_span: 6,
-                          row_span: 1,
-                          variant: 'standard',
-                        })
-                      }
-                      className="px-3 py-1 text-[11px] font-semibold text-blue-300 bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/20 rounded-md cursor-pointer transition"
-                    >
-                      + Add Block
-                    </button>
-                  )}
                 </div>
               ) : (
                 <div className="tmpl-grid-canvas">
                   {sec.blocks.map((block) => {
                     const isBlockSelected = selectedBlockId === block.id;
                     const boundField = getFieldForBlock(block);
-                    const blockLabel = block.label || boundField?.label || block.type;
+                    const blockLabel =
+                      block.label || boundField?.label || block.type;
 
-                    // Inline Grid Positioning Styles
                     const blockStyle: React.CSSProperties = {
                       gridColumn: `span ${block.col_span}`,
                       gridRow: `span ${block.row_span}`,
@@ -307,218 +798,22 @@ export default function TemplateEditorStage({
                         key={block.id}
                         style={blockStyle}
                         onClick={() => {
-                          onSelectBlock(block.id);
-                          if (boundField) onSelectField(boundField.id);
+                          onSelectBlock?.(block.id);
+                          if (boundField) onSelectField?.(boundField.id);
                         }}
-                        className={`tmpl-grid-block tmpl-block-variant-${block.variant} ${
+                        className={`tmpl-grid-block tmpl-block-variant-${
+                          block.variant
+                        } ${
                           isBlockSelected ? 'tmpl-grid-block-selected' : ''
                         } ${canvasMode === 'edit' ? 'cursor-pointer' : ''}`}
                       >
-                        {/* Hover Quick Controls for Resizing & Deleting (Edit Mode) */}
-                        {canvasMode === 'edit' && (
-                          <div className="tmpl-block-controls">
-                            {/* Width Spans */}
-                            <span className="text-[9px] text-muted font-mono mr-0.5">W:</span>
-                            <button
-                              type="button"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                onUpdateBlock(sec.id, block.id, { col_span: 3 });
-                              }}
-                              className={`tmpl-btn-pill ${block.col_span === 3 ? 'tmpl-btn-pill-active' : ''}`}
-                              title="1/4 Width (3 cols)"
-                            >
-                              1/4
-                            </button>
-                            <button
-                              type="button"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                onUpdateBlock(sec.id, block.id, { col_span: 4 });
-                              }}
-                              className={`tmpl-btn-pill ${block.col_span === 4 ? 'tmpl-btn-pill-active' : ''}`}
-                              title="1/3 Width (4 cols)"
-                            >
-                              1/3
-                            </button>
-                            <button
-                              type="button"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                onUpdateBlock(sec.id, block.id, { col_span: 6 });
-                              }}
-                              className={`tmpl-btn-pill ${block.col_span === 6 ? 'tmpl-btn-pill-active' : ''}`}
-                              title="Half Width (6 cols)"
-                            >
-                              1/2
-                            </button>
-                            <button
-                              type="button"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                onUpdateBlock(sec.id, block.id, { col_span: 12 });
-                              }}
-                              className={`tmpl-btn-pill ${block.col_span === 12 ? 'tmpl-btn-pill-active' : ''}`}
-                              title="Full Width (12 cols)"
-                            >
-                              Full
-                            </button>
-
-                            {/* Height Spans (Row Span) */}
-                            <span className="text-[9px] text-muted font-mono ml-1 mr-0.5">H:</span>
-                            <button
-                              type="button"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                onUpdateBlock(sec.id, block.id, { row_span: 1 });
-                              }}
-                              className={`tmpl-btn-pill ${block.row_span === 1 ? 'tmpl-btn-pill-active' : ''}`}
-                              title="1 Space Height"
-                            >
-                              1x
-                            </button>
-                            <button
-                              type="button"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                onUpdateBlock(sec.id, block.id, { row_span: 2 });
-                              }}
-                              className={`tmpl-btn-pill ${block.row_span === 2 ? 'tmpl-btn-pill-active' : ''}`}
-                              title="2 Spaces Height"
-                            >
-                              2x
-                            </button>
-                            <button
-                              type="button"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                onUpdateBlock(sec.id, block.id, { row_span: 4 });
-                              }}
-                              className={`tmpl-btn-pill ${block.row_span === 4 ? 'tmpl-btn-pill-active' : ''}`}
-                              title="4 Spaces Height (Table / Hero)"
-                            >
-                              4x
-                            </button>
-
-                            {/* Delete Block */}
-                            <button
-                              type="button"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                onRemoveBlock(sec.id, block.id);
-                              }}
-                              className="text-[11px] text-red-400 hover:text-red-200 ml-1 p-0.5 cursor-pointer leading-none"
-                              title="Remove Block"
-                            >
-                              ✕
-                            </button>
-                          </div>
-                        )}
-
-                        {/* Block Content Renderers by Type */}
-                        {block.type === 'table' ? (
-                          /* Table Format Block (e.g. 4 spaces vertically) */
-                          <div className="flex flex-col h-full w-full justify-between">
-                            <div>
-                              <div className="flex items-center justify-between border-b border-slate-700/60 pb-1.5 mb-2">
-                                <span className="text-xs font-bold text-slate-200 flex items-center gap-1.5">
-                                  <span>📊</span>
-                                  <span>{blockLabel}</span>
-                                </span>
-                                <span className="text-[9.5px] font-mono text-blue-400">
-                                  Table Grid ({block.row_span} rows)
-                                </span>
-                              </div>
-                              <div className="flex flex-col gap-1.5 text-xs text-slate-300">
-                                <div className="flex justify-between py-1 border-b border-slate-800">
-                                  <span className="text-muted font-medium">Complexity Rating:</span>
-                                  <span className="font-semibold text-slate-200">Medium (3.2 / 5.0)</span>
-                                </div>
-                                <div className="flex justify-between py-1 border-b border-slate-800">
-                                  <span className="text-muted font-medium">Suggested Age:</span>
-                                  <span className="font-semibold text-slate-200">14+ Years</span>
-                                </div>
-                                <div className="flex justify-between py-1 border-b border-slate-800">
-                                  <span className="text-muted font-medium">Playing Time:</span>
-                                  <span className="font-semibold text-slate-200">45 - 90 Minutes</span>
-                                </div>
-                                <div className="flex justify-between py-1">
-                                  <span className="text-muted font-medium">Edition:</span>
-                                  <span className="font-semibold text-slate-200">1st Collector Edition</span>
-                                </div>
-                              </div>
-                            </div>
-                            <span className="text-[9px] font-mono text-muted self-end">
-                              Span: {block.col_span} cols × {block.row_span} rows
-                            </span>
-                          </div>
-                        ) : block.type === 'media' ? (
-                          /* Hero / Media Box Block (e.g. 4 spaces vertically) */
-                          <div className="flex flex-col h-full w-full justify-between">
-                            <div className="flex items-center justify-between">
-                              <span className="text-xs font-bold text-slate-200 flex items-center gap-1.5">
-                                <span>🖼️</span>
-                                <span>{blockLabel}</span>
-                              </span>
-                              <span className="text-[9.5px] font-mono text-amber-400">
-                                Media Gallery
-                              </span>
-                            </div>
-                            <div className="flex-1 flex flex-col items-center justify-center my-4 text-center">
-                              <span className="text-3xl opacity-60">📷</span>
-                              <span className="text-xs text-muted mt-1">High-Res Artwork Preview</span>
-                            </div>
-                            <div className="flex justify-between items-center text-[10px] text-muted border-t border-slate-800/80 pt-1.5">
-                              <span>Aspect: 16:9 Banner</span>
-                              <span className="font-mono">{block.row_span} vertical spaces</span>
-                            </div>
-                          </div>
-                        ) : block.type === 'stat' ? (
-                          /* Metric / Stat Highlight Block */
-                          <div className="flex flex-col items-center justify-center h-full gap-1">
-                            <span className="text-[10px] uppercase font-bold tracking-wider text-muted">
+                        <div className="flex flex-col justify-between h-full min-w-0">
+                          <div className="flex items-center justify-between gap-1 mb-1">
+                            <span className="text-xs font-bold text-slate-200 truncate block">
                               {blockLabel}
                             </span>
-                            <span className="text-2xl font-extrabold text-blue-400 font-mono tracking-tight">
-                              98.5%
-                            </span>
-                            <span className="text-[9.5px] text-emerald-400 font-medium">
-                              ★ High Condition Rank
-                            </span>
                           </div>
-                        ) : (
-                          /* Standard Field Attribute Block */
-                          <div className="flex flex-col justify-between h-full min-w-0">
-                            <div>
-                              <div className="flex items-center justify-between gap-1 mb-1">
-                                <span className="text-xs font-bold text-slate-200 truncate block">
-                                  {blockLabel}
-                                </span>
-                                {boundField && (
-                                  <span className="text-[9px] font-mono font-bold uppercase px-1 py-0.5 rounded bg-slate-800/80 text-blue-400 border border-slate-700/60 shrink-0">
-                                    {boundField.field_type}
-                                  </span>
-                                )}
-                              </div>
-                              <span className="text-[10px] font-mono text-muted truncate block">
-                                {boundField?.name || 'custom_attribute'}
-                              </span>
-                            </div>
-
-                            <div className="mt-2.5 pt-1.5 border-t border-slate-800/80 flex items-center justify-between text-[10px]">
-                              <span className="text-slate-400 italic">
-                                {boundField?.field_type === 'select'
-                                  ? `${boundField.options?.length || 0} Options`
-                                  : boundField?.is_required
-                                  ? 'Required Field *'
-                                  : 'Sample Value'}
-                              </span>
-                              <span className="font-mono text-muted text-[9px]">
-                                {block.col_span}/12
-                              </span>
-                            </div>
-                          </div>
-                        )}
+                        </div>
                       </div>
                     );
                   })}
@@ -526,18 +821,6 @@ export default function TemplateEditorStage({
               )}
             </div>
           ))}
-
-          {/* Quick Add Section Button (Bottom of Canvas) */}
-          {canvasMode === 'edit' && (
-            <button
-              type="button"
-              onClick={() => onAddSection('Additional Section')}
-              className="py-3 px-4 rounded-xl border-2 border-dashed border-slate-800 hover:border-slate-700 text-xs font-semibold text-slate-400 hover:text-slate-200 transition cursor-pointer flex items-center justify-center gap-2"
-            >
-              <span>➕</span>
-              <span>Add Another Layout Section</span>
-            </button>
-          )}
         </div>
       )}
     </div>

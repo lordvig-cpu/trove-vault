@@ -22,6 +22,8 @@ import ModalContainers from '@/components/ModalContainers';
 import DynamicWatermark from '@/components/DynamicWatermark';
 import TemplateFieldInspector from '@/components/TemplateFieldInspector';
 import TemplateLayoutBuilder from '@/components/TemplateLayoutBuilder';
+import TemplateLayoutPalette from '@/components/TemplateLayoutPalette';
+import TemplatePropertiesInspector from '@/components/TemplatePropertiesInspector';
 import { useTemplateEditor } from '@/hooks/useTemplateEditor';
 import { filterExplorerForest, ExplorerTab } from '@/lib/filterExplorerForest';
 import { itemMatchesQuery } from '@/lib/explorerUtils';
@@ -900,6 +902,8 @@ export default function Home() {
           isRootSelected={templateEditor.isRootSelected}
           searchQuery={templateEditor.fieldSearchQuery}
           filterFieldTypes={templateEditor.filterFieldTypes}
+          placedFieldIds={templateEditor.placedFieldIds}
+          onPlaceField={templateEditor.placeField}
           onSelectField={templateEditor.setSelectedFieldId}
           onSelectRoot={templateEditor.selectRoot}
           onUpdateField={templateEditor.updateField}
@@ -916,22 +920,38 @@ export default function Home() {
         />
       );
     }
+    if (content === 'template_properties') {
+      return (
+        <TemplatePropertiesInspector
+          template={templateEditor.activeTemplate}
+          selectedNode={templateEditor.selectedNode}
+          parentNode={templateEditor.selectedContainer}
+          onUpdateContainer={templateEditor.updateFlexContainer}
+          onUpdateComponent={templateEditor.updateFlexComponent}
+          onRemoveNode={(id) => {
+            if (templateEditor.selectedNode?.nodeType === 'container') {
+              templateEditor.removeFlexContainer(id);
+            } else {
+              templateEditor.removeFlexComponent(id);
+            }
+          }}
+          onSelectNode={templateEditor.selectNode}
+        />
+      );
+    }
     if (content === 'template_builder') {
       return (
-        <TemplateLayoutBuilder
-          template={templateEditor.activeTemplate}
-          layoutConfig={templateEditor.layoutConfig}
-          selectedBlockId={templateEditor.selectedBlockId}
-          onSelectBlock={templateEditor.setSelectedBlockId}
-          onAddSection={templateEditor.addSection}
-          onRemoveSection={templateEditor.removeSection}
-          onUpdateSection={templateEditor.updateSection}
-          onAddBlock={templateEditor.addBlock}
-          onUpdateBlock={templateEditor.updateBlock}
-          onRemoveBlock={templateEditor.removeBlock}
-          onMoveBlock={templateEditor.moveBlock}
-          onResetLayout={templateEditor.resetLayoutToDefault}
-          position={pos}
+        <TemplateLayoutPalette
+          selectedContainer={templateEditor.selectedContainer}
+          onAddContainer={(preset) => {
+            const mapped =
+              preset === '2-col' ? 'split-2' : preset === '3-col' ? 'split-3' : preset;
+            templateEditor.addFlexPrimitive(mapped);
+          }}
+          onAddComponent={(comp) => {
+            templateEditor.addFlexComponent(templateEditor.activeContainerId, comp);
+          }}
+          onResetLayout={templateEditor.resetFlexLayoutToDefault}
         />
       );
     }
@@ -962,6 +982,7 @@ export default function Home() {
       if (tabs[0] === 'collections') return 'COLLECTIONS';
       if (tabs[0] === 'templates') return 'TEMPLATES';
       if (tabs[0] === 'template_editor') return 'TEMPLATE INSPECTOR';
+      if (tabs[0] === 'template_properties') return 'PROPERTIES';
       if (tabs[0] === 'template_builder') return 'LAYOUT BUILDER';
       if (tabs[0] === 'grabbed_content') return 'GRABBED CONTENT';
     }
@@ -969,6 +990,7 @@ export default function Home() {
     if (activeTab === 'collections') return 'COLLECTIONS';
     if (activeTab === 'templates') return 'TEMPLATES';
     if (activeTab === 'template_editor') return 'TEMPLATE INSPECTOR';
+    if (activeTab === 'template_properties') return 'PROPERTIES';
     if (activeTab === 'template_builder') return 'LAYOUT BUILDER';
     if (activeTab === 'grabbed_content') return 'GRABBED CONTENT';
     return defaultTitle;
@@ -1262,6 +1284,19 @@ export default function Home() {
               onSelectField={templateEditor.setSelectedFieldId}
               onDoneEditingTemplate={templateEditor.stopEditing}
               onAddFieldToTemplate={() => templateEditor.addField('text')}
+              flexLayoutConfig={templateEditor.flexLayoutConfig}
+              selectedNodeId={templateEditor.selectedNodeId}
+              activeContainerId={templateEditor.activeContainerId}
+              onSelectNode={templateEditor.selectNode}
+              onAddPrimitive={templateEditor.addFlexPrimitive}
+              onAddFlexContainer={templateEditor.addFlexContainer}
+              onUpdateFlexContainer={templateEditor.updateFlexContainer}
+              onRemoveFlexContainer={templateEditor.removeFlexContainer}
+              onAddFlexComponent={templateEditor.addFlexComponent}
+              onUpdateFlexComponent={templateEditor.updateFlexComponent}
+              onRemoveFlexComponent={templateEditor.removeFlexComponent}
+              onPlaceField={templateEditor.placeField}
+              onResetFlexLayout={templateEditor.resetFlexLayoutToDefault}
               layoutConfig={templateEditor.layoutConfig}
               selectedBlockId={templateEditor.selectedBlockId}
               canvasMode={templateEditor.canvasMode}
@@ -1272,7 +1307,6 @@ export default function Home() {
               onAddBlock={templateEditor.addBlock}
               onUpdateBlock={templateEditor.updateBlock}
               onRemoveBlock={templateEditor.removeBlock}
-              onMoveBlock={templateEditor.moveBlock}
               onResetLayout={templateEditor.resetLayoutToDefault}
               onToggleCanvasMode={templateEditor.toggleCanvasMode}
             />

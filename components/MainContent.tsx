@@ -5,7 +5,14 @@ import ItemDetailView from './ItemDetailView';
 import TemplateEditorStage from './TemplateEditorStage';
 import { ItemRecord } from '@/types/item';
 import { ItemTemplate } from '@/types/template';
-import { TemplateLayoutConfig, LayoutSection, LayoutBlock } from '@/types/layout';
+import {
+  TemplateLayoutConfig,
+  TemplateFlexLayoutConfig,
+  FlexContainerNode,
+  FlexComponentNode,
+  LayoutSection,
+  LayoutBlock,
+} from '@/types/layout';
 
 /* ==========================================================================
    1. TYPE DEFINITIONS & INTERFACES
@@ -23,7 +30,36 @@ interface MainContentProps {
   onSelectField?: (fieldId: number | null) => void;
   onDoneEditingTemplate?: () => void;
   onAddFieldToTemplate?: () => void;
-  // Layout Builder Props
+  // Modern Flexbox Layout Builder Props
+  flexLayoutConfig?: TemplateFlexLayoutConfig | null;
+  selectedNodeId?: string | null;
+  activeContainerId?: string;
+  onSelectNode?: (nodeId: string | null) => void;
+  onAddPrimitive?: (
+    primitiveType: 'row' | 'column' | 'split-2' | 'split-3' | 'card',
+    targetContainerId?: string
+  ) => string;
+  onAddFlexContainer?: (
+    targetContainerId: string,
+    options?: Partial<FlexContainerNode>
+  ) => string;
+  onUpdateFlexContainer?: (
+    containerId: string,
+    partial: Partial<FlexContainerNode>
+  ) => void;
+  onRemoveFlexContainer?: (containerId: string) => void;
+  onAddFlexComponent?: (
+    targetContainerId: string,
+    options: Omit<FlexComponentNode, 'id' | 'nodeType'>
+  ) => string;
+  onUpdateFlexComponent?: (
+    componentId: string,
+    partial: Partial<FlexComponentNode>
+  ) => void;
+  onRemoveFlexComponent?: (componentId: string) => void;
+  onPlaceField?: (fieldId: number, targetContainerId?: string) => void;
+  onResetFlexLayout?: () => void;
+  // Legacy Layout Builder Props
   layoutConfig?: TemplateLayoutConfig | null;
   selectedBlockId?: string | null;
   canvasMode?: 'edit' | 'preview';
@@ -39,7 +75,7 @@ interface MainContentProps {
   onToggleCanvasMode?: () => void;
   occupiedRightWidth?: number;
   occupiedLeftWidth?: number;
-  rightPanelWidth?: number; // Backward compatibility alias
+  rightPanelWidth?: number;
   bottomPanelHeight?: number;
 }
 
@@ -59,6 +95,19 @@ export default function MainContent({
   onSelectField,
   onDoneEditingTemplate,
   onAddFieldToTemplate,
+  flexLayoutConfig = null,
+  selectedNodeId = null,
+  activeContainerId,
+  onSelectNode,
+  onAddPrimitive,
+  onAddFlexContainer,
+  onUpdateFlexContainer,
+  onRemoveFlexContainer,
+  onAddFlexComponent,
+  onUpdateFlexComponent,
+  onRemoveFlexComponent,
+  onPlaceField,
+  onResetFlexLayout,
   layoutConfig = null,
   selectedBlockId = null,
   canvasMode = 'edit',
@@ -69,7 +118,6 @@ export default function MainContent({
   onAddBlock,
   onUpdateBlock,
   onRemoveBlock,
-  onMoveBlock,
   onResetLayout,
   onToggleCanvasMode,
 }: MainContentProps) {
@@ -96,6 +144,19 @@ export default function MainContent({
               <div className="w-full p-6 flex-1 pt-8 pb-10">
                 <TemplateEditorStage
                   template={editingTemplate}
+                  flexLayoutConfig={flexLayoutConfig}
+                  selectedNodeId={selectedNodeId}
+                  activeContainerId={activeContainerId}
+                  onSelectNode={onSelectNode}
+                  onAddPrimitive={onAddPrimitive}
+                  onAddFlexContainer={onAddFlexContainer}
+                  onUpdateFlexContainer={onUpdateFlexContainer}
+                  onRemoveFlexContainer={onRemoveFlexContainer}
+                  onAddFlexComponent={onAddFlexComponent}
+                  onUpdateFlexComponent={onUpdateFlexComponent}
+                  onRemoveFlexComponent={onRemoveFlexComponent}
+                  onPlaceField={onPlaceField}
+                  onResetFlexLayout={onResetFlexLayout}
                   layoutConfig={layoutConfig}
                   selectedBlockId={selectedBlockId}
                   selectedFieldId={selectedFieldId}
@@ -110,7 +171,6 @@ export default function MainContent({
                   onAddBlock={onAddBlock || (() => {})}
                   onUpdateBlock={onUpdateBlock || (() => {})}
                   onRemoveBlock={onRemoveBlock || (() => {})}
-                  onMoveBlock={onMoveBlock || (() => {})}
                   onResetLayout={onResetLayout || (() => {})}
                   onToggleCanvasMode={onToggleCanvasMode || (() => {})}
                 />

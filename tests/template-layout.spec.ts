@@ -139,4 +139,103 @@ test.describe('Template Layout Engine & Grid System', () => {
     expect(isDockZoneAllowed('bottom', 'right', { bottom: 'template_builder' })).toBe(true);
     expect(isDockZoneAllowed('bottom', 'left-tab', { bottom: 'template_builder', primaryTabs: ['explorer'] })).toBe(true);
   });
+
+  test('creates default Flexbox Container layout with root, card wrapper, and child components', async () => {
+    const { createDefaultFlexLayout, collectPlacedFieldIds } = await import('../types/layout');
+    const flexConfig = createDefaultFlexLayout(mockFields);
+
+    expect(flexConfig.version).toBe(2);
+    expect(flexConfig.root).toBeDefined();
+    expect(flexConfig.root.id).toBe('root-container');
+    expect(flexConfig.root.direction).toBe('column');
+    expect(flexConfig.root.children).toHaveLength(1);
+
+    const generalCard = flexConfig.root.children[0];
+    expect(generalCard.nodeType).toBe('container');
+    if (generalCard.nodeType === 'container') {
+      expect(generalCard.label).toBe('General Information');
+      expect(generalCard.isCard).toBe(true);
+      expect(generalCard.direction).toBe('row');
+      expect(generalCard.wrap).toBe(true);
+      expect(generalCard.children).toHaveLength(3);
+
+      const firstComp = generalCard.children[0];
+      expect(firstComp.nodeType).toBe('component');
+      if (firstComp.nodeType === 'component') {
+        expect(firstComp.field_id).toBe(101);
+        expect(firstComp.label).toBe('Player Count');
+        expect(firstComp.sizing.type).toBe('fixed');
+        expect(firstComp.sizing.value).toBe('48%');
+      }
+    }
+
+    const placedIds = collectPlacedFieldIds(flexConfig.root);
+    expect(placedIds).toEqual([101, 102, 103]);
+  });
+
+  test('migrates legacy 12-column grid layout into recursive Flexbox Container tree', async () => {
+    const { migrateGridToFlexLayout, findFlexNode, findParentFlexContainer } = await import('../types/layout');
+    const legacyLayout: TemplateLayoutConfig = {
+      version: 1,
+      sections: [
+        {
+          id: 'sec-general',
+          title: 'General Information',
+          columns: 12,
+          blocks: [
+            {
+              id: 'block-101',
+              type: 'field',
+              field_id: 101,
+              label: 'Player Count',
+              col_span: 6,
+              row_span: 1,
+              variant: 'standard',
+            },
+            {
+              id: 'block-table',
+              type: 'table',
+              label: 'Specs Table',
+              col_span: 12,
+              row_span: 4,
+              variant: 'table_row',
+            },
+          ],
+        },
+      ],
+    };
+
+    const flexLayout = migrateGridToFlexLayout(legacyLayout);
+    expect(flexLayout.version).toBe(2);
+    expect(flexLayout.root.id).toBe('root-container');
+    expect(flexLayout.root.children).toHaveLength(1);
+
+    const sectionContainer = flexLayout.root.children[0];
+    expect(sectionContainer.nodeType).toBe('container');
+    if (sectionContainer.nodeType === 'container') {
+      expect(sectionContainer.id).toBe('sec-general');
+      expect(sectionContainer.label).toBe('General Information');
+      expect(sectionContainer.children).toHaveLength(2);
+    }
+
+    // Node lookup helper
+    const foundTable = findFlexNode(flexLayout.root, 'block-table');
+    expect(foundTable).toBeDefined();
+    expect(foundTable?.nodeType).toBe('component');
+
+    // Parent container lookup helper
+    const parentContainer = findParentFlexContainer(flexLayout.root, 'block-table');
+    expect(parentContainer).toBeDefined();
+    expect(parentContainer?.id).toBe('sec-general');
+  });
+
+  test('docking engine allows template_properties in side panels but forbids bottom panel', () => {
+    // Docking template_properties to sidebars
+    expect(isDockZoneAllowed('template_properties', 'right')).toBe(true);
+    expect(isDockZoneAllowed('template_properties', 'left')).toBe(true);
+    expect(isDockZoneAllowed('template_properties', 'right-tab', { secondaryTabs: ['template_editor'] })).toBe(true);
+
+    // template_properties belongs in sidebars, not bottom panel
+    expect(isDockZoneAllowed('template_properties', 'bottom')).toBe(false);
+  });
 });

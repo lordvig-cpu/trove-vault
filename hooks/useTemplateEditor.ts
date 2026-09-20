@@ -4,7 +4,27 @@ import { useState, useCallback, useRef } from 'react';
 import { supabase } from '@/lib/supabase';
 import { ItemTemplate } from '@/types/template';
 import { FieldDefinition, FieldType } from '@/types/field';
-import { TemplateLayoutConfig, LayoutSection, LayoutBlock } from '@/types/layout';
+import {
+  TemplateLayoutConfig,
+  LayoutSection,
+  LayoutBlock,
+  TemplateFlexLayoutConfig,
+  FlexContainerNode,
+  FlexComponentNode,
+  FlexLayoutNode,
+  FlexDirection,
+  FlexGap,
+  FlexAlign,
+  FlexJustify,
+  FlexSizing,
+  LayoutBlockType,
+  isFlexLayoutConfig,
+  migrateGridToFlexLayout,
+  createDefaultFlexLayout,
+  findFlexNode,
+  findParentFlexContainer,
+  collectPlacedFieldIds,
+} from '@/types/layout';
 import { DockContent } from '@/hooks/usePanelDockDrag';
 
 export interface WorkspaceTabSnapshot {
@@ -71,7 +91,9 @@ export function useTemplateEditor({
   const [error, setError] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
-  // Layout Engine States
+  // Layout Engine States (Flexbox & Legacy)
+  const [flexLayoutConfig, setFlexLayoutConfigState] = useState<TemplateFlexLayoutConfig | null>(null);
+  const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
   const [layoutConfig, setLayoutConfigState] = useState<TemplateLayoutConfig | null>(null);
   const [selectedBlockId, setSelectedBlockId] = useState<string | null>(null);
   const [canvasMode, setCanvasMode] = useState<'edit' | 'preview'>('edit');
@@ -125,6 +147,35 @@ export function useTemplateEditor({
     [editingTemplateId]
   );
 
+  const saveFlexLayoutConfig = useCallback(
+    async (nextFlex: TemplateFlexLayoutConfig) => {
+      setFlexLayoutConfigState(nextFlex);
+      setLayoutConfigState(nextFlex as any);
+      if (editingTemplateId) {
+        if (typeof window !== 'undefined') {
+          try {
+            localStorage.setItem(
+              `trovevault_template_layout_${editingTemplateId}`,
+              JSON.stringify(nextFlex)
+            );
+          } catch (e) {
+            console.warn('Could not cache layout in localStorage:', e);
+          }
+        }
+
+        try {
+          await supabase
+            .from('item_templates')
+            .update({ layout_config: nextFlex } as any)
+            .eq('id', editingTemplateId);
+        } catch {
+          // Non-fatal
+        }
+      }
+    },
+    [editingTemplateId]
+  );
+
   /**
    * Fetch full template data (including fields and layout) for a given template ID
    */
@@ -154,27 +205,35 @@ export function useTemplateEditor({
         })),
       };
 
-      // Resolve Layout: Check localStorage -> tmplData.layout_config -> generate default
-      let resolvedLayout: TemplateLayoutConfig | null = null;
+      // Resolve Layout: Check localStorage -> tmplData.layout_config -> generate default flex layout
+      let rawConfig: any = null;
       if (typeof window !== 'undefined') {
         try {
           const cached = localStorage.getItem(`trovevault_template_layout_${templateId}`);
-          if (cached) resolvedLayout = JSON.parse(cached);
+          if (cached) rawConfig = JSON.parse(cached);
         } catch {
           // Ignore
         }
       }
 
-      if (!resolvedLayout && tmplData.layout_config) {
-        resolvedLayout = tmplData.layout_config;
+      if (!rawConfig && tmplData.layout_config) {
+        rawConfig = tmplData.layout_config;
       }
 
-      if (!resolvedLayout) {
-        resolvedLayout = createDefaultLayout(loadedTemplate.fields || []);
+      let resolvedFlex: TemplateFlexLayoutConfig;
+      if (rawConfig) {
+        resolvedFlex = migrateGridToFlexLayout(rawConfig);
+      } else {
+        resolvedFlex = createDefaultFlexLayout(loadedTemplate.fields || []);
       }
 
       setActiveTemplate(loadedTemplate);
-      setLayoutConfigState(resolvedLayout);
+      setFlexLayoutConfigState(resolvedFlex);
+      setLayoutConfigState(resolvedFlex as any);
+
+      // Select first child container if present, else root
+      const initialNodeId = resolvedFlex.root.children[0]?.id || resolvedFlex.root.id;
+      setSelectedNodeId(initialNodeId);
 
       // Select first field if available
       if (loadedTemplate.fields && loadedTemplate.fields.length > 0) {
@@ -200,7 +259,7 @@ export function useTemplateEditor({
    * 1. Takes snapshot of existing docked tabs
    * 2. Sets editingTemplateId
    * 3. Loads template & fields & layout
-   * 4. Focuses both Inspector and Builder tabs in right sidebar
+   * 4. Focuses Inspector and Properties tabs in right sidebar, and Builder in bottom panel
    */
   const startEditing = useCallback(
     async (templateId: number) => {
@@ -216,12 +275,12 @@ export function useTemplateEditor({
       setSuccessMsg(null);
       setCanvasMode('edit');
 
-      // 2. Open right panel with Template Inspector
+      // 2. Open right panel with Template Inspector & Properties
       if (onOpenSecondaryPanel) {
-        onOpenSecondaryPanel(['template_editor'], 'template_editor');
+        onOpenSecondaryPanel(['template_editor', 'template_properties'], 'template_editor');
       }
 
-      // 3. Open bottom panel with Builder
+      // 3. Open bottom panel with Builder (Layout & Components tabs)
       if (onOpenBottomPanel) {
         onOpenBottomPanel('template_builder');
       }
@@ -646,6 +705,333 @@ export function useTemplateEditor({
     saveLayoutConfig(defaultLayout);
   }, [activeTemplate, saveLayoutConfig]);
 
+  // ==========================================================================
+  // FLEXBOX LAYOUT ENGINE STATE & MUTATIONS
+  // ==========================================================================
+
+  const selectedNode =
+    flexLayoutConfig?.root && selectedNodeId
+      ? findFlexNode(flexLayoutConfig.root, selectedNodeId)
+      : null;
+
+  const selectedContainer: FlexContainerNode | null =
+    selectedNode?.nodeType === 'container'
+      ? selectedNode
+      : selectedNode?.nodeType === 'component' && flexLayoutConfig?.root && selectedNodeId
+      ? findParentFlexContainer(flexLayoutConfig.root, selectedNodeId)
+      : flexLayoutConfig?.root || null;
+
+  const selectedComponent: FlexComponentNode | null =
+    selectedNode?.nodeType === 'component' ? selectedNode : null;
+
+  const activeContainerId: string =
+    selectedContainer?.id || flexLayoutConfig?.root?.id || 'root-container';
+
+  const placedFieldIds: number[] = flexLayoutConfig?.root
+    ? collectPlacedFieldIds(flexLayoutConfig.root)
+    : [];
+
+  const selectNode = useCallback((nodeId: string | null) => {
+    setSelectedNodeId(nodeId);
+    if (nodeId) {
+      setSelectedBlockId(nodeId);
+    }
+  }, []);
+
+  const addFlexContainer = useCallback(
+    (targetContainerId: string, options: Partial<FlexContainerNode> = {}): string => {
+      if (!flexLayoutConfig) return '';
+      const newId = `cont-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
+      const newContainer: FlexContainerNode = {
+        id: newId,
+        nodeType: 'container',
+        label: options.label || 'Container Box',
+        direction: options.direction || 'row',
+        gap: options.gap !== undefined ? options.gap : 12,
+        wrap: options.wrap !== undefined ? options.wrap : true,
+        align: options.align || 'stretch',
+        justify: options.justify || 'start',
+        padding: options.padding !== undefined ? options.padding : 12,
+        sizing: options.sizing || { type: 'fill' },
+        isCard: options.isCard !== undefined ? options.isCard : false,
+        children: options.children || [],
+      };
+
+      const target = findFlexNode(flexLayoutConfig.root, targetContainerId)
+        ? targetContainerId
+        : flexLayoutConfig.root.id;
+
+      function insertIntoTarget(node: FlexContainerNode): FlexContainerNode {
+        if (node.id === target) {
+          return { ...node, children: [...node.children, newContainer] };
+        }
+        return {
+          ...node,
+          children: node.children.map((c) =>
+            c.nodeType === 'container' ? insertIntoTarget(c) : c
+          ),
+        };
+      }
+
+      const nextRoot = insertIntoTarget(flexLayoutConfig.root);
+      saveFlexLayoutConfig({ ...flexLayoutConfig, root: nextRoot });
+      setSelectedNodeId(newId);
+      return newId;
+    },
+    [flexLayoutConfig, saveFlexLayoutConfig]
+  );
+
+  const addFlexPrimitive = useCallback(
+    (
+      primitiveType: 'row' | 'column' | 'split-2' | 'split-3' | 'card',
+      targetContainerId?: string
+    ) => {
+      const target = targetContainerId || activeContainerId;
+      if (primitiveType === 'row') {
+        return addFlexContainer(target, {
+          label: 'Row Container',
+          direction: 'row',
+          gap: 12,
+          wrap: true,
+          isCard: false,
+          padding: 12,
+        });
+      }
+      if (primitiveType === 'column') {
+        return addFlexContainer(target, {
+          label: 'Column Container',
+          direction: 'column',
+          gap: 12,
+          wrap: false,
+          isCard: false,
+          padding: 12,
+        });
+      }
+      if (primitiveType === 'card') {
+        return addFlexContainer(target, {
+          label: 'Card Frame',
+          direction: 'column',
+          gap: 12,
+          wrap: false,
+          isCard: true,
+          padding: 16,
+        });
+      }
+      if (primitiveType === 'split-2') {
+        const splitId = Date.now();
+        const leftCol: FlexContainerNode = {
+          id: `cont-left-${splitId}`,
+          nodeType: 'container',
+          label: 'Left Column',
+          direction: 'column',
+          gap: 12,
+          wrap: false,
+          align: 'stretch',
+          justify: 'start',
+          padding: 12,
+          sizing: { type: 'fixed', value: '49%' },
+          isCard: true,
+          children: [],
+        };
+        const rightCol: FlexContainerNode = {
+          id: `cont-right-${splitId}`,
+          nodeType: 'container',
+          label: 'Right Column',
+          direction: 'column',
+          gap: 12,
+          wrap: false,
+          align: 'stretch',
+          justify: 'start',
+          padding: 12,
+          sizing: { type: 'fixed', value: '49%' },
+          isCard: true,
+          children: [],
+        };
+        return addFlexContainer(target, {
+          label: '2-Col Split',
+          direction: 'row',
+          gap: 12,
+          wrap: true,
+          align: 'stretch',
+          justify: 'between',
+          padding: 0,
+          isCard: false,
+          children: [leftCol, rightCol],
+        });
+      }
+      if (primitiveType === 'split-3') {
+        const splitId = Date.now();
+        const makeCol = (num: number, label: string): FlexContainerNode => ({
+          id: `cont-col${num}-${splitId}`,
+          nodeType: 'container',
+          label,
+          direction: 'column',
+          gap: 8,
+          wrap: false,
+          align: 'stretch',
+          justify: 'start',
+          padding: 12,
+          sizing: { type: 'fixed', value: '32%' },
+          isCard: true,
+          children: [],
+        });
+        return addFlexContainer(target, {
+          label: '3-Col Split',
+          direction: 'row',
+          gap: 12,
+          wrap: true,
+          align: 'stretch',
+          justify: 'between',
+          padding: 0,
+          isCard: false,
+          children: [makeCol(1, 'Column 1'), makeCol(2, 'Column 2'), makeCol(3, 'Column 3')],
+        });
+      }
+      return '';
+    },
+    [activeContainerId, addFlexContainer]
+  );
+
+  const updateFlexContainer = useCallback(
+    (containerId: string, partial: Partial<FlexContainerNode>) => {
+      if (!flexLayoutConfig) return;
+      function updateInTree(node: FlexContainerNode): FlexContainerNode {
+        if (node.id === containerId) {
+          return { ...node, ...partial };
+        }
+        return {
+          ...node,
+          children: node.children.map((c) =>
+            c.nodeType === 'container' ? updateInTree(c) : c
+          ),
+        };
+      }
+      const nextRoot = updateInTree(flexLayoutConfig.root);
+      saveFlexLayoutConfig({ ...flexLayoutConfig, root: nextRoot });
+    },
+    [flexLayoutConfig, saveFlexLayoutConfig]
+  );
+
+  const removeFlexContainer = useCallback(
+    (containerId: string) => {
+      if (!flexLayoutConfig || containerId === flexLayoutConfig.root.id) return;
+      function removeFromTree(node: FlexContainerNode): FlexContainerNode {
+        return {
+          ...node,
+          children: node.children
+            .filter((c) => c.id !== containerId)
+            .map((c) => (c.nodeType === 'container' ? removeFromTree(c) : c)),
+        };
+      }
+      const nextRoot = removeFromTree(flexLayoutConfig.root);
+      saveFlexLayoutConfig({ ...flexLayoutConfig, root: nextRoot });
+      if (selectedNodeId === containerId) {
+        setSelectedNodeId(flexLayoutConfig.root.id);
+      }
+    },
+    [flexLayoutConfig, selectedNodeId, saveFlexLayoutConfig]
+  );
+
+  const addFlexComponent = useCallback(
+    (
+      targetContainerId: string,
+      options: Omit<FlexComponentNode, 'id' | 'nodeType'>
+    ): string => {
+      if (!flexLayoutConfig) return '';
+      const newId = `comp-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
+      const newComp: FlexComponentNode = {
+        ...options,
+        id: newId,
+        nodeType: 'component',
+      };
+
+      const target = findFlexNode(flexLayoutConfig.root, targetContainerId)
+        ? targetContainerId
+        : flexLayoutConfig.root.id;
+
+      function insertIntoTarget(node: FlexContainerNode): FlexContainerNode {
+        if (node.id === target) {
+          return { ...node, children: [...node.children, newComp] };
+        }
+        return {
+          ...node,
+          children: node.children.map((c) =>
+            c.nodeType === 'container' ? insertIntoTarget(c) : c
+          ),
+        };
+      }
+
+      const nextRoot = insertIntoTarget(flexLayoutConfig.root);
+      saveFlexLayoutConfig({ ...flexLayoutConfig, root: nextRoot });
+      setSelectedNodeId(newId);
+      return newId;
+    },
+    [flexLayoutConfig, saveFlexLayoutConfig]
+  );
+
+  const updateFlexComponent = useCallback(
+    (componentId: string, partial: Partial<FlexComponentNode>) => {
+      if (!flexLayoutConfig) return;
+      function updateInTree(node: FlexContainerNode): FlexContainerNode {
+        return {
+          ...node,
+          children: node.children.map((c) => {
+            if (c.nodeType === 'component') {
+              return c.id === componentId ? { ...c, ...partial } : c;
+            }
+            return updateInTree(c);
+          }),
+        };
+      }
+      const nextRoot = updateInTree(flexLayoutConfig.root);
+      saveFlexLayoutConfig({ ...flexLayoutConfig, root: nextRoot });
+    },
+    [flexLayoutConfig, saveFlexLayoutConfig]
+  );
+
+  const removeFlexComponent = useCallback(
+    (componentId: string) => {
+      if (!flexLayoutConfig) return;
+      function removeFromTree(node: FlexContainerNode): FlexContainerNode {
+        return {
+          ...node,
+          children: node.children
+            .filter((c) => c.id !== componentId)
+            .map((c) => (c.nodeType === 'container' ? removeFromTree(c) : c)),
+        };
+      }
+      const nextRoot = removeFromTree(flexLayoutConfig.root);
+      saveFlexLayoutConfig({ ...flexLayoutConfig, root: nextRoot });
+      if (selectedNodeId === componentId) {
+        setSelectedNodeId(null);
+      }
+    },
+    [flexLayoutConfig, selectedNodeId, saveFlexLayoutConfig]
+  );
+
+  const placeField = useCallback(
+    (fieldId: number, targetContainerId?: string) => {
+      const fieldDef = activeTemplate?.fields?.find((f) => f.id === fieldId);
+      if (!fieldDef) return;
+      const target = targetContainerId || activeContainerId;
+      addFlexComponent(target, {
+        componentType: 'field',
+        field_id: fieldId,
+        label: fieldDef.label,
+        variant: 'standard',
+        sizing: { type: 'fixed', value: '48%' },
+      });
+    },
+    [activeTemplate, activeContainerId, addFlexComponent]
+  );
+
+  const resetFlexLayoutToDefault = useCallback(() => {
+    if (!activeTemplate) return;
+    const defaultFlex = createDefaultFlexLayout(activeTemplate.fields || []);
+    saveFlexLayoutConfig(defaultFlex);
+    setSelectedNodeId(defaultFlex.root.children[0]?.id || defaultFlex.root.id);
+  }, [activeTemplate, saveFlexLayoutConfig]);
+
   const selectedField = activeTemplate?.fields?.find((f) => f.id === selectedFieldId) || null;
 
   return {
@@ -686,7 +1072,25 @@ export function useTemplateEditor({
     updateField,
     deleteField,
     reorderFields,
-    // Layout Engine APIs
+    // Modern Flexbox Layout Engine APIs
+    flexLayoutConfig,
+    selectedNodeId,
+    selectedNode,
+    selectedContainer,
+    selectedComponent,
+    activeContainerId,
+    placedFieldIds,
+    selectNode,
+    addFlexContainer,
+    addFlexPrimitive,
+    updateFlexContainer,
+    removeFlexContainer,
+    addFlexComponent,
+    updateFlexComponent,
+    removeFlexComponent,
+    placeField,
+    resetFlexLayoutToDefault,
+    // Legacy Grid Layout Engine APIs (for compatibility)
     layoutConfig,
     selectedBlockId,
     setSelectedBlockId,
