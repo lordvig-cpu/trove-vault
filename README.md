@@ -37,8 +37,9 @@ their nested items. Each has its own search, filters, and expansion state. Drag
 either navigation tab or panel header into the left or right sidebar, or use the
 flyout's docking buttons. Occupied sidebars can swap their contents. Both trees
 share the same item and collection action menus; neither docks in the bottom panel.
-Ctrl+K targets Items search and Ctrl+L targets Collections search, opening the
-appropriate sidebar or flyout when needed (Command on macOS).
+Ctrl+K targets whichever search is displayed in the left side panel and Ctrl+L
+targets whichever search is displayed in the right side panel, opening the appropriate
+sidebar when needed (Command on macOS).
 
 Data loading paginates every table, including item/collection links, and cancels
 outdated refreshes. Tree construction indexes parent and membership relationships;

@@ -186,13 +186,19 @@ export function useTemplateEditor({
       setIsLoading(true);
       setError(null);
 
+      const rawId = Math.abs(templateId);
+      if (!rawId || rawId === 999) {
+        setError('Invalid template ID');
+        return null;
+      }
+
       const [{ data: tmplData, error: tmplErr }, { data: fieldsData, error: fieldsErr }] =
         await Promise.all([
-          supabase.from('item_templates').select('*').eq('id', templateId).single(),
+          supabase.from('item_templates').select('*').eq('id', rawId).single(),
           supabase
             .from('item_template_fields')
             .select('*')
-            .eq('template_id', templateId)
+            .eq('template_id', rawId)
             .order('display_order', { ascending: true }),
         ]);
 
@@ -211,7 +217,7 @@ export function useTemplateEditor({
       let rawConfig: any = null;
       if (typeof window !== 'undefined') {
         try {
-          const cached = localStorage.getItem(`trovevault_template_layout_${templateId}`);
+          const cached = localStorage.getItem(`trovevault_template_layout_${rawId}`);
           if (cached) rawConfig = JSON.parse(cached);
         } catch {
           // Ignore
@@ -265,13 +271,16 @@ export function useTemplateEditor({
    */
   const startEditing = useCallback(
     async (templateId: number) => {
+      const rawId = Math.abs(templateId);
+      if (!rawId || rawId === 999) return;
+
       // 1. Snapshot current tab setup if not already in editing mode
       if (getTabSnapshot && !tabSnapshotRef.current) {
         const snapshot = getTabSnapshot();
         tabSnapshotRef.current = snapshot;
       }
 
-      setEditingTemplateId(templateId);
+      setEditingTemplateId(rawId);
       setFieldSearchQuery('');
       setFilterFieldTypes([]);
       setSuccessMsg(null);
@@ -293,7 +302,7 @@ export function useTemplateEditor({
       }
 
       // 5. Load the template
-      await loadTemplate(templateId);
+      await loadTemplate(rawId);
     },
     [getTabSnapshot, loadTemplate, onOpenPrimaryPanel, onOpenSecondaryPanel, onOpenBottomPanel]
   );
@@ -753,7 +762,7 @@ export function useTemplateEditor({
         id: newId,
         nodeType: 'container',
         label: options.label || 'Container Box',
-        direction: options.direction || 'row',
+        direction: options.direction || 'none',
         gap: options.gap !== undefined ? options.gap : 12,
         wrap: options.wrap !== undefined ? options.wrap : true,
         align: options.align || 'stretch',

@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { DockablePanelId, DockDropTargetZone, isDockZoneAllowed, DockContent } from '@/hooks/usePanelDockDrag';
+import { TrashCanIcon, ProhibitedIcon } from '@/components/icons/PanelIcons';
 
 interface PanelDockDropZonesProps {
   isDragging: boolean;
@@ -128,19 +129,9 @@ export default function PanelDockDropZones({
       >
         <span className="dock-cursor-badge-icon">
           {hoveredZone === 'remove' ? (
-            <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M3 6h18" />
-              <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
-              <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
-            </svg>
+            <TrashCanIcon className="w-3.5 h-3.5" />
           ) : hoveredZone && !isHoveredZoneAllowed ? (
-            <svg className="w-3.5 h-3.5" viewBox="0 0 20 20" fill="currentColor">
-              <path
-                fillRule="evenodd"
-                d="M13.477 14.89A6 6 0 015.11 6.524l8.367 8.366zm1.414-1.414L6.524 5.11a6 6 0 018.367 8.366zM18 10a8 8 0 11-16 0 8 8 0 0116 0z"
-                clipRule="evenodd"
-              />
-            </svg>
+            <ProhibitedIcon className="w-3.5 h-3.5" />
           ) : (
             <span>❖</span>
           )}
@@ -329,13 +320,7 @@ export default function PanelDockDropZones({
                 hoveredZone === 'remove' ? 'dock-zone-remove-pill-active' : ''
               }`}
             >
-              <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M3 6h18" />
-                <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
-                <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
-                <line x1="10" y1="11" x2="10" y2="17" />
-                <line x1="14" y1="11" x2="14" y2="17" />
-              </svg>
+              <TrashCanIcon className="w-4 h-4 shrink-0" />
               <span>Remove <em>{draggedItemName}</em> Content</span>
             </div>
             <span
@@ -377,13 +362,7 @@ export default function PanelDockDropZones({
               {!isBottomAllowed ? (
                 /* Incompatible / Slashed NO Dock Icon */
                 <span className="dock-zone-prohibited-icon" aria-hidden="true">
-                  <svg className="w-3.5 h-3.5" viewBox="0 0 20 20" fill="currentColor">
-                    <path
-                      fillRule="evenodd"
-                      d="M13.477 14.89A6 6 0 015.11 6.524l8.367 8.366zm1.414-1.414L6.524 5.11a6 6 0 018.367 8.366zM18 10a8 8 0 11-16 0 8 8 0 0116 0z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
+                  <ProhibitedIcon className="w-3.5 h-3.5" />
                 </span>
               ) : (
                 <span>⬓</span>

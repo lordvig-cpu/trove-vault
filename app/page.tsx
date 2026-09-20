@@ -25,6 +25,7 @@ import TemplateLayoutBuilder from '@/components/TemplateLayoutBuilder';
 import TemplateLayoutPalette from '@/components/TemplateLayoutPalette';
 import TemplatePropertiesInspector from '@/components/TemplatePropertiesInspector';
 import TemplateHierarchyTree, { getAllContainerIds, countElements } from '@/components/TemplateHierarchyTree';
+import { FlexContainerNode } from '@/types/layout';
 import { useTemplateEditor } from '@/hooks/useTemplateEditor';
 import { filterExplorerForest, ExplorerTab } from '@/lib/filterExplorerForest';
 import { itemMatchesQuery } from '@/lib/explorerUtils';
@@ -215,15 +216,18 @@ export default function Home() {
       setPrimaryTabs(tabs);
       setPrimaryActiveTab(activeTab);
       setIsPrimarySidePanelOpen(true);
+      setIsPinned(true);
     },
     onOpenSecondaryPanel: (tabs, activeTab) => {
       setSecondaryTabs(tabs);
       setSecondaryActiveTab(activeTab);
       setIsSecondaryOpen(true);
+      setIsSecondaryPinned(true);
     },
     onOpenBottomPanel: (content) => {
       setBottomPanelContent(content);
       setIsBottomPanelOpen(true);
+      setIsBottomPinned(true);
     },
   });
 
@@ -277,6 +281,32 @@ export default function Home() {
       templateEditor.selectNode(nodeId);
     }
   }, [templateEditor]);
+
+  const handlePlaceField = useCallback((fieldId: number, targetContainerId?: string) => {
+    templateEditor.placeField(fieldId, targetContainerId);
+    if (targetContainerId) {
+      setHierarchyExpandedIds((prev) => {
+        const next = new Set(prev);
+        next.add(targetContainerId);
+        return next;
+      });
+    }
+  }, [templateEditor]);
+
+  const handleAddContainer = useCallback(
+    (targetContainerId: string, options?: Partial<FlexContainerNode>) => {
+      const newId = templateEditor.addFlexContainer(targetContainerId, options);
+      if (targetContainerId) {
+        setHierarchyExpandedIds((prev) => {
+          const next = new Set(prev);
+          next.add(targetContainerId);
+          return next;
+        });
+      }
+      return newId;
+    },
+    [templateEditor]
+  );
 
   /* ------------------------------------------------------------------------
      6. PANEL CONTENT MOVING & SWAPPING (Smooth Fluid Slide Transition)
@@ -745,33 +775,40 @@ export default function Home() {
     if (searchFocusTimer.current) clearTimeout(searchFocusTimer.current);
   }, []);
 
-  const focusTreeSearch = (content: 'explorer' | 'collections' | 'templates') => {
+  const focusSidePanelSearch = (side: 'left' | 'right') => {
     if (activeModal) return;
     if (searchFocusTimer.current) clearTimeout(searchFocusTimer.current);
-    setActiveSearchPanel(content);
-    setIsPrimaryFlyoutOpen(false);
-    setIsCollectionsFlyoutOpen(false);
-    setIsTemplatesFlyoutOpen(false);
-    if (primaryTabs.includes(content)) {
-      setPrimaryActiveTab(content);
-      setIsPrimarySidePanelOpen(true);
-    } else if (secondaryTabs.includes(content)) {
-      setSecondaryActiveTab(content);
-      setIsSecondaryOpen(true);
-    } else if (content === 'explorer') {
-      setIsPrimaryFlyoutOpen(true);
-    } else if (content === 'collections') {
-      setIsCollectionsFlyoutOpen(true);
+
+    if (side === 'left') {
+      const activeLeftContent = isTemplatesFlyoutOpen
+        ? 'templates'
+        : isCollectionsFlyoutOpen
+        ? 'collections'
+        : isPrimaryFlyoutOpen
+        ? 'explorer'
+        : primaryActiveTab;
+      if (activeLeftContent === 'explorer' || activeLeftContent === 'collections' || activeLeftContent === 'templates') {
+        setActiveSearchPanel(activeLeftContent);
+      }
+      if (!isPrimarySidePanelOpen && !isPrimaryFlyoutOpen && !isCollectionsFlyoutOpen && !isTemplatesFlyoutOpen) {
+        setIsPrimarySidePanelOpen(true);
+      }
     } else {
-      setIsTemplatesFlyoutOpen(true);
+      if (secondaryActiveTab === 'explorer' || secondaryActiveTab === 'collections' || secondaryActiveTab === 'templates') {
+        setActiveSearchPanel(secondaryActiveTab);
+      }
+      if (!isSecondaryOpen) {
+        setIsSecondaryOpen(true);
+      }
     }
 
     const attemptFocus = (remaining: number) => {
-      const searchTarget = content === 'explorer' ? 'items' : content === 'templates' ? 'templates' : 'collections';
       const inputs = document.querySelectorAll<HTMLInputElement>(
-        `[data-tree-search="${searchTarget}"]`
+        `[data-search-position="${side}"]`
       );
-      const input = Array.from(inputs).find(element => !element.closest('[inert]') && element.getClientRects().length > 0);
+      const input = Array.from(inputs).find(
+        (element) => !element.closest('[inert]') && element.getClientRects().length > 0
+      );
       if (input) {
         input.focus();
         input.select();
@@ -779,7 +816,7 @@ export default function Home() {
         searchFocusTimer.current = setTimeout(() => attemptFocus(remaining - 1), 50);
       }
     };
-    searchFocusTimer.current = setTimeout(() => attemptFocus(10), 50);
+    attemptFocus(10);
   };
 
   useKeyboardShortcuts([
@@ -852,19 +889,13 @@ export default function Home() {
       key: 'k',
       ctrl: true,
       allowInInputs: true,
-      action: () => focusTreeSearch('explorer'),
+      action: () => focusSidePanelSearch('left'),
     },
     {
       key: 'l',
       ctrl: true,
       allowInInputs: true,
-      action: () => focusTreeSearch('collections'),
-    },
-    {
-      key: ';',
-      ctrl: true,
-      allowInInputs: true,
-      action: () => focusTreeSearch('templates'),
+      action: () => focusSidePanelSearch('right'),
     },
   ]);
 
@@ -934,7 +965,10 @@ export default function Home() {
         setIsTemplatesFlyoutOpen(false);
         setIsCollectionsFlyoutOpen(false);
         setIsPrimaryFlyoutOpen(false);
-        templateEditor.startEditing(templateId);
+        const validId = Math.abs(templateId);
+        if (validId && validId !== 999) {
+          templateEditor.startEditing(validId);
+        }
       }}
       onEditCollection={(col) => openTemplateManager(col.id, col.name)}
       onDeleteCollection={openDeleteCollection}
@@ -1026,10 +1060,12 @@ export default function Home() {
           onToggleExpand={toggleHierarchyExpand}
           onSelectNode={templateEditor.selectNode}
           onOpenProperties={handleOpenProperties}
+          onAddContainer={handleAddContainer}
           onUpdateContainer={templateEditor.updateFlexContainer}
           onUpdateComponent={templateEditor.updateFlexComponent}
           onRemoveContainer={templateEditor.removeFlexContainer}
           onRemoveComponent={templateEditor.removeFlexComponent}
+          onPlaceField={handlePlaceField}
         />
       );
     }
@@ -1261,6 +1297,7 @@ export default function Home() {
       moveTooltip={primaryMoveTooltip}
       canMove={canMovePrimary}
       isOpen={isPrimaryActive}
+      isPinned={isPinned}
       onOpen={() => setIsPrimarySidePanelOpen(true)}
       onClose={() => {
         setIsPrimarySidePanelOpen(false);
@@ -1409,7 +1446,7 @@ export default function Home() {
               onAddFlexComponent={templateEditor.addFlexComponent}
               onUpdateFlexComponent={templateEditor.updateFlexComponent}
               onRemoveFlexComponent={templateEditor.removeFlexComponent}
-              onPlaceField={templateEditor.placeField}
+              onPlaceField={handlePlaceField}
               onResetFlexLayout={templateEditor.resetFlexLayoutToDefault}
               layoutConfig={templateEditor.layoutConfig}
               selectedBlockId={templateEditor.selectedBlockId}

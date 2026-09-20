@@ -17,6 +17,7 @@ interface TemplateRootActionMenuProps {
   onUpdateMeta: (name: string, description: string | null, icon: string) => Promise<void> | void;
   onAddField: (type?: FieldType) => Promise<void> | void;
   onDeleteTemplate?: (templateId: number) => Promise<void> | void;
+  onCloseEditor?: () => void;
 }
 
 export default function TemplateRootActionMenu({
@@ -26,6 +27,7 @@ export default function TemplateRootActionMenu({
   onUpdateMeta,
   onAddField,
   onDeleteTemplate,
+  onCloseEditor,
 }: TemplateRootActionMenuProps) {
   const [name, setName] = useState(template.name);
   const [icon, setIcon] = useState(template.icon || '📦');
@@ -122,6 +124,21 @@ export default function TemplateRootActionMenu({
           menu.closeMenu();
         }}
       />
+
+      {onCloseEditor && (
+        <>
+          <ActionMenuDivider />
+          <ActionMenuItem
+            icon={<span>✓</span>}
+            label="Done Editing"
+            subtext="Exit blueprint editor & restore pins"
+            onClick={() => {
+              menu.closeMenu();
+              onCloseEditor();
+            }}
+          />
+        </>
+      )}
 
       {/* Delete Blueprint if custom and available */}
       {onDeleteTemplate && !template.is_system_preset && (

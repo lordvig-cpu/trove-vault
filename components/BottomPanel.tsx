@@ -6,8 +6,10 @@ import {
   DockRightPanelIcon,
   DockBottomPanelIcon,
   ResetHeightIcon,
-} from '@/components/icons/SystemIcons';
-import { PinFilledIcon, PinOutlineIcon } from '@/components/icons/ExplorerIcons';
+  PinFilledIcon,
+  PinOutlineIcon,
+  PanelFolderTabSvg,
+} from '@/components/icons/PanelIcons';
 import { useUIPreferences } from '@/context/UIPreferencesContext';
 import { useResizableHeight } from '@/hooks/useResizableHeight';
 import EmptyPanelDropZone from '@/components/EmptyPanelDropZone';
@@ -248,27 +250,11 @@ export default function BottomPanel({
                 className="explorer-folder-tab explorer-folder-tab-active z-20 group/tab cursor-grab active:cursor-grabbing"
                 title={tabTitle || `${tabLabel} (drag to move tab)`}
               >
-                <svg
-                  className="absolute inset-0 w-full h-full pointer-events-none"
-                  viewBox="0 0 100 28"
-                  preserveAspectRatio="none"
-                >
-                  <defs>
-                    <linearGradient id="bottom-panel-tab-grad" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="var(--explorer-tab-active-top, rgba(18, 94, 158, 1))" className="tab-grad-top" />
-                      <stop offset="45%" stopColor="var(--explorer-tab-active-mid, rgba(10, 64, 112, 1))" className="tab-grad-mid" />
-                      <stop offset="100%" stopColor="var(--explorer-tab-active-bot, rgba(7, 47, 85, 1))" className="tab-grad-bot" />
-                    </linearGradient>
-                  </defs>
-                  <polygon
-                    points="0,28 7,0 93,0 100,28"
-                    fill="url(#bottom-panel-tab-grad)"
-                    className="tab-polygon"
-                  />
-                  <line x1="7" y1="0" x2="93" y2="0" className="tab-border-top" />
-                  <line x1="0" y1="28" x2="7" y2="0" className="tab-border-left" />
-                  <line x1="93" y1="0" x2="100" y2="28" className="tab-border-right" />
-                </svg>
+                <PanelFolderTabSvg
+                  gradientId="bottom-panel-tab-grad"
+                  isActive={true}
+                  variant="slanted"
+                />
                 <span className="relative z-10 font-bold select-none text-[12px] tracking-tight whitespace-nowrap">
                   {tabLabel}
                 </span>

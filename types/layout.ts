@@ -24,7 +24,7 @@ export interface WorkspaceLayoutPreferences {
    Contract for nested Auto-Layout / Flexbox container architecture.
    ========================================================================== */
 
-export type FlexDirection = 'row' | 'column';
+export type FlexDirection = 'row' | 'column' | 'none';
 export type FlexGap = 0 | 4 | 8 | 12 | 16 | 20 | 24 | 32;
 export type FlexAlign = 'start' | 'center' | 'end' | 'stretch';
 export type FlexJustify = 'start' | 'center' | 'end' | 'between' | 'around';

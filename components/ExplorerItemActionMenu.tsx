@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { AddSubItemIcon } from '@/components/icons/ActionIcons';
+import { AddSubItemIcon } from '@/components/icons/ExplorerIcons';
 import ExplorerActionMenu, {
   ActionMenuDangerItem,
   ActionMenuDivider,

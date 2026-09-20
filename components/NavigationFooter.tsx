@@ -5,15 +5,15 @@ import {
   AnimationsOnIcon, 
   AnimationsOffIcon, 
   AudioOnIcon, 
-  AudioOffIcon 
-} from '@/components/icons/MediaIcons';
+  AudioOffIcon,
+  MoonIcon, 
+  SunIcon,
+} from '@/components/icons/NavigationIcons';
 import { 
   DockLeftPanelIcon,
   DockBottomPanelIcon,
-  DockRightPanelIcon, 
-  MoonIcon, 
-  SunIcon 
-} from '@/components/icons/SystemIcons';
+  DockRightPanelIcon,
+} from '@/components/icons/PanelIcons';
 import { useUIPreferences } from '@/context/UIPreferencesContext';
 import OklchSeedControls from '@/components/OklchSeedControls';
 

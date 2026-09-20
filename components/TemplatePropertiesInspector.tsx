@@ -12,6 +12,7 @@ import {
   FlexSizingType,
   LayoutVariant,
 } from '@/types/layout';
+import { FlexRowIcon, FlexColumnIcon, LayoutContainerIcon } from '@/components/icons/LayoutIcons';
 
 interface TemplatePropertiesInspectorProps {
   template: ItemTemplate | null;
@@ -78,15 +79,25 @@ export default function TemplatePropertiesInspector({
           -------------------------------------------------------------------- */}
       <div className="flex items-center justify-between p-2.5 rounded-xl bg-slate-900/60 border border-subtle">
         <div className="flex items-center gap-2 min-w-0">
-          <span className="text-base p-1 rounded-lg bg-[color-mix(in_oklch,var(--primary-accent)_20%,transparent)] border border-[color-mix(in_oklch,var(--primary-accent)_35%,transparent)]">
-            {isContainer ? (selectedNode.direction === 'row' ? '↔️' : '↕️') : '🧩'}
+          <span className="w-6 h-6 flex items-center justify-center rounded-lg bg-[color-mix(in_oklch,var(--primary-accent)_20%,transparent)] border border-[color-mix(in_oklch,var(--primary-accent)_35%,transparent)] shrink-0">
+            {isContainer ? (
+              selectedNode.direction === 'row' ? (
+                <FlexRowIcon className="w-3.5 h-3.5 text-[var(--primary-accent)]" />
+              ) : selectedNode.direction === 'column' ? (
+                <FlexColumnIcon className="w-3.5 h-3.5 text-[var(--primary-accent)]" />
+              ) : (
+                <LayoutContainerIcon className="w-3.5 h-3.5 text-[var(--primary-accent)]" />
+              )
+            ) : (
+              '🧩'
+            )}
           </span>
           <div className="min-w-0">
             <span className="text-xs font-bold text-strong truncate block">
               {selectedNode.label || (isContainer ? 'Flex Container' : selectedNode.componentType)}
             </span>
             <span className="text-[9.5px] font-mono text-muted uppercase tracking-wider">
-              {isContainer ? `Container • ${selectedNode.direction.toUpperCase()}` : `Block • ${selectedNode.componentType}`}
+              {isContainer ? `Container • ${(selectedNode.direction || 'none').toUpperCase()}` : `Block • ${selectedNode.componentType}`}
             </span>
           </div>
         </div>
@@ -127,30 +138,45 @@ export default function TemplatePropertiesInspector({
             <label className="text-[10px] font-bold text-muted uppercase tracking-wider">
               Flex Flow Direction
             </label>
-            <div className="grid grid-cols-2 gap-1.5">
+            <div className="grid grid-cols-3 gap-1.5">
+              <button
+                type="button"
+                onClick={() => onUpdateContainer(selectedNode.id, { direction: 'none' })}
+                className={`flex flex-col items-center justify-center gap-1 p-2 rounded-lg border text-[11px] font-bold transition cursor-pointer ${
+                  selectedNode.direction === 'none' || !selectedNode.direction
+                    ? 'bg-[color-mix(in_oklch,var(--primary-accent)_25%,transparent)] border-[var(--primary-accent)] text-white shadow-sm'
+                    : 'bg-surface-secondary border-subtle text-muted hover:text-white'
+                }`}
+                title="No direction set (Layout Container Box)"
+              >
+                <LayoutContainerIcon className="w-4 h-4" />
+                <span>None</span>
+              </button>
               <button
                 type="button"
                 onClick={() => onUpdateContainer(selectedNode.id, { direction: 'row' })}
-                className={`flex items-center justify-center gap-2 p-2 rounded-lg border text-xs font-bold transition cursor-pointer ${
+                className={`flex flex-col items-center justify-center gap-1 p-2 rounded-lg border text-[11px] font-bold transition cursor-pointer ${
                   selectedNode.direction === 'row'
                     ? 'bg-[color-mix(in_oklch,var(--primary-accent)_25%,transparent)] border-[var(--primary-accent)] text-white shadow-sm'
                     : 'bg-surface-secondary border-subtle text-muted hover:text-white'
                 }`}
+                title="Row (Horizontal)"
               >
-                <span>↔️</span>
-                <span>Row (Horizontal)</span>
+                <FlexRowIcon className="w-4 h-4" />
+                <span>Row</span>
               </button>
               <button
                 type="button"
                 onClick={() => onUpdateContainer(selectedNode.id, { direction: 'column' })}
-                className={`flex items-center justify-center gap-2 p-2 rounded-lg border text-xs font-bold transition cursor-pointer ${
+                className={`flex flex-col items-center justify-center gap-1 p-2 rounded-lg border text-[11px] font-bold transition cursor-pointer ${
                   selectedNode.direction === 'column'
                     ? 'bg-[color-mix(in_oklch,var(--primary-accent)_25%,transparent)] border-[var(--primary-accent)] text-white shadow-sm'
                     : 'bg-surface-secondary border-subtle text-muted hover:text-white'
                 }`}
+                title="Column (Vertical)"
               >
-                <span>↕️</span>
-                <span>Column (Vertical)</span>
+                <FlexColumnIcon className="w-4 h-4" />
+                <span>Column</span>
               </button>
             </div>
           </div>

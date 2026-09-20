@@ -7,12 +7,13 @@ import {
   FlexComponentNode,
 } from '@/types/layout';
 import { FieldDefinition } from '@/types/field';
-import { GearIcon } from '@/components/icons/ActionIcons';
+import { GearIcon } from '@/components/icons/ExplorerIcons';
 import { useExplorerActionMenu } from '@/hooks/useExplorerActionMenu';
 import {
   TemplateContainerActionMenu,
   TemplateComponentActionMenu,
 } from '@/components/TemplateLayoutActionMenu';
+import { BodyIcon, FlexRowIcon, FlexColumnIcon, LayoutContainerIcon } from '@/components/icons/LayoutIcons';
 
 /* ==========================================================================
    1. PROPS INTERFACE
@@ -25,10 +26,12 @@ export interface TemplateHierarchyTreeProps {
   fields?: FieldDefinition[];
   onSelectNode: (nodeId: string | null) => void;
   onOpenProperties?: (nodeId: string) => void;
+  onAddContainer?: (targetContainerId: string, options?: Partial<FlexContainerNode>) => string;
   onUpdateContainer?: (containerId: string, partial: Partial<FlexContainerNode>) => void;
   onUpdateComponent?: (componentId: string, partial: Partial<FlexComponentNode>) => void;
   onRemoveContainer: (containerId: string) => void;
   onRemoveComponent: (componentId: string) => void;
+  onPlaceField?: (fieldId: number, targetContainerId?: string) => void;
   expandedIds?: Set<string>;
   onToggleExpand?: (id: string) => void;
 }
@@ -79,10 +82,12 @@ interface ContainerNodeRowProps {
   onToggleExpand: (id: string) => void;
   onSelectNode: (id: string | null) => void;
   onOpenProperties?: (id: string) => void;
+  onAddContainer?: (targetContainerId: string, options?: Partial<FlexContainerNode>) => string;
   onUpdateContainer?: (id: string, partial: Partial<FlexContainerNode>) => void;
   onUpdateComponent?: (id: string, partial: Partial<FlexComponentNode>) => void;
   onRemoveContainer: (id: string) => void;
   onRemoveComponent: (id: string) => void;
+  onPlaceField?: (fieldId: number, targetContainerId?: string) => void;
 }
 
 function ContainerNodeRow({
@@ -96,11 +101,14 @@ function ContainerNodeRow({
   onToggleExpand,
   onSelectNode,
   onOpenProperties,
+  onAddContainer,
   onUpdateContainer,
   onUpdateComponent,
   onRemoveContainer,
   onRemoveComponent,
+  onPlaceField,
 }: ContainerNodeRowProps) {
+  const [isDragOver, setIsDragOver] = useState(false);
   const isRoot = container.id === 'root-container';
   const isSelected = selectedNodeId === container.id;
   const isActiveTarget = activeContainerId === container.id;
@@ -109,13 +117,17 @@ function ContainerNodeRow({
   const menu = useExplorerActionMenu(`tree-container-${container.id}`, 280, 'left');
 
   // Semantic layout icon
-  const containerIcon = isRoot
-    ? '📦'
-    : container.isCard
-    ? '🗂️'
-    : container.direction === 'row'
-    ? '↔️'
-    : '↕️';
+  const containerIcon = isRoot ? (
+    <BodyIcon className="w-3.5 h-3.5 text-slate-400" />
+  ) : container.isCard ? (
+    '🗂️'
+  ) : container.direction === 'row' ? (
+    <FlexRowIcon className="w-3.5 h-3.5 text-slate-400" />
+  ) : container.direction === 'column' ? (
+    <FlexColumnIcon className="w-3.5 h-3.5 text-slate-400" />
+  ) : (
+    <LayoutContainerIcon className="w-3.5 h-3.5 text-slate-400" />
+  );
 
   const containerLabel = isRoot ? 'Body' : container.label || 'Container';
 
@@ -124,13 +136,48 @@ function ContainerNodeRow({
       {/* Row Item formatted to exact site explorer model */}
       <div
         onClick={() => onSelectNode(container.id)}
+        onDragOver={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          e.dataTransfer.dropEffect = 'copy';
+          if (!isDragOver) setIsDragOver(true);
+        }}
+        onDragEnter={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          setIsDragOver(true);
+        }}
+        onDragLeave={(e) => {
+          e.stopPropagation();
+          if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+            setIsDragOver(false);
+          }
+        }}
+        onDrop={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          setIsDragOver(false);
+          const fieldIdStr =
+            e.dataTransfer.getData('application/x-trove-field-id') ||
+            e.dataTransfer.getData('text/plain');
+          if (fieldIdStr) {
+            const fieldId = parseInt(fieldIdStr, 10);
+            if (!isNaN(fieldId)) {
+              onPlaceField?.(fieldId, container.id);
+              onSelectNode(container.id);
+            }
+          }
+        }}
+        data-tree-container-id={container.id}
         title={containerLabel}
         style={{ paddingLeft: `${depth * 18 + 6}px` }}
         className={[
-          'group relative flex items-center h-7 px-1.5 gap-1.5 rounded-md cursor-pointer transition w-full min-w-0',
-          isSelected
+          'explorer-tree-item group relative flex items-center h-7 px-1.5 gap-1.5 rounded-md cursor-pointer transition w-full min-w-0',
+          isDragOver
+            ? 'ring-1 ring-[var(--primary-accent)] bg-[color-mix(in_oklch,var(--primary-accent)_25%,transparent)] text-white font-semibold'
+            : isSelected
             ? 'explorer-tree-item-selected font-medium'
-            : 'explorer-tree-item',
+            : '',
         ].join(' ')}
       >
         {/* Expand / Collapse Chevron */}
@@ -167,7 +214,7 @@ function ContainerNodeRow({
         {/* Direction tag for non-root containers */}
         {!isRoot && (
           <span className="text-[9px] font-mono px-1 py-0.2 rounded bg-slate-800/80 text-slate-400 border border-slate-700/60 shrink-0">
-            {container.direction === 'row' ? 'Row' : 'Col'}
+            {container.direction === 'row' ? 'Row' : container.direction === 'column' ? 'Col' : 'Box'}
           </span>
         )}
 
@@ -188,7 +235,7 @@ function ContainerNodeRow({
           </span>
         )}
 
-        {/* Gear Icon: Triggers Explorer Action Menu with Item Properties */}
+        {/* Gear Icon: Triggers Explorer Action Menu with Item Properties or Body Actions */}
         <div className="relative ml-auto shrink-0">
           <div
             role="button"
@@ -244,6 +291,7 @@ function ContainerNodeRow({
         parentContainer={parentContainer}
         menu={menu}
         position="left"
+        onAddContainer={onAddContainer}
         onUpdateContainer={onUpdateContainer}
         onRemoveContainer={onRemoveContainer}
         onSelectNode={onSelectNode}
@@ -267,10 +315,12 @@ function ContainerNodeRow({
                   onToggleExpand={onToggleExpand}
                   onSelectNode={onSelectNode}
                   onOpenProperties={onOpenProperties}
+                  onAddContainer={onAddContainer}
                   onUpdateContainer={onUpdateContainer}
                   onUpdateComponent={onUpdateComponent}
                   onRemoveContainer={onRemoveContainer}
                   onRemoveComponent={onRemoveComponent}
+                  onPlaceField={onPlaceField}
                 />
               );
             }
@@ -347,13 +397,14 @@ function ComponentNodeRow({
     <div className="select-none text-[13px] font-sans w-full min-w-0 flex flex-col">
       <div
         onClick={() => onSelectNode(component.id)}
+        data-tree-component-id={component.id}
         title={label}
         style={{ paddingLeft: `${depth * 18 + 6}px` }}
         className={[
-          'group relative flex items-center h-7 px-1.5 gap-1.5 rounded-md cursor-pointer transition w-full min-w-0',
+          'explorer-tree-item group relative flex items-center h-7 px-1.5 gap-1.5 rounded-md cursor-pointer transition w-full min-w-0',
           isSelected
             ? 'explorer-tree-item-selected font-medium'
-            : 'explorer-tree-item',
+            : '',
         ].join(' ')}
       >
         {/* Spacer aligned with container chevron */}
@@ -459,10 +510,12 @@ export default function TemplateHierarchyTree({
   fields = [],
   onSelectNode,
   onOpenProperties,
+  onAddContainer,
   onUpdateContainer,
   onUpdateComponent,
   onRemoveContainer,
   onRemoveComponent,
+  onPlaceField,
   expandedIds: externalExpandedIds,
   onToggleExpand: externalOnToggleExpand,
 }: TemplateHierarchyTreeProps) {
@@ -512,10 +565,12 @@ export default function TemplateHierarchyTree({
         onToggleExpand={effectiveOnToggleExpand}
         onSelectNode={onSelectNode}
         onOpenProperties={onOpenProperties}
+        onAddContainer={onAddContainer}
         onUpdateContainer={onUpdateContainer}
         onUpdateComponent={onUpdateComponent}
         onRemoveContainer={onRemoveContainer}
         onRemoveComponent={onRemoveComponent}
+        onPlaceField={onPlaceField}
       />
     </div>
   );

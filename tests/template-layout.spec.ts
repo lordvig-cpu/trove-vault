@@ -300,13 +300,12 @@ test.describe('Template Layout Engine & Grid System', () => {
     // 1. Watermark is hidden during template editing
     await expect(page.locator('.watermark-logo-image')).toHaveCount(0);
 
-    // 2. Structure tree has matching gear action triggers
-    const structureGears = page.locator('.primary-side-panel [aria-label*="actions"]');
-    const gearCount = await structureGears.count();
-    expect(gearCount).toBeGreaterThan(1);
+    // 2. Root Body container has NO gear actions trigger
+    await expect(page.locator('.primary-side-panel [aria-label="Open Body actions"]')).toHaveCount(0);
 
-    // Click child container gear (nth(1)) to verify Parent Container label
-    const childGear = structureGears.nth(1);
+    // 3. Child containers have matching gear action triggers
+    const childGear = page.locator('.primary-side-panel [aria-label="Open General Information actions"]');
+    await expect(childGear).toBeVisible();
     await childGear.click();
     await page.waitForTimeout(500);
 
@@ -400,6 +399,236 @@ test.describe('Template Layout Engine & Grid System', () => {
     // Screenshot matching user media_1789920140123.png
     await page.screenshot({
       path: 'C:/Users/mc_cl/.gemini/antigravity/brain/31bae76a-fe56-4a8b-b91e-7d916ddebf78/side_panels_paper_folder_tabs_restored.png',
+      fullPage: true,
+    });
+  });
+
+  test('keyboard shortcuts: Ctrl+K targets left side search and Ctrl+L targets right side search', async ({ page }) => {
+    await page.goto('/');
+    await page.waitForLoadState('networkidle');
+
+    // 1. Dock Items to left panel
+    const itemsNavBtn = page.getByRole('button', { name: 'Open Items or drag to dock in a sidebar', exact: true });
+    await itemsNavBtn.click();
+    await page.waitForTimeout(400);
+    const dockLeftBtn = page.locator('button[aria-label="Dock Items to Left"]');
+    await dockLeftBtn.click();
+    await page.waitForTimeout(500);
+
+    // 2. Dock Collections to right panel
+    const collectionsNavBtn = page.getByRole('button', { name: 'Open Collections or drag to dock in a sidebar', exact: true });
+    await collectionsNavBtn.click();
+    await page.waitForTimeout(400);
+    const dockRightBtn = page.locator('button[aria-label="Dock Collections to Right"]');
+    await dockRightBtn.click();
+    await page.waitForTimeout(500);
+
+    // Verify left search has Ctrl-K shortcut
+    const leftSearch = page.locator('.primary-side-panel [data-search-position="left"]');
+    await expect(leftSearch).toBeVisible();
+    await expect(leftSearch).toHaveAttribute('aria-keyshortcuts', 'Control+K Meta+K');
+    await expect(leftSearch).toHaveAttribute('title', /Ctrl-K/);
+
+    // Verify right search has Ctrl-L shortcut
+    const rightSearch = page.locator('.secondary-side-panel [data-search-position="right"]');
+    await expect(rightSearch).toBeVisible();
+    await expect(rightSearch).toHaveAttribute('aria-keyshortcuts', 'Control+L Meta+L');
+    await expect(rightSearch).toHaveAttribute('title', /Ctrl-L/);
+
+    // Press Ctrl+K -> Left search gets focused
+    await page.keyboard.press('Control+k');
+    await expect(leftSearch).toBeFocused();
+
+    // Press Ctrl+L -> Right search gets focused
+    await page.keyboard.press('Control+l');
+    await expect(rightSearch).toBeFocused();
+
+    // Now open template editor so right panel has Inspector search
+    const templatesNav = page.locator('header button', { hasText: 'TEMPLATES' });
+    await templatesNav.click();
+    await page.waitForTimeout(500);
+
+    const gearBtn = page.locator('[aria-label="Open actions"]').first();
+    await gearBtn.click();
+    await page.waitForTimeout(400);
+    await page.locator('button', { hasText: 'Edit Template' }).click();
+    await page.waitForTimeout(1000);
+
+    // In template editor: right panel has Inspector search with Ctrl-L
+    const inspectorSearch = page.locator('.secondary-side-panel [data-search-position="right"]');
+    await expect(inspectorSearch).toBeVisible();
+    await expect(inspectorSearch).toHaveAttribute('aria-keyshortcuts', 'Control+L Meta+L');
+    await expect(inspectorSearch).toHaveAttribute('title', /Ctrl-L/);
+
+    // Press Ctrl+L -> Inspector search gets focused
+    await page.keyboard.press('Control+l');
+    await expect(inspectorSearch).toBeFocused();
+
+    // Type a query in right search
+    await page.keyboard.type('play_time');
+    await expect(inspectorSearch).toHaveValue('play_time');
+  });
+
+  test('drags a field from Inspector directly into template container without overlay, updating Structure tree', async ({ page }) => {
+    await page.goto('/');
+    await page.waitForLoadState('networkidle');
+
+    // Open TEMPLATES flyout and edit template
+    const templatesNav = page.locator('header button', { hasText: 'TEMPLATES' });
+    await templatesNav.click();
+    await page.waitForTimeout(500);
+
+    const gearBtn = page.locator('[aria-label="Open actions"]').first();
+    await gearBtn.click();
+    await page.waitForTimeout(400);
+    await page.locator('button', { hasText: 'Edit Template' }).click();
+    await page.waitForTimeout(1000);
+
+    // 1. Verify field rows in Inspector are draggable
+    const fieldItem = page.locator('.secondary-side-panel .tmpl-field-item', { hasText: 'Game Designer' });
+    await expect(fieldItem).toBeVisible();
+    await expect(fieldItem).toHaveAttribute('draggable', 'true');
+
+    // Verify grab handle exists
+    const grabHandle = fieldItem.locator('[aria-label="Drag handle"]');
+    await expect(grabHandle).toBeVisible();
+
+    // 2. Locate canvas container (e.g. "General Information" container)
+    const targetContainer = page.locator('[data-container-id="container-c1"]');
+    await expect(targetContainer).toBeVisible();
+
+    // 3. Count components in Structure tree before drop
+    const leftPanel = page.locator('.primary-side-panel');
+    const treeItemsBefore = await leftPanel.locator('.explorer-tree-item').count();
+
+    // 4. Drag field into canvas container
+    await fieldItem.dragTo(targetContainer);
+    await page.waitForTimeout(600);
+
+    // 5. Verify NO overlay was shown
+    const dockOverlay = page.locator('.panel-dock-drop-zones, .dock-drop-zone');
+    await expect(dockOverlay).toHaveCount(0);
+
+    // 6. Verify Structure tree count increased on the left and contains the dropped field
+    const treeItemsAfter = await leftPanel.locator('.explorer-tree-item').count();
+    expect(treeItemsAfter).toBeGreaterThan(treeItemsBefore);
+    await expect(leftPanel.locator('[data-tree-component-id]')).toContainText(['Game Designer']);
+
+    // Take screenshot showing the updated canvas and structure tree
+    await page.screenshot({
+      path: 'C:/Users/mc_cl/.gemini/antigravity/brain/31bae76a-fe56-4a8b-b91e-7d916ddebf78/field_drag_drop_success.png',
+      fullPage: true,
+    });
+  });
+
+  test('opens template editor from Items panel category gear -> Edit Item Template without error', async ({ page }) => {
+    await page.goto('/');
+    await page.waitForLoadState('networkidle');
+
+    // 1. Dock Items to left panel
+    const itemsNavBtn = page.getByRole('button', { name: 'Open Items or drag to dock in a sidebar', exact: true });
+    await itemsNavBtn.click();
+    await page.waitForTimeout(400);
+    const dockLeftBtn = page.locator('button[aria-label="Dock Items to Left"]');
+    await dockLeftBtn.click();
+    await page.waitForTimeout(500);
+
+    // 2. Locate Board Games category row in Items tree
+    const categoryRow = page.locator('.primary-side-panel [title*="Board Games"]').first();
+    await expect(categoryRow).toBeVisible();
+
+    // 3. Hover and click gear on Board Games category
+    const categoryGear = categoryRow.locator('[aria-label*="actions"]');
+    await categoryGear.click();
+    await page.waitForTimeout(400);
+
+    // 4. Click "Edit Item Template"
+    const editTemplateBtn = page.locator('[data-explorer-menu] button', { hasText: 'Edit Item Template' });
+    await expect(editTemplateBtn).toBeVisible();
+    await editTemplateBtn.click();
+    await page.waitForTimeout(1000);
+
+    // 5. Verify Structure panel is loaded on the left (contains Body)
+    const structurePanel = page.locator('.primary-side-panel');
+    await expect(structurePanel).toContainText('STRUCTURE');
+    await expect(structurePanel).toContainText('Body');
+
+    // 6. Verify Template Inspector is loaded on the right (contains Board Games & Tabletop)
+    const inspectorPanel = page.locator('.secondary-side-panel');
+    await expect(inspectorPanel).toContainText('TEMPLATE INSPECTOR');
+    await expect(inspectorPanel).toContainText('Board Games & Tabletop');
+
+    // 7. Verify main canvas renders template editor banner
+    const canvasBanner = page.locator('.tmpl-editor-stage-banner');
+    await expect(canvasBanner).toBeVisible();
+    await expect(canvasBanner).toContainText('Board Games & Tabletop');
+
+    // Take screenshot showing successfully loaded template editor from category gear
+    await page.screenshot({
+      path: 'C:/Users/mc_cl/.gemini/antigravity/brain/31bae76a-fe56-4a8b-b91e-7d916ddebf78/edit_template_from_category_gear_success.png',
+      fullPage: true,
+    });
+  });
+
+  test('displays SVG row and column direction buttons on containers allowing on-the-fly switching', async ({ page }) => {
+    await page.goto('/');
+    await page.waitForTimeout(1000);
+
+    // 1. Open template editor via TEMPLATES tab
+    const templatesNav = page.locator('header button', { hasText: 'TEMPLATES' });
+    await templatesNav.click();
+    await page.waitForTimeout(500);
+
+    const gearBtn = page.locator('[aria-label="Open actions"]').first();
+    await gearBtn.click();
+    await page.waitForTimeout(400);
+    await page.locator('button', { hasText: 'Edit Template' }).click();
+    await page.waitForTimeout(1000);
+
+    // 2. Find a container on canvas (e.g. "General Information")
+    const container = page.locator('[data-container-id]').filter({ hasText: 'General Information' }).first();
+    await expect(container).toBeVisible();
+
+    // 3. Locate Row and Column direction toggle buttons at the top-left of container
+    const rowBtn = container.locator('button[aria-label="Row layout"]');
+    const colBtn = container.locator('button[aria-label="Column layout"]');
+
+    await expect(rowBtn).toBeVisible();
+    await expect(colBtn).toBeVisible();
+
+    // Verify both buttons have crisp SVG icons
+    await expect(rowBtn.locator('svg')).toBeVisible();
+    await expect(colBtn.locator('svg')).toBeVisible();
+
+    // 4. Click Row layout button to switch on the fly
+    await rowBtn.click();
+    await page.waitForTimeout(300);
+
+    // Verify row button is now active (aria-pressed=true, nav-footer-dock-btn-open)
+    await expect(rowBtn).toHaveAttribute('aria-pressed', 'true');
+    await expect(rowBtn).toHaveClass(/nav-footer-dock-btn-open/);
+    await expect(colBtn).toHaveAttribute('aria-pressed', 'false');
+    await expect(colBtn).toHaveClass(/nav-footer-dock-btn-closed/);
+
+    // 5. Click Column layout button to switch back on the fly
+    await colBtn.click();
+    await page.waitForTimeout(300);
+
+    // Verify column button is now active
+    await expect(colBtn).toHaveAttribute('aria-pressed', 'true');
+    await expect(colBtn).toHaveClass(/nav-footer-dock-btn-open/);
+    await expect(rowBtn).toHaveAttribute('aria-pressed', 'false');
+    await expect(rowBtn).toHaveClass(/nav-footer-dock-btn-closed/);
+
+    // 6. Verify layout palette in bottom panel also has SVG icons for Row and Column containers
+    const paletteRowPrim = page.locator('button', { hasText: 'Row Container' });
+    const paletteColPrim = page.locator('button', { hasText: 'Column Container' });
+    await expect(paletteRowPrim.locator('svg')).toBeVisible();
+    await expect(paletteColPrim.locator('svg')).toBeVisible();
+
+    // 7. Take screenshot showing container direction buttons and palette SVGs
+    await page.screenshot({
+      path: 'C:/Users/mc_cl/.gemini/antigravity/brain/31bae76a-fe56-4a8b-b91e-7d916ddebf78/container_direction_svg_buttons.png',
       fullPage: true,
     });
   });

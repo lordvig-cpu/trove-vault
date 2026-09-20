@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { ItemRecord } from '@/types/item';
-import { GearIcon } from '@/components/icons/ActionIcons';
+import { GearIcon } from '@/components/icons/ExplorerIcons';
 import { useExplorerActionMenu } from '@/hooks/useExplorerActionMenu';
 import { useExplorerSelection } from '@/context/ExplorerSelectionContext';
 import ExplorerCollectionActionMenu from '@/components/ExplorerCollectionActionMenu';

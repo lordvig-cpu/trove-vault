@@ -59,7 +59,10 @@ export default function ExplorerCollectionActionMenu({
           label="Edit Item Template"
           subtext="Manage attributes & schema"
           onClick={() => {
-            onEditTemplate?.(collection.id);
+            const rawTemplateId = Math.abs(collection.id);
+            if (rawTemplateId !== 999) {
+              onEditTemplate?.(rawTemplateId);
+            }
             menu.closeMenu();
           }}
         />

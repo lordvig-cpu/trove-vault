@@ -6,7 +6,7 @@ import {
   ChevronRightIcon,
   ResetWidthIcon,
   ResetWidthRightIcon,
-} from '@/components/icons/SystemIcons';
+} from '@/components/icons/PanelIcons';
 import { useUIPreferences } from '@/context/UIPreferencesContext';
 import { useResizablePanel } from '@/hooks/useResizablePanel';
 import { SecondarySidebarPosition } from '@/types/layout';

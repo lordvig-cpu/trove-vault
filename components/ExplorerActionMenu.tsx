@@ -19,7 +19,7 @@ interface ExplorerActionMenuProps {
   top: number;
   left: number;
   title: string;
-  titleIcon: string;
+  titleIcon?: React.ReactNode;
   position?: 'left' | 'right';
   className?: string;
   children: React.ReactNode;

@@ -4,7 +4,7 @@ import React, { useState, useMemo } from 'react';
 import { ItemTemplate } from '@/types/template';
 import { FieldDefinition, FieldType } from '@/types/field';
 import { useExplorerActionMenu } from '@/hooks/useExplorerActionMenu';
-import { GearIcon } from '@/components/icons/ActionIcons';
+import { GearIcon } from '@/components/icons/ExplorerIcons';
 import TemplateFieldActionMenu from '@/components/TemplateFieldActionMenu';
 import TemplateRootActionMenu from '@/components/TemplateRootActionMenu';
 import '@/app/styles/components/templateFieldInspector.css';
@@ -52,6 +52,7 @@ function TemplateRootTreeRow({
   onSelectRoot,
   onUpdateTemplateMeta,
   onAddField,
+  onCloseEditor,
   position = 'left',
 }: {
   template: ItemTemplate;
@@ -59,6 +60,7 @@ function TemplateRootTreeRow({
   onSelectRoot: () => void;
   onUpdateTemplateMeta: (name: string, description: string | null, icon: string) => Promise<void> | void;
   onAddField: (type?: FieldType) => Promise<void> | void;
+  onCloseEditor?: () => void;
   position?: 'left' | 'right';
 }) {
   const isRightSide = position === 'right';
@@ -123,6 +125,20 @@ function TemplateRootTreeRow({
           <span className="text-[10px] font-mono font-bold text-[var(--primary-accent)] bg-[color-mix(in_oklch,var(--primary-accent)_15%,transparent)] px-1.5 py-0.5 rounded border border-[color-mix(in_oklch,var(--primary-accent)_30%,transparent)] shrink-0 select-none">
             ROOT
           </span>
+          {onCloseEditor && (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onCloseEditor();
+              }}
+              title="Done editing template (restores workspace pins & tabs)"
+              className="text-[10px] font-bold px-2 py-0.5 rounded bg-[var(--primary-accent)] text-white hover:opacity-90 transition cursor-pointer flex items-center gap-1 shadow-sm"
+            >
+              <span>✓</span>
+              <span>Done</span>
+            </button>
+          )}
           {!isRightSide && gearTrigger}
         </div>
       </div>
@@ -134,6 +150,7 @@ function TemplateRootTreeRow({
         position={position}
         onUpdateMeta={onUpdateTemplateMeta}
         onAddField={onAddField}
+        onCloseEditor={onCloseEditor}
       />
     </>
   );
@@ -200,18 +217,39 @@ function TemplateFieldTreeRow({
     </div>
   );
 
+  const [isRowDragging, setIsRowDragging] = useState(false);
+
   return (
     <>
       <div
         onClick={() => onSelectField(field.id)}
-        className={`tmpl-field-item group relative ${isSelected ? 'tmpl-field-item-selected' : ''}`}
+        draggable={true}
+        onDragStart={(e) => {
+          e.stopPropagation();
+          e.dataTransfer.setData('application/x-trove-field-id', String(field.id));
+          e.dataTransfer.setData('text/plain', String(field.id));
+          e.dataTransfer.effectAllowed = 'copyMove';
+          setIsRowDragging(true);
+        }}
+        onDragEnd={(e) => {
+          e.stopPropagation();
+          setIsRowDragging(false);
+        }}
+        className={`tmpl-field-item group relative transition-opacity ${
+          isSelected ? 'tmpl-field-item-selected' : ''
+        } ${isRowDragging ? 'opacity-40 ring-1 ring-[var(--primary-accent)]' : ''}`}
       >
         {/* Left Side: If docked on right panel, show gear on the left */}
         {isRightSide && gearTrigger}
 
         {/* Drag Handle & Field Identifiers */}
         <div className="flex items-center gap-1.5 min-w-0 flex-1">
-          <span className="text-[10px] text-muted/50 group-hover:text-muted cursor-grab active:cursor-grabbing tracking-tighter shrink-0 select-none">
+          <span
+            onPointerDown={(e) => e.stopPropagation()}
+            className="text-[10px] text-muted/50 group-hover:text-muted cursor-grab active:cursor-grabbing tracking-tighter shrink-0 select-none p-0.5 rounded hover:bg-slate-800"
+            title="Drag to place in container"
+            aria-label="Drag handle"
+          >
             ⋮⋮
           </span>
           <span className={`tmpl-type-badge ${typeCfg.badgeClass} shrink-0`}>
@@ -308,6 +346,7 @@ export default function TemplateFieldInspector({
   onDeleteField,
   onReorderFields,
   onUpdateTemplateMeta,
+  onCloseEditor,
   isLoading = false,
   error = null,
   successMsg = null,
@@ -468,6 +507,7 @@ export default function TemplateFieldInspector({
           onSelectRoot={onSelectRoot}
           onUpdateTemplateMeta={onUpdateTemplateMeta}
           onAddField={onAddField}
+          onCloseEditor={onCloseEditor}
           position={position}
         />
 

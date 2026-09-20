@@ -12,7 +12,7 @@ import {
   ResetWidthRightIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
-} from '@/components/icons/SystemIcons';
+} from '@/components/icons/PanelIcons';
 import { ExplorerTab } from '@/lib/filterExplorerForest';
 import { PrimarySidebarPosition } from '@/types/layout';
 import EmptyPanelDropZone from '@/components/EmptyPanelDropZone';
@@ -35,6 +35,7 @@ interface PrimarySidePanelProps {
   canMove?: boolean;
   onDock?: (position: 'left' | 'right') => void;
   isOpen: boolean;
+  isPinned?: boolean;
   onOpen?: () => void;
   onClose: () => void;
   onTogglePin?: () => void;
@@ -88,6 +89,7 @@ export default function PrimarySidePanel({
   canMove = true,
   onDock,
   isOpen,
+  isPinned: isPinnedProp,
   onOpen,
   onClose,
   onTogglePin,
@@ -128,7 +130,8 @@ export default function PrimarySidePanel({
   /* ------------------------------------------------------------------------
      2.1 CONTEXT & PREFERENCES
      ------------------------------------------------------------------------ */
-  const { isPinned, togglePin, animationsEnabled, isHydrated } = useUIPreferences();
+  const { isPinned: contextIsPinned, togglePin, animationsEnabled, isHydrated } = useUIPreferences();
+  const isPinned = isPinnedProp !== undefined ? isPinnedProp : contextIsPinned;
 
   /* ------------------------------------------------------------------------
      2.2 RESIZING CONTROLLER HOOK

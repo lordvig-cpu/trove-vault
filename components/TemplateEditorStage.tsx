@@ -11,6 +11,12 @@ import {
   LayoutSection,
   LayoutBlock,
 } from '@/types/layout';
+import {
+  BodyIcon,
+  FlexRowIcon,
+  FlexColumnIcon,
+  LayoutContainerIcon,
+} from '@/components/icons/LayoutIcons';
 
 /* ==========================================================================
    1. PROPS INTERFACE
@@ -94,6 +100,7 @@ function FlexContainerRenderer({
   onRemoveContainer,
   onUpdateComponent,
   onRemoveComponent,
+  onPlaceField,
 }: {
   container: FlexContainerNode;
   isRoot?: boolean;
@@ -110,7 +117,9 @@ function FlexContainerRenderer({
   onRemoveContainer?: (id: string) => void;
   onUpdateComponent?: (id: string, partial: Partial<FlexComponentNode>) => void;
   onRemoveComponent?: (id: string) => void;
+  onPlaceField?: (fieldId: number, targetContainerId?: string) => void;
 }) {
+  const [isDragOver, setIsDragOver] = useState(false);
   const isSelected = selectedNodeId === container.id;
   const isActive = activeContainerId === container.id;
 
@@ -125,9 +134,16 @@ function FlexContainerRenderer({
       ? 'flex-end'
       : 'flex-start';
 
+  const isUnsetDirection = container.direction === 'none' || !container.direction;
+
   const flexStyle: React.CSSProperties = {
     display: 'flex',
-    flexDirection: container.direction,
+    flexDirection:
+      container.direction === 'row'
+        ? 'row'
+        : container.direction === 'column'
+        ? 'column'
+        : undefined,
     gap: `${container.gap}px`,
     flexWrap: container.wrap ? 'wrap' : 'nowrap',
     alignItems: container.align,
@@ -155,15 +171,53 @@ function FlexContainerRenderer({
 
   return (
     <div
+      data-container-id={container.id}
       onClick={(e) => {
         e.stopPropagation();
         if (canvasMode === 'edit') onSelectNode?.(container.id);
+      }}
+      onDragOver={(e) => {
+        if (canvasMode !== 'edit') return;
+        e.preventDefault();
+        e.stopPropagation();
+        e.dataTransfer.dropEffect = 'copy';
+        if (!isDragOver) setIsDragOver(true);
+      }}
+      onDragEnter={(e) => {
+        if (canvasMode !== 'edit') return;
+        e.preventDefault();
+        e.stopPropagation();
+        setIsDragOver(true);
+      }}
+      onDragLeave={(e) => {
+        e.stopPropagation();
+        if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+          setIsDragOver(false);
+        }
+      }}
+      onDrop={(e) => {
+        if (canvasMode !== 'edit') return;
+        e.preventDefault();
+        e.stopPropagation();
+        setIsDragOver(false);
+        const fieldIdStr =
+          e.dataTransfer.getData('application/x-trove-field-id') ||
+          e.dataTransfer.getData('text/plain');
+        if (fieldIdStr) {
+          const fieldId = parseInt(fieldIdStr, 10);
+          if (!isNaN(fieldId)) {
+            onPlaceField?.(fieldId, container.id);
+            onSelectNode?.(container.id);
+          }
+        }
       }}
       className={`transition-all duration-150 relative ${
         canvasMode === 'preview'
           ? isCard
             ? 'rounded-2xl bg-slate-900/60 border border-slate-800/80 shadow-md backdrop-blur-sm'
             : ''
+          : isDragOver
+          ? 'rounded-2xl ring-2 ring-[var(--primary-accent)] ring-offset-2 ring-offset-slate-950 bg-[color-mix(in_oklch,var(--primary-accent)_16%,transparent)] border-[var(--primary-accent)] shadow-2xl shadow-[color-mix(in_oklch,var(--primary-accent)_25%,transparent)] p-1.5'
           : isSelected
           ? 'rounded-2xl ring-2 ring-[var(--primary-accent)] bg-[color-mix(in_oklch,var(--primary-accent)_12%,transparent)] shadow-xl shadow-[color-mix(in_oklch,var(--primary-accent)_15%,transparent)] border border-[var(--primary-accent)] p-1.5'
           : isActive
@@ -177,12 +231,65 @@ function FlexContainerRenderer({
       {canvasMode === 'edit' && !isRoot && (
         <div className="flex items-center justify-between px-2 py-1 mb-1 border-b border-slate-800/60 select-none">
           <div className="flex items-center gap-1.5 min-w-0">
-            <span className="text-xs">📁</span>
+            {/* Quick Direction Toggle Buttons (3-Button Layout Suite) */}
+            <div className="flex items-center gap-1 shrink-0" role="group" aria-label="Container flex direction">
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onUpdateContainer?.(container.id, { direction: 'none' });
+                }}
+                title="Generic container layout (unset flow) — click to remove row/column distinction"
+                aria-label="Generic container layout"
+                aria-pressed={isUnsetDirection}
+                className={`p-1 rounded-md border transition cursor-pointer flex items-center justify-center ${
+                  isUnsetDirection
+                    ? 'nav-footer-dock-btn-open border-[var(--primary-accent)] text-[var(--primary-accent)] shadow-sm'
+                    : 'nav-footer-dock-btn-closed hover:border-[var(--primary-accent)] hover:text-white'
+                }`}
+              >
+                <LayoutContainerIcon className="w-3.5 h-3.5" />
+              </button>
+
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onUpdateContainer?.(container.id, { direction: 'row' });
+                }}
+                title="Row layout (horizontal flow) — click to switch"
+                aria-label="Row layout"
+                aria-pressed={container.direction === 'row'}
+                className={`p-1 rounded-md border transition cursor-pointer flex items-center justify-center ${
+                  container.direction === 'row'
+                    ? 'nav-footer-dock-btn-open border-[var(--primary-accent)] text-[var(--primary-accent)] shadow-sm'
+                    : 'nav-footer-dock-btn-closed hover:border-[var(--primary-accent)] hover:text-white'
+                }`}
+              >
+                <FlexRowIcon className="w-3.5 h-3.5" />
+              </button>
+
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onUpdateContainer?.(container.id, { direction: 'column' });
+                }}
+                title="Column layout (vertical flow) — click to switch"
+                aria-label="Column layout"
+                aria-pressed={container.direction === 'column'}
+                className={`p-1 rounded-md border transition cursor-pointer flex items-center justify-center ${
+                  container.direction === 'column'
+                    ? 'nav-footer-dock-btn-open border-[var(--primary-accent)] text-[var(--primary-accent)] shadow-sm'
+                    : 'nav-footer-dock-btn-closed hover:border-[var(--primary-accent)] hover:text-white'
+                }`}
+              >
+                <FlexColumnIcon className="w-3.5 h-3.5" />
+              </button>
+            </div>
+
             <span className="text-[11px] font-bold text-slate-200 tracking-wide truncate">
               {container.label || 'Container'}
-            </span>
-            <span className="text-[9.5px] font-mono px-1.5 py-0.5 rounded bg-slate-800/90 text-[var(--primary-accent)] border border-[color-mix(in_oklch,var(--primary-accent)_30%,transparent)]">
-              {container.direction === 'row' ? '➡ Row' : '⬇ Col'}
             </span>
             <span className="text-[9px] font-mono text-slate-400">
               {container.gap}px gap
@@ -216,10 +323,22 @@ function FlexContainerRenderer({
       <div style={flexStyle} className="w-full">
         {container.children.length === 0 ? (
           canvasMode === 'edit' ? (
-            <div className="w-full py-6 border border-dashed border-slate-800/80 rounded-xl flex flex-col items-center justify-center text-center gap-2 select-none bg-slate-900/10">
-              <span className="text-[11px] text-slate-400 italic">
-                Empty container. Drop or add layout primitives or components from the bottom panel.
-              </span>
+            <div
+              className={`w-full py-6 border border-dashed rounded-xl flex flex-col items-center justify-center text-center gap-2 select-none transition-colors ${
+                isDragOver
+                  ? 'border-[var(--primary-accent)] bg-[color-mix(in_oklch,var(--primary-accent)_20%,transparent)]'
+                  : 'border-slate-800/80 bg-slate-900/10'
+              }`}
+            >
+              {isDragOver ? (
+                <span className="text-xs font-bold text-[var(--primary-accent)] flex items-center gap-1.5 animate-pulse">
+                  <span>📥</span> Drop field to insert into {container.label || (isRoot ? 'Body' : 'Container')}
+                </span>
+              ) : (
+                <span className="text-[11px] text-slate-400 italic">
+                  Empty container. Drag fields from Inspector or add layout primitives below.
+                </span>
+              )}
               <div className="flex items-center gap-1.5 mt-1">
                 <button
                   type="button"
@@ -271,6 +390,7 @@ function FlexContainerRenderer({
                   onRemoveContainer={onRemoveContainer}
                   onUpdateComponent={onUpdateComponent}
                   onRemoveComponent={onRemoveComponent}
+                  onPlaceField={onPlaceField}
                 />
               );
             }
@@ -620,6 +740,7 @@ export default function TemplateEditorStage({
             onRemoveContainer={onRemoveFlexContainer}
             onUpdateComponent={onUpdateFlexComponent}
             onRemoveComponent={onRemoveFlexComponent}
+            onPlaceField={onPlaceField}
           />
         </div>
       ) : sections.length === 0 ? (

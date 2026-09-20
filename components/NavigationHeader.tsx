@@ -3,7 +3,7 @@
 import React from 'react';
 import Image from 'next/image';
 import logo from '@/assets/images/nav_bar_website_logo.webp';
-import { NavigationBarTextureFilter } from '@/components/icons/SystemIcons';
+import { NavigationBarTextureFilter } from '@/components/icons/NavigationIcons';
 import { useUIPreferences } from '@/context/UIPreferencesContext';
 
 /* ==========================================================================

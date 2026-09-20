@@ -4,17 +4,19 @@ import React, { useState, useRef, useId } from 'react';
 import {
   FolderCollapseIcon,
   FolderExpandIcon,
-  PinFilledIcon,
-  PinOutlineIcon,
   FilterIcon,
   SlidersHorizontalIcon,
   SearchGlassIcon,
   SearchClearIcon,
+  PlusIcon,
 } from '@/components/icons/ExplorerIcons';
 import {
   DockLeftPanelIcon,
   DockRightPanelIcon,
-} from '@/components/icons/SystemIcons';
+  PinFilledIcon,
+  PinOutlineIcon,
+  PanelFolderTabSvg,
+} from '@/components/icons/PanelIcons';
 import ExplorerSearchMenu from '@/components/ExplorerSearchMenu';
 import CollectionFilterTree from '@/components/CollectionFilterTree';
 import { CollectionRecord } from '@/types/collection';
@@ -153,6 +155,15 @@ export default function PrimarySidePanelHeader({
     ? 'Structure'
     : 'Items';
   const isRight = position === 'right';
+  const shortcutKey = isRight ? 'Ctrl-L' : 'Ctrl-K';
+  const shortcutAria = isRight ? 'Control+L Meta+L' : 'Control+K Meta+K';
+  const searchInputTitle = isInspector
+    ? `Search Template Fields [shortcut: ${shortcutKey}]`
+    : isTemplates
+    ? `Search Templates & Items [shortcut: ${shortcutKey}]`
+    : isCollections
+    ? `Search Collections & Items [shortcut: ${shortcutKey}]`
+    : `Search Items [shortcut: ${shortcutKey}]`;
   const { animationsEnabled } = useUIPreferences();
 
   const displayedTabs: DockContent[] =
@@ -431,13 +442,14 @@ export default function PrimarySidePanelHeader({
                   id={`${headerId}-search`}
                   type="text"
                   data-tree-search={treeView ?? activeTab}
-                  aria-keyshortcuts={isTemplates ? 'Control+; Meta+;' : isCollections ? 'Control+L Meta+L' : 'Control+K Meta+K'}
+                  data-search-position={isRight ? 'right' : 'left'}
+                  aria-keyshortcuts={shortcutAria}
                   aria-label={isInspector ? 'Search template fields' : isTemplates ? 'Search templates and items' : isCollections ? 'Search collections and items' : 'Search items'}
                   value={searchQuery}
                   onChange={(e) => onSearchChange(e.target.value)}
                   onFocus={() => setIsSearchFocused(true)}
                   onBlur={() => setIsSearchFocused(false)}
-                  title={isInspector ? 'Search Template Fields' : isTemplates ? 'Search Templates & Items [shortcut: Ctrl-;]' : isCollections ? 'Search Collections & Items [shortcut: Ctrl-L]' : 'Search Items [shortcut: Ctrl-K]'}
+                  title={searchInputTitle}
                   placeholder={
                     isInspector
                       ? hasFieldTypeFilters
@@ -491,13 +503,14 @@ export default function PrimarySidePanelHeader({
                   id={`${headerId}-search`}
                   type="text"
                   data-tree-search={treeView ?? activeTab}
-                  aria-keyshortcuts={isTemplates ? 'Control+; Meta+;' : isCollections ? 'Control+L Meta+L' : 'Control+K Meta+K'}
+                  data-search-position={isRight ? 'right' : 'left'}
+                  aria-keyshortcuts={shortcutAria}
                   aria-label={isInspector ? 'Search template fields' : isTemplates ? 'Search templates and items' : isCollections ? 'Search collections and items' : 'Search items'}
                   value={searchQuery}
                   onChange={(e) => onSearchChange(e.target.value)}
                   onFocus={() => setIsSearchFocused(true)}
                   onBlur={() => setIsSearchFocused(false)}
-                  title={isInspector ? 'Search Template Fields' : isTemplates ? 'Search Templates & Items [shortcut: Ctrl-;]' : isCollections ? 'Search Collections & Items [shortcut: Ctrl-L]' : 'Search Items [shortcut: Ctrl-K]'}
+                  title={searchInputTitle}
                   placeholder={
                     isInspector
                       ? hasFieldTypeFilters
@@ -973,31 +986,12 @@ export default function PrimarySidePanelHeader({
                           : 'explorer-folder-tab-idle z-10'
                       } ${isThisTabDragging ? 'explorer-folder-tab-dragging' : ''}`}
                     >
-                      <svg
-                        className="absolute inset-0 w-full h-full pointer-events-none"
-                        viewBox="0 0 100 28"
-                        preserveAspectRatio="none"
-                      >
-                        <defs>
-                          <linearGradient id={`${headerId}-${tab}`} x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="0%" stopColor="var(--explorer-tab-active-top, rgba(18, 94, 158, 1))" className="tab-grad-top" />
-                            <stop offset="45%" stopColor="var(--explorer-tab-active-mid, rgba(10, 64, 112, 1))" className="tab-grad-mid" />
-                            <stop offset="100%" stopColor="var(--explorer-tab-active-bottom, rgba(5, 36, 70, 1))" className="tab-grad-bottom" />
-                          </linearGradient>
-                        </defs>
-                        <path
-                          d="M 0,28 L 8,3 C 9,1 11,0 14,0 L 86,0 C 89,0 91,1 92,3 L 100,28 Z"
-                          className="explorer-tab-svg-fill"
-                          style={isTabActive || isThisTabTarget ? { fill: `url(#${headerId}-${tab})` } : undefined}
-                        />
-                        <path
-                          d="M 0,28 L 8,3 C 9,1 11,0 14,0 L 86,0 C 89,0 91,1 92,3 L 100,28"
-                          className="explorer-tab-svg-stroke"
-                          fill="none"
-                          strokeWidth={isThisTabTarget ? '2' : '1.5'}
-                          vectorEffect="non-scaling-stroke"
-                        />
-                      </svg>
+                      <PanelFolderTabSvg
+                        gradientId={`${headerId}-${tab}`}
+                        isActive={isTabActive}
+                        isTarget={isThisTabTarget}
+                        variant="curved"
+                      />
                       <span className="relative z-10 flex items-center gap-1 px-0.5 select-none">
                         <span
                           className="text-[9px] opacity-40 group-hover/tab:opacity-90 transition-opacity tracking-tighter"
@@ -1027,18 +1021,7 @@ export default function PrimarySidePanelHeader({
                       className="explorer-tab-action-btn group"
                       title="Add New Field Definition"
                     >
-                      <svg
-                        className="w-2.5 h-2.5 origin-center transition-transform duration-150 ease-out group-hover:scale-110 text-[var(--explorer-action-icon,rgba(109,170,209,0.85))] group-hover:text-white"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2.5"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      >
-                        <line x1="12" y1="5" x2="12" y2="19" />
-                        <line x1="5" y1="12" x2="19" y2="12" />
-                      </svg>
+                      <PlusIcon className="w-2.5 h-2.5 origin-center transition-transform duration-150 ease-out group-hover:scale-110 text-[var(--explorer-action-icon,rgba(109,170,209,0.85))] group-hover:text-white" />
                     </button>
                   )
                 ) : isTemplates ? (
@@ -1049,18 +1032,7 @@ export default function PrimarySidePanelHeader({
                       className="explorer-tab-action-btn group"
                       title="Create New Item Template"
                     >
-                      <svg
-                        className="w-2.5 h-2.5 origin-center transition-transform duration-150 ease-out group-hover:scale-110 text-[var(--explorer-action-icon,rgba(109,170,209,0.85))] group-hover:text-white"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2.5"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      >
-                        <line x1="12" y1="5" x2="12" y2="19" />
-                        <line x1="5" y1="12" x2="19" y2="12" />
-                      </svg>
+                      <PlusIcon className="w-2.5 h-2.5 origin-center transition-transform duration-150 ease-out group-hover:scale-110 text-[var(--explorer-action-icon,rgba(109,170,209,0.85))] group-hover:text-white" />
                     </button>
                   )
                 ) : isCollections ? (
@@ -1071,18 +1043,7 @@ export default function PrimarySidePanelHeader({
                       className="explorer-tab-action-btn group"
                       title="Create New Collection"
                     >
-                      <svg
-                        className="w-2.5 h-2.5 origin-center transition-transform duration-150 ease-out group-hover:scale-110 text-[var(--explorer-action-icon,rgba(109,170,209,0.85))] group-hover:text-white"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2.5"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      >
-                        <line x1="12" y1="5" x2="12" y2="19" />
-                        <line x1="5" y1="12" x2="19" y2="12" />
-                      </svg>
+                      <PlusIcon className="w-2.5 h-2.5 origin-center transition-transform duration-150 ease-out group-hover:scale-110 text-[var(--explorer-action-icon,rgba(109,170,209,0.85))] group-hover:text-white" />
                     </button>
                   )
                 ) : isHierarchy || isProperties ? (
@@ -1095,18 +1056,7 @@ export default function PrimarySidePanelHeader({
                       className="explorer-tab-action-btn group"
                       title="Create New Item"
                     >
-                      <svg
-                        className="w-2.5 h-2.5 origin-center transition-transform duration-150 ease-out group-hover:scale-110 text-[var(--explorer-action-icon,rgba(109,170,209,0.85))] group-hover:text-white"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2.5"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      >
-                        <line x1="12" y1="5" x2="12" y2="19" />
-                        <line x1="5" y1="12" x2="19" y2="12" />
-                      </svg>
+                      <PlusIcon className="w-2.5 h-2.5 origin-center transition-transform duration-150 ease-out group-hover:scale-110 text-[var(--explorer-action-icon,rgba(109,170,209,0.85))] group-hover:text-white" />
                     </button>
                   )
                 )}

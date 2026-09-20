@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   FlexContainerNode,
   FlexComponentNode,
@@ -12,10 +12,13 @@ import {
 } from '@/types/layout';
 import { FieldDefinition } from '@/types/field';
 import { useExplorerActionMenu } from '@/hooks/useExplorerActionMenu';
+import { AddSubItemIcon } from '@/components/icons/ExplorerIcons';
 import ExplorerActionMenu, {
   ActionMenuDangerItem,
   ActionMenuDivider,
+  ActionMenuItem,
 } from '@/components/ExplorerActionMenu';
+import { BodyIcon, FlexRowIcon, FlexColumnIcon, LayoutContainerIcon } from '@/components/icons/LayoutIcons';
 
 const GAP_OPTIONS: { value: FlexGap; label: string }[] = [
   { value: 0, label: '0px' },
@@ -45,6 +48,7 @@ interface TemplateContainerActionMenuProps {
   parentContainer?: FlexContainerNode | null;
   menu: ReturnType<typeof useExplorerActionMenu>;
   position?: 'left' | 'right';
+  onAddContainer?: (targetContainerId: string, options?: Partial<FlexContainerNode>) => string;
   onUpdateContainer?: (containerId: string, partial: Partial<FlexContainerNode>) => void;
   onRemoveContainer?: (containerId: string) => void;
   onSelectNode?: (nodeId: string | null) => void;
@@ -55,6 +59,7 @@ export function TemplateContainerActionMenu({
   parentContainer,
   menu,
   position = 'left',
+  onAddContainer,
   onUpdateContainer,
   onRemoveContainer,
   onSelectNode,
@@ -62,10 +67,96 @@ export function TemplateContainerActionMenu({
   const isRoot = container.id === 'root-container';
   const defaultLabel = isRoot ? 'Body' : container.label || 'Container';
   const [label, setLabel] = useState(defaultLabel);
+  const [isAddingContent, setIsAddingContent] = useState(false);
+  const [newContainerName, setNewContainerName] = useState('New Container');
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (!menu.isMenuOpen) {
+      setIsAddingContent(false);
+      setNewContainerName('New Container');
+    }
+  }, [menu.isMenuOpen]);
+
+  useEffect(() => {
+    if (isAddingContent) {
+      inputRef.current?.focus();
+      inputRef.current?.select();
+    }
+  }, [isAddingContent]);
 
   useEffect(() => {
     setLabel(isRoot ? 'Body' : container.label || 'Container');
   }, [container.label, isRoot]);
+
+  if (isRoot) {
+    return (
+      <ExplorerActionMenu
+        isOpen={menu.isMenuOpen}
+        onMouseEnter={menu.handleMenuMouseEnter}
+        onMouseLeave={menu.handleMouseLeave}
+        top={menu.menuCoords.top}
+        left={menu.menuCoords.left}
+        position={position}
+        title="Body Actions"
+        titleIcon={<BodyIcon className="w-4 h-4 text-slate-300" />}
+      >
+        <ActionMenuItem
+          icon={<AddSubItemIcon className="w-3.5 h-3.5" />}
+          label="Add Content"
+          subtext="Insert layout container"
+          onClick={() => {
+            setNewContainerName('New Container');
+            setIsAddingContent((prev) => !prev);
+          }}
+        />
+
+        {isAddingContent && (
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              const trimmed = newContainerName.trim() || 'New Container';
+              onAddContainer?.(container.id, { label: trimmed, direction: 'none' });
+              setIsAddingContent(false);
+              menu.closeMenu();
+            }}
+            className="actionMenuRenameForm"
+          >
+            <input
+              ref={inputRef}
+              type="text"
+              value={newContainerName}
+              onChange={(e) => setNewContainerName(e.target.value)}
+              placeholder="New Container"
+              onKeyDown={(e) => {
+                if (e.key === 'Escape') {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setIsAddingContent(false);
+                }
+              }}
+              className="actionMenuRenameInput"
+            />
+            <div className="actionMenuRenameActions">
+              <button
+                type="button"
+                onClick={() => setIsAddingContent(false)}
+                className="actionMenuRenameCancelBtn"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="actionMenuRenameSaveBtn"
+              >
+                Add Container
+              </button>
+            </div>
+          </form>
+        )}
+      </ExplorerActionMenu>
+    );
+  }
 
   const handleLabelBlur = () => {
     const trimmed = label.trim();
@@ -74,13 +165,17 @@ export function TemplateContainerActionMenu({
     }
   };
 
-  const containerIcon = isRoot
-    ? '📦'
-    : container.isCard
-    ? '🗂️'
-    : container.direction === 'row'
-    ? '↔️'
-    : '↕️';
+  const containerIcon = isRoot ? (
+    <BodyIcon className="w-4 h-4 text-slate-300" />
+  ) : container.isCard ? (
+    '🗂️'
+  ) : container.direction === 'row' ? (
+    <FlexRowIcon className="w-4 h-4 text-slate-300" />
+  ) : container.direction === 'column' ? (
+    <FlexColumnIcon className="w-4 h-4 text-slate-300" />
+  ) : (
+    <LayoutContainerIcon className="w-4 h-4 text-slate-300" />
+  );
 
   return (
     <ExplorerActionMenu
@@ -118,7 +213,20 @@ export function TemplateContainerActionMenu({
           <label className="text-[10px] font-bold text-muted uppercase tracking-wider">
             Flex Flow Direction
           </label>
-          <div className="grid grid-cols-2 gap-1.5">
+          <div className="grid grid-cols-3 gap-1.5">
+            <button
+              type="button"
+              onClick={() => onUpdateContainer?.(container.id, { direction: 'none' })}
+              className={`flex items-center justify-center gap-1.5 p-1.5 rounded-lg border text-xs font-bold transition cursor-pointer ${
+                container.direction === 'none' || !container.direction
+                  ? 'bg-[color-mix(in_oklch,var(--primary-accent)_30%,transparent)] border-[var(--primary-accent)] text-white shadow-sm'
+                  : 'bg-surface-secondary border-subtle text-muted hover:text-white'
+              }`}
+              title="Generic container layout without flex row/column distinction"
+            >
+              <LayoutContainerIcon className="w-3.5 h-3.5" />
+              <span>None</span>
+            </button>
             <button
               type="button"
               onClick={() => onUpdateContainer?.(container.id, { direction: 'row' })}
@@ -128,7 +236,7 @@ export function TemplateContainerActionMenu({
                   : 'bg-surface-secondary border-subtle text-muted hover:text-white'
               }`}
             >
-              <span>↔️</span>
+              <FlexRowIcon className="w-3.5 h-3.5" />
               <span>Row</span>
             </button>
             <button
@@ -140,7 +248,7 @@ export function TemplateContainerActionMenu({
                   : 'bg-surface-secondary border-subtle text-muted hover:text-white'
               }`}
             >
-              <span>↕️</span>
+              <FlexColumnIcon className="w-3.5 h-3.5" />
               <span>Column</span>
             </button>
           </div>

@@ -7,6 +7,7 @@ import {
   LayoutBlockType,
   LayoutVariant,
 } from '@/types/layout';
+import { BodyIcon, FlexRowIcon, FlexColumnIcon } from '@/components/icons/LayoutIcons';
 
 interface TemplateLayoutPaletteProps {
   selectedContainer: FlexContainerNode | null;
@@ -18,7 +19,7 @@ interface TemplateLayoutPaletteProps {
 interface LayoutPrimitive {
   id: 'row' | 'column' | '2-col' | '3-col' | 'card';
   label: string;
-  icon: string;
+  icon: React.ReactNode;
   description: string;
 }
 
@@ -26,31 +27,31 @@ const LAYOUT_PRIMITIVES: LayoutPrimitive[] = [
   {
     id: 'row',
     label: 'Row Container',
-    icon: '↔️',
+    icon: <FlexRowIcon className="w-5 h-5 text-[var(--primary-accent)]" />,
     description: 'Horizontal flow; items sit side-by-side',
   },
   {
     id: 'column',
     label: 'Column Container',
-    icon: '↕️',
+    icon: <FlexColumnIcon className="w-5 h-5 text-[var(--primary-accent)]" />,
     description: 'Vertical flow; items stack top-to-bottom',
   },
   {
     id: '2-col',
     label: '2-Column Split',
-    icon: '▥',
+    icon: <span className="text-base">▥</span>,
     description: 'Two equal 50/50 flexible columns',
   },
   {
     id: '3-col',
     label: '3-Column Split',
-    icon: '▤',
+    icon: <span className="text-base">▤</span>,
     description: 'Three equal 33% flexible columns',
   },
   {
     id: 'card',
     label: 'Card Wrapper',
-    icon: '🗂️',
+    icon: <span className="text-base">🗂️</span>,
     description: 'Bordered card frame with surface background',
   },
 ];
@@ -159,7 +160,7 @@ export default function TemplateLayoutPalette({
                 : 'text-muted hover:text-strong hover:bg-slate-800/60'
             }`}
           >
-            <span>📦</span>
+            <BodyIcon className="w-3.5 h-3.5" />
             <span>Layout (Flexbox)</span>
           </button>
 
@@ -212,7 +213,7 @@ export default function TemplateLayoutPalette({
                 className="flex flex-col justify-between p-2.5 rounded-xl bg-surface-secondary hover:bg-surface-primary-hover border border-subtle hover:border-[var(--primary-accent)] transition cursor-pointer text-left h-[100px] min-w-[170px] max-w-[200px] shrink-0 group shadow-sm"
               >
                 <div className="flex items-center gap-2">
-                  <span className="text-lg p-1 rounded-lg bg-[color-mix(in_oklch,var(--primary-accent)_15%,transparent)] border border-[color-mix(in_oklch,var(--primary-accent)_30%,transparent)] group-hover:scale-105 transition-transform">
+                  <span className="w-7 h-7 flex items-center justify-center rounded-lg bg-[color-mix(in_oklch,var(--primary-accent)_15%,transparent)] border border-[color-mix(in_oklch,var(--primary-accent)_30%,transparent)] group-hover:scale-105 transition-transform shrink-0">
                     {prim.icon}
                   </span>
                   <span className="text-xs font-bold text-strong group-hover:text-white truncate">

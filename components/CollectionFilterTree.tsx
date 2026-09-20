@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { CollectionRecord } from '@/types/collection';
+import { TreeBranchIcon } from '@/components/icons/ExplorerIcons';
 
 type CollectionTreeNode = CollectionRecord & {
   children?: CollectionTreeNode[];
@@ -81,18 +82,7 @@ export default function CollectionFilterTree({
             </div>
 
             {depth > 0 && (
-              <svg
-                viewBox="0 0 16 16"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="explorer-filter-branch w-3.5 h-3.5 shrink-0 select-none -ml-1 mr-0.5"
-              >
-                <path d="M 5 2 L 5 9 L 13 9" />
-                <polyline points="10 6 13 9 10 12" />
-              </svg>
+              <TreeBranchIcon className="w-3.5 h-3.5 -ml-1 mr-0.5" />
             )}
 
             <span className="text-sm explorer-filter-icon shrink-0 select-none">{node.icon || '📁'}</span>
