@@ -24,7 +24,7 @@ import TemplateFieldInspector from '@/components/TemplateFieldInspector';
 import TemplateLayoutBuilder from '@/components/TemplateLayoutBuilder';
 import TemplateLayoutPalette from '@/components/TemplateLayoutPalette';
 import TemplatePropertiesInspector from '@/components/TemplatePropertiesInspector';
-import TemplateHierarchyTree from '@/components/TemplateHierarchyTree';
+import TemplateHierarchyTree, { getAllContainerIds, countElements } from '@/components/TemplateHierarchyTree';
 import { useTemplateEditor } from '@/hooks/useTemplateEditor';
 import { filterExplorerForest, ExplorerTab } from '@/lib/filterExplorerForest';
 import { itemMatchesQuery } from '@/lib/explorerUtils';
@@ -226,6 +226,65 @@ export default function Home() {
       setIsBottomPanelOpen(true);
     },
   });
+
+  /* ------------------------------------------------------------------------
+     5.1 TEMPLATE STRUCTURE HIERARCHY STATE & SELECTION SYNC
+     ------------------------------------------------------------------------ */
+  const [hierarchyExpandedIds, setHierarchyExpandedIds] = useState<Set<string>>(
+    () => new Set(['root-container'])
+  );
+
+  const allHierarchyContainerIds = useMemo(() => {
+    const root = templateEditor.flexLayoutConfig?.root;
+    if (!root) return [];
+    return getAllContainerIds(root);
+  }, [templateEditor.flexLayoutConfig]);
+
+  const hierarchyNodeCount = useMemo(() => {
+    const root = templateEditor.flexLayoutConfig?.root;
+    if (!root) return 0;
+    const stats = countElements(root);
+    return stats.containers + stats.components;
+  }, [templateEditor.flexLayoutConfig]);
+
+  const isAllHierarchyExpanded = useMemo(() => {
+    if (allHierarchyContainerIds.length <= 1) return true;
+    return allHierarchyContainerIds.every((id) => hierarchyExpandedIds.has(id));
+  }, [allHierarchyContainerIds, hierarchyExpandedIds]);
+
+  const toggleAllHierarchy = useCallback(() => {
+    if (isAllHierarchyExpanded) {
+      setHierarchyExpandedIds(new Set(['root-container']));
+    } else {
+      setHierarchyExpandedIds(new Set(allHierarchyContainerIds));
+    }
+  }, [isAllHierarchyExpanded, allHierarchyContainerIds]);
+
+  const toggleHierarchyExpand = useCallback((id: string) => {
+    setHierarchyExpandedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
+  }, []);
+
+  const handleOpenProperties = useCallback((nodeId?: string | null) => {
+    if (nodeId) {
+      templateEditor.selectNode(nodeId);
+    }
+    setSecondaryTabs((prev) => {
+      if (!prev.includes('template_properties')) {
+        return [...prev, 'template_properties'];
+      }
+      return prev;
+    });
+    setSecondaryActiveTab('template_properties');
+    setIsSecondaryOpen(true);
+  }, [templateEditor]);
 
   /* ------------------------------------------------------------------------
      6. PANEL CONTENT MOVING & SWAPPING (Smooth Fluid Slide Transition)
@@ -968,7 +1027,10 @@ export default function Home() {
           selectedNodeId={templateEditor.selectedNodeId}
           activeContainerId={templateEditor.activeContainerId}
           fields={templateEditor.activeTemplate?.fields || []}
+          expandedIds={hierarchyExpandedIds}
+          onToggleExpand={toggleHierarchyExpand}
           onSelectNode={templateEditor.selectNode}
+          onOpenProperties={handleOpenProperties}
           onRemoveContainer={templateEditor.removeFlexContainer}
           onRemoveComponent={templateEditor.removeFlexComponent}
         />
@@ -1003,7 +1065,7 @@ export default function Home() {
       if (tabs[0] === 'template_editor') return 'TEMPLATE INSPECTOR';
       if (tabs[0] === 'template_properties') return 'PROPERTIES';
       if (tabs[0] === 'template_builder') return 'LAYOUT BUILDER';
-      if (tabs[0] === 'template_hierarchy') return 'CONTENT';
+      if (tabs[0] === 'template_hierarchy') return 'STRUCTURE';
       if (tabs[0] === 'grabbed_content') return 'GRABBED CONTENT';
     }
     if (activeTab === 'explorer') return 'ITEMS';
@@ -1012,7 +1074,7 @@ export default function Home() {
     if (activeTab === 'template_editor') return 'TEMPLATE INSPECTOR';
     if (activeTab === 'template_properties') return 'PROPERTIES';
     if (activeTab === 'template_builder') return 'LAYOUT BUILDER';
-    if (activeTab === 'template_hierarchy') return 'CONTENT';
+    if (activeTab === 'template_hierarchy') return 'STRUCTURE';
     if (activeTab === 'grabbed_content') return 'GRABBED CONTENT';
     return defaultTitle;
   };
@@ -1022,6 +1084,8 @@ export default function Home() {
     const isTemplates = content === 'templates';
     const isInspector = content === 'template_editor';
     const isBuilder = content === 'template_builder';
+    const isHierarchy = content === 'template_hierarchy';
+    const isProperties = content === 'template_properties';
 
     // Calculate field type counts for template editor
     const fieldTypeCounts: Record<string, number> = {};
@@ -1033,7 +1097,19 @@ export default function Home() {
 
     return {
       treeView: (isCollections ? 'collections' : isTemplates ? 'templates' : 'items') as ExplorerTab,
-      activeTab: (isInspector ? 'template_editor' : isBuilder ? 'template_builder' : isCollections ? 'collections' : isTemplates ? 'templates' : 'items') as ExplorerTab | DockContent,
+      activeTab: (isInspector
+        ? 'template_editor'
+        : isBuilder
+        ? 'template_builder'
+        : isProperties
+        ? 'template_properties'
+        : isHierarchy
+        ? 'template_hierarchy'
+        : isCollections
+        ? 'collections'
+        : isTemplates
+        ? 'templates'
+        : 'items') as ExplorerTab | DockContent,
       searchQuery: isInspector
         ? templateEditor.fieldSearchQuery
         : isCollections
@@ -1051,8 +1127,21 @@ export default function Home() {
           else setSearchQuery(query);
         }
       },
-      isAnyCategoryExpanded: isCollections ? collectionsTree.isAnyCategoryExpanded : isTemplates ? templatesTree.isAnyCategoryExpanded : isAnyCategoryExpanded,
-      onToggleAllCategories: isCollections ? collectionsTree.handleToggleAllCategories : isTemplates ? templatesTree.handleToggleAllCategories : handleToggleAllCategories,
+      isAnyCategoryExpanded: isHierarchy
+        ? isAllHierarchyExpanded
+        : isCollections
+        ? collectionsTree.isAnyCategoryExpanded
+        : isTemplates
+        ? templatesTree.isAnyCategoryExpanded
+        : isAnyCategoryExpanded,
+      onToggleAllCategories: isHierarchy
+        ? toggleAllHierarchy
+        : isCollections
+        ? collectionsTree.handleToggleAllCategories
+        : isTemplates
+        ? templatesTree.handleToggleAllCategories
+        : handleToggleAllCategories,
+      hierarchyNodeCount: isHierarchy ? hierarchyNodeCount : undefined,
       filterCollectionIds: isCollections ? collectionsFilterIds : isTemplates ? templatesFilterIds : filterCollectionIds,
       onToggleFilterCollection: isCollections ? handleToggleCollectionsFilter : isTemplates ? handleToggleTemplatesFilter : handleToggleFilterCollection,
       onClearCollectionFilters: isCollections ? () => setCollectionsFilterIds([]) : isTemplates ? () => setTemplatesFilterIds([]) : handleClearCollectionFilters,
@@ -1164,6 +1253,7 @@ export default function Home() {
       hasDockedContent={primaryTabs.length > 0}
       isContentSliding={slidingState !== null && !(slidingState.incomingContent && slidingState.from === 'left' && slidingState.isMoving)}
       showSearchFilter={primaryActiveTab === 'explorer' || primaryActiveTab === 'collections' || primaryActiveTab === 'templates' || primaryActiveTab === 'template_editor'}
+      hierarchyNodeCount={hierarchyNodeCount}
       variant="sidebar"
       position="left"
       onTogglePosition={primaryTabs.length > 0 ? handleMovePrimaryContent : undefined}
@@ -1308,7 +1398,7 @@ export default function Home() {
               flexLayoutConfig={templateEditor.flexLayoutConfig}
               selectedNodeId={templateEditor.selectedNodeId}
               activeContainerId={templateEditor.activeContainerId}
-              onSelectNode={templateEditor.selectNode}
+              onSelectNode={handleOpenProperties}
               onAddPrimitive={templateEditor.addFlexPrimitive}
               onAddFlexContainer={templateEditor.addFlexContainer}
               onUpdateFlexContainer={templateEditor.updateFlexContainer}
@@ -1393,6 +1483,7 @@ export default function Home() {
             hasDockedContent={secondaryTabs.length > 0}
             isContentSliding={slidingState !== null && !(slidingState.incomingContent && slidingState.from === 'right' && slidingState.isMoving)}
             showSearchFilter={secondaryActiveTab === 'explorer' || secondaryActiveTab === 'collections' || secondaryActiveTab === 'templates' || secondaryActiveTab === 'template_editor'}
+            hierarchyNodeCount={hierarchyNodeCount}
             isOpen={isSecondaryActive}
             isPinned={isSecondaryPinned}
             position="right"

@@ -67,6 +67,7 @@ interface PrimarySidePanelProps {
   onStartTabDrag?: (tab: Exclude<DockContent, 'empty'>, e: React.PointerEvent) => void;
   isDragging?: boolean;
   reorderInfo?: TabReorderInfo | null;
+  hierarchyNodeCount?: number;
 }
 
 const DEFAULT_WIDTH = 304;
@@ -119,6 +120,7 @@ export default function PrimarySidePanel({
   onStartTabDrag,
   isDragging: isDockDragging = false,
   reorderInfo = null,
+  hierarchyNodeCount,
 }: PrimarySidePanelProps) {
   const activeIsExpanded = isAnyCategoryExpanded;
   const activeToggleAll = onToggleAllCategories;
@@ -264,6 +266,7 @@ export default function PrimarySidePanel({
         onStartTabDrag={onStartTabDrag}
         isDragging={isDockDragging}
         reorderInfo={reorderInfo}
+        hierarchyNodeCount={hierarchyNodeCount}
       />
 
       {/* Syncing Progress Banner */}

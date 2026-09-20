@@ -81,6 +81,7 @@ export interface PrimarySidePanelHeaderProps {
 
   isAnyFolderExpanded?: boolean;
   onToggleAllFolders?: () => void;
+  hierarchyNodeCount?: number;
 }
 
 /* ==========================================================================
@@ -108,6 +109,7 @@ export default function PrimarySidePanelHeader({
   onToggleAllCategories,
   isAnyFolderExpanded = false,
   onToggleAllFolders,
+  hierarchyNodeCount,
   onTogglePin,
   onClose,
   onAddNewItem,
@@ -134,7 +136,7 @@ export default function PrimarySidePanelHeader({
   const isInspector = activeTab === 'template_editor' || title === 'TEMPLATE INSPECTOR';
   const isBuilder = activeTab === 'template_builder' || title === 'LAYOUT BUILDER';
   const isProperties = activeTab === 'template_properties' || title === 'PROPERTIES';
-  const isHierarchy = activeTab === 'template_hierarchy' || title === 'CONTENT' || title === 'CONTENT HIERARCHY';
+  const isHierarchy = activeTab === 'template_hierarchy' || title === 'STRUCTURE' || title === 'CONTENT' || title === 'CONTENT HIERARCHY';
   const panelName = isCollections
     ? 'Collections'
     : isTemplates
@@ -148,7 +150,7 @@ export default function PrimarySidePanelHeader({
     : isProperties
     ? 'Properties'
     : isHierarchy
-    ? 'Content'
+    ? 'Structure'
     : 'Items';
   const isRight = position === 'right';
   const { animationsEnabled } = useUIPreferences();
@@ -667,9 +669,9 @@ export default function PrimarySidePanelHeader({
             : isBuilder
             ? 'Layout & Palette'
             : isProperties
-            ? 'Container & Block Properties'
+            ? 'Properties'
             : isHierarchy
-            ? 'Layout & Hierarchy'
+            ? (hierarchyNodeCount !== undefined ? `Layout & Content (${hierarchyNodeCount})` : 'Layout & Content')
             : 'Browse Items'}
         </h3>
       </div>
@@ -694,7 +696,7 @@ export default function PrimarySidePanelHeader({
                 : tab === 'template_properties'
                 ? 'Properties'
                 : tab === 'template_hierarchy'
-                ? 'Content'
+                ? 'Structure'
                 : 'Grabbed Content';
             const tabTitle =
               tab === 'explorer'
@@ -708,9 +710,9 @@ export default function PrimarySidePanelHeader({
                 : tab === 'template_builder'
                 ? 'Show Template Layout Builder (drag to move tab)'
                 : tab === 'template_properties'
-                ? 'Show Container & Block Properties (drag to move tab)'
+                ? 'Show Element Properties (drag to move tab)'
                 : tab === 'template_hierarchy'
-                ? 'Show Layout & Hierarchy (drag to move tab)'
+                ? 'Show Layout Structure (drag to move tab)'
                 : 'Show Grabbed Content (drag to move tab)';
 
             const isThisTabDragging = isDragging && reorderInfo?.draggingTab === tab && reorderInfo?.side === position;

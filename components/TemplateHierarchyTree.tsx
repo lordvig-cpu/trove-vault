@@ -5,30 +5,33 @@ import {
   TemplateFlexLayoutConfig,
   FlexContainerNode,
   FlexComponentNode,
-  FlexLayoutNode,
 } from '@/types/layout';
 import { FieldDefinition } from '@/types/field';
+import { GearIcon } from '@/components/icons/ActionIcons';
 
 /* ==========================================================================
    1. PROPS INTERFACE
    ========================================================================== */
 
-interface TemplateHierarchyTreeProps {
+export interface TemplateHierarchyTreeProps {
   flexLayoutConfig: TemplateFlexLayoutConfig | null;
   selectedNodeId: string | null;
   activeContainerId?: string;
   fields?: FieldDefinition[];
   onSelectNode: (nodeId: string | null) => void;
+  onOpenProperties?: (nodeId: string) => void;
   onRemoveContainer: (containerId: string) => void;
   onRemoveComponent: (componentId: string) => void;
+  expandedIds?: Set<string>;
+  onToggleExpand?: (id: string) => void;
 }
 
 /* ==========================================================================
    2. HELPER FUNCTIONS
    ========================================================================== */
 
-function countElements(node: FlexContainerNode): { containers: number; components: number } {
-  let containers = 1; // count this container
+export function countElements(node: FlexContainerNode): { containers: number; components: number } {
+  let containers = 1;
   let components = 0;
 
   for (const child of node.children) {
@@ -44,7 +47,7 @@ function countElements(node: FlexContainerNode): { containers: number; component
   return { containers, components };
 }
 
-function getAllContainerIds(node: FlexContainerNode): string[] {
+export function getAllContainerIds(node: FlexContainerNode): string[] {
   const ids = [node.id];
   for (const child of node.children) {
     if (child.nodeType === 'container') {
@@ -55,7 +58,7 @@ function getAllContainerIds(node: FlexContainerNode): string[] {
 }
 
 /* ==========================================================================
-   3. TREE NODE ROW: Container Node Item
+   3. TREE NODE ROW: Container Node Item (Explorer Tree Visual Model)
    ========================================================================== */
 
 interface ContainerNodeRowProps {
@@ -67,6 +70,7 @@ interface ContainerNodeRowProps {
   fields: FieldDefinition[];
   onToggleExpand: (id: string) => void;
   onSelectNode: (id: string | null) => void;
+  onOpenProperties?: (id: string) => void;
   onRemoveContainer: (id: string) => void;
   onRemoveComponent: (id: string) => void;
 }
@@ -80,6 +84,7 @@ function ContainerNodeRow({
   fields,
   onToggleExpand,
   onSelectNode,
+  onOpenProperties,
   onRemoveContainer,
   onRemoveComponent,
 }: ContainerNodeRowProps) {
@@ -89,78 +94,101 @@ function ContainerNodeRow({
   const isExpanded = expandedIds.has(container.id);
   const hasChildren = container.children.length > 0;
 
-  // Icon determining container presentation
+  // Semantic layout icon
   const containerIcon = isRoot
-    ? '📄'
+    ? '📦'
     : container.isCard
     ? '🗂️'
     : container.direction === 'row'
     ? '↔️'
     : '↕️';
 
-  const containerLabel = isRoot ? 'Body' : (container.label || 'Container');
+  const containerLabel = isRoot ? 'Body' : container.label || 'Container';
 
   return (
-    <div className="flex flex-col select-none">
-      {/* Container Row */}
+    <div className="select-none text-[13px] font-sans w-full min-w-0 flex flex-col">
+      {/* Row Item formatted to exact site explorer model */}
       <div
         onClick={() => onSelectNode(container.id)}
-        style={{ paddingLeft: `${depth * 14 + 6}px` }}
-        className={`group flex items-center justify-between py-1.5 pr-2 rounded-lg cursor-pointer transition-all duration-150 border text-xs ${
+        title={containerLabel}
+        style={{ paddingLeft: `${depth * 18 + 6}px` }}
+        className={[
+          'group relative flex items-center h-7 px-1.5 gap-1.5 rounded-md cursor-pointer transition w-full min-w-0',
           isSelected
-            ? 'bg-blue-600/25 border-blue-500/60 text-white font-semibold ring-1 ring-blue-500/40 shadow-sm'
-            : isActiveTarget && !isRoot
-            ? 'bg-blue-950/20 border-blue-500/30 text-blue-200 hover:bg-blue-900/30'
-            : 'border-transparent text-slate-300 hover:bg-slate-800/60 hover:text-slate-100'
-        }`}
+            ? 'explorer-tree-item-selected font-medium'
+            : 'explorer-tree-item',
+        ].join(' ')}
       >
-        <div className="flex items-center gap-1.5 min-w-0 flex-1">
-          {/* Expand/Collapse Chevron */}
-          {hasChildren ? (
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                onToggleExpand(container.id);
-              }}
-              className="w-4 h-4 flex items-center justify-center text-slate-400 hover:text-white rounded hover:bg-slate-700/60 shrink-0 transition"
-              title={isExpanded ? 'Collapse' : 'Expand'}
-              aria-label={isExpanded ? 'Collapse container' : 'Expand container'}
-            >
-              <span className="text-[10px] transform transition-transform duration-150">
-                {isExpanded ? '▾' : '▸'}
-              </span>
-            </button>
-          ) : (
-            <span className="w-4 h-4 shrink-0" aria-hidden="true" />
-          )}
+        {/* Expand / Collapse Chevron */}
+        <button
+          type="button"
+          aria-label={isExpanded ? 'Collapse container' : 'Expand container'}
+          aria-expanded={hasChildren ? isExpanded : undefined}
+          disabled={!hasChildren}
+          onClick={(e) => {
+            e.stopPropagation();
+            onToggleExpand(container.id);
+          }}
+          className={[
+            'flex items-center justify-center w-3.5 h-3.5 shrink-0',
+            'text-[9px] explorer-tree-muted',
+            'cursor-pointer transition select-none',
+            !hasChildren && 'explorer-tree-hidden pointer-events-none cursor-default opacity-0',
+          ].filter(Boolean).join(' ')}
+          title={isExpanded ? 'Collapse container' : 'Expand container'}
+        >
+          {isExpanded ? '▼' : '▶\uFE0E'}
+        </button>
 
-          {/* Node Icon */}
-          <span className="text-xs shrink-0">{containerIcon}</span>
+        {/* Node Icon */}
+        <span className="w-4 h-4 flex items-center justify-center text-xs opacity-80 shrink-0 select-none">
+          {containerIcon}
+        </span>
 
-          {/* Node Label */}
-          <span className="truncate font-medium tracking-wide">
-            {containerLabel}
+        {/* Node Label */}
+        <span className="text-[13px] tracking-tight truncate flex-1 min-w-0 text-slate-200 group-hover:text-white">
+          {containerLabel}
+        </span>
+
+        {/* Direction tag for non-root containers */}
+        {!isRoot && (
+          <span className="text-[9px] font-mono px-1 py-0.2 rounded bg-slate-800/80 text-slate-400 border border-slate-700/60 shrink-0">
+            {container.direction === 'row' ? 'Row' : 'Col'}
           </span>
+        )}
 
-          {/* Direction / Card Badge */}
-          {!isRoot && (
-            <span className="text-[9px] font-mono px-1 py-0.2 rounded bg-slate-800/90 text-slate-400 border border-slate-700/60 shrink-0">
-              {container.direction === 'row' ? 'Row' : 'Col'}
-            </span>
-          )}
-
-          {/* Child Count Pill */}
-          <span className="text-[9px] font-mono text-slate-400 shrink-0">
-            ({container.children.length})
+        {/* Child Count Badge */}
+        {hasChildren && (
+          <span
+            title={`${container.children.length} sub-items`}
+            className="explorer-tree-badge px-1.5 py-0.2 rounded text-[10px] font-mono shrink-0 select-none"
+          >
+            {container.children.length}
           </span>
+        )}
 
-          {/* Active Target Indicator Badge */}
-          {isActiveTarget && (
-            <span className="text-[8.5px] font-bold uppercase tracking-wider px-1 py-0.2 rounded bg-blue-500/20 text-blue-300 border border-blue-500/30 shrink-0">
-              Target
-            </span>
-          )}
+        {/* Active Target Indicator Badge */}
+        {isActiveTarget && !isRoot && (
+          <span className="text-[8.5px] font-bold uppercase tracking-wider px-1 py-0.2 rounded bg-blue-500/20 text-blue-300 border border-blue-500/30 shrink-0 select-none">
+            Target
+          </span>
+        )}
+
+        {/* Gear Icon: Opens Properties for this element */}
+        <div
+          onClick={(e) => {
+            e.stopPropagation();
+            onSelectNode(container.id);
+            onOpenProperties?.(container.id);
+          }}
+          className={`flex items-center justify-center w-5 h-5 rounded hover:bg-slate-700/50 transition-colors shrink-0 ${
+            isSelected
+              ? 'opacity-85 hover:opacity-100 text-amber-300'
+              : 'opacity-0 group-hover:opacity-75 hover:!opacity-100 text-slate-400 hover:text-white'
+          }`}
+          title="Open Container Properties"
+        >
+          <GearIcon className="w-[14px] h-[14px]" />
         </div>
 
         {/* Hover Delete Action */}
@@ -171,7 +199,7 @@ function ContainerNodeRow({
               e.stopPropagation();
               onRemoveContainer(container.id);
             }}
-            className="opacity-0 group-hover:opacity-100 text-xs text-red-400 hover:text-red-200 p-0.5 rounded hover:bg-red-500/20 transition cursor-pointer shrink-0 ml-1"
+            className="opacity-0 group-hover:opacity-70 hover:!opacity-100 text-[11px] text-red-400 hover:text-red-200 p-0.5 rounded hover:bg-red-500/20 transition cursor-pointer shrink-0"
             title={`Delete ${containerLabel}`}
             aria-label={`Delete ${containerLabel}`}
           >
@@ -182,7 +210,7 @@ function ContainerNodeRow({
 
       {/* Render Children when Expanded */}
       {isExpanded && hasChildren && (
-        <div className="flex flex-col relative before:absolute before:left-[14px] before:top-0 before:bottom-2 before:w-[1px] before:bg-slate-800/60">
+        <div className="flex flex-col relative">
           {container.children.map((child) => {
             if (child.nodeType === 'container') {
               return (
@@ -196,6 +224,7 @@ function ContainerNodeRow({
                   fields={fields}
                   onToggleExpand={onToggleExpand}
                   onSelectNode={onSelectNode}
+                  onOpenProperties={onOpenProperties}
                   onRemoveContainer={onRemoveContainer}
                   onRemoveComponent={onRemoveComponent}
                 />
@@ -209,6 +238,7 @@ function ContainerNodeRow({
                 selectedNodeId={selectedNodeId}
                 fields={fields}
                 onSelectNode={onSelectNode}
+                onOpenProperties={onOpenProperties}
                 onRemoveComponent={onRemoveComponent}
               />
             );
@@ -229,6 +259,7 @@ interface ComponentNodeRowProps {
   selectedNodeId: string | null;
   fields: FieldDefinition[];
   onSelectNode: (id: string | null) => void;
+  onOpenProperties?: (id: string) => void;
   onRemoveComponent: (id: string) => void;
 }
 
@@ -238,6 +269,7 @@ function ComponentNodeRow({
   selectedNodeId,
   fields,
   onSelectNode,
+  onOpenProperties,
   onRemoveComponent,
 }: ComponentNodeRowProps) {
   const isSelected = selectedNodeId === component.id;
@@ -248,7 +280,7 @@ function ComponentNodeRow({
 
   const label = component.label || boundField?.label || component.componentType;
 
-  // Icon by componentType
+  // Icon determining component representation
   const componentIcon =
     component.componentType === 'field'
       ? '📝'
@@ -258,43 +290,81 @@ function ComponentNodeRow({
       ? '🖼️'
       : component.componentType === 'stat'
       ? '📈'
-      : component.componentType === 'note'
-      ? '💡'
-      : '➖';
+      : '🗒️';
 
   return (
-    <div
-      onClick={() => onSelectNode(component.id)}
-      style={{ paddingLeft: `${depth * 14 + 18}px` }}
-      className={`group flex items-center justify-between py-1.5 pr-2 rounded-lg cursor-pointer transition-all duration-150 border text-xs select-none ${
-        isSelected
-          ? 'bg-amber-500/20 border-amber-500/50 text-amber-200 font-semibold ring-1 ring-amber-500/40 shadow-sm'
-          : 'border-transparent text-slate-300 hover:bg-slate-800/50 hover:text-slate-100'
-      }`}
-    >
-      <div className="flex items-center gap-1.5 min-w-0 flex-1">
-        <span className="text-xs shrink-0">{componentIcon}</span>
-        <span className="truncate font-medium">{label}</span>
-
-        {/* Component Type or Sizing Pill */}
-        <span className="text-[8.5px] font-mono uppercase px-1 py-0.2 rounded bg-slate-800/80 text-slate-400 border border-slate-700/50 shrink-0">
-          {component.sizing.type === 'fill' ? 'Fill' : component.sizing.value || 'Fixed'}
-        </span>
-      </div>
-
-      {/* Delete Component Button */}
-      <button
-        type="button"
-        onClick={(e) => {
-          e.stopPropagation();
-          onRemoveComponent(component.id);
-        }}
-        className="opacity-0 group-hover:opacity-100 text-xs text-red-400 hover:text-red-200 p-0.5 rounded hover:bg-red-500/20 transition cursor-pointer shrink-0 ml-1 leading-none"
-        title={`Remove ${label}`}
-        aria-label={`Remove ${label}`}
+    <div className="select-none text-[13px] font-sans w-full min-w-0 flex flex-col">
+      <div
+        onClick={() => onSelectNode(component.id)}
+        title={label}
+        style={{ paddingLeft: `${depth * 18 + 6}px` }}
+        className={[
+          'group relative flex items-center h-7 px-1.5 gap-1.5 rounded-md cursor-pointer transition w-full min-w-0',
+          isSelected
+            ? 'explorer-tree-item-selected font-medium'
+            : 'explorer-tree-item',
+        ].join(' ')}
       >
-        ✕
-      </button>
+        {/* Spacer aligned with container chevron */}
+        <span className="w-3.5 h-3.5 shrink-0 opacity-0" aria-hidden="true" />
+
+        {/* Node Icon */}
+        <span className="w-4 h-4 flex items-center justify-center text-xs opacity-80 shrink-0 select-none">
+          {componentIcon}
+        </span>
+
+        {/* Node Label */}
+        <span className="text-[13px] tracking-tight truncate flex-1 min-w-0 text-slate-200 group-hover:text-white">
+          {label}
+        </span>
+
+        {/* Variant / Sizing Badge */}
+        {component.variant && component.variant !== 'standard' && (
+          <span className="text-[9px] font-mono px-1 py-0.2 rounded bg-amber-500/10 text-amber-300 border border-amber-500/20 shrink-0">
+            {component.variant}
+          </span>
+        )}
+
+        {/* Sizing Indicator */}
+        {component.sizing && component.sizing.type !== 'fill' && (
+          <span className="text-[9px] font-mono text-slate-400 shrink-0">
+            {component.sizing.type === 'fixed'
+              ? component.sizing.value || 'fixed'
+              : 'auto'}
+          </span>
+        )}
+
+        {/* Gear Icon: Opens Properties for this element */}
+        <div
+          onClick={(e) => {
+            e.stopPropagation();
+            onSelectNode(component.id);
+            onOpenProperties?.(component.id);
+          }}
+          className={`flex items-center justify-center w-5 h-5 rounded hover:bg-slate-700/50 transition-colors shrink-0 ${
+            isSelected
+              ? 'opacity-85 hover:opacity-100 text-amber-300'
+              : 'opacity-0 group-hover:opacity-75 hover:!opacity-100 text-slate-400 hover:text-white'
+          }`}
+          title="Open Component Properties"
+        >
+          <GearIcon className="w-[14px] h-[14px]" />
+        </div>
+
+        {/* Hover Delete Action */}
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            onRemoveComponent(component.id);
+          }}
+          className="opacity-0 group-hover:opacity-70 hover:!opacity-100 text-[11px] text-red-400 hover:text-red-200 p-0.5 rounded hover:bg-red-500/20 transition cursor-pointer shrink-0"
+          title={`Delete ${label}`}
+          aria-label={`Delete ${label}`}
+        >
+          🗑️
+        </button>
+      </div>
     </div>
   );
 }
@@ -309,44 +379,32 @@ export default function TemplateHierarchyTree({
   activeContainerId,
   fields = [],
   onSelectNode,
+  onOpenProperties,
   onRemoveContainer,
   onRemoveComponent,
+  expandedIds: externalExpandedIds,
+  onToggleExpand: externalOnToggleExpand,
 }: TemplateHierarchyTreeProps) {
   const root = flexLayoutConfig?.root;
 
-  // Track expanded container IDs (default: all expanded for quick access)
+  // Fallback internal expansion tracking if not controlled externally
   const allIds = useMemo(() => (root ? getAllContainerIds(root) : []), [root]);
-  const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set(allIds));
+  const [internalExpandedIds, setInternalExpandedIds] = useState<Set<string>>(() => new Set(allIds));
 
-  // Toggle individual container expansion
-  const toggleExpand = (id: string) => {
-    setExpandedIds((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) {
-        next.delete(id);
-      } else {
-        next.add(id);
-      }
-      return next;
+  const effectiveExpandedIds = externalExpandedIds ?? internalExpandedIds;
+  const effectiveOnToggleExpand =
+    externalOnToggleExpand ??
+    ((id: string) => {
+      setInternalExpandedIds((prev) => {
+        const next = new Set(prev);
+        if (next.has(id)) {
+          next.delete(id);
+        } else {
+          next.add(id);
+        }
+        return next;
+      });
     });
-  };
-
-  // Toggle all containers expanded / collapsed
-  const isAllExpanded = root && allIds.every((id) => expandedIds.has(id));
-  const toggleExpandAll = () => {
-    if (isAllExpanded) {
-      // Keep only root expanded
-      setExpandedIds(new Set(['root-container']));
-    } else {
-      setExpandedIds(new Set(allIds));
-    }
-  };
-
-  // Calculate element stats
-  const stats = useMemo(() => {
-    if (!root) return { containers: 0, components: 0 };
-    return countElements(root);
-  }, [root]);
 
   if (!root) {
     return (
@@ -354,55 +412,27 @@ export default function TemplateHierarchyTree({
         <span className="text-2xl">📐</span>
         <span className="text-xs font-semibold text-slate-400">No Layout Loaded</span>
         <p className="text-[11px] text-slate-500">
-          Open a template to inspect and configure its visual content hierarchy.
+          Open a template to inspect and configure its visual content structure.
         </p>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col h-full w-full select-none">
-      {/* --------------------------------------------------------------------
-          1. COMPACT STATUS & ACTIONS TOOLBAR (No search bar, element count & toggles)
-          -------------------------------------------------------------------- */}
-      <div className="px-3 py-2 border-b border-slate-800/80 flex items-center justify-between gap-2 shrink-0 bg-slate-900/30">
-        <div className="flex items-center gap-1.5 min-w-0">
-          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
-            Structure
-          </span>
-          <span className="text-[9.5px] font-mono px-1.5 py-0.2 rounded-full bg-slate-800 text-blue-300 border border-slate-700/60 font-semibold">
-            {stats.containers + stats.components} nodes
-          </span>
-        </div>
-
-        <button
-          type="button"
-          onClick={toggleExpandAll}
-          className="text-[10px] font-semibold text-slate-400 hover:text-white px-2 py-0.5 rounded bg-slate-800/80 hover:bg-slate-700/80 border border-slate-700/60 transition cursor-pointer flex items-center gap-1"
-          title={isAllExpanded ? 'Collapse all containers' : 'Expand all containers'}
-        >
-          <span>{isAllExpanded ? '⊟' : '⊞'}</span>
-          <span>{isAllExpanded ? 'Collapse All' : 'Expand All'}</span>
-        </button>
-      </div>
-
-      {/* --------------------------------------------------------------------
-          2. HIERARCHICAL RECURSIVE TREE VIEW
-          -------------------------------------------------------------------- */}
-      <div className="flex-1 min-h-0 overflow-y-auto px-2 py-2 flex flex-col gap-0.5 primary-panel-scroll">
-        <ContainerNodeRow
-          container={root}
-          depth={0}
-          selectedNodeId={selectedNodeId}
-          activeContainerId={activeContainerId}
-          expandedIds={expandedIds}
-          fields={fields}
-          onToggleExpand={toggleExpand}
-          onSelectNode={onSelectNode}
-          onRemoveContainer={onRemoveContainer}
-          onRemoveComponent={onRemoveComponent}
-        />
-      </div>
+    <div className="flex flex-col h-full w-full select-none py-1.5">
+      <ContainerNodeRow
+        container={root}
+        depth={0}
+        selectedNodeId={selectedNodeId}
+        activeContainerId={activeContainerId}
+        expandedIds={effectiveExpandedIds}
+        fields={fields}
+        onToggleExpand={effectiveOnToggleExpand}
+        onSelectNode={onSelectNode}
+        onOpenProperties={onOpenProperties}
+        onRemoveContainer={onRemoveContainer}
+        onRemoveComponent={onRemoveComponent}
+      />
     </div>
   );
 }

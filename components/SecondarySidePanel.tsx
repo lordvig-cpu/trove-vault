@@ -69,6 +69,7 @@ interface SecondarySidePanelProps {
   onStartTabDrag?: (tab: Exclude<DockContent, 'empty'>, e: React.PointerEvent) => void;
   isDragging?: boolean;
   reorderInfo?: TabReorderInfo | null;
+  hierarchyNodeCount?: number;
 }
 
 const MIN_WIDTH = 260;
@@ -125,6 +126,7 @@ export default function SecondarySidePanel({
   onStartTabDrag,
   isDragging: isDockDragging = false,
   reorderInfo = null,
+  hierarchyNodeCount,
 }: SecondarySidePanelProps) {
   /* ------------------------------------------------------------------------
      2.1 USER PREFERENCES & RESIZING HOOK
@@ -305,6 +307,7 @@ export default function SecondarySidePanel({
           onStartTabDrag={onStartTabDrag}
           isDragging={isDockDragging}
           reorderInfo={reorderInfo}
+          hierarchyNodeCount={hierarchyNodeCount}
         />
 
         {/* Panel Scrollable Body */}
