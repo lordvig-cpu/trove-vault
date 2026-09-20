@@ -28,6 +28,8 @@ interface TemplateFieldInspectorProps {
   error?: string | null;
   successMsg?: string | null;
   position?: 'left' | 'right';
+  placedFieldIds?: Set<number>;
+  onPlaceField?: (fieldId: number) => void;
 }
 
 const FIELD_TYPE_CONFIG: Record<
@@ -310,10 +312,17 @@ export default function TemplateFieldInspector({
   error = null,
   successMsg = null,
   position = 'left',
+  placedFieldIds,
+  onPlaceField,
 }: TemplateFieldInspectorProps) {
   const [showAddMenu, setShowAddMenu] = useState<boolean>(false);
 
   const fields = useMemo(() => template?.fields || [], [template?.fields]);
+
+  const unplacedFields = useMemo(() => {
+    if (!placedFieldIds) return [];
+    return fields.filter((f) => !placedFieldIds.has(f.id));
+  }, [fields, placedFieldIds]);
 
   // Filtered Fields according to query & type filter
   const filteredFields = useMemo(() => {
@@ -377,7 +386,36 @@ export default function TemplateFieldInspector({
       )}
 
       {/* --------------------------------------------------------------------
-          2. TEMPLATE SCHEMA HIERARCHY TREE
+          2. UNPLACED SCHEMA FIELDS TRAY (when fields remain to place)
+          -------------------------------------------------------------------- */}
+      {unplacedFields.length > 0 && onPlaceField && (
+        <div className="p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/25 flex flex-col gap-2 shrink-0">
+          <div className="flex items-center justify-between">
+            <span className="text-[10.5px] font-bold uppercase tracking-wider text-amber-300 flex items-center gap-1.5">
+              <span>⚠️</span>
+              <span>Unplaced Fields ({unplacedFields.length})</span>
+            </span>
+            <span className="text-[9.5px] text-muted">Click to place</span>
+          </div>
+          <div className="flex flex-wrap gap-1.5">
+            {unplacedFields.map((f) => (
+              <button
+                key={f.id}
+                type="button"
+                onClick={() => onPlaceField(f.id)}
+                className="px-2 py-1 text-[11px] font-medium rounded-lg bg-amber-500/15 hover:bg-amber-500/30 border border-amber-500/30 text-amber-200 hover:text-white transition cursor-pointer flex items-center gap-1.5 shadow-sm"
+                title={`Place ${f.label} into active container`}
+              >
+                <span className="font-bold text-amber-400">+</span>
+                <span className="truncate max-w-[120px]">{f.label}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* --------------------------------------------------------------------
+          3. TEMPLATE SCHEMA HIERARCHY TREE
           -------------------------------------------------------------------- */}
       <div className="flex flex-col gap-1.5 flex-1 min-h-0">
         <div className="flex items-center justify-between px-0.5">

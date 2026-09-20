@@ -133,6 +133,7 @@ export default function PrimarySidePanelHeader({
   const isGrabbed = activeTab === 'grabbed_content' || title === 'GRABBED CONTENT';
   const isInspector = activeTab === 'template_editor' || title === 'TEMPLATE INSPECTOR';
   const isBuilder = activeTab === 'template_builder' || title === 'LAYOUT BUILDER';
+  const isProperties = activeTab === 'template_properties' || title === 'PROPERTIES';
   const panelName = isCollections
     ? 'Collections'
     : isTemplates
@@ -143,6 +144,8 @@ export default function PrimarySidePanelHeader({
     ? 'Template Inspector'
     : isBuilder
     ? 'Layout Builder'
+    : isProperties
+    ? 'Properties'
     : 'Items';
   const isRight = position === 'right';
   const { animationsEnabled } = useUIPreferences();
@@ -660,6 +663,8 @@ export default function PrimarySidePanelHeader({
             ? 'Field Schema Hierarchy'
             : isBuilder
             ? 'Layout & Palette'
+            : isProperties
+            ? 'Container & Block Properties'
             : 'Browse Items'}
         </h3>
       </div>
@@ -673,7 +678,8 @@ export default function PrimarySidePanelHeader({
               (activeTab === 'collections' && tab === 'collections') ||
               (activeTab === 'templates' && tab === 'templates') ||
               (activeTab === 'template_editor' && tab === 'template_editor') ||
-              (activeTab === 'template_builder' && tab === 'template_builder');
+              (activeTab === 'template_builder' && tab === 'template_builder') ||
+              (activeTab === 'template_properties' && tab === 'template_properties');
             const tabLabel =
               tab === 'explorer'
                 ? 'Items'
@@ -685,6 +691,8 @@ export default function PrimarySidePanelHeader({
                 ? 'Inspector'
                 : tab === 'template_builder'
                 ? 'Builder'
+                : tab === 'template_properties'
+                ? 'Properties'
                 : 'Grabbed Content';
             const tabTitle =
               tab === 'explorer'
@@ -697,6 +705,8 @@ export default function PrimarySidePanelHeader({
                 ? 'Show Template Field Inspector (drag to move tab)'
                 : tab === 'template_builder'
                 ? 'Show Template Layout Builder (drag to move tab)'
+                : tab === 'template_properties'
+                ? 'Show Container & Block Properties (drag to move tab)'
                 : 'Show Grabbed Content (drag to move tab)';
 
             const isThisTabDragging = isDragging && reorderInfo?.draggingTab === tab && reorderInfo?.side === position;

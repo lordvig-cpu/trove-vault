@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect, useCallback } from 'react';
 
-export type DockablePanelId = 'primary' | 'secondary' | 'bottom' | 'explorer' | 'collections' | 'templates' | 'grabbed_content' | 'template_editor' | 'template_builder';
+export type DockablePanelId = 'primary' | 'secondary' | 'bottom' | 'explorer' | 'collections' | 'templates' | 'grabbed_content' | 'template_editor' | 'template_builder' | 'template_properties';
 export type DockDropTargetZone =
   | 'left'
   | 'left-tab'
@@ -12,7 +12,7 @@ export type DockDropTargetZone =
   | 'right-replace'
   | 'bottom'
   | 'remove';
-export type DockContent = 'empty' | 'explorer' | 'collections' | 'templates' | 'grabbed_content' | 'template_editor' | 'template_builder';
+export type DockContent = 'empty' | 'explorer' | 'collections' | 'templates' | 'grabbed_content' | 'template_editor' | 'template_builder' | 'template_properties';
 export interface DockContents {
   primary?: DockContent;
   secondary?: DockContent;
@@ -42,7 +42,8 @@ export function isDockZoneAllowed(
     panelId === 'templates' ||
     panelId === 'grabbed_content' ||
     panelId === 'template_editor' ||
-    panelId === 'template_builder'
+    panelId === 'template_builder' ||
+    panelId === 'template_properties'
       ? panelId
       : panelId === 'primary'
       ? (contents.primaryActiveTab ?? contents.primary ?? 'empty')
