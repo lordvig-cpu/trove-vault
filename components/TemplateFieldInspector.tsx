@@ -120,7 +120,7 @@ function TemplateRootTreeRow({
         </div>
 
         <div className="flex items-center gap-1.5 shrink-0">
-          <span className="text-[10px] font-mono font-bold text-blue-400 bg-blue-500/10 px-1.5 py-0.5 rounded border border-blue-500/20 shrink-0 select-none">
+          <span className="text-[10px] font-mono font-bold text-[var(--primary-accent)] bg-[color-mix(in_oklch,var(--primary-accent)_15%,transparent)] px-1.5 py-0.5 rounded border border-[color-mix(in_oklch,var(--primary-accent)_30%,transparent)] shrink-0 select-none">
             ROOT
           </span>
           {!isRightSide && gearTrigger}
@@ -427,7 +427,7 @@ export default function TemplateFieldInspector({
             <button
               type="button"
               onClick={() => setShowAddMenu((p) => !p)}
-              className="text-[10px] font-semibold text-blue-400 hover:text-blue-300 flex items-center gap-1 px-2 py-0.5 rounded-md bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/20 transition cursor-pointer"
+              className="text-[10px] font-semibold text-[var(--primary-accent)] hover:text-white flex items-center gap-1 px-2 py-0.5 rounded-md bg-[color-mix(in_oklch,var(--primary-accent)_15%,transparent)] hover:bg-[var(--primary-accent)] border border-[color-mix(in_oklch,var(--primary-accent)_30%,transparent)] transition cursor-pointer"
             >
               <span>➕</span>
               <span>Add Field</span>

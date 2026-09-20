@@ -1034,6 +1034,8 @@ export default function Home() {
           onToggleExpand={toggleHierarchyExpand}
           onSelectNode={templateEditor.selectNode}
           onOpenProperties={handleOpenProperties}
+          onUpdateContainer={templateEditor.updateFlexContainer}
+          onUpdateComponent={templateEditor.updateFlexComponent}
           onRemoveContainer={templateEditor.removeFlexContainer}
           onRemoveComponent={templateEditor.removeFlexComponent}
         />
@@ -1305,11 +1307,13 @@ export default function Home() {
       ].join(' ')}
     >
       {/* Dynamic Watermark Background & Video Trigger */}
-      <DynamicWatermark
-        isHovered={isLogoHovered}
-        onHoverChange={setIsLogoHovered}
-        isAudioEnabled={isAudioEnabled}
-      />
+      {!templateEditor.isEditing && (
+        <DynamicWatermark
+          isHovered={isLogoHovered}
+          onHoverChange={setIsLogoHovered}
+          isAudioEnabled={isAudioEnabled}
+        />
+      )}
 
       {/* Primary Application Shell */}
       <div className="flex flex-col h-full w-full">

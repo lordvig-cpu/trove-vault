@@ -155,7 +155,7 @@ export default function TemplateLayoutPalette({
             onClick={() => setActiveTab('layout')}
             className={`py-1 px-3 rounded-lg text-xs font-bold transition cursor-pointer flex items-center gap-1.5 ${
               activeTab === 'layout'
-                ? 'bg-blue-600/30 text-white border border-blue-400/50 shadow-sm'
+                ? 'bg-[color-mix(in_oklch,var(--primary-accent)_30%,transparent)] text-white border border-[var(--primary-accent)] shadow-sm'
                 : 'text-muted hover:text-strong hover:bg-slate-800/60'
             }`}
           >
@@ -168,7 +168,7 @@ export default function TemplateLayoutPalette({
             onClick={() => setActiveTab('components')}
             className={`py-1 px-3 rounded-lg text-xs font-bold transition cursor-pointer flex items-center gap-1.5 ${
               activeTab === 'components'
-                ? 'bg-blue-600/30 text-white border border-blue-400/50 shadow-sm'
+                ? 'bg-[color-mix(in_oklch,var(--primary-accent)_30%,transparent)] text-white border border-[var(--primary-accent)] shadow-sm'
                 : 'text-muted hover:text-strong hover:bg-slate-800/60'
             }`}
           >
@@ -181,7 +181,7 @@ export default function TemplateLayoutPalette({
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-1.5 text-[11px] text-muted">
             <span>Inserting into:</span>
-            <span className="font-semibold text-blue-300 bg-blue-900/30 px-2 py-0.5 rounded border border-blue-500/30 max-w-[160px] truncate">
+            <span className="font-semibold text-[var(--primary-accent)] bg-[color-mix(in_oklch,var(--primary-accent)_20%,transparent)] px-2 py-0.5 rounded border border-[color-mix(in_oklch,var(--primary-accent)_35%,transparent)] max-w-[160px] truncate">
               {targetName}
             </span>
           </div>
@@ -209,10 +209,10 @@ export default function TemplateLayoutPalette({
                 key={prim.id}
                 type="button"
                 onClick={() => onAddContainer(prim.id)}
-                className="flex flex-col justify-between p-2.5 rounded-xl bg-surface-secondary hover:bg-surface-primary-hover border border-subtle hover:border-blue-400/60 transition cursor-pointer text-left h-[100px] min-w-[170px] max-w-[200px] shrink-0 group shadow-sm"
+                className="flex flex-col justify-between p-2.5 rounded-xl bg-surface-secondary hover:bg-surface-primary-hover border border-subtle hover:border-[var(--primary-accent)] transition cursor-pointer text-left h-[100px] min-w-[170px] max-w-[200px] shrink-0 group shadow-sm"
               >
                 <div className="flex items-center gap-2">
-                  <span className="text-lg p-1 rounded-lg bg-blue-500/15 border border-blue-500/25 group-hover:scale-105 transition-transform">
+                  <span className="text-lg p-1 rounded-lg bg-[color-mix(in_oklch,var(--primary-accent)_15%,transparent)] border border-[color-mix(in_oklch,var(--primary-accent)_30%,transparent)] group-hover:scale-105 transition-transform">
                     {prim.icon}
                   </span>
                   <span className="text-xs font-bold text-strong group-hover:text-white truncate">
@@ -222,7 +222,7 @@ export default function TemplateLayoutPalette({
                 <span className="text-[10px] text-muted line-clamp-2 leading-relaxed">
                   {prim.description}
                 </span>
-                <span className="text-[9.5px] font-semibold text-blue-400 group-hover:underline">
+                <span className="text-[9.5px] font-semibold text-[var(--primary-accent)] group-hover:underline">
                   + Add to {targetName}
                 </span>
               </button>
@@ -256,7 +256,7 @@ export default function TemplateLayoutPalette({
                             },
                           })
                         }
-                        className="flex flex-col justify-between p-2.5 rounded-xl bg-surface-secondary hover:bg-surface-primary-hover border border-subtle hover:border-blue-400/60 transition cursor-pointer text-left h-[90px] min-w-[150px] max-w-[170px] shrink-0 group shadow-sm"
+                        className="flex flex-col justify-between p-2.5 rounded-xl bg-surface-secondary hover:bg-surface-primary-hover border border-subtle hover:border-[var(--primary-accent)] transition cursor-pointer text-left h-[90px] min-w-[150px] max-w-[170px] shrink-0 group shadow-sm"
                       >
                         <div className="flex items-center gap-2">
                           <span className="text-base">{item.icon}</span>
@@ -267,7 +267,7 @@ export default function TemplateLayoutPalette({
                         <span className="text-[9.5px] text-muted truncate">
                           {item.description}
                         </span>
-                        <span className="text-[9px] font-semibold text-blue-400 group-hover:underline">
+                        <span className="text-[9px] font-semibold text-[var(--primary-accent)] group-hover:underline">
                           + Add Component
                         </span>
                       </button>

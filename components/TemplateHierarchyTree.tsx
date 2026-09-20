@@ -8,6 +8,11 @@ import {
 } from '@/types/layout';
 import { FieldDefinition } from '@/types/field';
 import { GearIcon } from '@/components/icons/ActionIcons';
+import { useExplorerActionMenu } from '@/hooks/useExplorerActionMenu';
+import {
+  TemplateContainerActionMenu,
+  TemplateComponentActionMenu,
+} from '@/components/TemplateLayoutActionMenu';
 
 /* ==========================================================================
    1. PROPS INTERFACE
@@ -20,6 +25,8 @@ export interface TemplateHierarchyTreeProps {
   fields?: FieldDefinition[];
   onSelectNode: (nodeId: string | null) => void;
   onOpenProperties?: (nodeId: string) => void;
+  onUpdateContainer?: (containerId: string, partial: Partial<FlexContainerNode>) => void;
+  onUpdateComponent?: (componentId: string, partial: Partial<FlexComponentNode>) => void;
   onRemoveContainer: (containerId: string) => void;
   onRemoveComponent: (componentId: string) => void;
   expandedIds?: Set<string>;
@@ -71,6 +78,8 @@ interface ContainerNodeRowProps {
   onToggleExpand: (id: string) => void;
   onSelectNode: (id: string | null) => void;
   onOpenProperties?: (id: string) => void;
+  onUpdateContainer?: (id: string, partial: Partial<FlexContainerNode>) => void;
+  onUpdateComponent?: (id: string, partial: Partial<FlexComponentNode>) => void;
   onRemoveContainer: (id: string) => void;
   onRemoveComponent: (id: string) => void;
 }
@@ -85,6 +94,8 @@ function ContainerNodeRow({
   onToggleExpand,
   onSelectNode,
   onOpenProperties,
+  onUpdateContainer,
+  onUpdateComponent,
   onRemoveContainer,
   onRemoveComponent,
 }: ContainerNodeRowProps) {
@@ -93,6 +104,7 @@ function ContainerNodeRow({
   const isActiveTarget = activeContainerId === container.id;
   const isExpanded = expandedIds.has(container.id);
   const hasChildren = container.children.length > 0;
+  const menu = useExplorerActionMenu(`tree-container-${container.id}`, 280, 'left');
 
   // Semantic layout icon
   const containerIcon = isRoot
@@ -169,26 +181,42 @@ function ContainerNodeRow({
 
         {/* Active Target Indicator Badge */}
         {isActiveTarget && !isRoot && (
-          <span className="text-[8.5px] font-bold uppercase tracking-wider px-1 py-0.2 rounded bg-blue-500/20 text-blue-300 border border-blue-500/30 shrink-0 select-none">
+          <span className="text-[8.5px] font-bold uppercase tracking-wider px-1 py-0.2 rounded bg-[color-mix(in_oklch,var(--primary-accent)_20%,transparent)] text-[var(--primary-accent)] border border-[color-mix(in_oklch,var(--primary-accent)_35%,transparent)] shrink-0 select-none">
             Target
           </span>
         )}
 
-        {/* Gear Icon: Opens Properties for this element */}
-        <div
-          onClick={(e) => {
-            e.stopPropagation();
-            onSelectNode(container.id);
-            onOpenProperties?.(container.id);
-          }}
-          className={`flex items-center justify-center w-5 h-5 rounded hover:bg-slate-700/50 transition-colors shrink-0 ${
-            isSelected
-              ? 'opacity-85 hover:opacity-100 text-amber-300'
-              : 'opacity-0 group-hover:opacity-75 hover:!opacity-100 text-slate-400 hover:text-white'
-          }`}
-          title="Open Container Properties"
-        >
-          <GearIcon className="w-[14px] h-[14px]" />
+        {/* Gear Icon: Triggers Explorer Action Menu with Item Properties */}
+        <div className="relative ml-auto shrink-0">
+          <div
+            role="button"
+            tabIndex={0}
+            aria-label={`Open ${containerLabel} actions`}
+            aria-expanded={menu.isMenuOpen}
+            onKeyDown={menu.handleGearKeyDown}
+            onClick={(e) => {
+              e.stopPropagation();
+              onSelectNode(container.id);
+              menu.handleGearMouseEnter(e);
+            }}
+            onMouseEnter={menu.handleGearMouseEnter}
+            onMouseLeave={menu.handleMouseLeave}
+            className={[
+              'group/gear flex items-center justify-center w-6 h-6 shrink-0',
+              'rounded border border-transparent cursor-pointer transition-colors',
+              menu.isMenuOpen ? 'tree-gear-trigger-active' : 'tree-gear-trigger',
+            ].join(' ')}
+          >
+            <GearIcon
+              isActive={menu.isMenuOpen}
+              className={[
+                'w-[15px] h-[15px] transition-all duration-300 ease-out',
+                menu.isMenuOpen
+                  ? 'explorer-tree-primary rotate-90'
+                  : 'explorer-tree-action-icon',
+              ].join(' ')}
+            />
+          </div>
         </div>
 
         {/* Hover Delete Action */}
@@ -208,6 +236,15 @@ function ContainerNodeRow({
         )}
       </div>
 
+      {/* Container Flyout Action Menu */}
+      <TemplateContainerActionMenu
+        container={container}
+        menu={menu}
+        position="left"
+        onUpdateContainer={onUpdateContainer}
+        onRemoveContainer={onRemoveContainer}
+      />
+
       {/* Render Children when Expanded */}
       {isExpanded && hasChildren && (
         <div className="flex flex-col relative">
@@ -225,6 +262,8 @@ function ContainerNodeRow({
                   onToggleExpand={onToggleExpand}
                   onSelectNode={onSelectNode}
                   onOpenProperties={onOpenProperties}
+                  onUpdateContainer={onUpdateContainer}
+                  onUpdateComponent={onUpdateComponent}
                   onRemoveContainer={onRemoveContainer}
                   onRemoveComponent={onRemoveComponent}
                 />
@@ -239,6 +278,7 @@ function ContainerNodeRow({
                 fields={fields}
                 onSelectNode={onSelectNode}
                 onOpenProperties={onOpenProperties}
+                onUpdateComponent={onUpdateComponent}
                 onRemoveComponent={onRemoveComponent}
               />
             );
@@ -260,6 +300,7 @@ interface ComponentNodeRowProps {
   fields: FieldDefinition[];
   onSelectNode: (id: string | null) => void;
   onOpenProperties?: (id: string) => void;
+  onUpdateComponent?: (id: string, partial: Partial<FlexComponentNode>) => void;
   onRemoveComponent: (id: string) => void;
 }
 
@@ -270,9 +311,11 @@ function ComponentNodeRow({
   fields,
   onSelectNode,
   onOpenProperties,
+  onUpdateComponent,
   onRemoveComponent,
 }: ComponentNodeRowProps) {
   const isSelected = selectedNodeId === component.id;
+  const menu = useExplorerActionMenu(`tree-comp-${component.id}`, 280, 'left');
 
   const boundField = component.field_id
     ? fields.find((f) => f.id === component.field_id)
@@ -334,21 +377,37 @@ function ComponentNodeRow({
           </span>
         )}
 
-        {/* Gear Icon: Opens Properties for this element */}
-        <div
-          onClick={(e) => {
-            e.stopPropagation();
-            onSelectNode(component.id);
-            onOpenProperties?.(component.id);
-          }}
-          className={`flex items-center justify-center w-5 h-5 rounded hover:bg-slate-700/50 transition-colors shrink-0 ${
-            isSelected
-              ? 'opacity-85 hover:opacity-100 text-amber-300'
-              : 'opacity-0 group-hover:opacity-75 hover:!opacity-100 text-slate-400 hover:text-white'
-          }`}
-          title="Open Component Properties"
-        >
-          <GearIcon className="w-[14px] h-[14px]" />
+        {/* Gear Icon: Triggers Explorer Action Menu with Item Properties */}
+        <div className="relative ml-auto shrink-0">
+          <div
+            role="button"
+            tabIndex={0}
+            aria-label={`Open ${label} actions`}
+            aria-expanded={menu.isMenuOpen}
+            onKeyDown={menu.handleGearKeyDown}
+            onClick={(e) => {
+              e.stopPropagation();
+              onSelectNode(component.id);
+              menu.handleGearMouseEnter(e);
+            }}
+            onMouseEnter={menu.handleGearMouseEnter}
+            onMouseLeave={menu.handleMouseLeave}
+            className={[
+              'group/gear flex items-center justify-center w-6 h-6 shrink-0',
+              'rounded border border-transparent cursor-pointer transition-colors',
+              menu.isMenuOpen ? 'tree-gear-trigger-active' : 'tree-gear-trigger',
+            ].join(' ')}
+          >
+            <GearIcon
+              isActive={menu.isMenuOpen}
+              className={[
+                'w-[15px] h-[15px] transition-all duration-300 ease-out',
+                menu.isMenuOpen
+                  ? 'explorer-tree-primary rotate-90'
+                  : 'explorer-tree-action-icon',
+              ].join(' ')}
+            />
+          </div>
         </div>
 
         {/* Hover Delete Action */}
@@ -365,6 +424,15 @@ function ComponentNodeRow({
           🗑️
         </button>
       </div>
+
+      {/* Component Flyout Action Menu */}
+      <TemplateComponentActionMenu
+        component={component}
+        menu={menu}
+        position="left"
+        onUpdateComponent={onUpdateComponent}
+        onRemoveComponent={onRemoveComponent}
+      />
     </div>
   );
 }
@@ -380,6 +448,8 @@ export default function TemplateHierarchyTree({
   fields = [],
   onSelectNode,
   onOpenProperties,
+  onUpdateContainer,
+  onUpdateComponent,
   onRemoveContainer,
   onRemoveComponent,
   expandedIds: externalExpandedIds,
@@ -430,6 +500,8 @@ export default function TemplateHierarchyTree({
         onToggleExpand={effectiveOnToggleExpand}
         onSelectNode={onSelectNode}
         onOpenProperties={onOpenProperties}
+        onUpdateContainer={onUpdateContainer}
+        onUpdateComponent={onUpdateComponent}
         onRemoveContainer={onRemoveContainer}
         onRemoveComponent={onRemoveComponent}
       />

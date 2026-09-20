@@ -165,9 +165,9 @@ function FlexContainerRenderer({
             ? 'rounded-2xl bg-slate-900/60 border border-slate-800/80 shadow-md backdrop-blur-sm'
             : ''
           : isSelected
-          ? 'rounded-2xl ring-2 ring-blue-500/90 bg-blue-950/20 shadow-xl shadow-blue-500/10 border border-blue-400/60 p-1.5'
+          ? 'rounded-2xl ring-2 ring-[var(--primary-accent)] bg-[color-mix(in_oklch,var(--primary-accent)_12%,transparent)] shadow-xl shadow-[color-mix(in_oklch,var(--primary-accent)_15%,transparent)] border border-[var(--primary-accent)] p-1.5'
           : isActive
-          ? 'rounded-2xl border border-blue-500/40 bg-slate-900/30 p-1.5'
+          ? 'rounded-2xl border border-[color-mix(in_oklch,var(--primary-accent)_50%,transparent)] bg-[color-mix(in_oklch,var(--primary-accent)_6%,transparent)] p-1.5'
           : isCard
           ? 'rounded-2xl border border-slate-800 bg-slate-900/50 hover:border-slate-700/80 p-1.5'
           : 'rounded-2xl border border-dashed border-slate-800/70 bg-slate-950/20 hover:border-slate-700/70 p-1.5'
@@ -181,7 +181,7 @@ function FlexContainerRenderer({
             <span className="text-[11px] font-bold text-slate-200 tracking-wide truncate">
               {container.label || 'Container'}
             </span>
-            <span className="text-[9.5px] font-mono px-1.5 py-0.5 rounded bg-slate-800/90 text-blue-300 border border-slate-700/60">
+            <span className="text-[9.5px] font-mono px-1.5 py-0.5 rounded bg-slate-800/90 text-[var(--primary-accent)] border border-[color-mix(in_oklch,var(--primary-accent)_30%,transparent)]">
               {container.direction === 'row' ? '➡ Row' : '⬇ Col'}
             </span>
             <span className="text-[9px] font-mono text-slate-400">
@@ -227,7 +227,7 @@ function FlexContainerRenderer({
                     e.stopPropagation();
                     onAddPrimitive?.('row', container.id);
                   }}
-                  className="px-2 py-0.5 text-[10.5px] font-semibold text-blue-300 bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/20 rounded-md transition cursor-pointer"
+                  className="px-2 py-0.5 text-[10.5px] font-semibold text-[var(--primary-accent)] bg-[color-mix(in_oklch,var(--primary-accent)_15%,transparent)] hover:bg-[color-mix(in_oklch,var(--primary-accent)_25%,transparent)] border border-[color-mix(in_oklch,var(--primary-accent)_35%,transparent)] rounded-md transition cursor-pointer"
                 >
                   + Row
                 </button>
@@ -386,7 +386,7 @@ function FlexComponentRenderer({
               <span>📊</span>
               <span>{label}</span>
             </span>
-            <span className="text-[10px] font-mono text-blue-400">
+            <span className="text-[10px] font-mono text-[var(--primary-accent)]">
               Specifications Table
             </span>
           </div>
@@ -436,7 +436,7 @@ function FlexComponentRenderer({
           <span className="text-[10px] uppercase font-bold tracking-wider text-slate-400">
             {label}
           </span>
-          <span className="text-2xl font-extrabold text-blue-400 font-mono tracking-tight">
+          <span className="text-2xl font-extrabold text-[var(--primary-accent)] font-mono tracking-tight">
             98.5%
           </span>
           <span className="text-[9.5px] text-emerald-400 font-medium">
@@ -463,7 +463,7 @@ function FlexComponentRenderer({
               {label}
             </span>
             {boundField && (
-              <span className="text-[9px] font-mono font-bold uppercase px-1 py-0.5 rounded bg-slate-800 text-blue-400 border border-slate-700/60 shrink-0">
+              <span className="text-[9px] font-mono font-bold uppercase px-1 py-0.5 rounded bg-slate-800 text-[var(--primary-accent)] border border-slate-700/60 shrink-0">
                 {boundField.field_type}
               </span>
             )}
@@ -538,7 +538,7 @@ export default function TemplateEditorStage({
           -------------------------------------------------------------------- */}
       <div className="tmpl-editor-stage-banner flex flex-wrap items-center justify-between gap-4 p-4 rounded-2xl bg-slate-900/60 border border-slate-800 backdrop-blur-md">
         <div className="flex items-center gap-3.5 min-w-0">
-          <div className="w-12 h-12 rounded-xl bg-blue-600/20 border border-blue-500/40 flex items-center justify-center text-2xl shadow-md shrink-0">
+          <div className="w-12 h-12 rounded-xl bg-[color-mix(in_oklch,var(--primary-accent)_20%,transparent)] border border-[color-mix(in_oklch,var(--primary-accent)_40%,transparent)] flex items-center justify-center text-2xl shadow-md shrink-0">
             {template.icon || '📦'}
           </div>
           <div className="min-w-0">
@@ -546,7 +546,7 @@ export default function TemplateEditorStage({
               <h1 className="text-lg font-bold text-white tracking-wide truncate">
                 {template.name}
               </h1>
-              <span className="px-2 py-0.5 rounded-full text-[9.5px] font-bold tracking-wider uppercase bg-blue-500/20 text-blue-300 border border-blue-500/30 shrink-0">
+              <span className="px-2 py-0.5 rounded-full text-[9.5px] font-bold tracking-wider uppercase bg-[color-mix(in_oklch,var(--primary-accent)_20%,transparent)] text-[var(--primary-accent)] border border-[color-mix(in_oklch,var(--primary-accent)_35%,transparent)] shrink-0">
                 {isFlexActive ? 'Auto-Layout Builder' : '12-Col Grid Builder'}
               </span>
             </div>
@@ -567,7 +567,7 @@ export default function TemplateEditorStage({
               }}
               className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer ${
                 canvasMode === 'edit'
-                  ? 'bg-blue-600 text-white shadow-sm'
+                  ? 'bg-[var(--primary-accent)] text-white shadow-sm'
                   : 'text-slate-400 hover:text-slate-200'
               }`}
             >
@@ -581,7 +581,7 @@ export default function TemplateEditorStage({
               }}
               className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer ${
                 canvasMode === 'preview'
-                  ? 'bg-blue-600 text-white shadow-sm'
+                  ? 'bg-[var(--primary-accent)] text-white shadow-sm'
                   : 'text-slate-400 hover:text-slate-200'
               }`}
             >
@@ -593,7 +593,7 @@ export default function TemplateEditorStage({
           <button
             type="button"
             onClick={onDoneEditing}
-            className="px-4 py-2 rounded-xl text-xs font-bold bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-500/20 flex items-center gap-1.5 transition hover:scale-[1.02] cursor-pointer"
+            className="px-4 py-2 rounded-xl text-xs font-bold bg-[var(--primary-accent)] hover:bg-[var(--primary-accent-hover)] text-white shadow-lg shadow-[color-mix(in_oklch,var(--primary-accent)_25%,transparent)] flex items-center gap-1.5 transition hover:scale-[1.02] cursor-pointer"
             title="Exit template editor and restore previous tab workspace"
           >
             <span>✓</span>
@@ -636,7 +636,7 @@ export default function TemplateEditorStage({
             <button
               type="button"
               onClick={onResetFlexLayout || onResetLayout}
-              className="px-4 py-2 text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white rounded-xl transition cursor-pointer"
+              className="px-4 py-2 text-xs font-semibold bg-[var(--primary-accent)] hover:bg-[var(--primary-accent-hover)] text-white rounded-xl transition cursor-pointer"
             >
               Auto-Generate Layout
             </button>
@@ -685,7 +685,7 @@ export default function TemplateEditorStage({
                           setEditingSectionId(null);
                         }
                       }}
-                      className="text-xs font-bold text-white bg-slate-800 px-2 py-0.5 rounded border border-blue-400 focus:outline-none"
+                      className="text-xs font-bold text-white bg-slate-800 px-2 py-0.5 rounded border border-[var(--primary-accent)] focus:outline-none"
                     />
                   ) : (
                     <h2
@@ -694,7 +694,7 @@ export default function TemplateEditorStage({
                       }
                       className={`text-xs font-bold text-slate-200 uppercase tracking-wider truncate ${
                         canvasMode === 'edit'
-                          ? 'cursor-pointer hover:text-blue-300'
+                          ? 'cursor-pointer hover:text-[var(--primary-accent)]'
                           : ''
                       }`}
                       title={

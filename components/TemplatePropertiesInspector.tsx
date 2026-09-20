@@ -54,7 +54,7 @@ export default function TemplatePropertiesInspector({
   if (!selectedNode) {
     return (
       <div className="flex flex-col items-center justify-center p-6 text-center gap-3 h-full min-h-[300px] select-none">
-        <div className="w-12 h-12 rounded-2xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-2xl shadow-sm">
+        <div className="w-12 h-12 rounded-2xl bg-[color-mix(in_oklch,var(--primary-accent)_12%,transparent)] border border-[color-mix(in_oklch,var(--primary-accent)_25%,transparent)] text-[var(--primary-accent)] flex items-center justify-center text-2xl shadow-sm">
           ⚙️
         </div>
         <div className="flex flex-col gap-1">
@@ -78,7 +78,7 @@ export default function TemplatePropertiesInspector({
           -------------------------------------------------------------------- */}
       <div className="flex items-center justify-between p-2.5 rounded-xl bg-slate-900/60 border border-subtle">
         <div className="flex items-center gap-2 min-w-0">
-          <span className="text-base p-1 rounded-lg bg-blue-500/20 border border-blue-500/30">
+          <span className="text-base p-1 rounded-lg bg-[color-mix(in_oklch,var(--primary-accent)_20%,transparent)] border border-[color-mix(in_oklch,var(--primary-accent)_35%,transparent)]">
             {isContainer ? (selectedNode.direction === 'row' ? '↔️' : '↕️') : '🧩'}
           </span>
           <div className="min-w-0">
@@ -118,7 +118,7 @@ export default function TemplatePropertiesInspector({
               value={selectedNode.label || ''}
               onChange={(e) => onUpdateContainer(selectedNode.id, { label: e.target.value })}
               placeholder="e.g. Header Section, Sidebar, Card Row"
-              className="px-2.5 py-1.5 text-xs bg-surface-secondary border border-subtle rounded-lg text-strong focus:outline-none focus:border-blue-400 font-medium"
+              className="px-2.5 py-1.5 text-xs bg-surface-secondary border border-subtle rounded-lg text-strong focus:outline-none focus:border-[var(--primary-accent)] font-medium"
             />
           </div>
 
@@ -133,7 +133,7 @@ export default function TemplatePropertiesInspector({
                 onClick={() => onUpdateContainer(selectedNode.id, { direction: 'row' })}
                 className={`flex items-center justify-center gap-2 p-2 rounded-lg border text-xs font-bold transition cursor-pointer ${
                   selectedNode.direction === 'row'
-                    ? 'bg-blue-600/25 border-blue-400 text-white shadow-sm'
+                    ? 'bg-[color-mix(in_oklch,var(--primary-accent)_25%,transparent)] border-[var(--primary-accent)] text-white shadow-sm'
                     : 'bg-surface-secondary border-subtle text-muted hover:text-white'
                 }`}
               >
@@ -145,7 +145,7 @@ export default function TemplatePropertiesInspector({
                 onClick={() => onUpdateContainer(selectedNode.id, { direction: 'column' })}
                 className={`flex items-center justify-center gap-2 p-2 rounded-lg border text-xs font-bold transition cursor-pointer ${
                   selectedNode.direction === 'column'
-                    ? 'bg-blue-600/25 border-blue-400 text-white shadow-sm'
+                    ? 'bg-[color-mix(in_oklch,var(--primary-accent)_25%,transparent)] border-[var(--primary-accent)] text-white shadow-sm'
                     : 'bg-surface-secondary border-subtle text-muted hover:text-white'
                 }`}
               >
@@ -161,7 +161,7 @@ export default function TemplatePropertiesInspector({
               <label className="text-[10px] font-bold text-muted uppercase tracking-wider">
                 Child Item Gap
               </label>
-              <span className="text-[10px] font-mono text-blue-400 font-semibold">
+              <span className="text-[10px] font-mono text-[var(--primary-accent)] font-semibold">
                 {selectedNode.gap}px
               </span>
             </div>
@@ -173,7 +173,7 @@ export default function TemplatePropertiesInspector({
                   onClick={() => onUpdateContainer(selectedNode.id, { gap: opt.value })}
                   className={`flex-1 min-w-[36px] py-1 text-[11px] font-semibold rounded border transition cursor-pointer ${
                     selectedNode.gap === opt.value
-                      ? 'bg-blue-600/30 text-white border-blue-400'
+                      ? 'bg-[color-mix(in_oklch,var(--primary-accent)_30%,transparent)] text-white border-[var(--primary-accent)]'
                       : 'bg-surface-secondary text-muted border-subtle hover:text-strong'
                   }`}
                 >
@@ -194,7 +194,7 @@ export default function TemplatePropertiesInspector({
                 type="button"
                 onClick={() => onUpdateContainer(selectedNode.id, { wrap: !selectedNode.wrap })}
                 className={`w-11 h-6 rounded-full transition-colors relative cursor-pointer ${
-                  selectedNode.wrap ? 'bg-blue-600' : 'bg-slate-700'
+                  selectedNode.wrap ? 'bg-[var(--primary-accent)]' : 'bg-slate-700'
                 }`}
               >
                 <span
@@ -215,7 +215,7 @@ export default function TemplatePropertiesInspector({
               <select
                 value={selectedNode.align}
                 onChange={(e) => onUpdateContainer(selectedNode.id, { align: e.target.value as FlexAlign })}
-                className="px-2 py-1.5 text-xs bg-surface-secondary border border-subtle rounded-lg text-strong focus:outline-none focus:border-blue-400"
+                className="px-2 py-1.5 text-xs bg-surface-secondary border border-subtle rounded-lg text-strong focus:outline-none focus:border-[var(--primary-accent)]"
               >
                 <option value="stretch">Stretch (Full cross)</option>
                 <option value="start">Start (Top / Left)</option>
@@ -231,7 +231,7 @@ export default function TemplatePropertiesInspector({
               <select
                 value={selectedNode.justify}
                 onChange={(e) => onUpdateContainer(selectedNode.id, { justify: e.target.value as FlexJustify })}
-                className="px-2 py-1.5 text-xs bg-surface-secondary border border-subtle rounded-lg text-strong focus:outline-none focus:border-blue-400"
+                className="px-2 py-1.5 text-xs bg-surface-secondary border border-subtle rounded-lg text-strong focus:outline-none focus:border-[var(--primary-accent)]"
               >
                 <option value="start">Start</option>
                 <option value="center">Center</option>
@@ -252,7 +252,7 @@ export default function TemplatePropertiesInspector({
               type="button"
               onClick={() => onUpdateContainer(selectedNode.id, { isCard: !selectedNode.isCard })}
               className={`w-11 h-6 rounded-full transition-colors relative cursor-pointer ${
-                selectedNode.isCard ? 'bg-blue-600' : 'bg-slate-700'
+                selectedNode.isCard ? 'bg-[var(--primary-accent)]' : 'bg-slate-700'
               }`}
             >
               <span
@@ -280,7 +280,7 @@ export default function TemplatePropertiesInspector({
               value={selectedNode.label || ''}
               onChange={(e) => onUpdateComponent(selectedNode.id, { label: e.target.value })}
               placeholder="Custom label..."
-              className="px-2.5 py-1.5 text-xs bg-surface-secondary border border-subtle rounded-lg text-strong focus:outline-none focus:border-blue-400 font-medium"
+              className="px-2.5 py-1.5 text-xs bg-surface-secondary border border-subtle rounded-lg text-strong focus:outline-none focus:border-[var(--primary-accent)] font-medium"
             />
           </div>
 
@@ -295,7 +295,7 @@ export default function TemplatePropertiesInspector({
                 onClick={() => onUpdateComponent(selectedNode.id, { sizing: { type: 'fill' } })}
                 className={`py-1.5 px-2 rounded-lg text-[11px] font-semibold border transition cursor-pointer text-center ${
                   selectedNode.sizing.type === 'fill'
-                    ? 'bg-blue-600/30 text-white border-blue-400'
+                    ? 'bg-[color-mix(in_oklch,var(--primary-accent)_30%,transparent)] text-white border-[var(--primary-accent)]'
                     : 'bg-surface-secondary text-muted border-subtle hover:text-white'
                 }`}
                 title="Expands to fill available row or column space"
@@ -308,7 +308,7 @@ export default function TemplatePropertiesInspector({
                 onClick={() => onUpdateComponent(selectedNode.id, { sizing: { type: 'fixed', value: '300px' } })}
                 className={`py-1.5 px-2 rounded-lg text-[11px] font-semibold border transition cursor-pointer text-center ${
                   selectedNode.sizing.type === 'fixed'
-                    ? 'bg-blue-600/30 text-white border-blue-400'
+                    ? 'bg-[color-mix(in_oklch,var(--primary-accent)_30%,transparent)] text-white border-[var(--primary-accent)]'
                     : 'bg-surface-secondary text-muted border-subtle hover:text-white'
                 }`}
                 title="Fixed width (e.g. 300px for sidebar or media)"
@@ -321,7 +321,7 @@ export default function TemplatePropertiesInspector({
                 onClick={() => onUpdateComponent(selectedNode.id, { sizing: { type: 'auto' } })}
                 className={`py-1.5 px-2 rounded-lg text-[11px] font-semibold border transition cursor-pointer text-center ${
                   selectedNode.sizing.type === 'auto'
-                    ? 'bg-blue-600/30 text-white border-blue-400'
+                    ? 'bg-[color-mix(in_oklch,var(--primary-accent)_30%,transparent)] text-white border-[var(--primary-accent)]'
                     : 'bg-surface-secondary text-muted border-subtle hover:text-white'
                 }`}
                 title="Sizes naturally to content"
@@ -341,7 +341,7 @@ export default function TemplatePropertiesInspector({
                     })
                   }
                   placeholder="e.g. 320px or 50%"
-                  className="flex-1 px-2.5 py-1 text-xs bg-surface-secondary border border-subtle rounded-lg text-strong font-mono focus:outline-none focus:border-blue-400"
+                  className="flex-1 px-2.5 py-1 text-xs bg-surface-secondary border border-subtle rounded-lg text-strong font-mono focus:outline-none focus:border-[var(--primary-accent)]"
                 />
                 <span className="text-[10px] text-muted">e.g. 300px, 50%</span>
               </div>
@@ -361,7 +361,7 @@ export default function TemplatePropertiesInspector({
                   onClick={() => onUpdateComponent(selectedNode.id, { variant: opt.variant })}
                   className={`flex items-center gap-2 p-2 rounded-lg border text-xs font-medium transition cursor-pointer text-left ${
                     selectedNode.variant === opt.variant
-                      ? 'bg-blue-600/25 border-blue-400 text-white'
+                      ? 'bg-[color-mix(in_oklch,var(--primary-accent)_25%,transparent)] border-[var(--primary-accent)] text-white'
                       : 'bg-surface-secondary border-subtle text-muted hover:text-white'
                   }`}
                 >
@@ -388,7 +388,7 @@ export default function TemplatePropertiesInspector({
                     label: f ? f.label : selectedNode.label,
                   });
                 }}
-                className="px-2.5 py-1.5 text-xs bg-surface-secondary border border-subtle rounded-lg text-strong focus:outline-none focus:border-blue-400"
+                className="px-2.5 py-1.5 text-xs bg-surface-secondary border border-subtle rounded-lg text-strong focus:outline-none focus:border-[var(--primary-accent)]"
               >
                 <option value="">-- Select Field --</option>
                 {template.fields.map((f) => (
@@ -409,7 +409,7 @@ export default function TemplatePropertiesInspector({
           <button
             type="button"
             onClick={() => onSelectNode(parentNode.id)}
-            className="text-xs font-semibold text-blue-400 hover:underline flex items-center gap-1 cursor-pointer"
+            className="text-xs font-semibold text-[var(--primary-accent)] hover:underline flex items-center gap-1 cursor-pointer"
           >
             <span>⬆</span>
             <span>{parentNode.label || 'Parent Container'}</span>

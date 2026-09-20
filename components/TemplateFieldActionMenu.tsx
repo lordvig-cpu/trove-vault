@@ -132,7 +132,7 @@ export default function TemplateFieldActionMenu({
               if (e.key === 'Enter') handleLabelBlur();
             }}
             placeholder="e.g. Player Count"
-            className="w-full px-2 py-1 bg-surface-panel border border-[var(--primary-border-strong,#334155)] rounded-md text-xs text-strong focus:border-blue-400 focus:outline-none transition"
+            className="w-full px-2 py-1 bg-surface-panel border border-[var(--primary-border-strong,#334155)] rounded-md text-xs text-strong focus:border-[var(--primary-accent)] focus:outline-none transition"
           />
         </div>
 
@@ -150,7 +150,7 @@ export default function TemplateFieldActionMenu({
               if (e.key === 'Enter') handleKeyBlur();
             }}
             placeholder="e.g. player_count"
-            className="w-full px-2 py-1 font-mono bg-surface-panel border border-[var(--primary-border-strong,#334155)] rounded-md text-[11px] text-muted focus:text-strong focus:border-blue-400 focus:outline-none transition"
+            className="w-full px-2 py-1 font-mono bg-surface-panel border border-[var(--primary-border-strong,#334155)] rounded-md text-[11px] text-muted focus:text-strong focus:border-[var(--primary-accent)] focus:outline-none transition"
           />
         </div>
 
@@ -167,7 +167,7 @@ export default function TemplateFieldActionMenu({
                 onClick={() => handleTypeChange(ft.type)}
                 className={`flex items-center gap-1.5 px-2 py-1 rounded-md text-[11px] border transition cursor-pointer text-left ${
                   fieldType === ft.type
-                    ? 'bg-blue-500/20 border-blue-500/50 text-white font-bold'
+                    ? 'bg-[color-mix(in_oklch,var(--primary-accent)_20%,transparent)] border-[var(--primary-accent)] text-white font-bold'
                     : 'bg-surface-panel border-subtle text-muted hover:text-strong hover:bg-slate-800'
                 }`}
               >
@@ -184,7 +184,7 @@ export default function TemplateFieldActionMenu({
             type="checkbox"
             checked={isRequired}
             onChange={handleToggleRequired}
-            className="w-3.5 h-3.5 rounded border-subtle text-blue-500 focus:ring-0 cursor-pointer"
+            className="w-3.5 h-3.5 rounded border-subtle text-[var(--primary-accent)] focus:ring-0 cursor-pointer accent-[var(--primary-accent)]"
           />
           <span className="text-[11px] font-medium text-strong">
             Required attribute for items
@@ -228,12 +228,12 @@ export default function TemplateFieldActionMenu({
                 value={newOption}
                 onChange={(e) => setNewOption(e.target.value)}
                 placeholder="Add option..."
-                className="flex-1 min-w-0 px-2 py-0.5 bg-surface-panel border border-subtle rounded text-[11px] text-strong focus:outline-none focus:border-blue-400"
+                className="flex-1 min-w-0 px-2 py-0.5 bg-surface-panel border border-subtle rounded text-[11px] text-strong focus:outline-none focus:border-[var(--primary-accent)]"
               />
               <button
                 type="submit"
                 disabled={!newOption.trim()}
-                className="px-2 py-0.5 bg-blue-500/20 hover:bg-blue-500/30 text-blue-300 disabled:opacity-40 rounded text-[11px] font-bold border border-blue-500/30 cursor-pointer"
+                className="px-2 py-0.5 bg-[color-mix(in_oklch,var(--primary-accent)_20%,transparent)] hover:bg-[color-mix(in_oklch,var(--primary-accent)_30%,transparent)] text-[var(--primary-accent)] disabled:opacity-40 rounded text-[11px] font-bold border border-[color-mix(in_oklch,var(--primary-accent)_35%,transparent)] cursor-pointer"
               >
                 +
               </button>

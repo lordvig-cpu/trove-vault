@@ -324,7 +324,7 @@ export default function TemplateManagerModal({
                     <span className="text-[11px] ui-muted">
                       Assigned to items directly during creation or editing.
                     </span>
-                    <span className="text-[10px] font-semibold ui-accent px-2 py-1 rounded bg-blue-500/10 border border-blue-500/20">
+                    <span className="text-[10px] font-semibold ui-accent px-2 py-1 rounded bg-[color-mix(in_oklch,var(--primary-accent)_12%,transparent)] border border-[color-mix(in_oklch,var(--primary-accent)_25%,transparent)]">
                       Item Blueprint
                     </span>
                   </div>

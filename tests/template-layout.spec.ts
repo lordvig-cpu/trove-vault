@@ -287,4 +287,53 @@ test.describe('Template Layout Engine & Grid System', () => {
     await page.waitForTimeout(400);
     await expect(rightTabs.nth(0)).toHaveAttribute('aria-selected', 'true');
   });
+
+  test('hides watermark and enables structure tree gear flyout properties menu in template editing mode', async ({ page }) => {
+    await page.goto('/');
+    await page.waitForLoadState('networkidle');
+
+    // Watermark is present before entering template edit mode
+    await expect(page.locator('.watermark-logo-image')).toHaveCount(1);
+
+    // Open TEMPLATES flyout
+    await page.locator('header button', { hasText: 'TEMPLATES' }).click();
+    await page.waitForTimeout(600);
+
+    // Open action menu for template and click Edit Template
+    const gearBtn = page.locator('[aria-label="Open actions"]').first();
+    await gearBtn.click();
+    await page.waitForTimeout(400);
+    await page.locator('button', { hasText: 'Edit Template' }).click();
+    await page.waitForTimeout(1000);
+
+    // 1. Watermark is hidden during template editing
+    await expect(page.locator('.watermark-logo-image')).toHaveCount(0);
+
+    // 2. Structure tree has matching gear action trigger
+    const structureGears = page.locator('.primary-side-panel [aria-label*="actions"]');
+    const gearCount = await structureGears.count();
+    expect(gearCount).toBeGreaterThan(0);
+
+    // Check that gear trigger has standard tree-gear-trigger class
+    const firstGear = structureGears.first();
+    await expect(firstGear).toHaveClass(/tree-gear-trigger/);
+
+    // 3. Click gear to open contextual action menu flyout
+    await firstGear.click();
+    await page.waitForTimeout(500);
+
+    // Action menu flyout is rendered with properties
+    const actionMenu = page.locator('[data-explorer-menu]').first();
+    await expect(actionMenu).toBeVisible();
+    await expect(actionMenu).toContainText('Container Name');
+    await expect(actionMenu).toContainText('Flex Flow Direction');
+    await expect(actionMenu).toContainText('Child Item Gap');
+    await expect(actionMenu).toContainText('Card Frame Style');
+
+    // Take screenshot showing the matching gear and open flyout menu
+    await page.screenshot({
+      path: 'C:/Users/mc_cl/.gemini/antigravity/brain/31bae76a-fe56-4a8b-b91e-7d916ddebf78/template_editor_oklch_gear_flyout.png',
+      fullPage: true,
+    });
+  });
 });

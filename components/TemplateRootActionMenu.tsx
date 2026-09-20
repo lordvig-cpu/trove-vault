@@ -76,7 +76,7 @@ export default function TemplateRootActionMenu({
               onChange={(e) => setIcon(e.target.value)}
               onBlur={handleSaveMeta}
               maxLength={4}
-              className="w-full px-1.5 py-1 text-center bg-surface-panel border border-[var(--primary-border-strong,#334155)] rounded-md text-sm text-strong focus:border-blue-400 focus:outline-none transition"
+              className="w-full px-1.5 py-1 text-center bg-surface-panel border border-[var(--primary-border-strong,#334155)] rounded-md text-sm text-strong focus:border-[var(--primary-accent)] focus:outline-none transition"
             />
           </div>
           <div className="flex flex-col gap-1 flex-1 min-w-0">
@@ -89,7 +89,7 @@ export default function TemplateRootActionMenu({
               onChange={(e) => setName(e.target.value)}
               onBlur={handleSaveMeta}
               placeholder="e.g. Board Game"
-              className="w-full px-2 py-1 bg-surface-panel border border-[var(--primary-border-strong,#334155)] rounded-md text-xs text-strong focus:border-blue-400 focus:outline-none transition"
+              className="w-full px-2 py-1 bg-surface-panel border border-[var(--primary-border-strong,#334155)] rounded-md text-xs text-strong focus:border-[var(--primary-accent)] focus:outline-none transition"
             />
           </div>
         </div>
@@ -105,7 +105,7 @@ export default function TemplateRootActionMenu({
             onChange={(e) => setDescription(e.target.value)}
             onBlur={handleSaveMeta}
             placeholder="Blueprint description..."
-            className="w-full px-2 py-1 bg-surface-panel border border-[var(--primary-border-strong,#334155)] rounded-md text-xs text-strong focus:border-blue-400 focus:outline-none transition resize-none primary-panel-scroll"
+            className="w-full px-2 py-1 bg-surface-panel border border-[var(--primary-border-strong,#334155)] rounded-md text-xs text-strong focus:border-[var(--primary-accent)] focus:outline-none transition resize-none primary-panel-scroll"
           />
         </div>
       </div>
