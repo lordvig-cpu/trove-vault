@@ -939,6 +939,9 @@ export default function Home() {
       onAddSubItem={openCreateItem}
       onAddSubCollection={openCreateCollection}
       onEditTemplate={(templateId: number) => {
+        setIsTemplatesFlyoutOpen(false);
+        setIsCollectionsFlyoutOpen(false);
+        setIsPrimaryFlyoutOpen(false);
         templateEditor.startEditing(templateId);
       }}
       onEditCollection={(col) => openTemplateManager(col.id, col.name)}

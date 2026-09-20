@@ -248,4 +248,43 @@ test.describe('Template Layout Engine & Grid System', () => {
     // template_hierarchy is a tree/sidebar panel, forbidden from bottom panel
     expect(isDockZoneAllowed('template_hierarchy', 'bottom')).toBe(false);
   });
+
+  test('displays paper folder tabs in both Structure (left) and Inspector/Properties (right) panels during template editing', async ({ page }) => {
+    await page.goto('/');
+    await page.waitForLoadState('networkidle');
+
+    // Open TEMPLATES flyout
+    await page.locator('header button', { hasText: 'TEMPLATES' }).click();
+    await page.waitForTimeout(600);
+
+    // Open action menu for template and click Edit Template
+    const gearBtn = page.locator('[aria-label="Open actions"]').first();
+    await gearBtn.click();
+    await page.waitForTimeout(400);
+    await page.locator('button', { hasText: 'Edit Template' }).click();
+    await page.waitForTimeout(1000);
+
+    // 1. Structure tab in left panel
+    const leftTab = page.locator('.primary-side-panel button[role="tab"]');
+    await expect(leftTab).toHaveCount(1);
+    await expect(leftTab.first()).toContainText('Structure');
+
+    const leftHeading = page.locator('.primary-side-panel .explorer-section-heading h3');
+    await expect(leftHeading).toContainText('Layout & Content');
+
+    // 2. Inspector and Properties tabs in right panel
+    const rightTabs = page.locator('.secondary-side-panel button[role="tab"]');
+    await expect(rightTabs).toHaveCount(2);
+    await expect(rightTabs.nth(0)).toContainText('Inspector');
+    await expect(rightTabs.nth(1)).toContainText('Properties');
+
+    // 3. Switch between tabs
+    await rightTabs.nth(1).click();
+    await page.waitForTimeout(400);
+    await expect(rightTabs.nth(1)).toHaveAttribute('aria-selected', 'true');
+
+    await rightTabs.nth(0).click();
+    await page.waitForTimeout(400);
+    await expect(rightTabs.nth(0)).toHaveAttribute('aria-selected', 'true');
+  });
 });
