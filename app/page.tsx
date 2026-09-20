@@ -276,14 +276,6 @@ export default function Home() {
     if (nodeId) {
       templateEditor.selectNode(nodeId);
     }
-    setSecondaryTabs((prev) => {
-      if (!prev.includes('template_properties')) {
-        return [...prev, 'template_properties'];
-      }
-      return prev;
-    });
-    setSecondaryActiveTab('template_properties');
-    setIsSecondaryOpen(true);
   }, [templateEditor]);
 
   /* ------------------------------------------------------------------------

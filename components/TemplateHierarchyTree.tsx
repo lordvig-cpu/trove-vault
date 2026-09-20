@@ -70,6 +70,7 @@ export function getAllContainerIds(node: FlexContainerNode): string[] {
 
 interface ContainerNodeRowProps {
   container: FlexContainerNode;
+  parentContainer?: FlexContainerNode | null;
   depth: number;
   selectedNodeId: string | null;
   activeContainerId?: string;
@@ -86,6 +87,7 @@ interface ContainerNodeRowProps {
 
 function ContainerNodeRow({
   container,
+  parentContainer,
   depth,
   selectedNodeId,
   activeContainerId,
@@ -239,10 +241,12 @@ function ContainerNodeRow({
       {/* Container Flyout Action Menu */}
       <TemplateContainerActionMenu
         container={container}
+        parentContainer={parentContainer}
         menu={menu}
         position="left"
         onUpdateContainer={onUpdateContainer}
         onRemoveContainer={onRemoveContainer}
+        onSelectNode={onSelectNode}
       />
 
       {/* Render Children when Expanded */}
@@ -254,6 +258,7 @@ function ContainerNodeRow({
                 <ContainerNodeRow
                   key={child.id}
                   container={child}
+                  parentContainer={container}
                   depth={depth + 1}
                   selectedNodeId={selectedNodeId}
                   activeContainerId={activeContainerId}
@@ -273,6 +278,7 @@ function ContainerNodeRow({
               <ComponentNodeRow
                 key={child.id}
                 component={child}
+                parentContainer={container}
                 depth={depth + 1}
                 selectedNodeId={selectedNodeId}
                 fields={fields}
@@ -295,6 +301,7 @@ function ContainerNodeRow({
 
 interface ComponentNodeRowProps {
   component: FlexComponentNode;
+  parentContainer?: FlexContainerNode | null;
   depth: number;
   selectedNodeId: string | null;
   fields: FieldDefinition[];
@@ -306,6 +313,7 @@ interface ComponentNodeRowProps {
 
 function ComponentNodeRow({
   component,
+  parentContainer,
   depth,
   selectedNodeId,
   fields,
@@ -428,10 +436,13 @@ function ComponentNodeRow({
       {/* Component Flyout Action Menu */}
       <TemplateComponentActionMenu
         component={component}
+        parentContainer={parentContainer}
+        fields={fields}
         menu={menu}
         position="left"
         onUpdateComponent={onUpdateComponent}
         onRemoveComponent={onRemoveComponent}
+        onSelectNode={onSelectNode}
       />
     </div>
   );
@@ -492,6 +503,7 @@ export default function TemplateHierarchyTree({
     <div className="flex flex-col h-full w-full select-none py-1.5">
       <ContainerNodeRow
         container={root}
+        parentContainer={null}
         depth={0}
         selectedNodeId={selectedNodeId}
         activeContainerId={activeContainerId}

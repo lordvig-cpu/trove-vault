@@ -371,7 +371,7 @@ export default function PrimarySidePanelHeader({
       </div>
 
       {/* Divider */}
-      {hasDockedContent && <hr className="explorer-header-divider" />}
+      <hr className="explorer-header-divider" />
 
       {/* ------------------------------------------------------------------
           ROW 2 & 3: Search Bar, Category Filters & Menus (Explorer Only)
@@ -957,31 +957,56 @@ export default function PrimarySidePanelHeader({
                       data-tab-name={tab}
                       data-tab-index={idx}
                       data-panel-side={position}
+                      type="button"
                       role="tab"
                       aria-selected={isTabActive}
                       title={tabTitle}
                       onClick={() => onTabChange?.(tab === 'explorer' ? 'items' : tab)}
-                      className={`explorer-tab explorer-tab-drop-target group ${
-                        isTabActive
-                          ? 'explorer-tab-active font-bold text-white'
-                          : 'explorer-tab-idle text-muted hover:text-white'
-                      }`}
+                      onPointerDown={(e) => {
+                        if (tab !== 'empty') onStartTabDrag?.(tab, e);
+                      }}
+                      className={`explorer-folder-tab group/tab cursor-grab active:cursor-grabbing ${idx > 0 ? '-ml-3.5' : ''} ${
+                        isThisTabTarget
+                          ? 'explorer-folder-tab-reorder-target z-30'
+                          : isTabActive
+                          ? 'explorer-folder-tab-active z-20'
+                          : 'explorer-folder-tab-idle z-10'
+                      } ${isThisTabDragging ? 'explorer-folder-tab-dragging' : ''}`}
                     >
-                      {/* Drag Handle Gripper Dots */}
-                      <span
-                        onPointerDown={(e) => {
-                          e.stopPropagation();
-                          if (tab !== 'empty') {
-                            onStartTabDrag?.(tab as Exclude<DockContent, 'empty'>, e);
-                          }
-                        }}
-                        className="explorer-tab-grip cursor-grab active:cursor-grabbing mr-1 opacity-40 hover:opacity-100 text-[10px] select-none tracking-tighter"
-                        title="Drag to undock or move tab"
-                        aria-label="Drag to undock or move tab"
+                      <svg
+                        className="absolute inset-0 w-full h-full pointer-events-none"
+                        viewBox="0 0 100 28"
+                        preserveAspectRatio="none"
                       >
-                        ⋮⋮
+                        <defs>
+                          <linearGradient id={`${headerId}-${tab}`} x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stopColor="var(--explorer-tab-active-top, rgba(18, 94, 158, 1))" className="tab-grad-top" />
+                            <stop offset="45%" stopColor="var(--explorer-tab-active-mid, rgba(10, 64, 112, 1))" className="tab-grad-mid" />
+                            <stop offset="100%" stopColor="var(--explorer-tab-active-bottom, rgba(5, 36, 70, 1))" className="tab-grad-bottom" />
+                          </linearGradient>
+                        </defs>
+                        <path
+                          d="M 0,28 L 8,3 C 9,1 11,0 14,0 L 86,0 C 89,0 91,1 92,3 L 100,28 Z"
+                          className="explorer-tab-svg-fill"
+                          style={isTabActive || isThisTabTarget ? { fill: `url(#${headerId}-${tab})` } : undefined}
+                        />
+                        <path
+                          d="M 0,28 L 8,3 C 9,1 11,0 14,0 L 86,0 C 89,0 91,1 92,3 L 100,28"
+                          className="explorer-tab-svg-stroke"
+                          fill="none"
+                          strokeWidth={isThisTabTarget ? '2' : '1.5'}
+                          vectorEffect="non-scaling-stroke"
+                        />
+                      </svg>
+                      <span className="relative z-10 flex items-center gap-1 px-0.5 select-none">
+                        <span
+                          className="text-[9px] opacity-40 group-hover/tab:opacity-90 transition-opacity tracking-tighter"
+                          aria-hidden="true"
+                        >
+                          ⋮⋮
+                        </span>
+                        <span>{tabLabel}</span>
                       </span>
-                      <span>{tabLabel}</span>
                     </button>
                     {showInsertAfter && (
                       <div className="explorer-tab-insert-marker explorer-tab-insert-marker-right" />

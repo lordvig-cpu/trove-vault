@@ -10,6 +10,7 @@ import {
   FlexJustify,
   LayoutVariant,
 } from '@/types/layout';
+import { FieldDefinition } from '@/types/field';
 import { useExplorerActionMenu } from '@/hooks/useExplorerActionMenu';
 import ExplorerActionMenu, {
   ActionMenuDangerItem,
@@ -41,18 +42,22 @@ const VARIANT_OPTIONS: { variant: LayoutVariant; label: string; icon: string }[]
 
 interface TemplateContainerActionMenuProps {
   container: FlexContainerNode;
+  parentContainer?: FlexContainerNode | null;
   menu: ReturnType<typeof useExplorerActionMenu>;
   position?: 'left' | 'right';
   onUpdateContainer?: (containerId: string, partial: Partial<FlexContainerNode>) => void;
   onRemoveContainer?: (containerId: string) => void;
+  onSelectNode?: (nodeId: string | null) => void;
 }
 
 export function TemplateContainerActionMenu({
   container,
+  parentContainer,
   menu,
   position = 'left',
   onUpdateContainer,
   onRemoveContainer,
+  onSelectNode,
 }: TemplateContainerActionMenuProps) {
   const isRoot = container.id === 'root-container';
   const defaultLabel = isRoot ? 'Body' : container.label || 'Container';
@@ -261,6 +266,42 @@ export function TemplateContainerActionMenu({
             />
           </>
         )}
+
+        {/* Parent Container Reference */}
+        {parentContainer && (
+          <div className="pt-2 border-t border-subtle flex items-center justify-between">
+            <span className="text-[10px] font-bold text-muted uppercase tracking-wider">
+              Parent Container
+            </span>
+            {onSelectNode ? (
+              <button
+                type="button"
+                onClick={() => {
+                  onSelectNode(parentContainer.id);
+                  menu.closeMenu();
+                }}
+                className="text-xs font-semibold text-[var(--primary-accent)] hover:underline flex items-center gap-1 cursor-pointer"
+                title={`Select parent container: ${parentContainer.id === 'root-container' ? 'Body' : parentContainer.label || 'Container'}`}
+              >
+                <span>⬆️</span>
+                <span>
+                  {parentContainer.id === 'root-container'
+                    ? 'Body'
+                    : parentContainer.label || 'Container'}
+                </span>
+              </button>
+            ) : (
+              <span className="text-xs font-semibold text-[var(--primary-accent)] flex items-center gap-1">
+                <span>⬆️</span>
+                <span>
+                  {parentContainer.id === 'root-container'
+                    ? 'Body'
+                    : parentContainer.label || 'Container'}
+                </span>
+              </span>
+            )}
+          </div>
+        )}
       </div>
     </ExplorerActionMenu>
   );
@@ -272,18 +313,24 @@ export function TemplateContainerActionMenu({
 
 interface TemplateComponentActionMenuProps {
   component: FlexComponentNode;
+  parentContainer?: FlexContainerNode | null;
+  fields?: FieldDefinition[];
   menu: ReturnType<typeof useExplorerActionMenu>;
   position?: 'left' | 'right';
   onUpdateComponent?: (componentId: string, partial: Partial<FlexComponentNode>) => void;
   onRemoveComponent?: (componentId: string) => void;
+  onSelectNode?: (nodeId: string | null) => void;
 }
 
 export function TemplateComponentActionMenu({
   component,
+  parentContainer,
+  fields,
   menu,
   position = 'left',
   onUpdateComponent,
   onRemoveComponent,
+  onSelectNode,
 }: TemplateComponentActionMenuProps) {
   const [label, setLabel] = useState(component.label || '');
 
@@ -348,6 +395,48 @@ export function TemplateComponentActionMenu({
           </span>
         </div>
 
+        {/* Flex Sizing Behavior */}
+        <div className="flex flex-col gap-1">
+          <label className="text-[10px] font-bold text-muted uppercase tracking-wider">
+            Flex Sizing
+          </label>
+          <div className="grid grid-cols-3 gap-1">
+            <button
+              type="button"
+              onClick={() => onUpdateComponent?.(component.id, { sizing: { type: 'fill' } })}
+              className={`py-1 px-1.5 rounded-md text-[10.5px] font-semibold border transition cursor-pointer text-center ${
+                (component.sizing?.type || 'fill') === 'fill'
+                  ? 'bg-[color-mix(in_oklch,var(--primary-accent)_30%,transparent)] text-white border-[var(--primary-accent)] shadow-sm'
+                  : 'bg-surface-secondary text-muted border-subtle hover:text-white'
+              }`}
+            >
+              Fill
+            </button>
+            <button
+              type="button"
+              onClick={() => onUpdateComponent?.(component.id, { sizing: { type: 'auto' } })}
+              className={`py-1 px-1.5 rounded-md text-[10.5px] font-semibold border transition cursor-pointer text-center ${
+                component.sizing?.type === 'auto'
+                  ? 'bg-[color-mix(in_oklch,var(--primary-accent)_30%,transparent)] text-white border-[var(--primary-accent)] shadow-sm'
+                  : 'bg-surface-secondary text-muted border-subtle hover:text-white'
+              }`}
+            >
+              Auto
+            </button>
+            <button
+              type="button"
+              onClick={() => onUpdateComponent?.(component.id, { sizing: { type: 'fixed', value: '160px' } })}
+              className={`py-1 px-1.5 rounded-md text-[10.5px] font-semibold border transition cursor-pointer text-center ${
+                component.sizing?.type === 'fixed'
+                  ? 'bg-[color-mix(in_oklch,var(--primary-accent)_30%,transparent)] text-white border-[var(--primary-accent)] shadow-sm'
+                  : 'bg-surface-secondary text-muted border-subtle hover:text-white'
+              }`}
+            >
+              Fixed
+            </button>
+          </div>
+        </div>
+
         {/* Layout Variant Selector */}
         <div className="flex flex-col gap-1">
           <label className="text-[10px] font-bold text-muted uppercase tracking-wider">
@@ -372,6 +461,34 @@ export function TemplateComponentActionMenu({
           </div>
         </div>
 
+        {/* Bound Schema Field Selector (if field type) */}
+        {component.componentType === 'field' && fields && fields.length > 0 && (
+          <div className="flex flex-col gap-1">
+            <label className="text-[10px] font-bold text-muted uppercase tracking-wider">
+              Bound Schema Field
+            </label>
+            <select
+              value={component.field_id || ''}
+              onChange={(e) => {
+                const val = Number(e.target.value);
+                const f = fields.find((item) => item.id === val);
+                onUpdateComponent?.(component.id, {
+                  field_id: val || null,
+                  label: f ? f.label : component.label,
+                });
+              }}
+              className="px-2 py-1 text-xs bg-surface-secondary border border-subtle rounded-lg text-strong focus:outline-none focus:border-[var(--primary-accent)]"
+            >
+              <option value="">-- Select Field --</option>
+              {fields.map((f) => (
+                <option key={f.id} value={f.id}>
+                  {f.label} ({f.field_type})
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
+
         {/* Delete Component Action */}
         {onRemoveComponent && (
           <>
@@ -386,6 +503,42 @@ export function TemplateComponentActionMenu({
               }}
             />
           </>
+        )}
+
+        {/* Parent Container Reference */}
+        {parentContainer && (
+          <div className="pt-2 border-t border-subtle flex items-center justify-between">
+            <span className="text-[10px] font-bold text-muted uppercase tracking-wider">
+              Parent Container
+            </span>
+            {onSelectNode ? (
+              <button
+                type="button"
+                onClick={() => {
+                  onSelectNode(parentContainer.id);
+                  menu.closeMenu();
+                }}
+                className="text-xs font-semibold text-[var(--primary-accent)] hover:underline flex items-center gap-1 cursor-pointer"
+                title={`Select parent container: ${parentContainer.id === 'root-container' ? 'Body' : parentContainer.label || 'Container'}`}
+              >
+                <span>⬆️</span>
+                <span>
+                  {parentContainer.id === 'root-container'
+                    ? 'Body'
+                    : parentContainer.label || 'Container'}
+                </span>
+              </button>
+            ) : (
+              <span className="text-xs font-semibold text-[var(--primary-accent)] flex items-center gap-1">
+                <span>⬆️</span>
+                <span>
+                  {parentContainer.id === 'root-container'
+                    ? 'Body'
+                    : parentContainer.label || 'Container'}
+                </span>
+              </span>
+            )}
+          </div>
         )}
       </div>
     </ExplorerActionMenu>

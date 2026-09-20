@@ -249,7 +249,7 @@ test.describe('Template Layout Engine & Grid System', () => {
     expect(isDockZoneAllowed('template_hierarchy', 'bottom')).toBe(false);
   });
 
-  test('displays paper folder tabs in both Structure (left) and Inspector/Properties (right) panels during template editing', async ({ page }) => {
+  test('displays paper folder tabs in both Structure (left) and Inspector (right) panels during template editing', async ({ page }) => {
     await page.goto('/');
     await page.waitForLoadState('networkidle');
 
@@ -272,23 +272,14 @@ test.describe('Template Layout Engine & Grid System', () => {
     const leftHeading = page.locator('.primary-side-panel .explorer-section-heading h3');
     await expect(leftHeading).toContainText('Layout & Content');
 
-    // 2. Inspector and Properties tabs in right panel
+    // 2. Only Inspector tab in right panel (Properties tab has been safely removed)
     const rightTabs = page.locator('.secondary-side-panel button[role="tab"]');
-    await expect(rightTabs).toHaveCount(2);
+    await expect(rightTabs).toHaveCount(1);
     await expect(rightTabs.nth(0)).toContainText('Inspector');
-    await expect(rightTabs.nth(1)).toContainText('Properties');
-
-    // 3. Switch between tabs
-    await rightTabs.nth(1).click();
-    await page.waitForTimeout(400);
-    await expect(rightTabs.nth(1)).toHaveAttribute('aria-selected', 'true');
-
-    await rightTabs.nth(0).click();
-    await page.waitForTimeout(400);
     await expect(rightTabs.nth(0)).toHaveAttribute('aria-selected', 'true');
   });
 
-  test('hides watermark and enables structure tree gear flyout properties menu in template editing mode', async ({ page }) => {
+  test('hides watermark and enables structure tree gear flyout properties menu with Parent Container label', async ({ page }) => {
     await page.goto('/');
     await page.waitForLoadState('networkidle');
 
@@ -309,30 +300,25 @@ test.describe('Template Layout Engine & Grid System', () => {
     // 1. Watermark is hidden during template editing
     await expect(page.locator('.watermark-logo-image')).toHaveCount(0);
 
-    // 2. Structure tree has matching gear action trigger
+    // 2. Structure tree has matching gear action triggers
     const structureGears = page.locator('.primary-side-panel [aria-label*="actions"]');
     const gearCount = await structureGears.count();
-    expect(gearCount).toBeGreaterThan(0);
+    expect(gearCount).toBeGreaterThan(1);
 
-    // Check that gear trigger has standard tree-gear-trigger class
-    const firstGear = structureGears.first();
-    await expect(firstGear).toHaveClass(/tree-gear-trigger/);
-
-    // 3. Click gear to open contextual action menu flyout
-    await firstGear.click();
+    // Click child container gear (nth(1)) to verify Parent Container label
+    const childGear = structureGears.nth(1);
+    await childGear.click();
     await page.waitForTimeout(500);
 
-    // Action menu flyout is rendered with properties
+    // Action menu flyout is rendered with properties including Parent Container
     const actionMenu = page.locator('[data-explorer-menu]').first();
     await expect(actionMenu).toBeVisible();
-    await expect(actionMenu).toContainText('Container Name');
+    await expect(actionMenu).toContainText('Parent Container');
     await expect(actionMenu).toContainText('Flex Flow Direction');
-    await expect(actionMenu).toContainText('Child Item Gap');
-    await expect(actionMenu).toContainText('Card Frame Style');
 
-    // Take screenshot showing the matching gear and open flyout menu
+    // Take screenshot showing the matching gear and open flyout menu with Parent Container
     await page.screenshot({
-      path: 'C:/Users/mc_cl/.gemini/antigravity/brain/31bae76a-fe56-4a8b-b91e-7d916ddebf78/template_editor_oklch_gear_flyout.png',
+      path: 'C:/Users/mc_cl/.gemini/antigravity/brain/31bae76a-fe56-4a8b-b91e-7d916ddebf78/template_structure_parent_container_menu.png',
       fullPage: true,
     });
   });
@@ -362,11 +348,61 @@ test.describe('Template Layout Engine & Grid System', () => {
     const sectionHeadings = primaryPanel.locator('.explorer-section-heading');
     await expect(sectionHeadings).toHaveCount(0);
 
-    // Take screenshot of empty side panel for visual verification
+    // Also toggle open the Bottom Panel to verify both empty panel headers match
+    const toggleBottomBtn = page.locator('button[aria-label="Show Bottom Panel"]');
+    await toggleBottomBtn.click();
+    await page.waitForTimeout(600);
+
+    const bottomPanel = page.locator('.bottom-side-panel');
+    await expect(bottomPanel).toBeVisible();
+    await expect(bottomPanel).toContainText(/BOTTOM PANEL is empty/i);
+
+    // Take screenshot of both empty panels for visual verification
     await page.screenshot({
-      path: 'C:/Users/mc_cl/.gemini/antigravity/brain/31bae76a-fe56-4a8b-b91e-7d916ddebf78/empty_primary_side_panel_no_phantom_tabs.png',
+      path: 'C:/Users/mc_cl/.gemini/antigravity/brain/31bae76a-fe56-4a8b-b91e-7d916ddebf78/empty_panels_matching_headers.png',
+      fullPage: true,
+    });
+  });
+
+  test('renders paper folder tab SVG on docked side panels for Items and Collections', async ({ page }) => {
+    await page.goto('/');
+    await page.waitForLoadState('networkidle');
+
+    // Open Items flyout and dock to left
+    const itemsNavBtn = page.getByRole('button', { name: 'Open Items or drag to dock in a sidebar', exact: true });
+    await itemsNavBtn.click();
+    await page.waitForTimeout(400);
+
+    const dockLeftBtn = page.locator('button[aria-label="Dock Items to Left"]');
+    await dockLeftBtn.click();
+    await page.waitForTimeout(500);
+
+    // Open Collections flyout and dock to right
+    const collectionsNavBtn = page.getByRole('button', { name: 'Open Collections or drag to dock in a sidebar', exact: true });
+    await collectionsNavBtn.click();
+    await page.waitForTimeout(400);
+
+    const dockRightBtn = page.locator('button[aria-label="Dock Collections to Right"]');
+    await dockRightBtn.click();
+    await page.waitForTimeout(500);
+
+    // Verify paper folder tabs are rendered with SVG paths
+    const leftTab = page.locator('.primary-side-panel .explorer-folder-tab');
+    await expect(leftTab).toBeVisible();
+    await expect(leftTab.locator('svg path.explorer-tab-svg-fill')).toHaveCount(1);
+    await expect(leftTab).toContainText('Items');
+
+    const rightTab = page.locator('.secondary-side-panel .explorer-folder-tab');
+    await expect(rightTab).toBeVisible();
+    await expect(rightTab.locator('svg path.explorer-tab-svg-fill')).toHaveCount(1);
+    await expect(rightTab).toContainText('Collections');
+
+    // Screenshot matching user media_1789920140123.png
+    await page.screenshot({
+      path: 'C:/Users/mc_cl/.gemini/antigravity/brain/31bae76a-fe56-4a8b-b91e-7d916ddebf78/side_panels_paper_folder_tabs_restored.png',
       fullPage: true,
     });
   });
 });
+
 

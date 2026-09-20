@@ -282,9 +282,9 @@ export function useTemplateEditor({
         onOpenPrimaryPanel(['template_hierarchy'], 'template_hierarchy');
       }
 
-      // 3. Open right panel with Template Inspector & Properties
+      // 3. Open right panel with Template Inspector
       if (onOpenSecondaryPanel) {
-        onOpenSecondaryPanel(['template_editor', 'template_properties'], 'template_editor');
+        onOpenSecondaryPanel(['template_editor'], 'template_editor');
       }
 
       // 4. Open bottom panel with Builder (Layout & Components tabs)
