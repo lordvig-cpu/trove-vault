@@ -28,7 +28,7 @@ interface TemplateFieldInspectorProps {
   error?: string | null;
   successMsg?: string | null;
   position?: 'left' | 'right';
-  placedFieldIds?: Set<number> | number[];
+  placedFieldIds?: Set<number>;
   onPlaceField?: (fieldId: number) => void;
 }
 
@@ -321,8 +321,7 @@ export default function TemplateFieldInspector({
 
   const unplacedFields = useMemo(() => {
     if (!placedFieldIds) return [];
-    const set = placedFieldIds instanceof Set ? placedFieldIds : new Set(placedFieldIds);
-    return fields.filter((f) => !set.has(f.id));
+    return fields.filter((f) => !placedFieldIds.has(f.id));
   }, [fields, placedFieldIds]);
 
   // Filtered Fields according to query & type filter
