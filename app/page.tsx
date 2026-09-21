@@ -1443,7 +1443,7 @@ export default function Home() {
               activeContainerId={templateEditor.activeContainerId}
               onSelectNode={handleOpenProperties}
               onAddPrimitive={templateEditor.addFlexPrimitive}
-              onAddFlexContainer={templateEditor.addFlexContainer}
+              onAddFlexContainer={handleAddContainer}
               onInsertFlexContainerSibling={templateEditor.insertFlexContainerSibling}
               onUpdateFlexContainer={templateEditor.updateFlexContainer}
               onRemoveFlexContainer={templateEditor.removeFlexContainer}
