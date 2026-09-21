@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { supabase } from '@/lib/supabase';
 import { ItemTemplate } from '@/types/template';
 import { FieldDefinition, FieldType } from '@/types/field';
@@ -122,64 +122,83 @@ export function useTemplateEditor({
   const tabSnapshotRef = useRef<WorkspaceTabSnapshot | null>(null);
 
   /**
-   * Save layout configuration to state, localStorage, and attempt remote save
+   * Layout persistence. The browser copy (localStorage) is written on every change so a refresh
+   * never loses work. The remote copy is debounced: a resize drag or a burst of edits sends ONE
+   * request after things settle, not one per mouse move.
    */
-  const saveLayoutConfig = useCallback(
-    async (nextLayout: TemplateLayoutConfig) => {
-      setLayoutConfigState(nextLayout);
-      if (editingTemplateId) {
-        if (typeof window !== 'undefined') {
-          try {
-            localStorage.setItem(
-              `trovevault_template_layout_${editingTemplateId}`,
-              JSON.stringify(nextLayout)
-            );
-          } catch (e) {
-            console.warn('Could not cache layout in localStorage:', e);
-          }
-        }
+  const REMOTE_SAVE_DELAY_MS = 800;
+  const remoteSaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const remoteSavePending = useRef<{ id: number; layout: unknown } | null>(null);
+  const remoteSaveWarned = useRef(false);
 
-        // Attempt remote save in Supabase if column is available
+  const flushRemoteSave = useCallback(async () => {
+    if (remoteSaveTimer.current) {
+      clearTimeout(remoteSaveTimer.current);
+      remoteSaveTimer.current = null;
+    }
+    const pending = remoteSavePending.current;
+    if (!pending) return;
+    remoteSavePending.current = null;
+    try {
+      const { error } = await supabase
+        .from('item_templates')
+        .update({ layout_config: pending.layout } as any)
+        .eq('id', pending.id);
+      // Warn once per session so a missing layout_config column is visible, not silent
+      if (error && !remoteSaveWarned.current) {
+        remoteSaveWarned.current = true;
+        console.warn('Template layout was not saved to the database (kept in this browser only):', error.message);
+      }
+    } catch {
+      // Non-fatal: the browser copy is still saved
+    }
+  }, []);
+
+  const persistLayout = useCallback(
+    (templateId: number, layout: unknown) => {
+      if (typeof window !== 'undefined') {
         try {
-          await supabase
-            .from('item_templates')
-            .update({ layout_config: nextLayout } as any)
-            .eq('id', editingTemplateId);
-        } catch {
-          // Non-fatal if column does not yet exist
+          localStorage.setItem(`trovevault_template_layout_${templateId}`, JSON.stringify(layout));
+        } catch (e) {
+          console.warn('Could not cache layout in localStorage:', e);
         }
       }
+      remoteSavePending.current = { id: templateId, layout };
+      if (remoteSaveTimer.current) clearTimeout(remoteSaveTimer.current);
+      remoteSaveTimer.current = setTimeout(() => {
+        void flushRemoteSave();
+      }, REMOTE_SAVE_DELAY_MS);
     },
-    [editingTemplateId]
+    [flushRemoteSave]
+  );
+
+  // Send any pending remote save when the page is hidden or closed
+  useEffect(() => {
+    const flush = () => {
+      void flushRemoteSave();
+    };
+    window.addEventListener('pagehide', flush);
+    return () => {
+      window.removeEventListener('pagehide', flush);
+      flush();
+    };
+  }, [flushRemoteSave]);
+
+  const saveLayoutConfig = useCallback(
+    (nextLayout: TemplateLayoutConfig) => {
+      setLayoutConfigState(nextLayout);
+      if (editingTemplateId) persistLayout(editingTemplateId, nextLayout);
+    },
+    [editingTemplateId, persistLayout]
   );
 
   const saveFlexLayoutConfig = useCallback(
-    async (nextFlex: TemplateFlexLayoutConfig) => {
+    (nextFlex: TemplateFlexLayoutConfig) => {
       setFlexLayoutConfigState(nextFlex);
       setLayoutConfigState(nextFlex as any);
-      if (editingTemplateId) {
-        if (typeof window !== 'undefined') {
-          try {
-            localStorage.setItem(
-              `trovevault_template_layout_${editingTemplateId}`,
-              JSON.stringify(nextFlex)
-            );
-          } catch (e) {
-            console.warn('Could not cache layout in localStorage:', e);
-          }
-        }
-
-        try {
-          await supabase
-            .from('item_templates')
-            .update({ layout_config: nextFlex } as any)
-            .eq('id', editingTemplateId);
-        } catch {
-          // Non-fatal
-        }
-      }
+      if (editingTemplateId) persistLayout(editingTemplateId, nextFlex);
     },
-    [editingTemplateId]
+    [editingTemplateId, persistLayout]
   );
 
   /**
