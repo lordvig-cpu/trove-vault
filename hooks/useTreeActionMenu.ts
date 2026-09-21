@@ -10,20 +10,20 @@ import { useState, useRef, useId, useCallback, useEffect } from 'react';
  * Window-level CustomEvent broadcast whenever any tree gear icon is triggered.
  * Enforces mutual exclusion so only one action menu remains open across the DOM.
  */
-const GLOBAL_MENU_OPEN_EVENT = 'explorer-action-menu-open';
+const GLOBAL_MENU_OPEN_EVENT = 'tree-action-menu-open';
 
 /* ==========================================================================
-   2. CUSTOM HOOK: useExplorerActionMenu
+   2. CUSTOM HOOK: useTreeActionMenu
    ========================================================================== */
 
 /**
  * Manages positioning physics, mutual exclusivity, hover grace periods,
- * and inline rename expansion states for ExplorerActionMenu portals.
+ * and inline rename expansion states for TreeActionMenu portals.
  *
  * @param id - Unique identifier representing the category, collection, or item instance
  * @param defaultMenuHeight - Base menu height (px) used to calculate upward clamping
  */
-export function useExplorerActionMenu(
+export function useTreeActionMenu(
   rowId: string,
   defaultMenuHeight: number = 215,
   position: 'left' | 'right' = 'left',
@@ -199,11 +199,11 @@ export function useExplorerActionMenu(
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
     timeoutRef.current = setTimeout(() => {
       const focused = document.activeElement;
-      if (focused === activeTargetElRef.current || (focused instanceof HTMLElement && focused.closest('[data-explorer-menu]'))) return;
+      if (focused === activeTargetElRef.current || (focused instanceof HTMLElement && focused.closest('[data-tree-menu]'))) return;
       setIsMenuOpen(false);
       setIsRenaming(false);
       window.dispatchEvent(
-        new CustomEvent('explorer-action-menu-close', { detail: id })
+        new CustomEvent('tree-action-menu-close', { detail: id })
       );
     }, 350);
   }, [isRenaming, id]);
@@ -216,7 +216,7 @@ export function useExplorerActionMenu(
     setIsMenuOpen(false);
     setIsRenaming(false);
     window.dispatchEvent(
-      new CustomEvent('explorer-action-menu-close', { detail: id })
+      new CustomEvent('tree-action-menu-close', { detail: id })
     );
   }, [id]);
 
@@ -225,7 +225,7 @@ export function useExplorerActionMenu(
     event.preventDefault();
     event.stopPropagation();
     handleGearMouseEnter(event);
-    requestAnimationFrame(() => document.querySelector<HTMLElement>('[data-explorer-menu]:not([inert]) button')?.focus());
+    requestAnimationFrame(() => document.querySelector<HTMLElement>('[data-tree-menu]:not([inert]) button')?.focus());
   }, [handleGearMouseEnter]);
 
   useEffect(() => {
@@ -240,7 +240,7 @@ export function useExplorerActionMenu(
       const target = e.target as HTMLElement | null;
       if (!target) return;
       if (
-        target.closest('[data-explorer-menu]') ||
+        target.closest('[data-tree-menu]') ||
         target.closest('[data-gear-trigger]') ||
         target === activeTargetElRef.current ||
         activeTargetElRef.current?.contains(target)

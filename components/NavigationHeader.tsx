@@ -29,8 +29,8 @@ interface NavigationHeaderProps {
   onTogglePrimarySidePanel?: () => void;
   unpinnedPrimaryPanel?: React.ReactNode;
   onAddNewItem?: () => void;
-  onStartExplorerDrag?: (e: React.PointerEvent) => void;
-  explorerDockedSide?: 'left' | 'right' | null;
+  onStartItemsDrag?: (e: React.PointerEvent) => void;
+  itemsDockedSide?: 'left' | 'right' | null;
   collectionsDockedSide?: 'left' | 'right' | null;
   isCollectionsOpen?: boolean;
   onToggleCollections?: () => void;
@@ -46,12 +46,12 @@ interface NavigationHeaderProps {
   // Backward-compatibility aliases
   isLeftSidePanelOpen?: boolean;
   onToggleLeftSidePanel?: () => void;
-  unpinnedExplorerPanel?: React.ReactNode;
+  unpinnedItemsPanel?: React.ReactNode;
 }
 
 /* ==========================================================================
    2. MAIN COMPONENT: NavigationHeader
-   Fixed top navigation bar (h-14) hosting branding, the Explorer toggle tab,
+   Fixed top navigation bar (h-14) hosting branding, the Items toggle tab,
    the collection switcher, and live database status indicators.
    ========================================================================== */
 
@@ -60,8 +60,8 @@ export default function NavigationHeader({
   isPrimarySidePanelOpen,
   onTogglePrimarySidePanel,
   unpinnedPrimaryPanel,
-  onStartExplorerDrag,
-  explorerDockedSide = null,
+  onStartItemsDrag,
+  itemsDockedSide = null,
   collectionsDockedSide = null,
   isCollectionsOpen = false,
   onToggleCollections,
@@ -75,7 +75,7 @@ export default function NavigationHeader({
   onStartGrabbedContentDrag,
   isLeftSidePanelOpen,
   onToggleLeftSidePanel,
-  unpinnedExplorerPanel,
+  unpinnedItemsPanel,
 }: NavigationHeaderProps) {
   /* ------------------------------------------------------------------------
      2.1 CONTEXT & ACTIVE TAB EVALUATION
@@ -84,10 +84,10 @@ export default function NavigationHeader({
 
   const effectiveIsOpen = isPrimarySidePanelOpen ?? isLeftSidePanelOpen ?? false;
   const effectiveToggle = onTogglePrimarySidePanel ?? onToggleLeftSidePanel ?? (() => {});
-  const effectiveUnpinnedPanel = unpinnedPrimaryPanel ?? unpinnedExplorerPanel;
+  const effectiveUnpinnedPanel = unpinnedPrimaryPanel ?? unpinnedItemsPanel;
 
   const treePanels = [
-    { name: 'Items', dockedSide: explorerDockedSide, isOpen: effectiveIsOpen, toggle: effectiveToggle, drag: onStartExplorerDrag, flyout: effectiveUnpinnedPanel },
+    { name: 'Items', dockedSide: itemsDockedSide, isOpen: effectiveIsOpen, toggle: effectiveToggle, drag: onStartItemsDrag, flyout: effectiveUnpinnedPanel },
     { name: 'Collections', dockedSide: collectionsDockedSide, isOpen: isCollectionsOpen, toggle: onToggleCollections, drag: onStartCollectionsDrag, flyout: collectionsFlyoutPanel },
     { name: 'Templates', dockedSide: templatesDockedSide, isOpen: isTemplatesOpen, toggle: onToggleTemplates, drag: onStartTemplatesDrag, flyout: templatesFlyoutPanel },
   ];
@@ -150,7 +150,7 @@ export default function NavigationHeader({
                         <span key={index} className="w-[2px] h-[2px] rounded-full bg-current" />
                       ))}
                     </span>
-                    <span className="explorer-header-title relative">
+                    <span className="tree-header-title relative">
                       <span className="tracking-wider">{panel.name}</span>
                       <span
                         className={[
@@ -227,7 +227,7 @@ export default function NavigationHeader({
                         <span key={index} className="w-[2px] h-[2px] rounded-full bg-current" />
                       ))}
                     </span>
-                    <span className="explorer-header-title relative">
+                    <span className="tree-header-title relative">
                       <span className="tracking-wider">{panel.name}</span>
                       <span
                         className={[

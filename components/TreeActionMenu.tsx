@@ -3,16 +3,16 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { usePresence } from '@/hooks/usePresence';
 import { createPortal } from 'react-dom';
-import '@/app/styles/components/ExplorerActionMenu.css';
+import '@/app/styles/components/TreeActionMenu.css';
 import { useUIPreferences } from '@/context/UIPreferencesContext';
-import { useExplorerPanel } from '@/context/ExplorerPanelContext';
+import { useTreePanel } from '@/context/TreePanelContext';
 
 /* --------------------------------------------------------------------------
   ACTION MENU CONTRACT
   The parent tree row owns menu state and coordinates. This component owns
   rendering, portal mounting, positioning offsets, and open/close animation.
   -------------------------------------------------------------------------- */
-interface ExplorerActionMenuProps {
+interface TreeActionMenuProps {
   isOpen: boolean;
   onMouseEnter: () => void;
   onMouseLeave: () => void;
@@ -25,7 +25,7 @@ interface ExplorerActionMenuProps {
   children: React.ReactNode;
 }
 
-export default function ExplorerActionMenu({
+export default function TreeActionMenu({
   isOpen,
   onMouseEnter,
   onMouseLeave,
@@ -36,9 +36,9 @@ export default function ExplorerActionMenu({
   position,
   className,
   children,
-}: ExplorerActionMenuProps) {
+}: TreeActionMenuProps) {
   const { animationsEnabled, isPinned: primaryPinned } = useUIPreferences();
-  const panel = useExplorerPanel();
+  const panel = useTreePanel();
   const isPinned = panel?.isPinned ?? primaryPinned;
   const effectivePosition = position ?? 'left';
 
@@ -88,7 +88,7 @@ export default function ExplorerActionMenu({
   return createPortal(
     <div
       ref={menuRef}
-      data-explorer-menu
+      data-tree-menu
       inert={!isOpen}
       aria-hidden={!isOpen}
       onFocus={onMouseEnter}

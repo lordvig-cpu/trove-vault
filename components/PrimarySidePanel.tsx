@@ -13,7 +13,7 @@ import {
   ChevronLeftIcon,
   ChevronRightIcon,
 } from '@/components/icons/PanelIcons';
-import { ExplorerTab } from '@/lib/filterExplorerForest';
+import { TreeTab } from '@/lib/filterTreeForest';
 import { PrimarySidebarPosition } from '@/types/layout';
 import EmptyPanelDropZone from '@/components/EmptyPanelDropZone';
 import PanelContentTransition from '@/components/PanelContentTransition';
@@ -39,8 +39,8 @@ interface PrimarySidePanelProps {
   onOpen?: () => void;
   onClose: () => void;
   onTogglePin?: () => void;
-  treeView?: ExplorerTab;
-  activeTab?: ExplorerTab | DockContent;
+  treeView?: TreeTab;
+  activeTab?: TreeTab | DockContent;
   onTabChange?: (tab: any) => void;
   tabs?: DockContent[];
   isAnyCategoryExpanded?: boolean;
@@ -398,7 +398,7 @@ export default function PrimarySidePanel({
       </button>
 
       {/* --------------------------------------------------------------------
-          4.3 DOCKED PRIMARY EXPLORER PANEL CONTAINER
+          4.3 DOCKED PRIMARY TREE PANEL CONTAINER
           -------------------------------------------------------------------- */}
       <aside
         inert={!isOpen}

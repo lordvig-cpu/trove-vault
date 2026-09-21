@@ -3,16 +3,16 @@
 import React, { useState, useEffect } from 'react';
 import { ItemTemplate } from '@/types/template';
 import { FieldType } from '@/types/field';
-import { useExplorerActionMenu } from '@/hooks/useExplorerActionMenu';
-import ExplorerActionMenu, {
+import { useTreeActionMenu } from '@/hooks/useTreeActionMenu';
+import TreeActionMenu, {
   ActionMenuDangerItem,
   ActionMenuDivider,
   ActionMenuItem,
-} from '@/components/ExplorerActionMenu';
+} from '@/components/TreeActionMenu';
 
 interface TemplateRootActionMenuProps {
   template: ItemTemplate;
-  menu: ReturnType<typeof useExplorerActionMenu>;
+  menu: ReturnType<typeof useTreeActionMenu>;
   position?: 'left' | 'right';
   onUpdateMeta: (name: string, description: string | null, icon: string) => Promise<void> | void;
   onAddField: (type?: FieldType) => Promise<void> | void;
@@ -54,7 +54,7 @@ export default function TemplateRootActionMenu({
   };
 
   return (
-    <ExplorerActionMenu
+    <TreeActionMenu
       isOpen={menu.isMenuOpen}
       onMouseEnter={menu.handleMenuMouseEnter}
       onMouseLeave={menu.handleMouseLeave}
@@ -157,7 +157,7 @@ export default function TemplateRootActionMenu({
           />
         </>
       )}
-    </ExplorerActionMenu>
+    </TreeActionMenu>
   );
 }
 

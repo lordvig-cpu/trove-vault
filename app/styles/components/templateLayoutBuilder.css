@@ -149,9 +149,9 @@
     radial-gradient(ellipse 90% 140% at 50% 0%,
       color-mix(in oklch, var(--secondary-accent) 38%, transparent) 0%,
       transparent 75%),
-    var(--secondary-explorer-menu-header-bg),
-    var(--secondary-explorer-menu-shell-bg);
-  border: 1.5px solid var(--secondary-explorer-menu-shell-border);
+    var(--secondary-tree-menu-header-bg),
+    var(--secondary-tree-menu-shell-bg);
+  border: 1.5px solid var(--secondary-tree-menu-shell-border);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
 }
@@ -160,18 +160,18 @@
 .tmpl-edge-panel.tmpl-edge-menu {
   background:
     linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
-    var(--secondary-explorer-menu-shell-bg);
+    var(--secondary-tree-menu-shell-bg);
 }
 
-/* The explorer checkbox style, in the editor bar's light blue instead of yellow */
-.explorer-filter-checkbox.tmpl-blue-check {
+/* The tree checkbox style, in the editor bar's light blue instead of yellow */
+.tree-filter-checkbox.tmpl-blue-check {
   border-color: color-mix(in oklch, var(--primary-accent) 35%, cyan);
   color: color-mix(in oklch, var(--primary-accent) 35%, cyan);
   accent-color: color-mix(in oklch, var(--primary-accent) 35%, cyan);
 }
 
-.explorer-filter-checkbox.tmpl-blue-check:hover,
-.explorer-filter-checkbox.tmpl-blue-check:focus {
+.tree-filter-checkbox.tmpl-blue-check:hover,
+.tree-filter-checkbox.tmpl-blue-check:focus {
   border-color: white;
   box-shadow: none;
 }

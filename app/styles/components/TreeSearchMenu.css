@@ -1,9 +1,9 @@
 /* ==========================================================================
-   EXPLORER ADVANCED SEARCH DROPDOWN MENU
+   TREE ADVANCED SEARCH DROPDOWN MENU
    Dropdown portal anchored below the PrimarySidePanel search header.
    ========================================================================== */
 
-/* Smooth horizontal slide-in matching ExplorerActionMenu (Left dock) */
+/* Smooth horizontal slide-in matching TreeActionMenu (Left dock) */
 @keyframes searchMenuSlideIn {
     0% {
         opacity: 0;
@@ -29,7 +29,7 @@
     }
 }
 
-/* Smooth horizontal slide-in matching ExplorerActionMenu (Right dock) */
+/* Smooth horizontal slide-in matching TreeActionMenu (Right dock) */
 @keyframes searchMenuSlideInRight {
     0% {
         opacity: 0;
@@ -83,9 +83,9 @@
 .searchMenuShell {
     width: 17.5rem;
     /* ~280px to comfortably fit selects & labels */
-    background: var(--secondary-explorer-menu-shell-bg);
-    border: 1.5px solid var(--secondary-explorer-menu-shell-border);
-    box-shadow: var(--explorer-menu-shell-shadow);
+    background: var(--secondary-tree-menu-shell-bg);
+    border: 1.5px solid var(--secondary-tree-menu-shell-border);
+    box-shadow: var(--tree-menu-shell-shadow);
     border-radius: 0.75rem;
     display: flex;
     flex-direction: column;
@@ -113,26 +113,26 @@
     padding-right: 0.75rem;
     padding-top: 0.375rem;
     padding-bottom: 0.375rem;
-    border: 1px solid var(--secondary-explorer-menu-header-border);
+    border: 1px solid var(--secondary-tree-menu-header-border);
     margin-bottom: 0.375rem;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    background: var(--secondary-explorer-menu-header-bg);
+    background: var(--secondary-tree-menu-header-bg);
     border-radius: 0.5rem;
 }
 
 .searchMenuHeaderTitle {
     font-size: 10.5px;
     font-weight: 700;
-    color: var(--secondary-explorer-menu-header-title);
+    color: var(--secondary-tree-menu-header-title);
     text-transform: uppercase;
     letter-spacing: 0.06em;
 }
 
 .searchMenuHeaderIcon {
     font-size: 11px;
-    color: var(--secondary-explorer-menu-header-icon);
+    color: var(--secondary-tree-menu-header-icon);
 }
 
 .searchMenuBody {
@@ -144,7 +144,7 @@
 .searchMenuShell input[type="text"],
 .searchMenuShell input[type="search"],
 .searchMenuShell select {
-    background-color: var(--secondary-explorer-menu-input-bg);
+    background-color: var(--secondary-tree-menu-input-bg);
     border: 1px solid var(--primary-border-input);
     border-radius: 0.375rem;
     padding: 0.25rem 0.5rem;

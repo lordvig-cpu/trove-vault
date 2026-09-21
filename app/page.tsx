@@ -6,7 +6,7 @@ import { ItemRecord } from '@/types/item';
 import { useCollections } from '@/hooks/useCollections';
 import { useModals } from '@/hooks/useModals';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
-import { useExplorerCategories } from '@/hooks/useExplorerCategories';
+import { useTreeCategories } from '@/hooks/useTreeCategories';
 import { usePanelDockDrag, DockablePanelId, DockDropTargetZone, isDockZoneAllowed, DockContent, DockContents } from '@/hooks/usePanelDockDrag';
 import NavigationHeader from '@/components/NavigationHeader';
 import NavigationFooter from '@/components/NavigationFooter';
@@ -16,8 +16,8 @@ import PrimarySidePanelHeader from '@/components/PrimarySidePanelHeader';
 import SecondarySidePanel from '@/components/SecondarySidePanel';
 import BottomPanel from '@/components/BottomPanel';
 import PanelDockDropZones from '@/components/PanelDockDropZones';
-import { ExplorerPanelContext } from '@/context/ExplorerPanelContext';
-import ExplorerContent from '@/components/ExplorerContent';
+import { TreePanelContext } from '@/context/TreePanelContext';
+import TreeContent from '@/components/TreeContent';
 import ModalContainers from '@/components/ModalContainers';
 import DynamicWatermark from '@/components/DynamicWatermark';
 import TemplateFieldInspector from '@/components/TemplateFieldInspector';
@@ -27,8 +27,8 @@ import TemplatePropertiesInspector from '@/components/TemplatePropertiesInspecto
 import TemplateHierarchyTree, { getAllContainerIds, countElements } from '@/components/TemplateHierarchyTree';
 import { FlexContainerNode } from '@/types/layout';
 import { useTemplateEditor } from '@/hooks/useTemplateEditor';
-import { filterExplorerForest, ExplorerTab } from '@/lib/filterExplorerForest';
-import { itemMatchesQuery } from '@/lib/explorerUtils';
+import { filterTreeForest, TreeTab } from '@/lib/filterTreeForest';
+import { itemMatchesQuery } from '@/lib/treeUtils';
 
 /**
  * Whether Edit Template opens and pins the left, right and bottom panels. Off while the editor is
@@ -76,10 +76,10 @@ export default function Home() {
   } = useModals();
 
   /* ------------------------------------------------------------------------
-     3. EXPLORER TABS, FILTERS & TREE STATE
+     3. TREE TABS, FILTERS & TREE STATE
      ------------------------------------------------------------------------ */
-  const activeExplorerTab: ExplorerTab = 'items';
-  const [activeSearchPanel, setActiveSearchPanel] = useState<'explorer' | 'collections' | 'templates'>('explorer');
+  const activeTreeTab: TreeTab = 'items';
+  const [activeSearchPanel, setActiveSearchPanel] = useState<'items' | 'collections' | 'templates'>('items');
   const [collectionsFilterIds, setCollectionsFilterIds] = useState<number[]>([]);
   const [templatesFilterIds, setTemplatesFilterIds] = useState<number[]>([]);
   const [filterCollectionIds, setFilterCollectionIds] = useState<number[]>([]);
@@ -94,14 +94,14 @@ export default function Home() {
     setFilterCollectionIds([]);
   };
 
-  const filteredForest = useMemo(() => filterExplorerForest(
+  const filteredForest = useMemo(() => filterTreeForest(
     unifiedForest,
     filterCollectionIds,
-    activeExplorerTab,
+    activeTreeTab,
     allItems,
     allCollections,
     templates
-  ), [unifiedForest, filterCollectionIds, activeExplorerTab, allItems, allCollections, templates]);
+  ), [unifiedForest, filterCollectionIds, activeTreeTab, allItems, allCollections, templates]);
 
   const {
     searchQuery,
@@ -110,20 +110,20 @@ export default function Home() {
     isAnyCategoryExpanded,
     handleToggleCategory,
     handleToggleAllCategories,
-  } = useExplorerCategories(filteredForest);
+  } = useTreeCategories(filteredForest);
 
-  const collectionsForest = useMemo(() => filterExplorerForest(
+  const collectionsForest = useMemo(() => filterTreeForest(
     unifiedForest, collectionsFilterIds, 'collections', allItems, allCollections, templates
   ), [unifiedForest, collectionsFilterIds, allItems, allCollections, templates]);
-  const collectionsTree = useExplorerCategories(collectionsForest);
+  const collectionsTree = useTreeCategories(collectionsForest);
   const handleToggleCollectionsFilter = (id: number) => {
     setCollectionsFilterIds(prev => prev.includes(id) ? prev.filter(value => value !== id) : [...prev, id]);
   };
 
-  const templatesForest = useMemo(() => filterExplorerForest(
+  const templatesForest = useMemo(() => filterTreeForest(
     unifiedForest, templatesFilterIds, 'templates', allItems, allCollections, templates
   ), [unifiedForest, templatesFilterIds, allItems, allCollections, templates]);
-  const templatesTree = useExplorerCategories(templatesForest, false);
+  const templatesTree = useTreeCategories(templatesForest, false);
   const handleToggleTemplatesFilter = (id: number) => {
     setTemplatesFilterIds(prev => prev.includes(id) ? prev.filter(value => value !== id) : [...prev, id]);
   };
@@ -176,12 +176,12 @@ export default function Home() {
     secondaryActiveTab,
   };
 
-  const handlePrimaryTabChange = useCallback((tab: DockContent | 'items') => {
-    setPrimaryActiveTab(tab === 'items' ? 'explorer' : tab);
+  const handlePrimaryTabChange = useCallback((tab: DockContent) => {
+    setPrimaryActiveTab(tab);
   }, []);
 
-  const handleSecondaryTabChange = useCallback((tab: DockContent | 'items') => {
-    setSecondaryActiveTab(tab === 'items' ? 'explorer' : tab);
+  const handleSecondaryTabChange = useCallback((tab: DockContent) => {
+    setSecondaryActiveTab(tab);
   }, []);
 
   // Dynamic occupied widths for main content margin adjustments (only when pinned)
@@ -546,7 +546,7 @@ export default function Home() {
 
       const getIncoming = (): DockContent => {
         if (
-          panelId === 'explorer' ||
+          panelId === 'items' ||
           panelId === 'collections' ||
           panelId === 'templates' ||
           panelId === 'grabbed_content' ||
@@ -601,7 +601,7 @@ export default function Home() {
         } else if (panelId === 'bottom') {
           setBottomPanelContent('empty');
         } else if (
-          panelId === 'explorer' ||
+          panelId === 'items' ||
           panelId === 'collections' ||
           panelId === 'templates' ||
           panelId === 'grabbed_content' ||
@@ -802,16 +802,16 @@ export default function Home() {
         : isCollectionsFlyoutOpen
         ? 'collections'
         : isPrimaryFlyoutOpen
-        ? 'explorer'
+        ? 'items'
         : primaryActiveTab;
-      if (activeLeftContent === 'explorer' || activeLeftContent === 'collections' || activeLeftContent === 'templates') {
+      if (activeLeftContent === 'items' || activeLeftContent === 'collections' || activeLeftContent === 'templates') {
         setActiveSearchPanel(activeLeftContent);
       }
       if (!isPrimarySidePanelOpen && !isPrimaryFlyoutOpen && !isCollectionsFlyoutOpen && !isTemplatesFlyoutOpen) {
         setIsPrimarySidePanelOpen(true);
       }
     } else {
-      if (secondaryActiveTab === 'explorer' || secondaryActiveTab === 'collections' || secondaryActiveTab === 'templates') {
+      if (secondaryActiveTab === 'items' || secondaryActiveTab === 'collections' || secondaryActiveTab === 'templates') {
         setActiveSearchPanel(secondaryActiveTab);
       }
       if (!isSecondaryOpen) {
@@ -940,20 +940,20 @@ export default function Home() {
   };
 
   /* ------------------------------------------------------------------------
-     10. MEMOIZED EXPLORER SUB-COMPONENTS & PANEL CONTENT RENDERERS
+     10. MEMOIZED TREE SUB-COMPONENTS & PANEL CONTENT RENDERERS
      ------------------------------------------------------------------------ */
-  const closeTreeFlyout = (content: 'explorer' | 'collections' | 'templates') => {
+  const closeTreeFlyout = (content: 'items' | 'collections' | 'templates') => {
     if (content === 'collections') setIsCollectionsFlyoutOpen(false);
     else if (content === 'templates') setIsTemplatesFlyoutOpen(false);
     else setIsPrimaryFlyoutOpen(false);
   };
 
-  const renderExplorerTree = (pos: 'left' | 'right', content: 'explorer' | 'collections' | 'templates' = 'explorer', isFlyout = false) => {
+  const renderTreePanel = (pos: 'left' | 'right', content: 'items' | 'collections' | 'templates' = 'items', isFlyout = false) => {
     const tree = content === 'collections' ? collectionsTree : content === 'templates' ? templatesTree : { searchQuery, expandedCategoryIds, handleToggleCategory };
     const forest = content === 'collections' ? collectionsForest : content === 'templates' ? templatesForest : filteredForest;
     return (
-    <ExplorerPanelContext.Provider value={{ isFlyout, isPinned: !isFlyout && (pos === 'left' ? isPinned : isSecondaryPinned) }}>
-    <ExplorerContent
+    <TreePanelContext.Provider value={{ isFlyout, isPinned: !isFlyout && (pos === 'left' ? isPinned : isSecondaryPinned) }}>
+    <TreeContent
       treeView={content === 'collections' ? 'collections' : content === 'templates' ? 'templates' : 'items'}
       unifiedForest={forest}
       searchQuery={tree.searchQuery}
@@ -997,16 +997,15 @@ export default function Home() {
       onRenameItem={renameItem}
       position={pos}
     />
-    </ExplorerPanelContext.Provider>
+    </TreePanelContext.Provider>
   );
   };
 
-  const renderPanelBody = (content: DockContent | 'items', pos: 'left' | 'right' | 'bottom') => {
-    const normalizedContent = content === 'items' ? 'explorer' : content;
-    if (normalizedContent === 'explorer' || normalizedContent === 'collections' || normalizedContent === 'templates') {
-      return renderExplorerTree(pos === 'bottom' ? 'left' : pos, normalizedContent);
+  const renderPanelBody = (content: DockContent, pos: 'left' | 'right' | 'bottom') => {
+    if (content === 'items' || content === 'collections' || content === 'templates') {
+      return renderTreePanel(pos === 'bottom' ? 'left' : pos, content);
     }
-    if (normalizedContent === 'template_editor') {
+    if (content === 'template_editor') {
       return (
         <TemplateFieldInspector
           template={templateEditor.activeTemplate}
@@ -1032,7 +1031,7 @@ export default function Home() {
         />
       );
     }
-    if (normalizedContent === 'template_properties') {
+    if (content === 'template_properties') {
       return (
         <TemplatePropertiesInspector
           template={templateEditor.activeTemplate}
@@ -1051,7 +1050,7 @@ export default function Home() {
         />
       );
     }
-    if (normalizedContent === 'template_builder') {
+    if (content === 'template_builder') {
       return (
         <TemplateLayoutPalette
           selectedContainer={templateEditor.selectedContainer}
@@ -1067,7 +1066,7 @@ export default function Home() {
         />
       );
     }
-    if (normalizedContent === 'template_hierarchy') {
+    if (content === 'template_hierarchy') {
       return (
         <TemplateHierarchyTree
           flexLayoutConfig={templateEditor.flexLayoutConfig}
@@ -1088,7 +1087,7 @@ export default function Home() {
         />
       );
     }
-    if (normalizedContent === 'grabbed_content') {
+    if (content === 'grabbed_content') {
       return (
         <div className="p-4 flex flex-col items-center justify-center text-center gap-3 h-full min-h-[220px] select-none">
           <div className="w-12 h-12 rounded-2xl bg-[color-mix(in_oklch,var(--brand-primary)_15%,transparent)] border border-[color-mix(in_oklch,var(--brand-primary)_35%,transparent)] flex items-center justify-center text-2xl shadow-sm">
@@ -1108,11 +1107,10 @@ export default function Home() {
     return null;
   };
 
-  const getPanelTitle = (tabs: DockContent[], activeTab: DockContent | 'items', defaultTitle: string) => {
+  const getPanelTitle = (tabs: DockContent[], activeTab: DockContent, defaultTitle: string) => {
     if (tabs.length === 0) return defaultTitle;
-    const normalizedActive = activeTab === 'items' ? 'explorer' : activeTab;
     if (tabs.length === 1) {
-      if (tabs[0] === 'explorer') return 'ITEMS';
+      if (tabs[0] === 'items') return 'ITEMS';
       if (tabs[0] === 'collections') return 'COLLECTIONS';
       if (tabs[0] === 'templates') return 'TEMPLATES';
       if (tabs[0] === 'template_editor') return 'TEMPLATE INSPECTOR';
@@ -1121,25 +1119,24 @@ export default function Home() {
       if (tabs[0] === 'template_hierarchy') return 'STRUCTURE';
       if (tabs[0] === 'grabbed_content') return 'GRABBED CONTENT';
     }
-    if (normalizedActive === 'explorer') return 'ITEMS';
-    if (normalizedActive === 'collections') return 'COLLECTIONS';
-    if (normalizedActive === 'templates') return 'TEMPLATES';
-    if (normalizedActive === 'template_editor') return 'TEMPLATE INSPECTOR';
-    if (normalizedActive === 'template_properties') return 'PROPERTIES';
-    if (normalizedActive === 'template_builder') return 'LAYOUT BUILDER';
-    if (normalizedActive === 'template_hierarchy') return 'STRUCTURE';
-    if (normalizedActive === 'grabbed_content') return 'GRABBED CONTENT';
+    if (activeTab === 'items') return 'ITEMS';
+    if (activeTab === 'collections') return 'COLLECTIONS';
+    if (activeTab === 'templates') return 'TEMPLATES';
+    if (activeTab === 'template_editor') return 'TEMPLATE INSPECTOR';
+    if (activeTab === 'template_properties') return 'PROPERTIES';
+    if (activeTab === 'template_builder') return 'LAYOUT BUILDER';
+    if (activeTab === 'template_hierarchy') return 'STRUCTURE';
+    if (activeTab === 'grabbed_content') return 'GRABBED CONTENT';
     return defaultTitle;
   };
 
-  const treeHeaderProps = (content: DockContent | 'items') => {
-    const normalizedContent = content === 'items' ? 'explorer' : content;
-    const isCollections = normalizedContent === 'collections';
-    const isTemplates = normalizedContent === 'templates';
-    const isInspector = normalizedContent === 'template_editor';
-    const isBuilder = normalizedContent === 'template_builder';
-    const isHierarchy = normalizedContent === 'template_hierarchy';
-    const isProperties = normalizedContent === 'template_properties';
+  const treeHeaderProps = (content: DockContent) => {
+    const isCollections = content === 'collections';
+    const isTemplates = content === 'templates';
+    const isInspector = content === 'template_editor';
+    const isBuilder = content === 'template_builder';
+    const isHierarchy = content === 'template_hierarchy';
+    const isProperties = content === 'template_properties';
 
     // Calculate field type counts for template editor
     const fieldTypeCounts: Record<string, number> = {};
@@ -1152,7 +1149,7 @@ export default function Home() {
     const isEmpty = content === 'empty';
 
     return {
-      treeView: (isEmpty ? undefined : isCollections ? 'collections' : isTemplates ? 'templates' : 'items') as ExplorerTab,
+      treeView: (isEmpty ? undefined : isCollections ? 'collections' : isTemplates ? 'templates' : 'items') as TreeTab,
       activeTab: (isEmpty
         ? 'empty'
         : isInspector
@@ -1167,7 +1164,7 @@ export default function Home() {
         ? 'collections'
         : isTemplates
         ? 'templates'
-        : content) as ExplorerTab | DockContent,
+        : content) as TreeTab | DockContent,
       searchQuery: isInspector
         ? templateEditor.fieldSearchQuery
         : isCollections
@@ -1179,7 +1176,7 @@ export default function Home() {
         if (isInspector) {
           templateEditor.setFieldSearchQuery(query);
         } else {
-          setActiveSearchPanel(isCollections ? 'collections' : isTemplates ? 'templates' : 'explorer');
+          setActiveSearchPanel(isCollections ? 'collections' : isTemplates ? 'templates' : 'items');
           if (isCollections) collectionsTree.setSearchQuery(query);
           else if (isTemplates) templatesTree.setSearchQuery(query);
           else setSearchQuery(query);
@@ -1211,26 +1208,26 @@ export default function Home() {
     };
   };
 
-  const explorerFlyoutPanel = (
+  const itemsFlyoutPanel = (
     <PrimarySidePanel
       title="ITEMS"
-      {...treeHeaderProps('explorer')}
+      {...treeHeaderProps('items')}
       hasDockedContent
       variant="flyout"
       position="left"
       isOpen={isPrimaryFlyoutOpen}
       onClose={() => setIsPrimaryFlyoutOpen(false)}
-      onDock={(position) => handleDropPanel('explorer', position)}
+      onDock={(position) => handleDropPanel('items', position)}
       loading={loading}
       error={error}
       onAddNewItem={() => openCreateItem(null, null)}
       onAddNewCollection={() => openCreateCollection(null)}
       onAddNewTemplate={() => openTemplateManager(null, undefined)}
       collections={allCollections}
-      onHandlePointerDown={(e) => startDockDrag('explorer', e)}
+      onHandlePointerDown={(e) => startDockDrag('items', e)}
       onStartTabDrag={(tab, e) => startDockDrag(tab, e)}
     >
-      {renderExplorerTree('left', 'explorer', true)}
+      {renderTreePanel('left', 'items', true)}
     </PrimarySidePanel>
   );
 
@@ -1253,7 +1250,7 @@ export default function Home() {
       onHandlePointerDown={(e) => startDockDrag('collections', e)}
       onStartTabDrag={(tab, e) => startDockDrag(tab, e)}
     >
-      {renderExplorerTree('left', 'collections', true)}
+      {renderTreePanel('left', 'collections', true)}
     </PrimarySidePanel>
   );
 
@@ -1276,7 +1273,7 @@ export default function Home() {
       onHandlePointerDown={(e) => startDockDrag('templates', e)}
       onStartTabDrag={(tab, e) => startDockDrag(tab, e)}
     >
-      {renderExplorerTree('left', 'templates', true)}
+      {renderTreePanel('left', 'templates', true)}
     </PrimarySidePanel>
   );
 
@@ -1301,7 +1298,7 @@ export default function Home() {
   const canMovePrimary = primaryTabs.length > 0 && !slidingState;
   const canMoveSecondary = secondaryTabs.length > 0 && !slidingState;
 
-  const explorerSidebarPanel = (
+  const itemsSidebarPanel = (
     <PrimarySidePanel
       title={getPanelTitle(primaryTabs, primaryActiveTab, 'PRIMARY SIDE PANEL')}
       {...treeHeaderProps(primaryActiveTab)}
@@ -1310,7 +1307,7 @@ export default function Home() {
       onTabChange={handlePrimaryTabChange}
       hasDockedContent={primaryTabs.length > 0}
       isContentSliding={slidingState !== null && !(slidingState.incomingContent && slidingState.from === 'left' && slidingState.isMoving)}
-      showSearchFilter={primaryActiveTab === 'explorer' || primaryActiveTab === 'collections' || primaryActiveTab === 'templates' || primaryActiveTab === 'template_editor'}
+      showSearchFilter={primaryActiveTab === 'items' || primaryActiveTab === 'collections' || primaryActiveTab === 'templates' || primaryActiveTab === 'template_editor'}
       hierarchyNodeCount={hierarchyNodeCount}
       variant="sidebar"
       position="left"
@@ -1384,7 +1381,7 @@ export default function Home() {
             }}
             isPrimarySidePanelOpen={isPrimaryFlyoutOpen}
             onTogglePrimarySidePanel={() => { setIsCollectionsFlyoutOpen(false); setIsTemplatesFlyoutOpen(false); setIsPrimaryFlyoutOpen(!isPrimaryFlyoutOpen); }}
-            unpinnedPrimaryPanel={explorerFlyoutPanel}
+            unpinnedPrimaryPanel={itemsFlyoutPanel}
             collectionsFlyoutPanel={collectionsFlyoutPanel}
             isCollectionsOpen={isCollectionsFlyoutOpen}
             onToggleCollections={() => { setIsPrimaryFlyoutOpen(false); setIsTemplatesFlyoutOpen(false); setIsCollectionsFlyoutOpen(!isCollectionsFlyoutOpen); }}
@@ -1395,8 +1392,8 @@ export default function Home() {
             onToggleTemplates={() => { setIsPrimaryFlyoutOpen(false); setIsCollectionsFlyoutOpen(false); setIsTemplatesFlyoutOpen(!isTemplatesFlyoutOpen); }}
             templatesDockedSide={primaryTabs.includes('templates') ? 'left' : secondaryTabs.includes('templates') ? 'right' : null}
             onStartTemplatesDrag={e => startDockDrag('templates', e)}
-            explorerDockedSide={primaryTabs.includes('explorer') ? 'left' : secondaryTabs.includes('explorer') ? 'right' : null}
-            onStartExplorerDrag={(e) => startDockDrag('explorer', e)}
+            itemsDockedSide={primaryTabs.includes('items') ? 'left' : secondaryTabs.includes('items') ? 'right' : null}
+            onStartItemsDrag={(e) => startDockDrag('items', e)}
             onStartGrabbedContentDrag={(e) => startDockDrag('grabbed_content', e)}
             onAddNewItem={() => {
               openCreateItem(activeCollectionId, null);
@@ -1429,8 +1426,8 @@ export default function Home() {
             secondaryActiveTab={secondaryActiveTab}
           />
 
-          {/* Primary Side Panel (Explorer Tree / Grabbed Content) - Sits Above Main Content (z-50) */}
-          {explorerSidebarPanel}
+          {/* Primary Side Panel (Tree / Grabbed Content) - Sits Above Main Content (z-50) */}
+          {itemsSidebarPanel}
 
           {/* Center Main Stage / Detail Canvas (Full-Width Base Layer z-10) */}
           <div
@@ -1545,7 +1542,7 @@ export default function Home() {
             onTabChange={handleSecondaryTabChange}
             hasDockedContent={secondaryTabs.length > 0}
             isContentSliding={slidingState !== null && !(slidingState.incomingContent && slidingState.from === 'right' && slidingState.isMoving)}
-            showSearchFilter={secondaryActiveTab === 'explorer' || secondaryActiveTab === 'collections' || secondaryActiveTab === 'templates' || secondaryActiveTab === 'template_editor'}
+            showSearchFilter={secondaryActiveTab === 'items' || secondaryActiveTab === 'collections' || secondaryActiveTab === 'templates' || secondaryActiveTab === 'template_editor'}
             hierarchyNodeCount={hierarchyNodeCount}
             isOpen={isSecondaryActive}
             isPinned={isSecondaryPinned}
@@ -1609,7 +1606,7 @@ export default function Home() {
                 tabs={slidingState.tabs}
                 activeTab={slidingState.activeTab}
                 hasDockedContent={slidingState.tabs.length > 0}
-                showSearchFilter={slidingState.activeTab === 'explorer' || slidingState.activeTab === 'collections' || slidingState.activeTab === 'templates'}
+                showSearchFilter={slidingState.activeTab === 'items' || slidingState.activeTab === 'collections' || slidingState.activeTab === 'templates'}
                 variant="sidebar"
                 isPinned={slidingState.to === 'left' ? isPinned : isSecondaryPinned}
                 position={slidingState.to}
@@ -1652,7 +1649,7 @@ export default function Home() {
               <PrimarySidePanelHeader
                 title={getPanelTitle(slidingState.secondaryTabs, slidingState.secondaryActiveTab ?? 'empty', 'SIDE PANEL')}
                 hasDockedContent={slidingState.secondaryTabs.length > 0}
-                showSearchFilter={slidingState.secondaryActiveTab === 'explorer' || slidingState.secondaryActiveTab === 'collections'}
+                showSearchFilter={slidingState.secondaryActiveTab === 'items' || slidingState.secondaryActiveTab === 'collections'}
                 variant="sidebar"
                 isPinned={slidingState.to === 'right' ? isPinned : isSecondaryPinned}
                 position={slidingState.to === 'right' ? 'left' : 'right'}

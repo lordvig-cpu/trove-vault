@@ -1,16 +1,16 @@
 import React from 'react';
 
 /* ==========================================================================
-   Explorer & Tree Navigation Icons (Search, Filter, Folders, Actions)
+   Tree & Tree Navigation Icons (Search, Filter, Folders, Actions)
    ========================================================================== */
 
-interface ExplorerIconProps {
+interface TreeIconProps {
   className?: string;
   isActive?: boolean;
 }
 
 // Clear the editable search pill
-export function SearchClearIcon({ className = 'w-3 h-3' }: ExplorerIconProps) {
+export function SearchClearIcon({ className = 'w-3 h-3' }: TreeIconProps) {
   return (
     <svg className={className} viewBox="0 0 12 12" fill="none" stroke="currentColor"
       strokeWidth="1.5" strokeLinecap="round" aria-hidden="true" focusable="false">
@@ -20,7 +20,7 @@ export function SearchClearIcon({ className = 'w-3 h-3' }: ExplorerIconProps) {
 }
 
 // Horizontal equalizer / tuning sliders (Advanced Search Trigger)
-export function SlidersHorizontalIcon({ className = 'w-3.5 h-3.5', isActive = false }: ExplorerIconProps) {
+export function SlidersHorizontalIcon({ className = 'w-3.5 h-3.5', isActive = false }: TreeIconProps) {
   return (
     <svg
       viewBox="0 0 24 24"
@@ -48,7 +48,7 @@ export function SlidersHorizontalIcon({ className = 'w-3.5 h-3.5', isActive = fa
 }
 
 // Filter icon
-export function FilterIcon({ className = 'w-3.5 h-3.5', isActive = false }: ExplorerIconProps) {
+export function FilterIcon({ className = 'w-3.5 h-3.5', isActive = false }: TreeIconProps) {
   return (
     <svg
       viewBox="0 0 24 24"
@@ -69,7 +69,7 @@ export function FilterIcon({ className = 'w-3.5 h-3.5', isActive = false }: Expl
 export function SearchGlassIcon({
   className = 'w-3.5 h-3.5',
   isFocused = false,
-}: ExplorerIconProps & { isFocused?: boolean }) {
+}: TreeIconProps & { isFocused?: boolean }) {
   return (
     <svg
       viewBox="0 0 24 24"
@@ -88,7 +88,7 @@ export function SearchGlassIcon({
 }
 
 // Magnifier with a plus / minus inside the lens (canvas zoom controls)
-export function ZoomInIcon({ className = 'w-4 h-4' }: ExplorerIconProps) {
+export function ZoomInIcon({ className = 'w-4 h-4' }: TreeIconProps) {
   return (
     <svg
       viewBox="0 0 24 24"
@@ -108,7 +108,7 @@ export function ZoomInIcon({ className = 'w-4 h-4' }: ExplorerIconProps) {
   );
 }
 
-export function ZoomOutIcon({ className = 'w-4 h-4' }: ExplorerIconProps) {
+export function ZoomOutIcon({ className = 'w-4 h-4' }: TreeIconProps) {
   return (
     <svg
       viewBox="0 0 24 24"
@@ -128,7 +128,7 @@ export function ZoomOutIcon({ className = 'w-4 h-4' }: ExplorerIconProps) {
 }
 
 // Folder with a minus sign (Collapse All / Current)
-export function FolderCollapseIcon({ className = 'w-3.5 h-3.5' }: ExplorerIconProps) {
+export function FolderCollapseIcon({ className = 'w-3.5 h-3.5' }: TreeIconProps) {
   return (
     <svg
       viewBox="0 0 24 24"
@@ -147,7 +147,7 @@ export function FolderCollapseIcon({ className = 'w-3.5 h-3.5' }: ExplorerIconPr
 }
 
 // Folder with a plus sign (Expand Active / Selected)
-export function FolderExpandIcon({ className = 'w-3.5 h-3.5' }: ExplorerIconProps) {
+export function FolderExpandIcon({ className = 'w-3.5 h-3.5' }: TreeIconProps) {
   return (
     <svg
       viewBox="0 0 24 24"
@@ -167,7 +167,7 @@ export function FolderExpandIcon({ className = 'w-3.5 h-3.5' }: ExplorerIconProp
 }
 
 // Down-pointing filled triangle
-export function TreeTriangleDownIcon({ className = 'w-[10px] h-[10px]' }: ExplorerIconProps) {
+export function TreeTriangleDownIcon({ className = 'w-[10px] h-[10px]' }: TreeIconProps) {
   return (
     <svg viewBox="0 0 24 24" fill="currentColor" className={className} aria-hidden="true">
       <polygon points="5,8 19,8 12,18" />
@@ -176,7 +176,7 @@ export function TreeTriangleDownIcon({ className = 'w-[10px] h-[10px]' }: Explor
 }
 
 // Right-pointing filled triangle
-export function TreeTriangleRightIcon({ className = 'w-[10px] h-[10px]' }: ExplorerIconProps) {
+export function TreeTriangleRightIcon({ className = 'w-[10px] h-[10px]' }: TreeIconProps) {
   return (
     <svg viewBox="0 0 24 24" fill="currentColor" className={className} aria-hidden="true">
       <polygon points="8,5 8,19 18,12" />
@@ -184,8 +184,8 @@ export function TreeTriangleRightIcon({ className = 'w-[10px] h-[10px]' }: Explo
   );
 }
 
-// Tree elbow branch connector (used in Filter / Explorer hierarchy tree)
-export function TreeBranchIcon({ className = 'w-3.5 h-3.5' }: ExplorerIconProps) {
+// Tree elbow branch connector (used in Filter / Tree hierarchy tree)
+export function TreeBranchIcon({ className = 'w-3.5 h-3.5' }: TreeIconProps) {
   return (
     <svg
       viewBox="0 0 16 16"
@@ -194,7 +194,7 @@ export function TreeBranchIcon({ className = 'w-3.5 h-3.5' }: ExplorerIconProps)
       strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"
-      className={`explorer-filter-branch shrink-0 select-none ${className}`}
+      className={`tree-filter-branch shrink-0 select-none ${className}`}
       aria-hidden="true"
     >
       <path d="M 5 2 L 5 9 L 13 9" />
@@ -204,7 +204,7 @@ export function TreeBranchIcon({ className = 'w-3.5 h-3.5' }: ExplorerIconProps)
 }
 
 // Plus Icon (used for contextual add action in headers)
-export function PlusIcon({ className = 'w-2.5 h-2.5' }: ExplorerIconProps) {
+export function PlusIcon({ className = 'w-2.5 h-2.5' }: TreeIconProps) {
   return (
     <svg
       className={className}

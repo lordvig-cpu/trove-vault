@@ -264,7 +264,7 @@
    --content-btn-danger-text: rgba(253, 164, 175, 1.00);
    /* #endregion */
 
-   /* #region 4. LEFT SIDE PANEL & EXPLORER TREE */
+   /* #region 4. LEFT SIDE PANEL & TREE */
    --panel-border-accent: rgba(0, 160, 255, 0.90);
    --panel-pinned-shadow:
      4px 0 14px -2px rgba(0, 0, 0, 0.55),
@@ -272,8 +272,8 @@
    --panel-reset-shadow: 4px 0 12px rgba(0, 0, 0, 0.60);
    --panel-shell-shadow: 0 12px 24px -4px rgba(0, 0, 0, 0.40);
 
-   /* Explorer Panel Sapphire Chassis Surface, Flare & Texture (Matches Right Side Panel) */
-   --explorer-panel-bg:
+   /* Tree Panel Sapphire Chassis Surface, Flare & Texture (Matches Right Side Panel) */
+   --tree-panel-bg:
      linear-gradient(180deg,
        rgba(255, 255, 255, 0.07) 0%,
        rgba(255, 255, 255, 0.015) 14%,
@@ -290,19 +290,19 @@
        rgba(0, 31, 64, 0.90) 68%,
        rgba(0, 23, 50, 0.90) 86%,
        rgba(0, 17, 36, 0.90) 100%);
-   --explorer-panel-border: var(--panel-border-strong);
-   --explorer-panel-flare-bg:
+   --tree-panel-border: var(--panel-border-strong);
+   --tree-panel-flare-bg:
      radial-gradient(ellipse 130% 120% at 15% -20%,
        rgba(0, 180, 255, 0.18) 0%,
        rgba(0, 110, 220, 0.08) 45%,
        transparent 75%);
-   --explorer-panel-flare-blend: screen;
-   --explorer-panel-flare-opacity: 0.70;
+   --tree-panel-flare-blend: screen;
+   --tree-panel-flare-opacity: 0.70;
 
-   --explorer-panel-texture-bg: none;
-   --explorer-panel-texture-filter: none;
-   --explorer-panel-texture-opacity: 0;
-   --explorer-panel-texture-blend: normal;
+   --tree-panel-texture-bg: none;
+   --tree-panel-texture-filter: none;
+   --tree-panel-texture-opacity: 0;
+   --tree-panel-texture-blend: normal;
 
    --panel-notice-loading-bg: rgba(4, 22, 54, 1.00);
    --panel-notice-loading-text: rgba(248, 188, 9, 1.00);
@@ -312,91 +312,91 @@
    --panel-notice-error-border: rgba(159, 18, 57, 1.00);
 
    /* Tree Node & Row Active States (Active Node has Golden Amber Box in Image 1) */
-   --explorer-item-hover-bg: rgba(10, 42, 88, 0.70);
-   --explorer-item-active-bg: rgba(248, 188, 9, 0.15);
-   --explorer-item-active-border: rgba(248, 188, 9, 0.90);
+   --tree-item-hover-bg: rgba(10, 42, 88, 0.70);
+   --tree-item-active-bg: rgba(248, 188, 9, 0.15);
+   --tree-item-active-border: rgba(248, 188, 9, 0.90);
 
    /* Hover Action Popup */
-   --explorer-menu-bg: var(--popover-surface-bg);
-   --explorer-menu-border: rgba(0, 180, 255, 0.60);
-   --explorer-menu-btn-text: rgba(148, 163, 184, 1.00);
-   --explorer-menu-btn-hover-bg: rgba(14, 55, 115, 1.00);
-   --explorer-menu-btn-hover-text: rgba(255, 255, 255, 1.00);
-   --explorer-menu-btn-accent-hover: rgba(248, 188, 9, 1.00);
+   --tree-menu-bg: var(--popover-surface-bg);
+   --tree-menu-border: rgba(0, 180, 255, 0.60);
+   --tree-menu-btn-text: rgba(148, 163, 184, 1.00);
+   --tree-menu-btn-hover-bg: rgba(14, 55, 115, 1.00);
+   --tree-menu-btn-hover-text: rgba(255, 255, 255, 1.00);
+   --tree-menu-btn-accent-hover: rgba(248, 188, 9, 1.00);
 
-   --explorer-menu-danger-text: rgba(244, 63, 94, 1.00);
-   --explorer-menu-danger-hover-bg: rgba(76, 5, 25, 0.45);
-   --explorer-menu-danger-hover-text: rgba(251, 113, 133, 1.00);
+   --tree-menu-danger-text: rgba(244, 63, 94, 1.00);
+   --tree-menu-danger-hover-bg: rgba(76, 5, 25, 0.45);
+   --tree-menu-danger-hover-text: rgba(251, 113, 133, 1.00);
 
    /* Category Row Glass Cards & Count Badges (Target Image 2) */
-   --explorer-category-card-bg:
+   --tree-category-card-bg:
      linear-gradient(180deg,
        rgba(4, 28, 62, 0.85) 0%,
        rgba(1, 18, 44, 0.90) 100%);
-   --explorer-category-card-border: rgba(0, 120, 220, 0.32);
-   --explorer-category-card-shadow:
+   --tree-category-card-border: rgba(0, 120, 220, 0.32);
+   --tree-category-card-shadow:
      inset 0 1px 0 rgba(255, 255, 255, 0.10),
      0 2px 8px rgba(0, 0, 0, 0.45);
-   --explorer-category-card-hover-bg:
+   --tree-category-card-hover-bg:
      linear-gradient(180deg,
        rgba(8, 38, 80, 0.90) 0%,
        rgba(3, 24, 56, 0.95) 100%);
-   --explorer-category-card-hover-border: rgba(0, 160, 240, 0.50);
-   --explorer-category-card-active-bg:
+   --tree-category-card-hover-border: rgba(0, 160, 240, 0.50);
+   --tree-category-card-active-bg:
      linear-gradient(180deg,
        rgba(12, 45, 95, 0.92) 0%,
        rgba(6, 28, 66, 0.98) 100%);
-   --explorer-category-card-active-border: rgba(248, 188, 9, 0.85);
+   --tree-category-card-active-border: rgba(248, 188, 9, 0.85);
 
-   --explorer-category-badge-bg: rgba(1, 12, 30, 0.90);
-   --explorer-category-badge-border: rgba(0, 120, 220, 0.35);
-   --explorer-category-badge-text: rgba(248, 188, 9, 1.00);
+   --tree-category-badge-bg: rgba(1, 12, 30, 0.90);
+   --tree-category-badge-border: rgba(0, 120, 220, 0.35);
+   --tree-category-badge-text: rgba(248, 188, 9, 1.00);
 
-   --explorer-tree-branch: rgba(0, 160, 240, 0.28);
+   --tree-branch: rgba(0, 160, 240, 0.28);
 
-   --explorer-sticky-category-bg: rgba(4, 22, 54, 0.95);
-   --explorer-sticky-category-border: var(--panel-border-subtle);
-   --explorer-sticky-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.65);
+   --tree-sticky-category-bg: rgba(4, 22, 54, 0.95);
+   --tree-sticky-category-border: var(--panel-border-subtle);
+   --tree-sticky-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.65);
 
    /* Search Bar & Shortcut Badge (PrimarySidePanelHeader.tsx) */
-   --explorer-search-input-bg: rgba(0, 20, 48, 0.88);
-   --explorer-search-input-border: rgba(0, 160, 255, 0.58);
-   --explorer-input-border-idle: rgba(0, 160, 255, 0.58);
-   --explorer-input-border-hover: rgba(0, 190, 255, 0.80);
-   --explorer-input-focus-glow: rgba(248, 188, 9, 0.25);
-   --explorer-control-bg: rgba(4, 24, 56, 0.75);
-   --explorer-kbd-text: rgba(52, 211, 153, 1.00);
-   --explorer-kbd-bg: rgba(6, 78, 59, 0.80);
-   --explorer-kbd-border: rgba(6, 95, 70, 0.60);
+   --tree-search-input-bg: rgba(0, 20, 48, 0.88);
+   --tree-search-input-border: rgba(0, 160, 255, 0.58);
+   --tree-input-border-idle: rgba(0, 160, 255, 0.58);
+   --tree-input-border-hover: rgba(0, 190, 255, 0.80);
+   --tree-input-focus-glow: rgba(248, 188, 9, 0.25);
+   --tree-control-bg: rgba(4, 24, 56, 0.75);
+   --tree-kbd-text: rgba(52, 211, 153, 1.00);
+   --tree-kbd-bg: rgba(6, 78, 59, 0.80);
+   --tree-kbd-border: rgba(6, 95, 70, 0.60);
 
-   /* Explorer Panel Icy Sky Blue Typography & Icons (Target Image Palette) */
-   --explorer-title-text: rgba(138, 194, 235, 0.95);
-   --explorer-search-placeholder: rgba(105, 147, 185, 0.85);
-   --explorer-search-icon: rgba(122, 189, 228, 0.80);
-   --explorer-action-icon: rgba(109, 170, 209, 0.85);
-   --explorer-action-icon-hover: rgba(255, 255, 255, 1.00);
-   --explorer-item-text: rgba(167, 190, 212, 0.95);
-   --explorer-item-text-hover: rgba(240, 249, 255, 1.00);
-   --explorer-tree-muted: rgba(105, 147, 185, 0.75);
+   /* Tree Panel Icy Sky Blue Typography & Icons (Target Image Palette) */
+   --tree-title-text: rgba(138, 194, 235, 0.95);
+   --tree-search-placeholder: rgba(105, 147, 185, 0.85);
+   --tree-search-icon: rgba(122, 189, 228, 0.80);
+   --tree-action-icon: rgba(109, 170, 209, 0.85);
+   --tree-action-icon-hover: rgba(255, 255, 255, 1.00);
+   --tree-item-text: rgba(167, 190, 212, 0.95);
+   --tree-item-text-hover: rgba(240, 249, 255, 1.00);
+   --tree-muted: rgba(105, 147, 185, 0.75);
 
-   /* Explorer Folder Tabs (Items & Collections) */
-   --explorer-tab-text-idle: rgba(107, 152, 184, 0.90);
-   --explorer-tab-text-hover: rgba(186, 230, 253, 1.00);
-   --explorer-tab-text-active: rgba(248, 188, 9, 1.00);
-   --explorer-tab-border-idle: rgba(0, 100, 190, 0.28);
-   --explorer-tab-border-hover: rgba(0, 160, 240, 0.55);
-   --explorer-tab-border-active: rgba(248, 188, 9, 1.00);
-   --explorer-tab-glow-active:
+   /* Tree Folder Tabs (Items & Collections) */
+   --tree-tab-text-idle: rgba(107, 152, 184, 0.90);
+   --tree-tab-text-hover: rgba(186, 230, 253, 1.00);
+   --tree-tab-text-active: rgba(248, 188, 9, 1.00);
+   --tree-tab-border-idle: rgba(0, 100, 190, 0.28);
+   --tree-tab-border-hover: rgba(0, 160, 240, 0.55);
+   --tree-tab-border-active: rgba(248, 188, 9, 1.00);
+   --tree-tab-glow-active:
      drop-shadow(0 -2px 6px rgba(248, 188, 9, 0.50))
      drop-shadow(4px 1px 5px rgba(0, 0, 0, 0.75));
-   --explorer-tab-bg-idle: rgba(2, 12, 30, 0.85);
-   --explorer-tab-bg-hover: rgba(6, 28, 60, 0.95);
-   --explorer-tab-bg-active: rgba(10, 64, 112, 1);
-   --explorer-tab-active-top: rgba(18, 94, 158, 1);
-   --explorer-tab-active-mid: rgba(10, 64, 112, 1);
-   --explorer-tab-active-bottom: rgba(5, 36, 70, 1);
-   --explorer-tab-shadow-right: rgba(0, 0, 0, 0.75);
-   --explorer-tab-baseline: rgba(248, 188, 9, 1.00);
+   --tree-tab-bg-idle: rgba(2, 12, 30, 0.85);
+   --tree-tab-bg-hover: rgba(6, 28, 60, 0.95);
+   --tree-tab-bg-active: rgba(10, 64, 112, 1);
+   --tree-tab-active-top: rgba(18, 94, 158, 1);
+   --tree-tab-active-mid: rgba(10, 64, 112, 1);
+   --tree-tab-active-bottom: rgba(5, 36, 70, 1);
+   --tree-tab-shadow-right: rgba(0, 0, 0, 0.75);
+   --tree-tab-baseline: rgba(248, 188, 9, 1.00);
    /* #endregion */
 
    /* #region 5. RIGHT SIDE PANEL */
@@ -496,8 +496,8 @@
    --item-modal-inline-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
    --confirm-danger-panel-bg: rgba(76, 5, 25, 0.30);
    --confirm-danger-panel-border: rgba(159, 18, 57, 0.50);
-   --explorer-filter-inset-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.25);
-   --explorer-filter-pill-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+   --tree-filter-inset-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.25);
+   --tree-filter-pill-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
 
    --tmpl-item-bg: rgba(2, 14, 36, 0.65);
    --tmpl-item-border: var(--panel-border-subtle);
@@ -520,8 +520,8 @@
    --tmpl-alert-error-text: rgba(253, 164, 175, 1.00);
    /* #endregion */
 
-   /* #region 7. EXPLORER ACTION MENU & SEARCH MENU POPPERS (Warm Amber Cockpit Chassis & Sapphire Filter Cards) */
-   --explorer-menu-shell-bg:
+   /* #region 7. TREE ACTION MENU & SEARCH MENU POPPERS (Warm Amber Cockpit Chassis & Sapphire Filter Cards) */
+   --tree-menu-shell-bg:
      linear-gradient(180deg,
        rgba(255, 255, 255, 0.08) 0%,
        rgba(255, 255, 255, 0.02) 15%,
@@ -539,85 +539,85 @@
        rgba(24, 11, 3, 1) 42%,
        rgba(16, 6, 1, 1) 70%,
        rgba(10, 4, 1, 1) 100%);
-   --explorer-menu-shell-border: rgba(245, 158, 11, 1);
+   --tree-menu-shell-border: rgba(245, 158, 11, 1);
 
-   --explorer-menu-shell-shadow:
+   --tree-menu-shell-shadow:
      0 0 25px 0 rgba(245, 158, 11, 0.45),
      0 0 8px 0 rgba(245, 158, 11, 0.35),
      20px 0 45px -4px rgba(0, 0, 0, 0.85),
      0 20px 40px rgba(0, 0, 0, 0.85),
      inset 0 1px 0 rgba(255, 235, 175, 0.28);
 
-   --explorer-menu-header-bg:
+   --tree-menu-header-bg:
      linear-gradient(180deg,
        rgba(146, 64, 14, 0.50) 0%,
        rgba(69, 26, 3, 0.65) 100%);
-   --explorer-menu-header-border: rgba(245, 158, 11, 0.45);
-   --explorer-menu-header-title: rgba(251, 191, 36, 1);
-   --explorer-menu-header-icon: rgba(245, 158, 11, 1);
+   --tree-menu-header-border: rgba(245, 158, 11, 0.45);
+   --tree-menu-header-title: rgba(251, 191, 36, 1);
+   --tree-menu-header-icon: rgba(245, 158, 11, 1);
 
-   --explorer-menu-form-bg: rgba(14, 8, 3, 0.95);
-   --explorer-menu-input-bg: rgba(6, 4, 1, 1.00);
+   --tree-menu-form-bg: rgba(14, 8, 3, 0.95);
+   --tree-menu-input-bg: rgba(6, 4, 1, 1.00);
 
-   --explorer-menu-divider: rgba(245, 158, 11, 0.28);
+   --tree-menu-divider: rgba(245, 158, 11, 0.28);
 
-   --explorer-menu-item-text: rgba(241, 245, 249, 1);
-   --explorer-menu-item-hover-bg: rgba(248, 188, 9, 0.20);
-   --explorer-menu-item-hover-text: rgba(255, 255, 255, 1);
-   --explorer-menu-item-subtext: rgba(203, 213, 225, 1);
-   --explorer-menu-item-hover-subtext: rgba(255, 255, 255, 1);
+   --tree-menu-item-text: rgba(241, 245, 249, 1);
+   --tree-menu-item-hover-bg: rgba(248, 188, 9, 0.20);
+   --tree-menu-item-hover-text: rgba(255, 255, 255, 1);
+   --tree-menu-item-subtext: rgba(203, 213, 225, 1);
+   --tree-menu-item-hover-subtext: rgba(255, 255, 255, 1);
 
-   --explorer-menu-danger-text: rgba(253, 164, 175, 1);
-   --explorer-menu-danger-icon: rgba(251, 113, 133, 1);
-   --explorer-menu-danger-subtext: rgba(251, 113, 133, 0.7);
-   --explorer-menu-danger-hover-bg: rgba(76, 5, 25, 0.5);
-   --explorer-menu-danger-hover-border: rgba(159, 18, 57, 0.6);
-   --explorer-menu-danger-hover-text: rgba(254, 205, 211, 1);
-   --explorer-menu-danger-hover-subtext: rgba(253, 164, 175, 1);
+   --tree-menu-danger-text: rgba(253, 164, 175, 1);
+   --tree-menu-danger-icon: rgba(251, 113, 133, 1);
+   --tree-menu-danger-subtext: rgba(251, 113, 133, 0.7);
+   --tree-menu-danger-hover-bg: rgba(76, 5, 25, 0.5);
+   --tree-menu-danger-hover-border: rgba(159, 18, 57, 0.6);
+   --tree-menu-danger-hover-text: rgba(254, 205, 211, 1);
+   --tree-menu-danger-hover-subtext: rgba(253, 164, 175, 1);
 
-   --explorer-menu-rename-input-bg: rgba(6, 4, 1, 1);
-   --explorer-menu-rename-input-text: rgba(255, 255, 255, 1);
-   --explorer-menu-rename-input-border: var(--explorer-input-border-idle, rgba(0, 160, 255, 0.58));
-   --explorer-menu-rename-input-focus: rgba(248, 188, 9, 1);
-   --explorer-menu-rename-cancel-text: rgba(148, 163, 184, 1);
-   --explorer-menu-rename-cancel-hover-text: rgba(255, 255, 255, 1);
-   --explorer-menu-rename-save-bg: rgba(248, 188, 9, 0.25);
-   --explorer-menu-rename-save-hover-bg: rgba(248, 188, 9, 0.4);
-   --explorer-menu-rename-save-text: rgba(248, 188, 9, 1);
+   --tree-menu-rename-input-bg: rgba(6, 4, 1, 1);
+   --tree-menu-rename-input-text: rgba(255, 255, 255, 1);
+   --tree-menu-rename-input-border: var(--tree-input-border-idle, rgba(0, 160, 255, 0.58));
+   --tree-menu-rename-input-focus: rgba(248, 188, 9, 1);
+   --tree-menu-rename-cancel-text: rgba(148, 163, 184, 1);
+   --tree-menu-rename-cancel-hover-text: rgba(255, 255, 255, 1);
+   --tree-menu-rename-save-bg: rgba(248, 188, 9, 0.25);
+   --tree-menu-rename-save-hover-bg: rgba(248, 188, 9, 0.4);
+   --tree-menu-rename-save-text: rgba(248, 188, 9, 1);
 
    /* Filter Tree Shell & Capsule Cards in Search Menu (Image 2) */
-   --explorer-filter-surface-bg: transparent;
-   --explorer-filter-shell-border: transparent;
-   --explorer-filter-inset-shadow: none;
+   --tree-filter-surface-bg: transparent;
+   --tree-filter-shell-border: transparent;
+   --tree-filter-inset-shadow: none;
 
-   --explorer-filter-card-bg:
+   --tree-filter-card-bg:
      linear-gradient(180deg,
        rgba(2, 28, 68, 0.95) 0%,
        rgba(1, 16, 42, 0.98) 100%);
-   --explorer-filter-card-border: rgba(0, 140, 255, 0.75);
-   --explorer-filter-card-shadow:
+   --tree-filter-card-border: rgba(0, 140, 255, 0.75);
+   --tree-filter-card-shadow:
      0 2px 8px rgba(0, 0, 0, 0.50),
      0 0 8px rgba(0, 140, 255, 0.15);
 
-   --explorer-filter-card-hover-bg:
+   --tree-filter-card-hover-bg:
      linear-gradient(180deg,
        rgba(3, 38, 90, 0.98) 0%,
        rgba(2, 22, 56, 1.00) 100%);
-   --explorer-filter-card-hover-border: rgba(0, 180, 255, 0.95);
-   --explorer-filter-card-hover-shadow:
+   --tree-filter-card-hover-border: rgba(0, 180, 255, 0.95);
+   --tree-filter-card-hover-shadow:
      0 4px 14px rgba(0, 0, 0, 0.60),
      0 0 12px rgba(0, 180, 255, 0.30);
 
    /* Sapphire count badge pill in search menu */
-   --explorer-filter-badge-bg: rgba(0, 24, 60, 0.95);
-   --explorer-filter-badge-border: rgba(0, 140, 255, 0.75);
-   --explorer-filter-badge-text: rgba(251, 191, 36, 1);
-   --explorer-filter-badge-shadow: 0 0 8px rgba(0, 140, 255, 0.25);
+   --tree-filter-badge-bg: rgba(0, 24, 60, 0.95);
+   --tree-filter-badge-border: rgba(0, 140, 255, 0.75);
+   --tree-filter-badge-text: rgba(251, 191, 36, 1);
+   --tree-filter-badge-shadow: 0 0 8px rgba(0, 140, 255, 0.25);
 
-   --explorer-filter-option-label: rgba(255, 255, 255, 1);
-   --explorer-filter-checkbox-bg: rgba(255, 255, 255, 1);
-   --explorer-filter-checkbox-border: rgba(245, 158, 11, 0.80);
-   --explorer-filter-icon-color: rgba(251, 191, 36, 1);
+   --tree-filter-option-label: rgba(255, 255, 255, 1);
+   --tree-filter-checkbox-bg: rgba(255, 255, 255, 1);
+   --tree-filter-checkbox-border: rgba(245, 158, 11, 0.80);
+   --tree-filter-icon-color: rgba(251, 191, 36, 1);
 
    --tree-gear-bg-hover: rgba(30, 58, 95, 0.80);
    --tree-gear-icon-active: var(--text-primary);

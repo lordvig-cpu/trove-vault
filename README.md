@@ -29,7 +29,7 @@ The intro video loads on first interaction and respects reduced-motion preferenc
 
 Panel separators support arrow keys (Shift for larger steps), Home for minimum
 size, and End for available space. Pointer cancellation and window blur restore
-cursor and selection styles. Explorer selection and action controls are keyboard
+cursor and selection styles. Tree selection and action controls are keyboard
 accessible; Escape dismisses an action menu before its enclosing panel.
 
 Items shows items by category; Collections shows collection hierarchies with

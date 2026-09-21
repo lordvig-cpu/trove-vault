@@ -45,7 +45,7 @@ function replaceColor(literal, token) {
   if (rgb.every(value => value === 0) || /shadow|overlay-bg/.test(token) && lightness < 0.15) {
     return `oklch(from var(${name}) l c h / calc(${alpha} * var(--oklch-shadow-opacity)))`;
   }
-  if (token === '--content-btn-primary-text' || token === '--explorer-filter-checkbox-bg' || lightness > 0.99 && alpha < 1) {
+  if (token === '--content-btn-primary-text' || token === '--tree-filter-checkbox-bg' || lightness > 0.99 && alpha < 1) {
     return `oklch(from var(${name}) l c h / ${alpha})`;
   }
   const isInk = /text|title|placeholder|icon|heading|label/.test(token) && !/shadow|glow/.test(token);

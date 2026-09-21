@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect, useCallback } from 'react';
 
-export type DockablePanelId = 'primary' | 'secondary' | 'bottom' | 'explorer' | 'collections' | 'templates' | 'grabbed_content' | 'template_editor' | 'template_builder' | 'template_properties' | 'template_hierarchy';
+export type DockablePanelId = 'primary' | 'secondary' | 'bottom' | 'items' | 'collections' | 'templates' | 'grabbed_content' | 'template_editor' | 'template_builder' | 'template_properties' | 'template_hierarchy';
 export type DockDropTargetZone =
   | 'left'
   | 'left-tab'
@@ -12,7 +12,7 @@ export type DockDropTargetZone =
   | 'right-replace'
   | 'bottom'
   | 'remove';
-export type DockContent = 'empty' | 'explorer' | 'collections' | 'templates' | 'grabbed_content' | 'template_editor' | 'template_builder' | 'template_properties' | 'template_hierarchy';
+export type DockContent = 'empty' | 'items' | 'collections' | 'templates' | 'grabbed_content' | 'template_editor' | 'template_builder' | 'template_properties' | 'template_hierarchy';
 export interface DockContents {
   primary?: DockContent;
   secondary?: DockContent;
@@ -37,7 +37,7 @@ export function isDockZoneAllowed(
 ): boolean {
   if (!panelId || !targetZone) return false;
   const content =
-    panelId === 'explorer' ||
+    panelId === 'items' ||
     panelId === 'collections' ||
     panelId === 'templates' ||
     panelId === 'grabbed_content' ||
@@ -210,7 +210,7 @@ export function usePanelDockDrag({ onDropPanel, contents }: UsePanelDockDragOpti
         // Detect if dragging a tab and cursor is currently over a tab strip area
         let currentReorderInfo: TabReorderInfo | null = null;
         if (
-          panelId === 'explorer' ||
+          panelId === 'items' ||
           panelId === 'collections' ||
           panelId === 'templates' ||
           panelId === 'grabbed_content' ||

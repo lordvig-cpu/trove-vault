@@ -2,37 +2,37 @@
 
 import React from 'react';
 import { CollectionRecord } from '@/types/collection';
-import { useExplorerActions } from '@/context/ExplorerActionsContext';
-import { useExplorerActionMenu } from '@/hooks/useExplorerActionMenu';
-import ExplorerActionMenu, {
+import { useTreeActions } from '@/context/TreeActionsContext';
+import { useTreeActionMenu } from '@/hooks/useTreeActionMenu';
+import TreeActionMenu, {
   ActionMenuDangerItem,
   ActionMenuDivider,
   ActionMenuItem,
   ActionMenuRenameForm,
-} from '@/components/ExplorerActionMenu';
+} from '@/components/TreeActionMenu';
 
-interface ExplorerTemplateActionMenuProps {
+interface TreeTemplateActionMenuProps {
   template: CollectionRecord;
-  menu: ReturnType<typeof useExplorerActionMenu>;
+  menu: ReturnType<typeof useTreeActionMenu>;
   position?: 'left' | 'right';
 }
 
-export default function ExplorerTemplateActionMenu({
+export default function TreeTemplateActionMenu({
   template,
   menu,
   position,
-}: ExplorerTemplateActionMenuProps) {
+}: TreeTemplateActionMenuProps) {
   const {
     onAddSubItem,
     onEditTemplate,
     onRenameTemplate,
     onDeleteTemplate,
-  } = useExplorerActions();
+  } = useTreeActions();
 
   const rawTemplateId = Math.abs(template.id);
 
   return (
-    <ExplorerActionMenu
+    <TreeActionMenu
       isOpen={menu.isMenuOpen}
       onMouseEnter={menu.handleMenuMouseEnter}
       onMouseLeave={menu.handleMouseLeave}
@@ -95,7 +95,7 @@ export default function ExplorerTemplateActionMenu({
           }}
         />
       )}
-    </ExplorerActionMenu>
+    </TreeActionMenu>
   );
 }
 

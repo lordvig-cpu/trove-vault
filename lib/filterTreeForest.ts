@@ -1,4 +1,4 @@
-import type { UnifiedCollectionNode } from '@/components/UnifiedExplorerTree';
+import type { UnifiedCollectionNode } from '@/components/UnifiedTree';
 import type { ItemRecord } from '@/types/item';
 import type { CollectionRecord } from '@/types/collection';
 import type { CollectionTemplate } from '@/types/template';
@@ -8,9 +8,9 @@ import {
   getItemRootCollectionIds,
   buildItemHierarchy,
   isDescendantOf,
-} from '@/lib/explorerUtils';
+} from '@/lib/treeUtils';
 
-export type ExplorerTab = 'items' | 'collections' | 'templates';
+export type TreeTab = 'items' | 'collections' | 'templates';
 
 /**
  * Synthesizes dynamic template nodes for a given list of items,
@@ -100,7 +100,7 @@ function buildCategoryNodesFromItems(
 }
 
 /**
- * Primary Explorer forest filter orchestrator:
+ * Primary Tree forest filter orchestrator:
  * - Items tab: groups items by category. If collection filters are active, only
  *   includes items existing within those filtered collection sets.
  * - Collections tab: returns collection hierarchies, pruning down to selected collections
@@ -108,10 +108,10 @@ function buildCategoryNodesFromItems(
  * - Templates tab: returns template hierarchies, pruning down to templates used by
  *   the selected collections or showing all active templates in use.
  */
-export function filterExplorerForest(
+export function filterTreeForest(
   forest: UnifiedCollectionNode[],
   filterCollectionIds: number[],
-  activeTab: ExplorerTab = 'items',
+  activeTab: TreeTab = 'items',
   allItems: ItemRecord[] = [],
   collections: CollectionRecord[] = [],
   templates: CollectionTemplate[] = []

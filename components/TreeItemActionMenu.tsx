@@ -1,34 +1,34 @@
 'use client';
 
 import React from 'react';
-import { AddSubItemIcon } from '@/components/icons/ExplorerIcons';
-import ExplorerActionMenu, {
+import { AddSubItemIcon } from '@/components/icons/TreeIcons';
+import TreeActionMenu, {
   ActionMenuDangerItem,
   ActionMenuDivider,
   ActionMenuItem,
   ActionMenuRenameForm,
-} from '@/components/ExplorerActionMenu';
-import { useExplorerActions } from '@/context/ExplorerActionsContext';
+} from '@/components/TreeActionMenu';
+import { useTreeActions } from '@/context/TreeActionsContext';
 import { ItemRecord } from '@/types/item';
-import { useExplorerActionMenu } from '@/hooks/useExplorerActionMenu';
+import { useTreeActionMenu } from '@/hooks/useTreeActionMenu';
 
-interface ExplorerItemActionMenuProps {
+interface TreeItemActionMenuProps {
   item: ItemRecord;
   collectionId: number | null;
-  menu: ReturnType<typeof useExplorerActionMenu>;
+  menu: ReturnType<typeof useTreeActionMenu>;
   position?: 'left' | 'right';
 }
 
-export default function ExplorerItemActionMenu({
+export default function TreeItemActionMenu({
   item,
   collectionId,
   menu,
   position,
-}: ExplorerItemActionMenuProps) {
-  const { onAddSubItem, onEditItem, onRenameItem, onDeleteItem } = useExplorerActions();
+}: TreeItemActionMenuProps) {
+  const { onAddSubItem, onEditItem, onRenameItem, onDeleteItem } = useTreeActions();
 
   return (
-    <ExplorerActionMenu
+    <TreeActionMenu
       isOpen={menu.isMenuOpen}
       onMouseEnter={menu.handleMenuMouseEnter}
       onMouseLeave={menu.handleMouseLeave}
@@ -87,6 +87,6 @@ export default function ExplorerItemActionMenu({
           menu.closeMenu();
         }}
       />
-    </ExplorerActionMenu>
+    </TreeActionMenu>
   );
 }

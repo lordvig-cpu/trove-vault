@@ -8,8 +8,8 @@ import {
   resolveDirection,
 } from '@/types/layout';
 import { FieldDefinition } from '@/types/field';
-import { GearIcon } from '@/components/icons/ExplorerIcons';
-import { useExplorerActionMenu } from '@/hooks/useExplorerActionMenu';
+import { GearIcon } from '@/components/icons/TreeIcons';
+import { useTreeActionMenu } from '@/hooks/useTreeActionMenu';
 import {
   TemplateContainerActionMenu,
   TemplateComponentActionMenu,
@@ -71,7 +71,7 @@ export function getAllContainerIds(node: FlexContainerNode): string[] {
 }
 
 /* ==========================================================================
-   3. TREE NODE ROW: Container Node Item (Explorer Tree Visual Model)
+   3. TREE NODE ROW: Container Node Item (Tree Visual Model)
    ========================================================================== */
 
 interface ContainerNodeRowProps {
@@ -120,7 +120,7 @@ function ContainerNodeRow({
   const isActiveTarget = activeContainerId === container.id;
   const isExpanded = expandedIds.has(container.id);
   const hasChildren = container.children.length > 0;
-  const menu = useExplorerActionMenu(`tree-container-${container.id}`, 280, position);
+  const menu = useTreeActionMenu(`tree-container-${container.id}`, 280, position);
 
   // Semantic layout icon
   const containerIcon = isRoot ? (
@@ -137,7 +137,7 @@ function ContainerNodeRow({
 
   return (
     <div className="select-none text-[13px] font-sans w-full min-w-0 flex flex-col">
-      {/* Row Item formatted to exact site explorer model */}
+      {/* Row Item formatted to exact site tree model */}
       <div
         onClick={() => onSelectNode(container.id)}
         onDragOver={(e) => {
@@ -176,11 +176,11 @@ function ContainerNodeRow({
         title={containerLabel}
         style={{ paddingLeft: `${depth * 18 + 6 + (isRightSide ? 32 : 0)}px` }}
         className={[
-          'explorer-tree-item group relative flex items-center h-7 px-1.5 gap-1.5 rounded-md cursor-pointer transition w-full min-w-0',
+          'tree-item group relative flex items-center h-7 px-1.5 gap-1.5 rounded-md cursor-pointer transition w-full min-w-0',
           isDragOver
             ? 'ring-1 ring-[var(--primary-accent)] bg-[color-mix(in_oklch,var(--primary-accent)_25%,transparent)] text-white font-semibold'
             : isSelected
-            ? 'explorer-tree-item-selected font-medium'
+            ? 'tree-item-selected font-medium'
             : '',
         ].join(' ')}
       >
@@ -196,9 +196,9 @@ function ContainerNodeRow({
           }}
           className={[
             'flex items-center justify-center w-3.5 h-3.5 shrink-0',
-            'text-[9px] explorer-tree-muted',
+            'text-[9px] tree-muted',
             'cursor-pointer transition select-none',
-            !hasChildren && 'explorer-tree-hidden pointer-events-none cursor-default opacity-0',
+            !hasChildren && 'tree-hidden pointer-events-none cursor-default opacity-0',
           ].filter(Boolean).join(' ')}
           title={isExpanded ? 'Collapse container' : 'Expand container'}
         >
@@ -224,14 +224,14 @@ function ContainerNodeRow({
         {hasChildren && (
           <span
             title={`${container.children.length} sub-items`}
-            className="explorer-tree-badge px-1.5 py-0.2 rounded text-[10px] font-mono shrink-0 select-none"
+            className="tree-badge px-1.5 py-0.2 rounded text-[10px] font-mono shrink-0 select-none"
           >
             {container.children.length}
           </span>
         )}
 
 
-        {/* Gear Icon: Triggers Explorer Action Menu with Item Properties or Body Actions */}
+        {/* Gear Icon: Triggers Tree Action Menu with Item Properties or Body Actions */}
         <div className={isRightSide ? 'absolute left-2 shrink-0' : 'relative ml-auto shrink-0'}>
           <div
             role="button"
@@ -262,8 +262,8 @@ function ContainerNodeRow({
               className={[
                 'w-[15px] h-[15px] transition-all duration-300 ease-out',
                 menu.isMenuOpen
-                  ? 'explorer-tree-primary rotate-90'
-                  : 'explorer-tree-action-icon',
+                  ? 'tree-primary rotate-90'
+                  : 'tree-action-icon',
               ].join(' ')}
             />
           </div>
@@ -379,7 +379,7 @@ function ComponentNodeRow({
 }: ComponentNodeRowProps) {
   const isRightSide = position === 'right';
   const isSelected = selectedNodeId === component.id;
-  const menu = useExplorerActionMenu(`tree-comp-${component.id}`, 280, position);
+  const menu = useTreeActionMenu(`tree-comp-${component.id}`, 280, position);
 
   const boundField = component.field_id
     ? fields.find((f) => f.id === component.field_id)
@@ -407,9 +407,9 @@ function ComponentNodeRow({
         title={label}
         style={{ paddingLeft: `${depth * 18 + 6 + (isRightSide ? 32 : 0)}px` }}
         className={[
-          'explorer-tree-item group relative flex items-center h-7 px-1.5 gap-1.5 rounded-md cursor-pointer transition w-full min-w-0',
+          'tree-item group relative flex items-center h-7 px-1.5 gap-1.5 rounded-md cursor-pointer transition w-full min-w-0',
           isSelected
-            ? 'explorer-tree-item-selected font-medium'
+            ? 'tree-item-selected font-medium'
             : '',
         ].join(' ')}
       >
@@ -442,7 +442,7 @@ function ComponentNodeRow({
           </span>
         )}
 
-        {/* Gear Icon: Triggers Explorer Action Menu with Item Properties */}
+        {/* Gear Icon: Triggers Tree Action Menu with Item Properties */}
         <div className={isRightSide ? 'absolute left-2 shrink-0' : 'relative ml-auto shrink-0'}>
           <div
             role="button"
@@ -473,8 +473,8 @@ function ComponentNodeRow({
               className={[
                 'w-[15px] h-[15px] transition-all duration-300 ease-out',
                 menu.isMenuOpen
-                  ? 'explorer-tree-primary rotate-90'
-                  : 'explorer-tree-action-icon',
+                  ? 'tree-primary rotate-90'
+                  : 'tree-action-icon',
               ].join(' ')}
             />
           </div>

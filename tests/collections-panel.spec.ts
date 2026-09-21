@@ -48,12 +48,12 @@ test('Collections flyout preserves collection and nested item actions', async ({
   const nestedItem = panel.getByRole('button', { name: 'Expansion pack', exact: true });
   await expect(nestedItem).toBeVisible();
   await nestedItem.locator('..').getByRole('button', { name: 'Open actions' }).hover();
-  await page.locator('[data-explorer-menu]:not([inert])').getByRole('button', { name: /Rename Item/ }).click();
-  await expect(page.locator('[data-explorer-menu]:not([inert]) input')).toHaveValue('Expansion pack');
+  await page.locator('[data-tree-menu]:not([inert])').getByRole('button', { name: /Rename Item/ }).click();
+  await expect(page.locator('[data-tree-menu]:not([inert]) input')).toHaveValue('Expansion pack');
   await page.keyboard.press('Escape');
   await page.keyboard.press('Escape');
   await item.locator('..').getByRole('button', { name: 'Open actions' }).hover();
-  const menu = page.locator('[data-explorer-menu]:not([inert])');
+  const menu = page.locator('[data-tree-menu]:not([inert])');
   for (const action of ['Add Sub-Item', 'Rename Item', 'Edit Item', 'Delete Item']) {
     await expect(menu.getByRole('button', { name: new RegExp(action) })).toBeVisible();
   }
@@ -69,14 +69,14 @@ test('Collections flyout preserves collection and nested item actions', async ({
   await expect(search.locator('input[type="checkbox"]').first()).toBeChecked();
 });
 
-test('Collections flyout stays interactive beside pinned Explorer and supports header dragging', async ({ page }) => {
+test('Collections flyout stays interactive beside the pinned Items panel and supports header dragging', async ({ page }) => {
   await dock(page, 'Items', 'left');
   await page.getByRole('button', { name: 'Pin Primary Side Bar', exact: true }).click();
   await page.getByRole('button', { name: 'Open Collections or drag to dock in a sidebar', exact: true }).click();
   const flyout = page.locator('aside.nav-flyout-menu');
   const collection = flyout.getByRole('button', { name: 'Games', exact: true });
   await collection.locator('..').getByRole('button', { name: 'Open actions' }).hover();
-  const menu = page.locator('[data-explorer-menu]:not([inert])');
+  const menu = page.locator('[data-tree-menu]:not([inert])');
   await expect(menu).toHaveCSS('z-index', '70');
   await menu.getByRole('button', { name: /Rename Collection/ }).click();
   await expect(menu.locator('input')).toHaveValue('Games');
@@ -94,18 +94,18 @@ test('Collections flyout stays interactive beside pinned Explorer and supports h
 });
 
 for (const side of ['left', 'right'] as const) {
-  test(`Collections and Explorer coexist with independent searches, Collections on ${side}`, async ({ page }) => {
+  test(`Collections and Items coexist with independent searches, Collections on ${side}`, async ({ page }) => {
     await dock(page, 'Collections', side);
     await dock(page, 'Items', side === 'left' ? 'right' : 'left');
     const collections = page.locator('aside').filter({ has: page.getByRole('tab', { name: 'Collections', exact: true }) });
-    const explorer = page.locator('aside').filter({ has: page.getByRole('tab', { name: 'Items', exact: true }) });
+    const itemsPanel = page.locator('aside').filter({ has: page.getByRole('tab', { name: 'Items', exact: true }) });
     await expect(collections).toHaveCount(1);
-    await expect(explorer).toHaveCount(1);
+    await expect(itemsPanel).toHaveCount(1);
     await page.keyboard.press('Control+k');
-    await expect(explorer.getByRole('textbox')).toBeFocused();
+    await expect(itemsPanel.getByRole('textbox')).toBeFocused();
     await page.keyboard.press('Control+l');
     await expect(collections.getByRole('textbox')).toBeFocused();
-    const rightPanel = side === 'right' ? collections : explorer;
+    const rightPanel = side === 'right' ? collections : itemsPanel;
     const gearPositions = await rightPanel.getByRole('button', { name: 'Open actions', exact: true })
       .evaluateAll(gears => gears.map(gear => gear.getBoundingClientRect().left));
     expect(gearPositions.length).toBeGreaterThan(2);
@@ -117,22 +117,22 @@ for (const side of ['left', 'right'] as const) {
     const arrowBox = (await rootRow.getByRole('button', { name: 'Collapse item', exact: true }).boundingBox())!;
     expect(arrowBox.x - (gearBox.x + gearBox.width)).toBeGreaterThanOrEqual(8);
     await nestedActions.hover();
-    await page.locator('[data-explorer-menu]:not([inert])').getByRole('button', { name: /Rename Item/ }).click();
-    await expect(page.locator('[data-explorer-menu]:not([inert]) input')).toHaveValue('Expansion pack');
+    await page.locator('[data-tree-menu]:not([inert])').getByRole('button', { name: /Rename Item/ }).click();
+    await expect(page.locator('[data-tree-menu]:not([inert]) input')).toHaveValue('Expansion pack');
     await page.keyboard.press('Escape');
     await page.keyboard.press('Escape');
     await collections.getByRole('textbox', { name: 'Search collections and items' }).fill('Board');
-    await explorer.getByRole('textbox', { name: 'Search items', exact: true }).fill('Standalone');
+    await itemsPanel.getByRole('textbox', { name: 'Search items', exact: true }).fill('Standalone');
     await expect(collections.getByRole('button', { name: 'Board game', exact: true })).toBeVisible();
-    await expect(explorer.getByRole('button', { name: 'Standalone item', exact: true })).toBeVisible();
+    await expect(itemsPanel.getByRole('button', { name: 'Standalone item', exact: true })).toBeVisible();
     await expect(collections.getByRole('textbox')).toHaveValue('Board');
     // Moving into an occupied sidebar swaps the two trees without losing their queries.
-    await expect(explorer.getByRole('button', { name: 'Swap ITEMS and COLLECTIONS', exact: true }))
+    await expect(itemsPanel.getByRole('button', { name: 'Swap ITEMS and COLLECTIONS', exact: true }))
       .toHaveAttribute('title', 'Swap ITEMS and COLLECTIONS');
     const swap = collections.getByRole('button', { name: 'Swap COLLECTIONS and ITEMS', exact: true });
     await expect(swap).toHaveAttribute('title', 'Swap COLLECTIONS and ITEMS');
     await swap.click();
     await expect(collections.getByRole('textbox')).toHaveValue('Board');
-    await expect(explorer.getByRole('textbox')).toHaveValue('Standalone');
+    await expect(itemsPanel.getByRole('textbox')).toHaveValue('Standalone');
   });
 }

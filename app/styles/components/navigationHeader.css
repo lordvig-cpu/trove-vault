@@ -111,9 +111,9 @@
 /* Accent bottom indicator line */
 .nav-tab-indicator {
   height: 2.5px;
-  background-color: var(--secondary-explorer-menu-rename-input-focus);
+  background-color: var(--secondary-tree-menu-rename-input-focus);
   border-radius: 9999px;
-  box-shadow: 0 0 6px var(--secondary-explorer-menu-rename-input-focus);
+  box-shadow: 0 0 6px var(--secondary-tree-menu-rename-input-focus);
   pointer-events: none;
   z-index: 10;
 }
@@ -156,7 +156,7 @@
   margin-top: 0;
   width: 22rem; /* w-88 (352px) */
   max-height: 75vh;
-  background: var(--primary-explorer-panel-bg);
+  background: var(--primary-tree-panel-bg);
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
   border: 1px solid var(--primary-border-strong);
@@ -180,9 +180,9 @@
   inset: 0;
   pointer-events: none;
   z-index: 1;
-  background: var(--explorer-panel-flare-bg);
-  mix-blend-mode: var(--explorer-panel-flare-blend);
-  opacity: var(--explorer-panel-flare-opacity);
+  background: var(--tree-panel-flare-bg);
+  mix-blend-mode: var(--tree-panel-flare-blend);
+  opacity: var(--tree-panel-flare-opacity);
   border-radius: inherit;
 }
 
@@ -193,10 +193,10 @@
   inset: 0;
   pointer-events: none;
   z-index: 1;
-  background: var(--explorer-panel-texture-bg);
-  filter: var(--explorer-panel-texture-filter);
-  opacity: var(--explorer-panel-texture-opacity);
-  mix-blend-mode: var(--explorer-panel-texture-blend);
+  background: var(--tree-panel-texture-bg);
+  filter: var(--tree-panel-texture-filter);
+  opacity: var(--tree-panel-texture-opacity);
+  mix-blend-mode: var(--tree-panel-texture-blend);
   border-radius: inherit;
 }
 

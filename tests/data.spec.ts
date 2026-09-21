@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { fetchAllPages } from '../lib/fetchAllPages';
-import { buildItemHierarchy, buildFilteredUnifiedForest, getItemRootCollectionIds, getStandaloneRootItem } from '../lib/explorerUtils';
-import { filterExplorerForest } from '../lib/filterExplorerForest';
+import { buildItemHierarchy, buildFilteredUnifiedForest, getItemRootCollectionIds, getStandaloneRootItem } from '../lib/treeUtils';
+import { filterTreeForest } from '../lib/filterTreeForest';
 import type { ItemRecord } from '../types/item';
 
 const item = (id: number, parent_id: number | null = null, collection_ids: number[] = []): ItemRecord => ({ id, parent_id, collection_ids, name: `Item ${id}`, attributes: {} });
@@ -38,7 +38,7 @@ test('membership inheritance, multi-collection items and standalone grouping sur
   expect(forest[0].items[0].children?.[0].id).toBe(2);
   expect(forest[0].subCollections[0].items[0].id).toBe(1);
   expect(forest.find(node => node.id < 0)?.items[0].id).toBe(3);
-  const categories = filterExplorerForest(forest, [10], 'items', items, collections, []);
+  const categories = filterTreeForest(forest, [10], 'items', items, collections, []);
   expect(categories.flatMap(node => node.items.map(item => item.id))).toEqual([1]);
 });
 

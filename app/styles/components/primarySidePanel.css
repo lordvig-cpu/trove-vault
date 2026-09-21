@@ -1,7 +1,7 @@
 /* ==========================================================================
-   PRIMARY SIDE PANEL & EXPLORER TREE STYLES
+   PRIMARY SIDE PANEL & TREE STYLES
    Orchestrates the collapsible Primary Side Panel (left/right dockable),
-   pinned flyouts, search cards, and sticky Category headers for Explorer.
+   pinned flyouts, search cards, and sticky Category headers for Tree.
    ========================================================================== */
 
 /* --------------------------------------------------------------------------
@@ -14,7 +14,7 @@
   bottom: 0;
   max-width: none;
   isolation: isolate;
-  background: var(--primary-explorer-panel-bg);
+  background: var(--primary-tree-panel-bg);
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
   display: flex;
@@ -45,9 +45,9 @@
   pointer-events: none;
   z-index: 1;
   clip-path: inset(0);
-  background: var(--explorer-panel-flare-bg);
-  mix-blend-mode: var(--explorer-panel-flare-blend);
-  opacity: var(--explorer-panel-flare-opacity);
+  background: var(--tree-panel-flare-bg);
+  mix-blend-mode: var(--tree-panel-flare-blend);
+  opacity: var(--tree-panel-flare-opacity);
 }
 
 /* Procedural surface texture overlay */
@@ -58,10 +58,10 @@
   pointer-events: none;
   z-index: 1;
   clip-path: inset(0);
-  background: var(--explorer-panel-texture-bg);
-  filter: var(--explorer-panel-texture-filter);
-  opacity: var(--explorer-panel-texture-opacity);
-  mix-blend-mode: var(--explorer-panel-texture-blend);
+  background: var(--tree-panel-texture-bg);
+  filter: var(--tree-panel-texture-filter);
+  opacity: var(--tree-panel-texture-opacity);
+  mix-blend-mode: var(--tree-panel-texture-blend);
 }
 
 /* Docked layout mode (Left docked) */
@@ -195,7 +195,7 @@
   z-index: 20;
   display: flex;
   flex-direction: column;
-  border-bottom: 1px solid var(--secondary-explorer-menu-rename-input-focus);
+  border-bottom: 1px solid var(--secondary-tree-menu-rename-input-focus);
   background: transparent;
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
@@ -220,7 +220,7 @@
   border-radius: 0.5rem;
   border: 1px solid transparent;
   background: transparent;
-  color: var(--primary-explorer-action-icon);
+  color: var(--primary-tree-action-icon);
   cursor: pointer;
   flex-shrink: 0;
   transition: all 150ms ease;
@@ -229,7 +229,7 @@
 .primary-side-panel-pin-btn:hover {
   border-color: var(--primary-border-subtle);
   background-color: var(--surface-primary-hover);
-  color: var(--explorer-action-icon-hover);
+  color: var(--tree-action-icon-hover);
 }
 
 /* Position swap button */
@@ -241,7 +241,7 @@
   border-radius: 0.5rem;
   border: 1px solid transparent;
   background: transparent;
-  color: var(--primary-explorer-action-icon);
+  color: var(--primary-tree-action-icon);
   cursor: pointer;
   flex-shrink: 0;
   transition: all 150ms ease;
@@ -250,11 +250,11 @@
 .primary-side-panel-position-btn:hover {
   border-color: var(--primary-border-subtle);
   background-color: var(--surface-primary-hover);
-  color: var(--explorer-action-icon-hover);
+  color: var(--tree-action-icon-hover);
 }
 
 /* Tab row action buttons (Contextual Add & Folder Accordion Toggle) */
-.explorer-tab-action-btn {
+.tree-tab-action-btn {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -264,26 +264,26 @@
   border-radius: 0.375rem;
   border: 1px solid transparent;
   background: transparent;
-  color: var(--primary-explorer-action-icon);
+  color: var(--primary-tree-action-icon);
   cursor: pointer;
   flex-shrink: 0;
   transition: all 150ms ease;
 }
 
-.explorer-tab-action-btn:hover {
+.tree-tab-action-btn:hover {
   border-color: var(--primary-border-subtle);
   background-color: var(--surface-primary-hover);
-  color: var(--explorer-action-icon-hover);
+  color: var(--tree-action-icon-hover);
 }
 
 /* --------------------------------------------------------------------------
-   Explorer Folder Tabs (Paper Folder Style)
+   Tree Folder Tabs (Paper Folder Style)
    -------------------------------------------------------------------------- */
-.explorer-tab-baseline {
-  border-color: var(--secondary-explorer-menu-rename-input-focus);
+.tree-tab-baseline {
+  border-color: var(--secondary-tree-menu-rename-input-focus);
 }
 
-.explorer-folder-tab {
+.tree-folder-tab {
   position: relative;
   display: inline-flex;
   align-items: center;
@@ -302,89 +302,89 @@
   user-select: none;
 }
 
-.explorer-folder-tab-idle {
-  color: var(--primary-explorer-tab-text-idle);
+.tree-folder-tab-idle {
+  color: var(--primary-tree-tab-text-idle);
 }
 
-.explorer-folder-tab-idle:hover {
-  color: var(--primary-explorer-tab-text-hover);
+.tree-folder-tab-idle:hover {
+  color: var(--primary-tree-tab-text-hover);
 }
 
-.explorer-folder-tab-active {
-  color: var(--secondary-explorer-menu-rename-save-text);
+.tree-folder-tab-active {
+  color: var(--secondary-tree-menu-rename-save-text);
   font-weight: 700;
 }
 
-.explorer-tab-svg-fill {
+.tree-tab-svg-fill {
   transition: fill 150ms ease;
 }
 
-.explorer-tab-svg-stroke {
+.tree-tab-svg-stroke {
   transition: stroke 150ms ease;
 }
 
-.explorer-folder-tab-idle .explorer-tab-svg-fill {
-  fill: var(--primary-explorer-tab-bg-idle);
+.tree-folder-tab-idle .tree-tab-svg-fill {
+  fill: var(--primary-tree-tab-bg-idle);
 }
 
-.explorer-folder-tab-idle:hover .explorer-tab-svg-fill {
-  fill: var(--primary-explorer-tab-bg-hover);
+.tree-folder-tab-idle:hover .tree-tab-svg-fill {
+  fill: var(--primary-tree-tab-bg-hover);
 }
 
-.explorer-folder-tab-idle .explorer-tab-svg-stroke {
-  stroke: var(--primary-explorer-tab-border-idle);
+.tree-folder-tab-idle .tree-tab-svg-stroke {
+  stroke: var(--primary-tree-tab-border-idle);
 }
 
-.explorer-folder-tab-idle:hover .explorer-tab-svg-stroke {
-  stroke: var(--primary-explorer-tab-border-hover);
+.tree-folder-tab-idle:hover .tree-tab-svg-stroke {
+  stroke: var(--primary-tree-tab-border-hover);
 }
 
-.explorer-folder-tab-active .explorer-tab-svg-fill {
-  fill: var(--primary-explorer-tab-bg-active);
+.tree-folder-tab-active .tree-tab-svg-fill {
+  fill: var(--primary-tree-tab-bg-active);
 }
 
 .tab-grad-top {
-  stop-color: var(--primary-explorer-tab-active-top);
+  stop-color: var(--primary-tree-tab-active-top);
 }
 
 .tab-grad-mid {
-  stop-color: var(--primary-explorer-tab-bg-active);
+  stop-color: var(--primary-tree-tab-bg-active);
 }
 
 .tab-grad-bottom {
-  stop-color: var(--primary-explorer-tab-active-bottom);
+  stop-color: var(--primary-tree-tab-active-bottom);
 }
 
-.explorer-folder-tab-active .explorer-tab-svg-stroke {
-  stroke: var(--secondary-explorer-menu-rename-input-focus);
+.tree-folder-tab-active .tree-tab-svg-stroke {
+  stroke: var(--secondary-tree-menu-rename-input-focus);
 }
 
 /* Cast luminous amber glow and 3D shadow on active tab */
-.explorer-folder-tab-active svg {
-  filter: var(--secondary-explorer-tab-glow-active);
+.tree-folder-tab-active svg {
+  filter: var(--secondary-tree-tab-glow-active);
 }
 
 /* Tab Reordering Drag and Drop Feedback */
-.explorer-folder-tab-dragging {
+.tree-folder-tab-dragging {
   opacity: 0.45;
   filter: grayscale(40%);
 }
 
-.explorer-folder-tab-reorder-target {
+.tree-folder-tab-reorder-target {
   position: relative;
   z-index: 35 !important;
 }
 
-.explorer-folder-tab-reorder-target .explorer-tab-svg-stroke {
+.tree-folder-tab-reorder-target .tree-tab-svg-stroke {
   stroke: rgba(255, 255, 255, 0.95) !important;
   stroke-width: 2px !important;
 }
 
-.explorer-folder-tab-reorder-target svg {
+.tree-folder-tab-reorder-target svg {
   filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.7)) drop-shadow(0 0 3px rgba(56, 189, 248, 0.9)) !important;
 }
 
-.explorer-tab-insert-marker {
+.tree-tab-insert-marker {
   position: absolute;
   top: 1px;
   bottom: 1px;
@@ -397,11 +397,11 @@
   animation: tabMarkerPulse 800ms ease-in-out infinite alternate;
 }
 
-.explorer-tab-insert-marker-left {
+.tree-tab-insert-marker-left {
   left: -2px;
 }
 
-.explorer-tab-insert-marker-right {
+.tree-tab-insert-marker-right {
   right: -2px;
 }
 
@@ -426,7 +426,7 @@
   flex-shrink: 0;
   background-color: var(--primary-panel-notice-loading-bg);
   border: 1px solid var(--primary-panel-notice-loading-border);
-  color: var(--secondary-explorer-menu-rename-save-text);
+  color: var(--secondary-tree-menu-rename-save-text);
 }
 
 .primary-side-panel-notice-error {
@@ -440,11 +440,11 @@
 }
 
 /* --------------------------------------------------------------------------
-   Explorer Tree Action Menu Popup & Buttons
+   Tree Action Menu Popup & Buttons
    -------------------------------------------------------------------------- */
-.explorer-action-popup {
+.tree-action-popup {
   background-color: var(--surface-popover);
-  border: 1px solid var(--primary-explorer-menu-border);
+  border: 1px solid var(--primary-tree-menu-border);
   border-radius: 0.375rem;
   box-shadow: var(--popover-elevation-shadow);
   padding: 0.25rem;
@@ -454,7 +454,7 @@
   white-space: nowrap;
 }
 
-.explorer-action-btn {
+.tree-action-btn {
   padding: 0.375rem;
   color: var(--text-muted);
   border-radius: 0.25rem;
@@ -466,19 +466,19 @@
   border: none;
 }
 
-.explorer-action-btn:hover {
+.tree-action-btn:hover {
   background-color: var(--primary-col-dropdown-btn-hover-bg);
-  color: var(--explorer-menu-btn-hover-text);
+  color: var(--tree-menu-btn-hover-text);
 }
 
-.explorer-action-btn-accent:hover {
+.tree-action-btn-accent:hover {
   background-color: var(--primary-col-dropdown-btn-hover-bg);
-  color: var(--secondary-explorer-menu-rename-input-focus);
+  color: var(--secondary-tree-menu-rename-input-focus);
 }
 
-.explorer-action-btn-danger {
+.tree-action-btn-danger {
   padding: 0.375rem;
-  color: var(--explorer-menu-danger-text);
+  color: var(--tree-menu-danger-text);
   border-radius: 0.25rem;
   font-size: 0.75rem;
   cursor: pointer;
@@ -488,13 +488,13 @@
   border: none;
 }
 
-.explorer-action-btn-danger:hover {
-  color: var(--explorer-menu-danger-hover-text);
-  background-color: var(--explorer-menu-danger-hover-bg);
+.tree-action-btn-danger:hover {
+  color: var(--tree-menu-danger-hover-text);
+  background-color: var(--tree-menu-danger-hover-bg);
 }
 
 /* Shared primary/secondary panel header: topper, gradient, title and divider. */
-.explorer-header-toolbar {
+.tree-header-toolbar {
   position: relative;
   isolation: isolate;
   height: 2rem;
@@ -588,7 +588,7 @@
   box-shadow: 0 -1px 4px color-mix(in oklch, var(--primary-accent-hover) 40%, transparent);
 }
 
-.explorer-header-toolbar::before {
+.tree-header-toolbar::before {
   content: '';
   position: absolute;
   top: -0.5rem;
@@ -603,7 +603,7 @@
   pointer-events: none;
 }
 
-.explorer-header-toolbar::after {
+.tree-header-toolbar::after {
   content: '';
   position: absolute;
   inset: -0.125rem -0.625rem -0.5rem;
@@ -619,21 +619,21 @@
 }
 
 /* Use the scrollbar aqua, rather than the primary seed's deeper blue. */
-.explorer-header-empty .explorer-header-toolbar::before {
+.tree-header-empty .tree-header-toolbar::before {
   background: linear-gradient(to bottom,
     color-mix(in oklch, var(--panel-border-strong) 75%, var(--surface-panel)),
     color-mix(in oklch, var(--panel-border-strong) 45%, var(--surface-panel)));
   box-shadow: none;
 }
 
-.explorer-header-occupied .explorer-header-toolbar::before {
+.tree-header-occupied .tree-header-toolbar::before {
   background: linear-gradient(to bottom,
     color-mix(in oklch, var(--primary-accent-hover) 75%, var(--text-fixed-white)),
     var(--primary-accent-hover));
   box-shadow: 0 1px 4px color-mix(in oklch, var(--primary-accent-hover) 40%, transparent);
 }
 
-.explorer-header-title {
+.tree-header-title {
   color: var(--text-strong);
   text-shadow: 0 1px 3px var(--shadow-black-35);
 }
@@ -663,7 +663,7 @@
 }
 
 /* Separate the panel controls from the search section. */
-.explorer-header-divider {
+.tree-header-divider {
   /* Extend through the header's px-2.5 inset to meet both panel edges. */
   width: calc(100% + 1.25rem);
   margin: 0 -0.625rem;
@@ -676,15 +676,15 @@
     0 1px 3px color-mix(in oklch, var(--primary-accent-hover) 20%, transparent);
 }
 
-.explorer-section-heading {
+.tree-section-heading {
   display: flex;
   align-items: center;
   gap: 0.5rem;
   margin-top: 0.5rem;
-  color: var(--primary-explorer-title-text);
+  color: var(--primary-tree-title-text);
 }
 
-.explorer-section-heading h3 {
+.tree-section-heading h3 {
   margin: 0;
   flex-shrink: 0;
   font-size: 0.625rem;
@@ -694,11 +694,11 @@
   text-shadow: 0 1px 2px var(--shadow-black-35);
 }
 
-.explorer-section-heading hr {
+.tree-section-heading hr {
   flex: 1;
   margin: 0;
   border: 0;
-  border-top: 1px solid color-mix(in oklch, var(--primary-explorer-title-text) 30%, transparent);
+  border-top: 1px solid color-mix(in oklch, var(--primary-tree-title-text) 30%, transparent);
   box-shadow:
     0 -1px 0 var(--shadow-black-50),
     0 1px 0 var(--shadow-black-50),
@@ -706,9 +706,9 @@
 }
 
 /* Compact Search Input */
-.explorer-search-input {
+.tree-search-input {
   width: 100%;
-  background-color: var(--primary-explorer-search-input-bg);
+  background-color: var(--primary-tree-search-input-bg);
   border-radius: 0.375rem;
   padding-left: 1.5rem;
   padding-right: 3rem;
@@ -722,35 +722,35 @@
   border: 1px solid var(--primary-border-input);
 }
 
-.explorer-search-input:hover {
+.tree-search-input:hover {
   border-color: var(--primary-border-input-hover);
 }
 
-.explorer-search-input::placeholder {
-  color: var(--primary-explorer-search-placeholder);
+.tree-search-input::placeholder {
+  color: var(--primary-tree-search-placeholder);
 }
 
-.explorer-search-input:focus-within {
+.tree-search-input:focus-within {
   border-color: var(--secondary-accent);
   box-shadow: var(--secondary-focus-ring);
 }
 
-.explorer-search-input-active {
+.tree-search-input-active {
   border-color: var(--secondary-accent);
 }
 
 /* The editable query becomes a pill without replacing the focused input. */
-.explorer-search-shell {
+.tree-search-shell {
   min-height: 2.25rem;
   gap: 0.375rem;
   padding: 0.25rem 0.5rem 0.25rem 2rem;
 }
 
-.explorer-search-shell-right {
+.tree-search-shell-right {
   padding: 0.25rem 2rem 0.25rem 0.5rem;
 }
 
-.explorer-search-query {
+.tree-search-query {
   display: flex;
   align-items: center;
   min-width: 0;
@@ -758,7 +758,7 @@
   flex: 1;
 }
 
-.explorer-search-query-pill {
+.tree-search-query-pill {
   flex: 0 1 auto;
   gap: 0.125rem;
   padding: 0.125rem 0.375rem;
@@ -769,7 +769,7 @@
   box-shadow: inset 0 1px 3px color-mix(in oklch, var(--primary-accent) 8%, transparent);
 }
 
-.explorer-search-query-input {
+.tree-search-query-input {
   width: 100%;
   min-width: 0;
   padding: 0;
@@ -780,11 +780,11 @@
   font: inherit;
 }
 
-.explorer-search-query-input::placeholder {
-  color: var(--primary-explorer-search-placeholder);
+.tree-search-query-input::placeholder {
+  color: var(--primary-tree-search-placeholder);
 }
 
-.explorer-search-query-clear {
+.tree-search-query-clear {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -797,16 +797,16 @@
   cursor: pointer;
 }
 
-.explorer-search-query-clear:hover {
+.tree-search-query-clear:hover {
   color: var(--primary-accent-hover);
 }
 
-.explorer-search-query-clear:focus-visible {
+.tree-search-query-clear:focus-visible {
   outline: 2px solid var(--primary-accent-hover);
   outline-offset: 1px;
 }
 
-.explorer-search-advanced {
+.tree-search-advanced {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -815,34 +815,34 @@
   padding-left: 0.5rem;
   border-left: 1px solid color-mix(in oklch, var(--text-soft) 35%, transparent);
   background: transparent;
-  color: var(--primary-explorer-action-icon);
+  color: var(--primary-tree-action-icon);
   transition: color 150ms ease;
   cursor: pointer;
 }
 
-.explorer-search-advanced-left {
+.tree-search-advanced-left {
   padding-left: 0;
   padding-right: 0.5rem;
   border-left: none;
   border-right: 1px solid color-mix(in oklch, var(--text-soft) 35%, transparent);
 }
 
-.explorer-search-advanced:hover {
+.tree-search-advanced:hover {
   color: var(--text-fixed-white);
 }
 
-.explorer-search-advanced[aria-expanded='true'],
-.explorer-search-advanced[data-filter-active='true'] {
+.tree-search-advanced[aria-expanded='true'],
+.tree-search-advanced[data-filter-active='true'] {
   color: var(--secondary-accent);
 }
 
-.explorer-search-advanced:focus-visible {
+.tree-search-advanced:focus-visible {
   outline: 2px solid var(--primary-accent-hover);
   outline-offset: 1px;
 }
 
 /* Keyboard Shortcut Badge */
-.explorer-search-kbd {
+.tree-search-kbd {
   position: absolute;
   right: 0.5rem;
   top: 50%;
@@ -856,9 +856,9 @@
   padding: 2px 4px;
   border-radius: 3px;
   box-shadow: 0 1px 2px 0 var(--shadow-black-5);
-  color: var(--explorer-kbd-text);
-  background-color: var(--explorer-kbd-bg);
-  border: 1px solid var(--explorer-kbd-border);
+  color: var(--tree-kbd-text);
+  background-color: var(--tree-kbd-bg);
+  border: 1px solid var(--tree-kbd-border);
 }
 
 /* --------------------------------------------------------------------------
@@ -890,7 +890,7 @@
 /* --------------------------------------------------------------------------
    Sticky Tree Category Headers
    -------------------------------------------------------------------------- */
-.explorer-tree-scroll-container {
+.tree-scroll-container {
   position: relative;
   overflow-y: auto;
   overflow-x: hidden;
@@ -898,13 +898,13 @@
   flex: 1;
 }
 
-.explorer-category-sticky-header {
+.tree-category-sticky-header {
   position: sticky;
   top: 0;
   border-radius: 0.5rem;
-  background: var(--primary-explorer-category-card-bg);
-  border: 1px solid var(--primary-explorer-category-card-border);
-  box-shadow: var(--explorer-category-card-shadow);
+  background: var(--primary-tree-category-card-bg);
+  border: 1px solid var(--primary-tree-category-card-border);
+  box-shadow: var(--tree-category-card-shadow);
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
   margin-top: 0;
@@ -912,19 +912,19 @@
   transition: all 150ms ease;
 }
 
-.explorer-category-sticky-header:hover {
-  background: var(--primary-explorer-category-card-hover-bg);
-  border-color: var(--primary-explorer-category-card-hover-border);
+.tree-category-sticky-header:hover {
+  background: var(--primary-tree-category-card-hover-bg);
+  border-color: var(--primary-tree-category-card-hover-border);
 }
 
-.explorer-category-sticky-header.explorer-category-row-active {
-  background: var(--primary-explorer-category-card-active-bg);
-  border-color: var(--secondary-explorer-category-card-active-border);
+.tree-category-sticky-header.tree-category-row-active {
+  background: var(--primary-tree-category-card-active-bg);
+  border-color: var(--secondary-tree-category-card-active-border);
 }
 
 /* Lift only the hovered sticky category above its sibling rows. The important
    override is needed for the depth-based inline z-index on these headers. */
-.explorer-category-sticky-header:hover {
+.tree-category-sticky-header:hover {
   z-index: 40 !important;
 }
 

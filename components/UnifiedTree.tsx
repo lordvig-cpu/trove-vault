@@ -2,13 +2,13 @@
 
 import React, { useState } from 'react';
 import { ItemRecord } from '@/types/item';
-import { GearIcon } from '@/components/icons/ExplorerIcons';
-import { useExplorerActionMenu } from '@/hooks/useExplorerActionMenu';
-import { useExplorerSelection } from '@/context/ExplorerSelectionContext';
-import ExplorerCollectionActionMenu from '@/components/ExplorerCollectionActionMenu';
-import ExplorerTemplateActionMenu from '@/components/ExplorerTemplateActionMenu';
-import ExplorerItemActionMenu from '@/components/ExplorerItemActionMenu';
-import { STANDALONE_COLLECTION_ID } from '@/lib/explorerUtils';
+import { GearIcon } from '@/components/icons/TreeIcons';
+import { useTreeActionMenu } from '@/hooks/useTreeActionMenu';
+import { useTreeSelection } from '@/context/TreeSelectionContext';
+import TreeCollectionActionMenu from '@/components/TreeCollectionActionMenu';
+import TreeTemplateActionMenu from '@/components/TreeTemplateActionMenu';
+import TreeItemActionMenu from '@/components/TreeItemActionMenu';
+import { STANDALONE_COLLECTION_ID } from '@/lib/treeUtils';
 import { CollectionRecord } from '@/types/collection';
 
 /* ==========================================================================
@@ -20,7 +20,7 @@ export interface UnifiedCollectionNode extends CollectionRecord {
   subCollections: UnifiedCollectionNode[];
 }
 
-export interface UnifiedExplorerTreeProps {
+export interface UnifiedTreeProps {
   collection: UnifiedCollectionNode;
   depth?: number;
   treeType?: 'items' | 'collections' | 'templates';
@@ -42,7 +42,7 @@ function getItemTypeIcon(item: ItemRecord): string {
   return '📄';
 }
 
-function ExplorerLoadMoreNode({
+function TreeLoadMoreNode({
   remainingCount,
   onLoadMore,
 }: {
@@ -58,7 +58,7 @@ function ExplorerLoadMoreNode({
         e.preventDefault();
         onLoadMore();
       }}
-      className="explorer-tree-load-more group"
+      className="tree-load-more group"
       title={`Load ${nextCount} more items (${remainingCount} remaining)`}
     >
       <span className="text-[11px] font-bold transition-transform duration-200 group-hover:translate-y-0.5 select-none">
@@ -72,7 +72,7 @@ function ExplorerLoadMoreNode({
   );
 }
 
-function UnifiedExplorerTreeItem({
+function UnifiedTreeItem({
   item,
   collectionId,
   depth = 0,
@@ -81,11 +81,11 @@ function UnifiedExplorerTreeItem({
   collectionId: number | null;
   depth: number;
 }) {
-  const { selectedItemId, searchHighlight, onSelectItem, position = 'left' } = useExplorerSelection();
+  const { selectedItemId, searchHighlight, onSelectItem, position = 'left' } = useTreeSelection();
   const isRightSide = position === 'right';
   const [isOpen, setIsOpen] = useState(true);
   const [displayLimit, setDisplayLimit] = useState(CHUNK_SIZE);
-  const menu = useExplorerActionMenu(`item-${item.id}`, 215, position);
+  const menu = useTreeActionMenu(`item-${item.id}`, 215, position);
   const isSelected = (searchHighlight?.itemId ?? selectedItemId) === item.id;
   const effectiveIsOpen = isOpen || !!searchHighlight?.ancestorItemIds.has(item.id);
   const childrenList = item.children || [];
@@ -116,8 +116,8 @@ function UnifiedExplorerTreeItem({
           className={[
             'w-[15px] h-[15px] transition-all duration-300 ease-out',
             menu.isMenuOpen
-              ? 'explorer-tree-gear-open rotate-90'
-              : 'explorer-tree-gear-closed',
+              ? 'tree-gear-open rotate-90'
+              : 'tree-gear-closed',
           ].join(' ')}
         />
       </div>
@@ -133,8 +133,8 @@ function UnifiedExplorerTreeItem({
         className={[
           'group relative flex items-center h-7 px-1.5 gap-1.5 rounded-md cursor-pointer transition w-full min-w-0',
           isSelected
-            ? 'explorer-tree-item-selected font-medium'
-            : 'explorer-tree-item',
+            ? 'tree-item-selected font-medium'
+            : 'tree-item',
         ].join(' ')}
       >
         {isRightSide && gearElement}
@@ -150,9 +150,9 @@ function UnifiedExplorerTreeItem({
           }}
           className={[
             'flex items-center justify-center w-3.5 h-3.5 shrink-0',
-            'text-[9px] explorer-tree-muted',
+            'text-[9px] tree-muted',
             'cursor-pointer transition select-none',
-            !hasSubItems && 'explorer-tree-hidden pointer-events-none cursor-default',
+            !hasSubItems && 'tree-hidden pointer-events-none cursor-default',
           ].filter(Boolean).join(' ')}
           title={effectiveIsOpen ? 'Collapse item' : 'Expand item'}
         >
@@ -170,7 +170,7 @@ function UnifiedExplorerTreeItem({
         {childrenList.length > 0 && (
           <span
             title={`${childrenList.length} sub-items`}
-            className={`explorer-tree-badge px-1.5 py-0.2 rounded text-[10px] font-mono shrink-0 select-none ${
+            className={`tree-badge px-1.5 py-0.2 rounded text-[10px] font-mono shrink-0 select-none ${
               isRightSide ? 'ml-auto' : ''
             }`}
           >
@@ -181,7 +181,7 @@ function UnifiedExplorerTreeItem({
         {!isRightSide && gearElement}
       </div>
 
-      <ExplorerItemActionMenu
+      <TreeItemActionMenu
         item={item}
         collectionId={collectionId}
         menu={menu}
@@ -189,9 +189,9 @@ function UnifiedExplorerTreeItem({
       />
 
       {effectiveIsOpen && hasSubItems && (
-        <div className={`explorer-tree-branch space-y-0.5 my-0.5 flex flex-col min-w-0 ${isRightSide ? '' : 'border-l ml-[13.5px] pl-2.5'}`}>
+        <div className={`tree-branch space-y-0.5 my-0.5 flex flex-col min-w-0 ${isRightSide ? '' : 'border-l ml-[13.5px] pl-2.5'}`}>
           {visibleChildren.map((child) => (
-            <UnifiedExplorerTreeItem
+            <UnifiedTreeItem
               key={`subitem-${child.id}`}
               item={child}
               collectionId={collectionId}
@@ -199,7 +199,7 @@ function UnifiedExplorerTreeItem({
             />
           ))}
           {remainingChildren > 0 && (
-            <ExplorerLoadMoreNode
+            <TreeLoadMoreNode
               remainingCount={remainingChildren}
               onLoadMore={() => setDisplayLimit((prev) => prev + CHUNK_SIZE)}
             />
@@ -214,11 +214,11 @@ function UnifiedExplorerTreeItem({
    3. COLLECTION / CATEGORY / TEMPLATE ROW
    ========================================================================== */
 
-export default function UnifiedExplorerTree({
+export default function UnifiedTree({
   collection,
   depth = 0,
   treeType = 'items',
-}: UnifiedExplorerTreeProps) {
+}: UnifiedTreeProps) {
   const {
     activeCollectionId,
     searchHighlight,
@@ -226,9 +226,9 @@ export default function UnifiedExplorerTree({
     onToggleCategory,
     onSelectCollection,
     position = 'left',
-  } = useExplorerSelection();
+  } = useTreeSelection();
   const isRightSide = position === 'right';
-  const menu = useExplorerActionMenu(`node-${collection.id}`, 240, position);
+  const menu = useTreeActionMenu(`node-${collection.id}`, 240, position);
   const [displayLimit, setDisplayLimit] = useState(CHUNK_SIZE);
 
   const isVirtualCategory = collection.id < 0;
@@ -279,8 +279,8 @@ export default function UnifiedExplorerTree({
           className={[
             'w-[15px] h-[15px] transition-all duration-300 ease-out',
             menu.isMenuOpen
-              ? 'explorer-tree-primary rotate-90'
-              : 'explorer-tree-action-icon',
+              ? 'tree-primary rotate-90'
+              : 'tree-action-icon',
           ].join(' ')}
         />
       </div>
@@ -294,10 +294,10 @@ export default function UnifiedExplorerTree({
         title={`${treeType === 'templates' ? 'Template' : isVirtualCategory ? 'Category' : 'Collection'}: ${collection.name}`}
         style={{ top: `${stickyTop}px`, zIndex: stickyZIndex, ...(isRightSide ? { paddingLeft: depth * 24.5 + 44 } : {}) }}
         className={[
-          'group flex items-center h-8 px-2 gap-1.5 cursor-pointer transition w-full min-w-0 explorer-category-sticky-header',
+          'group flex items-center h-8 px-2 gap-1.5 cursor-pointer transition w-full min-w-0 tree-category-sticky-header',
           isActiveCollection
-            ? 'explorer-category-row-active font-medium'
-            : 'explorer-category-row',
+            ? 'tree-category-row-active font-medium'
+            : 'tree-category-row',
         ].join(' ')}
       >
         {isRightSide && gearElement}
@@ -309,16 +309,16 @@ export default function UnifiedExplorerTree({
           onClick={handleToggle}
           className={[
             'flex items-center justify-center w-4 h-4 shrink-0',
-            'text-[9px] explorer-tree-muted',
+            'text-[9px] tree-muted',
             'cursor-pointer transition select-none',
-            !hasChildren && 'explorer-tree-hidden pointer-events-none cursor-default',
+            !hasChildren && 'tree-hidden pointer-events-none cursor-default',
           ].filter(Boolean).join(' ')}
           title={localIsOpen ? 'Collapse category' : 'Expand category'}
         >
           {localIsOpen ? '▼' : '▶\uFE0E'}
         </button>
 
-        <span className="w-4 h-4 flex items-center justify-center text-sm explorer-category-icon shrink-0 select-none">
+        <span className="w-4 h-4 flex items-center justify-center text-sm tree-category-icon shrink-0 select-none">
           {collection.icon || (localIsOpen ? '📂' : '📁')}
         </span>
 
@@ -336,7 +336,7 @@ export default function UnifiedExplorerTree({
         {collection.items?.length ? (
           <span
             title={`${collection.items.length} ${collection.items.length === 1 ? 'item' : 'items'}`}
-            className={`explorer-tree-badge px-2 py-0.5 rounded-full text-[10.5px] font-mono shrink-0 select-none ${
+            className={`tree-badge px-2 py-0.5 rounded-full text-[10.5px] font-mono shrink-0 select-none ${
               isRightSide ? 'ml-auto' : ''
             }`}
           >
@@ -348,13 +348,13 @@ export default function UnifiedExplorerTree({
       </div>
 
       {treeType === 'templates' ? (
-        <ExplorerTemplateActionMenu
+        <TreeTemplateActionMenu
           template={collection}
           menu={menu}
           position={position}
         />
       ) : (
-        <ExplorerCollectionActionMenu
+        <TreeCollectionActionMenu
           collection={collection}
           isVirtualCategory={isVirtualCategory}
           menu={menu}
@@ -363,9 +363,9 @@ export default function UnifiedExplorerTree({
       )}
 
       {localIsOpen && hasChildren && (
-        <div className={`explorer-tree-branch space-y-0.5 my-0.5 flex flex-col min-w-0 ${isRightSide ? '' : 'border-l ml-[13.5px] pl-2.5'}`}>
+        <div className={`tree-branch space-y-0.5 my-0.5 flex flex-col min-w-0 ${isRightSide ? '' : 'border-l ml-[13.5px] pl-2.5'}`}>
           {rawSubCollections.map((subCollection) => (
-            <UnifiedExplorerTree
+            <UnifiedTree
               key={`col-${subCollection.id}`}
               collection={subCollection}
               depth={depth + 1}
@@ -373,7 +373,7 @@ export default function UnifiedExplorerTree({
             />
           ))}
           {visibleItems.map((item) => (
-            <UnifiedExplorerTreeItem
+            <UnifiedTreeItem
               key={`item-${item.id}`}
               item={item}
               collectionId={effectiveCollectionId}
@@ -381,7 +381,7 @@ export default function UnifiedExplorerTree({
             />
           ))}
           {remainingItems > 0 && (
-            <ExplorerLoadMoreNode
+            <TreeLoadMoreNode
               remainingCount={remainingItems}
               onLoadMore={() => setDisplayLimit((prev) => prev + CHUNK_SIZE)}
             />

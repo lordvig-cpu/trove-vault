@@ -12,13 +12,13 @@ import {
   resolveDirection,
 } from '@/types/layout';
 import { FieldDefinition } from '@/types/field';
-import { useExplorerActionMenu } from '@/hooks/useExplorerActionMenu';
-import { AddSubItemIcon } from '@/components/icons/ExplorerIcons';
-import ExplorerActionMenu, {
+import { useTreeActionMenu } from '@/hooks/useTreeActionMenu';
+import { AddSubItemIcon } from '@/components/icons/TreeIcons';
+import TreeActionMenu, {
   ActionMenuDangerItem,
   ActionMenuDivider,
   ActionMenuItem,
-} from '@/components/ExplorerActionMenu';
+} from '@/components/TreeActionMenu';
 import TemplateBodyDimensions from '@/components/TemplateBodyDimensions';
 import TemplateContainerSizing from '@/components/TemplateContainerSizing';
 import { BodyIcon, FlexRowIcon, FlexColumnIcon, LayoutContainerIcon, AddChildContainerIcon } from '@/components/icons/LayoutIcons';
@@ -49,7 +49,7 @@ const VARIANT_OPTIONS: { variant: LayoutVariant; label: string; icon: string }[]
 interface TemplateContainerActionMenuProps {
   container: FlexContainerNode;
   parentContainer?: FlexContainerNode | null;
-  menu: ReturnType<typeof useExplorerActionMenu>;
+  menu: ReturnType<typeof useTreeActionMenu>;
   position?: 'left' | 'right';
   onAddContainer?: (targetContainerId: string, options?: Partial<FlexContainerNode>) => string;
   onUpdateContainer?: (containerId: string, partial: Partial<FlexContainerNode>) => void;
@@ -94,7 +94,7 @@ export function TemplateContainerActionMenu({
 
   if (isRoot) {
     return (
-      <ExplorerActionMenu
+      <TreeActionMenu
         isOpen={menu.isMenuOpen}
         onMouseEnter={menu.handleMenuMouseEnter}
         onMouseLeave={menu.handleMouseLeave}
@@ -206,7 +206,7 @@ export function TemplateContainerActionMenu({
           root={container}
           onUpdate={(partial) => onUpdateContainer?.(container.id, partial)}
         />
-      </ExplorerActionMenu>
+      </TreeActionMenu>
     );
   }
 
@@ -230,7 +230,7 @@ export function TemplateContainerActionMenu({
   );
 
   return (
-    <ExplorerActionMenu
+    <TreeActionMenu
       isOpen={menu.isMenuOpen}
       onMouseEnter={menu.handleMenuMouseEnter}
       onMouseLeave={menu.handleMouseLeave}
@@ -486,7 +486,7 @@ export function TemplateContainerActionMenu({
           </div>
         )}
       </div>
-    </ExplorerActionMenu>
+    </TreeActionMenu>
   );
 }
 
@@ -498,7 +498,7 @@ interface TemplateComponentActionMenuProps {
   component: FlexComponentNode;
   parentContainer?: FlexContainerNode | null;
   fields?: FieldDefinition[];
-  menu: ReturnType<typeof useExplorerActionMenu>;
+  menu: ReturnType<typeof useTreeActionMenu>;
   position?: 'left' | 'right';
   onUpdateComponent?: (componentId: string, partial: Partial<FlexComponentNode>) => void;
   onRemoveComponent?: (componentId: string) => void;
@@ -540,7 +540,7 @@ export function TemplateComponentActionMenu({
       : '💡';
 
   return (
-    <ExplorerActionMenu
+    <TreeActionMenu
       isOpen={menu.isMenuOpen}
       onMouseEnter={menu.handleMenuMouseEnter}
       onMouseLeave={menu.handleMouseLeave}
@@ -724,6 +724,6 @@ export function TemplateComponentActionMenu({
           </div>
         )}
       </div>
-    </ExplorerActionMenu>
+    </TreeActionMenu>
   );
 }

@@ -1,31 +1,31 @@
 'use client';
 
 import React, { useEffect, useMemo } from 'react';
-import UnifiedExplorerTree, { UnifiedCollectionNode } from '@/components/UnifiedExplorerTree';
+import UnifiedTree, { UnifiedCollectionNode } from '@/components/UnifiedTree';
 import {
-  ExplorerActionsProvider,
-  ExplorerActionsContextValue,
-} from '@/context/ExplorerActionsContext';
+  TreeActionsProvider,
+  TreeActionsContextValue,
+} from '@/context/TreeActionsContext';
 import {
-  ExplorerSelectionProvider,
-  ExplorerSelectionContextValue,
-} from '@/context/ExplorerSelectionContext';
+  TreeSelectionProvider,
+  TreeSelectionContextValue,
+} from '@/context/TreeSelectionContext';
 import { ItemRecord } from '@/types/item';
 import { CollectionRecord } from '@/types/collection';
-import { getSingleSearchHighlight, STANDALONE_COLLECTION_ID } from '@/lib/explorerUtils';
-import { ExplorerTab } from '@/lib/filterExplorerForest';
+import { getSingleSearchHighlight, STANDALONE_COLLECTION_ID } from '@/lib/treeUtils';
+import { TreeTab } from '@/lib/filterTreeForest';
 
 /* ==========================================================================
    1. TYPE DEFINITIONS & INTERFACES
    ========================================================================== */
 
 /**
- * Props for the ExplorerContent tree container.
+ * Props for the TreeContent tree container.
  * @property unifiedForest - Hierarchical tree data combining categories, collections, and items
  * @property searchQuery - Filter string supplied from the parent LeftSidePanel search bar
  * @property activeCollectionId - ID of the currently selected collection or category node
  * @property selectedItemId - ID of the currently active item record displayed on canvas
- * @property expandedCategoryIds - Set tracking open category/collection IDs from useExplorerCategories hook
+ * @property expandedCategoryIds - Set tracking open category/collection IDs from useTreeCategories hook
  * @property onToggleCategory - Callback toggling accordion expansion state for a category or collection node
  * @property onSelectCollection - Callback selecting an active root or sub-collection node
  * @property onSelectItem - Callback selecting an item (accepts nullable collectionId for standalone items)
@@ -40,7 +40,7 @@ import { ExplorerTab } from '@/lib/filterExplorerForest';
  * @property onDeleteItem - Callback prompting item deletion modal confirmation
  * @property treeView - Current view mode ('items' | 'collections')
  */
-export interface ExplorerContentProps {
+export interface TreeContentProps {
   unifiedForest: UnifiedCollectionNode[];
   searchQuery?: string;
   activeCollectionId: number | null;
@@ -62,7 +62,7 @@ export interface ExplorerContentProps {
   onRenameItem?: (id: number, nextName: string) => Promise<void> | void;
   onAddSubCollection?: (parentCollectionId: number) => void;
   position?: 'left' | 'right';
-  treeView?: ExplorerTab;
+  treeView?: TreeTab;
 }
 
 /* ==========================================================================
@@ -161,10 +161,10 @@ function filterCollection(
 }
 
 /* ==========================================================================
-   3. MAIN COMPONENT: ExplorerContent
+   3. MAIN COMPONENT: TreeContent
    ========================================================================== */
 
-export default function ExplorerContent({
+export default function TreeContent({
   unifiedForest,
   searchQuery = '',
   activeCollectionId,
@@ -186,7 +186,7 @@ export default function ExplorerContent({
   onRenameItem,
   position,
   treeView,
-}: ExplorerContentProps) {
+}: TreeContentProps) {
   const effectivePosition = position ?? 'left';
 
   // Support both canonical and legacy category prop naming
@@ -240,7 +240,7 @@ export default function ExplorerContent({
     );
   }, [searchHighlight, selectedItemId, onSelectSearchResult]);
 
-  const selectionValue: ExplorerSelectionContextValue = {
+  const selectionValue: TreeSelectionContextValue = {
     searchHighlight,
     activeCollectionId,
     selectedItemId,
@@ -251,7 +251,7 @@ export default function ExplorerContent({
     position: effectivePosition,
   };
 
-  const actionsValue: ExplorerActionsContextValue = {
+  const actionsValue: TreeActionsContextValue = {
     onAddSubItem,
     onEditTemplate,
     onEditItem,
@@ -277,17 +277,17 @@ export default function ExplorerContent({
         </div>
       ) : (
         /* Forest Root Nodes (Categories & Collections & Templates) */
-        <ExplorerActionsProvider value={actionsValue}>
-          <ExplorerSelectionProvider value={selectionValue}>
+        <TreeActionsProvider value={actionsValue}>
+          <TreeSelectionProvider value={selectionValue}>
             {filteredForest.map((node) => (
-              <UnifiedExplorerTree
+              <UnifiedTree
                 key={`root-col-${node.id}`}
                 collection={node}
                 treeType={treeView}
               />
             ))}
-          </ExplorerSelectionProvider>
-        </ExplorerActionsProvider>
+          </TreeSelectionProvider>
+        </TreeActionsProvider>
       )}
     </div>
   );

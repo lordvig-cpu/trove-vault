@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useRef, useState } from 'react';
-import { ZoomInIcon, ZoomOutIcon } from '@/components/icons/ExplorerIcons';
+import { ZoomInIcon, ZoomOutIcon } from '@/components/icons/TreeIcons';
 import { useCanvasZoom, ZOOM_MAX, ZOOM_MIN } from '@/context/CanvasZoomContext';
 import { BODY_WIDTH_PRESETS } from '@/types/layout';
 import { useDismissOnOutsideOrEscape } from '@/hooks/useDismissOnOutsideOrEscape';
@@ -111,7 +111,7 @@ export function PreviewWidthPicker() {
           type="checkbox"
           checked={isFit}
           onChange={(e) => toggleFit(e.target.checked)}
-          className="explorer-filter-checkbox tmpl-blue-check w-3.5 h-3.5 rounded cursor-pointer shrink-0"
+          className="tree-filter-checkbox tmpl-blue-check w-3.5 h-3.5 rounded cursor-pointer shrink-0"
         />
         Fit
       </label>

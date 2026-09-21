@@ -1,0 +1,354 @@
+/* Shared Tree row, filter, and panel-control visuals. */
+
+.tree-filter-row {
+  color: var(--text-strong);
+  transition: background-color 150ms ease;
+}
+
+.tree-filter-row:hover {
+  background-color: var(--surface-primary-hover);
+}
+
+.tree-filter-row-selected {
+  color: var(--secondary-accent);
+}
+
+.tree-filter-checkbox {
+  background-color: var(--tree-filter-checkbox-bg);
+  border: 1px solid var(--secondary-tree-filter-checkbox-border);
+  color: var(--secondary-accent);
+  accent-color: var(--secondary-accent);
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+}
+
+.tree-filter-checkbox:hover {
+  border-color: var(--primary-border-input-hover);
+}
+
+.tree-filter-checkbox:focus {
+  outline: none;
+  border-color: var(--secondary-accent);
+  box-shadow: var(--secondary-focus-ring);
+}
+
+.tree-filter-branch {
+  color: var(--text-muted);
+}
+
+.tree-item {
+  color: var(--primary-tree-item-text);
+}
+
+.tree-item:hover {
+  background-color: var(--primary-tree-item-hover-bg);
+  color: var(--tree-item-text-hover);
+}
+
+.tree-item-selected {
+  color: var(--text-strong);
+}
+
+.tree-item-selected-name {
+  color: var(--text-strong);
+}
+
+.tree-muted {
+  color: var(--primary-tree-muted);
+}
+
+.tree-primary {
+  color: var(--text-strong);
+}
+
+.tree-secondary {
+  color: var(--primary-tree-item-text);
+}
+
+.tree-gear-open {
+  color: var(--text-strong);
+}
+
+.tree-gear-closed {
+  color: var(--primary-tree-muted);
+}
+
+.tree-category-row {
+  color: var(--text-soft);
+}
+
+.tree-category-row:hover {
+  background-color: var(--primary-tree-item-hover-bg);
+  color: var(--text-strong);
+}
+
+.tree-category-row-active {
+  background-color: var(--secondary-selection-bg);
+  color: var(--secondary-accent);
+}
+
+.tree-panel-divider {
+  border-color: var(--primary-border-subtle);
+}
+
+.tree-panel-muted {
+  color: var(--primary-tree-title-text);
+}
+
+.tree-panel-primary {
+  color: var(--text-strong);
+}
+
+.tree-panel-accent {
+  color: var(--secondary-accent);
+}
+
+.tree-panel-hover:hover {
+  color: var(--text-strong);
+}
+
+.tree-panel-control {
+  color: var(--text-muted);
+  background-color: var(--primary-tree-control-bg);
+  border: 1px solid var(--primary-border-input);
+  transition: border-color 150ms ease, background-color 150ms ease, color 150ms ease, box-shadow 150ms ease;
+}
+
+.tree-panel-control:hover {
+  color: var(--text-strong);
+  background-color: var(--surface-primary-hover);
+  border-color: var(--primary-border-input-hover);
+}
+
+.tree-panel-control-active {
+  color: var(--secondary-accent);
+  background-color: var(--primary-tree-control-bg);
+  border-color: var(--secondary-accent);
+  box-shadow: var(--secondary-focus-ring);
+}
+
+.tree-panel-disabled:disabled {
+  opacity: 0.3;
+}
+
+.tree-filter-indicator {
+  opacity: 0.8;
+}
+
+/* Applied filters use the primary palette and the scrollbar border token. */
+@keyframes treeAppliedFiltersEnter {
+  from {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.tree-applied-filters-enter {
+  animation: treeAppliedFiltersEnter 300ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tree-applied-filters-enter {
+    animation: none;
+  }
+}
+
+.tree-applied-filters {
+  margin-block: 0.375rem;
+  padding: 0.5rem;
+  border-radius: 0.75rem;
+}
+
+/* Selected items share the applied-filter panel's primary surface and glow. */
+.tree-applied-filters,
+.tree-item-selected,
+.tree-item-selected:hover {
+  --applied-filter-highlight: color-mix(in oklch, var(--primary-accent) 65%, white);
+  border: 1.5px solid var(--applied-filter-highlight);
+  background: linear-gradient(
+    135deg,
+    color-mix(in oklch, var(--primary-accent) 28%, var(--surface-panel)),
+    color-mix(in oklch, var(--primary-accent) 14%, var(--surface-panel))
+  );
+  box-shadow:
+    inset 0 1px 5px color-mix(in oklch, var(--applied-filter-highlight) 45%, transparent),
+    0 0 5px color-mix(in oklch, var(--primary-accent) 45%, transparent),
+    0 0 12px color-mix(in oklch, var(--primary-accent) 20%, transparent);
+}
+
+.tree-applied-filters-header {
+  padding: 0.375rem 0.5rem;
+  color: var(--text-strong);
+}
+
+.tree-applied-filters-header .tree-panel-accent {
+  color: var(--applied-filter-highlight);
+}
+
+.tree-applied-filters-clear {
+  color: var(--applied-filter-highlight);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.tree-applied-filters-clear:hover {
+  color: var(--brand-primary-hover);
+}
+
+.tree-applied-filters .tree-filter-pill {
+  width: 100%;
+  min-width: 0;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  background: var(--surface-panel);
+  border-color: var(--primary-border-strong);
+  box-shadow: inset 0 1px 3px color-mix(in oklch, var(--primary-accent) 8%, transparent);
+}
+
+.tree-applied-filters .tree-filter-pill:hover {
+  border-color: var(--brand-primary-hover);
+}
+
+.tree-applied-filters .tree-filter-remove {
+  order: 3;
+  margin-left: auto;
+  flex-shrink: 0;
+  color: var(--primary-accent);
+}
+
+.tree-applied-filters .tree-filter-indicator {
+  color: var(--applied-filter-highlight);
+}
+
+.tree-applied-filters .tree-filter-name {
+  min-width: 0;
+  max-width: none;
+  color: var(--text-strong);
+}
+
+.tree-applied-filters .tree-filter-remove:hover {
+  color: var(--brand-primary-hover);
+}
+
+.tree-filter-surface {
+  background-color: var(--tree-filter-surface-bg);
+  border: 1px solid var(--primary-border-subtle);
+  box-shadow: var(--tree-filter-inset-shadow);
+}
+
+.tree-filter-pill {
+  background-color: var(--surface-panel);
+  border: 1px solid var(--primary-border-subtle);
+  color: var(--text-strong);
+  box-shadow: var(--tree-filter-pill-shadow);
+}
+
+.tree-filter-pill:hover {
+  border-color: var(--secondary-accent);
+}
+
+.tree-filter-remove {
+  color: var(--secondary-accent);
+}
+
+.tree-filter-remove:hover {
+  color: var(--content-btn-danger-text);
+}
+
+.tree-filter-name {
+  color: var(--text-strong);
+}
+
+.tree-filter-name:hover {
+  color: var(--secondary-accent);
+}
+
+.tree-filter-option {
+  background: var(--primary-tree-filter-badge-bg);
+  border: 1px solid var(--primary-border-filter);
+  color: var(--secondary-tree-menu-header-title);
+  box-shadow: var(--tree-filter-badge-shadow);
+}
+
+.tree-filter-option-label {
+  color: var(--tree-filter-option-label);
+}
+
+.tree-filter-icon {
+  color: var(--secondary-tree-menu-header-title);
+}
+
+.tree-filter-clear {
+  color: var(--content-btn-danger-text);
+}
+
+.tree-filter-clear:hover {
+  color: var(--modal-badge-req-text);
+}
+
+.tree-category-icon {
+  color: var(--secondary-accent);
+}
+
+.tree-category-count {
+  background-color: var(--primary-tree-category-badge-bg);
+  border: 1px solid var(--primary-tree-category-badge-border);
+  color: var(--secondary-tree-menu-rename-save-text);
+  box-shadow: var(--shadow-badge);
+}
+
+.tree-badge {
+  background-color: var(--primary-tree-category-badge-bg);
+  border: 1px solid var(--primary-tree-category-badge-border);
+  color: var(--secondary-tree-menu-rename-save-text);
+  box-shadow: var(--shadow-badge);
+  font-weight: 700;
+}
+
+.tree-action-icon {
+  color: var(--primary-tree-action-icon);
+}
+
+.tree-branch {
+  border-color: var(--primary-tree-branch);
+}
+
+.tree-filter-checkbox-hidden {
+  opacity: 0;
+}
+
+.group:hover .tree-filter-checkbox-hidden {
+  opacity: 1;
+}
+
+.tree-filter-nested {
+  border-color: var(--primary-border-subtle);
+}
+
+.tree-filter-shell {
+  background: var(--tree-filter-surface-bg);
+  border: 1px solid var(--tree-filter-shell-border);
+  box-shadow: var(--tree-filter-inset-shadow);
+}
+
+.tree-filter-root-card {
+  background: var(--primary-tree-filter-card-bg);
+  border: 1.5px solid var(--primary-border-filter);
+  border-radius: 0.5rem;
+  box-shadow: var(--tree-filter-card-shadow);
+  transition: border-color 150ms ease, background-color 150ms ease, box-shadow 150ms ease;
+}
+
+.tree-filter-root-card:hover {
+  background: var(--primary-tree-filter-card-hover-bg);
+  border-color: var(--primary-tree-filter-card-hover-border);
+  box-shadow: var(--tree-filter-card-hover-shadow);
+}
+
+.tree-hidden {
+  opacity: 0;
+}

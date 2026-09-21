@@ -254,9 +254,9 @@ export const PanelFolderTabSvg = ({
   >
     <defs>
       <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stopColor="var(--explorer-tab-active-top, rgba(18, 94, 158, 1))" className="tab-grad-top" />
-        <stop offset="45%" stopColor="var(--explorer-tab-active-mid, rgba(10, 64, 112, 1))" className="tab-grad-mid" />
-        <stop offset="100%" stopColor="var(--explorer-tab-active-bottom, rgba(5, 36, 70, 1))" className="tab-grad-bottom" />
+        <stop offset="0%" stopColor="var(--tree-tab-active-top, rgba(18, 94, 158, 1))" className="tab-grad-top" />
+        <stop offset="45%" stopColor="var(--tree-tab-active-mid, rgba(10, 64, 112, 1))" className="tab-grad-mid" />
+        <stop offset="100%" stopColor="var(--tree-tab-active-bottom, rgba(5, 36, 70, 1))" className="tab-grad-bottom" />
       </linearGradient>
     </defs>
 
@@ -265,13 +265,13 @@ export const PanelFolderTabSvg = ({
         <polygon
           points="0,28 7,0 93,0 100,28"
           fill={isActive || isTarget ? `url(#${gradientId})` : undefined}
-          className="explorer-tab-svg-fill"
+          className="tree-tab-svg-fill"
         />
         <polyline
           points="0,28 7,0 93,0 100,28"
           fill="none"
           strokeWidth={isTarget ? '2' : '1.5'}
-          className="explorer-tab-svg-stroke"
+          className="tree-tab-svg-stroke"
           vectorEffect="non-scaling-stroke"
         />
       </>
@@ -279,12 +279,12 @@ export const PanelFolderTabSvg = ({
       <>
         <path
           d="M 0,28 L 8,3 C 9,1 11,0 14,0 L 86,0 C 89,0 91,1 92,3 L 100,28 Z"
-          className="explorer-tab-svg-fill"
+          className="tree-tab-svg-fill"
           style={isActive || isTarget ? { fill: `url(#${gradientId})` } : undefined}
         />
         <path
           d="M 0,28 L 8,3 C 9,1 11,0 14,0 L 86,0 C 89,0 91,1 92,3 L 100,28"
-          className="explorer-tab-svg-stroke"
+          className="tree-tab-svg-stroke"
           fill="none"
           strokeWidth={isTarget ? '2' : '1.5'}
           vectorEffect="non-scaling-stroke"

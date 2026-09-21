@@ -9,7 +9,7 @@ import {
   SearchGlassIcon,
   SearchClearIcon,
   PlusIcon,
-} from '@/components/icons/ExplorerIcons';
+} from '@/components/icons/TreeIcons';
 import {
   DockLeftPanelIcon,
   DockRightPanelIcon,
@@ -17,10 +17,10 @@ import {
   PinOutlineIcon,
   PanelFolderTabSvg,
 } from '@/components/icons/PanelIcons';
-import ExplorerSearchMenu from '@/components/ExplorerSearchMenu';
+import TreeSearchMenu from '@/components/TreeSearchMenu';
 import CollectionFilterTree from '@/components/CollectionFilterTree';
 import { CollectionRecord } from '@/types/collection';
-import { ExplorerTab } from '@/lib/filterExplorerForest';
+import { TreeTab } from '@/lib/filterTreeForest';
 import { PrimarySidebarPosition } from '@/types/layout';
 import { useUIPreferences } from '@/context/UIPreferencesContext';
 import { DockContent, TabReorderInfo } from '@/hooks/usePanelDockDrag';
@@ -49,8 +49,8 @@ export interface PrimarySidePanelHeaderProps {
   moveTooltip?: string;
   canMove?: boolean;
   onDock?: (position: 'left' | 'right') => void;
-  treeView?: ExplorerTab;
-  activeTab?: ExplorerTab | DockContent;
+  treeView?: TreeTab;
+  activeTab?: TreeTab | DockContent;
   onTabChange?: (tab: any) => void;
   tabs?: DockContent[];
   searchQuery?: string;
@@ -186,9 +186,9 @@ export default function PrimarySidePanelHeader({
       : treeView === 'templates'
       ? ['templates']
       : treeView === 'items'
-      ? ['explorer']
+      ? ['items']
       : variant === 'flyout'
-      ? ['explorer', 'collections']
+      ? ['items', 'collections']
       : [];
   const [showAdvancedSearch, setShowAdvancedSearch] = useState(false);
   const [showAppliedFilters, setShowAppliedFilters] = useState(false);
@@ -246,13 +246,13 @@ export default function PrimarySidePanelHeader({
     <div
       ref={headerContainerRef}
       className={`primary-side-panel-header px-2.5 pt-2 pb-0 flex flex-col gap-2 shrink-0 ${
-        hasDockedContent ? 'explorer-header-occupied' : 'explorer-header-empty'
+        hasDockedContent ? 'tree-header-occupied' : 'tree-header-empty'
       }`}
     >
       {/* --------------------------------------------------------------------
           2.1 TOP TOOLBAR ROW: Drag Grip, Title, and Action Controls
           -------------------------------------------------------------------- */}
-      <div className="explorer-header-toolbar flex items-center justify-between gap-1 w-full shrink-0 select-none">
+      <div className="tree-header-toolbar flex items-center justify-between gap-1 w-full shrink-0 select-none">
         {/* Draggable Header Grip & Title */}
         <div
           onPointerDown={hasDockedContent ? onHandlePointerDown : undefined}
@@ -264,7 +264,7 @@ export default function PrimarySidePanelHeader({
           <span className="text-[10px] text-muted opacity-60 tracking-tighter" aria-hidden="true">
             ⋮⋮
           </span>
-          <span className="explorer-header-title text-xs font-bold uppercase tracking-wider px-0.5 truncate">
+          <span className="tree-header-title text-xs font-bold uppercase tracking-wider px-0.5 truncate">
             {title || (variant === 'sidebar' ? 'PRIMARY SIDE PANEL' : 'ITEMS')}
           </span>
         </div>
@@ -312,14 +312,14 @@ export default function PrimarySidePanelHeader({
               }
             >
               {position === 'left' ? (
-                <DockRightPanelIcon className="w-3.5 h-3.5 text-[var(--explorer-action-icon,rgba(109,170,209,0.85))] group-hover:text-white" isOpen={true} />
+                <DockRightPanelIcon className="w-3.5 h-3.5 text-[var(--tree-action-icon,rgba(109,170,209,0.85))] group-hover:text-white" isOpen={true} />
               ) : (
-                <DockLeftPanelIcon className="w-3.5 h-3.5 text-[var(--explorer-action-icon,rgba(109,170,209,0.85))] group-hover:text-white" isOpen={true} />
+                <DockLeftPanelIcon className="w-3.5 h-3.5 text-[var(--tree-action-icon,rgba(109,170,209,0.85))] group-hover:text-white" isOpen={true} />
               )}
             </button>
           )}
 
-          {/* Explorer docks into either sidebar; pinning belongs to the sidebars. */}
+          {/* Items docks into either sidebar; pinning belongs to the sidebars. */}
           {variant === 'flyout' && onDock && (
             <>
               <button
@@ -329,7 +329,7 @@ export default function PrimarySidePanelHeader({
                 title={`Dock ${panelName} to Left`}
                 aria-label={`Dock ${panelName} to Left`}
               >
-                <DockLeftPanelIcon className="w-3.5 h-3.5 text-[var(--explorer-action-icon,rgba(109,170,209,0.85))] group-hover:text-white" isOpen={true} />
+                <DockLeftPanelIcon className="w-3.5 h-3.5 text-[var(--tree-action-icon,rgba(109,170,209,0.85))] group-hover:text-white" isOpen={true} />
               </button>
               <button
                 type="button"
@@ -338,7 +338,7 @@ export default function PrimarySidePanelHeader({
                 title={`Dock ${panelName} to Right`}
                 aria-label={`Dock ${panelName} to Right`}
               >
-                <DockRightPanelIcon className="w-3.5 h-3.5 text-[var(--explorer-action-icon,rgba(109,170,209,0.85))] group-hover:text-white" isOpen={true} />
+                <DockRightPanelIcon className="w-3.5 h-3.5 text-[var(--tree-action-icon,rgba(109,170,209,0.85))] group-hover:text-white" isOpen={true} />
               </button>
             </>
           )}
@@ -354,12 +354,12 @@ export default function PrimarySidePanelHeader({
             {!isPinned ? (
               <PinOutlineIcon
                 position={position}
-                className="w-3.5 h-3.5 text-[var(--explorer-action-icon,rgba(109,170,209,0.85))] group-hover:text-white"
+                className="w-3.5 h-3.5 text-[var(--tree-action-icon,rgba(109,170,209,0.85))] group-hover:text-white"
               />
             ) : (
               <PinFilledIcon
                 position={position}
-                className="w-3.5 h-3.5 text-[var(--explorer-action-icon,rgba(109,170,209,0.85))] group-hover:text-white"
+                className="w-3.5 h-3.5 text-[var(--tree-action-icon,rgba(109,170,209,0.85))] group-hover:text-white"
               />
             )}
           </button>
@@ -373,7 +373,7 @@ export default function PrimarySidePanelHeader({
               className="primary-side-panel-pin-btn group"
               title={`Close ${panelName}`}
             >
-              <span className="inline-block origin-center transition-all duration-200 ease-out group-hover:scale-115 text-xs text-[var(--explorer-action-icon,rgba(109,170,209,0.85))] group-hover:text-white px-1 select-none">
+              <span className="inline-block origin-center transition-all duration-200 ease-out group-hover:scale-115 text-xs text-[var(--tree-action-icon,rgba(109,170,209,0.85))] group-hover:text-white px-1 select-none">
                 ✕
               </span>
             </button>
@@ -382,19 +382,19 @@ export default function PrimarySidePanelHeader({
       </div>
 
       {/* Divider */}
-      <hr className="explorer-header-divider" />
+      <hr className="tree-header-divider" />
 
       {/* ------------------------------------------------------------------
-          ROW 2 & 3: Search Bar, Category Filters & Menus (Explorer Only)
+          ROW 2 & 3: Search Bar, Category Filters & Menus (Tree Only)
           ------------------------------------------------------------------ */}
       {showSearchFilter && !isGrabbed && !isProperties && !isHierarchy && (
         <>
-          <div className="explorer-section-heading">
+          <div className="tree-section-heading">
             <hr aria-hidden="true" />
             <h3>Search and Filter ({isInspector ? 'Template Fields' : isCollections ? 'Collections' : isTemplates ? 'Templates' : 'Items'})</h3>
           </div>
       <div className="flex items-center gap-1.5 w-full">
-        <div className={`explorer-search-input explorer-search-shell ${isRight ? 'explorer-search-shell-right' : ''} relative flex-1 min-w-0 flex items-center ${searchQuery.length > 0 ? 'explorer-search-input-active' : ''}`}>
+        <div className={`tree-search-input tree-search-shell ${isRight ? 'tree-search-shell-right' : ''} relative flex-1 min-w-0 flex items-center ${searchQuery.length > 0 ? 'tree-search-input-active' : ''}`}>
           {isRight ? (
             <>
               {/* Advanced search sits on the left in right-docked layout */}
@@ -402,7 +402,7 @@ export default function PrimarySidePanelHeader({
                 ref={triggerBtnRef}
                 type="button"
                 onClick={handleToggleAdvancedSearch}
-                className="explorer-search-advanced explorer-search-advanced-left relative shrink-0"
+                className="tree-search-advanced tree-search-advanced-left relative shrink-0"
                 title="Advanced Search & Filters"
                 aria-label="Advanced Search & Filters"
                 aria-expanded={showAdvancedSearch}
@@ -424,7 +424,7 @@ export default function PrimarySidePanelHeader({
                     type="button"
                     onClick={() => setShowAppliedFilters((prev) => !prev)}
                     className={`p-0.5 rounded transition-all cursor-pointer flex items-center justify-center ${
-                      showAppliedFilters ? 'explorer-panel-accent' : 'explorer-panel-primary'
+                      showAppliedFilters ? 'tree-panel-accent' : 'tree-panel-primary'
                     }`}
                     title={showAppliedFilters ? 'Hide applied filters' : 'Show applied filters'}
                     aria-label={showAppliedFilters ? 'Hide applied filters' : 'Show applied filters'}
@@ -436,7 +436,7 @@ export default function PrimarySidePanelHeader({
               )}
 
               {/* Search Query Input */}
-              <div className={searchQuery.length > 0 ? 'explorer-search-query explorer-search-query-pill' : 'explorer-search-query'}>
+              <div className={searchQuery.length > 0 ? 'tree-search-query tree-search-query-pill' : 'tree-search-query'}>
                 <input
                   ref={searchInputRef}
                   id={`${headerId}-search`}
@@ -459,14 +459,14 @@ export default function PrimarySidePanelHeader({
                       ? 'Search filtered collection...'
                       : 'Search...'
                   }
-                  className="explorer-search-query-input"
+                  className="tree-search-query-input"
                   style={searchQuery.length > 0 ? { width: `${searchQuery.length + 0.5}ch` } : undefined}
                 />
                 {searchQuery.length > 0 && (
                   <button
                     type="button"
                     onClick={() => { onSearchChange(''); searchInputRef.current?.focus(); }}
-                    className="explorer-search-query-clear"
+                    className="tree-search-query-clear"
                     aria-label="Clear search term"
                     title="Clear search term"
                   >
@@ -479,7 +479,7 @@ export default function PrimarySidePanelHeader({
               <span className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none flex items-center justify-center select-none">
                 <SearchGlassIcon
                   className={`w-3.5 h-3.5 transition-colors duration-200 ${
-                    isSearchFocused ? 'explorer-panel-primary' : 'explorer-panel-muted'
+                    isSearchFocused ? 'tree-panel-primary' : 'tree-panel-muted'
                   }`}
                   isFocused={isSearchFocused}
                 />
@@ -491,13 +491,13 @@ export default function PrimarySidePanelHeader({
               <span className="absolute left-2 top-1/2 -translate-y-1/2 pointer-events-none flex items-center justify-center select-none">
                 <SearchGlassIcon
                   className={`w-3.5 h-3.5 transition-colors duration-200 ${
-                    isSearchFocused ? 'explorer-panel-primary' : 'explorer-panel-muted'
+                    isSearchFocused ? 'tree-panel-primary' : 'tree-panel-muted'
                   }`}
                   isFocused={isSearchFocused}
                 />
               </span>
 
-              <div className={searchQuery.length > 0 ? 'explorer-search-query explorer-search-query-pill' : 'explorer-search-query'}>
+              <div className={searchQuery.length > 0 ? 'tree-search-query tree-search-query-pill' : 'tree-search-query'}>
                 <input
                   ref={searchInputRef}
                   id={`${headerId}-search`}
@@ -520,14 +520,14 @@ export default function PrimarySidePanelHeader({
                       ? 'Search filtered collection...'
                       : 'Search...'
                   }
-                  className="explorer-search-query-input"
+                  className="tree-search-query-input"
                   style={searchQuery.length > 0 ? { width: `${searchQuery.length + 0.5}ch` } : undefined}
                 />
                 {searchQuery.length > 0 && (
                   <button
                     type="button"
                     onClick={() => { onSearchChange(''); searchInputRef.current?.focus(); }}
-                    className="explorer-search-query-clear"
+                    className="tree-search-query-clear"
                     aria-label="Clear search term"
                     title="Clear search term"
                   >
@@ -544,7 +544,7 @@ export default function PrimarySidePanelHeader({
                     type="button"
                     onClick={() => setShowAppliedFilters((prev) => !prev)}
                     className={`p-0.5 rounded transition-all cursor-pointer flex items-center justify-center ${
-                      showAppliedFilters ? 'explorer-panel-accent' : 'explorer-panel-primary'
+                      showAppliedFilters ? 'tree-panel-accent' : 'tree-panel-primary'
                     }`}
                     title={showAppliedFilters ? 'Hide applied filters' : 'Show applied filters'}
                     aria-label={showAppliedFilters ? 'Hide applied filters' : 'Show applied filters'}
@@ -560,7 +560,7 @@ export default function PrimarySidePanelHeader({
                 ref={triggerBtnRef}
                 type="button"
                 onClick={handleToggleAdvancedSearch}
-                className="explorer-search-advanced relative shrink-0"
+                className="tree-search-advanced relative shrink-0"
                 title="Advanced Search & Filters"
                 aria-label="Advanced Search & Filters"
                 aria-expanded={showAdvancedSearch}
@@ -583,13 +583,13 @@ export default function PrimarySidePanelHeader({
           ROW 3: COLLAPSIBLE FILTERS APPLIED SECTION
           ------------------------------------------------------------------ */}
       {isFilterActive && showAppliedFilters && (
-        <div className={`explorer-applied-filters w-full flex flex-col gap-1.5 ${animationsEnabled ? 'explorer-applied-filters-enter' : ''}`}>
-          <div className="explorer-applied-filters-header flex items-center justify-between gap-2">
+        <div className={`tree-applied-filters w-full flex flex-col gap-1.5 ${animationsEnabled ? 'tree-applied-filters-enter' : ''}`}>
+          <div className="tree-applied-filters-header flex items-center justify-between gap-2">
             <div className="flex items-center gap-1.5">
               <span className="text-[11px] font-semibold tracking-wider uppercase">
                 Filters Applied
               </span>
-              <span className="text-[10px] font-mono font-bold explorer-panel-accent">
+              <span className="text-[10px] font-mono font-bold tree-panel-accent">
                 ({appliedFilterCount})
               </span>
             </div>
@@ -597,7 +597,7 @@ export default function PrimarySidePanelHeader({
             <button
               type="button"
               onClick={clearAllFilters}
-              className="explorer-applied-filters-clear text-[10px] font-medium transition-colors cursor-pointer shrink-0"
+              className="tree-applied-filters-clear text-[10px] font-medium transition-colors cursor-pointer shrink-0"
               title="Clear all search and filters"
             >
               Clear all
@@ -607,20 +607,20 @@ export default function PrimarySidePanelHeader({
           <div className="flex flex-wrap items-center gap-1.5 px-0.5 py-1 min-h-[36px] max-h-36 overflow-y-auto primary-panel-scroll">
             {hasSearchFilter && (
               <span
-                className="group explorer-filter-pill inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[11px] select-none transition-all min-w-0 max-w-full"
+                className="group tree-filter-pill inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[11px] select-none transition-all min-w-0 max-w-full"
                 title={`Name contains "${searchPattern}"`}
               >
                 <button
                   type="button"
                   onClick={() => onSearchChange('')}
-                  className="explorer-filter-remove font-bold text-[10px] leading-none cursor-pointer pr-0.5 transition-colors shrink-0"
+                  className="tree-filter-remove font-bold text-[10px] leading-none cursor-pointer pr-0.5 transition-colors shrink-0"
                   title="Remove search filter"
                   aria-label="Remove search filter"
                 >
                   &#10005;
                 </button>
-                <FilterIcon className="w-3.5 h-3.5 explorer-filter-indicator shrink-0" />
-                <span className="explorer-filter-name truncate font-medium transition-colors">
+                <FilterIcon className="w-3.5 h-3.5 tree-filter-indicator shrink-0" />
+                <span className="tree-filter-name truncate font-medium transition-colors">
                   Name contains &quot;{searchPattern}&quot;
                 </span>
               </span>
@@ -633,18 +633,18 @@ export default function PrimarySidePanelHeader({
                 return (
                   <span
                     key={ft}
-                    className="group explorer-filter-pill inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[11px] select-none transition-all"
+                    className="group tree-filter-pill inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[11px] select-none transition-all"
                   >
                     <button
                       type="button"
                       onClick={() => onToggleFilterFieldType?.(ft)}
-                      className="explorer-filter-remove font-bold text-[10px] leading-none cursor-pointer pr-0.5 transition-colors"
+                      className="tree-filter-remove font-bold text-[10px] leading-none cursor-pointer pr-0.5 transition-colors"
                       title={`Remove filter: ${meta.label}`}
                     >
                       ✕
                     </button>
-                    <span className="text-[11px] explorer-filter-indicator">{meta.icon}</span>
-                    <span className="explorer-filter-name max-w-[110px] truncate font-medium transition-colors">
+                    <span className="text-[11px] tree-filter-indicator">{meta.icon}</span>
+                    <span className="tree-filter-name max-w-[110px] truncate font-medium transition-colors">
                       {meta.label}
                     </span>
                   </span>
@@ -658,18 +658,18 @@ export default function PrimarySidePanelHeader({
                 return (
                   <span
                     key={id}
-                    className="group explorer-filter-pill inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[11px] select-none transition-all"
+                    className="group tree-filter-pill inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[11px] select-none transition-all"
                   >
                     <button
                       type="button"
                       onClick={() => onToggleFilterCollection(id)}
-                      className="explorer-filter-remove font-bold text-[10px] leading-none cursor-pointer pr-0.5 transition-colors"
+                      className="tree-filter-remove font-bold text-[10px] leading-none cursor-pointer pr-0.5 transition-colors"
                       title={`Remove filter: ${col.name}`}
                     >
                       ✕
                     </button>
-                    <span className="text-[11px] explorer-filter-indicator">{col.icon || '📁'}</span>
-                    <span className="explorer-filter-name max-w-[110px] truncate font-medium transition-colors">
+                    <span className="text-[11px] tree-filter-indicator">{col.icon || '📁'}</span>
+                    <span className="tree-filter-name max-w-[110px] truncate font-medium transition-colors">
                       {col.name}
                     </span>
                   </span>
@@ -683,7 +683,7 @@ export default function PrimarySidePanelHeader({
       {/* ------------------------------------------------------------------
           ADVANCED SEARCH ACTION MENU PORTAL
           ------------------------------------------------------------------ */}
-      <ExplorerSearchMenu
+      <TreeSearchMenu
         isFlyout={variant === 'flyout'}
         isOpen={showAdvancedSearch}
         onClose={() => setShowAdvancedSearch(false)}
@@ -702,11 +702,11 @@ export default function PrimarySidePanelHeader({
             <div className="flex items-center justify-between px-2 py-1">
               <div className="flex items-center gap-2">
                 <span className="w-4 shrink-0 flex items-center justify-center text-sm">🎛️</span>
-                <span className="text-xs font-medium explorer-panel-primary">Field Type(s):</span>
+                <span className="text-xs font-medium tree-panel-primary">Field Type(s):</span>
               </div>
               <span
                 title={`${FIELD_TYPE_METAS.length} field types available`}
-                className="explorer-filter-option px-2 py-0.5 rounded-md text-[10px] font-mono font-bold shrink-0 select-none"
+                className="tree-filter-option px-2 py-0.5 rounded-md text-[10px] font-mono font-bold shrink-0 select-none"
               >
                 {FIELD_TYPE_METAS.length}
               </span>
@@ -742,15 +742,15 @@ export default function PrimarySidePanelHeader({
                           });
                         }
                       }}
-                      className="explorer-filter-checkbox w-3.5 h-3.5 rounded cursor-pointer shrink-0"
+                      className="tree-filter-checkbox w-3.5 h-3.5 rounded cursor-pointer shrink-0"
                     />
-                    <span className="text-[11px] font-semibold explorer-filter-option-label transition-colors">
+                    <span className="text-[11px] font-semibold tree-filter-option-label transition-colors">
                       {allSelected || isIndeterminate ? 'Deselect All' : 'Select All'}
                     </span>
                   </label>
 
                   {hasFieldTypeFilters && (
-                    <span className="text-[10px] font-mono explorer-panel-accent">
+                    <span className="text-[10px] font-mono tree-panel-accent">
                       {filterFieldTypes.length}/{FIELD_TYPE_METAS.length}
                     </span>
                   )}
@@ -768,8 +768,8 @@ export default function PrimarySidePanelHeader({
                   <div
                     key={type}
                     onClick={() => onToggleFilterFieldType(type)}
-                    className={`explorer-filter-row flex items-center justify-between px-2 py-1.5 rounded-lg text-xs cursor-pointer select-none transition ${
-                      isChecked ? 'explorer-filter-row-selected' : ''
+                    className={`tree-filter-row flex items-center justify-between px-2 py-1.5 rounded-lg text-xs cursor-pointer select-none transition ${
+                      isChecked ? 'tree-filter-row-selected' : ''
                     }`}
                   >
                     <div className="flex items-center gap-2 min-w-0">
@@ -777,12 +777,12 @@ export default function PrimarySidePanelHeader({
                         type="checkbox"
                         checked={isChecked}
                         onChange={() => {}} // handled by parent div onClick
-                        className="explorer-filter-checkbox w-3.5 h-3.5 rounded cursor-pointer shrink-0"
+                        className="tree-filter-checkbox w-3.5 h-3.5 rounded cursor-pointer shrink-0"
                       />
                       <span className="text-sm shrink-0">{icon}</span>
                       <span className="font-medium text-xs truncate">{label}</span>
                     </div>
-                    <span className="text-[10px] font-mono explorer-panel-muted shrink-0 ml-2">
+                    <span className="text-[10px] font-mono tree-panel-muted shrink-0 ml-2">
                       ({count})
                     </span>
                   </div>
@@ -791,14 +791,14 @@ export default function PrimarySidePanelHeader({
             </div>
 
             {isFilterActive && (
-              <div className="border-t border-[var(--explorer-menu-divider,rgba(245,158,11,0.2))] mt-0.5 pt-1.5 px-2 pb-0.5">
+              <div className="border-t border-[var(--tree-menu-divider,rgba(245,158,11,0.2))] mt-0.5 pt-1.5 px-2 pb-0.5">
                 <button
                   type="button"
                   onClick={() => {
                     clearAllFilters();
                     setShowAdvancedSearch(false);
                   }}
-                  className="explorer-filter-clear text-[10px] w-full font-semibold transition text-right cursor-pointer"
+                  className="tree-filter-clear text-[10px] w-full font-semibold transition text-right cursor-pointer"
                 >
                   ✕ Clear Filters
                 </button>
@@ -810,11 +810,11 @@ export default function PrimarySidePanelHeader({
             <div className="flex items-center justify-between px-2 py-1">
               <div className="flex items-center gap-2">
                 <span className="w-4 shrink-0 flex items-center justify-center text-sm">📁</span>
-                <span className="text-xs font-medium explorer-panel-primary">Collection(s):</span>
+                <span className="text-xs font-medium tree-panel-primary">Collection(s):</span>
               </div>
               <span
                 title={`${collections.length} ${collections.length === 1 ? 'collection' : 'collections'}`}
-                className="explorer-filter-option px-2 py-0.5 rounded-md text-[10px] font-mono font-bold shrink-0 select-none"
+                className="tree-filter-option px-2 py-0.5 rounded-md text-[10px] font-mono font-bold shrink-0 select-none"
               >
                 {collections.length}
               </span>
@@ -849,15 +849,15 @@ export default function PrimarySidePanelHeader({
                           });
                         }
                       }}
-                      className="explorer-filter-checkbox w-3.5 h-3.5 rounded cursor-pointer shrink-0"
+                      className="tree-filter-checkbox w-3.5 h-3.5 rounded cursor-pointer shrink-0"
                     />
-                    <span className="text-[11px] font-semibold explorer-filter-option-label transition-colors">
+                    <span className="text-[11px] font-semibold tree-filter-option-label transition-colors">
                       {allSelected || isIndeterminate ? 'Deselect All' : 'Select All'}
                     </span>
                   </label>
 
                   {hasCollectionFilters && (
-                    <span className="text-[10px] font-mono explorer-panel-accent">
+                    <span className="text-[10px] font-mono tree-panel-accent">
                       {filterCollectionIds.length}/{collections.length}
                     </span>
                   )}
@@ -872,14 +872,14 @@ export default function PrimarySidePanelHeader({
             />
 
             {isFilterActive && (
-              <div className="border-t border-[var(--explorer-menu-divider,rgba(245,158,11,0.2))] mt-0.5 pt-1.5 px-2 pb-0.5">
+              <div className="border-t border-[var(--tree-menu-divider,rgba(245,158,11,0.2))] mt-0.5 pt-1.5 px-2 pb-0.5">
                 <button
                   type="button"
                   onClick={() => {
                     clearAllFilters();
                     setShowAdvancedSearch(false);
                   }}
-                  className="explorer-filter-clear text-[10px] w-full font-semibold transition text-right cursor-pointer"
+                  className="tree-filter-clear text-[10px] w-full font-semibold transition text-right cursor-pointer"
                 >
                   ✕ Clear Filters
                 </button>
@@ -887,7 +887,7 @@ export default function PrimarySidePanelHeader({
             )}
           </div>
         )}
-      </ExplorerSearchMenu>
+      </TreeSearchMenu>
         </>
       )}
 
@@ -896,7 +896,7 @@ export default function PrimarySidePanelHeader({
           ------------------------------------------------------------------ */}
       {displayedTabs.length > 0 && (
         <>
-          <div className="explorer-section-heading">
+          <div className="tree-section-heading">
             <hr aria-hidden="true" />
             <h3>
               {isCollections
@@ -920,11 +920,9 @@ export default function PrimarySidePanelHeader({
             {/* Left: View Mode Paper Folder Tabs */}
             <div role="tablist" aria-label={`${panelName} views`} className="flex items-center relative">
               {displayedTabs.map((tab, idx) => {
-                const isTabActive =
-                  activeTab === tab ||
-                  (activeTab === 'items' && tab === 'explorer');
+                const isTabActive = activeTab === tab;
                 const tabLabel =
-                  tab === 'explorer'
+                  tab === 'items'
                     ? 'Items'
                     : tab === 'collections'
                     ? 'Collections'
@@ -940,7 +938,7 @@ export default function PrimarySidePanelHeader({
                     ? 'Structure'
                     : 'Grabbed Content';
                 const tabTitle =
-                  tab === 'explorer'
+                  tab === 'items'
                     ? 'Show Items organized by Category (drag to move tab)'
                     : tab === 'collections'
                     ? 'Show Collections hierarchy (drag to move tab)'
@@ -964,7 +962,7 @@ export default function PrimarySidePanelHeader({
                 return (
                   <div key={tab} className="relative flex items-center">
                     {showInsertBefore && (
-                      <div className="explorer-tab-insert-marker explorer-tab-insert-marker-left" />
+                      <div className="tree-tab-insert-marker tree-tab-insert-marker-left" />
                     )}
                     <button
                       data-tab-name={tab}
@@ -978,13 +976,13 @@ export default function PrimarySidePanelHeader({
                       onPointerDown={(e) => {
                         if (tab !== 'empty') onStartTabDrag?.(tab, e);
                       }}
-                      className={`explorer-folder-tab group/tab cursor-grab active:cursor-grabbing ${idx > 0 ? '-ml-3.5' : ''} ${
+                      className={`tree-folder-tab group/tab cursor-grab active:cursor-grabbing ${idx > 0 ? '-ml-3.5' : ''} ${
                         isThisTabTarget
-                          ? 'explorer-folder-tab-reorder-target z-30'
+                          ? 'tree-folder-tab-reorder-target z-30'
                           : isTabActive
-                          ? 'explorer-folder-tab-active z-20'
-                          : 'explorer-folder-tab-idle z-10'
-                      } ${isThisTabDragging ? 'explorer-folder-tab-dragging' : ''}`}
+                          ? 'tree-folder-tab-active z-20'
+                          : 'tree-folder-tab-idle z-10'
+                      } ${isThisTabDragging ? 'tree-folder-tab-dragging' : ''}`}
                     >
                       <PanelFolderTabSvg
                         gradientId={`${headerId}-${tab}`}
@@ -1003,7 +1001,7 @@ export default function PrimarySidePanelHeader({
                       </span>
                     </button>
                     {showInsertAfter && (
-                      <div className="explorer-tab-insert-marker explorer-tab-insert-marker-right" />
+                      <div className="tree-tab-insert-marker tree-tab-insert-marker-right" />
                     )}
                   </div>
                 );
@@ -1018,10 +1016,10 @@ export default function PrimarySidePanelHeader({
                     <button
                       type="button"
                       onClick={onAddNewField}
-                      className="explorer-tab-action-btn group"
+                      className="tree-tab-action-btn group"
                       title="Add New Field Definition"
                     >
-                      <PlusIcon className="w-2.5 h-2.5 origin-center transition-transform duration-150 ease-out group-hover:scale-110 text-[var(--explorer-action-icon,rgba(109,170,209,0.85))] group-hover:text-white" />
+                      <PlusIcon className="w-2.5 h-2.5 origin-center transition-transform duration-150 ease-out group-hover:scale-110 text-[var(--tree-action-icon,rgba(109,170,209,0.85))] group-hover:text-white" />
                     </button>
                   )
                 ) : isTemplates ? (
@@ -1029,10 +1027,10 @@ export default function PrimarySidePanelHeader({
                     <button
                       type="button"
                       onClick={onAddNewTemplate}
-                      className="explorer-tab-action-btn group"
+                      className="tree-tab-action-btn group"
                       title="Create New Item Template"
                     >
-                      <PlusIcon className="w-2.5 h-2.5 origin-center transition-transform duration-150 ease-out group-hover:scale-110 text-[var(--explorer-action-icon,rgba(109,170,209,0.85))] group-hover:text-white" />
+                      <PlusIcon className="w-2.5 h-2.5 origin-center transition-transform duration-150 ease-out group-hover:scale-110 text-[var(--tree-action-icon,rgba(109,170,209,0.85))] group-hover:text-white" />
                     </button>
                   )
                 ) : isCollections ? (
@@ -1040,10 +1038,10 @@ export default function PrimarySidePanelHeader({
                     <button
                       type="button"
                       onClick={onAddNewCollection}
-                      className="explorer-tab-action-btn group"
+                      className="tree-tab-action-btn group"
                       title="Create New Collection"
                     >
-                      <PlusIcon className="w-2.5 h-2.5 origin-center transition-transform duration-150 ease-out group-hover:scale-110 text-[var(--explorer-action-icon,rgba(109,170,209,0.85))] group-hover:text-white" />
+                      <PlusIcon className="w-2.5 h-2.5 origin-center transition-transform duration-150 ease-out group-hover:scale-110 text-[var(--tree-action-icon,rgba(109,170,209,0.85))] group-hover:text-white" />
                     </button>
                   )
                 ) : isHierarchy || isProperties ? (
@@ -1053,10 +1051,10 @@ export default function PrimarySidePanelHeader({
                     <button
                       type="button"
                       onClick={onAddNewItem}
-                      className="explorer-tab-action-btn group"
+                      className="tree-tab-action-btn group"
                       title="Create New Item"
                     >
-                      <PlusIcon className="w-2.5 h-2.5 origin-center transition-transform duration-150 ease-out group-hover:scale-110 text-[var(--explorer-action-icon,rgba(109,170,209,0.85))] group-hover:text-white" />
+                      <PlusIcon className="w-2.5 h-2.5 origin-center transition-transform duration-150 ease-out group-hover:scale-110 text-[var(--tree-action-icon,rgba(109,170,209,0.85))] group-hover:text-white" />
                     </button>
                   )
                 )}
@@ -1066,7 +1064,7 @@ export default function PrimarySidePanelHeader({
                     type="button"
                     onClick={activeToggleAll}
                     disabled={searchQuery.trim().length > 0}
-                    className="explorer-tab-action-btn explorer-panel-disabled group disabled:pointer-events-none disabled:cursor-not-allowed"
+                    className="tree-tab-action-btn tree-panel-disabled group disabled:pointer-events-none disabled:cursor-not-allowed"
                     title={
                       searchQuery.trim().length > 0
                         ? 'Tree expansion disabled during search'
@@ -1076,9 +1074,9 @@ export default function PrimarySidePanelHeader({
                     }
                   >
                     {activeIsExpanded ? (
-                      <FolderCollapseIcon className="w-3 h-3 text-[var(--explorer-action-icon,rgba(109,170,209,0.85))] group-hover:text-white" />
+                      <FolderCollapseIcon className="w-3 h-3 text-[var(--tree-action-icon,rgba(109,170,209,0.85))] group-hover:text-white" />
                     ) : (
-                      <FolderExpandIcon className="w-3 h-3 text-[var(--explorer-action-icon,rgba(109,170,209,0.85))] group-hover:text-white" />
+                      <FolderExpandIcon className="w-3 h-3 text-[var(--tree-action-icon,rgba(109,170,209,0.85))] group-hover:text-white" />
                     )}
                   </button>
                 )}

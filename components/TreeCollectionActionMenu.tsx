@@ -2,28 +2,28 @@
 
 import React from 'react';
 import { CollectionRecord } from '@/types/collection';
-import { useExplorerActions } from '@/context/ExplorerActionsContext';
-import { useExplorerActionMenu } from '@/hooks/useExplorerActionMenu';
-import ExplorerActionMenu, {
+import { useTreeActions } from '@/context/TreeActionsContext';
+import { useTreeActionMenu } from '@/hooks/useTreeActionMenu';
+import TreeActionMenu, {
   ActionMenuDangerItem,
   ActionMenuDivider,
   ActionMenuItem,
   ActionMenuRenameForm,
-} from '@/components/ExplorerActionMenu';
+} from '@/components/TreeActionMenu';
 
-interface ExplorerCollectionActionMenuProps {
+interface TreeCollectionActionMenuProps {
   collection: CollectionRecord;
   isVirtualCategory: boolean;
-  menu: ReturnType<typeof useExplorerActionMenu>;
+  menu: ReturnType<typeof useTreeActionMenu>;
   position?: 'left' | 'right';
 }
 
-export default function ExplorerCollectionActionMenu({
+export default function TreeCollectionActionMenu({
   collection,
   isVirtualCategory,
   menu,
   position,
-}: ExplorerCollectionActionMenuProps) {
+}: TreeCollectionActionMenuProps) {
   const {
     onAddSubItem,
     onEditTemplate,
@@ -31,11 +31,11 @@ export default function ExplorerCollectionActionMenu({
     onDeleteCollection,
     onEditCollection,
     onAddSubCollection,
-  } = useExplorerActions();
+  } = useTreeActions();
 
   if (isVirtualCategory) {
     return (
-      <ExplorerActionMenu
+      <TreeActionMenu
         isOpen={menu.isMenuOpen}
         onMouseEnter={menu.handleMenuMouseEnter}
         onMouseLeave={menu.handleMouseLeave}
@@ -66,12 +66,12 @@ export default function ExplorerCollectionActionMenu({
             menu.closeMenu();
           }}
         />
-      </ExplorerActionMenu>
+      </TreeActionMenu>
     );
   }
 
   return (
-    <ExplorerActionMenu
+    <TreeActionMenu
       isOpen={menu.isMenuOpen}
       onMouseEnter={menu.handleMenuMouseEnter}
       onMouseLeave={menu.handleMouseLeave}
@@ -156,6 +156,6 @@ export default function ExplorerCollectionActionMenu({
           }}
         />
       )}
-    </ExplorerActionMenu>
+    </TreeActionMenu>
   );
 }

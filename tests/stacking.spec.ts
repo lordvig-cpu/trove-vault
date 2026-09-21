@@ -21,7 +21,7 @@ test.beforeEach(async ({ page }) => {
 });
 
 for (const location of ['flyout', 'left', 'right'] as const) {
-  test(`menus retain their lower layer beside the ${location} explorer`, async ({ page }) => {
+  test(`menus retain their lower layer beside the ${location} items panel`, async ({ page }) => {
     const trigger = page.getByRole('button', { name: 'Open Items or drag to dock in a sidebar', exact: true });
     if (location === 'flyout') {
       await trigger.click();
@@ -36,7 +36,7 @@ for (const location of ['flyout', 'left', 'right'] as const) {
     }
     const row = page.getByRole('button', { name: 'Stacking item', exact: true });
     await row.locator('..').getByRole('button', { name: 'Open actions' }).hover();
-    const menu = page.locator('[data-explorer-menu]:not([inert])');
+    const menu = page.locator('[data-tree-menu]:not([inert])');
     await expect(menu).toHaveCSS('z-index', location === 'flyout' ? '70' : '45');
     const rename = menu.getByRole('button', { name: /Rename Item/ });
     await expectTopmost(rename);
@@ -61,7 +61,7 @@ test('hover lifts only sticky categories and leaves navigation / handles stable'
   await trigger.hover();
   await expect(trigger).toHaveCSS('z-index', '50');
   await trigger.click();
-  const category = page.locator('.explorer-category-sticky-header').first();
+  const category = page.locator('.tree-category-sticky-header').first();
   await category.hover();
   await expect(category).toHaveCSS('z-index', '40');
   await page.keyboard.press('Escape');
@@ -75,7 +75,7 @@ test('item and template modals cover navigation and all overlay tiers', async ({
   await page.getByRole('button', { name: 'Open Items or drag to dock in a sidebar', exact: true }).click();
   const row = page.getByRole('button', { name: 'Stacking item', exact: true });
   await row.locator('..').getByRole('button', { name: 'Open actions' }).hover();
-  await page.locator('[data-explorer-menu]').getByRole('button', { name: /Edit Item/ }).click();
+  await page.locator('[data-tree-menu]').getByRole('button', { name: /Edit Item/ }).click();
   const backdrop = page.locator('.item-modal-backdrop');
   await expect(backdrop).toHaveCSS('z-index', '400');
   expect(await backdrop.evaluate(element => element.contains(document.elementFromPoint(25, 25)))).toBe(true);

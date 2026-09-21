@@ -3,8 +3,8 @@
 import React, { useState, useMemo } from 'react';
 import { ItemTemplate } from '@/types/template';
 import { FieldDefinition, FieldType } from '@/types/field';
-import { useExplorerActionMenu } from '@/hooks/useExplorerActionMenu';
-import { GearIcon } from '@/components/icons/ExplorerIcons';
+import { useTreeActionMenu } from '@/hooks/useTreeActionMenu';
+import { GearIcon } from '@/components/icons/TreeIcons';
 import TemplateFieldActionMenu from '@/components/TemplateFieldActionMenu';
 import TemplateRootActionMenu from '@/components/TemplateRootActionMenu';
 import '@/app/styles/components/templateFieldInspector.css';
@@ -64,7 +64,7 @@ function TemplateRootTreeRow({
   position?: 'left' | 'right';
 }) {
   const isRightSide = position === 'right';
-  const menu = useExplorerActionMenu(`template-root-${template.id}`, 280, position, 272);
+  const menu = useTreeActionMenu(`template-root-${template.id}`, 280, position, 272);
   const fields = template.fields || [];
 
   const gearTrigger = (
@@ -93,8 +93,8 @@ function TemplateRootTreeRow({
         className={[
           'w-[15px] h-[15px] transition-all duration-300 ease-out',
           menu.isMenuOpen
-            ? 'explorer-tree-gear-open rotate-90'
-            : 'explorer-tree-gear-closed',
+            ? 'tree-gear-open rotate-90'
+            : 'tree-gear-closed',
         ].join(' ')}
       />
     </div>
@@ -181,7 +181,7 @@ function TemplateFieldTreeRow({
   onMoveField: (fieldId: number, direction: 'up' | 'down') => void;
 }) {
   const isRightSide = position === 'right';
-  const menu = useExplorerActionMenu(`template-field-${field.id}`, 480, position, 272);
+  const menu = useTreeActionMenu(`template-field-${field.id}`, 480, position, 272);
   const typeCfg = FIELD_TYPE_CONFIG[field.field_type] || FIELD_TYPE_CONFIG.text;
 
   const gearTrigger = (
@@ -210,8 +210,8 @@ function TemplateFieldTreeRow({
         className={[
           'w-[15px] h-[15px] transition-all duration-300 ease-out',
           menu.isMenuOpen
-            ? 'explorer-tree-gear-open rotate-90'
-            : 'explorer-tree-gear-closed',
+            ? 'tree-gear-open rotate-90'
+            : 'tree-gear-closed',
         ].join(' ')}
       />
     </div>

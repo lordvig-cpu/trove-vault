@@ -1,12 +1,12 @@
 import { CollectionRecord } from '@/types/collection';
 import { ItemRecord } from '@/types/item';
 import { CollectionTemplate } from '@/types/template';
-import { UnifiedCollectionNode } from '@/components/UnifiedExplorerTree';
+import { UnifiedCollectionNode } from '@/components/UnifiedTree';
 import { SearchScope } from '@/components/NavigationHeader';
 
 export const STANDALONE_COLLECTION_ID = 0;
 
-export interface ExplorerSearchHighlight {
+export interface TreeSearchHighlight {
   itemId: number;
   item: ItemRecord;
   collectionIds: Set<number>;
@@ -17,11 +17,11 @@ export interface ExplorerSearchHighlight {
 export function getSingleSearchHighlight(
   forest: UnifiedCollectionNode[],
   query: string
-): ExplorerSearchHighlight | null {
+): TreeSearchHighlight | null {
   const trimmed = query.trim().toLowerCase();
   if (!trimmed) return null;
 
-  const matches = new Map<number, ExplorerSearchHighlight>();
+  const matches = new Map<number, TreeSearchHighlight>();
   const visitItem = (item: ItemRecord, collectionId: number, ancestors: number[]) => {
     if (itemMatchesQuery(item, trimmed)) {
       const match = matches.get(item.id) ?? {

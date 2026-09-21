@@ -7,7 +7,7 @@ import { ItemRecord } from '@/types/item';
 import {
   buildItemHierarchy,
   buildFilteredUnifiedForest,
-} from '@/lib/explorerUtils';
+} from '@/lib/treeUtils';
 import { fetchAllPages } from '@/lib/fetchAllPages';
 import { ItemTemplate } from '@/types/template';
 

@@ -318,7 +318,7 @@
      2px 0 5px 0 oklch(from var(--oklch-blue-0-0-0) l c h / calc(0.35 * var(--oklch-shadow-opacity)));
    --panel-reset-shadow: 4px 0 12px oklch(from var(--oklch-blue-0-0-0) l c h / calc(0.6 * var(--oklch-shadow-opacity)));
    --panel-shell-shadow: 0 12px 24px -4px oklch(from var(--oklch-blue-0-0-0) l c h / calc(0.4 * var(--oklch-shadow-opacity)));
-   --explorer-panel-bg: linear-gradient(180deg,
+   --tree-panel-bg: linear-gradient(180deg,
        oklch(from var(--oklch-blue-255-255-255) l c h / 0.07) 0%,
        oklch(from var(--oklch-blue-255-255-255) l c h / 0.015) 14%,
        transparent 36%),
@@ -334,89 +334,89 @@
        oklch(from var(--oklch-blue-0-31-64) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.90) 68%,
        oklch(from var(--oklch-blue-0-23-50) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.90) 86%,
        oklch(from var(--oklch-blue-0-17-36) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.90) 100%);
-   --explorer-panel-border: var(--panel-border-strong);
-   --explorer-panel-flare-bg: radial-gradient(ellipse 130% 120% at 15% -20%,
+   --tree-panel-border: var(--panel-border-strong);
+   --tree-panel-flare-bg: radial-gradient(ellipse 130% 120% at 15% -20%,
        oklch(from var(--oklch-blue-0-180-255) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / calc(0.18 * var(--oklch-glow-opacity))) 0%,
        oklch(from var(--oklch-blue-0-110-220) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / calc(0.08 * var(--oklch-glow-opacity))) 45%,
        transparent 75%);
-   --explorer-panel-flare-blend: screen;
-   --explorer-panel-flare-opacity: 0.70;
-   --explorer-panel-texture-bg: none;
-   --explorer-panel-texture-filter: none;
-   --explorer-panel-texture-opacity: 0;
-   --explorer-panel-texture-blend: normal;
+   --tree-panel-flare-blend: screen;
+   --tree-panel-flare-opacity: 0.70;
+   --tree-panel-texture-bg: none;
+   --tree-panel-texture-filter: none;
+   --tree-panel-texture-opacity: 0;
+   --tree-panel-texture-blend: normal;
    --panel-notice-loading-bg: oklch(from var(--oklch-blue-4-22-54) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 1);
    --panel-notice-loading-text: oklch(from var(--oklch-yellow-248-188-9) clamp(0, calc(var(--oklch-ink-offset) + l * var(--oklch-ink-scale)), 1) calc(c * var(--oklch-ink-chroma)) h / 1);
    --panel-notice-loading-border: oklch(from var(--oklch-blue-0-140-255) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 0.3);
    --panel-notice-error-bg: oklch(from var(--oklch-blue-76-5-25) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.6);
    --panel-notice-error-text: oklch(from var(--oklch-blue-254-205-211) clamp(0, calc(var(--oklch-ink-offset) + l * var(--oklch-ink-scale)), 1) calc(c * var(--oklch-ink-chroma)) h / 1);
    --panel-notice-error-border: oklch(from var(--oklch-blue-159-18-57) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 1);
-   --explorer-item-hover-bg: oklch(from var(--oklch-blue-10-42-88) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.7);
-   --explorer-item-active-bg: oklch(from var(--oklch-yellow-248-188-9) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 0.15);
-   --explorer-item-active-border: oklch(from var(--oklch-yellow-248-188-9) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 0.9);
-   --explorer-menu-bg: var(--popover-surface-bg);
-   --explorer-menu-border: oklch(from var(--oklch-blue-0-180-255) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 0.6);
-   --explorer-menu-btn-text: oklch(from var(--oklch-blue-148-163-184) clamp(0, calc(var(--oklch-ink-offset) + l * var(--oklch-ink-scale)), 1) calc(c * var(--oklch-ink-chroma)) h / 1);
-   --explorer-menu-btn-hover-bg: oklch(from var(--oklch-blue-14-55-115) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 1);
-   --explorer-menu-btn-hover-text: oklch(from var(--oklch-blue-255-255-255) clamp(0, calc(var(--oklch-ink-offset) + l * var(--oklch-ink-scale)), 1) calc(c * var(--oklch-ink-chroma)) h / 1);
-   --explorer-menu-btn-accent-hover: oklch(from var(--oklch-yellow-248-188-9) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 1);
-   --explorer-menu-danger-text: oklch(from var(--oklch-blue-244-63-94) clamp(0, calc(var(--oklch-ink-offset) + l * var(--oklch-ink-scale)), 1) calc(c * var(--oklch-ink-chroma)) h / 1);
-   --explorer-menu-danger-hover-bg: oklch(from var(--oklch-blue-76-5-25) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.45);
-   --explorer-menu-danger-hover-text: oklch(from var(--oklch-blue-251-113-133) clamp(0, calc(var(--oklch-ink-offset) + l * var(--oklch-ink-scale)), 1) calc(c * var(--oklch-ink-chroma)) h / 1);
-   --explorer-category-card-bg: linear-gradient(180deg,
+   --tree-item-hover-bg: oklch(from var(--oklch-blue-10-42-88) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.7);
+   --tree-item-active-bg: oklch(from var(--oklch-yellow-248-188-9) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 0.15);
+   --tree-item-active-border: oklch(from var(--oklch-yellow-248-188-9) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 0.9);
+   --tree-menu-bg: var(--popover-surface-bg);
+   --tree-menu-border: oklch(from var(--oklch-blue-0-180-255) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 0.6);
+   --tree-menu-btn-text: oklch(from var(--oklch-blue-148-163-184) clamp(0, calc(var(--oklch-ink-offset) + l * var(--oklch-ink-scale)), 1) calc(c * var(--oklch-ink-chroma)) h / 1);
+   --tree-menu-btn-hover-bg: oklch(from var(--oklch-blue-14-55-115) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 1);
+   --tree-menu-btn-hover-text: oklch(from var(--oklch-blue-255-255-255) clamp(0, calc(var(--oklch-ink-offset) + l * var(--oklch-ink-scale)), 1) calc(c * var(--oklch-ink-chroma)) h / 1);
+   --tree-menu-btn-accent-hover: oklch(from var(--oklch-yellow-248-188-9) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 1);
+   --tree-menu-danger-text: oklch(from var(--oklch-blue-244-63-94) clamp(0, calc(var(--oklch-ink-offset) + l * var(--oklch-ink-scale)), 1) calc(c * var(--oklch-ink-chroma)) h / 1);
+   --tree-menu-danger-hover-bg: oklch(from var(--oklch-blue-76-5-25) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.45);
+   --tree-menu-danger-hover-text: oklch(from var(--oklch-blue-251-113-133) clamp(0, calc(var(--oklch-ink-offset) + l * var(--oklch-ink-scale)), 1) calc(c * var(--oklch-ink-chroma)) h / 1);
+   --tree-category-card-bg: linear-gradient(180deg,
        oklch(from var(--oklch-blue-4-28-62) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.85) 0%,
        oklch(from var(--oklch-blue-1-18-44) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.9) 100%);
-   --explorer-category-card-border: oklch(from var(--oklch-blue-0-120-220) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 0.32);
-   --explorer-category-card-shadow: inset 0 1px 0 oklch(from var(--oklch-blue-255-255-255) l c h / 0.1),
+   --tree-category-card-border: oklch(from var(--oklch-blue-0-120-220) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 0.32);
+   --tree-category-card-shadow: inset 0 1px 0 oklch(from var(--oklch-blue-255-255-255) l c h / 0.1),
      0 2px 8px oklch(from var(--oklch-blue-0-0-0) l c h / calc(0.45 * var(--oklch-shadow-opacity)));
-   --explorer-category-card-hover-bg: linear-gradient(180deg,
+   --tree-category-card-hover-bg: linear-gradient(180deg,
        oklch(from var(--oklch-blue-8-38-80) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.9) 0%,
        oklch(from var(--oklch-blue-3-24-56) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.95) 100%);
-   --explorer-category-card-hover-border: oklch(from var(--oklch-blue-0-160-240) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 0.5);
-   --explorer-category-card-active-bg: linear-gradient(180deg,
+   --tree-category-card-hover-border: oklch(from var(--oklch-blue-0-160-240) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 0.5);
+   --tree-category-card-active-bg: linear-gradient(180deg,
        oklch(from var(--oklch-blue-12-45-95) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.92) 0%,
        oklch(from var(--oklch-blue-6-28-66) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.98) 100%);
-   --explorer-category-card-active-border: oklch(from var(--oklch-yellow-248-188-9) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 0.85);
-   --explorer-category-badge-bg: oklch(from var(--oklch-blue-1-12-30) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.9);
-   --explorer-category-badge-border: oklch(from var(--oklch-blue-0-120-220) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 0.35);
-   --explorer-category-badge-text: oklch(from var(--oklch-yellow-248-188-9) clamp(0, calc(var(--oklch-ink-offset) + l * var(--oklch-ink-scale)), 1) calc(c * var(--oklch-ink-chroma)) h / 1);
-   --explorer-tree-branch: oklch(from var(--oklch-blue-0-160-240) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 0.28);
-   --explorer-sticky-category-bg: oklch(from var(--oklch-blue-4-22-54) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.95);
-   --explorer-sticky-category-border: var(--panel-border-subtle);
-   --explorer-sticky-shadow: 0 4px 12px -2px oklch(from var(--oklch-blue-0-0-0) l c h / calc(0.65 * var(--oklch-shadow-opacity)));
-   --explorer-search-input-bg: oklch(from var(--oklch-blue-0-20-48) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.88);
-   --explorer-search-input-border: oklch(from var(--oklch-blue-0-160-255) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 0.58);
-   --explorer-input-border-idle: oklch(from var(--oklch-blue-0-160-255) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 0.58);
-   --explorer-input-border-hover: oklch(from var(--oklch-blue-0-190-255) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 0.8);
-   --explorer-input-focus-glow: oklch(from var(--oklch-yellow-248-188-9) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / calc(0.25 * var(--oklch-glow-opacity)));
-   --explorer-control-bg: oklch(from var(--oklch-blue-4-24-56) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.75);
-   --explorer-kbd-text: oklch(from var(--oklch-blue-52-211-153) clamp(0, calc(var(--oklch-ink-offset) + l * var(--oklch-ink-scale)), 1) calc(c * var(--oklch-ink-chroma)) h / 1);
-   --explorer-kbd-bg: oklch(from var(--oklch-blue-6-78-59) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.8);
-   --explorer-kbd-border: oklch(from var(--oklch-blue-6-95-70) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 0.6);
-   --explorer-title-text: oklch(from var(--oklch-blue-138-194-235) clamp(0, calc(var(--oklch-ink-offset) + l * var(--oklch-ink-scale)), 1) calc(c * var(--oklch-ink-chroma)) h / 0.95);
-   --explorer-search-placeholder: oklch(from var(--oklch-blue-105-147-185) clamp(0, calc(var(--oklch-ink-offset) + l * var(--oklch-ink-scale)), 1) calc(c * var(--oklch-ink-chroma)) h / 0.85);
-   --explorer-search-icon: oklch(from var(--oklch-blue-122-189-228) clamp(0, calc(var(--oklch-ink-offset) + l * var(--oklch-ink-scale)), 1) calc(c * var(--oklch-ink-chroma)) h / 0.8);
-   --explorer-action-icon: oklch(from var(--oklch-blue-109-170-209) clamp(0, calc(var(--oklch-ink-offset) + l * var(--oklch-ink-scale)), 1) calc(c * var(--oklch-ink-chroma)) h / 0.85);
-   --explorer-action-icon-hover: oklch(from var(--oklch-blue-255-255-255) clamp(0, calc(var(--oklch-ink-offset) + l * var(--oklch-ink-scale)), 1) calc(c * var(--oklch-ink-chroma)) h / 1);
-   --explorer-item-text: oklch(from var(--oklch-blue-167-190-212) clamp(0, calc(var(--oklch-ink-offset) + l * var(--oklch-ink-scale)), 1) calc(c * var(--oklch-ink-chroma)) h / 0.95);
-   --explorer-item-text-hover: oklch(from var(--oklch-blue-240-249-255) clamp(0, calc(var(--oklch-ink-offset) + l * var(--oklch-ink-scale)), 1) calc(c * var(--oklch-ink-chroma)) h / 1);
-   --explorer-tree-muted: oklch(from var(--oklch-blue-105-147-185) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 0.75);
-   --explorer-tab-text-idle: oklch(from var(--oklch-blue-107-152-184) clamp(0, calc(var(--oklch-ink-offset) + l * var(--oklch-ink-scale)), 1) calc(c * var(--oklch-ink-chroma)) h / 0.9);
-   --explorer-tab-text-hover: oklch(from var(--oklch-blue-186-230-253) clamp(0, calc(var(--oklch-ink-offset) + l * var(--oklch-ink-scale)), 1) calc(c * var(--oklch-ink-chroma)) h / 1);
-   --explorer-tab-text-active: oklch(from var(--oklch-yellow-248-188-9) clamp(0, calc(var(--oklch-ink-offset) + l * var(--oklch-ink-scale)), 1) calc(c * var(--oklch-ink-chroma)) h / 1);
-   --explorer-tab-border-idle: oklch(from var(--oklch-blue-0-100-190) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 0.28);
-   --explorer-tab-border-hover: oklch(from var(--oklch-blue-0-160-240) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 0.55);
-   --explorer-tab-border-active: oklch(from var(--oklch-yellow-248-188-9) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 1);
-   --explorer-tab-glow-active: drop-shadow(0 -2px 6px oklch(from var(--oklch-yellow-248-188-9) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / calc(0.5 * var(--oklch-glow-opacity))))
+   --tree-category-card-active-border: oklch(from var(--oklch-yellow-248-188-9) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 0.85);
+   --tree-category-badge-bg: oklch(from var(--oklch-blue-1-12-30) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.9);
+   --tree-category-badge-border: oklch(from var(--oklch-blue-0-120-220) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 0.35);
+   --tree-category-badge-text: oklch(from var(--oklch-yellow-248-188-9) clamp(0, calc(var(--oklch-ink-offset) + l * var(--oklch-ink-scale)), 1) calc(c * var(--oklch-ink-chroma)) h / 1);
+   --tree-branch: oklch(from var(--oklch-blue-0-160-240) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 0.28);
+   --tree-sticky-category-bg: oklch(from var(--oklch-blue-4-22-54) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.95);
+   --tree-sticky-category-border: var(--panel-border-subtle);
+   --tree-sticky-shadow: 0 4px 12px -2px oklch(from var(--oklch-blue-0-0-0) l c h / calc(0.65 * var(--oklch-shadow-opacity)));
+   --tree-search-input-bg: oklch(from var(--oklch-blue-0-20-48) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.88);
+   --tree-search-input-border: oklch(from var(--oklch-blue-0-160-255) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 0.58);
+   --tree-input-border-idle: oklch(from var(--oklch-blue-0-160-255) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 0.58);
+   --tree-input-border-hover: oklch(from var(--oklch-blue-0-190-255) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 0.8);
+   --tree-input-focus-glow: oklch(from var(--oklch-yellow-248-188-9) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / calc(0.25 * var(--oklch-glow-opacity)));
+   --tree-control-bg: oklch(from var(--oklch-blue-4-24-56) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.75);
+   --tree-kbd-text: oklch(from var(--oklch-blue-52-211-153) clamp(0, calc(var(--oklch-ink-offset) + l * var(--oklch-ink-scale)), 1) calc(c * var(--oklch-ink-chroma)) h / 1);
+   --tree-kbd-bg: oklch(from var(--oklch-blue-6-78-59) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.8);
+   --tree-kbd-border: oklch(from var(--oklch-blue-6-95-70) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 0.6);
+   --tree-title-text: oklch(from var(--oklch-blue-138-194-235) clamp(0, calc(var(--oklch-ink-offset) + l * var(--oklch-ink-scale)), 1) calc(c * var(--oklch-ink-chroma)) h / 0.95);
+   --tree-search-placeholder: oklch(from var(--oklch-blue-105-147-185) clamp(0, calc(var(--oklch-ink-offset) + l * var(--oklch-ink-scale)), 1) calc(c * var(--oklch-ink-chroma)) h / 0.85);
+   --tree-search-icon: oklch(from var(--oklch-blue-122-189-228) clamp(0, calc(var(--oklch-ink-offset) + l * var(--oklch-ink-scale)), 1) calc(c * var(--oklch-ink-chroma)) h / 0.8);
+   --tree-action-icon: oklch(from var(--oklch-blue-109-170-209) clamp(0, calc(var(--oklch-ink-offset) + l * var(--oklch-ink-scale)), 1) calc(c * var(--oklch-ink-chroma)) h / 0.85);
+   --tree-action-icon-hover: oklch(from var(--oklch-blue-255-255-255) clamp(0, calc(var(--oklch-ink-offset) + l * var(--oklch-ink-scale)), 1) calc(c * var(--oklch-ink-chroma)) h / 1);
+   --tree-item-text: oklch(from var(--oklch-blue-167-190-212) clamp(0, calc(var(--oklch-ink-offset) + l * var(--oklch-ink-scale)), 1) calc(c * var(--oklch-ink-chroma)) h / 0.95);
+   --tree-item-text-hover: oklch(from var(--oklch-blue-240-249-255) clamp(0, calc(var(--oklch-ink-offset) + l * var(--oklch-ink-scale)), 1) calc(c * var(--oklch-ink-chroma)) h / 1);
+   --tree-muted: oklch(from var(--oklch-blue-105-147-185) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 0.75);
+   --tree-tab-text-idle: oklch(from var(--oklch-blue-107-152-184) clamp(0, calc(var(--oklch-ink-offset) + l * var(--oklch-ink-scale)), 1) calc(c * var(--oklch-ink-chroma)) h / 0.9);
+   --tree-tab-text-hover: oklch(from var(--oklch-blue-186-230-253) clamp(0, calc(var(--oklch-ink-offset) + l * var(--oklch-ink-scale)), 1) calc(c * var(--oklch-ink-chroma)) h / 1);
+   --tree-tab-text-active: oklch(from var(--oklch-yellow-248-188-9) clamp(0, calc(var(--oklch-ink-offset) + l * var(--oklch-ink-scale)), 1) calc(c * var(--oklch-ink-chroma)) h / 1);
+   --tree-tab-border-idle: oklch(from var(--oklch-blue-0-100-190) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 0.28);
+   --tree-tab-border-hover: oklch(from var(--oklch-blue-0-160-240) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 0.55);
+   --tree-tab-border-active: oklch(from var(--oklch-yellow-248-188-9) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 1);
+   --tree-tab-glow-active: drop-shadow(0 -2px 6px oklch(from var(--oklch-yellow-248-188-9) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / calc(0.5 * var(--oklch-glow-opacity))))
      drop-shadow(4px 1px 5px oklch(from var(--oklch-blue-0-0-0) l c h / calc(0.75 * var(--oklch-shadow-opacity))));
-   --explorer-tab-bg-idle: oklch(from var(--oklch-blue-2-12-30) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.85);
-   --explorer-tab-bg-hover: oklch(from var(--oklch-blue-6-28-60) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.95);
-   --explorer-tab-bg-active: oklch(from var(--oklch-blue-10-64-112) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 1);
-   --explorer-tab-active-top: oklch(from var(--oklch-blue-18-94-158) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 1);
-   --explorer-tab-active-mid: oklch(from var(--oklch-blue-10-64-112) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 1);
-   --explorer-tab-active-bottom: oklch(from var(--oklch-blue-5-36-70) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 1);
-   --explorer-tab-shadow-right: oklch(from var(--oklch-blue-0-0-0) l c h / calc(0.75 * var(--oklch-shadow-opacity)));
-   --explorer-tab-baseline: oklch(from var(--oklch-yellow-248-188-9) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 1);
+   --tree-tab-bg-idle: oklch(from var(--oklch-blue-2-12-30) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.85);
+   --tree-tab-bg-hover: oklch(from var(--oklch-blue-6-28-60) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.95);
+   --tree-tab-bg-active: oklch(from var(--oklch-blue-10-64-112) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 1);
+   --tree-tab-active-top: oklch(from var(--oklch-blue-18-94-158) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 1);
+   --tree-tab-active-mid: oklch(from var(--oklch-blue-10-64-112) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 1);
+   --tree-tab-active-bottom: oklch(from var(--oklch-blue-5-36-70) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 1);
+   --tree-tab-shadow-right: oklch(from var(--oklch-blue-0-0-0) l c h / calc(0.75 * var(--oklch-shadow-opacity)));
+   --tree-tab-baseline: oklch(from var(--oklch-yellow-248-188-9) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 1);
    --right-panel-bg: linear-gradient(180deg,
        oklch(from var(--oklch-blue-255-255-255) l c h / 0.07) 0%,
        oklch(from var(--oklch-blue-255-255-255) l c h / 0.015) 14%,
@@ -492,8 +492,8 @@
    --item-modal-inline-shadow: 0 1px 2px oklch(from var(--oklch-blue-0-0-0) l c h / calc(0.25 * var(--oklch-shadow-opacity)));
    --confirm-danger-panel-bg: oklch(from var(--oklch-blue-76-5-25) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.3);
    --confirm-danger-panel-border: oklch(from var(--oklch-blue-159-18-57) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 0.5);
-   --explorer-filter-inset-shadow: inset 0 2px 4px oklch(from var(--oklch-blue-0-0-0) l c h / calc(0.25 * var(--oklch-shadow-opacity)));
-   --explorer-filter-pill-shadow: 0 1px 2px oklch(from var(--oklch-blue-0-0-0) l c h / calc(0.25 * var(--oklch-shadow-opacity)));
+   --tree-filter-inset-shadow: inset 0 2px 4px oklch(from var(--oklch-blue-0-0-0) l c h / calc(0.25 * var(--oklch-shadow-opacity)));
+   --tree-filter-pill-shadow: 0 1px 2px oklch(from var(--oklch-blue-0-0-0) l c h / calc(0.25 * var(--oklch-shadow-opacity)));
    --tmpl-item-bg: oklch(from var(--oklch-blue-2-14-36) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.65);
    --tmpl-item-border: var(--panel-border-subtle);
    --tmpl-item-hover-border: var(--panel-border-strong);
@@ -509,7 +509,7 @@
    --tmpl-alert-error-bg: oklch(from var(--oklch-blue-76-5-25) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.6);
    --tmpl-alert-error-border: oklch(from var(--oklch-blue-159-18-57) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 0.8);
    --tmpl-alert-error-text: oklch(from var(--oklch-blue-253-164-175) clamp(0, calc(var(--oklch-ink-offset) + l * var(--oklch-ink-scale)), 1) calc(c * var(--oklch-ink-chroma)) h / 1);
-   --explorer-menu-shell-bg: linear-gradient(180deg,
+   --tree-menu-shell-bg: linear-gradient(180deg,
        oklch(from var(--oklch-blue-255-255-255) l c h / 0.08) 0%,
        oklch(from var(--oklch-blue-255-255-255) l c h / 0.02) 15%,
        transparent 30%),
@@ -526,65 +526,65 @@
        oklch(from var(--oklch-yellow-24-11-3) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 1) 42%,
        oklch(from var(--oklch-yellow-16-6-1) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 1) 70%,
        oklch(from var(--oklch-yellow-10-4-1) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 1) 100%);
-   --explorer-menu-shell-border: oklch(from var(--oklch-yellow-245-158-11) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 1);
-   --explorer-menu-shell-shadow: 0 0 25px 0 oklch(from var(--oklch-yellow-245-158-11) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 0.45),
+   --tree-menu-shell-border: oklch(from var(--oklch-yellow-245-158-11) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 1);
+   --tree-menu-shell-shadow: 0 0 25px 0 oklch(from var(--oklch-yellow-245-158-11) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 0.45),
      0 0 8px 0 oklch(from var(--oklch-yellow-245-158-11) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 0.35),
      20px 0 45px -4px oklch(from var(--oklch-blue-0-0-0) l c h / calc(0.85 * var(--oklch-shadow-opacity))),
      0 20px 40px oklch(from var(--oklch-blue-0-0-0) l c h / calc(0.85 * var(--oklch-shadow-opacity))),
      inset 0 1px 0 oklch(from var(--oklch-yellow-255-235-175) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 0.28);
-   --explorer-menu-header-bg: linear-gradient(180deg,
+   --tree-menu-header-bg: linear-gradient(180deg,
        oklch(from var(--oklch-yellow-146-64-14) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.5) 0%,
        oklch(from var(--oklch-yellow-69-26-3) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.65) 100%);
-   --explorer-menu-header-border: oklch(from var(--oklch-yellow-245-158-11) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 0.45);
-   --explorer-menu-header-title: oklch(from var(--oklch-yellow-251-191-36) clamp(0, calc(var(--oklch-ink-offset) + l * var(--oklch-ink-scale)), 1) calc(c * var(--oklch-ink-chroma)) h / 1);
-   --explorer-menu-header-icon: oklch(from var(--oklch-yellow-245-158-11) clamp(0, calc(var(--oklch-ink-offset) + l * var(--oklch-ink-scale)), 1) calc(c * var(--oklch-ink-chroma)) h / 1);
-   --explorer-menu-form-bg: oklch(from var(--oklch-blue-14-8-3) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.95);
-   --explorer-menu-input-bg: oklch(from var(--oklch-blue-6-4-1) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 1);
-   --explorer-menu-divider: oklch(from var(--oklch-yellow-245-158-11) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 0.28);
-   --explorer-menu-item-text: oklch(from var(--oklch-blue-241-245-249) clamp(0, calc(var(--oklch-ink-offset) + l * var(--oklch-ink-scale)), 1) calc(c * var(--oklch-ink-chroma)) h / 1);
-   --explorer-menu-item-hover-bg: oklch(from var(--oklch-yellow-248-188-9) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 0.2);
-   --explorer-menu-item-hover-text: oklch(from var(--oklch-blue-255-255-255) clamp(0, calc(var(--oklch-ink-offset) + l * var(--oklch-ink-scale)), 1) calc(c * var(--oklch-ink-chroma)) h / 1);
-   --explorer-menu-item-subtext: oklch(from var(--oklch-blue-203-213-225) clamp(0, calc(var(--oklch-ink-offset) + l * var(--oklch-ink-scale)), 1) calc(c * var(--oklch-ink-chroma)) h / 1);
-   --explorer-menu-item-hover-subtext: oklch(from var(--oklch-blue-255-255-255) clamp(0, calc(var(--oklch-ink-offset) + l * var(--oklch-ink-scale)), 1) calc(c * var(--oklch-ink-chroma)) h / 1);
-   --explorer-menu-danger-text: oklch(from var(--oklch-blue-253-164-175) clamp(0, calc(var(--oklch-ink-offset) + l * var(--oklch-ink-scale)), 1) calc(c * var(--oklch-ink-chroma)) h / 1);
-   --explorer-menu-danger-icon: oklch(from var(--oklch-blue-251-113-133) clamp(0, calc(var(--oklch-ink-offset) + l * var(--oklch-ink-scale)), 1) calc(c * var(--oklch-ink-chroma)) h / 1);
-   --explorer-menu-danger-subtext: oklch(from var(--oklch-blue-251-113-133) clamp(0, calc(var(--oklch-ink-offset) + l * var(--oklch-ink-scale)), 1) calc(c * var(--oklch-ink-chroma)) h / 0.7);
-   --explorer-menu-danger-hover-bg: oklch(from var(--oklch-blue-76-5-25) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.5);
-   --explorer-menu-danger-hover-border: oklch(from var(--oklch-blue-159-18-57) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 0.6);
-   --explorer-menu-danger-hover-text: oklch(from var(--oklch-blue-254-205-211) clamp(0, calc(var(--oklch-ink-offset) + l * var(--oklch-ink-scale)), 1) calc(c * var(--oklch-ink-chroma)) h / 1);
-   --explorer-menu-danger-hover-subtext: oklch(from var(--oklch-blue-253-164-175) clamp(0, calc(var(--oklch-ink-offset) + l * var(--oklch-ink-scale)), 1) calc(c * var(--oklch-ink-chroma)) h / 1);
-   --explorer-menu-rename-input-bg: oklch(from var(--oklch-blue-6-4-1) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 1);
-   --explorer-menu-rename-input-text: oklch(from var(--oklch-blue-255-255-255) clamp(0, calc(var(--oklch-ink-offset) + l * var(--oklch-ink-scale)), 1) calc(c * var(--oklch-ink-chroma)) h / 1);
-   --explorer-menu-rename-input-border: var(--explorer-input-border-idle, oklch(from var(--oklch-blue-0-160-255) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 0.58));
-   --explorer-menu-rename-input-focus: oklch(from var(--oklch-yellow-248-188-9) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 1);
-   --explorer-menu-rename-cancel-text: oklch(from var(--oklch-blue-148-163-184) clamp(0, calc(var(--oklch-ink-offset) + l * var(--oklch-ink-scale)), 1) calc(c * var(--oklch-ink-chroma)) h / 1);
-   --explorer-menu-rename-cancel-hover-text: oklch(from var(--oklch-blue-255-255-255) clamp(0, calc(var(--oklch-ink-offset) + l * var(--oklch-ink-scale)), 1) calc(c * var(--oklch-ink-chroma)) h / 1);
-   --explorer-menu-rename-save-bg: oklch(from var(--oklch-yellow-248-188-9) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 0.25);
-   --explorer-menu-rename-save-hover-bg: oklch(from var(--oklch-yellow-248-188-9) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 0.4);
-   --explorer-menu-rename-save-text: oklch(from var(--oklch-yellow-248-188-9) clamp(0, calc(var(--oklch-ink-offset) + l * var(--oklch-ink-scale)), 1) calc(c * var(--oklch-ink-chroma)) h / 1);
-   --explorer-filter-surface-bg: transparent;
-   --explorer-filter-shell-border: transparent;
-   --explorer-filter-inset-shadow: none;
-   --explorer-filter-card-bg: linear-gradient(180deg,
+   --tree-menu-header-border: oklch(from var(--oklch-yellow-245-158-11) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 0.45);
+   --tree-menu-header-title: oklch(from var(--oklch-yellow-251-191-36) clamp(0, calc(var(--oklch-ink-offset) + l * var(--oklch-ink-scale)), 1) calc(c * var(--oklch-ink-chroma)) h / 1);
+   --tree-menu-header-icon: oklch(from var(--oklch-yellow-245-158-11) clamp(0, calc(var(--oklch-ink-offset) + l * var(--oklch-ink-scale)), 1) calc(c * var(--oklch-ink-chroma)) h / 1);
+   --tree-menu-form-bg: oklch(from var(--oklch-blue-14-8-3) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.95);
+   --tree-menu-input-bg: oklch(from var(--oklch-blue-6-4-1) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 1);
+   --tree-menu-divider: oklch(from var(--oklch-yellow-245-158-11) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 0.28);
+   --tree-menu-item-text: oklch(from var(--oklch-blue-241-245-249) clamp(0, calc(var(--oklch-ink-offset) + l * var(--oklch-ink-scale)), 1) calc(c * var(--oklch-ink-chroma)) h / 1);
+   --tree-menu-item-hover-bg: oklch(from var(--oklch-yellow-248-188-9) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 0.2);
+   --tree-menu-item-hover-text: oklch(from var(--oklch-blue-255-255-255) clamp(0, calc(var(--oklch-ink-offset) + l * var(--oklch-ink-scale)), 1) calc(c * var(--oklch-ink-chroma)) h / 1);
+   --tree-menu-item-subtext: oklch(from var(--oklch-blue-203-213-225) clamp(0, calc(var(--oklch-ink-offset) + l * var(--oklch-ink-scale)), 1) calc(c * var(--oklch-ink-chroma)) h / 1);
+   --tree-menu-item-hover-subtext: oklch(from var(--oklch-blue-255-255-255) clamp(0, calc(var(--oklch-ink-offset) + l * var(--oklch-ink-scale)), 1) calc(c * var(--oklch-ink-chroma)) h / 1);
+   --tree-menu-danger-text: oklch(from var(--oklch-blue-253-164-175) clamp(0, calc(var(--oklch-ink-offset) + l * var(--oklch-ink-scale)), 1) calc(c * var(--oklch-ink-chroma)) h / 1);
+   --tree-menu-danger-icon: oklch(from var(--oklch-blue-251-113-133) clamp(0, calc(var(--oklch-ink-offset) + l * var(--oklch-ink-scale)), 1) calc(c * var(--oklch-ink-chroma)) h / 1);
+   --tree-menu-danger-subtext: oklch(from var(--oklch-blue-251-113-133) clamp(0, calc(var(--oklch-ink-offset) + l * var(--oklch-ink-scale)), 1) calc(c * var(--oklch-ink-chroma)) h / 0.7);
+   --tree-menu-danger-hover-bg: oklch(from var(--oklch-blue-76-5-25) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.5);
+   --tree-menu-danger-hover-border: oklch(from var(--oklch-blue-159-18-57) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 0.6);
+   --tree-menu-danger-hover-text: oklch(from var(--oklch-blue-254-205-211) clamp(0, calc(var(--oklch-ink-offset) + l * var(--oklch-ink-scale)), 1) calc(c * var(--oklch-ink-chroma)) h / 1);
+   --tree-menu-danger-hover-subtext: oklch(from var(--oklch-blue-253-164-175) clamp(0, calc(var(--oklch-ink-offset) + l * var(--oklch-ink-scale)), 1) calc(c * var(--oklch-ink-chroma)) h / 1);
+   --tree-menu-rename-input-bg: oklch(from var(--oklch-blue-6-4-1) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 1);
+   --tree-menu-rename-input-text: oklch(from var(--oklch-blue-255-255-255) clamp(0, calc(var(--oklch-ink-offset) + l * var(--oklch-ink-scale)), 1) calc(c * var(--oklch-ink-chroma)) h / 1);
+   --tree-menu-rename-input-border: var(--tree-input-border-idle, oklch(from var(--oklch-blue-0-160-255) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 0.58));
+   --tree-menu-rename-input-focus: oklch(from var(--oklch-yellow-248-188-9) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 1);
+   --tree-menu-rename-cancel-text: oklch(from var(--oklch-blue-148-163-184) clamp(0, calc(var(--oklch-ink-offset) + l * var(--oklch-ink-scale)), 1) calc(c * var(--oklch-ink-chroma)) h / 1);
+   --tree-menu-rename-cancel-hover-text: oklch(from var(--oklch-blue-255-255-255) clamp(0, calc(var(--oklch-ink-offset) + l * var(--oklch-ink-scale)), 1) calc(c * var(--oklch-ink-chroma)) h / 1);
+   --tree-menu-rename-save-bg: oklch(from var(--oklch-yellow-248-188-9) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 0.25);
+   --tree-menu-rename-save-hover-bg: oklch(from var(--oklch-yellow-248-188-9) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 0.4);
+   --tree-menu-rename-save-text: oklch(from var(--oklch-yellow-248-188-9) clamp(0, calc(var(--oklch-ink-offset) + l * var(--oklch-ink-scale)), 1) calc(c * var(--oklch-ink-chroma)) h / 1);
+   --tree-filter-surface-bg: transparent;
+   --tree-filter-shell-border: transparent;
+   --tree-filter-inset-shadow: none;
+   --tree-filter-card-bg: linear-gradient(180deg,
        oklch(from var(--oklch-blue-2-28-68) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.95) 0%,
        oklch(from var(--oklch-blue-1-16-42) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.98) 100%);
-   --explorer-filter-card-border: oklch(from var(--oklch-blue-0-140-255) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 0.75);
-   --explorer-filter-card-shadow: 0 2px 8px oklch(from var(--oklch-blue-0-0-0) l c h / calc(0.5 * var(--oklch-shadow-opacity))),
+   --tree-filter-card-border: oklch(from var(--oklch-blue-0-140-255) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 0.75);
+   --tree-filter-card-shadow: 0 2px 8px oklch(from var(--oklch-blue-0-0-0) l c h / calc(0.5 * var(--oklch-shadow-opacity))),
      0 0 8px oklch(from var(--oklch-blue-0-140-255) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 0.15);
-   --explorer-filter-card-hover-bg: linear-gradient(180deg,
+   --tree-filter-card-hover-bg: linear-gradient(180deg,
        oklch(from var(--oklch-blue-3-38-90) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.98) 0%,
        oklch(from var(--oklch-blue-2-22-56) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 1) 100%);
-   --explorer-filter-card-hover-border: oklch(from var(--oklch-blue-0-180-255) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 0.95);
-   --explorer-filter-card-hover-shadow: 0 4px 14px oklch(from var(--oklch-blue-0-0-0) l c h / calc(0.6 * var(--oklch-shadow-opacity))),
+   --tree-filter-card-hover-border: oklch(from var(--oklch-blue-0-180-255) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 0.95);
+   --tree-filter-card-hover-shadow: 0 4px 14px oklch(from var(--oklch-blue-0-0-0) l c h / calc(0.6 * var(--oklch-shadow-opacity))),
      0 0 12px oklch(from var(--oklch-blue-0-180-255) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 0.3);
-   --explorer-filter-badge-bg: oklch(from var(--oklch-blue-0-24-60) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.95);
-   --explorer-filter-badge-border: oklch(from var(--oklch-blue-0-140-255) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 0.75);
-   --explorer-filter-badge-text: oklch(from var(--oklch-yellow-251-191-36) clamp(0, calc(var(--oklch-ink-offset) + l * var(--oklch-ink-scale)), 1) calc(c * var(--oklch-ink-chroma)) h / 1);
-   --explorer-filter-badge-shadow: 0 0 8px oklch(from var(--oklch-blue-0-140-255) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 0.25);
-   --explorer-filter-option-label: oklch(from var(--oklch-blue-255-255-255) clamp(0, calc(var(--oklch-ink-offset) + l * var(--oklch-ink-scale)), 1) calc(c * var(--oklch-ink-chroma)) h / 1);
-   --explorer-filter-checkbox-bg: oklch(from var(--oklch-blue-255-255-255) l c h / 1);
-   --explorer-filter-checkbox-border: oklch(from var(--oklch-yellow-245-158-11) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 0.8);
-   --explorer-filter-icon-color: oklch(from var(--oklch-yellow-251-191-36) clamp(0, calc(var(--oklch-ink-offset) + l * var(--oklch-ink-scale)), 1) calc(c * var(--oklch-ink-chroma)) h / 1);
+   --tree-filter-badge-bg: oklch(from var(--oklch-blue-0-24-60) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.95);
+   --tree-filter-badge-border: oklch(from var(--oklch-blue-0-140-255) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 0.75);
+   --tree-filter-badge-text: oklch(from var(--oklch-yellow-251-191-36) clamp(0, calc(var(--oklch-ink-offset) + l * var(--oklch-ink-scale)), 1) calc(c * var(--oklch-ink-chroma)) h / 1);
+   --tree-filter-badge-shadow: 0 0 8px oklch(from var(--oklch-blue-0-140-255) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 0.25);
+   --tree-filter-option-label: oklch(from var(--oklch-blue-255-255-255) clamp(0, calc(var(--oklch-ink-offset) + l * var(--oklch-ink-scale)), 1) calc(c * var(--oklch-ink-chroma)) h / 1);
+   --tree-filter-checkbox-bg: oklch(from var(--oklch-blue-255-255-255) l c h / 1);
+   --tree-filter-checkbox-border: oklch(from var(--oklch-yellow-245-158-11) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 0.8);
+   --tree-filter-icon-color: oklch(from var(--oklch-yellow-251-191-36) clamp(0, calc(var(--oklch-ink-offset) + l * var(--oklch-ink-scale)), 1) calc(c * var(--oklch-ink-chroma)) h / 1);
    --tree-gear-bg-hover: oklch(from var(--oklch-blue-30-58-95) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.8);
    --tree-gear-icon-active: var(--text-primary);
    --tree-badge-active-bg: oklch(from var(--oklch-blue-6-95-70) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.85);

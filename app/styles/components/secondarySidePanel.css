@@ -129,7 +129,7 @@
   border-radius: 0.5rem;
   border: 1px solid transparent;
   background: transparent;
-  color: var(--primary-explorer-action-icon);
+  color: var(--primary-tree-action-icon);
   cursor: pointer;
   flex-shrink: 0;
   transition: all 150ms ease;
@@ -138,7 +138,7 @@
 .secondary-side-panel-btn:hover {
   border-color: var(--primary-border-subtle);
   background-color: var(--surface-primary-hover);
-  color: var(--explorer-action-icon-hover);
+  color: var(--tree-action-icon-hover);
 }
 
 /* --------------------------------------------------------------------------

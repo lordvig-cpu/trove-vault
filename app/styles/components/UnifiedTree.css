@@ -1,5 +1,5 @@
 /* ==========================================================================
-   UNIFIED EXPLORER TREE STYLES
+   UNIFIED TREE STYLES
    Hierarchical tree node controls: leaf chevron indicators, active status
    badges, hover-triggered row action gears, and contextual menu item styling.
    ========================================================================== */
@@ -47,63 +47,9 @@
 }
 
 /* --------------------------------------------------------------------------
-   Context Menu Action Rows
-   -------------------------------------------------------------------------- */
-
-/* Standard context & dropdown menu action button */
-.tree-menu-item {
-  width: 100%;
-  text-align: left;
-  transition: background-color 150ms ease-in-out, color 150ms ease-in-out;
-}
-
-.tree-menu-item:hover {
-  background-color: var(--tree-menu-item-hover-bg);
-}
-
-/* Context menu horizontal separator line */
-.tree-menu-divider {
-  border-top-width: 1px;
-  border-color: var(--secondary-explorer-menu-divider);
-}
-
-/* Destructive context menu action button */
-.tree-menu-item-danger {
-  width: 100%;
-  text-align: left;
-  transition: background-color 150ms ease-in-out, color 150ms ease-in-out;
-}
-
-.tree-menu-item-danger:hover {
-  background-color: var(--tree-menu-danger-hover-bg);
-}
-
-/* --------------------------------------------------------------------------
-   Destructive Action Item Typography
-   -------------------------------------------------------------------------- */
-
-/* Danger item label text */
-.tree-menu-danger-label {
-  color: var(--tree-menu-danger-label);
-}
-
-.tree-menu-item-danger:hover .tree-menu-danger-label {
-  color: var(--tree-menu-danger-label-hover);
-}
-
-/* Danger item subtext / description */
-.tree-menu-danger-subtext {
-  color: var(--tree-menu-danger-subtext);
-}
-
-.tree-menu-item-danger:hover .tree-menu-danger-subtext {
-  color: var(--tree-menu-danger-subtext-hover);
-}
-
-/* --------------------------------------------------------------------------
    Tree Load More Pagination Trigger
    -------------------------------------------------------------------------- */
-.explorer-tree-load-more {
+.tree-load-more {
   display: flex;
   align-items: center;
   gap: 0.375rem;
@@ -124,7 +70,7 @@
   text-align: left;
 }
 
-.explorer-tree-load-more:hover {
+.tree-load-more:hover {
   background: var(--secondary-selection-bg);
   border-color: var(--secondary-accent);
   color: var(--text-strong);

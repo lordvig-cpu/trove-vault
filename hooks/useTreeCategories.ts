@@ -7,23 +7,23 @@ import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
    Represents any expandable structural node in the tree hierarchy
    (categories, collections, sub-collections).
    ========================================================================== */
-export interface ExplorerNodeLike {
+export interface TreeNodeLike {
   id: number;
-  subCollections?: ExplorerNodeLike[];
+  subCollections?: TreeNodeLike[];
 }
 
 /* ==========================================================================
-   CUSTOM HOOK: useExplorerCategories
+   CUSTOM HOOK: useTreeCategories
    Manages tree node expansion state, bulk expand/collapse operations,
-   and local query state for the explorer sidebar.
+   and local query state for the tree sidebar.
    ========================================================================== */
-export function useExplorerCategories(nodes: ExplorerNodeLike[] = [], initialExpanded: boolean = true) {
+export function useTreeCategories(nodes: TreeNodeLike[] = [], initialExpanded: boolean = true) {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [expandedCategoryIds, setExpandedCategoryIds] = useState<Set<number>>(new Set());
 
   // Recursively extract all IDs from the forest (virtual categories, collections, sub-collections)
   const allNodeIds = useMemo(() => {
-    const extractIds = (items: ExplorerNodeLike[]): number[] => {
+    const extractIds = (items: TreeNodeLike[]): number[] => {
       return items.flatMap((node) => [
         node.id,
         ...(node.subCollections ? extractIds(node.subCollections) : []),

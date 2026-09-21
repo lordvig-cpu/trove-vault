@@ -76,7 +76,7 @@ test('diagnostic route is unavailable in production', async ({ page }) => {
   expect(response?.status()).toBe(404);
 });
 
-test('explorer rows and action menus are usable from the keyboard', async ({ page }) => {
+test('tree rows and action menus are usable from the keyboard', async ({ page }) => {
   await page.route('**/rest/v1/**', route => {
     const table = new URL(route.request().url()).pathname.split('/').pop();
     const from = Number(new URL(route.request().url()).searchParams.get('offset') ?? 0);
@@ -89,17 +89,17 @@ test('explorer rows and action menus are usable from the keyboard', async ({ pag
   await row.focus();
   await page.keyboard.press('Enter');
   await expect(page.getByRole('heading', { name: 'Keyboard item', exact: true })).toBeVisible();
-  // Selecting an item intentionally closes the unpinned explorer flyout.
+  // Selecting an item intentionally closes the unpinned items flyout.
   await page.getByRole('button', { name: 'Open Items or drag to dock in a sidebar', exact: true }).click();
   await expect(row).toHaveAttribute('aria-pressed', 'true');
   const actions = row.locator('..').getByRole('button', { name: 'Open actions' });
   await actions.focus();
   await page.keyboard.press('ArrowDown');
-  await expect(page.locator('[data-explorer-menu]:not([inert])')).toBeVisible();
-  await expect(page.locator('[data-explorer-menu]:not([inert]) button').first()).toBeFocused();
+  await expect(page.locator('[data-tree-menu]:not([inert])')).toBeVisible();
+  await expect(page.locator('[data-tree-menu]:not([inert]) button').first()).toBeFocused();
   await page.keyboard.press('Escape');
   await expect(actions).toBeFocused();
-  await expect(page.locator('[data-explorer-menu]:not([inert])')).toHaveCount(0);
+  await expect(page.locator('[data-tree-menu]:not([inert])')).toHaveCount(0);
 });
 
 test('preferences remain usable when storage writes fail', async ({ page }) => {

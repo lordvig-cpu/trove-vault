@@ -12,8 +12,8 @@ Component styles use the shared vocabulary in
 | `--editor-*` | Stable HEX editor colors, unaffected by experimental seeds | `--editor-surface` |
 
 Primary and secondary describe the seed, not a fixed blue/yellow hue. For
-example, `--primary-explorer-panel-bg` is the panel's layered first-seed
-background; `--secondary-explorer-menu-shell-bg` is its second-seed counterpart.
+example, `--primary-tree-panel-bg` is the panel's layered first-seed
+background; `--secondary-tree-menu-shell-bg` is its second-seed counterpart.
 Success/error colors keep their existing semantic names. Mixed-color shadows,
 textures, dimensions and animation settings keep component-specific names.
 

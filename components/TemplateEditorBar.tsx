@@ -11,7 +11,7 @@ import {
   AddChildContainerIcon,
   AddContainerAfterIcon,
 } from '@/components/icons/LayoutIcons';
-import { GearIcon } from '@/components/icons/ExplorerIcons';
+import { GearIcon } from '@/components/icons/TreeIcons';
 import { TrashCanIcon } from '@/components/icons/PanelIcons';
 import { PreviewWidthPicker, ZoomControls } from '@/components/CanvasViewControls';
 import { useDismissOnOutsideOrEscape } from '@/hooks/useDismissOnOutsideOrEscape';
@@ -258,11 +258,11 @@ export default function TemplateEditorBar({
         setIsTreeMenuOpen(false);
       }
     };
-    window.addEventListener('explorer-action-menu-open', handleOpen);
-    window.addEventListener('explorer-action-menu-close', handleClose);
+    window.addEventListener('tree-action-menu-open', handleOpen);
+    window.addEventListener('tree-action-menu-close', handleClose);
     return () => {
-      window.removeEventListener('explorer-action-menu-open', handleOpen);
-      window.removeEventListener('explorer-action-menu-close', handleClose);
+      window.removeEventListener('tree-action-menu-open', handleOpen);
+      window.removeEventListener('tree-action-menu-close', handleClose);
     };
   }, [containerId]);
 
@@ -452,7 +452,7 @@ export default function TemplateEditorBar({
             <button
               type="button"
               onClick={() => onRemoveContainer?.(container.id)}
-              className="p-1 rounded-md border transition flex items-center justify-center cursor-pointer shrink-0 bg-black/40 border-[var(--secondary-accent)] text-[var(--secondary-accent)] hover:bg-[var(--explorer-menu-danger-hover-bg)] hover:border-white hover:text-[var(--explorer-menu-danger-hover-text)]"
+              className="p-1 rounded-md border transition flex items-center justify-center cursor-pointer shrink-0 bg-black/40 border-[var(--secondary-accent)] text-[var(--secondary-accent)] hover:bg-[var(--tree-menu-danger-hover-bg)] hover:border-white hover:text-[var(--tree-menu-danger-hover-text)]"
               title="Delete Container"
               aria-label="Delete Container"
             >

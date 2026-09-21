@@ -137,7 +137,7 @@ test.describe('Template Layout Engine & Grid System', () => {
     // Docking from bottom to sidebars is allowed
     expect(isDockZoneAllowed('bottom', 'left', { bottom: 'template_builder' })).toBe(true);
     expect(isDockZoneAllowed('bottom', 'right', { bottom: 'template_builder' })).toBe(true);
-    expect(isDockZoneAllowed('bottom', 'left-tab', { bottom: 'template_builder', primaryTabs: ['explorer'] })).toBe(true);
+    expect(isDockZoneAllowed('bottom', 'left-tab', { bottom: 'template_builder', primaryTabs: ['items'] })).toBe(true);
   });
 
   test('creates default Flexbox Container layout with root, card wrapper, and child components', async () => {
@@ -243,7 +243,7 @@ test.describe('Template Layout Engine & Grid System', () => {
     // Docking template_hierarchy to sidebars (left and right)
     expect(isDockZoneAllowed('template_hierarchy', 'left')).toBe(true);
     expect(isDockZoneAllowed('template_hierarchy', 'right')).toBe(true);
-    expect(isDockZoneAllowed('template_hierarchy', 'left-tab', { primaryTabs: ['explorer'] })).toBe(true);
+    expect(isDockZoneAllowed('template_hierarchy', 'left-tab', { primaryTabs: ['items'] })).toBe(true);
 
     // template_hierarchy is a tree/sidebar panel, forbidden from bottom panel
     expect(isDockZoneAllowed('template_hierarchy', 'bottom')).toBe(false);
@@ -269,7 +269,7 @@ test.describe('Template Layout Engine & Grid System', () => {
     await expect(leftTab).toHaveCount(1);
     await expect(leftTab.first()).toContainText('Structure');
 
-    const leftHeading = page.locator('.primary-side-panel .explorer-section-heading h3');
+    const leftHeading = page.locator('.primary-side-panel .tree-section-heading h3');
     await expect(leftHeading).toContainText('Layout & Content');
 
     // 2. Only Inspector tab in right panel (Properties tab has been safely removed)
@@ -310,7 +310,7 @@ test.describe('Template Layout Engine & Grid System', () => {
     await page.waitForTimeout(500);
 
     // Action menu flyout is rendered with properties including Parent Container
-    const actionMenu = page.locator('[data-explorer-menu]').first();
+    const actionMenu = page.locator('[data-tree-menu]').first();
     await expect(actionMenu).toBeVisible();
     await expect(actionMenu).toContainText('Parent Container');
     await expect(actionMenu).toContainText('Flex Flow Direction');
@@ -344,7 +344,7 @@ test.describe('Template Layout Engine & Grid System', () => {
     await expect(tabs).toHaveCount(0);
 
     // Verify there is NO section heading (e.g. "Browse Items")
-    const sectionHeadings = primaryPanel.locator('.explorer-section-heading');
+    const sectionHeadings = primaryPanel.locator('.tree-section-heading');
     await expect(sectionHeadings).toHaveCount(0);
 
     // Also toggle open the Bottom Panel to verify both empty panel headers match
@@ -386,14 +386,14 @@ test.describe('Template Layout Engine & Grid System', () => {
     await page.waitForTimeout(500);
 
     // Verify paper folder tabs are rendered with SVG paths
-    const leftTab = page.locator('.primary-side-panel .explorer-folder-tab');
+    const leftTab = page.locator('.primary-side-panel .tree-folder-tab');
     await expect(leftTab).toBeVisible();
-    await expect(leftTab.locator('svg path.explorer-tab-svg-fill')).toHaveCount(1);
+    await expect(leftTab.locator('svg path.tree-tab-svg-fill')).toHaveCount(1);
     await expect(leftTab).toContainText('Items');
 
-    const rightTab = page.locator('.secondary-side-panel .explorer-folder-tab');
+    const rightTab = page.locator('.secondary-side-panel .tree-folder-tab');
     await expect(rightTab).toBeVisible();
-    await expect(rightTab.locator('svg path.explorer-tab-svg-fill')).toHaveCount(1);
+    await expect(rightTab.locator('svg path.tree-tab-svg-fill')).toHaveCount(1);
     await expect(rightTab).toContainText('Collections');
 
     // Screenshot matching user media_1789920140123.png
@@ -499,7 +499,7 @@ test.describe('Template Layout Engine & Grid System', () => {
 
     // 3. Count components in Structure tree before drop
     const leftPanel = page.locator('.primary-side-panel');
-    const treeItemsBefore = await leftPanel.locator('.explorer-tree-item').count();
+    const treeItemsBefore = await leftPanel.locator('.tree-item').count();
 
     // 4. Drag field into canvas container
     await fieldItem.dragTo(targetContainer);
@@ -510,7 +510,7 @@ test.describe('Template Layout Engine & Grid System', () => {
     await expect(dockOverlay).toHaveCount(0);
 
     // 6. Verify Structure tree count increased on the left and contains the dropped field
-    const treeItemsAfter = await leftPanel.locator('.explorer-tree-item').count();
+    const treeItemsAfter = await leftPanel.locator('.tree-item').count();
     expect(treeItemsAfter).toBeGreaterThan(treeItemsBefore);
     await expect(leftPanel.locator('[data-tree-component-id]')).toContainText(['Game Designer']);
 
@@ -543,7 +543,7 @@ test.describe('Template Layout Engine & Grid System', () => {
     await page.waitForTimeout(400);
 
     // 4. Click "Edit Item Template"
-    const editTemplateBtn = page.locator('[data-explorer-menu] button', { hasText: 'Edit Item Template' });
+    const editTemplateBtn = page.locator('[data-tree-menu] button', { hasText: 'Edit Item Template' });
     await expect(editTemplateBtn).toBeVisible();
     await editTemplateBtn.click();
     await page.waitForTimeout(1000);

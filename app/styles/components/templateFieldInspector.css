@@ -67,7 +67,7 @@
 }
 
 .tmpl-field-item:hover {
-  background-color: var(--primary-explorer-item-hover-bg, rgba(30, 41, 59, 0.7));
+  background-color: var(--primary-tree-item-hover-bg, rgba(30, 41, 59, 0.7));
   border-color: var(--primary-border-strong, rgba(100, 116, 139, 0.6));
   transform: translateX(1px);
 }

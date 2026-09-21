@@ -1,11 +1,11 @@
 /* ==========================================================================
-   EXPLORER ACTION MENU PORTAL SLIDE & FADE
-   Flyout popover positioned next to Explorer gear triggers (Category & Item).
+   TREE ACTION MENU PORTAL SLIDE & FADE
+   Flyout popover positioned next to Tree gear triggers (Category & Item).
    Rendered into document body via React Portal to escape panel clipping.
    ========================================================================== */
 
 /* Slide-in entrance animation (Left dock -> opening rightwards) */
-@keyframes explorerMenuSlideIn {
+@keyframes treeMenuSlideIn {
   0% {
     opacity: 0;
     transform: translateX(-300px);
@@ -17,7 +17,7 @@
 }
 
 /* Slide-out exit animation (Left dock -> closing leftwards) */
-@keyframes explorerMenuSlideOut {
+@keyframes treeMenuSlideOut {
   0% {
     opacity: 1;
     transform: translateX(0);
@@ -29,7 +29,7 @@
 }
 
 /* Slide-in entrance animation (Right dock -> opening leftwards) */
-@keyframes explorerMenuSlideInRight {
+@keyframes treeMenuSlideInRight {
   0% {
     opacity: 0;
     transform: translateX(300px);
@@ -41,7 +41,7 @@
 }
 
 /* Slide-out exit animation (Right dock -> closing rightwards) */
-@keyframes explorerMenuSlideOutRight {
+@keyframes treeMenuSlideOutRight {
   0% {
     opacity: 1;
     transform: translateX(0);
@@ -53,19 +53,19 @@
 }
 
 .menuSlideIn {
-  animation: explorerMenuSlideIn 800ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: treeMenuSlideIn 800ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .menuSlideOut {
-  animation: explorerMenuSlideOut 350ms cubic-bezier(0.7, 0, 0.84, 0) forwards;
+  animation: treeMenuSlideOut 350ms cubic-bezier(0.7, 0, 0.84, 0) forwards;
 }
 
 .menuSlideInRight {
-  animation: explorerMenuSlideInRight 800ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: treeMenuSlideInRight 800ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .menuSlideOutRight {
-  animation: explorerMenuSlideOutRight 350ms cubic-bezier(0.7, 0, 0.84, 0) forwards;
+  animation: treeMenuSlideOutRight 350ms cubic-bezier(0.7, 0, 0.84, 0) forwards;
 }
 
 /* Disable animations when animationsEnabled is false */
@@ -77,14 +77,14 @@
 
 /* --------------------------------------------------------------------------
    Outer Flyout Shell
-   Amber frosted chassis surface matching the active explorer theme.
+   Amber frosted chassis surface matching the active tree theme.
    -------------------------------------------------------------------------- */
 .menuShell {
   width: 14rem;
   max-height: calc(100vh - 72px);
-  background: var(--secondary-explorer-menu-shell-bg);
-  border: 1.5px solid var(--secondary-explorer-menu-shell-border);
-  box-shadow: var(--explorer-menu-shell-shadow);
+  background: var(--secondary-tree-menu-shell-bg);
+  border: 1.5px solid var(--secondary-tree-menu-shell-border);
+  box-shadow: var(--tree-menu-shell-shadow);
   border-radius: 0.75rem;
   display: flex;
   flex-direction: column;
@@ -130,7 +130,7 @@
   z-index: 1;
 }
 
-/* Compensates for wider gap offset when Explorer sidebar is pinned (Left dock) */
+/* Compensates for wider gap offset when Tree sidebar is pinned (Left dock) */
 .bridgePinned {
   left: -4rem; /* -left-16 */
   width: 4rem;  /* w-16 */
@@ -142,7 +142,7 @@
   width: 4rem;  /* w-16 */
 }
 
-/* Compensates for gap offset when Explorer sidebar is pinned (Right dock -> bridge spans right) */
+/* Compensates for gap offset when Tree sidebar is pinned (Right dock -> bridge spans right) */
 .bridgePinnedRight {
   right: -4rem;
   left: auto;
@@ -175,26 +175,26 @@
   padding-right: 0.75rem;
   padding-top: 0.375rem;
   padding-bottom: 0.375rem;
-  border: 1px solid var(--secondary-explorer-menu-header-border);
+  border: 1px solid var(--secondary-tree-menu-header-border);
   margin-bottom: 0.375rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: var(--secondary-explorer-menu-header-bg);
+  background: var(--secondary-tree-menu-header-bg);
   border-radius: 0.5rem;
 }
 
 .headerTitle {
   font-size: 10.5px;
   font-weight: 700;
-  color: var(--secondary-explorer-menu-header-title);
+  color: var(--secondary-tree-menu-header-title);
   text-transform: uppercase;
   letter-spacing: 0.06em;
 }
 
 .headerIcon {
   font-size: 11px;
-  color: var(--secondary-explorer-menu-header-icon);
+  color: var(--secondary-tree-menu-header-icon);
 }
 
 /* Action button list slot */
@@ -205,24 +205,27 @@
 
 /* Action Rows & Dividers */
 .tree-menu-item:hover {
-  background-color: var(--secondary-explorer-menu-item-hover-bg);
+  background-color: var(--secondary-tree-menu-item-hover-bg);
 }
 
 .tree-menu-item-danger:hover {
-  background-color: var(--explorer-menu-danger-hover-bg);
+  background-color: var(--tree-menu-danger-hover-bg);
 }
 
 .tree-menu-danger-label {
-  color: var(--explorer-menu-danger-label);
+  color: var(--tree-menu-danger-label);
 }
 
 .tree-menu-danger-subtext {
-  color: var(--explorer-menu-danger-subtext);
+  color: var(--tree-menu-danger-subtext);
 }
 
 .tree-menu-divider {
   height: 1px;
-  background-color: var(--secondary-explorer-menu-divider);
+  background-color: var(--secondary-tree-menu-divider);
+  /* Preflight's solid border style makes this draw a 1px line in the divider color */
+  border-top-width: 1px;
+  border-color: var(--secondary-tree-menu-divider);
 }
 
 /* Inline Rename / Action Form */
@@ -230,8 +233,8 @@
   padding: 0.375rem 0.5rem;
   margin: 0.125rem 0.25rem;
   border-radius: 0.5rem;
-  border: 1px solid var(--secondary-explorer-menu-divider);
-  background-color: var(--secondary-explorer-menu-form-bg);
+  border: 1px solid var(--secondary-tree-menu-divider);
+  background-color: var(--secondary-tree-menu-form-bg);
   display: flex;
   align-items: center;
   gap: 0.375rem;
@@ -240,7 +243,7 @@
 
 .renameInput {
   width: 100%;
-  background-color: var(--secondary-explorer-menu-input-bg);
+  background-color: var(--secondary-tree-menu-input-bg);
   border-radius: 0.375rem;
   padding: 0.25rem 0.5rem;
   font-size: 0.75rem;
@@ -279,28 +282,28 @@
 }
 
 .actionMenuItem:hover {
-  background-color: var(--secondary-explorer-menu-item-hover-bg);
+  background-color: var(--secondary-tree-menu-item-hover-bg);
 }
 
 .actionMenuItemLabel {
   font-size: 0.75rem;
   font-weight: 500;
-  color: var(--explorer-menu-item-text);
+  color: var(--tree-menu-item-text);
   transition: color 150ms ease;
 }
 
 .actionMenuItem:hover .actionMenuItemLabel {
-  color: var(--explorer-menu-item-hover-text);
+  color: var(--tree-menu-item-hover-text);
 }
 
 .actionMenuItemSubtext {
   font-size: 0.625rem;
-  color: var(--explorer-menu-item-subtext);
+  color: var(--tree-menu-item-subtext);
   transition: color 150ms ease;
 }
 
 .actionMenuItem:hover .actionMenuItemSubtext {
-  color: var(--explorer-menu-item-hover-subtext);
+  color: var(--tree-menu-item-hover-subtext);
 }
 
 /* --------------------------------------------------------------------------
@@ -321,8 +324,8 @@
 }
 
 .actionMenuDangerItem:hover {
-  background-color: var(--explorer-menu-danger-hover-bg);
-  border-color: var(--explorer-menu-danger-hover-border);
+  background-color: var(--tree-menu-danger-hover-bg);
+  border-color: var(--tree-menu-danger-hover-border);
 }
 
 .actionMenuDangerIcon {
@@ -332,28 +335,28 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  color: var(--explorer-menu-danger-icon);
+  color: var(--tree-menu-danger-icon);
 }
 
 .actionMenuDangerLabel {
   font-size: 0.75rem;
   font-weight: 500;
-  color: var(--explorer-menu-danger-text);
+  color: var(--tree-menu-danger-text);
   transition: color 150ms ease;
 }
 
 .actionMenuDangerItem:hover .actionMenuDangerLabel {
-  color: var(--explorer-menu-danger-hover-text);
+  color: var(--tree-menu-danger-hover-text);
 }
 
 .actionMenuDangerSubtext {
   font-size: 0.625rem;
-  color: var(--explorer-menu-danger-subtext);
+  color: var(--tree-menu-danger-subtext);
   transition: color 150ms ease;
 }
 
 .actionMenuDangerItem:hover .actionMenuDangerSubtext {
-  color: var(--explorer-menu-danger-hover-subtext);
+  color: var(--tree-menu-danger-hover-subtext);
 }
 
 /* --------------------------------------------------------------------------
@@ -369,11 +372,11 @@
 .actionMenuRenameInput {
   font-size: 0.75rem;
   line-height: 1rem;
-  background-color: var(--secondary-explorer-menu-input-bg);
-  color: var(--explorer-menu-rename-input-text);
+  background-color: var(--secondary-tree-menu-input-bg);
+  color: var(--tree-menu-rename-input-text);
   padding: 0.25rem 0.5rem;
   border-radius: 0.25rem;
-  border: 1px solid var(--primary-explorer-menu-rename-input-border);
+  border: 1px solid var(--primary-tree-menu-rename-input-border);
   outline: none;
   transition: border-color 150ms ease, box-shadow 150ms ease;
 }
@@ -391,7 +394,7 @@
 .actionMenuShell input[type="text"],
 .actionMenuShell input[type="search"],
 .actionMenuShell select {
-  background-color: var(--secondary-explorer-menu-input-bg);
+  background-color: var(--secondary-tree-menu-input-bg);
   border: 1px solid var(--primary-border-input);
   border-radius: 0.375rem;
   padding: 0.25rem 0.5rem;
@@ -434,20 +437,20 @@
 }
 
 .actionMenuRenameCancelBtn:hover {
-  color: var(--explorer-menu-rename-cancel-hover-text);
+  color: var(--tree-menu-rename-cancel-hover-text);
 }
 
 .actionMenuRenameSaveBtn {
   padding: 0.125rem 0.5rem;
   border-radius: 0.25rem;
   font-weight: 500;
-  background-color: var(--secondary-explorer-menu-rename-save-bg);
-  color: var(--secondary-explorer-menu-rename-save-text);
+  background-color: var(--secondary-tree-menu-rename-save-bg);
+  color: var(--secondary-tree-menu-rename-save-text);
   border: none;
   cursor: pointer;
   transition: background-color 150ms ease;
 }
 
 .actionMenuRenameSaveBtn:hover {
-  background-color: var(--secondary-explorer-menu-rename-save-hover-bg);
+  background-color: var(--secondary-tree-menu-rename-save-hover-bg);
 }

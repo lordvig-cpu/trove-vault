@@ -13,7 +13,7 @@ import { SecondarySidebarPosition } from '@/types/layout';
 import EmptyPanelDropZone from '@/components/EmptyPanelDropZone';
 import PanelContentTransition from '@/components/PanelContentTransition';
 import PrimarySidePanelHeader from '@/components/PrimarySidePanelHeader';
-import { ExplorerTab } from '@/lib/filterExplorerForest';
+import { TreeTab } from '@/lib/filterTreeForest';
 import { CollectionRecord } from '@/types/collection';
 import { DockContent, TabReorderInfo } from '@/hooks/usePanelDockDrag';
 
@@ -43,9 +43,9 @@ interface SecondarySidePanelProps {
   title?: string;
   showSearchFilter?: boolean;
 
-  // Header and Search Filter Props (active when Explorer is docked)
-  treeView?: ExplorerTab;
-  activeTab?: ExplorerTab | DockContent;
+  // Header and Search Filter Props (active when a tree panel is docked)
+  treeView?: TreeTab;
+  activeTab?: TreeTab | DockContent;
   onTabChange?: (tab: any) => void;
   tabs?: DockContent[];
   searchQuery?: string;

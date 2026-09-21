@@ -2,16 +2,16 @@
 
 import React, { useState, useEffect } from 'react';
 import { FieldDefinition, FieldType } from '@/types/field';
-import { useExplorerActionMenu } from '@/hooks/useExplorerActionMenu';
-import ExplorerActionMenu, {
+import { useTreeActionMenu } from '@/hooks/useTreeActionMenu';
+import TreeActionMenu, {
   ActionMenuDangerItem,
   ActionMenuDivider,
   ActionMenuItem,
-} from '@/components/ExplorerActionMenu';
+} from '@/components/TreeActionMenu';
 
 interface TemplateFieldActionMenuProps {
   field: FieldDefinition;
-  menu: ReturnType<typeof useExplorerActionMenu>;
+  menu: ReturnType<typeof useTreeActionMenu>;
   position?: 'left' | 'right';
   onUpdateField: (fieldId: number, partial: Partial<FieldDefinition>) => Promise<void> | void;
   onDeleteField: (fieldId: number) => Promise<void> | void;
@@ -106,7 +106,7 @@ export default function TemplateFieldActionMenu({
   const activeTypeMeta = FIELD_TYPES.find((t) => t.type === field.field_type) || FIELD_TYPES[0];
 
   return (
-    <ExplorerActionMenu
+    <TreeActionMenu
       isOpen={menu.isMenuOpen}
       onMouseEnter={menu.handleMenuMouseEnter}
       onMouseLeave={menu.handleMouseLeave}
@@ -282,7 +282,7 @@ export default function TemplateFieldActionMenu({
           menu.closeMenu();
         }}
       />
-    </ExplorerActionMenu>
+    </TreeActionMenu>
   );
 }
 

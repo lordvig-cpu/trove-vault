@@ -8,13 +8,13 @@
 @import "./styles/themes/theme-semantic.css";
 
 /* 2. Functional Component Stylesheets */
-@import "./styles/components/ExplorerPrimitives.css";
+@import "./styles/components/TreePrimitives.css";
 @import "./styles/components/ContentPrimitives.css";
 @import "./styles/components/navigationHeader.css";
 @import "./styles/components/navigationFooter.css";
 @import "./styles/components/mainContent.css";
 @import "./styles/components/primarySidePanel.css";
-@import "./styles/components/UnifiedExplorerTree.css";
+@import "./styles/components/UnifiedTree.css";
 @import "./styles/components/secondarySidePanel.css";
 @import "./styles/components/fieldManagerModal.css";
 @import "./styles/components/templateManagerModal.css";
@@ -25,7 +25,7 @@
 @import "./styles/components/PanelDockDropZones.css";
 
 :root {
-  /* Dialogs clear every app overlay; Explorer menus intentionally sit below panels. */
+  /* Dialogs clear every app overlay; Tree menus intentionally sit below panels. */
   --z-modal: 400;
 }
 
@@ -81,12 +81,12 @@ body {
    | 150        | Dock drop-target overlay              | Fixed; rendered inside workspace                   | PanelDockDropZones.tsx / CSS                 |
    | 100        | Logo introduction trigger             | Application shell                                  | DynamicWatermark.tsx                         |
    | 80         | Header wrapper / navigation bar       | Contains local navigation and flyout layers        | page.tsx; NavigationHeader.tsx               |
-   | 70         | Explorer menus while flyout is open   | Above backdrop (60), beneath flyout panel (80)      | globals.css; Explorer*Menu.tsx               |
+   | 70         | Tree menus while flyout is open   | Above backdrop (60), beneath flyout panel (80)      | globals.css; Tree*Menu.tsx               |
    | 60         | Footer wrapper / navigation footer    | Contains local footer layers                       | page.tsx; NavigationFooter.tsx               |
-   | 60         | Explorer flyout backdrop              | Body portal; begins below navigation               | PrimarySidePanel.tsx                         |
+   | 60         | Tree flyout backdrop              | Body portal; begins below navigation               | PrimarySidePanel.tsx                         |
    | 55 / 54    | Moving / displaced panel content      | Workspace; transient swap animation                | page.tsx                                     |
    | 50 / 40    | Primary / secondary sidebar asides    | 50: open + unpinned; 40: pinned or closed          | PrimarySidePanel.tsx; SecondarySidePanel.tsx |
-   | 45 / 35    | Explorer action / search menus        | Body portals; unpinned / pinned; under panel edge | Both Explorer*Menu.tsx components            |
+   | 45 / 35    | Tree action / search menus        | Body portals; unpinned / pinned; under panel edge | Both Tree*Menu.tsx components            |
    | 35         | Bottom panel aside                    | Workspace; same value pinned or unpinned           | BottomPanel.css                              |
    | 30         | Expand tabs / workspace header shadow | Workspace                                          | Panel CSS; navigationHeader.css              |
    | 10         | Center canvas wrapper                 | Workspace; owns MainContent local layers           | page.tsx                                     |
@@ -97,20 +97,20 @@ body {
    | z-index    | Element / state                       | Placement / scope                                  | Source                                       |
    |------------|---------------------------------------|----------------------------------------------------|----------------------------------------------|
    | 160        | Cursor-following drag badge           | LOCAL to the z=150 dock overlay                    | PanelDockDropZones.tsx / CSS                 |
-   | 80         | Explorer flyout aside                 | LOCAL to header / flyout containers                | PrimarySidePanel.tsx                         |
+   | 80         | Tree flyout aside                 | LOCAL to header / flyout containers                | PrimarySidePanel.tsx                         |
    | 60 / 50    | Active / inactive navigation tab      | LOCAL to the header; stable on hover               | navigationHeader.css                         |
    | 50         | Panel resize handles                  | LOCAL to their isolated panel                      | ContentPrimitives.css                        |
    | 40         | Panel reset buttons                   | LOCAL to their isolated panel                      | Side-panel and BottomPanel components        |
-   | 40         | Hovered sticky explorer category      | LOCAL to panel; scoped hover override              | primarySidePanel.css                         |
+   | 40         | Hovered sticky tree category      | LOCAL to panel; scoped hover override              | primarySidePanel.css                         |
    | 30         | Panel bottom topper / canvas fades    | LOCAL to panel / canvas respectively               | primarySidePanel.css; mainContent.css        |
-   | 20 - depth | Idle sticky explorer category headers | LOCAL to panel; hovered category uses 40           | UnifiedExplorerTree.tsx                      |
+   | 20 - depth | Idle sticky tree category headers | LOCAL to panel; hovered category uses 40           | UnifiedTree.tsx                      |
    | 20         | MainContent wrapper                   | LOCAL to the z=10 center canvas wrapper            | MainContent.tsx                              |
-   | 20 / 10    | Selected / idle explorer folder tabs  | LOCAL to panel header                              | PrimarySidePanelHeader.tsx                   |
+   | 20 / 10    | Selected / idle tree folder tabs  | LOCAL to panel header                              | PrimarySidePanelHeader.tsx                   |
    | 10 / 5 / 1 | Content / decoration / texture layers | LOCAL to header, footer or panel                   | Component CSS and TSX                        |
    | -1         | Folder-tab decorative pseudo-element  | LOCAL to isolated tab                              | primarySidePanel.css                         |
 
    CONTRACT:
-   - Explorer and Collections menus use their owning panel's layer: 35 when pinned
+   - Tree and Collections menus use their owning panel's layer: 35 when pinned
      and 45 when unpinned,
      beneath sidebar layers 40 / 50 so panel edges overlap the slide-out menus.
      Menus belonging to a flyout use 70: above its dismissal backdrop
@@ -118,7 +118,7 @@ body {
    - --z-modal (400) keeps all modal backdrops above menus, navigation, drag UI,
      and the seed picker (300). Shared unlayered CSS overrides old z-50/z-[100]
      utility classes; ModalContainers adds no portal or higher-z wrapper.
-   - Only .explorer-category-sticky-header:hover forces a local z-index of 40.
+   - Only .tree-category-sticky-header:hover forces a local z-index of 40.
      Navigation tabs, resize controls and unrelated .group elements keep their tiers.
    - Header/footer/panel isolation, transforms, filters and opacity create nested
      contexts. Equal-z siblings use DOM paint order; portals participate at their

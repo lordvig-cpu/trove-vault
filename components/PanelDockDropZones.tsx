@@ -45,7 +45,7 @@ export default function PanelDockDropZones({
     switch (content) {
       case 'collections':
         return 'Collections';
-      case 'explorer':
+      case 'items':
         return 'Items';
       case 'templates':
         return 'Templates';
@@ -68,8 +68,8 @@ export default function PanelDockDropZones({
     switch (id) {
       case 'collections':
         return 'collections';
-      case 'explorer':
-        return 'explorer';
+      case 'items':
+        return 'items';
       case 'templates':
         return 'templates';
       case 'template_editor':

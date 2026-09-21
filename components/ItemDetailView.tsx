@@ -33,7 +33,7 @@ export default function ItemDetailView({
           <span className="text-4xl mb-3">🔍</span>
           <h3 className="text-base font-semibold detail-heading">No Item Selected</h3>
           <p className="text-xs detail-muted mt-1 max-w-sm">
-            Select an item from the Explorer tree or create a new one to view its attributes, hierarchy, and metadata.
+            Select an item from the tree or create a new one to view its attributes, hierarchy, and metadata.
           </p>
         </div>
 

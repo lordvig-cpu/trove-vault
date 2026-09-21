@@ -3,10 +3,10 @@
 import React, { useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { usePresence } from '@/hooks/usePresence';
-import '@/app/styles/components/ExplorerSearchMenu.css';
+import '@/app/styles/components/TreeSearchMenu.css';
 import { useUIPreferences } from '@/context/UIPreferencesContext';
 
-interface ExplorerSearchMenuProps {
+interface TreeSearchMenuProps {
   isOpen: boolean;
   onClose: () => void;
   top: number;
@@ -20,7 +20,7 @@ interface ExplorerSearchMenuProps {
   children: React.ReactNode;
 }
 
-export default function ExplorerSearchMenu({
+export default function TreeSearchMenu({
   isOpen,
   onClose,
   top,
@@ -32,7 +32,7 @@ export default function ExplorerSearchMenu({
   triggerRef,
   position,
   children,
-}: ExplorerSearchMenuProps) {
+}: TreeSearchMenuProps) {
   const { animationsEnabled } = useUIPreferences();
   const effectivePosition = position ?? 'left';
   const { mounted, renderMenu, isClosing } = usePresence(isOpen, 500, animationsEnabled);

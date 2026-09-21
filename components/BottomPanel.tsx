@@ -164,10 +164,10 @@ export default function BottomPanel({
       {/* Panel Header with Navigation Controls */}
       <div
         className={`primary-side-panel-header px-2.5 pt-2 pb-0 flex flex-col gap-2 shrink-0 ${
-          occupied ? 'explorer-header-occupied' : 'explorer-header-empty'
+          occupied ? 'tree-header-occupied' : 'tree-header-empty'
         }`}
       >
-        <div className="explorer-header-toolbar flex items-center justify-between gap-1 w-full shrink-0 select-none">
+        <div className="tree-header-toolbar flex items-center justify-between gap-1 w-full shrink-0 select-none">
           {/* Draggable Grip Handle & Title */}
           <div
             onPointerDown={occupied ? onHandlePointerDown : undefined}
@@ -177,7 +177,7 @@ export default function BottomPanel({
             title={occupied ? 'Drag to dock content' : undefined}
           >
             <span className="text-[10px] text-muted opacity-60 tracking-tighter" aria-hidden="true">&#8942;&#8942;</span>
-            <span className="explorer-header-title text-xs font-bold uppercase tracking-wider px-0.5 truncate">
+            <span className="tree-header-title text-xs font-bold uppercase tracking-wider px-0.5 truncate">
               {panelHeading}
             </span>
           </div>
@@ -247,7 +247,7 @@ export default function BottomPanel({
                 role="tab"
                 aria-selected={true}
                 onPointerDown={onStartTabDrag}
-                className="explorer-folder-tab explorer-folder-tab-active z-20 group/tab cursor-grab active:cursor-grabbing"
+                className="tree-folder-tab tree-folder-tab-active z-20 group/tab cursor-grab active:cursor-grabbing"
                 title={tabTitle || `${tabLabel} (drag to move tab)`}
               >
                 <PanelFolderTabSvg
@@ -263,7 +263,7 @@ export default function BottomPanel({
           </div>
         )}
 
-        <hr className="explorer-header-divider" />
+        <hr className="tree-header-divider" />
       </div>
 
       {/* Content Area */}
