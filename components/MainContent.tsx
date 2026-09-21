@@ -6,12 +6,9 @@ import TemplateEditorStage from './TemplateEditorStage';
 import { ItemRecord } from '@/types/item';
 import { ItemTemplate } from '@/types/template';
 import {
-  TemplateLayoutConfig,
   TemplateFlexLayoutConfig,
   FlexContainerNode,
   FlexComponentNode,
-  LayoutSection,
-  LayoutBlock,
 } from '@/types/layout';
 
 /* ==========================================================================
@@ -26,10 +23,7 @@ interface MainContentProps {
   onEditItem: (item: ItemRecord, collectionId: number | null) => void;
   onDeleteItem: (item: ItemRecord, collectionId: number | null) => void;
   editingTemplate?: ItemTemplate | null;
-  selectedFieldId?: number | null;
-  onSelectField?: (fieldId: number | null) => void;
   onDoneEditingTemplate?: () => void;
-  onAddFieldToTemplate?: () => void;
   // Modern Flexbox Layout Builder Props
   flexLayoutConfig?: TemplateFlexLayoutConfig | null;
   selectedNodeId?: string | null;
@@ -65,19 +59,7 @@ interface MainContentProps {
   onPlaceField?: (fieldId: number, targetContainerId?: string) => void;
   onResetFlexLayout?: () => void;
   onSplitFlexContainer?: (containerId: string, splitType: 'columns' | 'rows') => void;
-  // Legacy Layout Builder Props
-  layoutConfig?: TemplateLayoutConfig | null;
-  selectedBlockId?: string | null;
   canvasMode?: 'edit' | 'preview';
-  onSelectBlock?: (blockId: string | null) => void;
-  onAddSection?: (title?: string) => void;
-  onRemoveSection?: (sectionId: string) => void;
-  onUpdateSection?: (sectionId: string, partial: Partial<LayoutSection>) => void;
-  onAddBlock?: (sectionId: string, block: Omit<LayoutBlock, 'id'>) => void;
-  onUpdateBlock?: (sectionId: string, blockId: string, partial: Partial<LayoutBlock>) => void;
-  onRemoveBlock?: (sectionId: string, blockId: string) => void;
-  onMoveBlock?: (fromSectionId: string, toSectionId: string, blockId: string, toIndex?: number) => void;
-  onResetLayout?: () => void;
   onToggleCanvasMode?: () => void;
   occupiedRightWidth?: number;
   occupiedLeftWidth?: number;
@@ -97,10 +79,7 @@ export default function MainContent({
   onEditItem,
   onDeleteItem,
   editingTemplate,
-  selectedFieldId = null,
-  onSelectField,
   onDoneEditingTemplate,
-  onAddFieldToTemplate,
   flexLayoutConfig = null,
   selectedNodeId = null,
   activeContainerId,
@@ -116,17 +95,7 @@ export default function MainContent({
   onRemoveFlexComponent,
   onPlaceField,
   onResetFlexLayout,
-  layoutConfig = null,
-  selectedBlockId = null,
   canvasMode = 'edit',
-  onSelectBlock,
-  onAddSection,
-  onRemoveSection,
-  onUpdateSection,
-  onAddBlock,
-  onUpdateBlock,
-  onRemoveBlock,
-  onResetLayout,
   onToggleCanvasMode,
 }: MainContentProps) {
 
@@ -167,21 +136,8 @@ export default function MainContent({
                   onRemoveFlexComponent={onRemoveFlexComponent}
                   onPlaceField={onPlaceField}
                   onResetFlexLayout={onResetFlexLayout}
-                  layoutConfig={layoutConfig}
-                  selectedBlockId={selectedBlockId}
-                  selectedFieldId={selectedFieldId}
                   canvasMode={canvasMode}
-                  onSelectBlock={onSelectBlock || (() => {})}
-                  onSelectField={onSelectField || (() => {})}
                   onDoneEditing={onDoneEditingTemplate || (() => {})}
-                  onAddField={onAddFieldToTemplate || (() => {})}
-                  onAddSection={onAddSection || (() => {})}
-                  onRemoveSection={onRemoveSection || (() => {})}
-                  onUpdateSection={onUpdateSection || (() => {})}
-                  onAddBlock={onAddBlock || (() => {})}
-                  onUpdateBlock={onUpdateBlock || (() => {})}
-                  onRemoveBlock={onRemoveBlock || (() => {})}
-                  onResetLayout={onResetLayout || (() => {})}
                   onToggleCanvasMode={onToggleCanvasMode || (() => {})}
                 />
               </div>

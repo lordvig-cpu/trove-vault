@@ -5,12 +5,9 @@ import { createPortal } from 'react-dom';
 import { ItemTemplate } from '@/types/template';
 import { FieldDefinition } from '@/types/field';
 import {
-  TemplateLayoutConfig,
   TemplateFlexLayoutConfig,
   FlexContainerNode,
   FlexComponentNode,
-  LayoutSection,
-  LayoutBlock,
   findFlexNode,
 } from '@/types/layout';
 import { DashedSquareQuestionIcon } from '@/components/icons/LayoutIcons';
@@ -60,32 +57,8 @@ interface TemplateEditorStageProps {
   onResetFlexLayout?: () => void;
   onSplitContainer?: (containerId: string, splitType: 'columns' | 'rows') => void;
 
-  // Legacy / fallback props
-  layoutConfig?: TemplateLayoutConfig | null;
-  selectedBlockId?: string | null;
-  selectedFieldId?: number | null;
   canvasMode: 'edit' | 'preview';
-  onSelectBlock?: (blockId: string | null) => void;
-  onSelectField?: (fieldId: number | null) => void;
   onDoneEditing: () => void;
-  onAddField?: () => void;
-  onAddSection?: (title?: string) => void;
-  onRemoveSection?: (sectionId: string) => void;
-  onUpdateSection?: (sectionId: string, partial: Partial<LayoutSection>) => void;
-  onAddBlock?: (sectionId: string, block: Omit<LayoutBlock, 'id'>) => void;
-  onUpdateBlock?: (
-    sectionId: string,
-    blockId: string,
-    partial: Partial<LayoutBlock>
-  ) => void;
-  onRemoveBlock?: (sectionId: string, blockId: string) => void;
-  onMoveBlock?: (
-    fromSectionId: string,
-    toSectionId: string,
-    blockId: string,
-    toIndex?: number
-  ) => void;
-  onResetLayout?: () => void;
   onToggleCanvasMode: () => void;
 }
 
@@ -714,33 +687,17 @@ export default function TemplateEditorStage({
   onInsertContainerSibling,
   onUpdateFlexContainer,
   onRemoveFlexContainer,
-  onAddFlexComponent,
   onUpdateFlexComponent,
   onRemoveFlexComponent,
   onPlaceField,
   onResetFlexLayout,
   onSplitContainer,
 
-  // Legacy / fallback props
-  layoutConfig,
-  selectedBlockId,
-  selectedFieldId,
   canvasMode,
-  onSelectBlock,
-  onSelectField,
   onDoneEditing,
-  onAddField,
-  onAddSection,
-  onRemoveSection,
-  onUpdateSection,
-  onAddBlock,
-  onUpdateBlock,
-  onRemoveBlock,
-  onResetLayout,
   onToggleCanvasMode,
 }: TemplateEditorStageProps) {
   const fields = template.fields || [];
-  const sections = layoutConfig?.sections || [];
 
   // Preview width and zoom are editor-only: every editing session starts at Fit / 100%.
   const { setPreviewWidth, resetZoom } = useCanvasZoom();
@@ -751,13 +708,6 @@ export default function TemplateEditorStage({
     },
     [setPreviewWidth, resetZoom]
   );
-
-  const [editingSectionId, setEditingSectionId] = useState<string | null>(null);
-
-  const getFieldForBlock = (block: LayoutBlock): FieldDefinition | undefined => {
-    if (!block.field_id) return undefined;
-    return fields.find((f) => f.id === block.field_id);
-  };
 
   const isFlexActive = Boolean(flexLayoutConfig?.root);
 
@@ -799,7 +749,7 @@ export default function TemplateEditorStage({
                 {template.name}
               </h1>
               <span className="px-2 py-0.5 rounded-full text-[9.5px] font-bold tracking-wider uppercase bg-[color-mix(in_oklch,var(--primary-accent)_20%,transparent)] text-[var(--primary-accent)] border border-[color-mix(in_oklch,var(--primary-accent)_35%,transparent)] shrink-0">
-                {isFlexActive ? 'Auto-Layout Builder' : '12-Col Grid Builder'}
+                Auto-Layout Builder
               </span>
             </div>
             <p className="text-xs text-[var(--text-muted)] mt-0.5 line-clamp-1">
@@ -878,205 +828,19 @@ export default function TemplateEditorStage({
             onPlaceField={onPlaceField}
           />
         </ScaledCanvas>
-      ) : sections.length === 0 ? (
-        <div className="w-full max-w-6xl mx-auto py-16 flex flex-col items-center justify-center text-center gap-3 border-2 border-dashed border-slate-800 rounded-2xl bg-slate-900/20">
-          <span className="text-4xl">📐</span>
-          <span className="text-sm font-bold text-slate-300">
-            No Layout Sections Created
-          </span>
-          <p className="text-xs text-slate-500 max-w-sm">
-            Generate a starter layout based on template fields or add custom
-            sections to begin visual design.
-          </p>
-          <div className="flex gap-2 mt-2">
-            <button
-              type="button"
-              onClick={onResetFlexLayout || onResetLayout}
-              className="px-4 py-2 text-xs font-semibold bg-[var(--primary-accent)] hover:bg-[var(--primary-accent-hover)] text-white rounded-xl transition cursor-pointer"
-            >
-              Auto-Generate Layout
-            </button>
-            {onAddSection && (
-              <button
-                type="button"
-                onClick={() => onAddSection('General Information')}
-                className="px-4 py-2 text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl border border-subtle transition cursor-pointer"
-              >
-                + Add First Section
-              </button>
-            )}
-          </div>
-        </div>
       ) : (
-        <div className="w-full max-w-6xl mx-auto flex flex-col gap-6">
-          {sections.map((sec) => (
-            <div
-              key={sec.id}
-              className="flex flex-col gap-3 p-4 sm:p-5 rounded-2xl bg-slate-900/40 border border-slate-800/80 backdrop-blur-sm"
-            >
-              {/* Section Header Row */}
-              <div className="flex items-center justify-between border-b border-slate-800/80 pb-2.5">
-                <div className="flex items-center gap-2 flex-1 min-w-0">
-                  <span className="text-sm select-none">📁</span>
-                  {editingSectionId === sec.id &&
-                  canvasMode === 'edit' &&
-                  onUpdateSection ? (
-                    <input
-                      type="text"
-                      autoFocus
-                      defaultValue={sec.title}
-                      onBlur={(e) => {
-                        onUpdateSection(sec.id, {
-                          title: e.target.value.trim() || sec.title,
-                        });
-                        setEditingSectionId(null);
-                      }}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter') {
-                          onUpdateSection(sec.id, {
-                            title:
-                              (e.target as HTMLInputElement).value.trim() ||
-                              sec.title,
-                          });
-                          setEditingSectionId(null);
-                        }
-                      }}
-                      className="text-xs font-bold text-white bg-slate-800 px-2 py-0.5 rounded border border-[var(--primary-accent)] focus:outline-none"
-                    />
-                  ) : (
-                    <h2
-                      onClick={() =>
-                        canvasMode === 'edit' && setEditingSectionId(sec.id)
-                      }
-                      className={`text-xs font-bold text-slate-200 uppercase tracking-wider truncate ${
-                        canvasMode === 'edit'
-                          ? 'cursor-pointer hover:text-[var(--primary-accent)]'
-                          : ''
-                      }`}
-                      title={
-                        canvasMode === 'edit'
-                          ? 'Click to rename section'
-                          : undefined
-                      }
-                    >
-                      {sec.title}
-                    </h2>
-                  )}
-
-                  <span className="text-[10px] font-mono text-slate-400 bg-slate-800/80 px-1.5 py-0.5 rounded border border-slate-700/50">
-                    {sec.blocks.length} blocks
-                  </span>
-                </div>
-
-                {/* Section Controls (Edit Mode Only) */}
-                {canvasMode === 'edit' && onAddBlock && (
-                  <div className="flex items-center gap-1 shrink-0">
-                    <button
-                      type="button"
-                      onClick={() =>
-                        onAddBlock(sec.id, {
-                          type: 'table',
-                          label: 'Specifications Table',
-                          col_span: 12,
-                          row_span: 4,
-                          variant: 'table_row',
-                        })
-                      }
-                      className="px-2 py-1 text-[11px] font-semibold text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700 rounded-md border border-subtle transition cursor-pointer flex items-center gap-1"
-                      title="Add 4-row specifications table"
-                    >
-                      <span>📊</span>
-                      <span>+ Table (4x)</span>
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() =>
-                        onAddBlock(sec.id, {
-                          type: 'media',
-                          label: 'Hero Artwork',
-                          col_span: 6,
-                          row_span: 4,
-                          variant: 'hero',
-                        })
-                      }
-                      className="px-2 py-1 text-[11px] font-semibold text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700 rounded-md border border-subtle transition cursor-pointer flex items-center gap-1"
-                      title="Add 4-row hero media box"
-                    >
-                      <span>🖼️</span>
-                      <span>+ Media Box (4x)</span>
-                    </button>
-
-                    {sections.length > 1 && onRemoveSection && (
-                      <button
-                        type="button"
-                        onClick={() => {
-                          if (
-                            confirm(
-                              `Delete section "${sec.title}" and its blocks?`
-                            )
-                          ) {
-                            onRemoveSection(sec.id);
-                          }
-                        }}
-                        className="text-xs text-red-400 hover:text-red-300 p-1 rounded hover:bg-red-500/10 cursor-pointer transition ml-1"
-                        title="Delete Section"
-                      >
-                        🗑️
-                      </button>
-                    )}
-                  </div>
-                )}
-              </div>
-
-              {/* 12-Column Grid Canvas */}
-              {sec.blocks.length === 0 ? (
-                <div className="py-8 border-2 border-dashed border-slate-800/80 rounded-xl flex flex-col items-center justify-center text-center gap-2">
-                  <span className="text-xs text-slate-400 italic">
-                    This section is empty.
-                  </span>
-                </div>
-              ) : (
-                <div className="tmpl-grid-canvas">
-                  {sec.blocks.map((block) => {
-                    const isBlockSelected = selectedBlockId === block.id;
-                    const boundField = getFieldForBlock(block);
-                    const blockLabel =
-                      block.label || boundField?.label || block.type;
-
-                    const blockStyle: React.CSSProperties = {
-                      gridColumn: `span ${block.col_span}`,
-                      gridRow: `span ${block.row_span}`,
-                    };
-
-                    return (
-                      <div
-                        key={block.id}
-                        style={blockStyle}
-                        onClick={() => {
-                          onSelectBlock?.(block.id);
-                          if (boundField) onSelectField?.(boundField.id);
-                        }}
-                        className={`tmpl-grid-block tmpl-block-variant-${
-                          block.variant
-                        } ${
-                          isBlockSelected ? 'tmpl-grid-block-selected' : ''
-                        } ${canvasMode === 'edit' ? 'cursor-pointer' : ''}`}
-                      >
-                        <div className="flex flex-col justify-between h-full min-w-0">
-                          <div className="flex items-center justify-between gap-1 mb-1">
-                            <span className="text-xs font-bold text-slate-200 truncate block">
-                              {blockLabel}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
-          ))}
+        <div className="w-full max-w-6xl mx-auto py-16 flex flex-col items-center justify-center text-center gap-3 border-2 border-dashed border-slate-800 rounded-2xl bg-slate-900/20">
+          <span className="text-sm font-bold text-slate-300">No layout yet</span>
+          <p className="text-xs text-slate-500 max-w-sm">
+            Generate a starter layout from this template&apos;s fields to begin designing.
+          </p>
+          <button
+            type="button"
+            onClick={onResetFlexLayout}
+            className="mt-2 px-4 py-2 text-xs font-semibold bg-[var(--primary-accent)] hover:bg-[var(--primary-accent-hover)] text-white rounded-xl transition cursor-pointer"
+          >
+            Auto-Generate Layout
+          </button>
         </div>
       )}
     </div>

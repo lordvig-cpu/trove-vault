@@ -5,21 +5,11 @@ import { supabase } from '@/lib/supabase';
 import { ItemTemplate } from '@/types/template';
 import { FieldDefinition, FieldType } from '@/types/field';
 import {
-  TemplateLayoutConfig,
-  LayoutSection,
-  LayoutBlock,
   TemplateFlexLayoutConfig,
   FlexContainerNode,
   FlexComponentNode,
-  FlexLayoutNode,
-  FlexDirection,
-  FlexGap,
-  FlexAlign,
-  FlexJustify,
   FlexSizing,
-  LayoutBlockType,
   isFlexLayoutConfig,
-  migrateGridToFlexLayout,
   createDefaultFlexLayout,
   findFlexNode,
   defaultChildDirection,
@@ -30,6 +20,7 @@ import {
   parsePxValue,
 } from '@/types/layout';
 import { DockContent } from '@/hooks/usePanelDockDrag';
+import { errorMessage } from '@/lib/errors';
 
 export interface WorkspaceTabSnapshot {
   primaryTabs: DockContent[];
@@ -54,30 +45,6 @@ interface UseTemplateEditorOptions {
   onOpenBottomPanel?: (content: 'template_builder') => void;
 }
 
-export function createDefaultLayout(fields: FieldDefinition[]): TemplateLayoutConfig {
-  const blocks: LayoutBlock[] = fields.map((f) => ({
-    id: `block-${f.id}`,
-    type: 'field',
-    field_id: f.id,
-    label: f.label,
-    col_span: 6,
-    row_span: 1,
-    variant: 'standard',
-  }));
-
-  return {
-    version: 1,
-    sections: [
-      {
-        id: 'sec-general',
-        title: 'General Information',
-        columns: 12,
-        blocks,
-      },
-    ],
-  };
-}
-
 export function useTemplateEditor({
   onRefreshData,
   getTabSnapshot,
@@ -100,8 +67,6 @@ export function useTemplateEditor({
   // Layout Engine States (Flexbox & Legacy)
   const [flexLayoutConfig, setFlexLayoutConfigState] = useState<TemplateFlexLayoutConfig | null>(null);
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
-  const [layoutConfig, setLayoutConfigState] = useState<TemplateLayoutConfig | null>(null);
-  const [selectedBlockId, setSelectedBlockId] = useState<string | null>(null);
   const [canvasMode, setCanvasMode] = useState<'edit' | 'preview'>('edit');
 
   const toggleFieldTypeFilter = useCallback((type: FieldType) => {
@@ -142,7 +107,7 @@ export function useTemplateEditor({
     try {
       const { error } = await supabase
         .from('item_templates')
-        .update({ layout_config: pending.layout } as any)
+        .update({ layout_config: pending.layout })
         .eq('id', pending.id);
       // Warn once per session so a missing layout_config column is visible, not silent
       if (error && !remoteSaveWarned.current) {
@@ -184,18 +149,9 @@ export function useTemplateEditor({
     };
   }, [flushRemoteSave]);
 
-  const saveLayoutConfig = useCallback(
-    (nextLayout: TemplateLayoutConfig) => {
-      setLayoutConfigState(nextLayout);
-      if (editingTemplateId) persistLayout(editingTemplateId, nextLayout);
-    },
-    [editingTemplateId, persistLayout]
-  );
-
   const saveFlexLayoutConfig = useCallback(
     (nextFlex: TemplateFlexLayoutConfig) => {
       setFlexLayoutConfigState(nextFlex);
-      setLayoutConfigState(nextFlex as any);
       if (editingTemplateId) persistLayout(editingTemplateId, nextFlex);
     },
     [editingTemplateId, persistLayout]
@@ -237,7 +193,7 @@ export function useTemplateEditor({
       };
 
       // Resolve Layout: Check localStorage -> tmplData.layout_config -> generate default flex layout
-      let rawConfig: any = null;
+      let rawConfig: unknown = null;
       if (typeof window !== 'undefined') {
         try {
           const cached = localStorage.getItem(`trovevault_template_layout_${rawId}`);
@@ -251,16 +207,13 @@ export function useTemplateEditor({
         rawConfig = tmplData.layout_config;
       }
 
-      let resolvedFlex: TemplateFlexLayoutConfig;
-      if (rawConfig) {
-        resolvedFlex = migrateGridToFlexLayout(rawConfig);
-      } else {
-        resolvedFlex = createDefaultFlexLayout(loadedTemplate.fields || []);
-      }
+      // Only current (flex, version 2) layouts are loaded; anything else starts from the default
+      const resolvedFlex: TemplateFlexLayoutConfig = isFlexLayoutConfig(rawConfig)
+        ? rawConfig
+        : createDefaultFlexLayout(loadedTemplate.fields || []);
 
       setActiveTemplate(loadedTemplate);
       setFlexLayoutConfigState(resolvedFlex);
-      setLayoutConfigState(resolvedFlex as any);
 
       // Select first child container if present, else root
       const initialNodeId = resolvedFlex.root.children[0]?.id || resolvedFlex.root.id;
@@ -276,9 +229,9 @@ export function useTemplateEditor({
       }
 
       return loadedTemplate;
-    } catch (err: any) {
+    } catch (err) {
       console.error('Failed to load template:', err);
-      setError(err?.message || 'Failed to load template details');
+      setError(errorMessage(err, 'Failed to load template details'));
       return null;
     } finally {
       setIsLoading(false);
@@ -376,9 +329,9 @@ export function useTemplateEditor({
         setActiveTemplate((prev) => (prev ? { ...prev, ...data } : null));
         setSuccessMsg('Template metadata updated');
         if (onRefreshData) await onRefreshData();
-      } catch (err: any) {
+      } catch (err) {
         console.error('Failed to update template metadata:', err);
-        setError(err?.message || 'Failed to update template');
+        setError(errorMessage(err, 'Failed to update template'));
       } finally {
         setIsSaving(false);
       }
@@ -438,9 +391,9 @@ export function useTemplateEditor({
         setIsRootSelected(false);
         setSuccessMsg(`Added field "${formattedField.label}"`);
         if (onRefreshData) await onRefreshData();
-      } catch (err: any) {
+      } catch (err) {
         console.error('Failed to add field:', err);
-        setError(err?.message || 'Failed to add field');
+        setError(errorMessage(err, 'Failed to add field'));
       } finally {
         setIsSaving(false);
       }
@@ -467,7 +420,7 @@ export function useTemplateEditor({
           };
         });
 
-        const updatePayload: any = {};
+        const updatePayload: Partial<Pick<FieldDefinition, 'name' | 'label' | 'field_type' | 'options' | 'is_required' | 'display_order'>> = {};
         if (partial.name !== undefined) updatePayload.name = partial.name;
         if (partial.label !== undefined) updatePayload.label = partial.label;
         if (partial.field_type !== undefined) updatePayload.field_type = partial.field_type;
@@ -499,9 +452,9 @@ export function useTemplateEditor({
 
         setSuccessMsg('Field updated');
         if (onRefreshData) await onRefreshData();
-      } catch (err: any) {
+      } catch (err) {
         console.error('Failed to update field:', err);
-        setError(err?.message || 'Failed to update field');
+        setError(errorMessage(err, 'Failed to update field'));
         // Reload to revert on error
         await loadTemplate(editingTemplateId);
       } finally {
@@ -549,9 +502,9 @@ export function useTemplateEditor({
 
         setSuccessMsg('Field removed from template');
         if (onRefreshData) await onRefreshData();
-      } catch (err: any) {
+      } catch (err) {
         console.error('Failed to delete field:', err);
-        setError(err?.message || 'Failed to delete field');
+        setError(errorMessage(err, 'Failed to delete field'));
       } finally {
         setIsSaving(false);
       }
@@ -591,9 +544,9 @@ export function useTemplateEditor({
 
         await Promise.all(updates);
         if (onRefreshData) await onRefreshData();
-      } catch (err: any) {
+      } catch (err) {
         console.error('Failed to reorder fields:', err);
-        setError(err?.message || 'Failed to save field order');
+        setError(errorMessage(err, 'Failed to save field order'));
         await loadTemplate(editingTemplateId);
       } finally {
         setIsSaving(false);
@@ -601,148 +554,6 @@ export function useTemplateEditor({
     },
     [editingTemplateId, activeTemplate, onRefreshData, loadTemplate]
   );
-
-  /* ------------------------------------------------------------------------
-     LAYOUT ENGINE MUTATIONS
-     ------------------------------------------------------------------------ */
-
-  const addSection = useCallback(
-    (title: string = 'New Section') => {
-      const newSec: LayoutSection = {
-        id: `sec-${Date.now()}`,
-        title,
-        columns: 12,
-        blocks: [],
-      };
-      const nextLayout: TemplateLayoutConfig = {
-        version: 1,
-        sections: [...(layoutConfig?.sections || []), newSec],
-      };
-      saveLayoutConfig(nextLayout);
-    },
-    [layoutConfig, saveLayoutConfig]
-  );
-
-  const removeSection = useCallback(
-    (sectionId: string) => {
-      if (!layoutConfig) return;
-      const nextSections = layoutConfig.sections.filter((s) => s.id !== sectionId);
-      saveLayoutConfig({ ...layoutConfig, sections: nextSections });
-    },
-    [layoutConfig, saveLayoutConfig]
-  );
-
-  const updateSection = useCallback(
-    (sectionId: string, partial: Partial<LayoutSection>) => {
-      if (!layoutConfig) return;
-      const nextSections = layoutConfig.sections.map((s) =>
-        s.id === sectionId ? { ...s, ...partial } : s
-      );
-      saveLayoutConfig({ ...layoutConfig, sections: nextSections });
-    },
-    [layoutConfig, saveLayoutConfig]
-  );
-
-  const reorderSections = useCallback(
-    (orderedIds: string[]) => {
-      if (!layoutConfig) return;
-      const secMap = new Map(layoutConfig.sections.map((s) => [s.id, s]));
-      const nextSections = orderedIds.map((id) => secMap.get(id)).filter(Boolean) as LayoutSection[];
-      saveLayoutConfig({ ...layoutConfig, sections: nextSections });
-    },
-    [layoutConfig, saveLayoutConfig]
-  );
-
-  const addBlock = useCallback(
-    (sectionId: string, block: Omit<LayoutBlock, 'id'>) => {
-      if (!layoutConfig) return;
-      const newBlock: LayoutBlock = {
-        ...block,
-        id: `block-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
-      };
-      const nextSections = layoutConfig.sections.map((sec) => {
-        if (sec.id === sectionId) {
-          return { ...sec, blocks: [...sec.blocks, newBlock] };
-        }
-        return sec;
-      });
-      saveLayoutConfig({ ...layoutConfig, sections: nextSections });
-      setSelectedBlockId(newBlock.id);
-    },
-    [layoutConfig, saveLayoutConfig]
-  );
-
-  const updateBlock = useCallback(
-    (sectionId: string, blockId: string, partial: Partial<LayoutBlock>) => {
-      if (!layoutConfig) return;
-      const nextSections = layoutConfig.sections.map((sec) => {
-        if (sec.id === sectionId) {
-          const nextBlocks = sec.blocks.map((b) => (b.id === blockId ? { ...b, ...partial } : b));
-          return { ...sec, blocks: nextBlocks };
-        }
-        return sec;
-      });
-      saveLayoutConfig({ ...layoutConfig, sections: nextSections });
-    },
-    [layoutConfig, saveLayoutConfig]
-  );
-
-  const removeBlock = useCallback(
-    (sectionId: string, blockId: string) => {
-      if (!layoutConfig) return;
-      const nextSections = layoutConfig.sections.map((sec) => {
-        if (sec.id === sectionId) {
-          return { ...sec, blocks: sec.blocks.filter((b) => b.id !== blockId) };
-        }
-        return sec;
-      });
-      saveLayoutConfig({ ...layoutConfig, sections: nextSections });
-      if (selectedBlockId === blockId) {
-        setSelectedBlockId(null);
-      }
-    },
-    [layoutConfig, selectedBlockId, saveLayoutConfig]
-  );
-
-  const moveBlock = useCallback(
-    (fromSectionId: string, toSectionId: string, blockId: string, toIndex?: number) => {
-      if (!layoutConfig) return;
-      let targetBlock: LayoutBlock | undefined;
-      // Extract block
-      const sectionsAfterExtract = layoutConfig.sections.map((sec) => {
-        if (sec.id === fromSectionId) {
-          targetBlock = sec.blocks.find((b) => b.id === blockId);
-          return { ...sec, blocks: sec.blocks.filter((b) => b.id !== blockId) };
-        }
-        return sec;
-      });
-
-      if (!targetBlock) return;
-
-      // Insert into destination
-      const nextSections = sectionsAfterExtract.map((sec) => {
-        if (sec.id === toSectionId) {
-          const list = [...sec.blocks];
-          if (typeof toIndex === 'number') {
-            list.splice(toIndex, 0, targetBlock!);
-          } else {
-            list.push(targetBlock!);
-          }
-          return { ...sec, blocks: list };
-        }
-        return sec;
-      });
-
-      saveLayoutConfig({ ...layoutConfig, sections: nextSections });
-    },
-    [layoutConfig, saveLayoutConfig]
-  );
-
-  const resetLayoutToDefault = useCallback(() => {
-    if (!activeTemplate) return;
-    const defaultLayout = createDefaultLayout(activeTemplate.fields || []);
-    saveLayoutConfig(defaultLayout);
-  }, [activeTemplate, saveLayoutConfig]);
 
   // ==========================================================================
   // FLEXBOX LAYOUT ENGINE STATE & MUTATIONS
@@ -772,9 +583,6 @@ export function useTemplateEditor({
 
   const selectNode = useCallback((nodeId: string | null) => {
     setSelectedNodeId(nodeId);
-    if (nodeId) {
-      setSelectedBlockId(nodeId);
-    }
   }, []);
 
   const addFlexContainer = useCallback(
@@ -1289,7 +1097,6 @@ export function useTemplateEditor({
     isSaving,
     error,
     successMsg,
-    tabSnapshot: tabSnapshotRef.current,
     setFieldSearchQuery,
     setFilterFieldTypes,
     setSelectedFieldId: (id: number | null) => {
@@ -1332,22 +1139,9 @@ export function useTemplateEditor({
     removeFlexComponent,
     placeField,
     resetFlexLayoutToDefault,
-    // Legacy Grid Layout Engine APIs (for compatibility)
-    layoutConfig,
-    selectedBlockId,
-    setSelectedBlockId,
     canvasMode,
     setCanvasMode,
     toggleCanvasMode,
-    addSection,
-    removeSection,
-    updateSection,
-    reorderSections,
-    addBlock,
-    updateBlock,
-    removeBlock,
-    moveBlock,
-    resetLayoutToDefault,
   };
 }
 

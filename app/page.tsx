@@ -21,7 +21,6 @@ import TreeContent from '@/components/TreeContent';
 import ModalContainers from '@/components/ModalContainers';
 import DynamicWatermark from '@/components/DynamicWatermark';
 import TemplateFieldInspector from '@/components/TemplateFieldInspector';
-import TemplateLayoutBuilder from '@/components/TemplateLayoutBuilder';
 import TemplateLayoutPalette from '@/components/TemplateLayoutPalette';
 import TemplatePropertiesInspector from '@/components/TemplatePropertiesInspector';
 import TemplateHierarchyTree, { getAllContainerIds, countElements } from '@/components/TemplateHierarchyTree';
@@ -1449,10 +1448,7 @@ export default function Home() {
               onEditItem={handleTriggerEditItem}
               onDeleteItem={handleTriggerDeleteItem}
               editingTemplate={templateEditor.isEditing ? templateEditor.activeTemplate : null}
-              selectedFieldId={templateEditor.selectedFieldId}
-              onSelectField={templateEditor.setSelectedFieldId}
               onDoneEditingTemplate={templateEditor.stopEditing}
-              onAddFieldToTemplate={() => templateEditor.addField('text')}
               flexLayoutConfig={templateEditor.flexLayoutConfig}
               selectedNodeId={templateEditor.selectedNodeId}
               activeContainerId={templateEditor.activeContainerId}
@@ -1468,17 +1464,7 @@ export default function Home() {
               onRemoveFlexComponent={templateEditor.removeFlexComponent}
               onPlaceField={handlePlaceField}
               onResetFlexLayout={templateEditor.resetFlexLayoutToDefault}
-              layoutConfig={templateEditor.layoutConfig}
-              selectedBlockId={templateEditor.selectedBlockId}
               canvasMode={templateEditor.canvasMode}
-              onSelectBlock={templateEditor.setSelectedBlockId}
-              onAddSection={templateEditor.addSection}
-              onRemoveSection={templateEditor.removeSection}
-              onUpdateSection={templateEditor.updateSection}
-              onAddBlock={templateEditor.addBlock}
-              onUpdateBlock={templateEditor.updateBlock}
-              onRemoveBlock={templateEditor.removeBlock}
-              onResetLayout={templateEditor.resetLayoutToDefault}
               onToggleCanvasMode={templateEditor.toggleCanvasMode}
             />
           </div>
