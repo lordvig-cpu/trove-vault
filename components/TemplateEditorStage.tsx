@@ -153,6 +153,29 @@ function FlexContainerRenderer({
   const [isTreeMenuOpen, setIsTreeMenuOpen] = useState(false);
 
   useEffect(() => {
+    if (canvasMode !== 'edit') return;
+    // Nested drops stop propagation. Observe the whole drag in capture phase so
+    // ancestors and previous targets cannot retain their drop-target rings.
+    const trackTarget = (event: DragEvent) => {
+      const target = event.target instanceof Element
+        ? event.target.closest('[data-container-id]')
+        : null;
+      setIsDragOver(target?.getAttribute('data-container-id') === container.id);
+    };
+    const clearTarget = () => setIsDragOver(false);
+    window.addEventListener('dragover', trackTarget, true);
+    window.addEventListener('drop', clearTarget, true);
+    window.addEventListener('dragend', clearTarget, true);
+    window.addEventListener('blur', clearTarget);
+    return () => {
+      window.removeEventListener('dragover', trackTarget, true);
+      window.removeEventListener('drop', clearTarget, true);
+      window.removeEventListener('dragend', clearTarget, true);
+      window.removeEventListener('blur', clearTarget);
+    };
+  }, [canvasMode, container.id]);
+
+  useEffect(() => {
     const handleOpen = (e: Event) => {
       const customEvent = e as CustomEvent<string>;
       if (
@@ -432,76 +455,6 @@ function FlexContainerRenderer({
               </button>
             </div>
 
-            {/* Split Container Buttons (Middle) */}
-            {isRoot ? (
-              <>
-                <div className="h-3.5 w-px bg-[color-mix(in_oklch,var(--primary-accent)_35%,var(--primary-border-subtle))] shrink-0" />
-                <div
-                  className="flex items-center justify-center gap-1 shrink-0"
-                  role="group"
-                  aria-label="Split container"
-                >
-                  <button
-                    type="button"
-                    disabled
-                    title="Root Body cannot be split"
-                    aria-label="Split into 2 Columns (Disabled for Body)"
-                    className="p-1 rounded-md border flex items-center justify-center opacity-35 cursor-not-allowed bg-[color-mix(in_oklch,var(--panel-surface-bg)_70%,transparent)] border-[var(--primary-border-subtle)] text-[var(--text-muted)]"
-                  >
-                    <SplitColumnsIcon className="w-3.5 h-3.5" />
-                  </button>
-                  <button
-                    type="button"
-                    disabled
-                    title="Root Body cannot be split"
-                    aria-label="Split into 2 Rows (Disabled for Body)"
-                    className="p-1 rounded-md border flex items-center justify-center opacity-35 cursor-not-allowed bg-[color-mix(in_oklch,var(--panel-surface-bg)_70%,transparent)] border-[var(--primary-border-subtle)] text-[var(--text-muted)]"
-                  >
-                    <SplitRowsIcon className="w-3.5 h-3.5" />
-                  </button>
-                </div>
-              </>
-            ) : (
-              (container.direction === 'row' || container.direction === 'column') && (
-                <>
-                  <div className="h-3.5 w-px bg-[color-mix(in_oklch,var(--primary-accent)_35%,var(--primary-border-subtle))] shrink-0" />
-                  <div
-                    className="flex items-center justify-center gap-1 shrink-0"
-                    role="group"
-                    aria-label="Split container"
-                  >
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onSplitContainer?.(container.id, 'columns');
-                      }}
-                      title="Split into 2 Columns (side-by-side)"
-                      aria-label="Split into 2 Columns"
-                      className="p-1 rounded-md border transition cursor-pointer flex items-center justify-center bg-[color-mix(in_oklch,var(--panel-surface-bg)_70%,transparent)] border-[var(--primary-border-subtle)] text-[var(--text-muted)] hover:border-[var(--primary-accent)] hover:text-white hover:bg-[color-mix(in_oklch,var(--primary-accent)_15%,transparent)]"
-                    >
-                      <SplitColumnsIcon className="w-3.5 h-3.5" />
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onSplitContainer?.(container.id, 'rows');
-                      }}
-                      title="Split into 2 Rows (stacked)"
-                      aria-label="Split into 2 Rows"
-                      className="p-1 rounded-md border transition cursor-pointer flex items-center justify-center bg-[color-mix(in_oklch,var(--panel-surface-bg)_70%,transparent)] border-[var(--primary-border-subtle)] text-[var(--text-muted)] hover:border-[var(--primary-accent)] hover:text-white hover:bg-[color-mix(in_oklch,var(--primary-accent)_15%,transparent)]"
-                    >
-                      <SplitRowsIcon className="w-3.5 h-3.5" />
-                    </button>
-                  </div>
-                </>
-              )
-            )}
-
-            <div className="h-3.5 w-px bg-[color-mix(in_oklch,var(--primary-accent)_35%,var(--primary-border-subtle))] shrink-0" />
-
             {/* Add Container Before, Child, and After Buttons */}
             <div className="flex items-center gap-1 shrink-0" role="group" aria-label="Add container before, child, or after">
               {/* Add Container Before */}
@@ -558,6 +511,51 @@ function FlexContainerRenderer({
                 }`}
               >
                 <AddContainerAfterIcon className="w-3.5 h-3.5" />
+              </button>
+            </div>
+
+            <div className="h-3.5 w-px bg-[color-mix(in_oklch,var(--primary-accent)_35%,var(--primary-border-subtle))] shrink-0" />
+
+            {/* Split Container Actions (Top right next to gear) */}
+            <div
+              className="flex items-center justify-center gap-1 shrink-0"
+              role="group"
+              aria-label="Split container"
+            >
+              <button
+                type="button"
+                disabled={isRoot}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (!isRoot) onSplitContainer?.(container.id, 'columns');
+                }}
+                title={isRoot ? "Root Body cannot be split" : "Split into 2 Columns (side-by-side)"}
+                aria-label="Split into 2 Columns"
+                className={`p-1 rounded-md border transition flex items-center justify-center ${
+                  isRoot
+                    ? 'opacity-35 cursor-not-allowed bg-[color-mix(in_oklch,var(--panel-surface-bg)_70%,transparent)] border-[var(--primary-border-subtle)] text-[var(--text-muted)]'
+                    : 'cursor-pointer bg-[color-mix(in_oklch,var(--panel-surface-bg)_70%,transparent)] border-[var(--primary-border-subtle)] text-[var(--text-muted)] hover:border-[var(--primary-accent)] hover:text-white hover:bg-[color-mix(in_oklch,var(--primary-accent)_15%,transparent)]'
+                }`}
+              >
+                <SplitColumnsIcon className="w-3.5 h-3.5" />
+              </button>
+
+              <button
+                type="button"
+                disabled={isRoot}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (!isRoot) onSplitContainer?.(container.id, 'rows');
+                }}
+                title={isRoot ? "Root Body cannot be split" : "Split into 2 Rows (stacked)"}
+                aria-label="Split into 2 Rows"
+                className={`p-1 rounded-md border transition flex items-center justify-center ${
+                  isRoot
+                    ? 'opacity-35 cursor-not-allowed bg-[color-mix(in_oklch,var(--panel-surface-bg)_70%,transparent)] border-[var(--primary-border-subtle)] text-[var(--text-muted)]'
+                    : 'cursor-pointer bg-[color-mix(in_oklch,var(--panel-surface-bg)_70%,transparent)] border-[var(--primary-border-subtle)] text-[var(--text-muted)] hover:border-[var(--primary-accent)] hover:text-white hover:bg-[color-mix(in_oklch,var(--primary-accent)_15%,transparent)]'
+                }`}
+              >
+                <SplitRowsIcon className="w-3.5 h-3.5" />
               </button>
             </div>
 
