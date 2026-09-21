@@ -48,6 +48,15 @@ above) before writing Next.js code; do not edit it, `next dev` regenerates it.
   `layout_config` column is not in `.supabase/schema.sql` yet, so remote saves currently fail (with
   one console warning per session).
 
+## To do before real template saving
+
+- Add a  column to the  table and to  (for example
+  ). Until it exists, layout edits are only
+  kept in this browser's localStorage and each remote save fails (one console warning per session).
+  The app already writes the whole layout to that column, debounced, in .
+- Replace the open development RLS policies with per-user policies when authentication is added, so
+  templates and preferences belong to the person who made them.
+
 ## Known state
 
 - No authentication yet. The Row Level Security policies in `.supabase/schema.sql` are open
