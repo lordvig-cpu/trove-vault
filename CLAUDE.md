@@ -51,6 +51,11 @@ above) before writing Next.js code; do not edit it, `next dev` regenerates it.
   on the container; drag handles only appear on Custom containers.
 - The editor bar (tools, preview width, zoom) is rendered by `TemplateEditorBar` into the slot under
   the header (`#template-toolbar-slot`).
+- Layout tree edits (add, insert sibling, split, update, remove) are pure functions in
+  `lib/layoutTree.ts`, covered by `tests/layout-tree.spec.ts`; `useTemplateEditor` calls them and saves.
+- `app/page.tsx` only composes: docking and panel state live in `hooks/useWorkspaceDock.ts`, the
+  Structure tree's expansion state in `hooks/useHierarchyState.ts`, and the Items / Collections /
+  Templates tree state in `hooks/useTreePanels.ts`.
 - Edit Template does not auto-open the side panels (`AUTO_OPEN_TEMPLATE_PANELS` in `app/page.tsx`).
 - Layout persistence: localStorage on every change, plus a debounced Supabase write. The
   `layout_config` column is not in `.supabase/schema.sql` yet, so remote saves currently fail (with
@@ -77,10 +82,13 @@ above) before writing Next.js code; do not edit it, `next dev` regenerates it.
   `tmpl-block-variant-${x}`), so check each before deleting.
 - 11 lint problems remain, all React-hooks rules (setState in effects, memoization); they need small
   structural changes.
-- Large files worth splitting once template saving lands: `app/page.tsx`, `hooks/useTemplateEditor.ts`,
-  `PrimarySidePanelHeader.tsx`, `TemplateEditorStage.tsx`. `PrimarySidePanel` takes ~87 props;
-  move workspace/dock state into contexts.
-- No CI yet: add a workflow running typecheck, lint, build and tests.
+- Large files still worth splitting: `app/page.tsx` (panel renderers and the JSX, ~1,170 lines),
+  `PrimarySidePanelHeader.tsx`, `TemplateEditorStage.tsx`, `hooks/useTemplateEditor.ts` (field CRUD and
+  `addFlexPrimitive`). `PrimarySidePanel` takes ~87 props; move workspace state into contexts.
+- CI is set up in `.github/workflows/ci.yml` (typecheck, lint, build, tests) but has not run on GitHub yet, so
+  it is unverified. Lint is non-blocking until the remaining React-hooks errors are fixed. To make the
+  build and tests use the real database, add the two `NEXT_PUBLIC_SUPABASE_*` values as repository
+  secrets (tests that need seeded data are skipped).
 
 ## Known state
 
