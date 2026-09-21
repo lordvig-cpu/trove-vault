@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ItemTemplate } from '@/types/template';
 import { FieldDefinition } from '@/types/field';
 import {
@@ -16,7 +16,14 @@ import {
   FlexRowIcon,
   FlexColumnIcon,
   LayoutContainerIcon,
+  SplitColumnsIcon,
+  SplitRowsIcon,
+  DashedSquareQuestionIcon,
+  AddContainerBeforeIcon,
+  AddChildContainerIcon,
+  AddContainerAfterIcon,
 } from '@/components/icons/LayoutIcons';
+import { GearIcon } from '@/components/icons/ExplorerIcons';
 
 /* ==========================================================================
    1. PROPS INTERFACE
@@ -37,6 +44,11 @@ interface TemplateEditorStageProps {
     targetContainerId: string,
     options?: Partial<FlexContainerNode>
   ) => string;
+  onInsertContainerSibling?: (
+    targetContainerId: string,
+    position: 'before' | 'after',
+    options?: Partial<FlexContainerNode>
+  ) => string;
   onUpdateFlexContainer?: (
     containerId: string,
     partial: Partial<FlexContainerNode>
@@ -53,6 +65,7 @@ interface TemplateEditorStageProps {
   onRemoveFlexComponent?: (componentId: string) => void;
   onPlaceField?: (fieldId: number, targetContainerId?: string) => void;
   onResetFlexLayout?: () => void;
+  onSplitContainer?: (containerId: string, splitType: 'columns' | 'rows') => void;
 
   // Legacy / fallback props
   layoutConfig?: TemplateLayoutConfig | null;
@@ -90,20 +103,25 @@ interface TemplateEditorStageProps {
 function FlexContainerRenderer({
   container,
   isRoot,
+  parentContainer,
   selectedNodeId,
   activeContainerId,
   canvasMode,
   fields,
   onSelectNode,
   onAddPrimitive,
+  onAddContainer,
+  onInsertContainerSibling,
   onUpdateContainer,
   onRemoveContainer,
+  onSplitContainer,
   onUpdateComponent,
   onRemoveComponent,
   onPlaceField,
 }: {
   container: FlexContainerNode;
   isRoot?: boolean;
+  parentContainer?: FlexContainerNode;
   selectedNodeId?: string | null;
   activeContainerId?: string;
   canvasMode: 'edit' | 'preview';
@@ -113,8 +131,18 @@ function FlexContainerRenderer({
     type: 'row' | 'column' | 'split-2' | 'split-3' | 'card',
     targetId?: string
   ) => void;
+  onAddContainer?: (
+    targetContainerId: string,
+    options?: Partial<FlexContainerNode>
+  ) => string;
+  onInsertContainerSibling?: (
+    targetContainerId: string,
+    position: 'before' | 'after',
+    options?: Partial<FlexContainerNode>
+  ) => string;
   onUpdateContainer?: (id: string, partial: Partial<FlexContainerNode>) => void;
   onRemoveContainer?: (id: string) => void;
+  onSplitContainer?: (containerId: string, splitType: 'columns' | 'rows') => void;
   onUpdateComponent?: (id: string, partial: Partial<FlexComponentNode>) => void;
   onRemoveComponent?: (id: string) => void;
   onPlaceField?: (fieldId: number, targetContainerId?: string) => void;
@@ -122,6 +150,39 @@ function FlexContainerRenderer({
   const [isDragOver, setIsDragOver] = useState(false);
   const isSelected = selectedNodeId === container.id;
   const isActive = activeContainerId === container.id;
+  const [isTreeMenuOpen, setIsTreeMenuOpen] = useState(false);
+
+  useEffect(() => {
+    const handleOpen = (e: Event) => {
+      const customEvent = e as CustomEvent<string>;
+      if (
+        typeof customEvent.detail === 'string' &&
+        customEvent.detail.startsWith(`tree-container-${container.id}`)
+      ) {
+        setIsTreeMenuOpen(true);
+      } else {
+        setIsTreeMenuOpen(false);
+      }
+    };
+
+    const handleClose = (e: Event) => {
+      const customEvent = e as CustomEvent<string>;
+      if (
+        !customEvent.detail ||
+        (typeof customEvent.detail === 'string' &&
+          customEvent.detail.startsWith(`tree-container-${container.id}`))
+      ) {
+        setIsTreeMenuOpen(false);
+      }
+    };
+
+    window.addEventListener('explorer-action-menu-open', handleOpen);
+    window.addEventListener('explorer-action-menu-close', handleClose);
+    return () => {
+      window.removeEventListener('explorer-action-menu-open', handleOpen);
+      window.removeEventListener('explorer-action-menu-close', handleClose);
+    };
+  }, [container.id]);
 
   const justifyStyle =
     container.justify === 'between'
@@ -136,24 +197,7 @@ function FlexContainerRenderer({
 
   const isUnsetDirection = container.direction === 'none' || !container.direction;
 
-  const flexStyle: React.CSSProperties = {
-    display: 'flex',
-    flexDirection:
-      container.direction === 'row'
-        ? 'row'
-        : container.direction === 'column'
-        ? 'column'
-        : undefined,
-    gap: `${container.gap}px`,
-    flexWrap: container.wrap ? 'wrap' : 'nowrap',
-    alignItems: container.align,
-    justifyContent: justifyStyle,
-    padding:
-      container.padding !== undefined
-        ? `${container.padding}px`
-        : isRoot
-        ? '0px'
-        : '12px',
+  const outerStyle: React.CSSProperties = {
     flex:
       container.sizing?.type === 'fixed'
         ? `0 0 ${container.sizing.value || 'auto'}`
@@ -163,8 +207,30 @@ function FlexContainerRenderer({
     width:
       container.sizing?.type === 'fixed' && container.sizing.value
         ? container.sizing.value
-        : undefined,
+        : container.width || undefined,
+    height: container.height || container.sizing?.height || undefined,
+    minHeight: container.minHeight || container.sizing?.minHeight || undefined,
     minWidth: 0,
+  };
+
+  const innerFlexStyle: React.CSSProperties = {
+    display: 'flex',
+    flexDirection:
+      container.direction === 'row'
+        ? 'row'
+        : container.direction === 'column'
+        ? 'column'
+        : isRoot
+        ? 'column'
+        : undefined,
+    gap: `${container.gap}px`,
+    flexWrap: container.wrap ? 'wrap' : 'nowrap',
+    alignItems: container.align,
+    justifyContent: justifyStyle,
+    padding:
+      container.padding !== undefined
+        ? `${container.padding}px`
+        : '0px',
   };
 
   const isCard = container.isCard;
@@ -211,41 +277,52 @@ function FlexContainerRenderer({
           }
         }
       }}
+      style={!isRoot ? outerStyle : undefined}
       className={`transition-all duration-150 relative ${
+        isSelected ? 'z-20' : 'z-10'
+      } ${
+        isRoot ? 'flex-1 flex flex-col min-h-0 w-full' : 'flex flex-col'
+      } ${
         canvasMode === 'preview'
           ? isCard
-            ? 'rounded-2xl bg-slate-900/60 border border-slate-800/80 shadow-md backdrop-blur-sm'
+            ? 'rounded-2xl bg-[var(--content-card-bg)] border border-[var(--content-card-border)] shadow-md backdrop-blur-sm'
             : ''
           : isDragOver
-          ? 'rounded-2xl ring-2 ring-[var(--primary-accent)] ring-offset-2 ring-offset-slate-950 bg-[color-mix(in_oklch,var(--primary-accent)_16%,transparent)] border-[var(--primary-accent)] shadow-2xl shadow-[color-mix(in_oklch,var(--primary-accent)_25%,transparent)] p-1.5'
+          ? 'rounded-2xl border-2 border-[var(--primary-accent)] ring-2 ring-[var(--primary-accent)] ring-offset-2 ring-offset-[var(--surface-panel)] bg-[color-mix(in_oklch,var(--primary-accent)_16%,transparent)] shadow-2xl shadow-[color-mix(in_oklch,var(--primary-accent)_25%,transparent)]'
           : isSelected
-          ? 'rounded-2xl ring-2 ring-[var(--primary-accent)] bg-[color-mix(in_oklch,var(--primary-accent)_12%,transparent)] shadow-xl shadow-[color-mix(in_oklch,var(--primary-accent)_15%,transparent)] border border-[var(--primary-accent)] p-1.5'
+          ? 'rounded-2xl border-2 border-white bg-[color-mix(in_oklch,var(--primary-accent)_8%,transparent)] shadow-xl shadow-white/10'
           : isActive
-          ? 'rounded-2xl border border-[color-mix(in_oklch,var(--primary-accent)_50%,transparent)] bg-[color-mix(in_oklch,var(--primary-accent)_6%,transparent)] p-1.5'
+          ? 'rounded-2xl border border-[color-mix(in_oklch,var(--primary-accent)_50%,transparent)] bg-[color-mix(in_oklch,var(--primary-accent)_6%,transparent)]'
           : isCard
-          ? 'rounded-2xl border border-slate-800 bg-slate-900/50 hover:border-slate-700/80 p-1.5'
-          : 'rounded-2xl border border-dashed border-slate-800/70 bg-slate-950/20 hover:border-slate-700/70 p-1.5'
+          ? 'rounded-2xl border border-[var(--primary-border-subtle)] bg-[color-mix(in_oklch,var(--panel-surface-bg)_60%,transparent)] hover:border-[color-mix(in_oklch,var(--primary-accent)_40%,var(--primary-border-subtle))]'
+          : 'rounded-2xl border border-dashed border-[var(--primary-border-subtle)] bg-[color-mix(in_oklch,var(--panel-surface-bg)_25%,transparent)] hover:border-[color-mix(in_oklch,var(--primary-accent)_40%,var(--primary-border-subtle))]'
       }`}
     >
-      {/* Container Header Bar in Edit Mode */}
-      {canvasMode === 'edit' && !isRoot && (
-        <div className="flex items-center justify-between px-2 py-1 mb-1 border-b border-slate-800/60 select-none">
-          <div className="flex items-center gap-1.5 min-w-0">
+      {/* Floating Action Toolbar in Edit Mode - Connected to container border */}
+      {canvasMode === 'edit' && isSelected && (
+        <div
+          className="tmpl-container-floating-toolbar absolute bottom-full left-3.5 z-30 select-none pointer-events-auto"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className="flex items-center gap-2 px-2.5 py-1.5 min-w-0">
             {/* Quick Direction Toggle Buttons (3-Button Layout Suite) */}
             <div className="flex items-center gap-1 shrink-0" role="group" aria-label="Container flex direction">
               <button
                 type="button"
+                disabled={isRoot}
                 onClick={(e) => {
                   e.stopPropagation();
-                  onUpdateContainer?.(container.id, { direction: 'none' });
+                  if (!isRoot) onUpdateContainer?.(container.id, { direction: 'none' });
                 }}
-                title="Generic container layout (unset flow) — click to remove row/column distinction"
+                title={isRoot ? "Generic container layout (default for Root Body — cannot be changed)" : "Generic container layout (unset flow) — click to remove row/column distinction"}
                 aria-label="Generic container layout"
                 aria-pressed={isUnsetDirection}
-                className={`p-1 rounded-md border transition cursor-pointer flex items-center justify-center ${
-                  isUnsetDirection
-                    ? 'nav-footer-dock-btn-open border-[var(--primary-accent)] text-[var(--primary-accent)] shadow-sm'
-                    : 'nav-footer-dock-btn-closed hover:border-[var(--primary-accent)] hover:text-white'
+                className={`p-1 rounded-md border transition flex items-center justify-center ${
+                  isRoot
+                    ? 'bg-[color-mix(in_oklch,var(--primary-accent)_25%,transparent)] border-[var(--primary-accent)] text-[var(--primary-accent)] opacity-80 cursor-not-allowed'
+                    : isUnsetDirection
+                    ? 'bg-[color-mix(in_oklch,var(--primary-accent)_25%,transparent)] border-[var(--primary-accent)] text-[var(--primary-accent)] shadow-sm cursor-pointer'
+                    : 'bg-[color-mix(in_oklch,var(--panel-surface-bg)_70%,transparent)] border-[var(--primary-border-subtle)] text-[var(--text-muted)] hover:border-[var(--primary-accent)] hover:text-white cursor-pointer'
                 }`}
               >
                 <LayoutContainerIcon className="w-3.5 h-3.5" />
@@ -253,17 +330,20 @@ function FlexContainerRenderer({
 
               <button
                 type="button"
+                disabled={isRoot}
                 onClick={(e) => {
                   e.stopPropagation();
-                  onUpdateContainer?.(container.id, { direction: 'row' });
+                  if (!isRoot) onUpdateContainer?.(container.id, { direction: 'row' });
                 }}
-                title="Row layout (horizontal flow) — click to switch"
+                title={isRoot ? "Row layout is not available for Root Body" : "Row layout (horizontal flow) — click to switch"}
                 aria-label="Row layout"
                 aria-pressed={container.direction === 'row'}
-                className={`p-1 rounded-md border transition cursor-pointer flex items-center justify-center ${
-                  container.direction === 'row'
-                    ? 'nav-footer-dock-btn-open border-[var(--primary-accent)] text-[var(--primary-accent)] shadow-sm'
-                    : 'nav-footer-dock-btn-closed hover:border-[var(--primary-accent)] hover:text-white'
+                className={`p-1 rounded-md border transition flex items-center justify-center ${
+                  isRoot
+                    ? 'opacity-35 cursor-not-allowed bg-[color-mix(in_oklch,var(--panel-surface-bg)_70%,transparent)] border-[var(--primary-border-subtle)] text-[var(--text-muted)]'
+                    : container.direction === 'row'
+                    ? 'bg-[color-mix(in_oklch,var(--primary-accent)_25%,transparent)] border-[var(--primary-accent)] text-[var(--primary-accent)] shadow-sm cursor-pointer'
+                    : 'bg-[color-mix(in_oklch,var(--panel-surface-bg)_70%,transparent)] border-[var(--primary-border-subtle)] text-[var(--text-muted)] hover:border-[var(--primary-accent)] hover:text-white cursor-pointer'
                 }`}
               >
                 <FlexRowIcon className="w-3.5 h-3.5" />
@@ -271,46 +351,268 @@ function FlexContainerRenderer({
 
               <button
                 type="button"
+                disabled={isRoot}
                 onClick={(e) => {
                   e.stopPropagation();
-                  onUpdateContainer?.(container.id, { direction: 'column' });
+                  if (!isRoot) onUpdateContainer?.(container.id, { direction: 'column' });
                 }}
-                title="Column layout (vertical flow) — click to switch"
+                title={isRoot ? "Column layout is not available for Root Body" : "Column layout (vertical flow) — click to switch"}
                 aria-label="Column layout"
                 aria-pressed={container.direction === 'column'}
-                className={`p-1 rounded-md border transition cursor-pointer flex items-center justify-center ${
-                  container.direction === 'column'
-                    ? 'nav-footer-dock-btn-open border-[var(--primary-accent)] text-[var(--primary-accent)] shadow-sm'
-                    : 'nav-footer-dock-btn-closed hover:border-[var(--primary-accent)] hover:text-white'
+                className={`p-1 rounded-md border transition flex items-center justify-center ${
+                  isRoot
+                    ? 'opacity-35 cursor-not-allowed bg-[color-mix(in_oklch,var(--panel-surface-bg)_70%,transparent)] border-[var(--primary-border-subtle)] text-[var(--text-muted)]'
+                    : container.direction === 'column'
+                    ? 'bg-[color-mix(in_oklch,var(--primary-accent)_25%,transparent)] border-[var(--primary-accent)] text-[var(--primary-accent)] shadow-sm cursor-pointer'
+                    : 'bg-[color-mix(in_oklch,var(--panel-surface-bg)_70%,transparent)] border-[var(--primary-border-subtle)] text-[var(--text-muted)] hover:border-[var(--primary-accent)] hover:text-white cursor-pointer'
                 }`}
               >
                 <FlexColumnIcon className="w-3.5 h-3.5" />
               </button>
             </div>
 
-            <span className="text-[11px] font-bold text-slate-200 tracking-wide truncate">
-              {container.label || 'Container'}
+            <div className="h-3.5 w-px bg-[color-mix(in_oklch,var(--primary-accent)_35%,var(--primary-border-subtle))] shrink-0" />
+
+            <span className="text-[11px] font-bold text-white tracking-wide truncate max-w-[130px]">
+              {isRoot ? 'Body' : container.label || 'Container'}
             </span>
-            <span className="text-[9px] font-mono text-slate-400">
-              {container.gap}px gap
-            </span>
-            {isCard && (
-              <span className="text-[9px] font-bold text-emerald-400 px-1 rounded bg-emerald-500/10 border border-emerald-500/20">
+            {!isRoot && isCard && (
+              <span className="text-[9px] font-bold text-emerald-400 px-1 rounded bg-emerald-500/10 border border-emerald-500/20 shrink-0">
                 Card
               </span>
             )}
-          </div>
 
-          <div className="flex items-center gap-1 shrink-0">
-            {container.id !== 'root-container' && (
+            {/* Sizing Mode Pill (Auto / Custom) */}
+            <div
+              className="flex items-center gap-0.5 bg-[color-mix(in_oklch,var(--panel-surface-bg)_80%,transparent)] p-0.5 rounded-md border border-[var(--primary-border-subtle)] shrink-0 text-[10px] font-semibold"
+              role="group"
+              aria-label="Container sizing mode"
+            >
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (!isRoot) onUpdateContainer?.(container.id, { sizing: { type: 'fill' } });
+                }}
+                title={isRoot ? "Auto: Root Body stretches automatically with content" : "Auto: stretches container to fill available parent space"}
+                className={`px-1.5 py-0.5 rounded transition ${
+                  isRoot
+                    ? 'bg-[var(--primary-accent)] text-white shadow-xs cursor-default'
+                    : (container.sizing?.type || 'fill') === 'fill'
+                    ? 'bg-[var(--primary-accent)] text-white shadow-xs cursor-pointer'
+                    : 'text-[var(--text-muted)] hover:text-white cursor-pointer'
+                }`}
+              >
+                Auto
+              </button>
+              <button
+                type="button"
+                disabled={isRoot}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (!isRoot) {
+                    onUpdateContainer?.(container.id, {
+                      sizing: {
+                        type: 'fixed',
+                        value: container.sizing?.type === 'fixed' ? container.sizing.value || '50%' : '50%',
+                      },
+                    });
+                  }
+                }}
+                title={isRoot ? "Custom fixed sizing is not available for Root Body (expands automatically with content)" : "Custom: user specifies custom width/height (e.g. 50%, 300px)"}
+                className={`px-1.5 py-0.5 rounded transition ${
+                  isRoot
+                    ? 'opacity-35 cursor-not-allowed text-[var(--text-muted)]'
+                    : container.sizing?.type === 'fixed'
+                    ? 'bg-[var(--primary-accent)] text-white shadow-xs cursor-pointer'
+                    : 'text-[var(--text-muted)] hover:text-white cursor-pointer'
+                }`}
+              >
+                Custom
+              </button>
+            </div>
+
+            {/* Split Container Buttons (Middle) */}
+            {isRoot ? (
+              <>
+                <div className="h-3.5 w-px bg-[color-mix(in_oklch,var(--primary-accent)_35%,var(--primary-border-subtle))] shrink-0" />
+                <div
+                  className="flex items-center justify-center gap-1 shrink-0"
+                  role="group"
+                  aria-label="Split container"
+                >
+                  <button
+                    type="button"
+                    disabled
+                    title="Root Body cannot be split"
+                    aria-label="Split into 2 Columns (Disabled for Body)"
+                    className="p-1 rounded-md border flex items-center justify-center opacity-35 cursor-not-allowed bg-[color-mix(in_oklch,var(--panel-surface-bg)_70%,transparent)] border-[var(--primary-border-subtle)] text-[var(--text-muted)]"
+                  >
+                    <SplitColumnsIcon className="w-3.5 h-3.5" />
+                  </button>
+                  <button
+                    type="button"
+                    disabled
+                    title="Root Body cannot be split"
+                    aria-label="Split into 2 Rows (Disabled for Body)"
+                    className="p-1 rounded-md border flex items-center justify-center opacity-35 cursor-not-allowed bg-[color-mix(in_oklch,var(--panel-surface-bg)_70%,transparent)] border-[var(--primary-border-subtle)] text-[var(--text-muted)]"
+                  >
+                    <SplitRowsIcon className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              </>
+            ) : (
+              (container.direction === 'row' || container.direction === 'column') && (
+                <>
+                  <div className="h-3.5 w-px bg-[color-mix(in_oklch,var(--primary-accent)_35%,var(--primary-border-subtle))] shrink-0" />
+                  <div
+                    className="flex items-center justify-center gap-1 shrink-0"
+                    role="group"
+                    aria-label="Split container"
+                  >
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onSplitContainer?.(container.id, 'columns');
+                      }}
+                      title="Split into 2 Columns (side-by-side)"
+                      aria-label="Split into 2 Columns"
+                      className="p-1 rounded-md border transition cursor-pointer flex items-center justify-center bg-[color-mix(in_oklch,var(--panel-surface-bg)_70%,transparent)] border-[var(--primary-border-subtle)] text-[var(--text-muted)] hover:border-[var(--primary-accent)] hover:text-white hover:bg-[color-mix(in_oklch,var(--primary-accent)_15%,transparent)]"
+                    >
+                      <SplitColumnsIcon className="w-3.5 h-3.5" />
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onSplitContainer?.(container.id, 'rows');
+                      }}
+                      title="Split into 2 Rows (stacked)"
+                      aria-label="Split into 2 Rows"
+                      className="p-1 rounded-md border transition cursor-pointer flex items-center justify-center bg-[color-mix(in_oklch,var(--panel-surface-bg)_70%,transparent)] border-[var(--primary-border-subtle)] text-[var(--text-muted)] hover:border-[var(--primary-accent)] hover:text-white hover:bg-[color-mix(in_oklch,var(--primary-accent)_15%,transparent)]"
+                    >
+                      <SplitRowsIcon className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                </>
+              )
+            )}
+
+            <div className="h-3.5 w-px bg-[color-mix(in_oklch,var(--primary-accent)_35%,var(--primary-border-subtle))] shrink-0" />
+
+            {/* Add Container Before, Child, and After Buttons */}
+            <div className="flex items-center gap-1 shrink-0" role="group" aria-label="Add container before, child, or after">
+              {/* Add Container Before */}
+              <button
+                type="button"
+                disabled={isRoot}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (!isRoot) {
+                    onInsertContainerSibling?.(container.id, 'before', { label: 'New Container', direction: 'none', padding: 0, sizing: { type: 'fill' } });
+                  }
+                }}
+                title={isRoot ? "Add Container Before is not available for Root Body" : "Add Container Before"}
+                aria-label="Add Container Before"
+                className={`p-1 rounded-md border transition flex items-center justify-center ${
+                  isRoot
+                    ? 'opacity-35 cursor-not-allowed bg-[color-mix(in_oklch,var(--panel-surface-bg)_70%,transparent)] border-[var(--primary-border-subtle)] text-[var(--text-muted)]'
+                    : 'bg-[color-mix(in_oklch,var(--panel-surface-bg)_70%,transparent)] border-[var(--primary-border-subtle)] text-[var(--text-muted)] hover:border-[var(--primary-accent)] hover:text-white hover:bg-[color-mix(in_oklch,var(--primary-accent)_15%,transparent)] cursor-pointer'
+                }`}
+              >
+                <AddContainerBeforeIcon className="w-3.5 h-3.5" />
+              </button>
+
+              {/* Add Child Container (In the middle) */}
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onAddContainer?.(container.id, { label: 'New Container', direction: 'none', padding: 0, sizing: { type: 'fill' } });
+                }}
+                title={isRoot ? "Add Child Container (Insert nested container into Body)" : "Add Child Container (Insert nested container inside)"}
+                aria-label="Add Child Container"
+                className="p-1 rounded-md border transition flex items-center justify-center bg-[color-mix(in_oklch,var(--panel-surface-bg)_70%,transparent)] border-[var(--primary-border-subtle)] text-[var(--text-muted)] hover:border-[var(--primary-accent)] hover:text-white hover:bg-[color-mix(in_oklch,var(--primary-accent)_15%,transparent)] cursor-pointer"
+              >
+                <AddChildContainerIcon className="w-3.5 h-3.5" />
+              </button>
+
+              {/* Add Container After */}
+              <button
+                type="button"
+                disabled={isRoot}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (!isRoot) {
+                    onInsertContainerSibling?.(container.id, 'after', { label: 'New Container', direction: 'none', padding: 0, sizing: { type: 'fill' } });
+                  }
+                }}
+                title={isRoot ? "Add Container After is not available for Root Body" : "Add Container After"}
+                aria-label="Add Container After"
+                className={`p-1 rounded-md border transition flex items-center justify-center ${
+                  isRoot
+                    ? 'opacity-35 cursor-not-allowed bg-[color-mix(in_oklch,var(--panel-surface-bg)_70%,transparent)] border-[var(--primary-border-subtle)] text-[var(--text-muted)]'
+                    : 'bg-[color-mix(in_oklch,var(--panel-surface-bg)_70%,transparent)] border-[var(--primary-border-subtle)] text-[var(--text-muted)] hover:border-[var(--primary-accent)] hover:text-white hover:bg-[color-mix(in_oklch,var(--primary-accent)_15%,transparent)] cursor-pointer'
+                }`}
+              >
+                <AddContainerAfterIcon className="w-3.5 h-3.5" />
+              </button>
+            </div>
+
+            <div className="h-3.5 w-px bg-[color-mix(in_oklch,var(--primary-accent)_35%,var(--primary-border-subtle))] shrink-0" />
+
+            {/* Gear Button: Triggers connected side panel gear and action menu */}
+            <button
+              type="button"
+              data-gear-trigger
+              onClick={(e) => {
+                e.stopPropagation();
+                onSelectNode?.(container.id);
+                const treeGear = document.querySelector<HTMLElement>(`[data-tree-gear-id="${container.id}"]`);
+                if (treeGear) {
+                  treeGear.click();
+                }
+              }}
+              title={isRoot ? 'Body Properties' : 'Container Properties'}
+              aria-label={isRoot ? 'Body properties' : 'Container properties'}
+              aria-expanded={isTreeMenuOpen}
+              className={`p-1 rounded-md border transition cursor-pointer flex items-center justify-center shrink-0 ${
+                isTreeMenuOpen
+                  ? 'bg-[var(--primary-accent)] text-white border-[var(--primary-accent)] shadow-sm'
+                  : 'bg-[color-mix(in_oklch,var(--panel-surface-bg)_70%,transparent)] border-[var(--primary-border-subtle)] text-[var(--text-muted)] hover:border-[var(--primary-accent)] hover:text-white'
+              }`}
+            >
+              <GearIcon
+                isActive={isTreeMenuOpen}
+                className={`w-3.5 h-3.5 transition-transform duration-300 ${
+                  isTreeMenuOpen ? 'rotate-90 text-white' : ''
+                }`}
+              />
+            </button>
+
+            {/* Trash Delete Button */}
+            {isRoot ? (
+              <button
+                type="button"
+                disabled
+                title="Root Body container cannot be deleted"
+                aria-label="Delete Container (Disabled for Body)"
+                className="text-xs p-0.5 rounded opacity-35 cursor-not-allowed shrink-0"
+              >
+                🗑️
+              </button>
+            ) : (
               <button
                 type="button"
                 onClick={(e) => {
                   e.stopPropagation();
                   onRemoveContainer?.(container.id);
                 }}
-                className="text-xs text-red-400 hover:text-red-300 p-0.5 rounded hover:bg-red-500/10 transition cursor-pointer"
+                className="text-xs text-red-400 hover:text-red-300 p-0.5 rounded hover:bg-red-500/10 transition cursor-pointer shrink-0"
                 title="Delete Container"
+                aria-label="Delete Container"
               >
                 🗑️
               </button>
@@ -320,56 +622,36 @@ function FlexContainerRenderer({
       )}
 
       {/* Children or Empty State */}
-      <div style={flexStyle} className="w-full">
+      <div style={innerFlexStyle} className={`w-full flex-1 min-h-0 ${isRoot ? 'flex flex-col' : ''}`}>
         {container.children.length === 0 ? (
           canvasMode === 'edit' ? (
             <div
-              className={`w-full py-6 border border-dashed rounded-xl flex flex-col items-center justify-center text-center gap-2 select-none transition-colors ${
+              title="Drag and drop to add content"
+              className={`w-full ${isRoot ? 'flex-1 min-h-[220px]' : 'min-h-[140px]'} py-6 px-4 rounded-xl border-2 border-dashed flex flex-col items-center justify-center text-center gap-2.5 select-none transition-all group cursor-pointer ${
                 isDragOver
-                  ? 'border-[var(--primary-accent)] bg-[color-mix(in_oklch,var(--primary-accent)_20%,transparent)]'
-                  : 'border-slate-800/80 bg-slate-900/10'
+                  ? 'border-[var(--primary-accent)] bg-[color-mix(in_oklch,var(--primary-accent)_20%,transparent)] shadow-lg shadow-[color-mix(in_oklch,var(--primary-accent)_15%,transparent)]'
+                  : 'border-[color-mix(in_oklch,var(--primary-accent)_35%,transparent)] bg-[color-mix(in_oklch,var(--primary-accent)_5%,transparent)] hover:border-[color-mix(in_oklch,var(--primary-accent)_65%,transparent)] hover:bg-[color-mix(in_oklch,var(--primary-accent)_9%,transparent)]'
               }`}
             >
-              {isDragOver ? (
-                <span className="text-xs font-bold text-[var(--primary-accent)] flex items-center gap-1.5 animate-pulse">
-                  <span>📥</span> Drop field to insert into {container.label || (isRoot ? 'Body' : 'Container')}
-                </span>
-              ) : (
-                <span className="text-[11px] text-slate-400 italic">
-                  Empty container. Drag fields from Inspector or add layout primitives below.
-                </span>
-              )}
-              <div className="flex items-center gap-1.5 mt-1">
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onAddPrimitive?.('row', container.id);
-                  }}
-                  className="px-2 py-0.5 text-[10.5px] font-semibold text-[var(--primary-accent)] bg-[color-mix(in_oklch,var(--primary-accent)_15%,transparent)] hover:bg-[color-mix(in_oklch,var(--primary-accent)_25%,transparent)] border border-[color-mix(in_oklch,var(--primary-accent)_35%,transparent)] rounded-md transition cursor-pointer"
-                >
-                  + Row
-                </button>
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onAddPrimitive?.('column', container.id);
-                  }}
-                  className="px-2 py-0.5 text-[10.5px] font-semibold text-purple-300 bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/20 rounded-md transition cursor-pointer"
-                >
-                  + Column
-                </button>
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onAddPrimitive?.('card', container.id);
-                  }}
-                  className="px-2 py-0.5 text-[10.5px] font-semibold text-emerald-300 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 rounded-md transition cursor-pointer"
-                >
-                  + Card Frame
-                </button>
+              {/* Empty Container Icon Badge */}
+              <div
+                title="Drag and drop to add content"
+                className="w-11 h-11 rounded-xl border border-[color-mix(in_oklch,var(--primary-accent)_45%,transparent)] bg-[color-mix(in_oklch,var(--primary-accent)_12%,transparent)] text-[var(--primary-accent)] flex items-center justify-center shadow-lg shadow-black/25 group-hover:scale-105 transition-transform"
+              >
+                <DashedSquareQuestionIcon className="w-6 h-6" />
+              </div>
+
+              {/* Title / Drag Feedback */}
+              <div className="flex flex-col items-center gap-0.5" title="Drag and drop to add content">
+                {isDragOver ? (
+                  <span className="text-xs font-bold text-[var(--primary-accent)] flex items-center gap-1.5 animate-pulse">
+                    <span>📥</span> Drop field to insert into {container.label || (isRoot ? 'Body' : 'Container')}
+                  </span>
+                ) : (
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-white">
+                    EMPTY
+                  </h4>
+                )}
               </div>
             </div>
           ) : null
@@ -380,14 +662,18 @@ function FlexContainerRenderer({
                 <FlexContainerRenderer
                   key={child.id}
                   container={child}
+                  parentContainer={container}
                   selectedNodeId={selectedNodeId}
                   activeContainerId={activeContainerId}
                   canvasMode={canvasMode}
                   fields={fields}
                   onSelectNode={onSelectNode}
                   onAddPrimitive={onAddPrimitive}
+                  onAddContainer={onAddContainer}
+                  onInsertContainerSibling={onInsertContainerSibling}
                   onUpdateContainer={onUpdateContainer}
                   onRemoveContainer={onRemoveContainer}
+                  onSplitContainer={onSplitContainer}
                   onUpdateComponent={onUpdateComponent}
                   onRemoveComponent={onRemoveComponent}
                   onPlaceField={onPlaceField}
@@ -613,6 +899,7 @@ export default function TemplateEditorStage({
   onSelectNode,
   onAddPrimitive,
   onAddFlexContainer,
+  onInsertContainerSibling,
   onUpdateFlexContainer,
   onRemoveFlexContainer,
   onAddFlexComponent,
@@ -620,6 +907,7 @@ export default function TemplateEditorStage({
   onRemoveFlexComponent,
   onPlaceField,
   onResetFlexLayout,
+  onSplitContainer,
 
   // Legacy / fallback props
   layoutConfig,
@@ -652,11 +940,11 @@ export default function TemplateEditorStage({
   const isFlexActive = Boolean(flexLayoutConfig?.root);
 
   return (
-    <div className="w-full max-w-6xl mx-auto p-4 sm:p-6 flex flex-col gap-6 select-none">
+    <div className="w-full max-w-6xl mx-auto p-4 sm:p-6 flex-1 flex flex-col gap-6 select-none min-h-0">
       {/* --------------------------------------------------------------------
           1. BLUEPRINT HEADER BANNER & CANVAS TOOLBAR
           -------------------------------------------------------------------- */}
-      <div className="tmpl-editor-stage-banner flex flex-wrap items-center justify-between gap-4 p-4 rounded-2xl bg-slate-900/60 border border-slate-800 backdrop-blur-md">
+      <div className="tmpl-editor-stage-banner flex flex-wrap items-center justify-between gap-4 p-4 rounded-2xl">
         <div className="flex items-center gap-3.5 min-w-0">
           <div className="w-12 h-12 rounded-xl bg-[color-mix(in_oklch,var(--primary-accent)_20%,transparent)] border border-[color-mix(in_oklch,var(--primary-accent)_40%,transparent)] flex items-center justify-center text-2xl shadow-md shrink-0">
             {template.icon || '📦'}
@@ -670,7 +958,7 @@ export default function TemplateEditorStage({
                 {isFlexActive ? 'Auto-Layout Builder' : '12-Col Grid Builder'}
               </span>
             </div>
-            <p className="text-xs text-slate-400 mt-0.5 line-clamp-1">
+            <p className="text-xs text-[var(--text-muted)] mt-0.5 line-clamp-1">
               {template.description || 'Custom visual layout schema'}
             </p>
           </div>
@@ -679,7 +967,7 @@ export default function TemplateEditorStage({
         {/* Toolbar Controls */}
         <div className="flex items-center gap-2 shrink-0">
           {/* Canvas Mode Toggle: Edit vs Preview */}
-          <div className="flex items-center bg-slate-800/80 p-0.5 rounded-xl border border-slate-700/80">
+          <div className="flex items-center bg-[color-mix(in_oklch,var(--panel-surface-bg)_80%,transparent)] p-0.5 rounded-xl border border-[color-mix(in_oklch,var(--primary-accent)_25%,var(--primary-border-subtle))]">
             <button
               type="button"
               onClick={() => {
@@ -688,7 +976,7 @@ export default function TemplateEditorStage({
               className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer ${
                 canvasMode === 'edit'
                   ? 'bg-[var(--primary-accent)] text-white shadow-sm'
-                  : 'text-slate-400 hover:text-slate-200'
+                  : 'text-[var(--text-muted)] hover:text-white'
               }`}
             >
               <span>✏️</span>
@@ -702,7 +990,7 @@ export default function TemplateEditorStage({
               className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer ${
                 canvasMode === 'preview'
                   ? 'bg-[var(--primary-accent)] text-white shadow-sm'
-                  : 'text-slate-400 hover:text-slate-200'
+                  : 'text-[var(--text-muted)] hover:text-white'
               }`}
             >
               <span>👁️</span>
@@ -726,7 +1014,7 @@ export default function TemplateEditorStage({
           2. VISUAL CANVAS STAGE (Flexbox Engine or Legacy Grid Fallback)
           -------------------------------------------------------------------- */}
       {isFlexActive && flexLayoutConfig?.root ? (
-        <div className="flex flex-col gap-6">
+        <div className="flex-1 flex flex-col min-h-0 gap-6 pt-8">
           <FlexContainerRenderer
             container={flexLayoutConfig.root}
             isRoot
@@ -736,8 +1024,11 @@ export default function TemplateEditorStage({
             fields={fields}
             onSelectNode={onSelectNode}
             onAddPrimitive={onAddPrimitive}
+            onAddContainer={onAddFlexContainer}
+            onInsertContainerSibling={onInsertContainerSibling}
             onUpdateContainer={onUpdateFlexContainer}
             onRemoveContainer={onRemoveFlexContainer}
+            onSplitContainer={onSplitContainer}
             onUpdateComponent={onUpdateFlexComponent}
             onRemoveComponent={onRemoveFlexComponent}
             onPlaceField={onPlaceField}

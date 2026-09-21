@@ -18,7 +18,7 @@ import ExplorerActionMenu, {
   ActionMenuDivider,
   ActionMenuItem,
 } from '@/components/ExplorerActionMenu';
-import { BodyIcon, FlexRowIcon, FlexColumnIcon, LayoutContainerIcon } from '@/components/icons/LayoutIcons';
+import { BodyIcon, FlexRowIcon, FlexColumnIcon, LayoutContainerIcon, AddChildContainerIcon } from '@/components/icons/LayoutIcons';
 
 const GAP_OPTIONS: { value: FlexGap; label: string }[] = [
   { value: 0, label: '0px' },
@@ -102,9 +102,9 @@ export function TemplateContainerActionMenu({
         titleIcon={<BodyIcon className="w-4 h-4 text-slate-300" />}
       >
         <ActionMenuItem
-          icon={<AddSubItemIcon className="w-3.5 h-3.5" />}
-          label="Add Content"
-          subtext="Insert layout container"
+          icon={<AddChildContainerIcon className="w-3.5 h-3.5" />}
+          label="Add Child Container"
+          subtext="Insert nested container"
           onClick={() => {
             setNewContainerName('New Container');
             setIsAddingContent((prev) => !prev);
@@ -116,7 +116,7 @@ export function TemplateContainerActionMenu({
             onSubmit={(e) => {
               e.preventDefault();
               const trimmed = newContainerName.trim() || 'New Container';
-              onAddContainer?.(container.id, { label: trimmed, direction: 'none' });
+              onAddContainer?.(container.id, { label: trimmed, direction: 'none', padding: 0, sizing: { type: 'fill' } });
               setIsAddingContent(false);
               menu.closeMenu();
             }}
@@ -149,11 +149,54 @@ export function TemplateContainerActionMenu({
                 type="submit"
                 className="actionMenuRenameSaveBtn"
               >
-                Add Container
+                Add Child Container
               </button>
             </div>
           </form>
         )}
+
+        {/* Set Padding Control */}
+        <div className="flex flex-col gap-1.5 px-3 py-2.5 border-t border-[var(--primary-border-subtle)]">
+          <div className="flex items-center justify-between">
+            <label className="text-[10px] font-bold text-muted uppercase tracking-wider">
+              Set Padding
+            </label>
+            <span className="text-[10px] font-mono text-[var(--primary-accent)] font-bold">
+              {(container.padding ?? 0)}px
+            </span>
+          </div>
+          <div className="grid grid-cols-4 gap-1">
+            {[0, 8, 16, 24].map((pad) => (
+              <button
+                key={pad}
+                type="button"
+                onClick={() => onUpdateContainer?.(container.id, { padding: pad })}
+                className={`px-2 py-1 rounded text-xs font-bold transition cursor-pointer text-center ${
+                  (container.padding ?? 0) === pad
+                    ? 'bg-[var(--primary-accent)] text-white shadow-xs'
+                    : 'bg-surface-secondary border border-subtle text-muted hover:text-white hover:border-[var(--primary-accent)]'
+                }`}
+              >
+                {pad}px
+              </button>
+            ))}
+          </div>
+          <div className="flex items-center gap-2 mt-0.5">
+            <input
+              type="range"
+              min="0"
+              max="48"
+              step="4"
+              value={container.padding ?? 0}
+              onChange={(e) => {
+                const val = parseInt(e.target.value, 10);
+                onUpdateContainer?.(container.id, { padding: isNaN(val) ? 0 : val });
+              }}
+              className="w-full accent-[var(--primary-accent)] cursor-pointer h-1.5 bg-surface-secondary rounded-lg"
+              title={`Adjust Body padding: ${container.padding ?? 0}px`}
+            />
+          </div>
+        </div>
       </ExplorerActionMenu>
     );
   }
@@ -176,6 +219,32 @@ export function TemplateContainerActionMenu({
   ) : (
     <LayoutContainerIcon className="w-4 h-4 text-slate-300" />
   );
+
+  const getMeasuredSize = () => {
+    if (typeof document === 'undefined') return { width: 500, height: 200 };
+    const el = document.querySelector(`[data-container-id="${container.id}"]`);
+    if (el) {
+      const rect = el.getBoundingClientRect();
+      return { width: Math.round(rect.width), height: Math.round(rect.height) };
+    }
+    return { width: 500, height: 200 };
+  };
+
+  const isCustomWidth = Boolean(
+    (container.sizing?.type === 'fixed' && container.sizing.value) || container.width
+  );
+  const rawWidthVal = container.width || container.sizing?.value;
+  const parsedWidth = rawWidthVal ? parseInt(rawWidthVal, 10) : NaN;
+  const currentWidthPx = !isNaN(parsedWidth)
+    ? parsedWidth
+    : getMeasuredSize().width;
+
+  const isCustomHeight = Boolean(container.height || container.sizing?.height);
+  const rawHeightVal = container.height || container.sizing?.height;
+  const parsedHeight = rawHeightVal ? parseInt(rawHeightVal, 10) : NaN;
+  const currentHeightPx = !isNaN(parsedHeight)
+    ? parsedHeight
+    : getMeasuredSize().height;
 
   return (
     <ExplorerActionMenu
@@ -254,6 +323,145 @@ export function TemplateContainerActionMenu({
           </div>
         </div>
 
+        {/* Container Width & Height Slider Controls */}
+        {!isRoot && (
+          <div className="flex flex-col gap-2.5 p-2 rounded-xl bg-surface-secondary border border-subtle">
+            {/* Specific Width Header & Slider */}
+            <div className="flex flex-col gap-1.5">
+              <div className="flex items-center justify-between">
+                <label className="text-[10px] font-bold text-muted uppercase tracking-wider">
+                  Width
+                </label>
+                <span className="text-[10px] font-mono text-[var(--primary-accent)] font-semibold">
+                  {isCustomWidth ? `${currentWidthPx}px` : 'Auto (Fill)'}
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <input
+                  type="range"
+                  min="60"
+                  max="1200"
+                  step="10"
+                  value={currentWidthPx}
+                  onChange={(e) => {
+                    const val = parseInt(e.target.value, 10);
+                    onUpdateContainer?.(container.id, {
+                      width: `${val}px`,
+                      sizing: { type: 'fixed', value: `${val}px` },
+                    });
+                  }}
+                  className="flex-1 min-w-[70px] accent-[var(--primary-accent)] cursor-pointer h-1.5 bg-slate-800 rounded-lg"
+                  title={`Adjust container width: ${currentWidthPx}px`}
+                />
+                <div className="flex items-center gap-0.5 bg-slate-900 border border-subtle rounded-md px-1 py-0.5 w-[62px] shrink-0 focus-within:border-[var(--primary-accent)]">
+                  <input
+                    type="number"
+                    min="10"
+                    max="2000"
+                    value={isCustomWidth ? currentWidthPx : ''}
+                    placeholder={String(currentWidthPx)}
+                    onChange={(e) => {
+                      const val = parseInt(e.target.value, 10);
+                      if (!isNaN(val)) {
+                        onUpdateContainer?.(container.id, {
+                          width: `${val}px`,
+                          sizing: { type: 'fixed', value: `${val}px` },
+                        });
+                      }
+                    }}
+                    className="w-full bg-transparent text-xs font-mono text-strong text-right focus:outline-none"
+                  />
+                  <span className="text-[10px] text-muted font-mono">px</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    onUpdateContainer?.(container.id, {
+                      width: undefined,
+                      sizing: { type: 'fill' },
+                    });
+                  }}
+                  title="Reset width to default (Auto Fill)"
+                  className={`px-1.5 py-1 text-[10px] font-semibold rounded border transition cursor-pointer shrink-0 whitespace-nowrap ${
+                    isCustomWidth
+                      ? 'bg-slate-800 border-subtle text-muted hover:text-white hover:border-[var(--primary-accent)]'
+                      : 'bg-[color-mix(in_oklch,var(--primary-accent)_20%,transparent)] border-[var(--primary-accent)] text-[var(--primary-accent)] opacity-60'
+                  }`}
+                >
+                  ↺ Reset
+                </button>
+              </div>
+            </div>
+
+            {/* Specific Height Header & Slider */}
+            <div className="flex flex-col gap-1.5 pt-2 border-t border-[var(--primary-border-subtle)]">
+              <div className="flex items-center justify-between">
+                <label className="text-[10px] font-bold text-muted uppercase tracking-wider">
+                  Height
+                </label>
+                <span className="text-[10px] font-mono text-[var(--primary-accent)] font-semibold">
+                  {isCustomHeight ? `${currentHeightPx}px` : 'Auto'}
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <input
+                  type="range"
+                  min="40"
+                  max="1000"
+                  step="10"
+                  value={currentHeightPx}
+                  onChange={(e) => {
+                    const val = parseInt(e.target.value, 10);
+                    onUpdateContainer?.(container.id, {
+                      height: `${val}px`,
+                      sizing: { ...container.sizing, height: `${val}px` },
+                    });
+                  }}
+                  className="flex-1 min-w-[70px] accent-[var(--primary-accent)] cursor-pointer h-1.5 bg-slate-800 rounded-lg"
+                  title={`Adjust container height: ${currentHeightPx}px`}
+                />
+                <div className="flex items-center gap-0.5 bg-slate-900 border border-subtle rounded-md px-1 py-0.5 w-[62px] shrink-0 focus-within:border-[var(--primary-accent)]">
+                  <input
+                    type="number"
+                    min="10"
+                    max="2000"
+                    value={isCustomHeight ? currentHeightPx : ''}
+                    placeholder={String(currentHeightPx)}
+                    onChange={(e) => {
+                      const val = parseInt(e.target.value, 10);
+                      if (!isNaN(val)) {
+                        onUpdateContainer?.(container.id, {
+                          height: `${val}px`,
+                          sizing: { ...container.sizing, height: `${val}px` },
+                        });
+                      }
+                    }}
+                    className="w-full bg-transparent text-xs font-mono text-strong text-right focus:outline-none"
+                  />
+                  <span className="text-[10px] text-muted font-mono">px</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    onUpdateContainer?.(container.id, {
+                      height: undefined,
+                      sizing: { ...container.sizing, height: undefined },
+                    });
+                  }}
+                  title="Reset height to default (Auto)"
+                  className={`px-1.5 py-1 text-[10px] font-semibold rounded border transition cursor-pointer shrink-0 whitespace-nowrap ${
+                    isCustomHeight
+                      ? 'bg-slate-800 border-subtle text-muted hover:text-white hover:border-[var(--primary-accent)]'
+                      : 'bg-[color-mix(in_oklch,var(--primary-accent)_20%,transparent)] border-[var(--primary-accent)] text-[var(--primary-accent)] opacity-60'
+                  }`}
+                >
+                  ↺ Reset
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Child Gap */}
         <div className="flex flex-col gap-1">
           <div className="flex items-center justify-between">
@@ -277,6 +485,34 @@ export function TemplateContainerActionMenu({
                 }`}
               >
                 {opt.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Container Padding */}
+        <div className="flex flex-col gap-1">
+          <div className="flex items-center justify-between">
+            <label className="text-[10px] font-bold text-muted uppercase tracking-wider">
+              Container Padding
+            </label>
+            <span className="text-[10px] font-mono text-[var(--primary-accent)] font-semibold">
+              {(container.padding ?? 0)}px
+            </span>
+          </div>
+          <div className="grid grid-cols-4 gap-1">
+            {[0, 8, 16, 24].map((pad) => (
+              <button
+                key={pad}
+                type="button"
+                onClick={() => onUpdateContainer?.(container.id, { padding: pad })}
+                className={`py-0.5 text-[10.5px] font-semibold rounded border transition cursor-pointer text-center ${
+                  (container.padding ?? 0) === pad
+                    ? 'bg-[color-mix(in_oklch,var(--primary-accent)_35%,transparent)] text-white border-[var(--primary-accent)]'
+                    : 'bg-surface-secondary text-muted border-subtle hover:text-white'
+                }`}
+              >
+                {pad}px
               </button>
             ))}
           </div>

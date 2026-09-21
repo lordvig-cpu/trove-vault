@@ -86,6 +86,30 @@ export function useExplorerActionMenu(
         calculatedTop = Math.max(16, maxAllowedTop);
       }
 
+      // Check if trigger is inside a stage canvas toolbar rather than a sidebar panel
+      const isToolbarTarget = Boolean(
+        targetEl?.closest?.('.tmpl-container-floating-toolbar, [data-stage-toolbar]')
+      );
+
+      if (isToolbarTarget) {
+        // Position menu directly under the gear button, aligning with its right edge
+        let calculatedTop = Math.round(gearRect.bottom + 6);
+        if (calculatedTop > maxAllowedTop) {
+          calculatedTop = Math.max(16, Math.round(gearRect.top - menuHeight - 6));
+        }
+        const calculatedLeft = Math.max(
+          16,
+          Math.min(
+            window.innerWidth - MENU_WIDTH - 16,
+            Math.round(gearRect.right - MENU_WIDTH + 8)
+          )
+        );
+        return {
+          top: calculatedTop,
+          left: calculatedLeft,
+        };
+      }
+
       // Find the parent panel boundary for exact seam alignment (supports pinned sidebar, secondary sidebar, and unpinned flyout)
       const panelEl =
         targetEl?.closest?.('aside, .primary-side-panel, .secondary-side-panel, .nav-flyout-menu') ||
@@ -178,8 +202,11 @@ export function useExplorerActionMenu(
       if (focused === activeTargetElRef.current || (focused instanceof HTMLElement && focused.closest('[data-explorer-menu]'))) return;
       setIsMenuOpen(false);
       setIsRenaming(false);
+      window.dispatchEvent(
+        new CustomEvent('explorer-action-menu-close', { detail: id })
+      );
     }, 350);
-  }, [isRenaming]);
+  }, [isRenaming, id]);
 
   /**
    * Explicit immediate dismissal handler (called by Escape hotkeys or node selection).
@@ -188,7 +215,10 @@ export function useExplorerActionMenu(
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
     setIsMenuOpen(false);
     setIsRenaming(false);
-  }, []);
+    window.dispatchEvent(
+      new CustomEvent('explorer-action-menu-close', { detail: id })
+    );
+  }, [id]);
 
   const handleGearKeyDown = useCallback((event: React.KeyboardEvent<HTMLElement>) => {
     if (!['Enter', ' ', 'ArrowDown'].includes(event.key)) return;
@@ -206,8 +236,25 @@ export function useExplorerActionMenu(
       closeMenu();
       activeTargetElRef.current?.focus();
     };
+    const handleDocumentMouseDown = (e: MouseEvent) => {
+      const target = e.target as HTMLElement | null;
+      if (!target) return;
+      if (
+        target.closest('[data-explorer-menu]') ||
+        target.closest('[data-gear-trigger]') ||
+        target === activeTargetElRef.current ||
+        activeTargetElRef.current?.contains(target)
+      ) {
+        return;
+      }
+      closeMenu();
+    };
     document.addEventListener('keydown', escape);
-    return () => document.removeEventListener('keydown', escape);
+    document.addEventListener('mousedown', handleDocumentMouseDown);
+    return () => {
+      document.removeEventListener('keydown', escape);
+      document.removeEventListener('mousedown', handleDocumentMouseDown);
+    };
   }, [isMenuOpen, closeMenu]);
 
   return {

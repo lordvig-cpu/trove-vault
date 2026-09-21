@@ -974,7 +974,7 @@ export default function PrimarySidePanelHeader({
                       role="tab"
                       aria-selected={isTabActive}
                       title={tabTitle}
-                      onClick={() => onTabChange?.(tab === 'explorer' ? 'items' : tab)}
+                      onClick={() => onTabChange?.(tab)}
                       onPointerDown={(e) => {
                         if (tab !== 'empty') onStartTabDrag?.(tab, e);
                       }}

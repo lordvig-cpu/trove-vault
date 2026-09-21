@@ -43,6 +43,11 @@ interface MainContentProps {
     targetContainerId: string,
     options?: Partial<FlexContainerNode>
   ) => string;
+  onInsertFlexContainerSibling?: (
+    targetContainerId: string,
+    position: 'before' | 'after',
+    options?: Partial<FlexContainerNode>
+  ) => string;
   onUpdateFlexContainer?: (
     containerId: string,
     partial: Partial<FlexContainerNode>
@@ -59,6 +64,7 @@ interface MainContentProps {
   onRemoveFlexComponent?: (componentId: string) => void;
   onPlaceField?: (fieldId: number, targetContainerId?: string) => void;
   onResetFlexLayout?: () => void;
+  onSplitFlexContainer?: (containerId: string, splitType: 'columns' | 'rows') => void;
   // Legacy Layout Builder Props
   layoutConfig?: TemplateLayoutConfig | null;
   selectedBlockId?: string | null;
@@ -101,8 +107,10 @@ export default function MainContent({
   onSelectNode,
   onAddPrimitive,
   onAddFlexContainer,
+  onInsertFlexContainerSibling,
   onUpdateFlexContainer,
   onRemoveFlexContainer,
+  onSplitFlexContainer,
   onAddFlexComponent,
   onUpdateFlexComponent,
   onRemoveFlexComponent,
@@ -141,7 +149,7 @@ export default function MainContent({
             }`}
           >
             {editingTemplate ? (
-              <div className="w-full p-6 flex-1 pt-8 pb-10">
+              <div className="w-full p-6 flex-1 pt-8 pb-10 flex flex-col min-h-0">
                 <TemplateEditorStage
                   template={editingTemplate}
                   flexLayoutConfig={flexLayoutConfig}
@@ -150,8 +158,10 @@ export default function MainContent({
                   onSelectNode={onSelectNode}
                   onAddPrimitive={onAddPrimitive}
                   onAddFlexContainer={onAddFlexContainer}
+                  onInsertContainerSibling={onInsertFlexContainerSibling}
                   onUpdateFlexContainer={onUpdateFlexContainer}
                   onRemoveFlexContainer={onRemoveFlexContainer}
+                  onSplitContainer={onSplitFlexContainer}
                   onAddFlexComponent={onAddFlexComponent}
                   onUpdateFlexComponent={onUpdateFlexComponent}
                   onRemoveFlexComponent={onRemoveFlexComponent}

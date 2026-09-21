@@ -797,6 +797,70 @@ export function useTemplateEditor({
     [flexLayoutConfig, saveFlexLayoutConfig]
   );
 
+  const insertFlexContainerSibling = useCallback(
+    (
+      targetContainerId: string,
+      position: 'before' | 'after',
+      options: Partial<FlexContainerNode> = {}
+    ): string => {
+      if (!flexLayoutConfig) return '';
+
+      // Root Body has no siblings; if target is root, we only support 'after' which appends to root children
+      if (targetContainerId === flexLayoutConfig.root.id) {
+        if (position === 'after') {
+          return addFlexContainer(flexLayoutConfig.root.id, {
+            label: options.label || 'New Container',
+            direction: options.direction || 'none',
+            ...options,
+          });
+        }
+        return '';
+      }
+
+      const parent = findParentFlexContainer(flexLayoutConfig.root, targetContainerId);
+      if (!parent) return '';
+
+      const newId = `cont-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
+      const newContainer: FlexContainerNode = {
+        id: newId,
+        nodeType: 'container',
+        label: options.label || 'New Container',
+        direction: options.direction || 'none',
+        gap: options.gap !== undefined ? options.gap : 12,
+        wrap: options.wrap !== undefined ? options.wrap : true,
+        align: options.align || 'stretch',
+        justify: options.justify || 'start',
+        padding: options.padding !== undefined ? options.padding : 12,
+        sizing: options.sizing || { type: 'fill' },
+        isCard: options.isCard !== undefined ? options.isCard : false,
+        children: options.children || [],
+      };
+
+      function insertSibling(node: FlexContainerNode): FlexContainerNode {
+        if (node.id === parent!.id) {
+          const targetIndex = node.children.findIndex((c) => c.id === targetContainerId);
+          if (targetIndex === -1) return node;
+          const nextChildren = [...node.children];
+          const insertIndex = position === 'before' ? targetIndex : targetIndex + 1;
+          nextChildren.splice(insertIndex, 0, newContainer);
+          return { ...node, children: nextChildren };
+        }
+        return {
+          ...node,
+          children: node.children.map((c) =>
+            c.nodeType === 'container' ? insertSibling(c) : c
+          ),
+        };
+      }
+
+      const nextRoot = insertSibling(flexLayoutConfig.root);
+      saveFlexLayoutConfig({ ...flexLayoutConfig, root: nextRoot });
+      setSelectedNodeId(newId);
+      return newId;
+    },
+    [flexLayoutConfig, saveFlexLayoutConfig, addFlexContainer]
+  );
+
   const addFlexPrimitive = useCallback(
     (
       primitiveType: 'row' | 'column' | 'split-2' | 'split-3' | 'card',
@@ -906,6 +970,127 @@ export function useTemplateEditor({
       return '';
     },
     [activeContainerId, addFlexContainer]
+  );
+
+  const splitFlexContainer = useCallback(
+    (targetContainerId: string, splitType: 'columns' | 'rows'): string => {
+      if (!flexLayoutConfig) return '';
+      if (targetContainerId === flexLayoutConfig.root.id) return '';
+
+      const parent = findParentFlexContainer(flexLayoutConfig.root, targetContainerId);
+      if (!parent) return '';
+
+      const foundNode = findFlexNode(flexLayoutConfig.root, targetContainerId);
+      if (!foundNode || foundNode.nodeType !== 'container') return '';
+      const targetContainer: FlexContainerNode = foundNode;
+
+      const gap = parent.gap !== undefined ? parent.gap : 12;
+
+      // Calculate base name by stripping any previous "(X of Y)"
+      const rawLabel = targetContainer.label || 'Container';
+      const baseName = rawLabel.replace(/\s*\(\d+\s+of\s+\d+\)$/i, '').trim() || 'Container';
+      const targetLabel = `${baseName} (1 / 2)`;
+      const newContainerLabel = `${baseName} (2 / 2)`;
+
+      // Calculate 50% sizing for columns vs rows
+      let colSizing: FlexSizing;
+      if (targetContainer.sizing?.type === 'fixed' && targetContainer.sizing.value) {
+        const val = targetContainer.sizing.value.trim();
+        const pctMatch = val.match(/^(\d+(?:\.\d+)?)%$/);
+        if (pctMatch) {
+          const num = parseFloat(pctMatch[1]);
+          colSizing = { type: 'fixed', value: `${(num / 2).toFixed(1).replace(/\.0$/, '')}%` };
+        } else {
+          const calcMatch = val.match(/^calc\((\d+(?:\.\d+)?)%\s*-\s*(\d+(?:\.\d+)?)px\)$/i);
+          if (calcMatch) {
+            const pct = parseFloat(calcMatch[1]);
+            colSizing = { type: 'fixed', value: `calc(${(pct / 2).toFixed(1).replace(/\.0$/, '')}% - ${gap / 2}px)` };
+          } else {
+            colSizing = { type: 'fixed', value: `calc(50% - ${gap / 2}px)` };
+          }
+        }
+      } else {
+        colSizing = { type: 'fixed', value: `calc(50% - ${gap / 2}px)` };
+      }
+
+      const rowSizing: FlexSizing =
+        targetContainer.sizing?.type === 'fixed'
+          ? targetContainer.sizing
+          : { type: 'fixed', value: '100%' };
+
+      const chosenSizing = splitType === 'columns' ? colSizing : rowSizing;
+
+      const newId = `cont-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
+      const updatedTarget: FlexContainerNode = {
+        ...targetContainer,
+        label: targetLabel,
+        sizing: chosenSizing,
+      };
+
+      const newContainer: FlexContainerNode = {
+        id: newId,
+        nodeType: 'container',
+        label: newContainerLabel,
+        direction: 'none',
+        gap: targetContainer.gap !== undefined ? targetContainer.gap : 12,
+        wrap: targetContainer.wrap !== undefined ? targetContainer.wrap : true,
+        align: targetContainer.align || 'stretch',
+        justify: targetContainer.justify || 'start',
+        padding: targetContainer.padding !== undefined ? targetContainer.padding : 12,
+        sizing: chosenSizing,
+        isCard: targetContainer.isCard !== undefined ? targetContainer.isCard : false,
+        children: [],
+      };
+
+      function transformTree(node: FlexContainerNode): FlexContainerNode {
+        if (node.id === parent?.id) {
+          const childIdx = node.children.findIndex((c) => c.id === targetContainerId);
+          if (childIdx === -1) return node;
+
+          const nextChildren = node.children.map((child) => {
+            // When parent changes to row with wrap, preserve existing siblings as 100% full-width
+            if (node.direction === 'column' && splitType === 'columns') {
+              if (
+                child.id !== targetContainerId &&
+                child.nodeType === 'container' &&
+                (!child.sizing || child.sizing.type === 'fill')
+              ) {
+                return { ...child, sizing: { type: 'fixed', value: '100%' } as FlexSizing };
+              }
+            }
+            return child;
+          });
+
+          // Splice in the two split containers directly into the parent at target's position
+          nextChildren.splice(childIdx, 1, updatedTarget, newContainer);
+
+          return {
+            ...node,
+            direction:
+              splitType === 'columns'
+                ? 'row'
+                : node.direction === 'none'
+                ? 'column'
+                : node.direction,
+            wrap: true,
+            children: nextChildren,
+          };
+        }
+
+        return {
+          ...node,
+          children: node.children.map((c) =>
+            c.nodeType === 'container' ? transformTree(c) : c
+          ),
+        };
+      }
+
+      const nextRoot = transformTree(flexLayoutConfig.root);
+      saveFlexLayoutConfig({ ...flexLayoutConfig, root: nextRoot });
+      setSelectedNodeId(newId);
+      return newId;
+    },
+    [flexLayoutConfig, saveFlexLayoutConfig]
   );
 
   const updateFlexContainer = useCallback(
@@ -1098,7 +1283,9 @@ export function useTemplateEditor({
     placedFieldIds,
     selectNode,
     addFlexContainer,
+    insertFlexContainerSibling,
     addFlexPrimitive,
+    splitFlexContainer,
     updateFlexContainer,
     removeFlexContainer,
     addFlexComponent,

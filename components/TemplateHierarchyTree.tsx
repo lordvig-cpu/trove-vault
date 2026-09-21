@@ -228,25 +228,24 @@ function ContainerNodeRow({
           </span>
         )}
 
-        {/* Active Target Indicator Badge */}
-        {isActiveTarget && !isRoot && (
-          <span className="text-[8.5px] font-bold uppercase tracking-wider px-1 py-0.2 rounded bg-[color-mix(in_oklch,var(--primary-accent)_20%,transparent)] text-[var(--primary-accent)] border border-[color-mix(in_oklch,var(--primary-accent)_35%,transparent)] shrink-0 select-none">
-            Target
-          </span>
-        )}
 
         {/* Gear Icon: Triggers Explorer Action Menu with Item Properties or Body Actions */}
         <div className="relative ml-auto shrink-0">
           <div
             role="button"
             tabIndex={0}
+            data-tree-gear-id={container.id}
             aria-label={`Open ${containerLabel} actions`}
             aria-expanded={menu.isMenuOpen}
             onKeyDown={menu.handleGearKeyDown}
             onClick={(e) => {
               e.stopPropagation();
               onSelectNode(container.id);
-              menu.handleGearMouseEnter(e);
+              if (menu.isMenuOpen) {
+                menu.closeMenu();
+              } else {
+                menu.handleGearMouseEnter(e);
+              }
             }}
             onMouseEnter={menu.handleGearMouseEnter}
             onMouseLeave={menu.handleMouseLeave}
@@ -441,13 +440,18 @@ function ComponentNodeRow({
           <div
             role="button"
             tabIndex={0}
+            data-tree-gear-id={component.id}
             aria-label={`Open ${label} actions`}
             aria-expanded={menu.isMenuOpen}
             onKeyDown={menu.handleGearKeyDown}
             onClick={(e) => {
               e.stopPropagation();
               onSelectNode(component.id);
-              menu.handleGearMouseEnter(e);
+              if (menu.isMenuOpen) {
+                menu.closeMenu();
+              } else {
+                menu.handleGearMouseEnter(e);
+              }
             }}
             onMouseEnter={menu.handleGearMouseEnter}
             onMouseLeave={menu.handleMouseLeave}

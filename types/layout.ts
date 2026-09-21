@@ -33,6 +33,8 @@ export type FlexSizingType = 'fill' | 'fixed' | 'auto';
 export interface FlexSizing {
   type: FlexSizingType; // 'fill' (flex: 1 1 0%), 'fixed' (flex: 0 0 [value]), 'auto' (flex: 0 0 auto)
   value?: string;       // e.g. "320px", "50%", "280px" when type === 'fixed'
+  height?: string;      // optional explicit height e.g. "240px"
+  minHeight?: string;   // optional min-height e.g. "160px"
 }
 
 export type LayoutBlockType =
@@ -74,6 +76,9 @@ export interface FlexContainerNode {
   justify: FlexJustify;
   padding?: number;     // e.g. 0, 8, 12, 16, 24
   sizing: FlexSizing;
+  width?: string;       // optional explicit width e.g. "400px", "50%"
+  height?: string;      // optional explicit height e.g. "250px"
+  minHeight?: string;   // optional min-height e.g. "160px"
   isCard?: boolean;     // Whether container renders with card background & border
   children: (FlexContainerNode | FlexComponentNode)[];
 }

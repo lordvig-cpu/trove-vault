@@ -169,12 +169,12 @@ export default function Home() {
     secondaryActiveTab,
   };
 
-  const handlePrimaryTabChange = useCallback((tab: DockContent) => {
-    setPrimaryActiveTab(tab);
+  const handlePrimaryTabChange = useCallback((tab: DockContent | 'items') => {
+    setPrimaryActiveTab(tab === 'items' ? 'explorer' : tab);
   }, []);
 
-  const handleSecondaryTabChange = useCallback((tab: DockContent) => {
-    setSecondaryActiveTab(tab);
+  const handleSecondaryTabChange = useCallback((tab: DockContent | 'items') => {
+    setSecondaryActiveTab(tab === 'items' ? 'explorer' : tab);
   }, []);
 
   // Dynamic occupied widths for main content margin adjustments (only when pinned)
@@ -984,11 +984,12 @@ export default function Home() {
   );
   };
 
-  const renderPanelBody = (content: DockContent, pos: 'left' | 'right' | 'bottom') => {
-    if (content === 'explorer' || content === 'collections' || content === 'templates') {
-      return renderExplorerTree(pos === 'bottom' ? 'left' : pos, content);
+  const renderPanelBody = (content: DockContent | 'items', pos: 'left' | 'right' | 'bottom') => {
+    const normalizedContent = content === 'items' ? 'explorer' : content;
+    if (normalizedContent === 'explorer' || normalizedContent === 'collections' || normalizedContent === 'templates') {
+      return renderExplorerTree(pos === 'bottom' ? 'left' : pos, normalizedContent);
     }
-    if (content === 'template_editor') {
+    if (normalizedContent === 'template_editor') {
       return (
         <TemplateFieldInspector
           template={templateEditor.activeTemplate}
@@ -1014,7 +1015,7 @@ export default function Home() {
         />
       );
     }
-    if (content === 'template_properties') {
+    if (normalizedContent === 'template_properties') {
       return (
         <TemplatePropertiesInspector
           template={templateEditor.activeTemplate}
@@ -1033,7 +1034,7 @@ export default function Home() {
         />
       );
     }
-    if (content === 'template_builder') {
+    if (normalizedContent === 'template_builder') {
       return (
         <TemplateLayoutPalette
           selectedContainer={templateEditor.selectedContainer}
@@ -1049,7 +1050,7 @@ export default function Home() {
         />
       );
     }
-    if (content === 'template_hierarchy') {
+    if (normalizedContent === 'template_hierarchy') {
       return (
         <TemplateHierarchyTree
           flexLayoutConfig={templateEditor.flexLayoutConfig}
@@ -1069,7 +1070,7 @@ export default function Home() {
         />
       );
     }
-    if (content === 'grabbed_content') {
+    if (normalizedContent === 'grabbed_content') {
       return (
         <div className="p-4 flex flex-col items-center justify-center text-center gap-3 h-full min-h-[220px] select-none">
           <div className="w-12 h-12 rounded-2xl bg-[color-mix(in_oklch,var(--brand-primary)_15%,transparent)] border border-[color-mix(in_oklch,var(--brand-primary)_35%,transparent)] flex items-center justify-center text-2xl shadow-sm">
@@ -1089,8 +1090,9 @@ export default function Home() {
     return null;
   };
 
-  const getPanelTitle = (tabs: DockContent[], activeTab: DockContent, defaultTitle: string) => {
+  const getPanelTitle = (tabs: DockContent[], activeTab: DockContent | 'items', defaultTitle: string) => {
     if (tabs.length === 0) return defaultTitle;
+    const normalizedActive = activeTab === 'items' ? 'explorer' : activeTab;
     if (tabs.length === 1) {
       if (tabs[0] === 'explorer') return 'ITEMS';
       if (tabs[0] === 'collections') return 'COLLECTIONS';
@@ -1101,24 +1103,25 @@ export default function Home() {
       if (tabs[0] === 'template_hierarchy') return 'STRUCTURE';
       if (tabs[0] === 'grabbed_content') return 'GRABBED CONTENT';
     }
-    if (activeTab === 'explorer') return 'ITEMS';
-    if (activeTab === 'collections') return 'COLLECTIONS';
-    if (activeTab === 'templates') return 'TEMPLATES';
-    if (activeTab === 'template_editor') return 'TEMPLATE INSPECTOR';
-    if (activeTab === 'template_properties') return 'PROPERTIES';
-    if (activeTab === 'template_builder') return 'LAYOUT BUILDER';
-    if (activeTab === 'template_hierarchy') return 'STRUCTURE';
-    if (activeTab === 'grabbed_content') return 'GRABBED CONTENT';
+    if (normalizedActive === 'explorer') return 'ITEMS';
+    if (normalizedActive === 'collections') return 'COLLECTIONS';
+    if (normalizedActive === 'templates') return 'TEMPLATES';
+    if (normalizedActive === 'template_editor') return 'TEMPLATE INSPECTOR';
+    if (normalizedActive === 'template_properties') return 'PROPERTIES';
+    if (normalizedActive === 'template_builder') return 'LAYOUT BUILDER';
+    if (normalizedActive === 'template_hierarchy') return 'STRUCTURE';
+    if (normalizedActive === 'grabbed_content') return 'GRABBED CONTENT';
     return defaultTitle;
   };
 
-  const treeHeaderProps = (content: DockContent) => {
-    const isCollections = content === 'collections';
-    const isTemplates = content === 'templates';
-    const isInspector = content === 'template_editor';
-    const isBuilder = content === 'template_builder';
-    const isHierarchy = content === 'template_hierarchy';
-    const isProperties = content === 'template_properties';
+  const treeHeaderProps = (content: DockContent | 'items') => {
+    const normalizedContent = content === 'items' ? 'explorer' : content;
+    const isCollections = normalizedContent === 'collections';
+    const isTemplates = normalizedContent === 'templates';
+    const isInspector = normalizedContent === 'template_editor';
+    const isBuilder = normalizedContent === 'template_builder';
+    const isHierarchy = normalizedContent === 'template_hierarchy';
+    const isProperties = normalizedContent === 'template_properties';
 
     // Calculate field type counts for template editor
     const fieldTypeCounts: Record<string, number> = {};
@@ -1441,8 +1444,10 @@ export default function Home() {
               onSelectNode={handleOpenProperties}
               onAddPrimitive={templateEditor.addFlexPrimitive}
               onAddFlexContainer={templateEditor.addFlexContainer}
+              onInsertFlexContainerSibling={templateEditor.insertFlexContainerSibling}
               onUpdateFlexContainer={templateEditor.updateFlexContainer}
               onRemoveFlexContainer={templateEditor.removeFlexContainer}
+              onSplitFlexContainer={templateEditor.splitFlexContainer}
               onAddFlexComponent={templateEditor.addFlexComponent}
               onUpdateFlexComponent={templateEditor.updateFlexComponent}
               onRemoveFlexComponent={templateEditor.removeFlexComponent}
