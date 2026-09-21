@@ -51,7 +51,7 @@ export interface PrimarySidePanelHeaderProps {
   onDock?: (position: 'left' | 'right') => void;
   treeView?: TreeTab;
   activeTab?: TreeTab | DockContent;
-  onTabChange?: (tab: any) => void;
+  onTabChange?: (tab: DockContent) => void;
   tabs?: DockContent[];
   searchQuery?: string;
   onSearchChange?: (val: string) => void;

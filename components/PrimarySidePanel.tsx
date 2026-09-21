@@ -41,7 +41,7 @@ interface PrimarySidePanelProps {
   onTogglePin?: () => void;
   treeView?: TreeTab;
   activeTab?: TreeTab | DockContent;
-  onTabChange?: (tab: any) => void;
+  onTabChange?: (tab: DockContent) => void;
   tabs?: DockContent[];
   isAnyCategoryExpanded?: boolean;
   onToggleAllCategories?: () => void;

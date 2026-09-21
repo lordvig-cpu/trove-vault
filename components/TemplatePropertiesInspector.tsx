@@ -5,11 +5,9 @@ import { ItemTemplate } from '@/types/template';
 import {
   FlexContainerNode,
   FlexComponentNode,
-  FlexDirection,
   FlexGap,
   FlexAlign,
   FlexJustify,
-  FlexSizingType,
   LayoutVariant,
   resolveDirection,
 } from '@/types/layout';

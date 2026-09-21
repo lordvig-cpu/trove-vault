@@ -4,7 +4,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import {
   FlexContainerNode,
   FlexComponentNode,
-  FlexDirection,
   FlexGap,
   FlexAlign,
   FlexJustify,
@@ -13,7 +12,6 @@ import {
 } from '@/types/layout';
 import { FieldDefinition } from '@/types/field';
 import { useTreeActionMenu } from '@/hooks/useTreeActionMenu';
-import { AddSubItemIcon } from '@/components/icons/TreeIcons';
 import TreeActionMenu, {
   ActionMenuDangerItem,
   ActionMenuDivider,

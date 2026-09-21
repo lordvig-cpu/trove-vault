@@ -61,19 +61,6 @@ export function getItemRootCollectionIds(item: ItemRecord, allItems: ItemRecord[
 }
 
 /**
- * Traverses parent item relationships upwards to determine the primary collection
- * an item belongs to.
- */
-export function getItemRootCollectionId(
-  item: ItemRecord,
-  allItems: ItemRecord[]
-): number | null {
-  const ids = getItemRootCollectionIds(item, allItems);
-  return ids.length > 0 ? ids[0] : null;
-}
-
-
-/**
  * Traverses upwards to find the top-level root ancestor item of a standalone item.
  */
 export function getStandaloneRootItem(item: ItemRecord, allItems: ItemRecord[], lookup = new Map(allItems.map(item => [item.id, item]))): ItemRecord {
@@ -203,18 +190,6 @@ export function isDescendantOf(collections: CollectionRecord[], candidateId: num
     current = lookup.get(current.parent_id);
   }
   return false;
-}
-
-/**
- * Checks if collection A is an ancestor of collection B.
- */
-export function isAncestorOf(
-  collections: CollectionRecord[],
-  candidateId: number,
-  descendantId: number | null
-): boolean {
-  if (!descendantId || candidateId <= 0) return false;
-  return isDescendantOf(collections, descendantId, candidateId);
 }
 
 /**

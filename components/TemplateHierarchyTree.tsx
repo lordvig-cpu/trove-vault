@@ -14,7 +14,7 @@ import {
   TemplateContainerActionMenu,
   TemplateComponentActionMenu,
 } from '@/components/TemplateLayoutActionMenu';
-import { BodyIcon, FlexRowIcon, FlexColumnIcon, LayoutContainerIcon } from '@/components/icons/LayoutIcons';
+import { BodyIcon, FlexRowIcon, FlexColumnIcon } from '@/components/icons/LayoutIcons';
 
 /* ==========================================================================
    1. PROPS INTERFACE
@@ -117,7 +117,6 @@ function ContainerNodeRow({
   const [isDragOver, setIsDragOver] = useState(false);
   const isRoot = container.id === 'root-container';
   const isSelected = selectedNodeId === container.id;
-  const isActiveTarget = activeContainerId === container.id;
   const isExpanded = expandedIds.has(container.id);
   const hasChildren = container.children.length > 0;
   const menu = useTreeActionMenu(`tree-container-${container.id}`, 280, position);
@@ -372,7 +371,6 @@ function ComponentNodeRow({
   selectedNodeId,
   fields,
   onSelectNode,
-  onOpenProperties,
   onUpdateComponent,
   onRemoveComponent,
   position = 'left',

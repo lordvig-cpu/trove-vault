@@ -16,7 +16,6 @@ import EmptyPanelDropZone from '@/components/EmptyPanelDropZone';
 import PanelContentTransition from '@/components/PanelContentTransition';
 
 export const DEFAULT_BOTTOM_PANEL_HEIGHT = 220;
-export const BOTTOM_PANEL_HEIGHT = DEFAULT_BOTTOM_PANEL_HEIGHT;
 
 interface BottomPanelProps {
   isOpen: boolean;

@@ -46,7 +46,7 @@ interface SecondarySidePanelProps {
   // Header and Search Filter Props (active when a tree panel is docked)
   treeView?: TreeTab;
   activeTab?: TreeTab | DockContent;
-  onTabChange?: (tab: any) => void;
+  onTabChange?: (tab: DockContent) => void;
   tabs?: DockContent[];
   searchQuery?: string;
   onSearchChange?: (query: string) => void;

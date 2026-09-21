@@ -56,7 +56,6 @@ interface NavigationHeaderProps {
    ========================================================================== */
 
 export default function NavigationHeader({
-  onOpenTemplateManager,
   isPrimarySidePanelOpen,
   onTogglePrimarySidePanel,
   unpinnedPrimaryPanel,
