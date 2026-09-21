@@ -5,6 +5,7 @@ import {
   TemplateFlexLayoutConfig,
   FlexContainerNode,
   FlexComponentNode,
+  resolveDirection,
 } from '@/types/layout';
 import { FieldDefinition } from '@/types/field';
 import { GearIcon } from '@/components/icons/ExplorerIcons';
@@ -32,6 +33,8 @@ export interface TemplateHierarchyTreeProps {
   onRemoveContainer: (containerId: string) => void;
   onRemoveComponent: (componentId: string) => void;
   onPlaceField?: (fieldId: number, targetContainerId?: string) => void;
+  /** Dock side: on the right, row gears move to the left edge and menus open rightward. */
+  position?: 'left' | 'right';
   expandedIds?: Set<string>;
   onToggleExpand?: (id: string) => void;
 }
@@ -88,6 +91,7 @@ interface ContainerNodeRowProps {
   onRemoveContainer: (id: string) => void;
   onRemoveComponent: (id: string) => void;
   onPlaceField?: (fieldId: number, targetContainerId?: string) => void;
+  position?: 'left' | 'right';
 }
 
 function ContainerNodeRow({
@@ -107,26 +111,26 @@ function ContainerNodeRow({
   onRemoveContainer,
   onRemoveComponent,
   onPlaceField,
+  position = 'left',
 }: ContainerNodeRowProps) {
+  const isRightSide = position === 'right';
   const [isDragOver, setIsDragOver] = useState(false);
   const isRoot = container.id === 'root-container';
   const isSelected = selectedNodeId === container.id;
   const isActiveTarget = activeContainerId === container.id;
   const isExpanded = expandedIds.has(container.id);
   const hasChildren = container.children.length > 0;
-  const menu = useExplorerActionMenu(`tree-container-${container.id}`, 280, 'left');
+  const menu = useExplorerActionMenu(`tree-container-${container.id}`, 280, position);
 
   // Semantic layout icon
   const containerIcon = isRoot ? (
     <BodyIcon className="w-3.5 h-3.5 text-slate-400" />
   ) : container.isCard ? (
     '🗂️'
-  ) : container.direction === 'row' ? (
+  ) : resolveDirection(container, isRoot) === 'row' ? (
     <FlexRowIcon className="w-3.5 h-3.5 text-slate-400" />
-  ) : container.direction === 'column' ? (
-    <FlexColumnIcon className="w-3.5 h-3.5 text-slate-400" />
   ) : (
-    <LayoutContainerIcon className="w-3.5 h-3.5 text-slate-400" />
+    <FlexColumnIcon className="w-3.5 h-3.5 text-slate-400" />
   );
 
   const containerLabel = isRoot ? 'Body' : container.label || 'Container';
@@ -170,7 +174,7 @@ function ContainerNodeRow({
         }}
         data-tree-container-id={container.id}
         title={containerLabel}
-        style={{ paddingLeft: `${depth * 18 + 6}px` }}
+        style={{ paddingLeft: `${depth * 18 + 6 + (isRightSide ? 32 : 0)}px` }}
         className={[
           'explorer-tree-item group relative flex items-center h-7 px-1.5 gap-1.5 rounded-md cursor-pointer transition w-full min-w-0',
           isDragOver
@@ -211,12 +215,10 @@ function ContainerNodeRow({
           {containerLabel}
         </span>
 
-        {/* Direction tag for non-root containers */}
-        {!isRoot && (
-          <span className="text-[9px] font-mono px-1 py-0.2 rounded bg-slate-800/80 text-slate-400 border border-slate-700/60 shrink-0">
-            {container.direction === 'row' ? 'Row' : container.direction === 'column' ? 'Col' : 'Box'}
-          </span>
-        )}
+        {/* Direction tag: every container, the Body included, is a row or a column */}
+        <span className="text-[9px] font-mono px-1 py-0.2 rounded bg-slate-800/80 text-slate-400 border border-slate-700/60 shrink-0">
+          {resolveDirection(container, isRoot) === 'row' ? 'Row' : 'Col'}
+        </span>
 
         {/* Child Count Badge */}
         {hasChildren && (
@@ -230,7 +232,7 @@ function ContainerNodeRow({
 
 
         {/* Gear Icon: Triggers Explorer Action Menu with Item Properties or Body Actions */}
-        <div className="relative ml-auto shrink-0">
+        <div className={isRightSide ? 'absolute left-2 shrink-0' : 'relative ml-auto shrink-0'}>
           <div
             role="button"
             tabIndex={0}
@@ -289,7 +291,7 @@ function ContainerNodeRow({
         container={container}
         parentContainer={parentContainer}
         menu={menu}
-        position="left"
+        position={position}
         onAddContainer={onAddContainer}
         onUpdateContainer={onUpdateContainer}
         onRemoveContainer={onRemoveContainer}
@@ -320,6 +322,7 @@ function ContainerNodeRow({
                   onRemoveContainer={onRemoveContainer}
                   onRemoveComponent={onRemoveComponent}
                   onPlaceField={onPlaceField}
+                  position={position}
                 />
               );
             }
@@ -335,6 +338,7 @@ function ContainerNodeRow({
                 onOpenProperties={onOpenProperties}
                 onUpdateComponent={onUpdateComponent}
                 onRemoveComponent={onRemoveComponent}
+                position={position}
               />
             );
           })}
@@ -358,6 +362,7 @@ interface ComponentNodeRowProps {
   onOpenProperties?: (id: string) => void;
   onUpdateComponent?: (id: string, partial: Partial<FlexComponentNode>) => void;
   onRemoveComponent: (id: string) => void;
+  position?: 'left' | 'right';
 }
 
 function ComponentNodeRow({
@@ -370,9 +375,11 @@ function ComponentNodeRow({
   onOpenProperties,
   onUpdateComponent,
   onRemoveComponent,
+  position = 'left',
 }: ComponentNodeRowProps) {
+  const isRightSide = position === 'right';
   const isSelected = selectedNodeId === component.id;
-  const menu = useExplorerActionMenu(`tree-comp-${component.id}`, 280, 'left');
+  const menu = useExplorerActionMenu(`tree-comp-${component.id}`, 280, position);
 
   const boundField = component.field_id
     ? fields.find((f) => f.id === component.field_id)
@@ -398,7 +405,7 @@ function ComponentNodeRow({
         onClick={() => onSelectNode(component.id)}
         data-tree-component-id={component.id}
         title={label}
-        style={{ paddingLeft: `${depth * 18 + 6}px` }}
+        style={{ paddingLeft: `${depth * 18 + 6 + (isRightSide ? 32 : 0)}px` }}
         className={[
           'explorer-tree-item group relative flex items-center h-7 px-1.5 gap-1.5 rounded-md cursor-pointer transition w-full min-w-0',
           isSelected
@@ -436,7 +443,7 @@ function ComponentNodeRow({
         )}
 
         {/* Gear Icon: Triggers Explorer Action Menu with Item Properties */}
-        <div className="relative ml-auto shrink-0">
+        <div className={isRightSide ? 'absolute left-2 shrink-0' : 'relative ml-auto shrink-0'}>
           <div
             role="button"
             tabIndex={0}
@@ -494,7 +501,7 @@ function ComponentNodeRow({
         parentContainer={parentContainer}
         fields={fields}
         menu={menu}
-        position="left"
+        position={position}
         onUpdateComponent={onUpdateComponent}
         onRemoveComponent={onRemoveComponent}
         onSelectNode={onSelectNode}
@@ -520,6 +527,7 @@ export default function TemplateHierarchyTree({
   onRemoveContainer,
   onRemoveComponent,
   onPlaceField,
+  position = 'left',
   expandedIds: externalExpandedIds,
   onToggleExpand: externalOnToggleExpand,
 }: TemplateHierarchyTreeProps) {
@@ -575,6 +583,7 @@ export default function TemplateHierarchyTree({
         onRemoveContainer={onRemoveContainer}
         onRemoveComponent={onRemoveComponent}
         onPlaceField={onPlaceField}
+        position={position}
       />
     </div>
   );

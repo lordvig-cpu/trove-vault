@@ -111,7 +111,7 @@ export function PreviewWidthPicker() {
           type="checkbox"
           checked={isFit}
           onChange={(e) => toggleFit(e.target.checked)}
-          className="accent-[var(--primary-accent)] cursor-pointer"
+          className="explorer-filter-checkbox tmpl-blue-check w-3.5 h-3.5 rounded cursor-pointer shrink-0"
         />
         Fit
       </label>

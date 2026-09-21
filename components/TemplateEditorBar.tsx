@@ -12,6 +12,7 @@ import {
   AddContainerAfterIcon,
 } from '@/components/icons/LayoutIcons';
 import { GearIcon } from '@/components/icons/ExplorerIcons';
+import { TrashCanIcon } from '@/components/icons/PanelIcons';
 import { PreviewWidthPicker, ZoomControls } from '@/components/CanvasViewControls';
 import { useDismissOnOutsideOrEscape } from '@/hooks/useDismissOnOutsideOrEscape';
 import { activeBtn, disabledBtn, ghostBtn, idleBtn } from '@/components/editorBarStyles';
@@ -26,7 +27,7 @@ import { activeBtn, disabledBtn, ghostBtn, idleBtn } from '@/components/editorBa
 const NEW_CONTAINER = { label: 'New Container', padding: 0, sizing: { type: 'fill' } } as const;
 
 const iconBtn =
-  'px-1.5 py-1 rounded-md border transition flex items-center gap-1 text-[11px] font-semibold cursor-pointer';
+  'px-1.5 py-1 rounded-md border transition flex items-center gap-1 text-[11px] font-semibold';
 const divider = 'h-4 w-px bg-[color-mix(in_oklch,var(--secondary-accent)_40%,transparent)] shrink-0 mx-0.5';
 
 const ToolGroupContext = createContext<() => void>(() => {});
@@ -100,13 +101,15 @@ function ToolGroup({
           }
         }}
         className={`${iconBtn} ${
-          disabled
+          disabled && set
+            ? `${activeBtn} opacity-60 cursor-not-allowed`
+            : disabled
             ? `${idleBtn} ${disabledBtn}`
             : set
-            ? `${activeBtn} hover:border-white hover:text-white`
+            ? `${activeBtn} cursor-pointer hover:border-white hover:text-white`
             : isOpen
-            ? `${idleBtn} border-white text-white bg-white/10`
-            : idleBtn
+            ? `${idleBtn} cursor-pointer border-white text-white bg-white/10`
+            : `${idleBtn} cursor-pointer`
         }`}
       >
         {icon}
@@ -282,7 +285,7 @@ export default function TemplateEditorBar({
             label={flexLabel}
             title={isRoot ? 'The Body layout direction cannot be changed' : 'Flex direction: row or column'}
             disabled={isRoot}
-            set={!isRoot}
+            set
           >
             <>
                 <GroupOption
@@ -436,18 +439,24 @@ export default function TemplateEditorBar({
           </button>
 
           {isRoot ? (
-            <button type="button" disabled title="The Body cannot be deleted" aria-label="Delete (disabled for Body)" className="text-xs p-0.5 rounded opacity-35 cursor-not-allowed shrink-0">
-              🗑️
+            <button
+              type="button"
+              disabled
+              title="The Body cannot be deleted"
+              aria-label="Delete (disabled for Body)"
+              className={`p-1 rounded-md border transition flex items-center justify-center shrink-0 ${idleBtn} ${disabledBtn}`}
+            >
+              <TrashCanIcon className="w-3.5 h-3.5" />
             </button>
           ) : (
             <button
               type="button"
               onClick={() => onRemoveContainer?.(container.id)}
-              className="text-xs text-red-400 hover:text-red-300 p-0.5 rounded hover:bg-red-500/10 transition cursor-pointer shrink-0"
+              className="p-1 rounded-md border transition flex items-center justify-center cursor-pointer shrink-0 bg-black/40 border-[var(--secondary-accent)] text-[var(--secondary-accent)] hover:bg-[var(--explorer-menu-danger-hover-bg)] hover:border-white hover:text-[var(--explorer-menu-danger-hover-text)]"
               title="Delete Container"
               aria-label="Delete Container"
             >
-              🗑️
+              <TrashCanIcon className="w-3.5 h-3.5" />
             </button>
           )}
 

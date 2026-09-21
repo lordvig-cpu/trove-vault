@@ -551,7 +551,9 @@ export default function Home() {
           panelId === 'templates' ||
           panelId === 'grabbed_content' ||
           panelId === 'template_editor' ||
-          panelId === 'template_builder'
+          panelId === 'template_builder' ||
+          panelId === 'template_properties' ||
+          panelId === 'template_hierarchy'
         )
           return panelId;
         if (panelId === 'primary') return primaryActiveTab;
@@ -604,7 +606,9 @@ export default function Home() {
           panelId === 'templates' ||
           panelId === 'grabbed_content' ||
           panelId === 'template_editor' ||
-          panelId === 'template_builder'
+          panelId === 'template_builder' ||
+          panelId === 'template_properties' ||
+          panelId === 'template_hierarchy'
         ) {
           removeTabFromPrimary(panelId);
           removeTabFromSecondary(panelId);
@@ -1080,6 +1084,7 @@ export default function Home() {
           onRemoveContainer={templateEditor.removeFlexContainer}
           onRemoveComponent={templateEditor.removeFlexComponent}
           onPlaceField={handlePlaceField}
+          position={pos === 'bottom' ? 'right' : pos}
         />
       );
     }

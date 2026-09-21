@@ -215,7 +215,9 @@ export function usePanelDockDrag({ onDropPanel, contents }: UsePanelDockDragOpti
           panelId === 'templates' ||
           panelId === 'grabbed_content' ||
           panelId === 'template_editor' ||
-          panelId === 'template_builder'
+          panelId === 'template_builder' ||
+          panelId === 'template_properties' ||
+          panelId === 'template_hierarchy'
         ) {
           const elements = document.elementsFromPoint(moveEv.clientX, moveEv.clientY);
           const tabEl = elements.find((el) => el.hasAttribute('data-tab-name'));
