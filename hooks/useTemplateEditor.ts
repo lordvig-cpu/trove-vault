@@ -1072,7 +1072,7 @@ export function useTemplateEditor({
                 : node.direction === 'none'
                 ? 'column'
                 : node.direction,
-            wrap: true,
+            wrap: splitType === 'columns' ? false : (node.wrap ?? false),
             children: nextChildren,
           };
         }

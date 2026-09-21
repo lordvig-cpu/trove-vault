@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { ItemTemplate } from '@/types/template';
 import { FieldDefinition } from '@/types/field';
 import {
@@ -151,6 +151,37 @@ function FlexContainerRenderer({
   const isSelected = selectedNodeId === container.id;
   const isActive = activeContainerId === container.id;
   const [isTreeMenuOpen, setIsTreeMenuOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  const isRightChildInRow = Boolean(
+    parentContainer?.direction === 'row' &&
+    parentContainer.children &&
+    parentContainer.children.findIndex((c) => c.id === container.id) > 0
+  );
+  const [isRightAligned, setIsRightAligned] = useState(isRightChildInRow);
+
+  useEffect(() => {
+    setIsRightAligned(isRightChildInRow);
+  }, [isRightChildInRow]);
+
+  useEffect(() => {
+    if (!isSelected || !containerRef.current) return;
+    const checkAlignment = () => {
+      if (!containerRef.current) return;
+      const rect = containerRef.current.getBoundingClientRect();
+      const stageEl = containerRef.current.closest('main') || document.body;
+      const stageRect = stageEl.getBoundingClientRect();
+
+      const isRightOfStage = rect.left + rect.width / 2 > stageRect.left + stageRect.width / 2;
+      const wouldOverflowRight = rect.left + 480 > stageRect.right - 20;
+
+      setIsRightAligned(isRightChildInRow || isRightOfStage || wouldOverflowRight);
+    };
+
+    checkAlignment();
+    window.addEventListener('resize', checkAlignment);
+    return () => window.removeEventListener('resize', checkAlignment);
+  }, [isSelected, isRightChildInRow]);
 
   useEffect(() => {
     if (canvasMode !== 'edit') return;
@@ -223,7 +254,7 @@ function FlexContainerRenderer({
   const outerStyle: React.CSSProperties = {
     flex:
       container.sizing?.type === 'fixed'
-        ? `0 0 ${container.sizing.value || 'auto'}`
+        ? `1 1 ${container.sizing.value || 'auto'}`
         : container.sizing?.type === 'auto'
         ? '0 0 auto'
         : '1 1 0%',
@@ -231,6 +262,10 @@ function FlexContainerRenderer({
       container.sizing?.type === 'fixed' && container.sizing.value
         ? container.sizing.value
         : container.width || undefined,
+    maxWidth:
+      container.sizing?.type === 'fixed' && container.sizing.value
+        ? container.sizing.value
+        : undefined,
     height: container.height || container.sizing?.height || undefined,
     minHeight: container.minHeight || container.sizing?.minHeight || undefined,
     minWidth: 0,
@@ -260,6 +295,7 @@ function FlexContainerRenderer({
 
   return (
     <div
+      ref={containerRef}
       data-container-id={container.id}
       onClick={(e) => {
         e.stopPropagation();
@@ -324,7 +360,9 @@ function FlexContainerRenderer({
       {/* Floating Action Toolbar in Edit Mode - Connected to container border */}
       {canvasMode === 'edit' && isSelected && (
         <div
-          className="tmpl-container-floating-toolbar absolute bottom-full left-3.5 z-30 select-none pointer-events-auto"
+          className={`tmpl-container-floating-toolbar absolute bottom-full z-30 select-none pointer-events-auto max-w-[calc(100vw-3rem)] ${
+            isRightAligned ? 'right-3.5' : 'left-3.5'
+          }`}
           onClick={(e) => e.stopPropagation()}
         >
           <div className="flex items-center gap-2 px-2.5 py-1.5 min-w-0">
@@ -620,7 +658,7 @@ function FlexContainerRenderer({
       )}
 
       {/* Children or Empty State */}
-      <div style={innerFlexStyle} className={`w-full flex-1 min-h-0 ${isRoot ? 'flex flex-col' : ''}`}>
+      <div style={innerFlexStyle} className="w-full flex-1 min-h-0">
         {container.children.length === 0 ? (
           canvasMode === 'edit' ? (
             <div
