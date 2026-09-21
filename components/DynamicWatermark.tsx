@@ -47,7 +47,9 @@ export default function DynamicWatermark({
       if (!video.getAttribute('src')) video.src = '/videos/website_intro_video.mp4';
       try {
         video.currentTime = 0;
-      } catch {}
+      } catch {
+        // Some browsers throw if the video's metadata is not loaded yet; it then just plays from the start.
+      }
 
       const playPromise = video.play();
       if (playPromise !== undefined) {

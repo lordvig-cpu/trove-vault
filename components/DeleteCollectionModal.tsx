@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import { CollectionRecord } from '@/types/collection';
 import { ItemRecord } from '@/types/item';
+import { errorMessage } from '@/lib/errors';
 
 /* ==========================================================================
    1. TYPE DEFINITIONS & PROPS
@@ -100,7 +101,7 @@ export default function DeleteCollectionModal({
         };
 
         setCascadeList(flattenTree(nestedTree));
-      } catch (err: any) {
+      } catch (err) {
         console.error('Error fetching collection items for delete:', err);
         setError('Could not calculate affected items');
       } finally {
@@ -130,9 +131,9 @@ export default function DeleteCollectionModal({
 
       onCollectionDeleted();
       onClose();
-    } catch (err: any) {
+    } catch (err) {
       console.error('Delete collection error:', err);
-      setError(err?.message || 'Failed to delete collection');
+      setError(errorMessage(err, 'Failed to delete collection'));
     } finally {
       setDeleting(false);
     }
@@ -168,7 +169,7 @@ export default function DeleteCollectionModal({
 
           <p className="text-sm confirm-modal-item leading-relaxed">
             Are you sure you want to delete the collection{' '}
-            <strong className="confirm-modal-item-name">"{collection.name}"</strong> (ID: #{collection.id})?
+            <strong className="confirm-modal-item-name">&quot;{collection.name}&quot;</strong> (ID: #{collection.id})?
           </p>
 
           <div className="confirm-modal-danger-panel rounded-xl p-3.5 space-y-2">

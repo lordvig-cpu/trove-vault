@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import { ItemTemplate } from '@/types/template';
 import { fetchTemplateCatalog } from '@/lib/templateCatalog';
+import { errorMessage } from '@/lib/errors';
 
 /* ==========================================================================
    1. TYPE DEFINITIONS & INTERFACES
@@ -59,9 +60,9 @@ export default function TemplateManagerModal({
       } else if (fullTemplates.length > 0 && !selectedTemplateId) {
         setSelectedTemplateId(fullTemplates[0].id);
       }
-    } catch (err: any) {
+    } catch (err) {
       console.error('Error fetching templates:', err);
-      setError(err?.message || 'Failed to load templates');
+      setError(errorMessage(err, 'Failed to load templates'));
     } finally {
       setLoading(false);
     }
@@ -110,9 +111,9 @@ export default function TemplateManagerModal({
       await fetchTemplates();
       setSelectedTemplateId(createdTemplate.id);
       if (onTemplateApplied) onTemplateApplied();
-    } catch (err: any) {
+    } catch (err) {
       console.error('Save template error:', err);
-      setError(err?.message || 'Failed to save template');
+      setError(errorMessage(err, 'Failed to save template'));
     } finally {
       setSavingCustom(false);
     }

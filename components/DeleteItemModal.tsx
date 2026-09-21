@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { ItemRecord } from '@/types/item';
+import { errorMessage } from '@/lib/errors';
 
 /* ==========================================================================
    1. TYPE DEFINITIONS & PROPS
@@ -68,9 +69,9 @@ export default function DeleteItemModal({
 
       onItemDeleted();
       onClose();
-    } catch (err: any) {
+    } catch (err) {
       console.error('Delete error on items table:', err);
-      setError(err?.message || 'Failed to delete item');
+      setError(errorMessage(err, 'Failed to delete item'));
     } finally {
       setDeleting(false);
     }
@@ -105,7 +106,7 @@ export default function DeleteItemModal({
           )}
 
           <p className="text-sm confirm-modal-item leading-relaxed">
-            Are you sure you want to delete <strong className="confirm-modal-item-name">"{item.name}"</strong> (ID: #{item.id})?
+            Are you sure you want to delete <strong className="confirm-modal-item-name">&quot;{item.name}&quot;</strong> (ID: #{item.id})?
           </p>
 
           {cascadeItems.length > 0 && (

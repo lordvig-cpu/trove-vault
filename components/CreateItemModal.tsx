@@ -1,8 +1,8 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { supabase } from '@/lib/supabase';
-import { uploadItemImage } from '@/lib/storage';
+import { uploadItemImage, validateImageFile } from '@/lib/storage';
 import { fetchTemplateCatalog } from '@/lib/templateCatalog';
 import { ItemRecord } from '@/types/item';
 import { FieldDefinition } from '@/types/field';
@@ -10,6 +10,7 @@ import { CollectionTemplate } from '@/types/template';
 import AdHocAttributesEditor from '@/components/item-form/AdHocAttributesEditor';
 import ItemImagePicker from '@/components/item-form/ItemImagePicker';
 import TemplateFieldInputs from '@/components/item-form/TemplateFieldInputs';
+import { errorMessage } from '@/lib/errors';
 
 /* ==========================================================================
    1. TYPE DEFINITIONS & PROPS
@@ -48,7 +49,7 @@ export default function CreateItemModal({
 
   // Dynamic values & ad-hoc custom fields
   const [activeTemplateFields, setActiveTemplateFields] = useState<FieldDefinition[]>([]);
-  const [dynamicValues, setDynamicValues] = useState<Record<string, any>>({});
+  const [dynamicValues, setDynamicValues] = useState<Record<string, unknown>>({});
   const [adHocAttributes, setAdHocAttributes] = useState<{ key: string; value: string }[]>([]);
 
   // Media & state
@@ -56,6 +57,22 @@ export default function CreateItemModal({
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Isolate dynamic values strictly to the selected template
+  const applyTemplateFields = useCallback((template: CollectionTemplate) => {
+    setSelectedTemplateId(template.id);
+    const fields = template.fields || [];
+    setActiveTemplateFields(fields);
+
+    const initialValues: Record<string, unknown> = {};
+    for (const f of fields) {
+      if (f.field_type === 'boolean') initialValues[f.name] = false;
+      else if (f.field_type === 'select' && f.options && f.options.length > 0)
+        initialValues[f.name] = f.options[0];
+      else initialValues[f.name] = '';
+    }
+    setDynamicValues(initialValues);
+  }, []);
 
   /* ------------------------------------------------------------------------
      2.2 TEMPLATE FETCHING & AUTO-MATCHING
@@ -93,25 +110,9 @@ export default function CreateItemModal({
     }
 
     loadTemplatesAndFields();
-  }, [isOpen, collectionId, initialParentId, availableParents]);
+  }, [isOpen, collectionId, initialParentId, availableParents, applyTemplateFields]);
 
-  // Isolate dynamic values strictly to the selected template
-  const applyTemplateFields = (template: CollectionTemplate) => {
-    setSelectedTemplateId(template.id);
-    const fields = template.fields || [];
-    setActiveTemplateFields(fields);
-
-    const initialValues: Record<string, any> = {};
-    for (const f of fields) {
-      if (f.field_type === 'boolean') initialValues[f.name] = false;
-      else if (f.field_type === 'select' && f.options && f.options.length > 0)
-        initialValues[f.name] = f.options[0];
-      else initialValues[f.name] = '';
-    }
-    setDynamicValues(initialValues);
-  };
-
-  const handleTemplateSelect = (tmplId: number | 'blank') => {
+  const handleTemplateSelect = (tmplId: string) => {
     if (tmplId === 'blank') {
       setSelectedTemplateId(null);
       setActiveTemplateFields([]);
@@ -149,6 +150,12 @@ export default function CreateItemModal({
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      const problem = validateImageFile(file);
+      if (problem) {
+        setError(problem);
+        e.target.value = '';
+        return;
+      }
       setSelectedFile(file);
       setPreviewUrl(URL.createObjectURL(file));
     }
@@ -191,7 +198,7 @@ export default function CreateItemModal({
       }
 
       // 1. Only include active template fields that have values
-      const jsonAttributes: Record<string, any> = {};
+      const jsonAttributes: Record<string, unknown> = {};
 
       for (const field of activeTemplateFields) {
         const val = dynamicValues[field.name];
@@ -235,7 +242,12 @@ export default function CreateItemModal({
           item_id: createdItem.id,
           collection_id: effectiveCollectionId,
         });
-        if (linkError) console.warn('Failed to link item to collection:', linkError);
+        if (linkError) {
+          // The item must not exist without its collection link: undo it, then report the failure
+          const { error: undoError } = await supabase.from('items').delete().eq('id', createdItem.id);
+          if (undoError) console.error('Could not undo the new item after the link failed:', undoError);
+          throw linkError;
+        }
       }
 
 
@@ -246,9 +258,9 @@ export default function CreateItemModal({
       setPreviewUrl(null);
       onItemCreated();
       onClose();
-    } catch (err: any) {
+    } catch (err) {
       console.error('Failed to create item in items table:', err);
-      setError(err?.message || 'Failed to create item');
+      setError(errorMessage(err, 'Failed to create item'));
     } finally {
       setLoading(false);
     }
@@ -328,7 +340,7 @@ export default function CreateItemModal({
 
             <select
               value={selectedTemplateId || 'blank'}
-              onChange={(e) => handleTemplateSelect(e.target.value as any)}
+              onChange={(e) => handleTemplateSelect(e.target.value)}
               className="w-full item-modal-input rounded-lg px-2.5 py-1.5 text-xs"
             >
               {availableTemplates.map((tmpl) => (

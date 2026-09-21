@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { CollectionRecord } from '@/types/collection';
+import { errorMessage } from '@/lib/errors';
 
 /* ==========================================================================
    1. TYPE DEFINITIONS & PROPS
@@ -59,9 +60,9 @@ export default function CreateCollectionModal({
 
       onCollectionCreated(data.id);
       onClose();
-    } catch (err: any) {
+    } catch (err) {
       console.error('Error creating collection:', err);
-      setError(err?.message || 'Failed to create collection');
+      setError(errorMessage(err, 'Failed to create collection'));
     } finally {
       setLoading(false);
     }

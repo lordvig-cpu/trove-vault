@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { supabase } from '@/lib/supabase';
-import { uploadItemImage } from '@/lib/storage';
+import { uploadItemImage, validateImageFile } from '@/lib/storage';
 import { fetchTemplateCatalog } from '@/lib/templateCatalog';
 import { ItemRecord } from '@/types/item';
 import { FieldDefinition } from '@/types/field';
@@ -10,6 +10,7 @@ import { CollectionTemplate } from '@/types/template';
 import AdHocAttributesEditor from '@/components/item-form/AdHocAttributesEditor';
 import ItemImagePicker from '@/components/item-form/ItemImagePicker';
 import TemplateFieldInputs from '@/components/item-form/TemplateFieldInputs';
+import { errorMessage } from '@/lib/errors';
 
 /* ==========================================================================
    1. TYPE DEFINITIONS & PROPS
@@ -39,7 +40,7 @@ export default function EditItemModal({
   const [selectedTemplateId, setSelectedTemplateId] = useState<number | null>(null);
 
   const [activeTemplateFields, setActiveTemplateFields] = useState<FieldDefinition[]>([]);
-  const [dynamicValues, setDynamicValues] = useState<Record<string, any>>({});
+  const [dynamicValues, setDynamicValues] = useState<Record<string, unknown>>({});
   const [adHocAttributes, setAdHocAttributes] = useState<{ key: string; value: string }[]>([]);
 
   // Media & Status
@@ -69,7 +70,7 @@ export default function EditItemModal({
       setAvailableTemplates(fullTemplates);
 
       // Extract existing attributes excluding image_url
-      const loadedDynamicValues: Record<string, any> = {};
+      const loadedDynamicValues: Record<string, unknown> = {};
 
       for (const [key, val] of Object.entries(rawAttrs)) {
         if (key === 'image_url') continue;
@@ -99,7 +100,7 @@ export default function EditItemModal({
       }
     }
 
-    function keyInAttributes(key: string, attrs: Record<string, any>) {
+    function keyInAttributes(key: string, attrs: Record<string, unknown>) {
       return Object.prototype.hasOwnProperty.call(attrs, key);
     }
 
@@ -109,7 +110,7 @@ export default function EditItemModal({
   /* ------------------------------------------------------------------------
      2.2 TEMPLATE SELECTION
      ------------------------------------------------------------------------ */
-  const handleTemplateSelect = (tmplId: number | 'blank') => {
+  const handleTemplateSelect = (tmplId: string) => {
     if (tmplId === 'blank') {
       setSelectedTemplateId(null);
       setActiveTemplateFields([]);
@@ -122,7 +123,7 @@ export default function EditItemModal({
       const fields = match.fields || [];
       setActiveTemplateFields(fields);
 
-      const updatedValues: Record<string, any> = { ...dynamicValues };
+      const updatedValues: Record<string, unknown> = { ...dynamicValues };
       for (const f of fields) {
         if (updatedValues[f.name] === undefined) {
           if (f.field_type === 'boolean') updatedValues[f.name] = false;
@@ -161,6 +162,12 @@ export default function EditItemModal({
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      const problem = validateImageFile(file);
+      if (problem) {
+        setError(problem);
+        e.target.value = '';
+        return;
+      }
       setSelectedFile(file);
       setPreviewUrl(URL.createObjectURL(file));
     }
@@ -203,7 +210,7 @@ export default function EditItemModal({
         finalImageUrl = await uploadItemImage(selectedFile);
       }
 
-      const jsonAttributes: Record<string, any> = { ...dynamicValues };
+      const jsonAttributes: Record<string, unknown> = { ...dynamicValues };
 
       if (finalImageUrl) {
         jsonAttributes['image_url'] = finalImageUrl;
@@ -228,9 +235,9 @@ export default function EditItemModal({
 
       onItemUpdated();
       onClose();
-    } catch (err: any) {
+    } catch (err) {
       console.error('Update error on items table:', err);
-      setError(err?.message || 'Failed to update item');
+      setError(errorMessage(err, 'Failed to update item'));
     } finally {
       setSaving(false);
     }
@@ -284,7 +291,7 @@ export default function EditItemModal({
 
             <select
               value={selectedTemplateId || 'blank'}
-              onChange={(e) => handleTemplateSelect(e.target.value as any)}
+              onChange={(e) => handleTemplateSelect(e.target.value)}
               className="w-full item-modal-input rounded-lg px-2.5 py-1.5 text-xs"
             >
               {availableTemplates.map((tmpl) => (
