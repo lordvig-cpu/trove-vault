@@ -18,7 +18,7 @@ interface CanvasZoomContextType {
   /** Editor-only preview width: a px screen size, or 'fit' to use the whole editor area. */
   previewWidth: PreviewWidth;
   setPreviewWidth: (w: PreviewWidth) => void;
-  /** Width in px of the editor area, reported by the canvas (shown while Fit is on). */
+  /** Width in px the Body is actually laid out at, reported by the canvas (shown while Fit is on). */
   fitWidth: number;
   setFitWidth: (w: number) => void;
   zoom: number;

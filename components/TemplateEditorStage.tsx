@@ -16,6 +16,7 @@ import {
 import { DashedSquareQuestionIcon } from '@/components/icons/LayoutIcons';
 import { useCanvasZoom } from '@/context/CanvasZoomContext';
 import TemplateEditorBar from '@/components/TemplateEditorBar';
+import ContainerResizeHandles from '@/components/ContainerResizeHandles';
 
 /* ==========================================================================
    1. PROPS INTERFACE
@@ -100,6 +101,7 @@ function ScaledCanvas({ children }: { children: React.ReactNode }) {
   const innerRef = useRef<HTMLDivElement>(null);
   const [available, setAvailable] = useState(0);
   const [innerHeight, setInnerHeight] = useState(0);
+  const [bodyPx, setBodyPx] = useState(0);
 
   useEffect(() => {
     const host = hostRef.current;
@@ -108,8 +110,12 @@ function ScaledCanvas({ children }: { children: React.ReactNode }) {
     const measure = () => {
       setAvailable(host.clientWidth);
       setInnerHeight(inner.offsetHeight); // layout height: unaffected by the CSS transform
+      // The Body as actually laid out (px): reflects zoom reflow and any max content width
+      setBodyPx(inner.querySelector<HTMLElement>('[data-container-id]')?.offsetWidth ?? 0);
     };
     const ro = new ResizeObserver(measure);
+    const bodyEl = inner.querySelector('[data-container-id]');
+    if (bodyEl) ro.observe(bodyEl);
     ro.observe(host);
     ro.observe(inner);
     return () => ro.disconnect();
@@ -118,8 +124,8 @@ function ScaledCanvas({ children }: { children: React.ReactNode }) {
   const { zoom, previewWidth: bodyWidth, setFitWidth } = useCanvasZoom();
 
   useEffect(() => {
-    if (available > 0) setFitWidth(available);
-  }, [available, setFitWidth]);
+    if (bodyPx > 0) setFitWidth(bodyPx);
+  }, [bodyPx, setFitWidth]);
 
   // Default view shrinks the Body to fit the editor area (never up); zoom multiplies on top.
   const isFit = bodyWidth === 'fit';
@@ -132,7 +138,9 @@ function ScaledCanvas({ children }: { children: React.ReactNode }) {
   return (
     <div
       ref={hostRef}
-      className="w-full overflow-x-auto"
+      // -12px margins cancel the stage's side padding, so the canvas runs edge to edge
+      // (the banner above keeps its padding). Fit then uses all the space the panels leave.
+      className="overflow-x-auto -mx-3"
       style={{ paddingTop: 8 }}
     >
       <div
@@ -392,16 +400,34 @@ function FlexContainerRenderer({
             ? 'rounded-2xl bg-[var(--content-card-bg)] border border-[var(--content-card-border)] shadow-md backdrop-blur-sm'
             : ''
           : isDragOver
-          ? 'rounded-2xl border-2 border-[var(--primary-accent)] ring-2 ring-[var(--primary-accent)] ring-offset-2 ring-offset-[var(--surface-panel)] bg-[color-mix(in_oklch,var(--primary-accent)_16%,transparent)] shadow-2xl shadow-[color-mix(in_oklch,var(--primary-accent)_25%,transparent)]'
+          ? 'rounded-2xl outline-2 outline-[var(--primary-accent)] -outline-offset-2 ring-2 ring-[var(--primary-accent)] ring-offset-2 ring-offset-[var(--surface-panel)] bg-[color-mix(in_oklch,var(--primary-accent)_16%,transparent)] shadow-2xl shadow-[color-mix(in_oklch,var(--primary-accent)_25%,transparent)]'
           : isSelected
-          ? 'rounded-2xl border-2 border-white bg-[color-mix(in_oklch,var(--primary-accent)_8%,transparent)] shadow-xl shadow-white/10'
+          ? 'rounded-2xl outline-2 outline-white -outline-offset-2 bg-[color-mix(in_oklch,var(--primary-accent)_8%,transparent)] shadow-xl shadow-white/10'
           : isActive
-          ? 'rounded-2xl border border-[color-mix(in_oklch,var(--primary-accent)_50%,transparent)] bg-[color-mix(in_oklch,var(--primary-accent)_6%,transparent)]'
+          ? 'rounded-2xl outline outline-1 outline-[color-mix(in_oklch,var(--primary-accent)_50%,transparent)] -outline-offset-1 bg-[color-mix(in_oklch,var(--primary-accent)_6%,transparent)]'
           : isCard
-          ? 'rounded-2xl border border-[var(--primary-border-subtle)] bg-[color-mix(in_oklch,var(--panel-surface-bg)_60%,transparent)] hover:border-[color-mix(in_oklch,var(--primary-accent)_40%,var(--primary-border-subtle))]'
-          : 'rounded-2xl border border-dashed border-[var(--primary-border-subtle)] bg-[color-mix(in_oklch,var(--panel-surface-bg)_25%,transparent)] hover:border-[color-mix(in_oklch,var(--primary-accent)_40%,var(--primary-border-subtle))]'
+          ? 'rounded-2xl bg-[color-mix(in_oklch,var(--panel-surface-bg)_60%,transparent)] hover:border-[color-mix(in_oklch,var(--primary-accent)_40%,var(--primary-border-subtle))]'
+          : 'rounded-2xl outline outline-1 outline-dashed outline-[var(--primary-border-subtle)] -outline-offset-1 bg-[color-mix(in_oklch,var(--panel-surface-bg)_25%,transparent)] hover:outline-[color-mix(in_oklch,var(--primary-accent)_40%,var(--primary-border-subtle))]'
+      } ${
+        // Editing outlines are drawn inset with `outline`, so they take no layout space and the
+        // canvas matches the live preview to the pixel. A card frame is a real border in both modes.
+        canvasMode === 'edit' && isCard ? 'border border-[var(--primary-border-subtle)]' : ''
       }`}
     >
+      {/* Drag handles: only for a selected container that is set to Custom sizing */}
+      {canvasMode === 'edit' &&
+        isSelected &&
+        !isRoot &&
+        !parentStacked &&
+        container.sizing?.type === 'fixed' &&
+        onUpdateContainer && (
+          <ContainerResizeHandles
+            containerRef={containerRef}
+            container={container}
+            onUpdate={(partial) => onUpdateContainer(container.id, partial)}
+          />
+        )}
+
       {/* Children or Empty State */}
       <div style={innerFlexStyle} className="w-full flex-1 min-h-0">
         {container.children.length === 0 ? (
@@ -743,7 +769,7 @@ export default function TemplateEditorStage({
   const toolbarContainer = selectedNode?.nodeType === 'container' ? selectedNode : null;
 
   return (
-    <div className="w-full mx-auto p-4 sm:p-6 flex-1 flex flex-col gap-6 select-none min-h-0">
+    <div className="w-full mx-auto p-3 flex-1 flex flex-col gap-6 select-none min-h-0">
       {isFlexActive && toolbarSlot &&
         createPortal(
           <TemplateEditorBar

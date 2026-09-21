@@ -149,7 +149,7 @@ export default function MainContent({
             }`}
           >
             {editingTemplate ? (
-              <div className="w-full p-6 flex-1 pt-8 pb-10 flex flex-col min-h-0">
+              <div className="w-full px-0 flex-1 pt-8 pb-10 flex flex-col min-h-0">
                 <TemplateEditorStage
                   template={editingTemplate}
                   flexLayoutConfig={flexLayoutConfig}

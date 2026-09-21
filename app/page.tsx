@@ -30,6 +30,13 @@ import { useTemplateEditor } from '@/hooks/useTemplateEditor';
 import { filterExplorerForest, ExplorerTab } from '@/lib/filterExplorerForest';
 import { itemMatchesQuery } from '@/lib/explorerUtils';
 
+/**
+ * Whether Edit Template opens and pins the left, right and bottom panels. Off while the editor is
+ * still being built: their template content is still loaded into the docks, but they stay as the
+ * user left them (open them from the footer dock buttons).
+ */
+const AUTO_OPEN_TEMPLATE_PANELS = false;
+
 export default function Home() {
   /* ------------------------------------------------------------------------
      1. DATA LAYER (Supabase Records, Trees & CRUD Mutations)
@@ -215,19 +222,25 @@ export default function Home() {
     onOpenPrimaryPanel: (tabs, activeTab) => {
       setPrimaryTabs(tabs);
       setPrimaryActiveTab(activeTab);
-      setIsPrimarySidePanelOpen(true);
-      setIsPinned(true);
+      if (AUTO_OPEN_TEMPLATE_PANELS) {
+        setIsPrimarySidePanelOpen(true);
+        setIsPinned(true);
+      }
     },
     onOpenSecondaryPanel: (tabs, activeTab) => {
       setSecondaryTabs(tabs);
       setSecondaryActiveTab(activeTab);
-      setIsSecondaryOpen(true);
-      setIsSecondaryPinned(true);
+      if (AUTO_OPEN_TEMPLATE_PANELS) {
+        setIsSecondaryOpen(true);
+        setIsSecondaryPinned(true);
+      }
     },
     onOpenBottomPanel: (content) => {
       setBottomPanelContent(content);
-      setIsBottomPanelOpen(true);
-      setIsBottomPinned(true);
+      if (AUTO_OPEN_TEMPLATE_PANELS) {
+        setIsBottomPanelOpen(true);
+        setIsBottomPinned(true);
+      }
     },
   });
 
