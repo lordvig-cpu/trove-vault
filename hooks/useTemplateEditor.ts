@@ -22,8 +22,12 @@ import {
   migrateGridToFlexLayout,
   createDefaultFlexLayout,
   findFlexNode,
+  defaultChildDirection,
+  resolveDirection,
   findParentFlexContainer,
   collectPlacedFieldIds,
+  halveCssLength,
+  parsePxValue,
 } from '@/types/layout';
 import { DockContent } from '@/hooks/usePanelDockDrag';
 
@@ -758,16 +762,19 @@ export function useTemplateEditor({
     (targetContainerId: string, options: Partial<FlexContainerNode> = {}): string => {
       if (!flexLayoutConfig) return '';
       const newId = `cont-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
+      const parentNode = findFlexNode(flexLayoutConfig.root, targetContainerId);
+      const parentContainer =
+        parentNode?.nodeType === 'container' ? parentNode : flexLayoutConfig.root;
       const newContainer: FlexContainerNode = {
         id: newId,
         nodeType: 'container',
         label: options.label || 'Container Box',
-        direction: options.direction || 'none',
-        gap: options.gap !== undefined ? options.gap : 12,
+        direction: options.direction || defaultChildDirection(parentContainer, parentContainer.id === flexLayoutConfig.root.id),
+        gap: options.gap !== undefined ? options.gap : 0,
         wrap: options.wrap !== undefined ? options.wrap : true,
         align: options.align || 'stretch',
         justify: options.justify || 'start',
-        padding: options.padding !== undefined ? options.padding : 12,
+        padding: options.padding !== undefined ? options.padding : 0,
         sizing: options.sizing || { type: 'fill' },
         isCard: options.isCard !== undefined ? options.isCard : false,
         children: options.children || [],
@@ -810,7 +817,6 @@ export function useTemplateEditor({
         if (position === 'after') {
           return addFlexContainer(flexLayoutConfig.root.id, {
             label: options.label || 'New Container',
-            direction: options.direction || 'none',
             ...options,
           });
         }
@@ -825,12 +831,12 @@ export function useTemplateEditor({
         id: newId,
         nodeType: 'container',
         label: options.label || 'New Container',
-        direction: options.direction || 'none',
-        gap: options.gap !== undefined ? options.gap : 12,
+        direction: options.direction || defaultChildDirection(parent, parent.id === flexLayoutConfig.root.id),
+        gap: options.gap !== undefined ? options.gap : 0,
         wrap: options.wrap !== undefined ? options.wrap : true,
         align: options.align || 'stretch',
         justify: options.justify || 'start',
-        padding: options.padding !== undefined ? options.padding : 12,
+        padding: options.padding !== undefined ? options.padding : 0,
         sizing: options.sizing || { type: 'fill' },
         isCard: options.isCard !== undefined ? options.isCard : false,
         children: options.children || [],
@@ -871,30 +877,30 @@ export function useTemplateEditor({
         return addFlexContainer(target, {
           label: 'Row Container',
           direction: 'row',
-          gap: 12,
+          gap: 0,
           wrap: true,
           isCard: false,
-          padding: 12,
+          padding: 0,
         });
       }
       if (primitiveType === 'column') {
         return addFlexContainer(target, {
           label: 'Column Container',
           direction: 'column',
-          gap: 12,
+          gap: 0,
           wrap: false,
           isCard: false,
-          padding: 12,
+          padding: 0,
         });
       }
       if (primitiveType === 'card') {
         return addFlexContainer(target, {
           label: 'Card Frame',
           direction: 'column',
-          gap: 12,
+          gap: 0,
           wrap: false,
           isCard: true,
-          padding: 16,
+          padding: 0,
         });
       }
       if (primitiveType === 'split-2') {
@@ -904,12 +910,12 @@ export function useTemplateEditor({
           nodeType: 'container',
           label: 'Left Column',
           direction: 'column',
-          gap: 12,
+          gap: 0,
           wrap: false,
           align: 'stretch',
           justify: 'start',
-          padding: 12,
-          sizing: { type: 'fixed', value: '49%' },
+          padding: 0,
+          sizing: { type: 'fixed', value: '50%' },
           isCard: true,
           children: [],
         };
@@ -918,20 +924,20 @@ export function useTemplateEditor({
           nodeType: 'container',
           label: 'Right Column',
           direction: 'column',
-          gap: 12,
+          gap: 0,
           wrap: false,
           align: 'stretch',
           justify: 'start',
-          padding: 12,
-          sizing: { type: 'fixed', value: '49%' },
+          padding: 0,
+          sizing: { type: 'fixed', value: '50%' },
           isCard: true,
           children: [],
         };
         return addFlexContainer(target, {
           label: '2-Col Split',
           direction: 'row',
-          gap: 12,
-          wrap: true,
+          gap: 0,
+          wrap: false,
           align: 'stretch',
           justify: 'between',
           padding: 0,
@@ -946,20 +952,20 @@ export function useTemplateEditor({
           nodeType: 'container',
           label,
           direction: 'column',
-          gap: 8,
+          gap: 0,
           wrap: false,
           align: 'stretch',
           justify: 'start',
-          padding: 12,
-          sizing: { type: 'fixed', value: '32%' },
+          padding: 0,
+          sizing: { type: 'fixed', value: '33.333%' },
           isCard: true,
           children: [],
         });
         return addFlexContainer(target, {
           label: '3-Col Split',
           direction: 'row',
-          gap: 12,
-          wrap: true,
+          gap: 0,
+          wrap: false,
           align: 'stretch',
           justify: 'between',
           padding: 0,
@@ -984,7 +990,6 @@ export function useTemplateEditor({
       if (!foundNode || foundNode.nodeType !== 'container') return '';
       const targetContainer: FlexContainerNode = foundNode;
 
-      const gap = parent.gap !== undefined ? parent.gap : 12;
 
       // Calculate base name by stripping any previous "(X of Y)"
       const rawLabel = targetContainer.label || 'Container';
@@ -992,89 +997,104 @@ export function useTemplateEditor({
       const targetLabel = `${baseName} (1 / 2)`;
       const newContainerLabel = `${baseName} (2 / 2)`;
 
-      // Calculate 50% sizing for columns vs rows
-      let colSizing: FlexSizing;
-      if (targetContainer.sizing?.type === 'fixed' && targetContainer.sizing.value) {
-        const val = targetContainer.sizing.value.trim();
-        const pctMatch = val.match(/^(\d+(?:\.\d+)?)%$/);
-        if (pctMatch) {
-          const num = parseFloat(pctMatch[1]);
-          colSizing = { type: 'fixed', value: `${(num / 2).toFixed(1).replace(/\.0$/, '')}%` };
-        } else {
-          const calcMatch = val.match(/^calc\((\d+(?:\.\d+)?)%\s*-\s*(\d+(?:\.\d+)?)px\)$/i);
-          if (calcMatch) {
-            const pct = parseFloat(calcMatch[1]);
-            colSizing = { type: 'fixed', value: `calc(${(pct / 2).toFixed(1).replace(/\.0$/, '')}% - ${gap / 2}px)` };
-          } else {
-            colSizing = { type: 'fixed', value: `calc(50% - ${gap / 2}px)` };
-          }
-        }
+      const parentDir = parent.direction;
+      const targetSizing: FlexSizing = targetContainer.sizing || { type: 'fill' };
+      const targetWidthRaw =
+        (targetSizing.type === 'fixed' && targetSizing.value) || targetContainer.width || undefined;
+      const targetHeightRaw = targetContainer.height || targetSizing.height || undefined;
+      const targetHeightPx = /px$/i.test(targetHeightRaw || '') ? parsePxValue(targetHeightRaw) : null;
+
+      // Rows stack children of a column parent; columns sit side by side in a row parent.
+      // In any other parent, wrap the two halves in a new container so neither the parent's
+      // direction nor its other children are disturbed.
+      const inPlace = splitType === 'columns' ? parentDir === 'row' : parentDir === 'column';
+
+      // Height: columns share the target's height; rows split it (px only).
+      const halfHeight =
+        splitType === 'rows' && targetHeightPx !== null
+          ? `${Math.max(0, targetHeightPx / 2)}px`
+          : targetHeightRaw;
+
+      // Width / basis of each half
+      let halfSizing: FlexSizing;
+      if (splitType === 'columns') {
+        halfSizing = {
+          type: 'fixed',
+          value: inPlace ? halveCssLength(targetWidthRaw) : '50%',
+        };
       } else {
-        colSizing = { type: 'fixed', value: `calc(50% - ${gap / 2}px)` };
+        halfSizing =
+          inPlace && targetSizing.type === 'fixed' && targetSizing.value
+            ? { type: 'fixed', value: targetSizing.value }
+            : { type: 'fixed', value: '100%' };
       }
 
-      const rowSizing: FlexSizing =
-        targetContainer.sizing?.type === 'fixed'
-          ? targetContainer.sizing
-          : { type: 'fixed', value: '100%' };
-
-      const chosenSizing = splitType === 'columns' ? colSizing : rowSizing;
+      const withDims = (node: FlexContainerNode, sizing: FlexSizing, height?: string): FlexContainerNode => ({
+        ...node,
+        width: undefined,
+        height,
+        sizing: { ...sizing, height, minHeight: node.minHeight ?? sizing.minHeight },
+      });
 
       const newId = `cont-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
-      const updatedTarget: FlexContainerNode = {
-        ...targetContainer,
-        label: targetLabel,
-        sizing: chosenSizing,
-      };
+      const updatedTarget = withDims(
+        { ...targetContainer, label: targetLabel },
+        halfSizing,
+        halfHeight
+      );
 
-      const newContainer: FlexContainerNode = {
-        id: newId,
-        nodeType: 'container',
-        label: newContainerLabel,
-        direction: 'none',
-        gap: targetContainer.gap !== undefined ? targetContainer.gap : 12,
-        wrap: targetContainer.wrap !== undefined ? targetContainer.wrap : true,
-        align: targetContainer.align || 'stretch',
-        justify: targetContainer.justify || 'start',
-        padding: targetContainer.padding !== undefined ? targetContainer.padding : 12,
-        sizing: chosenSizing,
-        isCard: targetContainer.isCard !== undefined ? targetContainer.isCard : false,
-        children: [],
-      };
+      const newContainer = withDims(
+        {
+          id: newId,
+          nodeType: 'container',
+          label: newContainerLabel,
+          direction: resolveDirection(targetContainer, false),
+          gap: targetContainer.gap !== undefined ? targetContainer.gap : 0,
+          wrap: targetContainer.wrap !== undefined ? targetContainer.wrap : true,
+          align: targetContainer.align || 'stretch',
+          justify: targetContainer.justify || 'start',
+          padding: targetContainer.padding ?? 0,
+          sizing: halfSizing,
+          isCard: targetContainer.isCard !== undefined ? targetContainer.isCard : false,
+          children: [],
+        },
+        halfSizing,
+        halfHeight
+      );
+
+      // Node(s) that replace the target inside its parent
+      let replacement: FlexContainerNode[];
+      if (inPlace) {
+        replacement = [updatedTarget, newContainer];
+      } else {
+        // The wrapper inherits the target's original footprint inside the parent
+        replacement = [
+          {
+            id: `cont-split-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
+            nodeType: 'container',
+            label: `${baseName} Split`,
+            direction: splitType === 'columns' ? 'row' : 'column',
+            gap: 0,
+            wrap: false,
+            align: 'stretch',
+            justify: 'start',
+            padding: 0,
+            sizing: { ...targetSizing },
+            width: targetContainer.width,
+            height: targetContainer.height,
+            isCard: false,
+            children: [updatedTarget, newContainer],
+          },
+        ];
+      }
 
       function transformTree(node: FlexContainerNode): FlexContainerNode {
         if (node.id === parent?.id) {
           const childIdx = node.children.findIndex((c) => c.id === targetContainerId);
           if (childIdx === -1) return node;
-
-          const nextChildren = node.children.map((child) => {
-            // When parent changes to row with wrap, preserve existing siblings as 100% full-width
-            if (node.direction === 'column' && splitType === 'columns') {
-              if (
-                child.id !== targetContainerId &&
-                child.nodeType === 'container' &&
-                (!child.sizing || child.sizing.type === 'fill')
-              ) {
-                return { ...child, sizing: { type: 'fixed', value: '100%' } as FlexSizing };
-              }
-            }
-            return child;
-          });
-
-          // Splice in the two split containers directly into the parent at target's position
-          nextChildren.splice(childIdx, 1, updatedTarget, newContainer);
-
-          return {
-            ...node,
-            direction:
-              splitType === 'columns'
-                ? 'row'
-                : node.direction === 'none'
-                ? 'column'
-                : node.direction,
-            wrap: splitType === 'columns' ? false : (node.wrap ?? false),
-            children: nextChildren,
-          };
+          const nextChildren = [...node.children];
+          nextChildren.splice(childIdx, 1, ...replacement);
+          return { ...node, children: nextChildren };
         }
 
         return {

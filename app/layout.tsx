@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { UIPreferencesProvider } from '@/context/UIPreferencesContext';
+import { CanvasZoomProvider } from '@/context/CanvasZoomContext';
 
 /* ==========================================================================
    1. GLOBAL FONT OPTIMIZATIONS (Next.js Geist Typography)
@@ -40,7 +41,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="min-h-full flex flex-col">
         {/* Top-level provider orchestrating localStorage preferences, themes & docking */}
         <UIPreferencesProvider>
-          {children}
+          <CanvasZoomProvider>
+            {children}
+          </CanvasZoomProvider>
         </UIPreferencesProvider>
       </body>
     </html>

@@ -292,6 +292,12 @@ export default function NavigationHeader({
           )}
         </div>
 
+        {/* Slot for the template editor bar (portaled in by the editor), centered under the header */}
+        <div
+          id="template-toolbar-slot"
+          className="absolute top-full left-1/2 -translate-x-1/2 z-[85] pointer-events-none"
+        />
+
         {/* ------------------------------------------------------------------
             2.3 RIGHT SECTION: DATABASE STATUS & USER BADGE
             ------------------------------------------------------------------ */}

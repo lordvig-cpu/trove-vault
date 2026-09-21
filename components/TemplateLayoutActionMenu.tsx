@@ -9,6 +9,7 @@ import {
   FlexAlign,
   FlexJustify,
   LayoutVariant,
+  resolveDirection,
 } from '@/types/layout';
 import { FieldDefinition } from '@/types/field';
 import { useExplorerActionMenu } from '@/hooks/useExplorerActionMenu';
@@ -18,6 +19,8 @@ import ExplorerActionMenu, {
   ActionMenuDivider,
   ActionMenuItem,
 } from '@/components/ExplorerActionMenu';
+import TemplateBodyDimensions from '@/components/TemplateBodyDimensions';
+import TemplateContainerSizing from '@/components/TemplateContainerSizing';
 import { BodyIcon, FlexRowIcon, FlexColumnIcon, LayoutContainerIcon, AddChildContainerIcon } from '@/components/icons/LayoutIcons';
 
 const GAP_OPTIONS: { value: FlexGap; label: string }[] = [
@@ -116,7 +119,7 @@ export function TemplateContainerActionMenu({
             onSubmit={(e) => {
               e.preventDefault();
               const trimmed = newContainerName.trim() || 'New Container';
-              onAddContainer?.(container.id, { label: trimmed, direction: 'none', padding: 0, sizing: { type: 'fill' } });
+              onAddContainer?.(container.id, { label: trimmed, padding: 0, sizing: { type: 'fill' } });
               setIsAddingContent(false);
               menu.closeMenu();
             }}
@@ -197,6 +200,12 @@ export function TemplateContainerActionMenu({
             />
           </div>
         </div>
+
+        {/* Body Width & Height */}
+        <TemplateBodyDimensions
+          root={container}
+          onUpdate={(partial) => onUpdateContainer?.(container.id, partial)}
+        />
       </ExplorerActionMenu>
     );
   }
@@ -212,39 +221,13 @@ export function TemplateContainerActionMenu({
     <BodyIcon className="w-4 h-4 text-slate-300" />
   ) : container.isCard ? (
     '🗂️'
-  ) : container.direction === 'row' ? (
+  ) : resolveDirection(container, isRoot) === 'row' ? (
     <FlexRowIcon className="w-4 h-4 text-slate-300" />
-  ) : container.direction === 'column' ? (
+  ) : resolveDirection(container, isRoot) === 'column' ? (
     <FlexColumnIcon className="w-4 h-4 text-slate-300" />
   ) : (
     <LayoutContainerIcon className="w-4 h-4 text-slate-300" />
   );
-
-  const getMeasuredSize = () => {
-    if (typeof document === 'undefined') return { width: 500, height: 200 };
-    const el = document.querySelector(`[data-container-id="${container.id}"]`);
-    if (el) {
-      const rect = el.getBoundingClientRect();
-      return { width: Math.round(rect.width), height: Math.round(rect.height) };
-    }
-    return { width: 500, height: 200 };
-  };
-
-  const isCustomWidth = Boolean(
-    (container.sizing?.type === 'fixed' && container.sizing.value) || container.width
-  );
-  const rawWidthVal = container.width || container.sizing?.value;
-  const parsedWidth = rawWidthVal ? parseInt(rawWidthVal, 10) : NaN;
-  const currentWidthPx = !isNaN(parsedWidth)
-    ? parsedWidth
-    : getMeasuredSize().width;
-
-  const isCustomHeight = Boolean(container.height || container.sizing?.height);
-  const rawHeightVal = container.height || container.sizing?.height;
-  const parsedHeight = rawHeightVal ? parseInt(rawHeightVal, 10) : NaN;
-  const currentHeightPx = !isNaN(parsedHeight)
-    ? parsedHeight
-    : getMeasuredSize().height;
 
   return (
     <ExplorerActionMenu
@@ -282,25 +265,12 @@ export function TemplateContainerActionMenu({
           <label className="text-[10px] font-bold text-muted uppercase tracking-wider">
             Flex Flow Direction
           </label>
-          <div className="grid grid-cols-3 gap-1.5">
-            <button
-              type="button"
-              onClick={() => onUpdateContainer?.(container.id, { direction: 'none' })}
-              className={`flex items-center justify-center gap-1.5 p-1.5 rounded-lg border text-xs font-bold transition cursor-pointer ${
-                container.direction === 'none' || !container.direction
-                  ? 'bg-[color-mix(in_oklch,var(--primary-accent)_30%,transparent)] border-[var(--primary-accent)] text-white shadow-sm'
-                  : 'bg-surface-secondary border-subtle text-muted hover:text-white'
-              }`}
-              title="Generic container layout without flex row/column distinction"
-            >
-              <LayoutContainerIcon className="w-3.5 h-3.5" />
-              <span>None</span>
-            </button>
+          <div className="grid grid-cols-2 gap-1.5">
             <button
               type="button"
               onClick={() => onUpdateContainer?.(container.id, { direction: 'row' })}
               className={`flex items-center justify-center gap-1.5 p-1.5 rounded-lg border text-xs font-bold transition cursor-pointer ${
-                container.direction === 'row'
+                resolveDirection(container, isRoot) === 'row'
                   ? 'bg-[color-mix(in_oklch,var(--primary-accent)_30%,transparent)] border-[var(--primary-accent)] text-white shadow-sm'
                   : 'bg-surface-secondary border-subtle text-muted hover:text-white'
               }`}
@@ -312,7 +282,7 @@ export function TemplateContainerActionMenu({
               type="button"
               onClick={() => onUpdateContainer?.(container.id, { direction: 'column' })}
               className={`flex items-center justify-center gap-1.5 p-1.5 rounded-lg border text-xs font-bold transition cursor-pointer ${
-                container.direction === 'column'
+                resolveDirection(container, isRoot) === 'column'
                   ? 'bg-[color-mix(in_oklch,var(--primary-accent)_30%,transparent)] border-[var(--primary-accent)] text-white shadow-sm'
                   : 'bg-surface-secondary border-subtle text-muted hover:text-white'
               }`}
@@ -323,143 +293,12 @@ export function TemplateContainerActionMenu({
           </div>
         </div>
 
-        {/* Container Width & Height Slider Controls */}
+        {/* Container Sizing (Width / Min / Max, Height / Min / Max, Stack) */}
         {!isRoot && (
-          <div className="flex flex-col gap-2.5 p-2 rounded-xl bg-surface-secondary border border-subtle">
-            {/* Specific Width Header & Slider */}
-            <div className="flex flex-col gap-1.5">
-              <div className="flex items-center justify-between">
-                <label className="text-[10px] font-bold text-muted uppercase tracking-wider">
-                  Width
-                </label>
-                <span className="text-[10px] font-mono text-[var(--primary-accent)] font-semibold">
-                  {isCustomWidth ? `${currentWidthPx}px` : 'Auto (Fill)'}
-                </span>
-              </div>
-              <div className="flex items-center gap-2">
-                <input
-                  type="range"
-                  min="60"
-                  max="1200"
-                  step="10"
-                  value={currentWidthPx}
-                  onChange={(e) => {
-                    const val = parseInt(e.target.value, 10);
-                    onUpdateContainer?.(container.id, {
-                      width: `${val}px`,
-                      sizing: { type: 'fixed', value: `${val}px` },
-                    });
-                  }}
-                  className="flex-1 min-w-[70px] accent-[var(--primary-accent)] cursor-pointer h-1.5 bg-slate-800 rounded-lg"
-                  title={`Adjust container width: ${currentWidthPx}px`}
-                />
-                <div className="flex items-center gap-0.5 bg-slate-900 border border-subtle rounded-md px-1 py-0.5 w-[62px] shrink-0 focus-within:border-[var(--primary-accent)]">
-                  <input
-                    type="number"
-                    min="10"
-                    max="2000"
-                    value={isCustomWidth ? currentWidthPx : ''}
-                    placeholder={String(currentWidthPx)}
-                    onChange={(e) => {
-                      const val = parseInt(e.target.value, 10);
-                      if (!isNaN(val)) {
-                        onUpdateContainer?.(container.id, {
-                          width: `${val}px`,
-                          sizing: { type: 'fixed', value: `${val}px` },
-                        });
-                      }
-                    }}
-                    className="w-full bg-transparent text-xs font-mono text-strong text-right focus:outline-none"
-                  />
-                  <span className="text-[10px] text-muted font-mono">px</span>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => {
-                    onUpdateContainer?.(container.id, {
-                      width: undefined,
-                      sizing: { type: 'fill' },
-                    });
-                  }}
-                  title="Reset width to default (Auto Fill)"
-                  className={`px-1.5 py-1 text-[10px] font-semibold rounded border transition cursor-pointer shrink-0 whitespace-nowrap ${
-                    isCustomWidth
-                      ? 'bg-slate-800 border-subtle text-muted hover:text-white hover:border-[var(--primary-accent)]'
-                      : 'bg-[color-mix(in_oklch,var(--primary-accent)_20%,transparent)] border-[var(--primary-accent)] text-[var(--primary-accent)] opacity-60'
-                  }`}
-                >
-                  ↺ Reset
-                </button>
-              </div>
-            </div>
-
-            {/* Specific Height Header & Slider */}
-            <div className="flex flex-col gap-1.5 pt-2 border-t border-[var(--primary-border-subtle)]">
-              <div className="flex items-center justify-between">
-                <label className="text-[10px] font-bold text-muted uppercase tracking-wider">
-                  Height
-                </label>
-                <span className="text-[10px] font-mono text-[var(--primary-accent)] font-semibold">
-                  {isCustomHeight ? `${currentHeightPx}px` : 'Auto'}
-                </span>
-              </div>
-              <div className="flex items-center gap-2">
-                <input
-                  type="range"
-                  min="40"
-                  max="1000"
-                  step="10"
-                  value={currentHeightPx}
-                  onChange={(e) => {
-                    const val = parseInt(e.target.value, 10);
-                    onUpdateContainer?.(container.id, {
-                      height: `${val}px`,
-                      sizing: { ...container.sizing, height: `${val}px` },
-                    });
-                  }}
-                  className="flex-1 min-w-[70px] accent-[var(--primary-accent)] cursor-pointer h-1.5 bg-slate-800 rounded-lg"
-                  title={`Adjust container height: ${currentHeightPx}px`}
-                />
-                <div className="flex items-center gap-0.5 bg-slate-900 border border-subtle rounded-md px-1 py-0.5 w-[62px] shrink-0 focus-within:border-[var(--primary-accent)]">
-                  <input
-                    type="number"
-                    min="10"
-                    max="2000"
-                    value={isCustomHeight ? currentHeightPx : ''}
-                    placeholder={String(currentHeightPx)}
-                    onChange={(e) => {
-                      const val = parseInt(e.target.value, 10);
-                      if (!isNaN(val)) {
-                        onUpdateContainer?.(container.id, {
-                          height: `${val}px`,
-                          sizing: { ...container.sizing, height: `${val}px` },
-                        });
-                      }
-                    }}
-                    className="w-full bg-transparent text-xs font-mono text-strong text-right focus:outline-none"
-                  />
-                  <span className="text-[10px] text-muted font-mono">px</span>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => {
-                    onUpdateContainer?.(container.id, {
-                      height: undefined,
-                      sizing: { ...container.sizing, height: undefined },
-                    });
-                  }}
-                  title="Reset height to default (Auto)"
-                  className={`px-1.5 py-1 text-[10px] font-semibold rounded border transition cursor-pointer shrink-0 whitespace-nowrap ${
-                    isCustomHeight
-                      ? 'bg-slate-800 border-subtle text-muted hover:text-white hover:border-[var(--primary-accent)]'
-                      : 'bg-[color-mix(in_oklch,var(--primary-accent)_20%,transparent)] border-[var(--primary-accent)] text-[var(--primary-accent)] opacity-60'
-                  }`}
-                >
-                  ↺ Reset
-                </button>
-              </div>
-            </div>
-          </div>
+          <TemplateContainerSizing
+            container={container}
+            onUpdate={(partial) => onUpdateContainer?.(container.id, partial)}
+          />
         )}
 
         {/* Child Gap */}
@@ -519,7 +358,7 @@ export function TemplateContainerActionMenu({
         </div>
 
         {/* Wrap Children Toggle (Row mode only) */}
-        {container.direction === 'row' && (
+        {resolveDirection(container, isRoot) === 'row' && (
           <div className="flex items-center justify-between p-1.5 rounded-lg bg-surface-secondary border border-subtle">
             <span className="text-[11px] font-medium text-strong">Wrap Children</span>
             <button

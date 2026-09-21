@@ -87,6 +87,46 @@ export function SearchGlassIcon({
   );
 }
 
+// Magnifier with a plus / minus inside the lens (canvas zoom controls)
+export function ZoomInIcon({ className = 'w-4 h-4' }: ExplorerIconProps) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      aria-hidden="true"
+    >
+      <circle cx="11" cy="11" r="7" />
+      <line x1="21" y1="21" x2="16.65" y2="16.65" />
+      <line x1="8" y1="11" x2="14" y2="11" />
+      <line x1="11" y1="8" x2="11" y2="14" />
+    </svg>
+  );
+}
+
+export function ZoomOutIcon({ className = 'w-4 h-4' }: ExplorerIconProps) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      aria-hidden="true"
+    >
+      <circle cx="11" cy="11" r="7" />
+      <line x1="21" y1="21" x2="16.65" y2="16.65" />
+      <line x1="8" y1="11" x2="14" y2="11" />
+    </svg>
+  );
+}
+
 // Folder with a minus sign (Collapse All / Current)
 export function FolderCollapseIcon({ className = 'w-3.5 h-3.5' }: ExplorerIconProps) {
   return (

@@ -87,7 +87,6 @@ const COMPONENT_CATEGORIES: ComponentCategory[] = [
         icon: '📝',
         variant: 'standard',
         sizingType: 'fill',
-        sizingValue: 'calc(50% - 8px)',
         description: 'Standard card displaying field label & value',
       },
     ],

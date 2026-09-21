@@ -37,6 +37,35 @@ export interface FlexSizing {
   minHeight?: string;   // optional min-height e.g. "160px"
 }
 
+/** Parse a plain "NNNpx" (or bare number) CSS length; returns null for %, calc(), etc. */
+export function parsePxValue(raw?: string | null): number | null {
+  if (!raw) return null;
+  const m = raw.trim().match(/^(\d+(?:\.\d+)?)(?:px)?$/i);
+  return m ? parseFloat(m[1]) : null;
+}
+
+const fmtNum = (n: number) => `${Math.round(n * 10) / 10}`;
+
+/**
+ * Size of ONE of two equal halves of `raw`. Supports px, %, and calc(P% - Qpx);
+ * anything else (fill/unknown) is simply half the parent: 50%.
+ */
+export function halveCssLength(raw?: string | null): string {
+  const val = (raw || '').trim();
+  const px = parsePxValue(val);
+  if (px !== null && /px$/i.test(val)) return `${fmtNum(px / 2)}px`;
+  const pct = val.match(/^(\d+(?:\.\d+)?)%$/);
+  if (pct) return `${fmtNum(parseFloat(pct[1]) / 2)}%`;
+  const calc = val.match(/^calc\(\s*(\d+(?:\.\d+)?)%\s*-\s*(\d+(?:\.\d+)?)px\s*\)$/i);
+  if (calc) {
+    return `calc(${fmtNum(parseFloat(calc[1]) / 2)}% - ${fmtNum(parseFloat(calc[2]) / 2)}px)`;
+  }
+  return '50%';
+}
+
+/** Preview widths offered in the editor zoom panel (editor-only; templates themselves are fluid). */
+export const BODY_WIDTH_PRESETS = [2560, 1920, 1440, 1280, 1024, 768, 390];
+
 export type LayoutBlockType =
   | 'field'       // Bound to a field definition
   | 'table'       // Multi-row attribute list or table
@@ -79,11 +108,34 @@ export interface FlexContainerNode {
   width?: string;       // optional explicit width e.g. "400px", "50%"
   height?: string;      // optional explicit height e.g. "250px"
   minHeight?: string;   // optional min-height e.g. "160px"
+  minWidth?: string;    // optional min-width e.g. "300px"
+  maxWidth?: string;    // optional max-width; on the Body it caps the content width (centered)
+  maxHeight?: string;   // optional max-height e.g. "600px"
+  stackBelow?: number;  // row containers stack into a column when narrower than this many px
   isCard?: boolean;     // Whether container renders with card background & border
   children: (FlexContainerNode | FlexComponentNode)[];
 }
 
 export type FlexLayoutNode = FlexContainerNode | FlexComponentNode;
+
+/**
+ * The direction a container actually lays out in. Every container is a row or a column; the legacy
+ * unset value ('none') is what the canvas already rendered: a row, except the Body, which stacks.
+ */
+export function resolveDirection(container: FlexContainerNode, isRoot = false): 'row' | 'column' {
+  if (container.direction === 'row' || container.direction === 'column') return container.direction;
+  return isRoot ? 'column' : 'row';
+}
+
+/**
+ * Direction a brand-new container starts with: the opposite of its parent's flow, so nesting
+ * alternates naturally (a column Body holds rows, a row holds columns). An unset ('none') parent
+ * renders as a row, except the Body, which stacks vertically.
+ */
+export function defaultChildDirection(parent: FlexContainerNode, isRoot = false): 'row' | 'column' {
+  const effective = parent.direction === 'none' || !parent.direction ? (isRoot ? 'column' : 'row') : parent.direction;
+  return effective === 'column' ? 'row' : 'column';
+}
 
 export interface TemplateFlexLayoutConfig {
   version: 2;
@@ -159,11 +211,11 @@ export function migrateGridToFlexLayout(config: any): TemplateFlexLayoutConfig {
       nodeType: 'container' as const,
       label: sec.title || 'Section',
       direction: 'row' as const,
-      gap: 12 as const,
+      gap: 0 as const,
       wrap: true,
       align: 'stretch' as const,
       justify: 'start' as const,
-      padding: 16,
+      padding: 0,
       sizing: { type: 'fill' as const },
       isCard: true,
       children: componentChildren,
@@ -177,7 +229,7 @@ export function migrateGridToFlexLayout(config: any): TemplateFlexLayoutConfig {
       nodeType: 'container',
       label: 'Page Layout',
       direction: 'column',
-      gap: 16,
+      gap: 0,
       wrap: false,
       align: 'stretch',
       justify: 'start',
@@ -209,7 +261,7 @@ export function createDefaultFlexLayout(fields: any[] = []): TemplateFlexLayoutC
       nodeType: 'container',
       label: 'Page Layout',
       direction: 'column',
-      gap: 16,
+      gap: 0,
       wrap: false,
       align: 'stretch',
       justify: 'start',
@@ -221,11 +273,11 @@ export function createDefaultFlexLayout(fields: any[] = []): TemplateFlexLayoutC
           nodeType: 'container',
           label: 'General Information',
           direction: 'row',
-          gap: 12,
+          gap: 0,
           wrap: true,
           align: 'stretch',
           justify: 'start',
-          padding: 16,
+          padding: 0,
           isCard: true,
           sizing: { type: 'fill' },
           children: componentChildren,

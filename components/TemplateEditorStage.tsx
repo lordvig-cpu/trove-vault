@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { ItemTemplate } from '@/types/template';
 import { FieldDefinition } from '@/types/field';
 import {
@@ -10,20 +11,11 @@ import {
   FlexComponentNode,
   LayoutSection,
   LayoutBlock,
+  findFlexNode,
 } from '@/types/layout';
-import {
-  BodyIcon,
-  FlexRowIcon,
-  FlexColumnIcon,
-  LayoutContainerIcon,
-  SplitColumnsIcon,
-  SplitRowsIcon,
-  DashedSquareQuestionIcon,
-  AddContainerBeforeIcon,
-  AddChildContainerIcon,
-  AddContainerAfterIcon,
-} from '@/components/icons/LayoutIcons';
-import { GearIcon } from '@/components/icons/ExplorerIcons';
+import { DashedSquareQuestionIcon } from '@/components/icons/LayoutIcons';
+import { useCanvasZoom } from '@/context/CanvasZoomContext';
+import TemplateEditorBar from '@/components/TemplateEditorBar';
 
 /* ==========================================================================
    1. PROPS INTERFACE
@@ -97,6 +89,77 @@ interface TemplateEditorStageProps {
 }
 
 /* ==========================================================================
+   1b. SCALED CANVAS
+   Lays the Body out at its design width and scales it down (never up) to fit the
+   available editor area, then applies the user's zoom (header +/-) on top.
+   data-canvas-scale / data-body-width let panels report real px.
+   ========================================================================== */
+
+function ScaledCanvas({ children }: { children: React.ReactNode }) {
+  const hostRef = useRef<HTMLDivElement>(null);
+  const innerRef = useRef<HTMLDivElement>(null);
+  const [available, setAvailable] = useState(0);
+  const [innerHeight, setInnerHeight] = useState(0);
+
+  useEffect(() => {
+    const host = hostRef.current;
+    const inner = innerRef.current;
+    if (!host || !inner) return;
+    const measure = () => {
+      setAvailable(host.clientWidth);
+      setInnerHeight(inner.offsetHeight); // layout height: unaffected by the CSS transform
+    };
+    const ro = new ResizeObserver(measure);
+    ro.observe(host);
+    ro.observe(inner);
+    return () => ro.disconnect();
+  }, []);
+
+  const { zoom, previewWidth: bodyWidth, setFitWidth } = useCanvasZoom();
+
+  useEffect(() => {
+    if (available > 0) setFitWidth(available);
+  }, [available, setFitWidth]);
+
+  // Default view shrinks the Body to fit the editor area (never up); zoom multiplies on top.
+  const isFit = bodyWidth === 'fit';
+  const fitScale = !isFit && available > 0 ? Math.min(1, available / bodyWidth) : 1;
+  const scale = fitScale * zoom;
+  // 'fit' bodies reflow like browser zoom: the layout width shrinks as the scale grows.
+  const layoutWidth = isFit ? (available ? available / zoom : undefined) : bodyWidth;
+  const scaledWidth = layoutWidth ? layoutWidth * scale : undefined;
+
+  return (
+    <div
+      ref={hostRef}
+      className="w-full overflow-x-auto"
+      style={{ paddingTop: 8 }}
+    >
+      <div
+        style={{
+          width: scaledWidth,
+          height: innerHeight ? Math.ceil(innerHeight * scale) : undefined,
+          margin: '0 auto',
+        }}
+      >
+        <div
+          ref={innerRef}
+          data-canvas-scale={scale}
+          data-body-width={layoutWidth}
+          style={{
+            width: layoutWidth,
+            transform: scale !== 1 ? `scale(${scale})` : undefined,
+            transformOrigin: 'top left',
+          }}
+        >
+          {children}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ==========================================================================
    2. RECURSIVE FLEX CONTAINER RENDERER
    ========================================================================== */
 
@@ -118,10 +181,13 @@ function FlexContainerRenderer({
   onUpdateComponent,
   onRemoveComponent,
   onPlaceField,
+  parentStacked,
 }: {
   container: FlexContainerNode;
   isRoot?: boolean;
   parentContainer?: FlexContainerNode;
+  /** The parent row collapsed into a column (its stackBelow width was reached). */
+  parentStacked?: boolean;
   selectedNodeId?: string | null;
   activeContainerId?: string;
   canvasMode: 'edit' | 'preview';
@@ -150,38 +216,25 @@ function FlexContainerRenderer({
   const [isDragOver, setIsDragOver] = useState(false);
   const isSelected = selectedNodeId === container.id;
   const isActive = activeContainerId === container.id;
-  const [isTreeMenuOpen, setIsTreeMenuOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const isRightChildInRow = Boolean(
-    parentContainer?.direction === 'row' &&
-    parentContainer.children &&
-    parentContainer.children.findIndex((c) => c.id === container.id) > 0
-  );
-  const [isRightAligned, setIsRightAligned] = useState(isRightChildInRow);
-
+  // Responsive stacking: a row collapses into a column when its own layout width drops below
+  // stackBelow. offsetWidth is the pre-transform width, so the editor's scale doesn't skew it.
+  const stackBelow = container.direction === 'row' ? container.stackBelow : undefined;
+  const [isStacked, setIsStacked] = useState(false);
   useEffect(() => {
-    setIsRightAligned(isRightChildInRow);
-  }, [isRightChildInRow]);
+    const el = containerRef.current;
+    if (!el || !stackBelow) {
+      setIsStacked(false);
+      return;
+    }
+    const measure = () => setIsStacked(el.offsetWidth < stackBelow);
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [stackBelow]);
 
-  useEffect(() => {
-    if (!isSelected || !containerRef.current) return;
-    const checkAlignment = () => {
-      if (!containerRef.current) return;
-      const rect = containerRef.current.getBoundingClientRect();
-      const stageEl = containerRef.current.closest('main') || document.body;
-      const stageRect = stageEl.getBoundingClientRect();
-
-      const isRightOfStage = rect.left + rect.width / 2 > stageRect.left + stageRect.width / 2;
-      const wouldOverflowRight = rect.left + 480 > stageRect.right - 20;
-
-      setIsRightAligned(isRightChildInRow || isRightOfStage || wouldOverflowRight);
-    };
-
-    checkAlignment();
-    window.addEventListener('resize', checkAlignment);
-    return () => window.removeEventListener('resize', checkAlignment);
-  }, [isSelected, isRightChildInRow]);
 
   useEffect(() => {
     if (canvasMode !== 'edit') return;
@@ -206,38 +259,6 @@ function FlexContainerRenderer({
     };
   }, [canvasMode, container.id]);
 
-  useEffect(() => {
-    const handleOpen = (e: Event) => {
-      const customEvent = e as CustomEvent<string>;
-      if (
-        typeof customEvent.detail === 'string' &&
-        customEvent.detail.startsWith(`tree-container-${container.id}`)
-      ) {
-        setIsTreeMenuOpen(true);
-      } else {
-        setIsTreeMenuOpen(false);
-      }
-    };
-
-    const handleClose = (e: Event) => {
-      const customEvent = e as CustomEvent<string>;
-      if (
-        !customEvent.detail ||
-        (typeof customEvent.detail === 'string' &&
-          customEvent.detail.startsWith(`tree-container-${container.id}`))
-      ) {
-        setIsTreeMenuOpen(false);
-      }
-    };
-
-    window.addEventListener('explorer-action-menu-open', handleOpen);
-    window.addEventListener('explorer-action-menu-close', handleClose);
-    return () => {
-      window.removeEventListener('explorer-action-menu-open', handleOpen);
-      window.removeEventListener('explorer-action-menu-close', handleClose);
-    };
-  }, [container.id]);
-
   const justifyStyle =
     container.justify === 'between'
       ? 'space-between'
@@ -249,11 +270,18 @@ function FlexContainerRenderer({
       ? 'flex-end'
       : 'flex-start';
 
-  const isUnsetDirection = container.direction === 'none' || !container.direction;
+  // In a column parent the main axis is vertical: a container must keep its content height
+  // (the body scrolls) and take its width from cross-axis stretch, not from flex-basis.
+  const parentIsColumn =
+    !!parentContainer &&
+    (parentContainer.direction === 'column' ||
+      ((!parentContainer.direction || parentContainer.direction === 'none') &&
+        parentContainer.id === 'root-container'));
 
   const outerStyle: React.CSSProperties = {
-    flex:
-      container.sizing?.type === 'fixed'
+    flex: parentIsColumn
+      ? '0 0 auto'
+      : container.sizing?.type === 'fixed'
         ? `1 1 ${container.sizing.value || 'auto'}`
         : container.sizing?.type === 'auto'
         ? '0 0 auto'
@@ -262,26 +290,36 @@ function FlexContainerRenderer({
       container.sizing?.type === 'fixed' && container.sizing.value
         ? container.sizing.value
         : container.width || undefined,
+    // An explicit Max W wins; otherwise a fixed width doubles as the cap.
     maxWidth:
-      container.sizing?.type === 'fixed' && container.sizing.value
+      container.maxWidth ||
+      (container.sizing?.type === 'fixed' && container.sizing.value
         ? container.sizing.value
-        : undefined,
+        : undefined),
     height: container.height || container.sizing?.height || undefined,
     minHeight: container.minHeight || container.sizing?.minHeight || undefined,
-    minWidth: 0,
+    maxHeight: container.maxHeight || undefined,
+    // Now that the toolbar lives outside the container, a capped height can safely scroll.
+    overflowY: container.maxHeight ? 'auto' : undefined,
+    alignSelf: parentIsColumn && container.sizing?.type !== 'fixed' && !container.width ? 'stretch' : undefined,
+    minWidth: container.minWidth || 0,
+    // Children of a stacked row take the full width, ignoring their row-mode widths.
+    ...(parentStacked ? { width: '100%', maxWidth: container.maxWidth || undefined, flex: '0 0 auto' } : null),
   };
 
   const innerFlexStyle: React.CSSProperties = {
     display: 'flex',
     flexDirection:
       container.direction === 'row'
-        ? 'row'
+        ? isStacked
+          ? 'column'
+          : 'row'
         : container.direction === 'column'
         ? 'column'
         : isRoot
         ? 'column'
         : undefined,
-    gap: `${container.gap}px`,
+    gap: `${container.gap ?? 0}px`,
     flexWrap: container.wrap ? 'wrap' : 'nowrap',
     alignItems: container.align,
     justifyContent: justifyStyle,
@@ -336,7 +374,14 @@ function FlexContainerRenderer({
           }
         }
       }}
-      style={!isRoot ? outerStyle : undefined}
+      style={
+        !isRoot
+          ? outerStyle
+          : // Body: optional max content width, centered (blank = stretch to fill)
+            container.maxWidth
+            ? { maxWidth: container.maxWidth, marginInline: 'auto' }
+            : undefined
+      }
       className={`transition-all duration-150 relative ${
         isSelected ? 'z-20' : 'z-10'
       } ${
@@ -357,306 +402,6 @@ function FlexContainerRenderer({
           : 'rounded-2xl border border-dashed border-[var(--primary-border-subtle)] bg-[color-mix(in_oklch,var(--panel-surface-bg)_25%,transparent)] hover:border-[color-mix(in_oklch,var(--primary-accent)_40%,var(--primary-border-subtle))]'
       }`}
     >
-      {/* Floating Action Toolbar in Edit Mode - Connected to container border */}
-      {canvasMode === 'edit' && isSelected && (
-        <div
-          className={`tmpl-container-floating-toolbar absolute bottom-full z-30 select-none pointer-events-auto max-w-[calc(100vw-3rem)] ${
-            isRightAligned ? 'right-3.5' : 'left-3.5'
-          }`}
-          onClick={(e) => e.stopPropagation()}
-        >
-          <div className="flex items-center gap-2 px-2.5 py-1.5 min-w-0">
-            {/* Quick Direction Toggle Buttons (3-Button Layout Suite) */}
-            <div className="flex items-center gap-1 shrink-0" role="group" aria-label="Container flex direction">
-              <button
-                type="button"
-                disabled={isRoot}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  if (!isRoot) onUpdateContainer?.(container.id, { direction: 'none' });
-                }}
-                title={isRoot ? "Generic container layout (default for Root Body — cannot be changed)" : "Generic container layout (unset flow) — click to remove row/column distinction"}
-                aria-label="Generic container layout"
-                aria-pressed={isUnsetDirection}
-                className={`p-1 rounded-md border transition flex items-center justify-center ${
-                  isRoot
-                    ? 'bg-[color-mix(in_oklch,var(--primary-accent)_25%,transparent)] border-[var(--primary-accent)] text-[var(--primary-accent)] opacity-80 cursor-not-allowed'
-                    : isUnsetDirection
-                    ? 'bg-[color-mix(in_oklch,var(--primary-accent)_25%,transparent)] border-[var(--primary-accent)] text-[var(--primary-accent)] shadow-sm cursor-pointer'
-                    : 'bg-[color-mix(in_oklch,var(--panel-surface-bg)_70%,transparent)] border-[var(--primary-border-subtle)] text-[var(--text-muted)] hover:border-[var(--primary-accent)] hover:text-white cursor-pointer'
-                }`}
-              >
-                <LayoutContainerIcon className="w-3.5 h-3.5" />
-              </button>
-
-              <button
-                type="button"
-                disabled={isRoot}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  if (!isRoot) onUpdateContainer?.(container.id, { direction: 'row' });
-                }}
-                title={isRoot ? "Row layout is not available for Root Body" : "Row layout (horizontal flow) — click to switch"}
-                aria-label="Row layout"
-                aria-pressed={container.direction === 'row'}
-                className={`p-1 rounded-md border transition flex items-center justify-center ${
-                  isRoot
-                    ? 'opacity-35 cursor-not-allowed bg-[color-mix(in_oklch,var(--panel-surface-bg)_70%,transparent)] border-[var(--primary-border-subtle)] text-[var(--text-muted)]'
-                    : container.direction === 'row'
-                    ? 'bg-[color-mix(in_oklch,var(--primary-accent)_25%,transparent)] border-[var(--primary-accent)] text-[var(--primary-accent)] shadow-sm cursor-pointer'
-                    : 'bg-[color-mix(in_oklch,var(--panel-surface-bg)_70%,transparent)] border-[var(--primary-border-subtle)] text-[var(--text-muted)] hover:border-[var(--primary-accent)] hover:text-white cursor-pointer'
-                }`}
-              >
-                <FlexRowIcon className="w-3.5 h-3.5" />
-              </button>
-
-              <button
-                type="button"
-                disabled={isRoot}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  if (!isRoot) onUpdateContainer?.(container.id, { direction: 'column' });
-                }}
-                title={isRoot ? "Column layout is not available for Root Body" : "Column layout (vertical flow) — click to switch"}
-                aria-label="Column layout"
-                aria-pressed={container.direction === 'column'}
-                className={`p-1 rounded-md border transition flex items-center justify-center ${
-                  isRoot
-                    ? 'opacity-35 cursor-not-allowed bg-[color-mix(in_oklch,var(--panel-surface-bg)_70%,transparent)] border-[var(--primary-border-subtle)] text-[var(--text-muted)]'
-                    : container.direction === 'column'
-                    ? 'bg-[color-mix(in_oklch,var(--primary-accent)_25%,transparent)] border-[var(--primary-accent)] text-[var(--primary-accent)] shadow-sm cursor-pointer'
-                    : 'bg-[color-mix(in_oklch,var(--panel-surface-bg)_70%,transparent)] border-[var(--primary-border-subtle)] text-[var(--text-muted)] hover:border-[var(--primary-accent)] hover:text-white cursor-pointer'
-                }`}
-              >
-                <FlexColumnIcon className="w-3.5 h-3.5" />
-              </button>
-            </div>
-
-            <div className="h-3.5 w-px bg-[color-mix(in_oklch,var(--primary-accent)_35%,var(--primary-border-subtle))] shrink-0" />
-
-            <span className="text-[11px] font-bold text-white tracking-wide truncate max-w-[130px]">
-              {isRoot ? 'Body' : container.label || 'Container'}
-            </span>
-            {!isRoot && isCard && (
-              <span className="text-[9px] font-bold text-emerald-400 px-1 rounded bg-emerald-500/10 border border-emerald-500/20 shrink-0">
-                Card
-              </span>
-            )}
-
-            {/* Sizing Mode Pill (Auto / Custom) */}
-            <div
-              className="flex items-center gap-0.5 bg-[color-mix(in_oklch,var(--panel-surface-bg)_80%,transparent)] p-0.5 rounded-md border border-[var(--primary-border-subtle)] shrink-0 text-[10px] font-semibold"
-              role="group"
-              aria-label="Container sizing mode"
-            >
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  if (!isRoot) onUpdateContainer?.(container.id, { sizing: { type: 'fill' } });
-                }}
-                title={isRoot ? "Auto: Root Body stretches automatically with content" : "Auto: stretches container to fill available parent space"}
-                className={`px-1.5 py-0.5 rounded transition ${
-                  isRoot
-                    ? 'bg-[var(--primary-accent)] text-white shadow-xs cursor-default'
-                    : (container.sizing?.type || 'fill') === 'fill'
-                    ? 'bg-[var(--primary-accent)] text-white shadow-xs cursor-pointer'
-                    : 'text-[var(--text-muted)] hover:text-white cursor-pointer'
-                }`}
-              >
-                Auto
-              </button>
-              <button
-                type="button"
-                disabled={isRoot}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  if (!isRoot) {
-                    onUpdateContainer?.(container.id, {
-                      sizing: {
-                        type: 'fixed',
-                        value: container.sizing?.type === 'fixed' ? container.sizing.value || '50%' : '50%',
-                      },
-                    });
-                  }
-                }}
-                title={isRoot ? "Custom fixed sizing is not available for Root Body (expands automatically with content)" : "Custom: user specifies custom width/height (e.g. 50%, 300px)"}
-                className={`px-1.5 py-0.5 rounded transition ${
-                  isRoot
-                    ? 'opacity-35 cursor-not-allowed text-[var(--text-muted)]'
-                    : container.sizing?.type === 'fixed'
-                    ? 'bg-[var(--primary-accent)] text-white shadow-xs cursor-pointer'
-                    : 'text-[var(--text-muted)] hover:text-white cursor-pointer'
-                }`}
-              >
-                Custom
-              </button>
-            </div>
-
-            {/* Add Container Before, Child, and After Buttons */}
-            <div className="flex items-center gap-1 shrink-0" role="group" aria-label="Add container before, child, or after">
-              {/* Add Container Before */}
-              <button
-                type="button"
-                disabled={isRoot}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  if (!isRoot) {
-                    onInsertContainerSibling?.(container.id, 'before', { label: 'New Container', direction: 'none', padding: 0, sizing: { type: 'fill' } });
-                  }
-                }}
-                title={isRoot ? "Add Container Before is not available for Root Body" : "Add Container Before"}
-                aria-label="Add Container Before"
-                className={`p-1 rounded-md border transition flex items-center justify-center ${
-                  isRoot
-                    ? 'opacity-35 cursor-not-allowed bg-[color-mix(in_oklch,var(--panel-surface-bg)_70%,transparent)] border-[var(--primary-border-subtle)] text-[var(--text-muted)]'
-                    : 'bg-[color-mix(in_oklch,var(--panel-surface-bg)_70%,transparent)] border-[var(--primary-border-subtle)] text-[var(--text-muted)] hover:border-[var(--primary-accent)] hover:text-white hover:bg-[color-mix(in_oklch,var(--primary-accent)_15%,transparent)] cursor-pointer'
-                }`}
-              >
-                <AddContainerBeforeIcon className="w-3.5 h-3.5" />
-              </button>
-
-              {/* Add Child Container (In the middle) */}
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onAddContainer?.(container.id, { label: 'New Container', direction: 'none', padding: 0, sizing: { type: 'fill' } });
-                }}
-                title={isRoot ? "Add Child Container (Insert nested container into Body)" : "Add Child Container (Insert nested container inside)"}
-                aria-label="Add Child Container"
-                className="p-1 rounded-md border transition flex items-center justify-center bg-[color-mix(in_oklch,var(--panel-surface-bg)_70%,transparent)] border-[var(--primary-border-subtle)] text-[var(--text-muted)] hover:border-[var(--primary-accent)] hover:text-white hover:bg-[color-mix(in_oklch,var(--primary-accent)_15%,transparent)] cursor-pointer"
-              >
-                <AddChildContainerIcon className="w-3.5 h-3.5" />
-              </button>
-
-              {/* Add Container After */}
-              <button
-                type="button"
-                disabled={isRoot}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  if (!isRoot) {
-                    onInsertContainerSibling?.(container.id, 'after', { label: 'New Container', direction: 'none', padding: 0, sizing: { type: 'fill' } });
-                  }
-                }}
-                title={isRoot ? "Add Container After is not available for Root Body" : "Add Container After"}
-                aria-label="Add Container After"
-                className={`p-1 rounded-md border transition flex items-center justify-center ${
-                  isRoot
-                    ? 'opacity-35 cursor-not-allowed bg-[color-mix(in_oklch,var(--panel-surface-bg)_70%,transparent)] border-[var(--primary-border-subtle)] text-[var(--text-muted)]'
-                    : 'bg-[color-mix(in_oklch,var(--panel-surface-bg)_70%,transparent)] border-[var(--primary-border-subtle)] text-[var(--text-muted)] hover:border-[var(--primary-accent)] hover:text-white hover:bg-[color-mix(in_oklch,var(--primary-accent)_15%,transparent)] cursor-pointer'
-                }`}
-              >
-                <AddContainerAfterIcon className="w-3.5 h-3.5" />
-              </button>
-            </div>
-
-            <div className="h-3.5 w-px bg-[color-mix(in_oklch,var(--primary-accent)_35%,var(--primary-border-subtle))] shrink-0" />
-
-            {/* Split Container Actions (Top right next to gear) */}
-            <div
-              className="flex items-center justify-center gap-1 shrink-0"
-              role="group"
-              aria-label="Split container"
-            >
-              <button
-                type="button"
-                disabled={isRoot}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  if (!isRoot) onSplitContainer?.(container.id, 'columns');
-                }}
-                title={isRoot ? "Root Body cannot be split" : "Split into 2 Columns (side-by-side)"}
-                aria-label="Split into 2 Columns"
-                className={`p-1 rounded-md border transition flex items-center justify-center ${
-                  isRoot
-                    ? 'opacity-35 cursor-not-allowed bg-[color-mix(in_oklch,var(--panel-surface-bg)_70%,transparent)] border-[var(--primary-border-subtle)] text-[var(--text-muted)]'
-                    : 'cursor-pointer bg-[color-mix(in_oklch,var(--panel-surface-bg)_70%,transparent)] border-[var(--primary-border-subtle)] text-[var(--text-muted)] hover:border-[var(--primary-accent)] hover:text-white hover:bg-[color-mix(in_oklch,var(--primary-accent)_15%,transparent)]'
-                }`}
-              >
-                <SplitColumnsIcon className="w-3.5 h-3.5" />
-              </button>
-
-              <button
-                type="button"
-                disabled={isRoot}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  if (!isRoot) onSplitContainer?.(container.id, 'rows');
-                }}
-                title={isRoot ? "Root Body cannot be split" : "Split into 2 Rows (stacked)"}
-                aria-label="Split into 2 Rows"
-                className={`p-1 rounded-md border transition flex items-center justify-center ${
-                  isRoot
-                    ? 'opacity-35 cursor-not-allowed bg-[color-mix(in_oklch,var(--panel-surface-bg)_70%,transparent)] border-[var(--primary-border-subtle)] text-[var(--text-muted)]'
-                    : 'cursor-pointer bg-[color-mix(in_oklch,var(--panel-surface-bg)_70%,transparent)] border-[var(--primary-border-subtle)] text-[var(--text-muted)] hover:border-[var(--primary-accent)] hover:text-white hover:bg-[color-mix(in_oklch,var(--primary-accent)_15%,transparent)]'
-                }`}
-              >
-                <SplitRowsIcon className="w-3.5 h-3.5" />
-              </button>
-            </div>
-
-            <div className="h-3.5 w-px bg-[color-mix(in_oklch,var(--primary-accent)_35%,var(--primary-border-subtle))] shrink-0" />
-
-            {/* Gear Button: Triggers connected side panel gear and action menu */}
-            <button
-              type="button"
-              data-gear-trigger
-              onClick={(e) => {
-                e.stopPropagation();
-                onSelectNode?.(container.id);
-                const treeGear = document.querySelector<HTMLElement>(`[data-tree-gear-id="${container.id}"]`);
-                if (treeGear) {
-                  treeGear.click();
-                }
-              }}
-              title={isRoot ? 'Body Properties' : 'Container Properties'}
-              aria-label={isRoot ? 'Body properties' : 'Container properties'}
-              aria-expanded={isTreeMenuOpen}
-              className={`p-1 rounded-md border transition cursor-pointer flex items-center justify-center shrink-0 ${
-                isTreeMenuOpen
-                  ? 'bg-[var(--primary-accent)] text-white border-[var(--primary-accent)] shadow-sm'
-                  : 'bg-[color-mix(in_oklch,var(--panel-surface-bg)_70%,transparent)] border-[var(--primary-border-subtle)] text-[var(--text-muted)] hover:border-[var(--primary-accent)] hover:text-white'
-              }`}
-            >
-              <GearIcon
-                isActive={isTreeMenuOpen}
-                className={`w-3.5 h-3.5 transition-transform duration-300 ${
-                  isTreeMenuOpen ? 'rotate-90 text-white' : ''
-                }`}
-              />
-            </button>
-
-            {/* Trash Delete Button */}
-            {isRoot ? (
-              <button
-                type="button"
-                disabled
-                title="Root Body container cannot be deleted"
-                aria-label="Delete Container (Disabled for Body)"
-                className="text-xs p-0.5 rounded opacity-35 cursor-not-allowed shrink-0"
-              >
-                🗑️
-              </button>
-            ) : (
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onRemoveContainer?.(container.id);
-                }}
-                className="text-xs text-red-400 hover:text-red-300 p-0.5 rounded hover:bg-red-500/10 transition cursor-pointer shrink-0"
-                title="Delete Container"
-                aria-label="Delete Container"
-              >
-                🗑️
-              </button>
-            )}
-          </div>
-        </div>
-      )}
-
       {/* Children or Empty State */}
       <div style={innerFlexStyle} className="w-full flex-1 min-h-0">
         {container.children.length === 0 ? (
@@ -699,6 +444,7 @@ function FlexContainerRenderer({
                   key={child.id}
                   container={child}
                   parentContainer={container}
+                  parentStacked={isStacked}
                   selectedNodeId={selectedNodeId}
                   activeContainerId={activeContainerId}
                   canvasMode={canvasMode}
@@ -720,6 +466,7 @@ function FlexContainerRenderer({
               <FlexComponentRenderer
                 key={child.id}
                 component={child}
+                parentStacked={isStacked}
                 selectedNodeId={selectedNodeId}
                 canvasMode={canvasMode}
                 fields={fields}
@@ -745,8 +492,10 @@ function FlexComponentRenderer({
   fields,
   onSelectNode,
   onRemoveComponent,
+  parentStacked,
 }: {
   component: FlexComponentNode;
+  parentStacked?: boolean;
   selectedNodeId?: string | null;
   canvasMode: 'edit' | 'preview';
   fields: FieldDefinition[];
@@ -771,6 +520,7 @@ function FlexComponentRenderer({
         ? component.sizing.value
         : undefined,
     minWidth: 0,
+    ...(parentStacked ? { flex: '0 0 auto', width: '100%' } : null),
   };
 
   return (
@@ -966,6 +716,16 @@ export default function TemplateEditorStage({
   const fields = template.fields || [];
   const sections = layoutConfig?.sections || [];
 
+  // Preview width and zoom are editor-only: every editing session starts at Fit / 100%.
+  const { setPreviewWidth, resetZoom } = useCanvasZoom();
+  useEffect(
+    () => () => {
+      setPreviewWidth('fit');
+      resetZoom();
+    },
+    [setPreviewWidth, resetZoom]
+  );
+
   const [editingSectionId, setEditingSectionId] = useState<string | null>(null);
 
   const getFieldForBlock = (block: LayoutBlock): FieldDefinition | undefined => {
@@ -975,12 +735,34 @@ export default function TemplateEditorStage({
 
   const isFlexActive = Boolean(flexLayoutConfig?.root);
 
+  // The editor bar (container tools, preview width, zoom) lives in the slot under the top header.
+  const toolbarSlot =
+    typeof document !== 'undefined' ? document.getElementById('template-toolbar-slot') : null;
+  const selectedNode =
+    flexLayoutConfig?.root && selectedNodeId ? findFlexNode(flexLayoutConfig.root, selectedNodeId) : null;
+  const toolbarContainer = selectedNode?.nodeType === 'container' ? selectedNode : null;
+
   return (
-    <div className="w-full max-w-6xl mx-auto p-4 sm:p-6 flex-1 flex flex-col gap-6 select-none min-h-0">
+    <div className="w-full mx-auto p-4 sm:p-6 flex-1 flex flex-col gap-6 select-none min-h-0">
+      {isFlexActive && toolbarSlot &&
+        createPortal(
+          <TemplateEditorBar
+            container={toolbarContainer}
+            isRoot={!!toolbarContainer && toolbarContainer.id === flexLayoutConfig?.root.id}
+            showContainerTools={canvasMode === 'edit'}
+            onUpdateContainer={onUpdateFlexContainer}
+            onAddContainer={onAddFlexContainer}
+            onInsertContainerSibling={onInsertContainerSibling}
+            onSplitContainer={onSplitContainer}
+            onRemoveContainer={onRemoveFlexContainer}
+            onSelectNode={onSelectNode}
+          />,
+          toolbarSlot
+        )}
       {/* --------------------------------------------------------------------
           1. BLUEPRINT HEADER BANNER & CANVAS TOOLBAR
           -------------------------------------------------------------------- */}
-      <div className="tmpl-editor-stage-banner flex flex-wrap items-center justify-between gap-4 p-4 rounded-2xl">
+      <div className="tmpl-editor-stage-banner w-full max-w-6xl mx-auto flex flex-wrap items-center justify-between gap-4 p-4 rounded-2xl">
         <div className="flex items-center gap-3.5 min-w-0">
           <div className="w-12 h-12 rounded-xl bg-[color-mix(in_oklch,var(--primary-accent)_20%,transparent)] border border-[color-mix(in_oklch,var(--primary-accent)_40%,transparent)] flex items-center justify-center text-2xl shadow-md shrink-0">
             {template.icon || '📦'}
@@ -1050,7 +832,7 @@ export default function TemplateEditorStage({
           2. VISUAL CANVAS STAGE (Flexbox Engine or Legacy Grid Fallback)
           -------------------------------------------------------------------- */}
       {isFlexActive && flexLayoutConfig?.root ? (
-        <div className="flex-1 flex flex-col min-h-0 gap-6 pt-8">
+        <ScaledCanvas>
           <FlexContainerRenderer
             container={flexLayoutConfig.root}
             isRoot
@@ -1069,9 +851,9 @@ export default function TemplateEditorStage({
             onRemoveComponent={onRemoveFlexComponent}
             onPlaceField={onPlaceField}
           />
-        </div>
+        </ScaledCanvas>
       ) : sections.length === 0 ? (
-        <div className="py-16 flex flex-col items-center justify-center text-center gap-3 border-2 border-dashed border-slate-800 rounded-2xl bg-slate-900/20">
+        <div className="w-full max-w-6xl mx-auto py-16 flex flex-col items-center justify-center text-center gap-3 border-2 border-dashed border-slate-800 rounded-2xl bg-slate-900/20">
           <span className="text-4xl">📐</span>
           <span className="text-sm font-bold text-slate-300">
             No Layout Sections Created
@@ -1100,7 +882,7 @@ export default function TemplateEditorStage({
           </div>
         </div>
       ) : (
-        <div className="flex flex-col gap-6">
+        <div className="w-full max-w-6xl mx-auto flex flex-col gap-6">
           {sections.map((sec) => (
             <div
               key={sec.id}
