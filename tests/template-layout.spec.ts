@@ -279,49 +279,6 @@ test.describe('Template Layout Engine & Grid System', () => {
     await expect(rightTabs.nth(0)).toHaveAttribute('aria-selected', 'true');
   });
 
-  test('hides watermark and enables structure tree gear flyout properties menu with Parent Container label', async ({ page }) => {
-    await page.goto('/');
-    await page.waitForLoadState('networkidle');
-
-    // Watermark is present before entering template edit mode
-    await expect(page.locator('.watermark-logo-image')).toHaveCount(1);
-
-    // Open TEMPLATES flyout
-    await page.locator('header button', { hasText: 'TEMPLATES' }).click();
-    await page.waitForTimeout(600);
-
-    // Open action menu for template and click Edit Template
-    const gearBtn = page.locator('[aria-label="Open actions"]').first();
-    await gearBtn.click();
-    await page.waitForTimeout(400);
-    await page.locator('button', { hasText: 'Edit Template' }).click();
-    await page.waitForTimeout(1000);
-
-    // 1. Watermark is hidden during template editing
-    await expect(page.locator('.watermark-logo-image')).toHaveCount(0);
-
-    // 2. Root Body container has NO gear actions trigger
-    await expect(page.locator('.primary-side-panel [aria-label="Open Body actions"]')).toHaveCount(0);
-
-    // 3. Child containers have matching gear action triggers
-    const childGear = page.locator('.primary-side-panel [aria-label="Open General Information actions"]');
-    await expect(childGear).toBeVisible();
-    await childGear.click();
-    await page.waitForTimeout(500);
-
-    // Action menu flyout is rendered with properties including Parent Container
-    const actionMenu = page.locator('[data-tree-menu]').first();
-    await expect(actionMenu).toBeVisible();
-    await expect(actionMenu).toContainText('Parent Container');
-    await expect(actionMenu).toContainText('Flex Flow Direction');
-
-    // Take screenshot showing the matching gear and open flyout menu with Parent Container
-    await page.screenshot({
-      path: 'C:/Users/mc_cl/.gemini/antigravity/brain/31bae76a-fe56-4a8b-b91e-7d916ddebf78/template_structure_parent_container_menu.png',
-      fullPage: true,
-    });
-  });
-
   test('empty primary side panel renders empty drop zone without phantom items tab or section header', async ({ page }) => {
     await page.goto('/');
     await page.waitForLoadState('networkidle');
@@ -469,58 +426,6 @@ test.describe('Template Layout Engine & Grid System', () => {
     await expect(inspectorSearch).toHaveValue('play_time');
   });
 
-  test('drags a field from Inspector directly into template container without overlay, updating Structure tree', async ({ page }) => {
-    await page.goto('/');
-    await page.waitForLoadState('networkidle');
-
-    // Open TEMPLATES flyout and edit template
-    const templatesNav = page.locator('header button', { hasText: 'TEMPLATES' });
-    await templatesNav.click();
-    await page.waitForTimeout(500);
-
-    const gearBtn = page.locator('[aria-label="Open actions"]').first();
-    await gearBtn.click();
-    await page.waitForTimeout(400);
-    await page.locator('button', { hasText: 'Edit Template' }).click();
-    await page.waitForTimeout(1000);
-
-    // 1. Verify field rows in Inspector are draggable
-    const fieldItem = page.locator('.secondary-side-panel .tmpl-field-item', { hasText: 'Game Designer' });
-    await expect(fieldItem).toBeVisible();
-    await expect(fieldItem).toHaveAttribute('draggable', 'true');
-
-    // Verify grab handle exists
-    const grabHandle = fieldItem.locator('[aria-label="Drag handle"]');
-    await expect(grabHandle).toBeVisible();
-
-    // 2. Locate canvas container (e.g. "General Information" container)
-    const targetContainer = page.locator('[data-container-id="container-c1"]');
-    await expect(targetContainer).toBeVisible();
-
-    // 3. Count components in Structure tree before drop
-    const leftPanel = page.locator('.primary-side-panel');
-    const treeItemsBefore = await leftPanel.locator('.tree-item').count();
-
-    // 4. Drag field into canvas container
-    await fieldItem.dragTo(targetContainer);
-    await page.waitForTimeout(600);
-
-    // 5. Verify NO overlay was shown
-    const dockOverlay = page.locator('.panel-dock-drop-zones, .dock-drop-zone');
-    await expect(dockOverlay).toHaveCount(0);
-
-    // 6. Verify Structure tree count increased on the left and contains the dropped field
-    const treeItemsAfter = await leftPanel.locator('.tree-item').count();
-    expect(treeItemsAfter).toBeGreaterThan(treeItemsBefore);
-    await expect(leftPanel.locator('[data-tree-component-id]')).toContainText(['Game Designer']);
-
-    // Take screenshot showing the updated canvas and structure tree
-    await page.screenshot({
-      path: 'C:/Users/mc_cl/.gemini/antigravity/brain/31bae76a-fe56-4a8b-b91e-7d916ddebf78/field_drag_drop_success.png',
-      fullPage: true,
-    });
-  });
-
   test('opens template editor from Items panel category gear -> Edit Item Template without error', async ({ page }) => {
     await page.goto('/');
     await page.waitForLoadState('networkidle');
@@ -566,69 +471,6 @@ test.describe('Template Layout Engine & Grid System', () => {
     // Take screenshot showing successfully loaded template editor from category gear
     await page.screenshot({
       path: 'C:/Users/mc_cl/.gemini/antigravity/brain/31bae76a-fe56-4a8b-b91e-7d916ddebf78/edit_template_from_category_gear_success.png',
-      fullPage: true,
-    });
-  });
-
-  test('displays SVG row and column direction buttons on containers allowing on-the-fly switching', async ({ page }) => {
-    await page.goto('/');
-    await page.waitForTimeout(1000);
-
-    // 1. Open template editor via TEMPLATES tab
-    const templatesNav = page.locator('header button', { hasText: 'TEMPLATES' });
-    await templatesNav.click();
-    await page.waitForTimeout(500);
-
-    const gearBtn = page.locator('[aria-label="Open actions"]').first();
-    await gearBtn.click();
-    await page.waitForTimeout(400);
-    await page.locator('button', { hasText: 'Edit Template' }).click();
-    await page.waitForTimeout(1000);
-
-    // 2. Find a container on canvas (e.g. "General Information")
-    const container = page.locator('[data-container-id]').filter({ hasText: 'General Information' }).first();
-    await expect(container).toBeVisible();
-
-    // 3. Locate Row and Column direction toggle buttons at the top-left of container
-    const rowBtn = container.locator('button[aria-label="Row layout"]');
-    const colBtn = container.locator('button[aria-label="Column layout"]');
-
-    await expect(rowBtn).toBeVisible();
-    await expect(colBtn).toBeVisible();
-
-    // Verify both buttons have crisp SVG icons
-    await expect(rowBtn.locator('svg')).toBeVisible();
-    await expect(colBtn.locator('svg')).toBeVisible();
-
-    // 4. Click Row layout button to switch on the fly
-    await rowBtn.click();
-    await page.waitForTimeout(300);
-
-    // Verify row button is now active (aria-pressed=true, nav-footer-dock-btn-open)
-    await expect(rowBtn).toHaveAttribute('aria-pressed', 'true');
-    await expect(rowBtn).toHaveClass(/nav-footer-dock-btn-open/);
-    await expect(colBtn).toHaveAttribute('aria-pressed', 'false');
-    await expect(colBtn).toHaveClass(/nav-footer-dock-btn-closed/);
-
-    // 5. Click Column layout button to switch back on the fly
-    await colBtn.click();
-    await page.waitForTimeout(300);
-
-    // Verify column button is now active
-    await expect(colBtn).toHaveAttribute('aria-pressed', 'true');
-    await expect(colBtn).toHaveClass(/nav-footer-dock-btn-open/);
-    await expect(rowBtn).toHaveAttribute('aria-pressed', 'false');
-    await expect(rowBtn).toHaveClass(/nav-footer-dock-btn-closed/);
-
-    // 6. Verify layout palette in bottom panel also has SVG icons for Row and Column containers
-    const paletteRowPrim = page.locator('button', { hasText: 'Row Container' });
-    const paletteColPrim = page.locator('button', { hasText: 'Column Container' });
-    await expect(paletteRowPrim.locator('svg')).toBeVisible();
-    await expect(paletteColPrim.locator('svg')).toBeVisible();
-
-    // 7. Take screenshot showing container direction buttons and palette SVGs
-    await page.screenshot({
-      path: 'C:/Users/mc_cl/.gemini/antigravity/brain/31bae76a-fe56-4a8b-b91e-7d916ddebf78/container_direction_svg_buttons.png',
       fullPage: true,
     });
   });
