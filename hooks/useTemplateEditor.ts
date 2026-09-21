@@ -21,6 +21,7 @@ import {
 } from '@/types/layout';
 import { DockContent } from '@/hooks/usePanelDockDrag';
 import { errorMessage } from '@/lib/errors';
+import { toFieldDefinition, toItemTemplate, toJson } from '@/lib/data/mappers';
 
 export interface WorkspaceTabSnapshot {
   primaryTabs: DockContent[];
@@ -93,7 +94,7 @@ export function useTemplateEditor({
    */
   const REMOTE_SAVE_DELAY_MS = 800;
   const remoteSaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const remoteSavePending = useRef<{ id: number; layout: unknown } | null>(null);
+  const remoteSavePending = useRef<{ id: number; layout: TemplateFlexLayoutConfig } | null>(null);
   const remoteSaveWarned = useRef(false);
 
   const flushRemoteSave = useCallback(async () => {
@@ -107,7 +108,7 @@ export function useTemplateEditor({
     try {
       const { error } = await supabase
         .from('item_templates')
-        .update({ layout_config: pending.layout })
+        .update({ layout_config: toJson(pending.layout) })
         .eq('id', pending.id);
       // Warn once per session so a missing layout_config column is visible, not silent
       if (error && !remoteSaveWarned.current) {
@@ -120,7 +121,7 @@ export function useTemplateEditor({
   }, []);
 
   const persistLayout = useCallback(
-    (templateId: number, layout: unknown) => {
+    (templateId: number, layout: TemplateFlexLayoutConfig) => {
       if (typeof window !== 'undefined') {
         try {
           localStorage.setItem(`trovevault_template_layout_${templateId}`, JSON.stringify(layout));
@@ -184,13 +185,7 @@ export function useTemplateEditor({
       if (tmplErr) throw tmplErr;
       if (fieldsErr) throw fieldsErr;
 
-      const loadedTemplate: ItemTemplate = {
-        ...tmplData,
-        fields: (fieldsData || []).map((f) => ({
-          ...f,
-          options: Array.isArray(f.options) ? f.options : null,
-        })),
-      };
+      const loadedTemplate: ItemTemplate = toItemTemplate(tmplData, (fieldsData || []).map(toFieldDefinition));
 
       // Resolve Layout: Check localStorage -> tmplData.layout_config -> generate default flex layout
       let rawConfig: unknown = null;
@@ -326,7 +321,9 @@ export function useTemplateEditor({
 
         if (updateErr) throw updateErr;
 
-        setActiveTemplate((prev) => (prev ? { ...prev, ...data } : null));
+        setActiveTemplate((prev) =>
+          prev ? { ...prev, name: data.name, description: data.description, icon: data.icon ?? '📦' } : null
+        );
         setSuccessMsg('Template metadata updated');
         if (onRefreshData) await onRefreshData();
       } catch (err) {
@@ -374,10 +371,7 @@ export function useTemplateEditor({
 
         if (insertErr) throw insertErr;
 
-        const formattedField: FieldDefinition = {
-          ...createdField,
-          options: Array.isArray(createdField.options) ? createdField.options : null,
-        };
+        const formattedField: FieldDefinition = toFieldDefinition(createdField);
 
         setActiveTemplate((prev) =>
           prev
@@ -437,10 +431,7 @@ export function useTemplateEditor({
 
         if (updateErr) throw updateErr;
 
-        const formattedUpdated: FieldDefinition = {
-          ...updated,
-          options: Array.isArray(updated.options) ? updated.options : null,
-        };
+        const formattedUpdated: FieldDefinition = toFieldDefinition(updated);
 
         setActiveTemplate((prev) => {
           if (!prev) return null;

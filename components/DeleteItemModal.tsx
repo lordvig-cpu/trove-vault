@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { supabase } from '@/lib/supabase';
+import { deleteItem } from '@/lib/data/items';
 import { ItemRecord } from '@/types/item';
 import { errorMessage } from '@/lib/errors';
 
@@ -60,12 +60,7 @@ export default function DeleteItemModal({
     setError(null);
 
     try {
-      const { error: deleteError } = await supabase
-        .from('items')
-        .delete()
-        .eq('id', item.id);
-
-      if (deleteError) throw deleteError;
+      await deleteItem(item.id);
 
       onItemDeleted();
       onClose();

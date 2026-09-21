@@ -1,4 +1,5 @@
 import { supabase } from '@/lib/supabase';
+import { toFieldDefinition, toItemTemplate } from '@/lib/data/mappers';
 import { ItemTemplate } from '@/types/template';
 
 export async function fetchTemplateCatalog(): Promise<ItemTemplate[]> {
@@ -18,9 +19,11 @@ export async function fetchTemplateCatalog(): Promise<ItemTemplate[]> {
   if (templateError) throw templateError;
   if (fieldError) throw fieldError;
 
-  return (templates || []).map((template) => ({
-    ...template,
-    fields: (fields || []).filter((field) => field.template_id === template.id),
-  }));
+  const fieldDefinitions = (fields || []).map(toFieldDefinition);
+  return (templates || []).map((template) =>
+    toItemTemplate(
+      template,
+      fieldDefinitions.filter((field) => field.template_id === template.id)
+    )
+  );
 }
-

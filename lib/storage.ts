@@ -1,5 +1,7 @@
 import { supabase } from './supabase';
 
+const IMAGE_BUCKET = 'item-images';
+
 /** Largest image accepted for upload. */
 export const IMAGE_UPLOAD_MAX_BYTES = 10 * 1024 * 1024;
 
@@ -27,17 +29,24 @@ export function validateImageFile(file: File): string | null {
   return null;
 }
 
-export async function uploadItemImage(file: File): Promise<string> {
+export interface UploadedImage {
+  /** Public URL to store on the item. */
+  url: string;
+  /** Storage path, needed to remove the file again if a later step fails. */
+  path: string;
+}
+
+export async function uploadItemImage(file: File): Promise<UploadedImage> {
   const problem = validateImageFile(file);
   if (problem) throw new Error(problem);
 
   // Generate a clean, unique file path: timestamp_random.ext
   const fileName = `${Date.now()}_${Math.random().toString(36).substring(2, 9)}.${IMAGE_EXTENSIONS[file.type]}`;
-  const filePath = `uploads/${fileName}`;
+  const path = `uploads/${fileName}`;
 
   const { error: uploadError } = await supabase.storage
-    .from('item-images')
-    .upload(filePath, file, {
+    .from(IMAGE_BUCKET)
+    .upload(path, file, {
       cacheControl: '3600',
       contentType: file.type,
       upsert: false,
@@ -47,7 +56,12 @@ export async function uploadItemImage(file: File): Promise<string> {
     throw uploadError;
   }
 
-  // Get the public URL
-  const { data } = supabase.storage.from('item-images').getPublicUrl(filePath);
-  return data.publicUrl;
+  const { data } = supabase.storage.from(IMAGE_BUCKET).getPublicUrl(path);
+  return { url: data.publicUrl, path };
+}
+
+/** Best-effort removal of an uploaded image (used to clean up after a failed save). */
+export async function removeItemImage(path: string): Promise<void> {
+  const { error } = await supabase.storage.from(IMAGE_BUCKET).remove([path]);
+  if (error) console.error('Could not remove the uploaded image after a failed save:', error);
 }

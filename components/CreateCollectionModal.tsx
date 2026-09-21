@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { supabase } from '@/lib/supabase';
+import { createCollection } from '@/lib/data/collections';
 import { CollectionRecord } from '@/types/collection';
 import { errorMessage } from '@/lib/errors';
 
@@ -46,19 +46,13 @@ export default function CreateCollectionModal({
       setLoading(true);
       setError(null);
 
-      const { data, error: insertError } = await supabase
-        .from('collections')
-        .insert({
-          name: name.trim(),
-          description: description.trim() || null,
-          parent_id: parentId,
-        })
-        .select()
-        .single();
+      const created = await createCollection({
+        name: name.trim(),
+        description: description.trim() || null,
+        parentId,
+      });
 
-      if (insertError) throw insertError;
-
-      onCollectionCreated(data.id);
+      onCollectionCreated(created.id);
       onClose();
     } catch (err) {
       console.error('Error creating collection:', err);

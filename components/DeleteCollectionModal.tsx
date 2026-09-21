@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { supabase } from '@/lib/supabase';
+import { deleteCollection, fetchCollectionItems as loadCollectionItems } from '@/lib/data/collections';
 import { CollectionRecord } from '@/types/collection';
 import { ItemRecord } from '@/types/item';
 import { errorMessage } from '@/lib/errors';
@@ -63,29 +63,7 @@ export default function DeleteCollectionModal({
         setLoadingItems(true);
         setError(null);
 
-        const { data: juncData, error: juncErr } = await supabase
-          .from('item_collections')
-          .select('item_id')
-          .eq('collection_id', collection.id);
-
-        if (juncErr) throw juncErr;
-
-        const linkedItemIds = (juncData || []).map((r: { item_id: number }) => r.item_id);
-        if (linkedItemIds.length === 0) {
-          setCascadeList([]);
-          setLoadingItems(false);
-          return;
-        }
-
-        const { data, error: fetchErr } = await supabase
-          .from('items')
-          .select('*')
-          .in('id', linkedItemIds)
-          .order('id', { ascending: true });
-
-        if (fetchErr) throw fetchErr;
-
-        const rawItems = (data || []) as ItemRecord[];
+        const rawItems = await loadCollectionItems(collection.id);
 
         const nestedTree = buildItemHierarchy(rawItems, null);
 
@@ -122,12 +100,7 @@ export default function DeleteCollectionModal({
     setError(null);
 
     try {
-      const { error: deleteError } = await supabase
-        .from('collections')
-        .delete()
-        .eq('id', collection.id);
-
-      if (deleteError) throw deleteError;
+      await deleteCollection(collection.id);
 
       onCollectionDeleted();
       onClose();

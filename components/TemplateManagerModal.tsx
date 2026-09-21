@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { supabase } from '@/lib/supabase';
+import { createTemplate } from '@/lib/data/templates';
 import { ItemTemplate } from '@/types/template';
 import { fetchTemplateCatalog } from '@/lib/templateCatalog';
 import { errorMessage } from '@/lib/errors';
@@ -91,18 +91,11 @@ export default function TemplateManagerModal({
     setError(null);
 
     try {
-      const { data: createdTemplate, error: tmplCreateErr } = await supabase
-        .from('item_templates')
-        .insert({
-          name: newTemplateName.trim(),
-          description: newTemplateDesc.trim() || 'Custom item blueprint',
-          icon: newTemplateIcon || '📦',
-          is_system_preset: false,
-        })
-        .select()
-        .single();
-
-      if (tmplCreateErr) throw tmplCreateErr;
+      const createdTemplate = await createTemplate({
+        name: newTemplateName.trim(),
+        description: newTemplateDesc.trim() || 'Custom item blueprint',
+        icon: newTemplateIcon || '📦',
+      });
 
       setSuccessMsg(`Template "${createdTemplate.name}" created successfully!`);
       setShowSaveAsCustom(false);

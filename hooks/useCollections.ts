@@ -10,6 +10,8 @@ import {
 } from '@/lib/treeUtils';
 import { fetchAllPages } from '@/lib/fetchAllPages';
 import { ItemTemplate } from '@/types/template';
+import { toItemRecord, toItemTemplate } from '@/lib/data/mappers';
+import type { TableRow } from '@/types/database';
 
 /* ==========================================================================
    CUSTOM HOOK: useCollections
@@ -60,8 +62,8 @@ export function useCollections() {
 
         const [fetchedCollections, rawItems, fetchedTemplates, itemLinks] = await Promise.all([
           fetchAllPages<CollectionRecord>((from, to) => supabase.from('collections').select('*').order('id').range(from, to).abortSignal(signal), signal),
-          fetchAllPages<ItemRecord>((from, to) => supabase.from('items').select('*').order('id').range(from, to).abortSignal(signal), signal),
-          fetchAllPages<ItemTemplate>((from, to) => supabase.from('item_templates').select('*').order('id').range(from, to).abortSignal(signal), signal),
+          fetchAllPages<TableRow<'items'>>((from, to) => supabase.from('items').select('*').order('id').range(from, to).abortSignal(signal), signal),
+          fetchAllPages<TableRow<'item_templates'>>((from, to) => supabase.from('item_templates').select('*').order('id').range(from, to).abortSignal(signal), signal),
           fetchAllPages<{ item_id: number; collection_id: number }>((from, to) => supabase.from('item_collections').select('item_id, collection_id').order('item_id').order('collection_id').range(from, to).abortSignal(signal), signal),
         ]);
 
@@ -73,7 +75,7 @@ export function useCollections() {
           }
         );
 
-        const fetchedItems: ItemRecord[] = rawItems.map((it) => {
+        const fetchedItems: ItemRecord[] = rawItems.map(toItemRecord).map((it) => {
           const colIds = itemCollectionsMap.get(it.id) || [];
           return {
             ...it,
@@ -84,7 +86,7 @@ export function useCollections() {
 
         setAllCollections(fetchedCollections);
         setAllItems(fetchedItems);
-        setTemplates(fetchedTemplates);
+        setTemplates(fetchedTemplates.map((template) => toItemTemplate(template)));
 
 
         setActiveCollectionId(current => {
