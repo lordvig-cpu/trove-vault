@@ -50,10 +50,11 @@ above) before writing Next.js code; do not edit it, `next dev` regenerates it.
 
 ## To do before real template saving
 
-- Add a  column to the  table and to  (for example
-  ). Until it exists, layout edits are only
-  kept in this browser's localStorage and each remote save fails (one console warning per session).
-  The app already writes the whole layout to that column, debounced, in .
+- Add a `layout_config` column to the `item_templates` table and to `.supabase/schema.sql` (for
+  example `ALTER TABLE item_templates ADD COLUMN layout_config jsonb;`). Until it exists, layout
+  edits are only kept in this browser's localStorage and each remote save fails (one console warning
+  per session). The app already writes the whole layout to that column, debounced, in
+  `hooks/useTemplateEditor.ts`.
 - Replace the open development RLS policies with per-user policies when authentication is added, so
   templates and preferences belong to the person who made them.
 
