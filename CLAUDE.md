@@ -58,6 +58,24 @@ above) before writing Next.js code; do not edit it, `next dev` regenerates it.
 - Replace the open development RLS policies with per-user policies when authentication is added, so
   templates and preferences belong to the person who made them.
 
+## Cleanup backlog (found in the code audit, not yet done)
+
+- If the item insert fails after its photo uploaded, the photo stays in storage as an orphan (do
+  the insert and cleanup together in the data layer).
+- In the Create/Edit item modals the error message sits at the top of a scrolled form and can be out
+  of view; show it near the submit button or scroll it into view.
+- Deleting a template (`TemplateRootActionMenu`) still uses the browser's `confirm()` dialog: replace
+  it with the app's styled confirm modal.
+- Unused SVG icons remain in `components/icons/` (kept for now; remove or use them).
+- About 89 CSS classes look unreferenced (heuristic; some names are built dynamically, e.g.
+  `tmpl-block-variant-${x}`), so check each before deleting.
+- 11 lint problems remain, all React-hooks rules (setState in effects, memoization); they need small
+  structural changes.
+- Large files worth splitting once template saving lands: `app/page.tsx`, `hooks/useTemplateEditor.ts`,
+  `PrimarySidePanelHeader.tsx`, `TemplateEditorStage.tsx`. `PrimarySidePanel` takes ~87 props;
+  move workspace/dock state into contexts.
+- No CI yet: add a workflow running typecheck, lint, build and tests.
+
 ## Known state
 
 - No authentication yet. The Row Level Security policies in `.supabase/schema.sql` are open
