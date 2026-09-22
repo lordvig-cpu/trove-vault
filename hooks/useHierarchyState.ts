@@ -26,6 +26,22 @@ export function useHierarchyState(templateEditor: TemplateEditor) {
   // sibling branches the user already collapsed.
   const selectedNodeId = templateEditor.selectedNodeId;
   const root = templateEditor.flexLayoutConfig?.root;
+
+  // Start a fresh editing session fully expanded (matches useTreeCategories' initialExpanded for
+  // the Items/Collections trees), rather than only the ancestors of whatever got auto-selected.
+  // editingTemplateId is set before the template's layout finishes loading, so this waits for
+  // `root` to actually arrive before expanding, and does it once per session (not on every edit).
+  const editingTemplateId = templateEditor.editingTemplateId;
+  const [expandedInitForId, setExpandedInitForId] = useState<number | null>(null);
+  if (editingTemplateId !== expandedInitForId) {
+    if (editingTemplateId !== null && root) {
+      setExpandedInitForId(editingTemplateId);
+      setHierarchyExpandedIds(new Set(getAllContainerIds(root)));
+    } else if (editingTemplateId === null) {
+      setExpandedInitForId(null);
+    }
+  }
+
   const ancestorIds = useMemo(
     () => (selectedNodeId && root ? findAncestorContainerIds(root, selectedNodeId) : []),
     [selectedNodeId, root]
