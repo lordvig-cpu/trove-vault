@@ -1,6 +1,7 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
+import DeleteTemplateModal from '@/components/DeleteTemplateModal';
 import { CollectionRecord } from '@/types/collection';
 import { useTreeActions } from '@/context/TreeActionsContext';
 import { useTreeActionMenu } from '@/hooks/useTreeActionMenu';
@@ -30,8 +31,10 @@ export default function TreeTemplateActionMenu({
   } = useTreeActions();
 
   const rawTemplateId = Math.abs(template.id);
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
 
   return (
+    <>
     <TreeActionMenu
       isOpen={menu.isMenuOpen}
       onMouseEnter={menu.handleMenuMouseEnter}
@@ -90,12 +93,20 @@ export default function TreeTemplateActionMenu({
           label="Delete Template"
           subtext="Permanently remove"
           onClick={() => {
-            onDeleteTemplate(rawTemplateId);
             menu.closeMenu();
+            setConfirmingDelete(true);
           }}
         />
       )}
     </TreeActionMenu>
+    {confirmingDelete && onDeleteTemplate && (
+      <DeleteTemplateModal
+        templateName={template.name}
+        onConfirm={() => onDeleteTemplate(rawTemplateId)}
+        onClose={() => setConfirmingDelete(false)}
+      />
+    )}
+    </>
   );
 }
 

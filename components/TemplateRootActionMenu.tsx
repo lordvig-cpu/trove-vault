@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { ItemTemplate } from '@/types/template';
 import { FieldType } from '@/types/field';
 import { useTreeActionMenu } from '@/hooks/useTreeActionMenu';
+import DeleteTemplateModal from '@/components/DeleteTemplateModal';
 import TreeActionMenu, {
   ActionMenuDangerItem,
   ActionMenuDivider,
@@ -32,6 +33,7 @@ export default function TemplateRootActionMenu({
   const [name, setName] = useState(template.name);
   const [icon, setIcon] = useState(template.icon || '📦');
   const [description, setDescription] = useState(template.description || '');
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
 
   useEffect(() => {
     setName(template.name);
@@ -54,6 +56,7 @@ export default function TemplateRootActionMenu({
   };
 
   return (
+    <>
     <TreeActionMenu
       isOpen={menu.isMenuOpen}
       onMouseEnter={menu.handleMenuMouseEnter}
@@ -149,15 +152,21 @@ export default function TemplateRootActionMenu({
             label="Delete Blueprint"
             subtext="Permanently remove template"
             onClick={() => {
-              if (confirm(`Are you sure you want to delete blueprint "${template.name}"?`)) {
-                onDeleteTemplate(template.id);
-                menu.closeMenu();
-              }
+              menu.closeMenu();
+              setConfirmingDelete(true);
             }}
           />
         </>
       )}
     </TreeActionMenu>
+    {confirmingDelete && onDeleteTemplate && (
+      <DeleteTemplateModal
+        templateName={template.name}
+        onConfirm={() => onDeleteTemplate(template.id)}
+        onClose={() => setConfirmingDelete(false)}
+      />
+    )}
+    </>
   );
 }
 
