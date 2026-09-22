@@ -45,8 +45,14 @@ export default function ScaledCanvas({ children }: { children: React.ReactNode }
   const isFit = bodyWidth === 'fit';
   const fitScale = !isFit && available > 0 ? Math.min(1, available / bodyWidth) : 1;
   const scale = fitScale * zoom;
-  // 'fit' bodies reflow like browser zoom: the layout width shrinks as the scale grows.
-  const layoutWidth = isFit ? (available ? available / zoom : undefined) : bodyWidth;
+  // Below 100%, a 'fit' body reflows like browser zoom: the layout widens so more of the design
+  // comes into view, then the whole thing is scaled back down to fill the same on-screen width
+  // (scaledWidth stays `available`, no horizontal scrollbar needed). Above 100% that would shrink
+  // the layout width instead, re-wrapping rows into a visibly different arrangement while scaling
+  // it back up to still exactly fill `available` -- zoom must never change what the layout looks
+  // like, only how big it renders. So past 100%, hold the layout at its fit width and let the
+  // transform alone enlarge it, overflowing into the horizontal scrollbar.
+  const layoutWidth = isFit ? (available ? available / Math.min(zoom, 1) : undefined) : bodyWidth;
   const scaledWidth = layoutWidth ? layoutWidth * scale : undefined;
 
   return (
