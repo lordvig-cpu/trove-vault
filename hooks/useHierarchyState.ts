@@ -3,7 +3,7 @@
 import { useState, useMemo, useCallback } from 'react';
 import { getAllContainerIds, countElements } from '@/components/TemplateHierarchyTree';
 import type { useTemplateEditor } from '@/hooks/useTemplateEditor';
-import type { FlexContainerNode } from '@/types/layout';
+import { findAncestorContainerIds, type FlexContainerNode } from '@/types/layout';
 
 /* ==========================================================================
    Structure tree state for the template editor: which containers are expanded, and the helpers
@@ -17,6 +17,32 @@ export function useHierarchyState(templateEditor: TemplateEditor) {
   const [hierarchyExpandedIds, setHierarchyExpandedIds] = useState<Set<string>>(
     () => new Set(['root-container'])
   );
+
+  // Whatever gets selected (canvas click, gear sync, undo/redo, initial load) must be visible in
+  // the tree. Keyed on the ancestor *path*, not just the selected id: an action like Split keeps
+  // the target container's id but re-parents it under a new wrapper, so the id alone wouldn't
+  // change. Detected during render, same as SizeField's draft re-sync in
+  // TemplateContainerSizing.tsx, rather than an effect — expands its ancestors without touching
+  // sibling branches the user already collapsed.
+  const selectedNodeId = templateEditor.selectedNodeId;
+  const root = templateEditor.flexLayoutConfig?.root;
+  const ancestorIds = useMemo(
+    () => (selectedNodeId && root ? findAncestorContainerIds(root, selectedNodeId) : []),
+    [selectedNodeId, root]
+  );
+  const ancestorPathKey = ancestorIds.join('>');
+  const [prevAncestorPathKey, setPrevAncestorPathKey] = useState(ancestorPathKey);
+  if (ancestorPathKey !== prevAncestorPathKey) {
+    setPrevAncestorPathKey(ancestorPathKey);
+    if (ancestorIds.length > 0) {
+      setHierarchyExpandedIds((prev) => {
+        if (ancestorIds.every((id) => prev.has(id))) return prev;
+        const next = new Set(prev);
+        ancestorIds.forEach((id) => next.add(id));
+        return next;
+      });
+    }
+  }
 
   const allHierarchyContainerIds = useMemo(() => {
     const root = templateEditor.flexLayoutConfig?.root;
