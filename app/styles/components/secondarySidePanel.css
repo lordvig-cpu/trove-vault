@@ -110,38 +110,6 @@
 }
 
 /* --------------------------------------------------------------------------
-   Header & Action Controls
-   -------------------------------------------------------------------------- */
-.secondary-side-panel-header {
-  position: relative;
-  z-index: 20;
-  display: flex;
-  flex-direction: column;
-  background: transparent;
-  flex-shrink: 0;
-}
-
-.secondary-side-panel-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.375rem;
-  border-radius: 0.5rem;
-  border: 1px solid transparent;
-  background: transparent;
-  color: var(--primary-tree-action-icon);
-  cursor: pointer;
-  flex-shrink: 0;
-  transition: all 150ms ease;
-}
-
-.secondary-side-panel-btn:hover {
-  border-color: var(--primary-border-subtle);
-  background-color: var(--surface-primary-hover);
-  color: var(--tree-action-icon-hover);
-}
-
-/* --------------------------------------------------------------------------
    Visibility States
    -------------------------------------------------------------------------- */
 .secondary-panel-tab-hidden-right {

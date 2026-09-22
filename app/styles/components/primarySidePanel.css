@@ -95,35 +95,6 @@
   pointer-events: none;
 }
 
-/* Backward-compatibility classes */
-.primary-side-panel-pinned-left {
-  border-right: 1px solid var(--primary-border-strong);
-  border-left: 1px solid transparent;
-  box-shadow: var(--panel-pinned-shadow);
-  opacity: 1;
-  transform: translateX(0);
-}
-
-.primary-side-panel-pinned-right {
-  border-left: 1px solid var(--primary-border-strong);
-  border-right: 1px solid transparent;
-  box-shadow: var(--right-panel-shadow);
-  opacity: 1;
-  transform: translateX(0);
-}
-
-.primary-side-panel-unpinned-left {
-  opacity: 0;
-  pointer-events: none;
-  transform: translateX(-110%);
-}
-
-.primary-side-panel-unpinned-right {
-  opacity: 0;
-  pointer-events: none;
-  transform: translateX(110%);
-}
-
 /* --------------------------------------------------------------------------
    Floating Expand Tab (Visible When Primary Sidebar is Collapsed)
    -------------------------------------------------------------------------- */
@@ -279,10 +250,6 @@
 /* --------------------------------------------------------------------------
    Tree Folder Tabs (Paper Folder Style)
    -------------------------------------------------------------------------- */
-.tree-tab-baseline {
-  border-color: var(--secondary-tree-menu-rename-input-focus);
-}
-
 .tree-folder-tab {
   position: relative;
   display: inline-flex;
@@ -437,60 +404,6 @@
   background-color: var(--panel-notice-error-bg);
   border: 1px solid var(--panel-notice-error-border);
   color: var(--panel-notice-error-text);
-}
-
-/* --------------------------------------------------------------------------
-   Tree Action Menu Popup & Buttons
-   -------------------------------------------------------------------------- */
-.tree-action-popup {
-  background-color: var(--surface-popover);
-  border: 1px solid var(--primary-tree-menu-border);
-  border-radius: 0.375rem;
-  box-shadow: var(--popover-elevation-shadow);
-  padding: 0.25rem;
-  display: flex;
-  align-items: center;
-  gap: 0.125rem;
-  white-space: nowrap;
-}
-
-.tree-action-btn {
-  padding: 0.375rem;
-  color: var(--text-muted);
-  border-radius: 0.25rem;
-  font-size: 0.75rem;
-  cursor: pointer;
-  transition: all 150ms ease;
-  white-space: nowrap;
-  background: transparent;
-  border: none;
-}
-
-.tree-action-btn:hover {
-  background-color: var(--primary-col-dropdown-btn-hover-bg);
-  color: var(--tree-menu-btn-hover-text);
-}
-
-.tree-action-btn-accent:hover {
-  background-color: var(--primary-col-dropdown-btn-hover-bg);
-  color: var(--secondary-tree-menu-rename-input-focus);
-}
-
-.tree-action-btn-danger {
-  padding: 0.375rem;
-  color: var(--tree-menu-danger-text);
-  border-radius: 0.25rem;
-  font-size: 0.75rem;
-  cursor: pointer;
-  transition: all 150ms ease;
-  white-space: nowrap;
-  background: transparent;
-  border: none;
-}
-
-.tree-action-btn-danger:hover {
-  color: var(--tree-menu-danger-hover-text);
-  background-color: var(--tree-menu-danger-hover-bg);
 }
 
 /* Shared primary/secondary panel header: topper, gradient, title and divider. */
@@ -841,63 +754,9 @@
   outline-offset: 1px;
 }
 
-/* Keyboard Shortcut Badge */
-.tree-search-kbd {
-  position: absolute;
-  right: 0.5rem;
-  top: 50%;
-  transform: translateY(-50%);
-  pointer-events: none;
-  user-select: none;
-  font-size: 8px;
-  line-height: 1;
-  font-family: monospace;
-  letter-spacing: -0.05em;
-  padding: 2px 4px;
-  border-radius: 3px;
-  box-shadow: 0 1px 2px 0 var(--shadow-black-5);
-  color: var(--tree-kbd-text);
-  background-color: var(--tree-kbd-bg);
-  border: 1px solid var(--tree-kbd-border);
-}
-
-/* --------------------------------------------------------------------------
-   Universal Search Result Cards
-   -------------------------------------------------------------------------- */
-.search-result-card {
-  padding: 0.5rem;
-  border-radius: 0.5rem;
-  border: 1px solid var(--primary-border-subtle);
-  background-color: var(--surface-panel);
-  cursor: pointer;
-  display: flex;
-  flex-direction: column;
-  gap: 0.125rem;
-  transition: all 150ms ease;
-}
-
-.search-result-card:hover {
-  border-color: var(--primary-border-strong);
-  background-color: var(--surface-primary-hover);
-}
-
-.search-result-card-selected {
-  background-color: var(--secondary-selection-bg);
-  border-color: var(--primary-accent);
-  box-shadow: 0 4px 6px -1px var(--shadow-black-30);
-}
-
 /* --------------------------------------------------------------------------
    Sticky Tree Category Headers
    -------------------------------------------------------------------------- */
-.tree-scroll-container {
-  position: relative;
-  overflow-y: auto;
-  overflow-x: hidden;
-  min-height: 0;
-  flex: 1;
-}
-
 .tree-category-sticky-header {
   position: sticky;
   top: 0;

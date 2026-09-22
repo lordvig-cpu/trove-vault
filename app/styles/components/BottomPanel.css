@@ -56,67 +56,6 @@
   mix-blend-mode: var(--right-panel-texture-blend, overlay);
 }
 
-/* Header & Tab Controls */
-.bottom-side-panel-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0.375rem 1rem;
-  border-bottom: 1px solid var(--primary-border-subtle, rgba(0, 140, 255, 0.2));
-  flex-shrink: 0;
-  background: transparent;
-  backdrop-filter: blur(8px);
-  position: relative;
-  z-index: 10;
-}
-
-/* Terminal / Output Tabs */
-.bottom-panel-tab {
-  padding: 0.25rem 0.625rem;
-  font-size: 0.6875rem;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  border-radius: 0.375rem;
-  color: var(--text-muted);
-  cursor: pointer;
-  transition: all 150ms ease;
-  background: transparent;
-  border: 1px solid transparent;
-}
-
-.bottom-panel-tab:hover {
-  color: var(--text-strong);
-  background-color: var(--surface-primary-hover);
-}
-
-.bottom-panel-tab-active {
-  color: var(--secondary-accent);
-  background-color: var(--secondary-selection-bg, rgba(248, 188, 9, 0.12));
-  border-color: var(--secondary-selection-border, rgba(248, 188, 9, 0.3));
-}
-
-/* Collapse Trigger Button */
-.bottom-side-panel-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 1.5rem;
-  width: 1.5rem;
-  border-radius: 0.375rem;
-  color: var(--text-muted);
-  border: 1px solid transparent;
-  background: transparent;
-  cursor: pointer;
-  transition: all 150ms ease;
-}
-
-.bottom-side-panel-btn:hover {
-  color: var(--text-strong);
-  background-color: var(--surface-primary-hover);
-  border-color: var(--primary-border-subtle);
-}
-
 /* Visibility States */
 .bottom-panel-docked-open {
   opacity: 1;

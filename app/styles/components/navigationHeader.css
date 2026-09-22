@@ -253,45 +253,6 @@
 }
 
 /* --------------------------------------------------------------------------
-   Search Bar & Scope Selection Control
-   -------------------------------------------------------------------------- */
-.nav-search-select {
-  background-color: var(--surface-panel);
-  color: var(--text-soft);
-  font-size: 0.75rem;
-  font-weight: 500;
-  padding: 0.375rem 1.5rem 0.375rem 0.5rem;
-  border: 1px solid var(--primary-border-subtle);
-  border-top-left-radius: 0.5rem;
-  border-bottom-left-radius: 0.5rem;
-  cursor: pointer;
-}
-
-.nav-search-select:focus {
-  outline: none;
-  border-color: var(--primary-accent);
-}
-
-.nav-search-input {
-  width: 100%;
-  background-color: var(--surface-canvas);
-  border-top: 1px solid var(--primary-border-subtle);
-  border-bottom: 1px solid var(--primary-border-subtle);
-  border-right: 1px solid var(--primary-border-subtle);
-  border-left: none;
-  font-size: 0.75rem;
-  border-top-right-radius: 0.5rem;
-  border-bottom-right-radius: 0.5rem;
-  padding: 0.375rem 0.75rem;
-  color: var(--text-strong);
-}
-
-.nav-search-input:focus {
-  outline: none;
-  border-color: var(--primary-accent);
-}
-
-/* --------------------------------------------------------------------------
    Live Indicator & User Profile Avatar
    -------------------------------------------------------------------------- */
 .nav-live-badge {
@@ -338,16 +299,6 @@
 /* --------------------------------------------------------------------------
    Pinned & Flyout Visibility States
    -------------------------------------------------------------------------- */
-.nav-header-pinned-visible {
-  opacity: 1;
-  transition-delay: 350ms;
-}
-
-.nav-header-pinned-hidden {
-  opacity: 0;
-  transition-delay: 0ms;
-}
-
 /* Tab indicator visibility states */
 .nav-tab-indicator-active {
   opacity: 0.90;
@@ -371,26 +322,3 @@
   opacity: 0;
 }
 
-/* Portal backdrop overlay states */
-.nav-overlay-pinned {
-  opacity: 0;
-  pointer-events: none;
-}
-
-.nav-overlay-unpinned {
-  opacity: 1;
-  pointer-events: auto;
-}
-
-/* Flyout container translate & clickability states */
-.nav-flyout-pinned {
-  opacity: 0;
-  transform: translateX(-11.5rem); /* -translate-x-46 (184px) */
-  pointer-events: none;
-}
-
-.nav-flyout-unpinned {
-  opacity: 1;
-  transform: translateX(0);
-  pointer-events: auto;
-}

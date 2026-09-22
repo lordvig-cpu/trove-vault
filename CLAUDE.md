@@ -74,8 +74,6 @@ above) before writing Next.js code; do not edit it, `next dev` regenerates it.
 
 ## Cleanup backlog (found in the code audit, not yet done)
 
-- About 89 CSS classes look unreferenced (heuristic; some names are built dynamically, e.g.
-  `tmpl-block-variant-${x}`), so check each before deleting.
 - Large files still worth splitting: `app/page.tsx` (panel renderers and the JSX, ~1,170 lines),
   `PrimarySidePanelHeader.tsx`, `TemplateEditorStage.tsx`, `hooks/useTemplateEditor.ts` (field CRUD and
   `addFlexPrimitive`). `PrimarySidePanel` takes ~87 props; move workspace state into contexts.

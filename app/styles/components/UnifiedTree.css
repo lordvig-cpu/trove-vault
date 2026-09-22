@@ -5,17 +5,6 @@
    ========================================================================== */
 
 /* --------------------------------------------------------------------------
-   Tree Node Indicators
-   -------------------------------------------------------------------------- */
-
-/* Tree leaf indicator (hidden and unclickable when row has no nested children) */
-.tree-chevron-leaf {
-  opacity: 0;
-  cursor: default;
-  pointer-events: none;
-}
-
-/* --------------------------------------------------------------------------
    Tree Node Action Gear Triggers
    -------------------------------------------------------------------------- */
 
@@ -40,10 +29,6 @@
   opacity: 1;
   background-color: var(--primary-tree-gear-bg-hover);
   border-color: var(--primary-border-subtle);
-}
-
-.tree-gear-icon-active {
-  color: var(--tree-gear-icon-active);
 }
 
 /* --------------------------------------------------------------------------
