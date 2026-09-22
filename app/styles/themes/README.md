@@ -1,5 +1,5 @@
 Component styles use the shared vocabulary in
-[`../themes/theme-semantic.css`](../themes/theme-semantic.css).
+[`theme-semantic.css`](theme-semantic.css).
 
 | Token family | Meaning | Example |
 | --- | --- | --- |

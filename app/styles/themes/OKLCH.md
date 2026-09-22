@@ -50,4 +50,4 @@ it preserves the editable seeds and mode rules.
 Component styles consume the readable aliases in `theme-semantic.css`.
 `--primary-*` follows the first seed and `--secondary-*` follows the second;
 shared text and surface roles have their own prefixes. See
-[`../components/README.md`](../components/README.md) for the naming guide.
+[`README.md`](README.md) for the naming guide.
