@@ -21,11 +21,8 @@ jobs:
       - name: Type check
         run: npx tsc --noEmit
 
-      # A few React-hooks lint errors are known and tracked in CLAUDE.md (cleanup backlog).
-      # Report them without failing the build; remove continue-on-error once they are fixed.
       - name: Lint
         run: npm run lint
-        continue-on-error: true
 
       - name: Build
         run: npm run build

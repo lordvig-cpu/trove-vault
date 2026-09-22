@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { ItemTemplate } from '@/types/template';
 import { FieldType } from '@/types/field';
 import { useTreeActionMenu } from '@/hooks/useTreeActionMenu';
@@ -35,11 +35,15 @@ export default function TemplateRootActionMenu({
   const [description, setDescription] = useState(template.description || '');
   const [confirmingDelete, setConfirmingDelete] = useState(false);
 
-  useEffect(() => {
+  // Adjust state during render rather than in an effect, per
+  // https://react.dev/learn/you-might-not-need-an-effect#adjusting-some-state-when-a-prop-changes
+  const [prevTemplate, setPrevTemplate] = useState(template);
+  if (prevTemplate !== template) {
+    setPrevTemplate(template);
     setName(template.name);
     setIcon(template.icon || '📦');
     setDescription(template.description || '');
-  }, [template]);
+  }
 
   const handleSaveMeta = () => {
     if (

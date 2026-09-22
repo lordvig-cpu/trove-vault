@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { FieldDefinition, FieldType } from '@/types/field';
 import { useTreeActionMenu } from '@/hooks/useTreeActionMenu';
 import TreeActionMenu, {
@@ -44,13 +44,16 @@ export default function TemplateFieldActionMenu({
   const [isRequired, setIsRequired] = useState(field.is_required);
   const [newOption, setNewOption] = useState('');
 
-  // Sync state when field prop updates
-  useEffect(() => {
+  // Sync state when field prop updates (adjusting state during render, not in an effect,
+  // per https://react.dev/learn/you-might-not-need-an-effect#adjusting-some-state-when-a-prop-changes)
+  const [prevField, setPrevField] = useState(field);
+  if (prevField !== field) {
+    setPrevField(field);
     setLabel(field.label);
     setKey(field.name);
     setFieldType(field.field_type);
     setIsRequired(field.is_required);
-  }, [field]);
+  }
 
   const handleSaveFieldProps = (partial: Partial<FieldDefinition>) => {
     onUpdateField(field.id, partial);

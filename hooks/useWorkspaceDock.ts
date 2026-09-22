@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, useEffect, useRef } from 'react';
+import { useState, useCallback, useEffect, useMemo, useRef } from 'react';
 import { useUIPreferences } from '@/context/UIPreferencesContext';
 import {
   usePanelDockDrag,
@@ -53,15 +53,18 @@ export function useWorkspaceDock() {
 
   const isPrimaryActive = isPinned || isPrimarySidePanelOpen;
   const isSecondaryActive = isSecondaryPinned || isSecondaryOpen;
-  const dockContents: DockContents = {
-    primary: primaryActiveTab,
-    secondary: secondaryActiveTab,
-    bottom: bottomPanelContent,
-    primaryTabs,
-    secondaryTabs,
-    primaryActiveTab,
-    secondaryActiveTab,
-  };
+  const dockContents: DockContents = useMemo(
+    () => ({
+      primary: primaryActiveTab,
+      secondary: secondaryActiveTab,
+      bottom: bottomPanelContent,
+      primaryTabs,
+      secondaryTabs,
+      primaryActiveTab,
+      secondaryActiveTab,
+    }),
+    [primaryActiveTab, secondaryActiveTab, bottomPanelContent, primaryTabs, secondaryTabs]
+  );
 
   const handlePrimaryTabChange = useCallback((tab: DockContent) => {
     setPrimaryActiveTab(tab);

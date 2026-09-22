@@ -9,7 +9,7 @@ above) before writing Next.js code; do not edit it, `next dev` regenerates it.
 ## Running and checking
 
 - Dev server: `npm run dev` (port 3000). Type check: `npx tsc --noEmit`. Lint: `npm run lint`
-  (there are known pre-existing lint errors; do not add new ones).
+  (currently clean; keep it that way).
 - Tests: `npm run build` first, then `npm test`. Playwright runs against a production build on port
   3100 using the Edge channel. Some tests are `test.fixme` because they need seeded data.
 - For any UI change, look at it in the browser (Playwright with `channel: 'msedge'` against the dev
@@ -77,14 +77,11 @@ above) before writing Next.js code; do not edit it, `next dev` regenerates it.
 - Unused SVG icons remain in `components/icons/` (kept for now; remove or use them).
 - About 89 CSS classes look unreferenced (heuristic; some names are built dynamically, e.g.
   `tmpl-block-variant-${x}`), so check each before deleting.
-- 11 lint problems remain, all React-hooks rules (setState in effects, memoization); they need small
-  structural changes.
 - Large files still worth splitting: `app/page.tsx` (panel renderers and the JSX, ~1,170 lines),
   `PrimarySidePanelHeader.tsx`, `TemplateEditorStage.tsx`, `hooks/useTemplateEditor.ts` (field CRUD and
   `addFlexPrimitive`). `PrimarySidePanel` takes ~87 props; move workspace state into contexts.
 - CI is set up in `.github/workflows/ci.yml` (typecheck, lint, build, tests) but has not run on GitHub yet, so
-  it is unverified. Lint is non-blocking until the remaining React-hooks errors are fixed. To make the
-  build and tests use the real database, add the two `NEXT_PUBLIC_SUPABASE_*` values as repository
+  it is unverified. To make the build and tests use the real database, add the two `NEXT_PUBLIC_SUPABASE_*` values as repository
   secrets (tests that need seeded data are skipped).
 
 ## Known state

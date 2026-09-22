@@ -46,9 +46,13 @@ export default function TreeActionMenu({
   const menuRef = useRef<HTMLDivElement>(null);
   const [adjustedTop, setAdjustedTop] = useState(top);
 
-  useEffect(() => {
+  // Adjust state during render rather than in an effect, per
+  // https://react.dev/learn/you-might-not-need-an-effect#adjusting-some-state-when-a-prop-changes
+  const [prevTop, setPrevTop] = useState(top);
+  if (prevTop !== top) {
+    setPrevTop(top);
     setAdjustedTop(top);
-  }, [top]);
+  }
 
   useEffect(() => {
     if (!menuRef.current || !isOpen) return;

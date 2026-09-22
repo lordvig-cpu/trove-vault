@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 
 /* ==========================================================================
    NODE CONTRACT
@@ -32,26 +32,21 @@ export function useTreeCategories(nodes: TreeNodeLike[] = [], initialExpanded: b
     return extractIds(nodes);
   }, [nodes]);
 
-  const hasInitialized = useRef(false);
-  const prevIdsRef = useRef<number[]>([]);
+  const [hasInitialized, setHasInitialized] = useState(false);
+  const [prevNodeIds, setPrevNodeIds] = useState<number[]>([]);
 
-  // Automatically expand all tree nodes on initial load or when view transitions across forests (unless initialExpanded is false)
-  useEffect(() => {
-    if (allNodeIds.length === 0) return;
+  // Automatically expand all tree nodes on initial load or when view transitions across forests
+  // (unless initialExpanded is false). Adjusted during render rather than in an effect, per
+  // https://react.dev/learn/you-might-not-need-an-effect#adjusting-some-state-when-a-prop-changes
+  if (allNodeIds.length > 0 && allNodeIds !== prevNodeIds) {
+    const isNewForest = prevNodeIds.length === 0 || !allNodeIds.some((id) => prevNodeIds.includes(id));
 
-    const prevIds = prevIdsRef.current;
-    const isNewForest = prevIds.length === 0 || !allNodeIds.some((id) => prevIds.includes(id));
-
-    if (!hasInitialized.current || isNewForest) {
-      if (initialExpanded) {
-        setExpandedCategoryIds(new Set(allNodeIds));
-      } else {
-        setExpandedCategoryIds(new Set());
-      }
-      hasInitialized.current = true;
+    if (!hasInitialized || isNewForest) {
+      setExpandedCategoryIds(initialExpanded ? new Set(allNodeIds) : new Set());
+      setHasInitialized(true);
     }
-    prevIdsRef.current = allNodeIds;
-  }, [allNodeIds, initialExpanded]);
+    setPrevNodeIds(allNodeIds);
+  }
 
   const isAnyCategoryExpanded = useMemo(() => {
     return expandedCategoryIds.size > 0;

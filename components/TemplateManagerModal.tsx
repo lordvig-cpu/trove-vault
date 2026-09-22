@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { createTemplate } from '@/lib/data/templates';
 import { ItemTemplate } from '@/types/template';
 import { fetchTemplateCatalog } from '@/lib/data/templates';
@@ -47,7 +47,7 @@ export default function TemplateManagerModal({
      2.1 DATA FETCHING
      Loads item templates and nested field schemas from Supabase.
      ------------------------------------------------------------------------ */
-  async function fetchTemplates() {
+  const fetchTemplates = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -57,8 +57,8 @@ export default function TemplateManagerModal({
       setTemplates(fullTemplates);
       if (initialTemplateId && fullTemplates.some((t) => t.id === initialTemplateId)) {
         setSelectedTemplateId(initialTemplateId);
-      } else if (fullTemplates.length > 0 && !selectedTemplateId) {
-        setSelectedTemplateId(fullTemplates[0].id);
+      } else {
+        setSelectedTemplateId((current) => current ?? (fullTemplates.length > 0 ? fullTemplates[0].id : current));
       }
     } catch (err) {
       console.error('Error fetching templates:', err);
@@ -66,15 +66,19 @@ export default function TemplateManagerModal({
     } finally {
       setLoading(false);
     }
-  }
+  }, [initialTemplateId]);
 
   useEffect(() => {
-    if (isOpen) {
-      fetchTemplates();
+    if (!isOpen) return;
+    // Defer so the effect body itself makes no synchronous setState call (matches the
+    // deferred-fetch pattern in hooks/useCollections.ts).
+    const timer = setTimeout(() => {
       setSuccessMsg(null);
       setError(null);
-    }
-  }, [isOpen]);
+      void fetchTemplates();
+    }, 0);
+    return () => clearTimeout(timer);
+  }, [isOpen, fetchTemplates]);
 
   if (!isOpen) return null;
 

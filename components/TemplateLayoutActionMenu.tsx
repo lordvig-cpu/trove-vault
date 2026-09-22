@@ -73,22 +73,28 @@ export function TemplateContainerActionMenu({
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (!menu.isMenuOpen) {
-      setIsAddingContent(false);
-      setNewContainerName('New Container');
-    }
-  }, [menu.isMenuOpen]);
-
-  useEffect(() => {
     if (isAddingContent) {
       inputRef.current?.focus();
       inputRef.current?.select();
     }
   }, [isAddingContent]);
 
-  useEffect(() => {
-    setLabel(isRoot ? 'Body' : container.label || 'Container');
-  }, [container.label, isRoot]);
+  // Adjust state during render, not in an effect, when the menu closes or the container's own
+  // label changes (https://react.dev/learn/you-might-not-need-an-effect#adjusting-some-state-when-a-prop-changes).
+  const [prevMenuOpen, setPrevMenuOpen] = useState(menu.isMenuOpen);
+  if (prevMenuOpen !== menu.isMenuOpen) {
+    setPrevMenuOpen(menu.isMenuOpen);
+    if (!menu.isMenuOpen) {
+      setIsAddingContent(false);
+      setNewContainerName('New Container');
+    }
+  }
+
+  const [prevDefaultLabel, setPrevDefaultLabel] = useState(defaultLabel);
+  if (prevDefaultLabel !== defaultLabel) {
+    setPrevDefaultLabel(defaultLabel);
+    setLabel(defaultLabel);
+  }
 
   if (isRoot) {
     return (
@@ -515,9 +521,13 @@ export function TemplateComponentActionMenu({
 }: TemplateComponentActionMenuProps) {
   const [label, setLabel] = useState(component.label || '');
 
-  useEffect(() => {
+  // Adjust state during render rather than in an effect, per
+  // https://react.dev/learn/you-might-not-need-an-effect#adjusting-some-state-when-a-prop-changes
+  const [prevComponentLabel, setPrevComponentLabel] = useState(component.label);
+  if (prevComponentLabel !== component.label) {
+    setPrevComponentLabel(component.label);
     setLabel(component.label || '');
-  }, [component.label]);
+  }
 
   const handleLabelBlur = () => {
     const trimmed = label.trim();
