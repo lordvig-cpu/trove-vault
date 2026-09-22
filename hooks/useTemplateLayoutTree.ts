@@ -271,9 +271,18 @@ export function useTemplateLayoutTree({
   const removeFlexContainer = useCallback(
     (containerId: string) => {
       if (!flexLayoutConfig || containerId === flexLayoutConfig.root.id) return;
+      const parent = findParentFlexContainer(flexLayoutConfig.root, containerId);
       saveFlexLayoutConfig({ ...flexLayoutConfig, root: removeNode(flexLayoutConfig.root, containerId) });
       if (selectedNodeId === containerId) {
-        setSelectedNodeId(flexLayoutConfig.root.id);
+        // Prefer the previous sibling (what you'd land on next in the tree), then the next one,
+        // falling back to the parent container, and only to the Body if the parent couldn't be found.
+        if (parent) {
+          const childIndex = parent.children.findIndex((child) => child.id === containerId);
+          const sibling = parent.children[childIndex - 1] ?? parent.children[childIndex + 1];
+          setSelectedNodeId(sibling ? sibling.id : parent.id);
+        } else {
+          setSelectedNodeId(flexLayoutConfig.root.id);
+        }
       }
     },
     [flexLayoutConfig, selectedNodeId, saveFlexLayoutConfig, setSelectedNodeId]
