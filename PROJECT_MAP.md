@@ -125,6 +125,7 @@ resize handles), `FlexComponentRenderer.tsx` (a single field/table/media/stat/no
   delegates to instead of holding this logic itself.
 - `usePresence.ts` — delays a portaled element's unmount until its close animation finishes.
 - `useReducedMotion.ts` — reads the OS "prefers reduced motion" setting.
+- `useScreenWidth.ts` — reads the user's actual monitor width (SSR-safe; 0 until mount).
 - `useResizableDimension.ts` — shared drag/keyboard resize logic used by the width/height hooks below.
 - `useResizableHeight.ts` / `useResizablePanel.ts` — the bottom panel's height and a side panel's
   width resize behavior, built on `useResizableDimension`.

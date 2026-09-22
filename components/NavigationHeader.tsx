@@ -42,6 +42,11 @@ interface NavigationHeaderProps {
   onStartTemplatesDrag?: (e: React.PointerEvent) => void;
   templatesFlyoutPanel?: React.ReactNode;
   onStartGrabbedContentDrag?: (e: React.PointerEvent) => void;
+  /** Width (px) a pinned primary/secondary panel takes out of the workspace, so the portaled
+      template toolbar (`#template-toolbar-slot`) can center on the visible canvas, not the full
+      header. */
+  leftOccupiedWidth?: number;
+  rightOccupiedWidth?: number;
 
   // Backward-compatibility aliases
   isLeftSidePanelOpen?: boolean;
@@ -72,6 +77,8 @@ export default function NavigationHeader({
   onStartTemplatesDrag,
   templatesFlyoutPanel,
   onStartGrabbedContentDrag,
+  leftOccupiedWidth = 0,
+  rightOccupiedWidth = 0,
   isLeftSidePanelOpen,
   onToggleLeftSidePanel,
   unpinnedItemsPanel,
@@ -291,10 +298,14 @@ export default function NavigationHeader({
           )}
         </div>
 
-        {/* Slot for the template editor bar (portaled in by the editor), centered under the header */}
+        {/* Slot for the template editor bar (portaled in by the editor), centered on the visible
+            canvas — a pinned panel eats into one side, so plain 50% would drift off-center. */}
         <div
           id="template-toolbar-slot"
-          className="absolute top-full left-1/2 -translate-x-1/2 z-[85] pointer-events-none"
+          className={`absolute top-full -translate-x-1/2 z-[85] pointer-events-none ${
+            animationsEnabled ? 'transition-[left] duration-500 ease-in-out' : ''
+          }`}
+          style={{ left: `calc(50% + ${(leftOccupiedWidth - rightOccupiedWidth) / 2}px)` }}
         />
 
         {/* ------------------------------------------------------------------

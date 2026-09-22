@@ -225,6 +225,22 @@ export function findParentFlexContainer(
 }
 
 /**
+ * Container IDs on the path from the root down to (but not including) the given node, root first.
+ * Used to expand exactly the tree rows that must be open for a selected node to be visible.
+ */
+export function findAncestorContainerIds(root: FlexContainerNode, nodeId: string): string[] {
+  const ids: string[] = [];
+  let currentId = nodeId;
+  while (true) {
+    const parent = findParentFlexContainer(root, currentId);
+    if (!parent) break;
+    ids.push(parent.id);
+    currentId = parent.id;
+  }
+  return ids.reverse();
+}
+
+/**
  * Recursively collects all field IDs bound to components in the container tree.
  */
 export function collectPlacedFieldIds(node: FlexContainerNode): number[] {

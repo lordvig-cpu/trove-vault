@@ -15,7 +15,7 @@ import { GearIcon } from '@/components/icons/TreeIcons';
 import { TrashCanIcon } from '@/components/icons/PanelIcons';
 import { PreviewWidthPicker, ZoomControls } from '@/components/CanvasViewControls';
 import { useDismissOnOutsideOrEscape } from '@/hooks/useDismissOnOutsideOrEscape';
-import { activeBtn, disabledBtn, ghostBtn, idleBtn } from '@/components/editorBarStyles';
+import { activeBtn, barControlHeight, disabledBtn, ghostBtn, idleBtn } from '@/components/editorBarStyles';
 
 /* ==========================================================================
    Template editor bar: one panel hanging from the top navigation header.
@@ -27,7 +27,7 @@ import { activeBtn, disabledBtn, ghostBtn, idleBtn } from '@/components/editorBa
 const NEW_CONTAINER = { label: 'New Container', padding: 0, sizing: { type: 'fill' } } as const;
 
 const iconBtn =
-  'px-1.5 py-1 rounded-md border transition flex items-center gap-1 text-[11px] font-semibold';
+  `px-1.5 ${barControlHeight} rounded-md border transition flex items-center gap-1 text-[11px] font-semibold`;
 const divider = 'h-4 w-px bg-[color-mix(in_oklch,var(--secondary-accent)_40%,transparent)] shrink-0 mx-0.5';
 
 const ToolGroupContext = createContext<() => void>(() => {});
@@ -283,7 +283,11 @@ export default function TemplateEditorBar({
           <ToolGroup
             icon={flexIcon}
             label={flexLabel}
-            title={isRoot ? 'The Body layout direction cannot be changed' : 'Flex direction: row or column'}
+            title={
+              isRoot
+                ? 'The Body always flows top-to-bottom, like a page. To place items side-by-side, add a Row container and put them inside it.'
+                : 'Flex direction: row or column'
+            }
             disabled={isRoot}
             set
           >
@@ -377,15 +381,17 @@ export default function TemplateEditorBar({
 
           {/* Sizing mode (Auto / Custom) */}
           <div
-            className="flex items-center gap-0.5 bg-black/40 p-0.5 rounded-md border border-[color-mix(in_oklch,var(--secondary-accent)_35%,transparent)] shrink-0 text-[10px] font-semibold"
+            className={`flex items-center gap-0.5 bg-black/40 px-0.5 ${barControlHeight} rounded-md border border-[color-mix(in_oklch,var(--secondary-accent)_35%,transparent)] shrink-0 text-[10px] font-semibold`}
             role="group"
             aria-label="Container sizing mode"
           >
             <button
               type="button"
-              onClick={() => { if (!isRoot) onUpdateContainer?.(container.id, { sizing: { type: 'fill' } }); }}
+              onClick={() => {
+                if (!isRoot) onUpdateContainer?.(container.id, { width: undefined, sizing: { type: 'fill' } });
+              }}
               title={isRoot ? 'Auto: the Body stretches automatically with content' : 'Auto: fill the available parent space'}
-              className={`px-1.5 py-0.5 rounded transition ${
+              className={`px-1.5 h-[22px] flex items-center rounded transition ${
                 isRoot || (container.sizing?.type || 'fill') === 'fill'
                   ? `border ${activeBtn} ${isRoot ? 'cursor-default' : 'cursor-pointer'}`
                   : `${ghostBtn} cursor-pointer`
@@ -396,16 +402,20 @@ export default function TemplateEditorBar({
             <button
               type="button"
               disabled={isRoot}
-              onClick={() =>
-                onUpdateContainer?.(container.id, {
-                  sizing: {
-                    type: 'fixed',
-                    value: container.sizing?.type === 'fixed' ? container.sizing.value || '50%' : '50%',
-                  },
-                })
-              }
+              onClick={() => {
+                // Snapshot the on-screen width (unscaled layout px, not the zoomed CSS box) so
+                // switching to Custom only reveals the resize handles — nothing jumps. A stale
+                // remembered value from an earlier Custom session would otherwise pop back in.
+                const el = document.querySelector<HTMLElement>(`[data-container-id="${container.id}"]`);
+                const value = el?.offsetWidth
+                  ? `${Math.round(el.offsetWidth)}px`
+                  : container.sizing?.type === 'fixed'
+                  ? container.sizing.value || '50%'
+                  : '50%';
+                onUpdateContainer?.(container.id, { width: value, sizing: { type: 'fixed', value } });
+              }}
               title={isRoot ? 'Custom sizing is not available for the Body' : 'Custom: set your own width/height (e.g. 50%, 300px)'}
-              className={`px-1.5 py-0.5 rounded transition ${
+              className={`px-1.5 h-[22px] flex items-center rounded transition ${
                 isRoot
                   ? `${disabledBtn} text-[var(--secondary-accent)]`
                   : container.sizing?.type === 'fixed'
@@ -428,7 +438,7 @@ export default function TemplateEditorBar({
             title={isRoot ? 'Body Properties' : 'Container Properties'}
             aria-label={isRoot ? 'Body properties' : 'Container properties'}
             aria-expanded={isTreeMenuOpen}
-            className={`p-1 rounded-md border transition cursor-pointer flex items-center justify-center shrink-0 ${
+            className={`w-[26px] ${barControlHeight} rounded-md border transition cursor-pointer flex items-center justify-center shrink-0 ${
               isTreeMenuOpen ? activeBtn : idleBtn
             }`}
           >
@@ -444,7 +454,7 @@ export default function TemplateEditorBar({
               disabled
               title="The Body cannot be deleted"
               aria-label="Delete (disabled for Body)"
-              className={`p-1 rounded-md border transition flex items-center justify-center shrink-0 ${idleBtn} ${disabledBtn}`}
+              className={`w-[26px] ${barControlHeight} rounded-md border transition flex items-center justify-center shrink-0 ${idleBtn} ${disabledBtn}`}
             >
               <TrashCanIcon className="w-3.5 h-3.5" />
             </button>
@@ -452,7 +462,7 @@ export default function TemplateEditorBar({
             <button
               type="button"
               onClick={() => onRemoveContainer?.(container.id)}
-              className="p-1 rounded-md border transition flex items-center justify-center cursor-pointer shrink-0 bg-black/40 border-[var(--secondary-accent)] text-[var(--secondary-accent)] hover:bg-[var(--tree-menu-danger-hover-bg)] hover:border-white hover:text-[var(--tree-menu-danger-hover-text)]"
+              className={`w-[26px] ${barControlHeight} rounded-md border transition flex items-center justify-center cursor-pointer shrink-0 bg-black/40 border-[var(--secondary-accent)] text-[var(--secondary-accent)] hover:bg-[var(--tree-menu-danger-hover-bg)] hover:border-white hover:text-[var(--tree-menu-danger-hover-text)]`}
               title="Delete Container"
               aria-label="Delete Container"
             >
@@ -464,13 +474,10 @@ export default function TemplateEditorBar({
         </>
       )}
 
-      {/* Preview width applies to the whole canvas, so it lives with the Body (and preview mode) */}
-      {(!showContainerTools || (container && isRoot)) && (
-        <>
-          <PreviewWidthPicker />
-          <div className={divider} aria-hidden="true" />
-        </>
-      )}
+      {/* Preview width applies to the whole canvas, not the selected container, but stays visible
+          no matter what's selected so switching containers doesn't hide it. */}
+      <PreviewWidthPicker />
+      <div className={divider} aria-hidden="true" />
 
       <ZoomControls />
     </div>

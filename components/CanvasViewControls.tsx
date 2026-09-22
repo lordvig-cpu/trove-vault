@@ -1,11 +1,12 @@
 'use client';
 
 import React, { useRef, useState } from 'react';
-import { ZoomInIcon, ZoomOutIcon } from '@/components/icons/TreeIcons';
-import { useCanvasZoom, ZOOM_MAX, ZOOM_MIN } from '@/context/CanvasZoomContext';
+import { SearchGlassIcon } from '@/components/icons/TreeIcons';
+import { useCanvasZoom, ZOOM_MAX, ZOOM_MIN, ZOOM_STEP } from '@/context/CanvasZoomContext';
 import { BODY_WIDTH_PRESETS } from '@/types/layout';
 import { useDismissOnOutsideOrEscape } from '@/hooks/useDismissOnOutsideOrEscape';
-import { activeBtn, ghostBtn, idleBtn } from '@/components/editorBarStyles';
+import { useScreenWidth } from '@/hooks/useScreenWidth';
+import { activeBtn, barControlHeight, ghostBtn, idleBtn } from '@/components/editorBarStyles';
 
 /**
  * Canvas preview controls used inside the template editor bar.
@@ -13,7 +14,8 @@ import { activeBtn, ghostBtn, idleBtn } from '@/components/editorBarStyles';
  */
 
 const MIN_PREVIEW_WIDTH = 320;
-const MAX_PREVIEW_WIDTH = 3840;
+// Fallback cap for SSR / browsers that don't expose screen.width; actual cap below tracks the user's monitor.
+const FALLBACK_MAX_PREVIEW_WIDTH = 3840;
 const ACCENT_BORDER = 'border-[color-mix(in_oklch,var(--secondary-accent)_45%,transparent)]';
 
 /** Screen width being previewed: pick a hard width, or check Fit to use the whole editor area. */
@@ -23,13 +25,17 @@ export function PreviewWidthPicker() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [draft, setDraft] = useState('');
   const menuRef = useRef<HTMLDivElement>(null);
+  // The highest width a user could plausibly want to preview: their actual monitor, not a guess.
+  // 0 during SSR/before mount, so fall back until the real value is known.
+  const screenWidth = useScreenWidth();
+  const maxPreviewWidth = Math.max(FALLBACK_MAX_PREVIEW_WIDTH, screenWidth);
 
   useDismissOnOutsideOrEscape(menuOpen, menuRef, () => setMenuOpen(false));
 
   const commitDraft = () => {
     const val = parseInt(draft, 10);
     if (!isNaN(val)) {
-      setPreviewWidth(Math.min(Math.max(val, MIN_PREVIEW_WIDTH), MAX_PREVIEW_WIDTH));
+      setPreviewWidth(Math.min(Math.max(val, MIN_PREVIEW_WIDTH), maxPreviewWidth));
       setMenuOpen(false);
     }
   };
@@ -37,14 +43,14 @@ export function PreviewWidthPicker() {
   // Turning Fit off keeps the width you were looking at as the starting hard width.
   const toggleFit = (checked: boolean) => {
     if (checked) setPreviewWidth('fit');
-    else setPreviewWidth(Math.min(Math.max(Math.round(fitWidth) || 1920, MIN_PREVIEW_WIDTH), MAX_PREVIEW_WIDTH));
+    else setPreviewWidth(Math.min(Math.max(Math.round(fitWidth) || 1920, MIN_PREVIEW_WIDTH), maxPreviewWidth));
   };
 
   const shownWidth = isFit ? Math.round(fitWidth) : previewWidth;
 
   return (
     <div className="flex items-center gap-0.5">
-      <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)] mr-1">Width</span>
+      <span className="text-[10px] font-bold uppercase tracking-wider text-white mr-1">Width</span>
       <div className="relative" ref={menuRef}>
         <button
           type="button"
@@ -56,7 +62,7 @@ export function PreviewWidthPicker() {
           title={isFit ? 'Uncheck Fit to preview a specific screen width' : 'Choose a screen width to preview'}
           aria-haspopup="listbox"
           aria-expanded={menuOpen}
-          className={`min-w-[5.25rem] px-2 py-0.5 rounded-md border text-[11px] font-mono font-semibold flex items-center justify-between gap-1 cursor-pointer disabled:opacity-60 disabled:cursor-default ${idleBtn}`}
+          className={`min-w-[4.5rem] px-2 ${barControlHeight} rounded-md border text-[11px] font-mono font-semibold flex items-center justify-between gap-1 cursor-pointer disabled:opacity-60 disabled:cursor-default ${idleBtn}`}
         >
           <span>{shownWidth ? `${shownWidth}px` : '—'}</span>
           <span aria-hidden="true" className="text-[9px]">▾</span>
@@ -85,7 +91,7 @@ export function PreviewWidthPicker() {
                 <input
                   type="number"
                   min={MIN_PREVIEW_WIDTH}
-                  max={MAX_PREVIEW_WIDTH}
+                  max={maxPreviewWidth}
                   value={draft}
                   onChange={(e) => setDraft(e.target.value)}
                   onKeyDown={(e) => {
@@ -113,34 +119,57 @@ export function PreviewWidthPicker() {
           onChange={(e) => toggleFit(e.target.checked)}
           className="tree-filter-checkbox tmpl-blue-check w-3.5 h-3.5 rounded cursor-pointer shrink-0"
         />
-        Fit
+        FIT
       </label>
     </div>
   );
 }
 
-/** Zoom -/+ in 10% steps; 100% = the preview fitted to the editor area. */
-export function ZoomControls() {
-  const { zoom, zoomIn, zoomOut, resetZoom } = useCanvasZoom();
+// Chromium/Edge's default accent-color range thumb is ~16px — used to correct the tick position below.
+const ZOOM_THUMB_WIDTH_PX = 16;
 
-  const btn = `p-1.5 rounded-md flex items-center justify-center transition cursor-pointer ${ghostBtn} disabled:opacity-35 disabled:cursor-not-allowed`;
+/** Zoom slider, 100% = the preview fitted to the editor area. Drag or arrow-key the track; double-click it (or click the readout) to snap back to 100%. */
+export function ZoomControls() {
+  const { zoom, setZoom, resetZoom } = useCanvasZoom();
+
+  // Where 100% falls along the track — marks the snap-back stop. A native thumb can't travel past
+  // the track edges, so its center only spans [thumbWidth/2, 100% - thumbWidth/2], not the full
+  // width; mixing a % term with a px correction (valid in calc()) lines the tick up with it exactly,
+  // at any track width, without needing to know that width in JS.
+  const midFraction = (1 - ZOOM_MIN) / (ZOOM_MAX - ZOOM_MIN);
+  const tickLeft = `calc(${midFraction * 100}% + ${ZOOM_THUMB_WIDTH_PX * (0.5 - midFraction)}px)`;
 
   return (
-    <div className="flex items-center gap-0.5" role="group" aria-label="Zoom">
-      <button type="button" onClick={zoomOut} disabled={zoom <= ZOOM_MIN} title="Zoom out 10%" aria-label="Zoom out" className={btn}>
-        <ZoomOutIcon />
-      </button>
+    <div className="flex items-center gap-1.5" role="group" aria-label="Zoom">
+      <SearchGlassIcon className="w-3.5 h-3.5 text-[var(--secondary-accent)] shrink-0" />
+      <div className="relative flex items-center w-24 h-4 shrink-0">
+        <div
+          aria-hidden="true"
+          className="absolute top-1/2 -translate-y-1/2 w-px h-2.5 bg-white/80 pointer-events-none"
+          style={{ left: tickLeft }}
+        />
+        <input
+          type="range"
+          min={ZOOM_MIN}
+          max={ZOOM_MAX}
+          step={ZOOM_STEP}
+          value={zoom}
+          onChange={(e) => setZoom(parseFloat(e.target.value))}
+          onDoubleClick={resetZoom}
+          aria-label="Zoom level"
+          aria-valuetext={`${Math.round(zoom * 100)}%`}
+          title="Drag to zoom; double-click to reset to 100%"
+          className="w-full h-1.5 rounded-full cursor-pointer accent-[var(--secondary-accent)] bg-black/40"
+        />
+      </div>
       <button
         type="button"
         onClick={resetZoom}
         title="Reset zoom to 100%"
         aria-label={`Zoom ${Math.round(zoom * 100)}%, click to reset`}
-        className={`min-w-[3rem] px-1.5 py-0.5 rounded-md text-[11px] font-mono font-semibold cursor-pointer text-center ${ghostBtn}`}
+        className={`min-w-[2.75rem] px-1 ${barControlHeight} rounded-md text-[11px] font-mono font-semibold cursor-pointer text-center ${ghostBtn}`}
       >
         {Math.round(zoom * 100)}%
-      </button>
-      <button type="button" onClick={zoomIn} disabled={zoom >= ZOOM_MAX} title="Zoom in 10%" aria-label="Zoom in" className={btn}>
-        <ZoomInIcon />
       </button>
     </div>
   );

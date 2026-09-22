@@ -22,6 +22,7 @@ interface CanvasZoomContextType {
   fitWidth: number;
   setFitWidth: (w: number) => void;
   zoom: number;
+  setZoom: (z: number) => void;
   zoomIn: () => void;
   zoomOut: () => void;
   resetZoom: () => void;
@@ -38,13 +39,24 @@ export function CanvasZoomProvider({ children }: { children: React.ReactNode }) 
   const [previewWidth, setPreviewWidth] = useState<PreviewWidth>('fit');
   const [fitWidth, setFitWidth] = useState(0);
 
+  const setZoomClamped = useCallback((z: number) => setZoom(clampZoom(z)), []);
   const zoomIn = useCallback(() => setZoom((z) => clampZoom(z + ZOOM_STEP)), []);
   const zoomOut = useCallback(() => setZoom((z) => clampZoom(z - ZOOM_STEP)), []);
   const resetZoom = useCallback(() => setZoom(1), []);
 
   const value = useMemo(
-    () => ({ previewWidth, setPreviewWidth, fitWidth, setFitWidth, zoom, zoomIn, zoomOut, resetZoom }),
-    [previewWidth, fitWidth, zoom, zoomIn, zoomOut, resetZoom]
+    () => ({
+      previewWidth,
+      setPreviewWidth,
+      fitWidth,
+      setFitWidth,
+      zoom,
+      setZoom: setZoomClamped,
+      zoomIn,
+      zoomOut,
+      resetZoom,
+    }),
+    [previewWidth, fitWidth, zoom, setZoomClamped, zoomIn, zoomOut, resetZoom]
   );
 
   return <CanvasZoomContext.Provider value={value}>{children}</CanvasZoomContext.Provider>;

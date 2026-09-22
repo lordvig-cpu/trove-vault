@@ -539,6 +539,8 @@ export default function Home() {
             itemsDockedSide={primaryTabs.includes('items') ? 'left' : secondaryTabs.includes('items') ? 'right' : null}
             onStartItemsDrag={(e) => startDockDrag('items', e)}
             onStartGrabbedContentDrag={(e) => startDockDrag('grabbed_content', e)}
+            leftOccupiedWidth={leftOccupiedWidth}
+            rightOccupiedWidth={rightOccupiedWidth}
             onAddNewItem={() => {
               openCreateItem(activeCollectionId, null);
             }}
