@@ -62,8 +62,6 @@ export const DockRightPanelIcon = ({ className = '', isOpen }: { className?: str
   </svg>
 );
 
-export const DockPanelIcon = DockRightPanelIcon;
-
 /* Pin Icons */
 interface PinIconProps {
   className?: string;
@@ -181,21 +179,6 @@ export const ChevronRightIcon = ({ className }: { className?: string }) => (
     aria-hidden="true"
   >
     <polyline points="9 18 15 12 9 6" />
-  </svg>
-);
-
-export const ChevronDownIcon = ({ className }: { className?: string }) => (
-  <svg 
-    className={className} 
-    viewBox="0 0 24 24" 
-    fill="none" 
-    stroke="currentColor" 
-    strokeWidth="2.5" 
-    strokeLinecap="round" 
-    strokeLinejoin="round"
-    aria-hidden="true"
-  >
-    <polyline points="6 9 12 15 18 9" />
   </svg>
 );
 

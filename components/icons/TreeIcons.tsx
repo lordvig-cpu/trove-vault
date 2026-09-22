@@ -166,24 +166,6 @@ export function FolderExpandIcon({ className = 'w-3.5 h-3.5' }: TreeIconProps) {
   );
 }
 
-// Down-pointing filled triangle
-export function TreeTriangleDownIcon({ className = 'w-[10px] h-[10px]' }: TreeIconProps) {
-  return (
-    <svg viewBox="0 0 24 24" fill="currentColor" className={className} aria-hidden="true">
-      <polygon points="5,8 19,8 12,18" />
-    </svg>
-  );
-}
-
-// Right-pointing filled triangle
-export function TreeTriangleRightIcon({ className = 'w-[10px] h-[10px]' }: TreeIconProps) {
-  return (
-    <svg viewBox="0 0 24 24" fill="currentColor" className={className} aria-hidden="true">
-      <polygon points="8,5 8,19 18,12" />
-    </svg>
-  );
-}
-
 // Tree elbow branch connector (used in Filter / Tree hierarchy tree)
 export function TreeBranchIcon({ className = 'w-3.5 h-3.5' }: TreeIconProps) {
   return (

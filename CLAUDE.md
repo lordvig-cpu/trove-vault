@@ -74,7 +74,6 @@ above) before writing Next.js code; do not edit it, `next dev` regenerates it.
 
 ## Cleanup backlog (found in the code audit, not yet done)
 
-- Unused SVG icons remain in `components/icons/` (kept for now; remove or use them).
 - About 89 CSS classes look unreferenced (heuristic; some names are built dynamically, e.g.
   `tmpl-block-variant-${x}`), so check each before deleting.
 - Large files still worth splitting: `app/page.tsx` (panel renderers and the JSX, ~1,170 lines),

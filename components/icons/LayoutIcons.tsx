@@ -53,8 +53,6 @@ export const LayoutContainerIcon = ({ className = 'w-4 h-4', strokeWidth = 1.8 }
   </svg>
 );
 
-export const ContainerIcon = LayoutContainerIcon;
-
 /**
  * FlexRowIcon:
  * Two boxes side-by-side with an arrow across the top pointing left and right.
