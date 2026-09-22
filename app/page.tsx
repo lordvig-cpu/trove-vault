@@ -2,11 +2,9 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useUIPreferences } from '@/context/UIPreferencesContext';
-import { ItemRecord } from '@/types/item';
 import { useCollections } from '@/hooks/useCollections';
 import { useModals } from '@/hooks/useModals';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
-import { DockContent } from '@/hooks/usePanelDockDrag';
 import NavigationHeader from '@/components/NavigationHeader';
 import NavigationFooter from '@/components/NavigationFooter';
 import MainContent from '@/components/MainContent';
@@ -15,20 +13,14 @@ import PrimarySidePanelHeader from '@/components/PrimarySidePanelHeader';
 import SecondarySidePanel from '@/components/SecondarySidePanel';
 import BottomPanel from '@/components/BottomPanel';
 import PanelDockDropZones from '@/components/PanelDockDropZones';
-import { TreePanelContext } from '@/context/TreePanelContext';
-import TreeContent from '@/components/TreeContent';
 import ModalContainers from '@/components/ModalContainers';
 import DynamicWatermark from '@/components/DynamicWatermark';
-import TemplateFieldInspector from '@/components/TemplateFieldInspector';
-import TemplateLayoutPalette from '@/components/TemplateLayoutPalette';
-import TemplatePropertiesInspector from '@/components/TemplatePropertiesInspector';
-import TemplateHierarchyTree from '@/components/TemplateHierarchyTree';
 import { useTemplateEditor } from '@/hooks/useTemplateEditor';
 import { useWorkspaceDock } from '@/hooks/useWorkspaceDock';
 import { useHierarchyState } from '@/hooks/useHierarchyState';
 import { useTreePanels } from '@/hooks/useTreePanels';
-import { TreeTab } from '@/lib/filterTreeForest';
-import { itemMatchesQuery } from '@/lib/treeUtils';
+import { usePanelRenderers } from '@/hooks/usePanelRenderers';
+import { getPanelTitle } from '@/lib/panelTitles';
 
 /**
  * Whether Edit Template opens and pins the left, right and bottom panels. Off while the editor is
@@ -41,67 +33,38 @@ export default function Home() {
   /* ------------------------------------------------------------------------
      1. DATA LAYER (Supabase Records, Trees & CRUD Mutations)
      ------------------------------------------------------------------------ */
+  const collections = useCollections();
   const {
     allCollections,
     allItems,
     templates,
     activeCollectionId,
-    setActiveCollectionId,
     activeCollection,
     selectedItem,
     setSelectedItem,
-    selectItemWithChildren,
     unifiedForest,
     loading,
     error,
     fetchAllData,
-    renameCollection,
-    renameItem,
-    renameTemplate,
-    deleteTemplate,
-  } = useCollections();
+  } = collections;
 
   /* ------------------------------------------------------------------------
      2. MODAL DIALOG STATE
      ------------------------------------------------------------------------ */
+  const modals = useModals();
   const {
     activeModal,
     closeModal,
     openTemplateManager,
-    openDeleteCollection,
     openCreateCollection,
     openCreateItem,
-    openEditItem,
-    openDeleteItem,
-  } = useModals();
+  } = modals;
 
   /* ------------------------------------------------------------------------
      3. TREE TABS, FILTERS & TREE STATE
      ------------------------------------------------------------------------ */
-  const {
-    activeSearchPanel,
-    setActiveSearchPanel,
-    collectionsFilterIds,
-    setCollectionsFilterIds,
-    templatesFilterIds,
-    setTemplatesFilterIds,
-    filterCollectionIds,
-    handleToggleFilterCollection,
-    handleClearCollectionFilters,
-    filteredForest,
-    collectionsForest,
-    collectionsTree,
-    handleToggleCollectionsFilter,
-    templatesForest,
-    templatesTree,
-    handleToggleTemplatesFilter,
-    searchQuery,
-    setSearchQuery,
-    expandedCategoryIds,
-    isAnyCategoryExpanded,
-    handleToggleCategory,
-    handleToggleAllCategories,
-  } = useTreePanels({ unifiedForest, allItems, allCollections, templates });
+  const treePanels = useTreePanels({ unifiedForest, allItems, allCollections, templates });
+  const { searchQuery, setSearchQuery, setActiveSearchPanel } = treePanels;
 
   /* ------------------------------------------------------------------------
      4. GLOBAL UI & LAYOUT PREFERENCES
@@ -230,16 +193,8 @@ export default function Home() {
     },
   });
 
-  const {
-    hierarchyExpandedIds,
-    hierarchyNodeCount,
-    isAllHierarchyExpanded,
-    toggleAllHierarchy,
-    toggleHierarchyExpand,
-    handleOpenProperties,
-    handlePlaceField,
-    handleAddContainer,
-  } = useHierarchyState(templateEditor);
+  const hierarchy = useHierarchyState(templateEditor);
+  const { hierarchyNodeCount, handleOpenProperties, handlePlaceField, handleAddContainer } = hierarchy;
 
   /* ------------------------------------------------------------------------
      8. GLOBAL KEYBOARD SHORTCUTS
@@ -373,297 +328,29 @@ export default function Home() {
     },
   ]);
 
-  /* ------------------------------------------------------------------------
-     9. EVENT HANDLERS & DELEGATION
-     ------------------------------------------------------------------------ */
-  const handleTreeSelectItem = (item: ItemRecord, collectionId: number | null) => {
-    // Clear the search in the same update so its sole match cannot override this click.
-    const pattern = searchQuery.trim();
-    if (pattern && !itemMatchesQuery(item, pattern)) {
-      setSearchQuery('');
-    }
-    selectItemWithChildren(item, collectionId);
-    setIsPrimaryFlyoutOpen(false);
-  };
-
-  const handleTriggerEditItem = (item: ItemRecord, collectionId: number | null) => {
-    setActiveCollectionId(collectionId);
-    openEditItem(item, collectionId);
-  };
-
-  const handleTriggerDeleteItem = (item: ItemRecord, collectionId: number | null) => {
-    setActiveCollectionId(collectionId);
-    openDeleteItem(item, collectionId);
-  };
 
   /* ------------------------------------------------------------------------
-     10. MEMOIZED TREE SUB-COMPONENTS & PANEL CONTENT RENDERERS
+     9. PANEL RENDERERS (tree panels, template panels, panel header props)
      ------------------------------------------------------------------------ */
-  const closeTreeFlyout = (content: 'items' | 'collections' | 'templates') => {
-    if (content === 'collections') setIsCollectionsFlyoutOpen(false);
-    else if (content === 'templates') setIsTemplatesFlyoutOpen(false);
-    else setIsPrimaryFlyoutOpen(false);
-  };
+  const {
+    handleTriggerEditItem,
+    handleTriggerDeleteItem,
+    renderTreePanel,
+    renderPanelBody,
+    treeHeaderProps,
+  } = usePanelRenderers({
+    collections,
+    modals,
+    treePanels,
+    hierarchy,
+    templateEditor,
+    isPinned,
+    isSecondaryPinned,
+    setIsPrimaryFlyoutOpen,
+    setIsCollectionsFlyoutOpen,
+    setIsTemplatesFlyoutOpen,
+  });
 
-  const renderTreePanel = (pos: 'left' | 'right', content: 'items' | 'collections' | 'templates' = 'items', isFlyout = false) => {
-    const tree = content === 'collections' ? collectionsTree : content === 'templates' ? templatesTree : { searchQuery, expandedCategoryIds, handleToggleCategory };
-    const forest = content === 'collections' ? collectionsForest : content === 'templates' ? templatesForest : filteredForest;
-    return (
-    <TreePanelContext.Provider value={{ isFlyout, isPinned: !isFlyout && (pos === 'left' ? isPinned : isSecondaryPinned) }}>
-    <TreeContent
-      treeView={content === 'collections' ? 'collections' : content === 'templates' ? 'templates' : 'items'}
-      unifiedForest={forest}
-      searchQuery={tree.searchQuery}
-      activeCollectionId={activeCollectionId}
-      selectedItemId={selectedItem?.id || null}
-      expandedCategoryIds={tree.expandedCategoryIds}
-      onToggleCategory={tree.handleToggleCategory}
-      onSelectCollection={(colId) => {
-        setActiveSearchPanel(content);
-        if (content !== 'templates') {
-          setActiveCollectionId(colId);
-        }
-        closeTreeFlyout(content);
-      }}
-      onSelectItem={(item, collectionId) => {
-        setActiveSearchPanel(content);
-        if (content === 'collections' || content === 'templates') {
-          selectItemWithChildren(item, collectionId);
-          closeTreeFlyout(content);
-        } else handleTreeSelectItem(item, collectionId);
-      }}
-      onSelectSearchResult={activeSearchPanel === content ? selectItemWithChildren : undefined}
-      onAddSubItem={openCreateItem}
-      onAddSubCollection={openCreateCollection}
-      onEditTemplate={(templateId: number) => {
-        setIsTemplatesFlyoutOpen(false);
-        setIsCollectionsFlyoutOpen(false);
-        setIsPrimaryFlyoutOpen(false);
-        const validId = Math.abs(templateId);
-        if (validId && validId !== 999) {
-          templateEditor.startEditing(validId);
-        }
-      }}
-      onEditCollection={(col) => openTemplateManager(col.id, col.name)}
-      onDeleteCollection={openDeleteCollection}
-      onDeleteTemplate={deleteTemplate}
-      onEditItem={handleTriggerEditItem}
-      onDeleteItem={handleTriggerDeleteItem}
-      onRenameCollection={renameCollection}
-      onRenameTemplate={renameTemplate}
-      onRenameItem={renameItem}
-      position={pos}
-    />
-    </TreePanelContext.Provider>
-  );
-  };
-
-  const renderPanelBody = (content: DockContent, pos: 'left' | 'right' | 'bottom') => {
-    if (content === 'items' || content === 'collections' || content === 'templates') {
-      return renderTreePanel(pos === 'bottom' ? 'left' : pos, content);
-    }
-    if (content === 'template_editor') {
-      return (
-        <TemplateFieldInspector
-          template={templateEditor.activeTemplate}
-          selectedFieldId={templateEditor.selectedFieldId}
-          isRootSelected={templateEditor.isRootSelected}
-          searchQuery={templateEditor.fieldSearchQuery}
-          filterFieldTypes={templateEditor.filterFieldTypes}
-          placedFieldIds={templateEditor.placedFieldIds}
-          onPlaceField={templateEditor.placeField}
-          onSelectField={templateEditor.setSelectedFieldId}
-          onSelectRoot={templateEditor.selectRoot}
-          onUpdateField={templateEditor.updateField}
-          onAddField={templateEditor.addField}
-          onDeleteField={templateEditor.deleteField}
-          onReorderFields={templateEditor.reorderFields}
-          onUpdateTemplateMeta={templateEditor.updateTemplateMetadata}
-          onCloseEditor={templateEditor.stopEditing}
-          isLoading={templateEditor.isLoading}
-          isSaving={templateEditor.isSaving}
-          error={templateEditor.error}
-          successMsg={templateEditor.successMsg}
-          position={pos === 'bottom' ? 'right' : pos}
-        />
-      );
-    }
-    if (content === 'template_properties') {
-      return (
-        <TemplatePropertiesInspector
-          template={templateEditor.activeTemplate}
-          selectedNode={templateEditor.selectedNode}
-          parentNode={templateEditor.selectedContainer}
-          onUpdateContainer={templateEditor.updateFlexContainer}
-          onUpdateComponent={templateEditor.updateFlexComponent}
-          onRemoveNode={(id) => {
-            if (templateEditor.selectedNode?.nodeType === 'container') {
-              templateEditor.removeFlexContainer(id);
-            } else {
-              templateEditor.removeFlexComponent(id);
-            }
-          }}
-          onSelectNode={templateEditor.selectNode}
-        />
-      );
-    }
-    if (content === 'template_builder') {
-      return (
-        <TemplateLayoutPalette
-          selectedContainer={templateEditor.selectedContainer}
-          onAddContainer={(preset) => {
-            const mapped =
-              preset === '2-col' ? 'split-2' : preset === '3-col' ? 'split-3' : preset;
-            templateEditor.addFlexPrimitive(mapped);
-          }}
-          onAddComponent={(comp) => {
-            templateEditor.addFlexComponent(templateEditor.activeContainerId, comp);
-          }}
-          onResetLayout={templateEditor.resetFlexLayoutToDefault}
-        />
-      );
-    }
-    if (content === 'template_hierarchy') {
-      return (
-        <TemplateHierarchyTree
-          flexLayoutConfig={templateEditor.flexLayoutConfig}
-          selectedNodeId={templateEditor.selectedNodeId}
-          activeContainerId={templateEditor.activeContainerId}
-          fields={templateEditor.activeTemplate?.fields || []}
-          expandedIds={hierarchyExpandedIds}
-          onToggleExpand={toggleHierarchyExpand}
-          onSelectNode={templateEditor.selectNode}
-          onOpenProperties={handleOpenProperties}
-          onAddContainer={handleAddContainer}
-          onUpdateContainer={templateEditor.updateFlexContainer}
-          onUpdateComponent={templateEditor.updateFlexComponent}
-          onRemoveContainer={templateEditor.removeFlexContainer}
-          onRemoveComponent={templateEditor.removeFlexComponent}
-          onPlaceField={handlePlaceField}
-          position={pos === 'bottom' ? 'right' : pos}
-        />
-      );
-    }
-    if (content === 'grabbed_content') {
-      return (
-        <div className="p-4 flex flex-col items-center justify-center text-center gap-3 h-full min-h-[220px] select-none">
-          <div className="w-12 h-12 rounded-2xl bg-[color-mix(in_oklch,var(--brand-primary)_15%,transparent)] border border-[color-mix(in_oklch,var(--brand-primary)_35%,transparent)] flex items-center justify-center text-2xl shadow-sm">
-            📦
-          </div>
-          <div className="flex flex-col gap-1">
-            <div className="text-sm font-bold text-[var(--content-primary,rgba(226,232,240,1))] uppercase tracking-wider">
-              Grabbed Content
-            </div>
-            <p className="text-xs text-[var(--text-muted,rgba(148,163,184,1))] max-w-[200px] leading-relaxed">
-              This is docked content.
-            </p>
-          </div>
-        </div>
-      );
-    }
-    return null;
-  };
-
-  const getPanelTitle = (tabs: DockContent[], activeTab: DockContent, defaultTitle: string) => {
-    if (tabs.length === 0) return defaultTitle;
-    if (tabs.length === 1) {
-      if (tabs[0] === 'items') return 'ITEMS';
-      if (tabs[0] === 'collections') return 'COLLECTIONS';
-      if (tabs[0] === 'templates') return 'TEMPLATES';
-      if (tabs[0] === 'template_editor') return 'TEMPLATE INSPECTOR';
-      if (tabs[0] === 'template_properties') return 'PROPERTIES';
-      if (tabs[0] === 'template_builder') return 'LAYOUT BUILDER';
-      if (tabs[0] === 'template_hierarchy') return 'STRUCTURE';
-      if (tabs[0] === 'grabbed_content') return 'GRABBED CONTENT';
-    }
-    if (activeTab === 'items') return 'ITEMS';
-    if (activeTab === 'collections') return 'COLLECTIONS';
-    if (activeTab === 'templates') return 'TEMPLATES';
-    if (activeTab === 'template_editor') return 'TEMPLATE INSPECTOR';
-    if (activeTab === 'template_properties') return 'PROPERTIES';
-    if (activeTab === 'template_builder') return 'LAYOUT BUILDER';
-    if (activeTab === 'template_hierarchy') return 'STRUCTURE';
-    if (activeTab === 'grabbed_content') return 'GRABBED CONTENT';
-    return defaultTitle;
-  };
-
-  const treeHeaderProps = (content: DockContent) => {
-    const isCollections = content === 'collections';
-    const isTemplates = content === 'templates';
-    const isInspector = content === 'template_editor';
-    const isBuilder = content === 'template_builder';
-    const isHierarchy = content === 'template_hierarchy';
-    const isProperties = content === 'template_properties';
-
-    // Calculate field type counts for template editor
-    const fieldTypeCounts: Record<string, number> = {};
-    if (templateEditor.activeTemplate?.fields) {
-      for (const f of templateEditor.activeTemplate.fields) {
-        fieldTypeCounts[f.field_type] = (fieldTypeCounts[f.field_type] || 0) + 1;
-      }
-    }
-
-    const isEmpty = content === 'empty';
-
-    return {
-      treeView: (isEmpty ? undefined : isCollections ? 'collections' : isTemplates ? 'templates' : 'items') as TreeTab,
-      activeTab: (isEmpty
-        ? 'empty'
-        : isInspector
-        ? 'template_editor'
-        : isBuilder
-        ? 'template_builder'
-        : isProperties
-        ? 'template_properties'
-        : isHierarchy
-        ? 'template_hierarchy'
-        : isCollections
-        ? 'collections'
-        : isTemplates
-        ? 'templates'
-        : content) as TreeTab | DockContent,
-      searchQuery: isInspector
-        ? templateEditor.fieldSearchQuery
-        : isCollections
-        ? collectionsTree.searchQuery
-        : isTemplates
-        ? templatesTree.searchQuery
-        : searchQuery,
-      onSearchChange: (query: string) => {
-        if (isInspector) {
-          templateEditor.setFieldSearchQuery(query);
-        } else {
-          setActiveSearchPanel(isCollections ? 'collections' : isTemplates ? 'templates' : 'items');
-          if (isCollections) collectionsTree.setSearchQuery(query);
-          else if (isTemplates) templatesTree.setSearchQuery(query);
-          else setSearchQuery(query);
-        }
-      },
-      isAnyCategoryExpanded: isHierarchy
-        ? isAllHierarchyExpanded
-        : isCollections
-        ? collectionsTree.isAnyCategoryExpanded
-        : isTemplates
-        ? templatesTree.isAnyCategoryExpanded
-        : isAnyCategoryExpanded,
-      onToggleAllCategories: isHierarchy
-        ? toggleAllHierarchy
-        : isCollections
-        ? collectionsTree.handleToggleAllCategories
-        : isTemplates
-        ? templatesTree.handleToggleAllCategories
-        : handleToggleAllCategories,
-      hierarchyNodeCount: isHierarchy ? hierarchyNodeCount : undefined,
-      filterCollectionIds: isCollections ? collectionsFilterIds : isTemplates ? templatesFilterIds : filterCollectionIds,
-      onToggleFilterCollection: isCollections ? handleToggleCollectionsFilter : isTemplates ? handleToggleTemplatesFilter : handleToggleFilterCollection,
-      onClearCollectionFilters: isCollections ? () => setCollectionsFilterIds([]) : isTemplates ? () => setTemplatesFilterIds([]) : handleClearCollectionFilters,
-      filterFieldTypes: templateEditor.filterFieldTypes,
-      onToggleFilterFieldType: templateEditor.toggleFieldTypeFilter,
-      onClearFieldTypeFilters: templateEditor.clearFieldTypeFilters,
-      fieldTypeCounts,
-      onAddNewField: () => templateEditor.addField('text'),
-    };
-  };
 
   const itemsFlyoutPanel = (
     <PrimarySidePanel
