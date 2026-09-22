@@ -264,21 +264,6 @@ function ContainerNodeRow({
           </div>
         </div>
 
-        {/* Hover Delete Action */}
-        {!isRoot && (
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              onRemoveContainer(container.id);
-            }}
-            className="opacity-0 group-hover:opacity-70 hover:!opacity-100 text-[11px] text-red-400 hover:text-red-200 p-0.5 rounded hover:bg-red-500/20 transition cursor-pointer shrink-0"
-            title={`Delete ${containerLabel}`}
-            aria-label={`Delete ${containerLabel}`}
-          >
-            🗑️
-          </button>
-        )}
       </div>
 
       {/* Container Flyout Action Menu */}
@@ -474,19 +459,6 @@ function ComponentNodeRow({
           </div>
         </div>
 
-        {/* Hover Delete Action */}
-        <button
-          type="button"
-          onClick={(e) => {
-            e.stopPropagation();
-            onRemoveComponent(component.id);
-          }}
-          className="opacity-0 group-hover:opacity-70 hover:!opacity-100 text-[11px] text-red-400 hover:text-red-200 p-0.5 rounded hover:bg-red-500/20 transition cursor-pointer shrink-0"
-          title={`Delete ${label}`}
-          aria-label={`Delete ${label}`}
-        >
-          🗑️
-        </button>
       </div>
 
       {/* Component Flyout Action Menu */}
