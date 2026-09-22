@@ -61,6 +61,8 @@ interface MainContentProps {
   onSplitFlexContainer?: (containerId: string, splitType: 'columns' | 'rows') => void;
   canvasMode?: 'edit' | 'preview';
   onToggleCanvasMode?: () => void;
+  isStructurePanelOpen?: boolean;
+  onOpenStructurePanel?: () => void;
   occupiedRightWidth?: number;
   occupiedLeftWidth?: number;
   rightPanelWidth?: number;
@@ -97,6 +99,8 @@ export default function MainContent({
   onResetFlexLayout,
   canvasMode = 'edit',
   onToggleCanvasMode,
+  isStructurePanelOpen,
+  onOpenStructurePanel,
 }: MainContentProps) {
 
   return (
@@ -139,6 +143,8 @@ export default function MainContent({
                   canvasMode={canvasMode}
                   onDoneEditing={onDoneEditingTemplate || (() => {})}
                   onToggleCanvasMode={onToggleCanvasMode || (() => {})}
+                  isStructurePanelOpen={isStructurePanelOpen}
+                  onOpenStructurePanel={onOpenStructurePanel}
                 />
               </div>
             ) : (

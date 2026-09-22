@@ -229,6 +229,10 @@ interface TemplateEditorBarProps {
   onSplitContainer?: (containerId: string, splitType: 'columns' | 'rows') => void;
   onRemoveContainer?: (id: string) => void;
   onSelectNode?: (id: string | null) => void;
+  /** Whether the Structure tree's side panel is currently visible (pinned or unpinned). */
+  isStructurePanelOpen?: boolean;
+  /** Opens the Structure panel unpinned. The gear needs it on-screen before it can sync to it. */
+  onOpenStructurePanel?: () => void;
 }
 
 export default function TemplateEditorBar({
@@ -241,6 +245,8 @@ export default function TemplateEditorBar({
   onSplitContainer,
   onRemoveContainer,
   onSelectNode,
+  isStructurePanelOpen,
+  onOpenStructurePanel,
 }: TemplateEditorBarProps) {
   const [isTreeMenuOpen, setIsTreeMenuOpen] = useState(false);
   const containerId = container?.id;
@@ -433,7 +439,45 @@ export default function TemplateEditorBar({
             data-gear-trigger
             onClick={() => {
               onSelectNode?.(container.id);
-              document.querySelector<HTMLElement>(`[data-tree-gear-id="${container.id}"]`)?.click();
+              const clickTreeGear = () =>
+                document.querySelector<HTMLElement>(`[data-tree-gear-id="${container.id}"]`)?.click();
+              if (isStructurePanelOpen) {
+                clickTreeGear();
+                return;
+              }
+              // The tree row (and its gear) isn't on screen yet: open the panel unpinned, then
+              // wait for the *panel's own* slide-in transition to genuinely finish before syncing
+              // to it. The menu's position is computed from the panel's live bounding rect at
+              // click time, so clicking mid-transition (or even a couple of animation frames in —
+              // a frame-to-frame "has it stopped moving" check can be fooled by the transition not
+              // having visibly started yet) anchors it to the panel's still-collapsed position.
+              onOpenStructurePanel?.();
+              const waitForPanelThen = (cb: () => void) => {
+                const panelEl = document.querySelector<HTMLElement>('.primary-side-panel');
+                if (!panelEl) {
+                  requestAnimationFrame(() => waitForPanelThen(cb));
+                  return;
+                }
+                const transitionSeconds = parseFloat(getComputedStyle(panelEl).transitionDuration) || 0;
+                if (transitionSeconds === 0) {
+                  cb();
+                  return;
+                }
+                let done = false;
+                const finish = () => {
+                  if (done) return;
+                  done = true;
+                  panelEl.removeEventListener('transitionend', onEnd);
+                  cb();
+                };
+                const onEnd = (e: TransitionEvent) => {
+                  if (e.target === panelEl) finish();
+                };
+                panelEl.addEventListener('transitionend', onEnd);
+                // Safety net if the transition never fires an end event (e.g. it gets interrupted).
+                setTimeout(finish, transitionSeconds * 1000 + 100);
+              };
+              waitForPanelThen(clickTreeGear);
             }}
             title={isRoot ? 'Body Properties' : 'Container Properties'}
             aria-label={isRoot ? 'Body properties' : 'Container properties'}

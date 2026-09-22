@@ -59,6 +59,10 @@ interface TemplateEditorStageProps {
   canvasMode: 'edit' | 'preview';
   onDoneEditing: () => void;
   onToggleCanvasMode: () => void;
+  /** Whether the Structure tree's side panel is currently visible, and how to open it unpinned
+      when it isn't — passed through to the toolbar gear. */
+  isStructurePanelOpen?: boolean;
+  onOpenStructurePanel?: () => void;
 }
 
 /* ==========================================================================
@@ -85,6 +89,8 @@ export default function TemplateEditorStage({
   canvasMode,
   onDoneEditing,
   onToggleCanvasMode,
+  isStructurePanelOpen,
+  onOpenStructurePanel,
 }: TemplateEditorStageProps) {
   const fields = template.fields || [];
 
@@ -121,6 +127,8 @@ export default function TemplateEditorStage({
             onSplitContainer={onSplitContainer}
             onRemoveContainer={onRemoveFlexContainer}
             onSelectNode={onSelectNode}
+            isStructurePanelOpen={isStructurePanelOpen}
+            onOpenStructurePanel={onOpenStructurePanel}
           />,
           toolbarSlot
         )}

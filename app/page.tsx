@@ -196,6 +196,15 @@ export default function Home() {
   const hierarchy = useHierarchyState(templateEditor);
   const { hierarchyNodeCount, handleOpenProperties, handlePlaceField, handleAddContainer } = hierarchy;
 
+  // Opens the primary side panel unpinned, on the Structure tab — used when the template editor's
+  // toolbar gear is clicked while the panel that would show it is closed.
+  const openStructurePanel = () => {
+    if (primaryTabs.includes('template_hierarchy')) {
+      setPrimaryActiveTab('template_hierarchy');
+    }
+    setIsPrimarySidePanelOpen(true);
+  };
+
   /* ------------------------------------------------------------------------
      8. GLOBAL KEYBOARD SHORTCUTS
      ------------------------------------------------------------------------ */
@@ -613,6 +622,8 @@ export default function Home() {
               onResetFlexLayout={templateEditor.resetFlexLayoutToDefault}
               canvasMode={templateEditor.canvasMode}
               onToggleCanvasMode={templateEditor.toggleCanvasMode}
+              isStructurePanelOpen={isPrimaryActive}
+              onOpenStructurePanel={openStructurePanel}
             />
           </div>
 
