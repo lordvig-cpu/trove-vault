@@ -44,3 +44,8 @@ export async function fetchCollectionItems(collectionId: number): Promise<ItemRe
   if (error) throw error;
   return (data || []).map(toItemRecord);
 }
+
+export async function renameCollection(id: number, name: string): Promise<void> {
+  const { error } = await supabase.from('collections').update({ name }).eq('id', id);
+  if (error) throw error;
+}

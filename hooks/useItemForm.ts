@@ -3,7 +3,7 @@
 import { useCallback, useMemo, useState } from 'react';
 import { validateImageFile } from '@/lib/storage';
 import { errorMessage } from '@/lib/errors';
-import { fetchTemplateCatalog } from '@/lib/templateCatalog';
+import { fetchTemplateCatalog } from '@/lib/data/templates';
 import type { AdHocAttribute } from '@/components/item-form/AdHocAttributesEditor';
 import type { FieldDefinition } from '@/types/field';
 import type { CollectionTemplate } from '@/types/template';

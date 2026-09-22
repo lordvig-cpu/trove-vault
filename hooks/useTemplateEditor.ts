@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useCallback, useEffect, useRef } from 'react';
-import { supabase } from '@/lib/supabase';
+import { fetchTemplate, saveTemplateLayout, updateTemplateMetadata as saveTemplateMetadata } from '@/lib/data/templates';
+import { createTemplateField, deleteTemplateField, reorderTemplateFields, updateTemplateField } from '@/lib/data/templateFields';
 import { ItemTemplate } from '@/types/template';
 import { FieldDefinition, FieldType } from '@/types/field';
 import {
@@ -17,7 +18,6 @@ import {
 } from '@/types/layout';
 import { DockContent } from '@/hooks/usePanelDockDrag';
 import { errorMessage } from '@/lib/errors';
-import { toFieldDefinition, toItemTemplate, toJson } from '@/lib/data/mappers';
 import {
   buildContainer,
   insertChild,
@@ -112,17 +112,14 @@ export function useTemplateEditor({
     if (!pending) return;
     remoteSavePending.current = null;
     try {
-      const { error } = await supabase
-        .from('item_templates')
-        .update({ layout_config: toJson(pending.layout) })
-        .eq('id', pending.id);
-      // Warn once per session so a missing layout_config column is visible, not silent
-      if (error && !remoteSaveWarned.current) {
+      await saveTemplateLayout(pending.id, pending.layout);
+    } catch (err) {
+      // Warn once per session so a missing layout_config column is visible, not silent.
+      // The browser copy is still saved, so this is not fatal.
+      if (!remoteSaveWarned.current) {
         remoteSaveWarned.current = true;
-        console.warn('Template layout was not saved to the database (kept in this browser only):', error.message);
+        console.warn('Template layout was not saved to the database (kept in this browser only):', errorMessage(err, 'unknown error'));
       }
-    } catch {
-      // Non-fatal: the browser copy is still saved
     }
   }, []);
 
@@ -178,22 +175,9 @@ export function useTemplateEditor({
         return null;
       }
 
-      const [{ data: tmplData, error: tmplErr }, { data: fieldsData, error: fieldsErr }] =
-        await Promise.all([
-          supabase.from('item_templates').select('*').eq('id', rawId).single(),
-          supabase
-            .from('item_template_fields')
-            .select('*')
-            .eq('template_id', rawId)
-            .order('display_order', { ascending: true }),
-        ]);
+      const loadedTemplate: ItemTemplate = await fetchTemplate(rawId);
 
-      if (tmplErr) throw tmplErr;
-      if (fieldsErr) throw fieldsErr;
-
-      const loadedTemplate: ItemTemplate = toItemTemplate(tmplData, (fieldsData || []).map(toFieldDefinition));
-
-      // Resolve Layout: Check localStorage -> tmplData.layout_config -> generate default flex layout
+      // Resolve Layout: Check localStorage -> the template's stored layout -> generate default flex layout
       let rawConfig: unknown = null;
       if (typeof window !== 'undefined') {
         try {
@@ -204,8 +188,8 @@ export function useTemplateEditor({
         }
       }
 
-      if (!rawConfig && tmplData.layout_config) {
-        rawConfig = tmplData.layout_config;
+      if (!rawConfig && loadedTemplate.layout_config) {
+        rawConfig = loadedTemplate.layout_config;
       }
 
       // Only current (flex, version 2) layouts are loaded; anything else starts from the default
@@ -314,21 +298,10 @@ export function useTemplateEditor({
         setIsSaving(true);
         setError(null);
 
-        const { data, error: updateErr } = await supabase
-          .from('item_templates')
-          .update({
-            name: name.trim(),
-            description: description?.trim() || null,
-            icon: icon.trim() || '📦',
-          })
-          .eq('id', editingTemplateId)
-          .select()
-          .single();
-
-        if (updateErr) throw updateErr;
+        const updated = await saveTemplateMetadata(editingTemplateId, { name, description, icon });
 
         setActiveTemplate((prev) =>
-          prev ? { ...prev, name: data.name, description: data.description, icon: data.icon ?? '📦' } : null
+          prev ? { ...prev, name: updated.name, description: updated.description, icon: updated.icon } : null
         );
         setSuccessMsg('Template metadata updated');
         if (onRefreshData) await onRefreshData();
@@ -359,25 +332,14 @@ export function useTemplateEditor({
           : `field_${Date.now().toString().slice(-4)}`;
         const label = customLabel || `New ${initialType.charAt(0).toUpperCase() + initialType.slice(1)} Field`;
 
-        const newFieldPayload = {
-          template_id: editingTemplateId,
+        const formattedField: FieldDefinition = await createTemplateField({
+          templateId: editingTemplateId,
           name: baseName || `field_${Date.now()}`,
           label,
-          field_type: initialType,
+          fieldType: initialType,
           options: initialType === 'select' ? ['Option 1', 'Option 2'] : null,
-          is_required: false,
-          display_order: nextOrder,
-        };
-
-        const { data: createdField, error: insertErr } = await supabase
-          .from('item_template_fields')
-          .insert(newFieldPayload)
-          .select()
-          .single();
-
-        if (insertErr) throw insertErr;
-
-        const formattedField: FieldDefinition = toFieldDefinition(createdField);
+          displayOrder: nextOrder,
+        });
 
         setActiveTemplate((prev) =>
           prev
@@ -420,24 +382,7 @@ export function useTemplateEditor({
           };
         });
 
-        const updatePayload: Partial<Pick<FieldDefinition, 'name' | 'label' | 'field_type' | 'options' | 'is_required' | 'display_order'>> = {};
-        if (partial.name !== undefined) updatePayload.name = partial.name;
-        if (partial.label !== undefined) updatePayload.label = partial.label;
-        if (partial.field_type !== undefined) updatePayload.field_type = partial.field_type;
-        if (partial.options !== undefined) updatePayload.options = partial.options;
-        if (partial.is_required !== undefined) updatePayload.is_required = partial.is_required;
-        if (partial.display_order !== undefined) updatePayload.display_order = partial.display_order;
-
-        const { data: updated, error: updateErr } = await supabase
-          .from('item_template_fields')
-          .update(updatePayload)
-          .eq('id', fieldId)
-          .select()
-          .single();
-
-        if (updateErr) throw updateErr;
-
-        const formattedUpdated: FieldDefinition = toFieldDefinition(updated);
+        const formattedUpdated: FieldDefinition = await updateTemplateField(fieldId, partial);
 
         setActiveTemplate((prev) => {
           if (!prev) return null;
@@ -471,12 +416,7 @@ export function useTemplateEditor({
         setIsSaving(true);
         setError(null);
 
-        const { error: deleteErr } = await supabase
-          .from('item_template_fields')
-          .delete()
-          .eq('id', fieldId);
-
-        if (deleteErr) throw deleteErr;
+        await deleteTemplateField(fieldId);
 
         setActiveTemplate((prev) => {
           if (!prev) return null;
@@ -531,15 +471,7 @@ export function useTemplateEditor({
 
         setActiveTemplate((prev) => (prev ? { ...prev, fields: updatedFields } : null));
 
-        // Update in Supabase
-        const updates = orderedFieldIds.map((id, index) =>
-          supabase
-            .from('item_template_fields')
-            .update({ display_order: index + 1 })
-            .eq('id', id)
-        );
-
-        await Promise.all(updates);
+        await reorderTemplateFields(orderedFieldIds);
         if (onRefreshData) await onRefreshData();
       } catch (err) {
         console.error('Failed to reorder fields:', err);

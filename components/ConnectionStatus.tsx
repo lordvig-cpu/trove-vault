@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { supabase } from '@/lib/supabase';
+import { checkDatabaseConnection } from '@/lib/data/workspace';
 
 export default function ConnectionStatus() {
   const [status, setStatus] = useState('Checking database access…');
@@ -9,8 +9,7 @@ export default function ConnectionStatus() {
     const controller = new AbortController();
     async function check() {
       try {
-        const { error } = await supabase.from('collections').select('id').limit(1).abortSignal(controller.signal);
-        if (error) throw new Error(error.message);
+        await checkDatabaseConnection(controller.signal);
         if (!controller.signal.aborted) setStatus('Database query succeeded.');
       } catch (error: unknown) {
         if (!controller.signal.aborted) setStatus(`Database query failed: ${error instanceof Error ? error.message : 'Unknown error'}`);

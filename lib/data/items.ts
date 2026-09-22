@@ -94,3 +94,8 @@ export async function deleteItem(id: number): Promise<void> {
   const { error } = await supabase.from('items').delete().eq('id', id);
   if (error) throw error;
 }
+
+export async function renameItem(id: number, name: string): Promise<void> {
+  const { error } = await supabase.from('items').update({ name }).eq('id', id);
+  if (error) throw error;
+}

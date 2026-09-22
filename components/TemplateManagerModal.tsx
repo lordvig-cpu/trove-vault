@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { createTemplate } from '@/lib/data/templates';
 import { ItemTemplate } from '@/types/template';
-import { fetchTemplateCatalog } from '@/lib/templateCatalog';
+import { fetchTemplateCatalog } from '@/lib/data/templates';
 import { errorMessage } from '@/lib/errors';
 
 /* ==========================================================================

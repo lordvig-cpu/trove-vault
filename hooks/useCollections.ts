@@ -1,17 +1,17 @@
 'use client';
 
 import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
-import { supabase } from '@/lib/supabase';
+import { fetchWorkspaceData } from '@/lib/data/workspace';
+import { renameCollection as saveCollectionName } from '@/lib/data/collections';
+import { renameItem as saveItemName } from '@/lib/data/items';
+import { renameTemplate as saveTemplateName, deleteTemplate as removeTemplate } from '@/lib/data/templates';
 import { CollectionRecord } from '@/types/collection';
 import { ItemRecord } from '@/types/item';
 import {
   buildItemHierarchy,
   buildFilteredUnifiedForest,
 } from '@/lib/treeUtils';
-import { fetchAllPages } from '@/lib/fetchAllPages';
 import { ItemTemplate } from '@/types/template';
-import { toItemRecord, toItemTemplate } from '@/lib/data/mappers';
-import type { TableRow } from '@/types/database';
 
 /* ==========================================================================
    CUSTOM HOOK: useCollections
@@ -60,12 +60,8 @@ export function useCollections() {
         setLoading(true);
         setError(null);
 
-        const [fetchedCollections, rawItems, fetchedTemplates, itemLinks] = await Promise.all([
-          fetchAllPages<CollectionRecord>((from, to) => supabase.from('collections').select('*').order('id').range(from, to).abortSignal(signal), signal),
-          fetchAllPages<TableRow<'items'>>((from, to) => supabase.from('items').select('*').order('id').range(from, to).abortSignal(signal), signal),
-          fetchAllPages<TableRow<'item_templates'>>((from, to) => supabase.from('item_templates').select('*').order('id').range(from, to).abortSignal(signal), signal),
-          fetchAllPages<{ item_id: number; collection_id: number }>((from, to) => supabase.from('item_collections').select('item_id, collection_id').order('item_id').order('collection_id').range(from, to).abortSignal(signal), signal),
-        ]);
+        const { collections: fetchedCollections, items: rawItems, templates: fetchedTemplates, itemLinks } =
+          await fetchWorkspaceData(signal);
 
         const itemCollectionsMap = new Map<number, number[]>();
         itemLinks.forEach(
@@ -75,7 +71,7 @@ export function useCollections() {
           }
         );
 
-        const fetchedItems: ItemRecord[] = rawItems.map(toItemRecord).map((it) => {
+        const fetchedItems: ItemRecord[] = rawItems.map((it) => {
           const colIds = itemCollectionsMap.get(it.id) || [];
           return {
             ...it,
@@ -86,7 +82,7 @@ export function useCollections() {
 
         setAllCollections(fetchedCollections);
         setAllItems(fetchedItems);
-        setTemplates(fetchedTemplates.map((template) => toItemTemplate(template)));
+        setTemplates(fetchedTemplates);
 
 
         setActiveCollectionId(current => {
@@ -168,14 +164,11 @@ export function useCollections() {
       const trimmed = nextName.trim();
       if (!trimmed) return;
 
-      const { error: updateError } = await supabase
-        .from('collections')
-        .update({ name: trimmed })
-        .eq('id', id);
-
-      if (updateError) {
-        console.error('Failed to rename collection:', updateError);
-        throw updateError;
+      try {
+        await saveCollectionName(id, trimmed);
+      } catch (err) {
+        console.error('Failed to rename collection:', err);
+        throw err;
       }
 
       setAllCollections((prev) =>
@@ -193,14 +186,11 @@ export function useCollections() {
       const trimmed = nextName.trim();
       if (!trimmed) return;
 
-      const { error: updateError } = await supabase
-        .from('items')
-        .update({ name: trimmed })
-        .eq('id', id);
-
-      if (updateError) {
-        console.error('Failed to rename item:', updateError);
-        throw updateError;
+      try {
+        await saveItemName(id, trimmed);
+      } catch (err) {
+        console.error('Failed to rename item:', err);
+        throw err;
       }
 
       setAllItems((prev) =>
@@ -222,14 +212,11 @@ export function useCollections() {
       const trimmed = nextName.trim();
       if (!trimmed) return;
 
-      const { error: updateError } = await supabase
-        .from('item_templates')
-        .update({ name: trimmed })
-        .eq('id', id);
-
-      if (updateError) {
-        console.error('Failed to rename template:', updateError);
-        throw updateError;
+      try {
+        await saveTemplateName(id, trimmed);
+      } catch (err) {
+        console.error('Failed to rename template:', err);
+        throw err;
       }
 
       setTemplates((prev) =>
@@ -244,14 +231,11 @@ export function useCollections() {
    */
   const deleteTemplate = useCallback(
     async (id: number) => {
-      const { error: deleteError } = await supabase
-        .from('item_templates')
-        .delete()
-        .eq('id', id);
-
-      if (deleteError) {
-        console.error('Failed to delete template:', deleteError);
-        throw deleteError;
+      try {
+        await removeTemplate(id);
+      } catch (err) {
+        console.error('Failed to delete template:', err);
+        throw err;
       }
 
       setTemplates((prev) => prev.filter((t) => t.id !== id));
