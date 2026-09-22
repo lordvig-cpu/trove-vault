@@ -1,0 +1,346 @@
+'use client';
+
+import React, { useState, useEffect, useRef } from 'react';
+import { FieldDefinition } from '@/types/field';
+import { FlexContainerNode, FlexComponentNode } from '@/types/layout';
+import { DashedSquareQuestionIcon } from '@/components/icons/LayoutIcons';
+import ContainerResizeHandles from '@/components/ContainerResizeHandles';
+import FlexComponentRenderer from '@/components/template-canvas/FlexComponentRenderer';
+
+/* ==========================================================================
+   RECURSIVE FLEX CONTAINER RENDERER
+   ========================================================================== */
+
+export default function FlexContainerRenderer({
+  container,
+  isRoot,
+  parentContainer,
+  selectedNodeId,
+  activeContainerId,
+  canvasMode,
+  fields,
+  onSelectNode,
+  onAddPrimitive,
+  onAddContainer,
+  onInsertContainerSibling,
+  onUpdateContainer,
+  onRemoveContainer,
+  onSplitContainer,
+  onUpdateComponent,
+  onRemoveComponent,
+  onPlaceField,
+  parentStacked,
+}: {
+  container: FlexContainerNode;
+  isRoot?: boolean;
+  parentContainer?: FlexContainerNode;
+  /** The parent row collapsed into a column (its stackBelow width was reached). */
+  parentStacked?: boolean;
+  selectedNodeId?: string | null;
+  activeContainerId?: string;
+  canvasMode: 'edit' | 'preview';
+  fields: FieldDefinition[];
+  onSelectNode?: (id: string | null) => void;
+  onAddPrimitive?: (
+    type: 'row' | 'column' | 'split-2' | 'split-3' | 'card',
+    targetId?: string
+  ) => void;
+  onAddContainer?: (
+    targetContainerId: string,
+    options?: Partial<FlexContainerNode>
+  ) => string;
+  onInsertContainerSibling?: (
+    targetContainerId: string,
+    position: 'before' | 'after',
+    options?: Partial<FlexContainerNode>
+  ) => string;
+  onUpdateContainer?: (id: string, partial: Partial<FlexContainerNode>) => void;
+  onRemoveContainer?: (id: string) => void;
+  onSplitContainer?: (containerId: string, splitType: 'columns' | 'rows') => void;
+  onUpdateComponent?: (id: string, partial: Partial<FlexComponentNode>) => void;
+  onRemoveComponent?: (id: string) => void;
+  onPlaceField?: (fieldId: number, targetContainerId?: string) => void;
+}) {
+  const [isDragOver, setIsDragOver] = useState(false);
+  const isSelected = selectedNodeId === container.id;
+  const isActive = activeContainerId === container.id;
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  // Responsive stacking: a row collapses into a column when its own layout width drops below
+  // stackBelow. offsetWidth is the pre-transform width, so the editor's scale doesn't skew it.
+  const stackBelow = container.direction === 'row' ? container.stackBelow : undefined;
+  const [isStacked, setIsStacked] = useState(false);
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el || !stackBelow) {
+      setIsStacked(false);
+      return;
+    }
+    const measure = () => setIsStacked(el.offsetWidth < stackBelow);
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [stackBelow]);
+
+
+  useEffect(() => {
+    if (canvasMode !== 'edit') return;
+    // Nested drops stop propagation. Observe the whole drag in capture phase so
+    // ancestors and previous targets cannot retain their drop-target rings.
+    const trackTarget = (event: DragEvent) => {
+      const target = event.target instanceof Element
+        ? event.target.closest('[data-container-id]')
+        : null;
+      setIsDragOver(target?.getAttribute('data-container-id') === container.id);
+    };
+    const clearTarget = () => setIsDragOver(false);
+    window.addEventListener('dragover', trackTarget, true);
+    window.addEventListener('drop', clearTarget, true);
+    window.addEventListener('dragend', clearTarget, true);
+    window.addEventListener('blur', clearTarget);
+    return () => {
+      window.removeEventListener('dragover', trackTarget, true);
+      window.removeEventListener('drop', clearTarget, true);
+      window.removeEventListener('dragend', clearTarget, true);
+      window.removeEventListener('blur', clearTarget);
+    };
+  }, [canvasMode, container.id]);
+
+  const justifyStyle =
+    container.justify === 'between'
+      ? 'space-between'
+      : container.justify === 'around'
+      ? 'space-around'
+      : container.justify === 'center'
+      ? 'center'
+      : container.justify === 'end'
+      ? 'flex-end'
+      : 'flex-start';
+
+  // In a column parent the main axis is vertical: a container must keep its content height
+  // (the body scrolls) and take its width from cross-axis stretch, not from flex-basis.
+  const parentIsColumn =
+    !!parentContainer &&
+    (parentContainer.direction === 'column' ||
+      ((!parentContainer.direction || parentContainer.direction === 'none') &&
+        parentContainer.id === 'root-container'));
+
+  const outerStyle: React.CSSProperties = {
+    flex: parentIsColumn
+      ? '0 0 auto'
+      : container.sizing?.type === 'fixed'
+        ? `1 1 ${container.sizing.value || 'auto'}`
+        : container.sizing?.type === 'auto'
+        ? '0 0 auto'
+        : '1 1 0%',
+    width:
+      container.sizing?.type === 'fixed' && container.sizing.value
+        ? container.sizing.value
+        : container.width || undefined,
+    // An explicit Max W wins; otherwise a fixed width doubles as the cap.
+    maxWidth:
+      container.maxWidth ||
+      (container.sizing?.type === 'fixed' && container.sizing.value
+        ? container.sizing.value
+        : undefined),
+    height: container.height || container.sizing?.height || undefined,
+    minHeight: container.minHeight || container.sizing?.minHeight || undefined,
+    maxHeight: container.maxHeight || undefined,
+    // Now that the toolbar lives outside the container, a capped height can safely scroll.
+    overflowY: container.maxHeight ? 'auto' : undefined,
+    alignSelf: parentIsColumn && container.sizing?.type !== 'fixed' && !container.width ? 'stretch' : undefined,
+    minWidth: container.minWidth || 0,
+    // Children of a stacked row take the full width, ignoring their row-mode widths.
+    ...(parentStacked ? { width: '100%', maxWidth: container.maxWidth || undefined, flex: '0 0 auto' } : null),
+  };
+
+  const innerFlexStyle: React.CSSProperties = {
+    display: 'flex',
+    flexDirection:
+      container.direction === 'row'
+        ? isStacked
+          ? 'column'
+          : 'row'
+        : container.direction === 'column'
+        ? 'column'
+        : isRoot
+        ? 'column'
+        : undefined,
+    gap: `${container.gap ?? 0}px`,
+    flexWrap: container.wrap ? 'wrap' : 'nowrap',
+    alignItems: container.align,
+    justifyContent: justifyStyle,
+    padding:
+      container.padding !== undefined
+        ? `${container.padding}px`
+        : '0px',
+  };
+
+  const isCard = container.isCard;
+
+  return (
+    <div
+      ref={containerRef}
+      data-container-id={container.id}
+      onClick={(e) => {
+        e.stopPropagation();
+        if (canvasMode === 'edit') onSelectNode?.(container.id);
+      }}
+      onDragOver={(e) => {
+        if (canvasMode !== 'edit') return;
+        e.preventDefault();
+        e.stopPropagation();
+        e.dataTransfer.dropEffect = 'copy';
+        if (!isDragOver) setIsDragOver(true);
+      }}
+      onDragEnter={(e) => {
+        if (canvasMode !== 'edit') return;
+        e.preventDefault();
+        e.stopPropagation();
+        setIsDragOver(true);
+      }}
+      onDragLeave={(e) => {
+        e.stopPropagation();
+        if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+          setIsDragOver(false);
+        }
+      }}
+      onDrop={(e) => {
+        if (canvasMode !== 'edit') return;
+        e.preventDefault();
+        e.stopPropagation();
+        setIsDragOver(false);
+        const fieldIdStr = e.dataTransfer.getData('text/field-id');
+        if (fieldIdStr) {
+          const fieldId = parseInt(fieldIdStr, 10);
+          if (!isNaN(fieldId)) {
+            onPlaceField?.(fieldId, container.id);
+            onSelectNode?.(container.id);
+          }
+        }
+      }}
+      style={
+        !isRoot
+          ? outerStyle
+          : // Body: optional max content width, centered (blank = stretch to fill)
+            container.maxWidth
+            ? { maxWidth: container.maxWidth, marginInline: 'auto' }
+            : undefined
+      }
+      className={`transition-all duration-150 relative ${
+        isSelected ? 'z-20' : 'z-10'
+      } ${
+        isRoot ? 'flex-1 flex flex-col min-h-0 w-full' : 'flex flex-col'
+      } ${
+        canvasMode === 'preview'
+          ? isCard
+            ? 'rounded-2xl bg-[var(--content-card-bg)] border border-[var(--content-card-border)] shadow-md backdrop-blur-sm'
+            : ''
+          : isDragOver
+          ? 'rounded-2xl outline-2 outline-[var(--primary-accent)] -outline-offset-2 ring-2 ring-[var(--primary-accent)] ring-offset-2 ring-offset-[var(--surface-panel)] bg-[color-mix(in_oklch,var(--primary-accent)_16%,transparent)] shadow-2xl shadow-[color-mix(in_oklch,var(--primary-accent)_25%,transparent)]'
+          : isSelected
+          ? 'rounded-2xl outline-2 outline-white -outline-offset-2 bg-[color-mix(in_oklch,var(--primary-accent)_8%,transparent)] shadow-xl shadow-white/10'
+          : isActive
+          ? 'rounded-2xl outline outline-1 outline-[color-mix(in_oklch,var(--primary-accent)_50%,transparent)] -outline-offset-1 bg-[color-mix(in_oklch,var(--primary-accent)_6%,transparent)]'
+          : isCard
+          ? 'rounded-2xl bg-[color-mix(in_oklch,var(--panel-surface-bg)_60%,transparent)] hover:border-[color-mix(in_oklch,var(--primary-accent)_40%,var(--primary-border-subtle))]'
+          : 'rounded-2xl outline outline-1 outline-dashed outline-[var(--primary-border-subtle)] -outline-offset-1 bg-[color-mix(in_oklch,var(--panel-surface-bg)_25%,transparent)] hover:outline-[color-mix(in_oklch,var(--primary-accent)_40%,var(--primary-border-subtle))]'
+      } ${
+        // Editing outlines are drawn inset with `outline`, so they take no layout space and the
+        // canvas matches the live preview to the pixel. A card frame is a real border in both modes.
+        canvasMode === 'edit' && isCard ? 'border border-[var(--primary-border-subtle)]' : ''
+      }`}
+    >
+      {/* Drag handles: only for a selected container that is set to Custom sizing */}
+      {canvasMode === 'edit' &&
+        isSelected &&
+        !isRoot &&
+        !parentStacked &&
+        container.sizing?.type === 'fixed' &&
+        onUpdateContainer && (
+          <ContainerResizeHandles
+            containerRef={containerRef}
+            container={container}
+            onUpdate={(partial) => onUpdateContainer(container.id, partial)}
+          />
+        )}
+
+      {/* Children or Empty State */}
+      <div style={innerFlexStyle} className="w-full flex-1 min-h-0">
+        {container.children.length === 0 ? (
+          canvasMode === 'edit' ? (
+            <div
+              title="Drag and drop to add content"
+              className={`w-full ${isRoot ? 'flex-1 min-h-[220px]' : 'min-h-[140px]'} py-6 px-4 rounded-xl border-2 border-dashed flex flex-col items-center justify-center text-center gap-2.5 select-none transition-all group cursor-pointer ${
+                isDragOver
+                  ? 'border-[var(--primary-accent)] bg-[color-mix(in_oklch,var(--primary-accent)_20%,transparent)] shadow-lg shadow-[color-mix(in_oklch,var(--primary-accent)_15%,transparent)]'
+                  : 'border-[color-mix(in_oklch,var(--primary-accent)_35%,transparent)] bg-[color-mix(in_oklch,var(--primary-accent)_5%,transparent)] hover:border-[color-mix(in_oklch,var(--primary-accent)_65%,transparent)] hover:bg-[color-mix(in_oklch,var(--primary-accent)_9%,transparent)]'
+              }`}
+            >
+              {/* Empty Container Icon Badge */}
+              <div
+                title="Drag and drop to add content"
+                className="w-11 h-11 rounded-xl border border-[color-mix(in_oklch,var(--primary-accent)_45%,transparent)] bg-[color-mix(in_oklch,var(--primary-accent)_12%,transparent)] text-[var(--primary-accent)] flex items-center justify-center shadow-lg shadow-black/25 group-hover:scale-105 transition-transform"
+              >
+                <DashedSquareQuestionIcon className="w-6 h-6" />
+              </div>
+
+              {/* Title / Drag Feedback */}
+              <div className="flex flex-col items-center gap-0.5" title="Drag and drop to add content">
+                {isDragOver ? (
+                  <span className="text-xs font-bold text-[var(--primary-accent)] flex items-center gap-1.5 animate-pulse">
+                    <span>📥</span> Drop field to insert into {container.label || (isRoot ? 'Body' : 'Container')}
+                  </span>
+                ) : (
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-white">
+                    EMPTY
+                  </h4>
+                )}
+              </div>
+            </div>
+          ) : null
+        ) : (
+          container.children.map((child) => {
+            if (child.nodeType === 'container') {
+              return (
+                <FlexContainerRenderer
+                  key={child.id}
+                  container={child}
+                  parentContainer={container}
+                  parentStacked={isStacked}
+                  selectedNodeId={selectedNodeId}
+                  activeContainerId={activeContainerId}
+                  canvasMode={canvasMode}
+                  fields={fields}
+                  onSelectNode={onSelectNode}
+                  onAddPrimitive={onAddPrimitive}
+                  onAddContainer={onAddContainer}
+                  onInsertContainerSibling={onInsertContainerSibling}
+                  onUpdateContainer={onUpdateContainer}
+                  onRemoveContainer={onRemoveContainer}
+                  onSplitContainer={onSplitContainer}
+                  onUpdateComponent={onUpdateComponent}
+                  onRemoveComponent={onRemoveComponent}
+                  onPlaceField={onPlaceField}
+                />
+              );
+            }
+            return (
+              <FlexComponentRenderer
+                key={child.id}
+                component={child}
+                parentStacked={isStacked}
+                selectedNodeId={selectedNodeId}
+                canvasMode={canvasMode}
+                fields={fields}
+                onSelectNode={onSelectNode}
+                onRemoveComponent={onRemoveComponent}
+              />
+            );
+          })
+        )}
+      </div>
+    </div>
+  );
+}
