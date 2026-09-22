@@ -185,86 +185,101 @@ export function usePanelRenderers({
     if (content === 'items' || content === 'collections' || content === 'templates') {
       return renderTreePanel(pos === 'bottom' ? 'left' : pos, content);
     }
+    // These tabs never appear in a flyout (only items/collections/templates get a dedicated one
+    // above), but they do live in the sidebar's pinned vs. unpinned-open states, which their own
+    // gear/action menus (useTreeActionMenu) need to know to pick a z-index above the panel's.
+    const panelContext = {
+      isFlyout: false,
+      isPinned: pos === 'right' ? isSecondaryPinned : isPinned,
+    };
     if (content === 'template_editor') {
       return (
-        <TemplateFieldInspector
-          template={templateEditor.activeTemplate}
-          selectedFieldId={templateEditor.selectedFieldId}
-          isRootSelected={templateEditor.isRootSelected}
-          searchQuery={templateEditor.fieldSearchQuery}
-          filterFieldTypes={templateEditor.filterFieldTypes}
-          placedFieldIds={templateEditor.placedFieldIds}
-          onPlaceField={templateEditor.placeField}
-          onSelectField={templateEditor.setSelectedFieldId}
-          onSelectRoot={templateEditor.selectRoot}
-          onUpdateField={templateEditor.updateField}
-          onAddField={templateEditor.addField}
-          onDeleteField={templateEditor.deleteField}
-          onReorderFields={templateEditor.reorderFields}
-          onUpdateTemplateMeta={templateEditor.updateTemplateMetadata}
-          onCloseEditor={templateEditor.stopEditing}
-          isLoading={templateEditor.isLoading}
-          isSaving={templateEditor.isSaving}
-          error={templateEditor.error}
-          successMsg={templateEditor.successMsg}
-          position={pos === 'bottom' ? 'right' : pos}
-        />
+        <TreePanelContext.Provider value={panelContext}>
+          <TemplateFieldInspector
+            template={templateEditor.activeTemplate}
+            selectedFieldId={templateEditor.selectedFieldId}
+            isRootSelected={templateEditor.isRootSelected}
+            searchQuery={templateEditor.fieldSearchQuery}
+            filterFieldTypes={templateEditor.filterFieldTypes}
+            placedFieldIds={templateEditor.placedFieldIds}
+            onPlaceField={templateEditor.placeField}
+            onSelectField={templateEditor.setSelectedFieldId}
+            onSelectRoot={templateEditor.selectRoot}
+            onUpdateField={templateEditor.updateField}
+            onAddField={templateEditor.addField}
+            onDeleteField={templateEditor.deleteField}
+            onReorderFields={templateEditor.reorderFields}
+            onUpdateTemplateMeta={templateEditor.updateTemplateMetadata}
+            onCloseEditor={templateEditor.stopEditing}
+            isLoading={templateEditor.isLoading}
+            isSaving={templateEditor.isSaving}
+            error={templateEditor.error}
+            successMsg={templateEditor.successMsg}
+            position={pos === 'bottom' ? 'right' : pos}
+          />
+        </TreePanelContext.Provider>
       );
     }
     if (content === 'template_properties') {
       return (
-        <TemplatePropertiesInspector
-          template={templateEditor.activeTemplate}
-          selectedNode={templateEditor.selectedNode}
-          parentNode={templateEditor.selectedContainer}
-          onUpdateContainer={templateEditor.updateFlexContainer}
-          onUpdateComponent={templateEditor.updateFlexComponent}
-          onRemoveNode={(id) => {
-            if (templateEditor.selectedNode?.nodeType === 'container') {
-              templateEditor.removeFlexContainer(id);
-            } else {
-              templateEditor.removeFlexComponent(id);
-            }
-          }}
-          onSelectNode={templateEditor.selectNode}
-        />
+        <TreePanelContext.Provider value={panelContext}>
+          <TemplatePropertiesInspector
+            template={templateEditor.activeTemplate}
+            selectedNode={templateEditor.selectedNode}
+            parentNode={templateEditor.selectedContainer}
+            onUpdateContainer={templateEditor.updateFlexContainer}
+            onUpdateComponent={templateEditor.updateFlexComponent}
+            onRemoveNode={(id) => {
+              if (templateEditor.selectedNode?.nodeType === 'container') {
+                templateEditor.removeFlexContainer(id);
+              } else {
+                templateEditor.removeFlexComponent(id);
+              }
+            }}
+            onSelectNode={templateEditor.selectNode}
+          />
+        </TreePanelContext.Provider>
       );
     }
     if (content === 'template_builder') {
       return (
-        <TemplateLayoutPalette
-          selectedContainer={templateEditor.selectedContainer}
-          onAddContainer={(preset) => {
-            const mapped =
-              preset === '2-col' ? 'split-2' : preset === '3-col' ? 'split-3' : preset;
-            templateEditor.addFlexPrimitive(mapped);
-          }}
-          onAddComponent={(comp) => {
-            templateEditor.addFlexComponent(templateEditor.activeContainerId, comp);
-          }}
-          onResetLayout={templateEditor.resetFlexLayoutToDefault}
-        />
+        <TreePanelContext.Provider value={panelContext}>
+          <TemplateLayoutPalette
+            selectedContainer={templateEditor.selectedContainer}
+            onAddContainer={(preset) => {
+              const mapped =
+                preset === '2-col' ? 'split-2' : preset === '3-col' ? 'split-3' : preset;
+              templateEditor.addFlexPrimitive(mapped);
+            }}
+            onAddComponent={(comp) => {
+              templateEditor.addFlexComponent(templateEditor.activeContainerId, comp);
+            }}
+            onResetLayout={templateEditor.resetFlexLayoutToDefault}
+          />
+        </TreePanelContext.Provider>
       );
     }
     if (content === 'template_hierarchy') {
       return (
-        <TemplateHierarchyTree
-          flexLayoutConfig={templateEditor.flexLayoutConfig}
-          selectedNodeId={templateEditor.selectedNodeId}
-          activeContainerId={templateEditor.activeContainerId}
-          fields={templateEditor.activeTemplate?.fields || []}
-          expandedIds={hierarchyExpandedIds}
-          onToggleExpand={toggleHierarchyExpand}
-          onSelectNode={templateEditor.selectNode}
-          onOpenProperties={handleOpenProperties}
-          onAddContainer={handleAddContainer}
-          onUpdateContainer={templateEditor.updateFlexContainer}
-          onUpdateComponent={templateEditor.updateFlexComponent}
-          onRemoveContainer={templateEditor.removeFlexContainer}
-          onRemoveComponent={templateEditor.removeFlexComponent}
-          onPlaceField={handlePlaceField}
-          position={pos === 'bottom' ? 'right' : pos}
-        />
+        <TreePanelContext.Provider value={panelContext}>
+          <TemplateHierarchyTree
+            flexLayoutConfig={templateEditor.flexLayoutConfig}
+            selectedNodeId={templateEditor.selectedNodeId}
+            activeContainerId={templateEditor.activeContainerId}
+            fields={templateEditor.activeTemplate?.fields || []}
+            expandedIds={hierarchyExpandedIds}
+            onToggleExpand={toggleHierarchyExpand}
+            onSelectNode={templateEditor.selectNode}
+            onOpenProperties={handleOpenProperties}
+            onAddContainer={handleAddContainer}
+            onUpdateContainer={templateEditor.updateFlexContainer}
+            onUpdateComponent={templateEditor.updateFlexComponent}
+            onRemoveContainer={templateEditor.removeFlexContainer}
+            onRemoveComponent={templateEditor.removeFlexComponent}
+            onPlaceField={handlePlaceField}
+            position={pos === 'bottom' ? 'right' : pos}
+          />
+        </TreePanelContext.Provider>
       );
     }
     if (content === 'grabbed_content') {
