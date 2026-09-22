@@ -752,7 +752,8 @@ export function useTemplateEditor({
       const result = splitContainer(flexLayoutConfig.root, targetContainerId, splitType);
       if (!result) return '';
       saveFlexLayoutConfig({ ...flexLayoutConfig, root: result.root });
-      setSelectedNodeId(result.newId);
+      // The container that was split stays selected, not the new half
+      setSelectedNodeId(targetContainerId);
       return result.newId;
     },
     [flexLayoutConfig, saveFlexLayoutConfig]

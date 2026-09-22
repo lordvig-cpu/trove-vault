@@ -2,6 +2,7 @@ import { test, expect } from '@playwright/test';
 import {
   buildContainer,
   insertChild,
+  nextNumberedLabel,
   insertSibling,
   removeNode,
   splitContainer,
@@ -110,7 +111,7 @@ test.describe('Layout tree operations (pure)', () => {
 
     expect(first.id).toBe(box.id);
     expect(second.id).toBe(result!.newId);
-    expect([first.label, second.label]).toEqual(['Box (1 / 2)', 'Box (2 / 2)']);
+    expect([first.label, second.label]).toEqual(['Box', 'Box 2']); // the source keeps its name
     expect(first.sizing).toMatchObject({ type: 'fixed', value: '50%' });
     expect(second.sizing).toMatchObject({ type: 'fixed', value: '50%' });
   });
@@ -128,6 +129,31 @@ test.describe('Layout tree operations (pure)', () => {
     expect(wrapper.direction).toBe('column');
     expect(wrapper.children.map((c) => c.id)).toEqual([box.id, result.newId]);
     expect(parent.direction).toBe('row');
+  });
+
+  test('nextNumberedLabel gives the next free number and never repeats a name', () => {
+    expect(nextNumberedLabel('Box', new Set(['Box']))).toBe('Box 2');
+    expect(nextNumberedLabel('Box', new Set(['Box', 'Box 2']))).toBe('Box 3');
+    expect(nextNumberedLabel('Column 1', new Set(['Column 1']))).toBe('Column 2');
+    expect(nextNumberedLabel('Room 101', new Set(['Room 101']))).toBe('Room 102');
+    expect(nextNumberedLabel('Column 1', new Set(['Column 1', 'Column 2', 'Column 3']))).toBe('Column 4');
+  });
+
+  test('splitting again never accumulates suffixes or repeats a name', () => {
+    const box = buildContainer({ label: 'Box' }, 'x', 'column');
+    let root = insertChild(freshRoot(), 'container-general', box);
+
+    const first = splitContainer(root, box.id, 'columns')!; // Box | Box 2
+    root = first.root;
+    const second = splitContainer(root, box.id, 'columns')!; // split the source again: Box | Box 3 | Box 2
+    root = second.root;
+    const third = splitContainer(root, first.newId, 'columns')!; // split the new half: Box 2 | Box 4
+    root = third.root;
+
+    const labels = (general(root).children.slice(2) as FlexContainerNode[]).map((c) => c.label);
+    expect(labels).toEqual(['Box', 'Box 3', 'Box 2', 'Box 4']);
+    expect(new Set(labels).size).toBe(labels.length);
+    expect(labels.every((label) => !/[()]/.test(label ?? ''))).toBe(true); // no "(1 / 2)" style suffixes
   });
 
   test('splitContainer refuses the root and unknown containers', () => {

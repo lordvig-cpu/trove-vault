@@ -37,6 +37,29 @@ function mapContainers(
   };
 }
 
+/** Every container label in the tree. */
+export function collectLabels(root: FlexContainerNode): Set<string> {
+  const labels = new Set<string>();
+  const walk = (node: FlexContainerNode) => {
+    if (node.label) labels.add(node.label);
+    for (const child of node.children) if (child.nodeType === 'container') walk(child);
+  };
+  walk(root);
+  return labels;
+}
+
+/**
+ * The next free numbered name after `label`: "Box" -> "Box 2", "Column 1" -> "Column 2",
+ * skipping any name already in `taken` ("Box 2" taken -> "Box 3").
+ */
+export function nextNumberedLabel(label: string, taken: Set<string>): string {
+  const match = label.match(/^(.*\S)\s+(\d+)$/);
+  const base = match ? match[1] : label;
+  let n = match ? parseInt(match[2], 10) + 1 : 2;
+  while (taken.has(`${base} ${n}`)) n++;
+  return `${base} ${n}`;
+}
+
 /** A new container with sensible defaults; `options` override any of them. */
 export function buildContainer(
   options: Partial<FlexContainerNode>,
@@ -138,11 +161,9 @@ export function splitContainer(
   if (!found || found.nodeType !== 'container') return null;
   const target: FlexContainerNode = found;
 
-  // Calculate base name by stripping any previous "(X of Y)"
-  const rawLabel = target.label || 'Container';
-  const baseName = rawLabel.replace(/\s*\(\d+\s+of\s+\d+\)$/i, '').trim() || 'Container';
-  const targetLabel = `${baseName} (1 / 2)`;
-  const newContainerLabel = `${baseName} (2 / 2)`;
+  // The container being split keeps its name; the new half gets the next free number.
+  const sourceLabel = target.label || 'Container';
+  const newContainerLabel = nextNumberedLabel(sourceLabel, collectLabels(root));
 
   const parentDir = parent.direction;
   const targetSizing: FlexSizing = target.sizing || { type: 'fill' };
@@ -180,7 +201,7 @@ export function splitContainer(
   });
 
   const newId = newNodeId('cont');
-  const updatedTarget = withDims({ ...target, label: targetLabel }, halfSizing, halfHeight);
+  const updatedTarget = withDims({ ...target }, halfSizing, halfHeight);
   const newContainer = withDims(
     {
       id: newId,
@@ -208,7 +229,7 @@ export function splitContainer(
         {
           id: newNodeId('cont-split'),
           nodeType: 'container',
-          label: `${baseName} Split`,
+          label: `${sourceLabel} Split`,
           direction: splitType === 'columns' ? 'row' : 'column',
           gap: 0,
           wrap: false,
