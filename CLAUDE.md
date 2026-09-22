@@ -52,6 +52,11 @@ commit whenever you add, remove, split or rename a file — it goes stale otherw
 - **Tailwind:** class names must appear as full literal strings; never build them with `${}`
   interpolation (Tailwind cannot see them). Shared editor-bar styles are in
   `components/editorBarStyles.ts`.
+- **Z-index:** never pick a `z-index` by guessing. `app/styles/Z_INDEX.md` maps every value in the
+  app to what it's for and why, plus the stacking-context contract (transforms, filters, opacity
+  and portals all change what a z-index can actually reach). A new stacking layer gets added there
+  in the same commit, and the tree-menu/sidebar overlap it documents (menus render a few pixels
+  *under* their own panel's edge) is intentional, not a bug to fix.
 - **Styling states:** controls are amber by default, white on hover, light blue when they represent a
   selected/set value; destructive hover uses the `--tree-menu-danger-*` variables.
 

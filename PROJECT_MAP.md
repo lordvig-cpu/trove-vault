@@ -19,6 +19,9 @@ Conventions and architecture (data access, theming, template editor internals, b
   the semantic variable aliases components consume, and the Premium Contrast generator input.
   `styles/themes/OKLCH.md` explains how they relate and how to recolor; `styles/themes/README.md`
   is the `--primary-*`/`--secondary-*`/`--surface-*`/`--text-*` naming guide for new component CSS.
+- `styles/Z_INDEX.md` — every `z-index` value used in the app, why it's set where it is, and the
+  stacking-context contract (what can and can't escape a parent context). Keep it in sync with any
+  new or changed `z-index`.
 - `styles/components/*.css` — one stylesheet per component area (tree, panels, modals, nav,
   template editor), each imported from `globals.css`.
 
