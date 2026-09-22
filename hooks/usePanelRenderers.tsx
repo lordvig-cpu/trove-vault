@@ -124,6 +124,8 @@ export function usePanelRenderers({
     else setIsPrimaryFlyoutOpen(false);
   };
 
+  // Renders one of the three tree views (Items, Collections, Templates) wired up for wherever it's
+  // docked: its own forest/search/expansion state, and the selection/CRUD handlers every tree needs.
   const renderTreePanel = (pos: 'left' | 'right', content: 'items' | 'collections' | 'templates' = 'items', isFlyout = false) => {
     const tree = content === 'collections' ? collectionsTree : content === 'templates' ? templatesTree : { searchQuery, expandedCategoryIds, handleToggleCategory };
     const forest = content === 'collections' ? collectionsForest : content === 'templates' ? templatesForest : filteredForest;
@@ -177,6 +179,8 @@ export function usePanelRenderers({
     );
   };
 
+  // Renders whatever a docked tab holds, tree views included: the template editor's inspector,
+  // properties panel, layout palette and structure tree, or the grabbed-content placeholder.
   const renderPanelBody = (content: DockContent, pos: 'left' | 'right' | 'bottom') => {
     if (content === 'items' || content === 'collections' || content === 'templates') {
       return renderTreePanel(pos === 'bottom' ? 'left' : pos, content);
@@ -283,6 +287,10 @@ export function usePanelRenderers({
     return null;
   };
 
+  // The props PrimarySidePanelHeader/SecondarySidePanelHeader need for whatever content a docked
+  // tab holds: which search/filter state to read and write (per-tab-type: Items, Collections,
+  // Templates and the template field inspector each keep their own), and the expand-all state.
+  // Spread onto the header with {...treeHeaderProps(content)}.
   const treeHeaderProps = (content: DockContent) => {
     const isCollections = content === 'collections';
     const isTemplates = content === 'templates';

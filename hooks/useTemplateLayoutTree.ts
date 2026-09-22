@@ -45,11 +45,15 @@ export function useTemplateLayoutTree({
   saveFlexLayoutConfig,
   activeTemplate,
 }: UseTemplateLayoutTreeOptions) {
+  // The selected node itself, resolved from its id every render (never cached, since the tree
+  // reference changes on every edit).
   const selectedNode =
     flexLayoutConfig?.root && selectedNodeId
       ? findFlexNode(flexLayoutConfig.root, selectedNodeId)
       : null;
 
+  // The container tools (toolbar, resize handles) always act on a container: when a component is
+  // selected, that's its parent; with nothing selected, it's the root Body.
   const selectedContainer: FlexContainerNode | null =
     selectedNode?.nodeType === 'container'
       ? selectedNode
@@ -60,6 +64,8 @@ export function useTemplateLayoutTree({
   const selectedComponent: FlexComponentNode | null =
     selectedNode?.nodeType === 'component' ? selectedNode : null;
 
+  // Where new containers/components/fields land when no explicit target is given (e.g. the
+  // palette's "Add" buttons, placeField without a drop target).
   const activeContainerId: string =
     selectedContainer?.id || flexLayoutConfig?.root?.id || 'root-container';
 
