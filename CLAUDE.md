@@ -58,7 +58,11 @@ commit whenever you add, remove, split or rename a file — it goes stale otherw
 ## Template editor
 
 - Every container is a Row or a Column (`resolveDirection` in `types/layout.ts`); new containers start
-  with the opposite of their parent's direction.
+  with the opposite of their parent's direction. The Body's own direction is locked to Column in the
+  UI (`disabled={isRoot}` in `TemplateEditorBar.tsx`) — nothing in the layout engine requires this, it's
+  a deliberate choice to keep the top level reading like a page. A container only controls how *its own*
+  children flow, not how it sits among its siblings, so two containers added directly to the Body will
+  always stack vertically; to place things side-by-side, add one Row container and put both inside it.
 - Templates are fluid. Preview width and zoom are editor-only state (`CanvasZoomContext`), reset to
   Fit / 100% when the editor closes. Container sizing (Width, Min/Max, Height, stack-below) is stored
   on the container; drag handles only appear on Custom containers.
@@ -92,6 +96,10 @@ commit whenever you add, remove, split or rename a file — it goes stale otherw
   `hooks/useTemplateEditor.ts`.
 - Replace the open development RLS policies with per-user policies when authentication is added, so
   templates and preferences belong to the person who made them.
+- `.supabase/schema.sql` is the re-initialization script for a fresh Supabase project — it is not
+  auto-generated from the live database. Any schema change (new table, column, index, constraint,
+  RLS policy, or seed row) must be added to it in the same commit as the migration that makes the
+  change, or the script silently drifts from reality (see the `layout_config` gap noted above).
 
 ## Cleanup backlog (found in the code audit, not yet done)
 
