@@ -7,7 +7,7 @@ interface LayoutIconProps {
 
 /**
  * BodyIcon:
- * Root template layout container icon representing a layout frame with header and content boxes.
+ * The root template layout, drawn as a plain tall frame — no internal detail implied.
  */
 export const BodyIcon = ({ className = 'w-4 h-4', strokeWidth = 1.8 }: LayoutIconProps) => (
   <svg
@@ -20,10 +20,7 @@ export const BodyIcon = ({ className = 'w-4 h-4', strokeWidth = 1.8 }: LayoutIco
     className={`origin-center shrink-0 ${className}`}
     aria-hidden="true"
   >
-    <rect x="3" y="4" width="18" height="16" rx="2" stroke="currentColor" strokeWidth={strokeWidth} />
-    <line x1="3" y1="8" x2="21" y2="8" stroke="currentColor" strokeWidth={strokeWidth} />
-    <rect x="6" y="10.5" width="4" height="6.5" rx="1" stroke="currentColor" strokeWidth={strokeWidth} />
-    <rect x="11.5" y="10.5" width="6.5" height="6.5" rx="1" stroke="currentColor" strokeWidth={strokeWidth} />
+    <rect x="5" y="2" width="14" height="20" rx="2" />
   </svg>
 );
 
@@ -55,7 +52,7 @@ export const LayoutContainerIcon = ({ className = 'w-4 h-4', strokeWidth = 1.8 }
 
 /**
  * FlexRowIcon:
- * Two boxes side-by-side with an arrow across the top pointing left and right.
+ * A horizontal line with arrows pointing outward at both ends.
  */
 export const FlexRowIcon = ({ className = 'w-4 h-4', strokeWidth = 1.8 }: LayoutIconProps) => (
   <svg
@@ -68,19 +65,15 @@ export const FlexRowIcon = ({ className = 'w-4 h-4', strokeWidth = 1.8 }: Layout
     className={`origin-center shrink-0 ${className}`}
     aria-hidden="true"
   >
-    {/* Arrow pointing left and right */}
-    <path d="M6.5 2.5L3.5 5l3 2.5" />
-    <path d="M3.5 5h17" />
-    <path d="M17.5 2.5L20.5 5l-3 2.5" />
-    {/* Two boxes side-by-side */}
-    <rect x="3.5" y="9.5" width="7.5" height="11" rx="1.5" />
-    <rect x="13" y="9.5" width="7.5" height="11" rx="1.5" />
+    <path d="M3.5 12h17" />
+    <path d="M8 7.5L3.5 12l4.5 4.5" />
+    <path d="M16 7.5l4.5 4.5-4.5 4.5" />
   </svg>
 );
 
 /**
  * FlexColumnIcon:
- * Two boxes stacked top-bottom with an arrow on the left pointing up and down.
+ * A vertical line with arrows pointing outward at both ends.
  */
 export const FlexColumnIcon = ({ className = 'w-4 h-4', strokeWidth = 1.8 }: LayoutIconProps) => (
   <svg
@@ -93,13 +86,9 @@ export const FlexColumnIcon = ({ className = 'w-4 h-4', strokeWidth = 1.8 }: Lay
     className={`origin-center shrink-0 ${className}`}
     aria-hidden="true"
   >
-    {/* Arrow on the left pointing up and down */}
-    <path d="M2.5 6.5L5 3.5l2.5 3" />
-    <path d="M5 3.5v17" />
-    <path d="M2.5 17.5L5 20.5l2.5-3" />
-    {/* Two boxes stacked top-bottom */}
-    <rect x="9.5" y="3.5" width="11" height="7.5" rx="1.5" />
-    <rect x="9.5" y="13" width="11" height="7.5" rx="1.5" />
+    <path d="M12 3.5v17" />
+    <path d="M7.5 8L12 3.5 16.5 8" />
+    <path d="M7.5 16l4.5 4.5 4.5-4.5" />
   </svg>
 );
 

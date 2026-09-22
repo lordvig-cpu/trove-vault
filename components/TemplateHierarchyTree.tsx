@@ -15,6 +15,7 @@ import {
   TemplateComponentActionMenu,
 } from '@/components/TemplateLayoutActionMenu';
 import { BodyIcon, FlexRowIcon, FlexColumnIcon } from '@/components/icons/LayoutIcons';
+import { activeIconColor } from '@/components/editorBarStyles';
 
 /* ==========================================================================
    1. PROPS INTERFACE
@@ -123,13 +124,13 @@ function ContainerNodeRow({
 
   // Semantic layout icon
   const containerIcon = isRoot ? (
-    <BodyIcon className="w-3.5 h-3.5 text-slate-400" />
+    <BodyIcon className={`w-3.5 h-3.5 ${activeIconColor}`} />
   ) : container.isCard ? (
     '🗂️'
   ) : resolveDirection(container, isRoot) === 'row' ? (
-    <FlexRowIcon className="w-3.5 h-3.5 text-slate-400" />
+    <FlexRowIcon className={`w-3.5 h-3.5 ${activeIconColor}`} />
   ) : (
-    <FlexColumnIcon className="w-3.5 h-3.5 text-slate-400" />
+    <FlexColumnIcon className={`w-3.5 h-3.5 ${activeIconColor}`} />
   );
 
   const containerLabel = isRoot ? 'Body' : container.label || 'Container';
@@ -210,13 +211,8 @@ function ContainerNodeRow({
         </span>
 
         {/* Node Label */}
-        <span className="text-[13px] tracking-tight truncate flex-1 min-w-0 text-slate-200 group-hover:text-white">
+        <span className="text-[13px] tracking-tight truncate flex-1 min-w-0 tree-muted">
           {containerLabel}
-        </span>
-
-        {/* Direction tag: every container, the Body included, is a row or a column */}
-        <span className="text-[9px] font-mono px-1 py-0.2 rounded bg-slate-800/80 text-slate-400 border border-slate-700/60 shrink-0">
-          {resolveDirection(container, isRoot) === 'row' ? 'Row' : 'Col'}
         </span>
 
         {/* Child Count Badge */}
@@ -420,7 +416,7 @@ function ComponentNodeRow({
         </span>
 
         {/* Node Label */}
-        <span className="text-[13px] tracking-tight truncate flex-1 min-w-0 text-slate-200 group-hover:text-white">
+        <span className="text-[13px] tracking-tight truncate flex-1 min-w-0 tree-muted">
           {label}
         </span>
 
