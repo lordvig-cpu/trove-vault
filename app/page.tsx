@@ -196,9 +196,20 @@ export default function Home() {
   const hierarchy = useHierarchyState(templateEditor);
   const { hierarchyNodeCount, handleOpenProperties, handlePlaceField, handleAddContainer } = hierarchy;
 
-  // Opens the primary side panel unpinned, on the Structure tab — used when the template editor's
-  // toolbar gear is clicked while the panel that would show it is closed.
+  // The Structure tab can be docked to either side; the toolbar gear needs to open and sync to
+  // whichever one actually holds it, not always the left.
+  const isStructureOnSecondary = secondaryTabs.includes('template_hierarchy');
+  const isStructurePanelOpen = isStructureOnSecondary ? isSecondaryActive : isPrimaryActive;
+  const structurePanelSelector = isStructureOnSecondary ? '.secondary-side-panel' : '.primary-side-panel';
+
+  // Opens the side panel that holds the Structure tab, unpinned — used when the template editor's
+  // toolbar gear is clicked while that panel is closed.
   const openStructurePanel = () => {
+    if (isStructureOnSecondary) {
+      setSecondaryActiveTab('template_hierarchy');
+      setIsSecondaryOpen(true);
+      return;
+    }
     if (primaryTabs.includes('template_hierarchy')) {
       setPrimaryActiveTab('template_hierarchy');
     }
@@ -622,8 +633,9 @@ export default function Home() {
               onResetFlexLayout={templateEditor.resetFlexLayoutToDefault}
               canvasMode={templateEditor.canvasMode}
               onToggleCanvasMode={templateEditor.toggleCanvasMode}
-              isStructurePanelOpen={isPrimaryActive}
+              isStructurePanelOpen={isStructurePanelOpen}
               onOpenStructurePanel={openStructurePanel}
+              structurePanelSelector={structurePanelSelector}
             />
           </div>
 

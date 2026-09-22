@@ -63,6 +63,7 @@ interface TemplateEditorStageProps {
       when it isn't — passed through to the toolbar gear. */
   isStructurePanelOpen?: boolean;
   onOpenStructurePanel?: () => void;
+  structurePanelSelector?: string;
 }
 
 /* ==========================================================================
@@ -91,6 +92,7 @@ export default function TemplateEditorStage({
   onToggleCanvasMode,
   isStructurePanelOpen,
   onOpenStructurePanel,
+  structurePanelSelector,
 }: TemplateEditorStageProps) {
   const fields = template.fields || [];
 
@@ -129,6 +131,7 @@ export default function TemplateEditorStage({
             onSelectNode={onSelectNode}
             isStructurePanelOpen={isStructurePanelOpen}
             onOpenStructurePanel={onOpenStructurePanel}
+            structurePanelSelector={structurePanelSelector}
           />,
           toolbarSlot
         )}

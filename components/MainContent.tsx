@@ -63,6 +63,7 @@ interface MainContentProps {
   onToggleCanvasMode?: () => void;
   isStructurePanelOpen?: boolean;
   onOpenStructurePanel?: () => void;
+  structurePanelSelector?: string;
   occupiedRightWidth?: number;
   occupiedLeftWidth?: number;
   rightPanelWidth?: number;
@@ -101,6 +102,7 @@ export default function MainContent({
   onToggleCanvasMode,
   isStructurePanelOpen,
   onOpenStructurePanel,
+  structurePanelSelector,
 }: MainContentProps) {
 
   return (
@@ -145,6 +147,7 @@ export default function MainContent({
                   onToggleCanvasMode={onToggleCanvasMode || (() => {})}
                   isStructurePanelOpen={isStructurePanelOpen}
                   onOpenStructurePanel={onOpenStructurePanel}
+                  structurePanelSelector={structurePanelSelector}
                 />
               </div>
             ) : (

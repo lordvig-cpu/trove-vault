@@ -233,6 +233,11 @@ interface TemplateEditorBarProps {
   isStructurePanelOpen?: boolean;
   /** Opens the Structure panel unpinned. The gear needs it on-screen before it can sync to it. */
   onOpenStructurePanel?: () => void;
+  /**
+   * The panel shell to wait on for its slide-in transition before syncing: whichever side
+   * (primary/left or secondary/right) the Structure tab is actually docked on.
+   */
+  structurePanelSelector?: string;
 }
 
 export default function TemplateEditorBar({
@@ -247,6 +252,7 @@ export default function TemplateEditorBar({
   onSelectNode,
   isStructurePanelOpen,
   onOpenStructurePanel,
+  structurePanelSelector = '.primary-side-panel',
 }: TemplateEditorBarProps) {
   const [isTreeMenuOpen, setIsTreeMenuOpen] = useState(false);
   const containerId = container?.id;
@@ -453,7 +459,7 @@ export default function TemplateEditorBar({
               // having visibly started yet) anchors it to the panel's still-collapsed position.
               onOpenStructurePanel?.();
               const waitForPanelThen = (cb: () => void) => {
-                const panelEl = document.querySelector<HTMLElement>('.primary-side-panel');
+                const panelEl = document.querySelector<HTMLElement>(structurePanelSelector);
                 if (!panelEl) {
                   requestAnimationFrame(() => waitForPanelThen(cb));
                   return;

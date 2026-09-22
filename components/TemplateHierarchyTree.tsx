@@ -120,7 +120,9 @@ function ContainerNodeRow({
   const isSelected = selectedNodeId === container.id;
   const isExpanded = expandedIds.has(container.id);
   const hasChildren = container.children.length > 0;
-  const menu = useTreeActionMenu(`tree-container-${container.id}`, 280, position);
+  // 328px (20.5rem): matches the .menuShellWide class TemplateContainerActionMenu renders with,
+  // so a right-docked panel's flyout is positioned by its real width, not the 224px shell default.
+  const menu = useTreeActionMenu(`tree-container-${container.id}`, 280, position, 328);
 
   // Semantic layout icon
   const containerIcon = isRoot ? (
@@ -358,7 +360,8 @@ function ComponentNodeRow({
 }: ComponentNodeRowProps) {
   const isRightSide = position === 'right';
   const isSelected = selectedNodeId === component.id;
-  const menu = useTreeActionMenu(`tree-comp-${component.id}`, 280, position);
+  // 328px (20.5rem): matches the .menuShellWide class TemplateComponentActionMenu renders with.
+  const menu = useTreeActionMenu(`tree-comp-${component.id}`, 280, position, 328);
 
   const boundField = component.field_id
     ? fields.find((f) => f.id === component.field_id)
