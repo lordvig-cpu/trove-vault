@@ -298,6 +298,14 @@ function ContainerNodeRow({
       {/* Render Children when Expanded */}
       {isExpanded && hasChildren && (
         <div className="flex flex-col relative">
+          {/* Hierarchy guide line: absolutely positioned (rather than indenting this wrapper,
+              which would double up with each child row's own independent depth-based paddingLeft)
+              at this row's own indent, continuing the line down through its children. */}
+          <div
+            aria-hidden="true"
+            className="tree-branch absolute top-0 bottom-0 border-l pointer-events-none"
+            style={{ left: depth * 18 + 6 + (isRightSide ? 32 : 0) }}
+          />
           {container.children.map((child) => {
             if (child.nodeType === 'container') {
               return (

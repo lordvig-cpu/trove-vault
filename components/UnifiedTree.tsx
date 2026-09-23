@@ -189,7 +189,10 @@ function UnifiedTreeItem({
       />
 
       {effectiveIsOpen && hasSubItems && (
-        <div className={`tree-branch space-y-0.5 my-0.5 flex flex-col min-w-0 ${isRightSide ? '' : 'border-l ml-[13.5px] pl-2.5'}`}>
+        <div
+          style={isRightSide ? { marginLeft: depth * 24.5 + 44 } : undefined}
+          className={`tree-branch space-y-0.5 my-0.5 flex flex-col min-w-0 border-l pl-2.5 ${isRightSide ? '' : 'ml-[13.5px]'}`}
+        >
           {visibleChildren.map((child) => (
             <UnifiedTreeItem
               key={`subitem-${child.id}`}
@@ -363,7 +366,10 @@ export default function UnifiedTree({
       )}
 
       {localIsOpen && hasChildren && (
-        <div className={`tree-branch space-y-0.5 my-0.5 flex flex-col min-w-0 ${isRightSide ? '' : 'border-l ml-[13.5px] pl-2.5'}`}>
+        <div
+          style={isRightSide ? { marginLeft: depth * 24.5 + 44 } : undefined}
+          className={`tree-branch space-y-0.5 my-0.5 flex flex-col min-w-0 border-l pl-2.5 ${isRightSide ? '' : 'ml-[13.5px]'}`}
+        >
           {rawSubCollections.map((subCollection) => (
             <UnifiedTree
               key={`col-${subCollection.id}`}
