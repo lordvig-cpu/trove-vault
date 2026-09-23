@@ -5,15 +5,14 @@ import React, { createContext, useCallback, useContext, useMemo, useState } from
 /* ==========================================================================
    Canvas zoom for the template editor.
    `zoom` is a multiplier on top of the "fit to view" scale: 1 (100%) = the Body
-   shrunk to fit the editor area; +/- steps by 10% from there.
+   shrunk to fit the editor area; +/- steps by 25% from there (25%, 50%, 75%, 100%, ..., 300%).
    ========================================================================== */
 
-export const ZOOM_STEP = 0.1;
-// Symmetric around 1 (100%) so the reset tick sits exactly in the middle of the track. Not
-// literally 0: ScaledCanvas divides by `Math.min(zoom, 1)` for the 'fit' width calc, so an exact
-// zero would divide by zero.
-export const ZOOM_MIN = 0.1;
-export const ZOOM_MAX = 1.9;
+export const ZOOM_STEP = 0.25;
+// Not literally 0: ScaledCanvas divides by `Math.min(zoom, 1)` for the 'fit' width calc, so an
+// exact zero would divide by zero — 25% is already well below any real need.
+export const ZOOM_MIN = 0.25;
+export const ZOOM_MAX = 3;
 
 export type PreviewWidth = 'fit' | number;
 
@@ -33,9 +32,9 @@ interface CanvasZoomContextType {
 
 const CanvasZoomContext = createContext<CanvasZoomContextType | null>(null);
 
-// Round to one decimal so repeated steps never drift (0.1 + 0.2 !== 0.3).
+// Snap to the nearest quarter-step so repeated steps never drift (0.1 + 0.2 !== 0.3).
 const clampZoom = (z: number) =>
-  Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, Math.round(z * 10) / 10));
+  Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, Math.round(z / ZOOM_STEP) * ZOOM_STEP));
 
 export function CanvasZoomProvider({ children }: { children: React.ReactNode }) {
   const [zoom, setZoom] = useState(1);
