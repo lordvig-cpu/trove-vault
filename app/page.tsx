@@ -634,6 +634,10 @@ export default function Home() {
               onOverflowChange={templateEditor.reportContainerOverflow}
               canvasMode={templateEditor.canvasMode}
               onToggleCanvasMode={templateEditor.toggleCanvasMode}
+              canUndo={templateEditor.canUndoLayout}
+              canRedo={templateEditor.canRedoLayout}
+              onUndo={templateEditor.undoLayout}
+              onRedo={templateEditor.redoLayout}
               isStructurePanelOpen={isStructurePanelOpen}
               onOpenStructurePanel={openStructurePanel}
               structurePanelSelector={structurePanelSelector}

@@ -5,10 +5,11 @@ import { fetchTemplate, saveTemplateLayout, updateTemplateMetadata as saveTempla
 import { createTemplateField, deleteTemplateField, reorderTemplateFields, updateTemplateField } from '@/lib/data/templateFields';
 import { ItemTemplate } from '@/types/template';
 import { FieldDefinition, FieldType } from '@/types/field';
-import { TemplateFlexLayoutConfig, isFlexLayoutConfig, createDefaultFlexLayout } from '@/types/layout';
+import { TemplateFlexLayoutConfig, isFlexLayoutConfig, createDefaultFlexLayout, findFlexNode } from '@/types/layout';
 import { DockContent } from '@/hooks/usePanelDockDrag';
 import { errorMessage } from '@/lib/errors';
 import { useTemplateLayoutTree } from '@/hooks/useTemplateLayoutTree';
+import { useLayoutHistory } from '@/hooks/useLayoutHistory';
 
 export interface WorkspaceTabSnapshot {
   primaryTabs: DockContent[];
@@ -54,6 +55,14 @@ export function useTemplateEditor({
 
   // Layout Engine States (Flexbox & Legacy)
   const [flexLayoutConfig, setFlexLayoutConfigState] = useState<TemplateFlexLayoutConfig | null>(null);
+  // The newest layout, readable from callbacks that may hold a stale render's state (history needs the true "before").
+  const flexLayoutRef = useRef<TemplateFlexLayoutConfig | null>(null);
+  const layoutHistory = useLayoutHistory();
+  const { record: recordLayoutEdit, clear: clearLayoutHistory } = layoutHistory;
+  const setFlexLayout = useCallback((next: TemplateFlexLayoutConfig) => {
+    flexLayoutRef.current = next;
+    setFlexLayoutConfigState(next);
+  }, []);
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
   const [canvasMode, setCanvasMode] = useState<'edit' | 'preview'>('edit');
 
@@ -136,10 +145,11 @@ export function useTemplateEditor({
 
   const saveFlexLayoutConfig = useCallback(
     (nextFlex: TemplateFlexLayoutConfig) => {
-      setFlexLayoutConfigState(nextFlex);
+      if (flexLayoutRef.current) recordLayoutEdit(flexLayoutRef.current, nextFlex);
+      setFlexLayout(nextFlex);
       if (editingTemplateId) persistLayout(editingTemplateId, nextFlex);
     },
-    [editingTemplateId, persistLayout]
+    [editingTemplateId, persistLayout, recordLayoutEdit, setFlexLayout]
   );
 
   /**
@@ -179,7 +189,7 @@ export function useTemplateEditor({
         : createDefaultFlexLayout(loadedTemplate.fields || []);
 
       setActiveTemplate(loadedTemplate);
-      setFlexLayoutConfigState(resolvedFlex);
+      setFlexLayout(resolvedFlex);
 
       // Select first child container if present, else root
       const initialNodeId = resolvedFlex.root.children[0]?.id || resolvedFlex.root.id;
@@ -202,7 +212,7 @@ export function useTemplateEditor({
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [setFlexLayout]);
 
   /**
    * Start editing a template:
@@ -227,6 +237,7 @@ export function useTemplateEditor({
       setFilterFieldTypes([]);
       setSuccessMsg(null);
       setCanvasMode('edit');
+      clearLayoutHistory();
 
       // 2. Open left panel with Content (Hierarchy)
       if (onOpenPrimaryPanel) {
@@ -246,7 +257,7 @@ export function useTemplateEditor({
       // 5. Load the template
       await loadTemplate(rawId);
     },
-    [getTabSnapshot, loadTemplate, onOpenPrimaryPanel, onOpenSecondaryPanel, onOpenBottomPanel]
+    [getTabSnapshot, loadTemplate, clearLayoutHistory, onOpenPrimaryPanel, onOpenSecondaryPanel, onOpenBottomPanel]
   );
 
   /**
@@ -267,7 +278,8 @@ export function useTemplateEditor({
     setFilterFieldTypes([]);
     setError(null);
     setSuccessMsg(null);
-  }, [onRestoreTabs]);
+    clearLayoutHistory();
+  }, [onRestoreTabs, clearLayoutHistory]);
 
   /**
    * Update template top-level metadata (name, description, icon)
@@ -475,6 +487,29 @@ export function useTemplateEditor({
     activeTemplate,
   });
 
+  // Undo / redo step the layout through the session's history. They are not new edits, so they
+  // bypass saveFlexLayoutConfig (which would record them), but the result is still persisted.
+  const { stepBack, stepForward } = layoutHistory;
+  const applyHistoryStep = useCallback(
+    (layout: TemplateFlexLayoutConfig) => {
+      setFlexLayout(layout);
+      if (editingTemplateId) persistLayout(editingTemplateId, layout);
+      // A node the step removed can't stay selected
+      if (selectedNodeId && !findFlexNode(layout.root, selectedNodeId)) setSelectedNodeId(layout.root.id);
+    },
+    [editingTemplateId, persistLayout, selectedNodeId, setFlexLayout]
+  );
+  const undoLayout = useCallback(() => {
+    if (!flexLayoutRef.current) return;
+    const layout = stepBack(flexLayoutRef.current);
+    if (layout) applyHistoryStep(layout);
+  }, [stepBack, applyHistoryStep]);
+  const redoLayout = useCallback(() => {
+    if (!flexLayoutRef.current) return;
+    const layout = stepForward(flexLayoutRef.current);
+    if (layout) applyHistoryStep(layout);
+  }, [stepForward, applyHistoryStep]);
+
   const selectedField = activeTemplate?.fields?.find((f) => f.id === selectedFieldId) || null;
 
   return {
@@ -518,6 +553,10 @@ export function useTemplateEditor({
     flexLayoutConfig,
     selectedNodeId,
     ...layoutTree,
+    canUndoLayout: layoutHistory.canUndo,
+    canRedoLayout: layoutHistory.canRedo,
+    undoLayout,
+    redoLayout,
     canvasMode,
     setCanvasMode,
     toggleCanvasMode,

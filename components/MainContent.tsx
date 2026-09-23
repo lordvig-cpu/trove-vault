@@ -62,6 +62,10 @@ interface MainContentProps {
   onSplitFlexContainer?: (containerId: string, splitType: 'columns' | 'rows') => void;
   canvasMode?: 'edit' | 'preview';
   onToggleCanvasMode?: () => void;
+  canUndo?: boolean;
+  canRedo?: boolean;
+  onUndo?: () => void;
+  onRedo?: () => void;
   isStructurePanelOpen?: boolean;
   onOpenStructurePanel?: () => void;
   structurePanelSelector?: string;
@@ -102,6 +106,10 @@ export default function MainContent({
   onOverflowChange,
   canvasMode = 'edit',
   onToggleCanvasMode,
+  canUndo,
+  canRedo,
+  onUndo,
+  onRedo,
   isStructurePanelOpen,
   onOpenStructurePanel,
   structurePanelSelector,
@@ -148,6 +156,10 @@ export default function MainContent({
                   canvasMode={canvasMode}
                   onDoneEditing={onDoneEditingTemplate || (() => {})}
                   onToggleCanvasMode={onToggleCanvasMode || (() => {})}
+                  canUndo={canUndo}
+                  canRedo={canRedo}
+                  onUndo={onUndo}
+                  onRedo={onRedo}
                   isStructurePanelOpen={isStructurePanelOpen}
                   onOpenStructurePanel={onOpenStructurePanel}
                   structurePanelSelector={structurePanelSelector}
