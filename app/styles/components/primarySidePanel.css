@@ -256,12 +256,12 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  font-size: 0.6875rem;
+  font-size: 0.9rem;
   font-weight: 600;
   letter-spacing: 0.025em;
   line-height: 1;
-  height: 1.625rem;
-  padding: 0 0.95rem;
+  height: 2.125rem;
+  padding: 0 1.25rem;
   border: none;
   background: transparent;
   outline: none;

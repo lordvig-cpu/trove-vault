@@ -213,6 +213,73 @@ export const ProhibitedIcon = ({ className = 'w-3.5 h-3.5' }: { className?: stri
   </svg>
 );
 
+/* Tree Type Tab Icons (replace the Items/Collections/Templates tab labels so a long word
+   can't stretch the tab strip wide enough to push the panel's expand/collapse/+ controls
+   off-screen; the button's own `title` attribute still carries the name on hover). */
+export const ItemsTabIcon = ({ className = 'w-3.5 h-3.5' }: { className?: string }) => (
+  <svg
+    className={className}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.8"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden="true"
+  >
+    <path d="M12 3.5 18.5 7.2 12 10.9 5.5 7.2 12 3.5Z" />
+    <path d="M5.5 7.2v9.6L12 20.5v-9.6" />
+    <path d="M18.5 7.2v9.6L12 20.5" />
+  </svg>
+);
+
+export const CollectionsTabIcon = ({ className = 'w-3.5 h-3.5' }: { className?: string }) => (
+  <svg
+    className={className}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.7"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden="true"
+  >
+    {/* top cube */}
+    <path d="M12 2.8 15.1 4.6 12 6.4 8.9 4.6 12 2.8Z" />
+    <path d="M8.9 4.6v4.4L12 10.8V6.4" />
+    <path d="M15.1 4.6v4.4L12 10.8" />
+
+    {/* bottom left cube */}
+    <path d="M7.4 10.2 10.5 12 7.4 13.8 4.3 12 7.4 10.2Z" />
+    <path d="M4.3 12v4.4l3.1 1.8v-4.4" />
+    <path d="M10.5 12v4.4l-3.1 1.8" />
+
+    {/* bottom right cube */}
+    <path d="M16.6 10.2 19.7 12 16.6 13.8 13.5 12 16.6 10.2Z" />
+    <path d="M13.5 12v4.4l3.1 1.8v-4.4" />
+    <path d="M19.7 12v4.4l-3.1 1.8" />
+  </svg>
+);
+
+export const TemplatesTabIcon = ({ className = 'w-3.5 h-3.5' }: { className?: string }) => (
+  <svg
+    className={className}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.8"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden="true"
+  >
+    <rect x="4.5" y="4.5" width="15" height="15" rx="2.2" />
+    <rect x="7.5" y="7.2" width="9" height="3.2" rx="0.8" />
+    <rect x="7.5" y="12.2" width="3.2" height="4.2" rx="0.6" />
+    <path d="M12.5 12.7h4" />
+    <path d="M12.5 15.3h4" />
+  </svg>
+);
+
 /* PanelFolderTabSvg: Reusable paper folder tab shape for side and bottom panels */
 interface PanelFolderTabSvgProps {
   gradientId: string;

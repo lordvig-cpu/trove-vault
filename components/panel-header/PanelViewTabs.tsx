@@ -6,7 +6,12 @@ import {
   FolderExpandIcon,
   PlusIcon,
 } from '@/components/icons/TreeIcons';
-import { PanelFolderTabSvg } from '@/components/icons/PanelIcons';
+import {
+  PanelFolderTabSvg,
+  ItemsTabIcon,
+  CollectionsTabIcon,
+  TemplatesTabIcon,
+} from '@/components/icons/PanelIcons';
 import { DockContent, TabReorderInfo } from '@/hooks/usePanelDockDrag';
 import { PrimarySidebarPosition } from '@/types/layout';
 
@@ -109,6 +114,14 @@ export default function PanelViewTabs({
                 : tab === 'template_hierarchy'
                 ? 'Structure'
                 : 'Grabbed Content';
+            const TabIcon =
+              tab === 'items'
+                ? ItemsTabIcon
+                : tab === 'collections'
+                ? CollectionsTabIcon
+                : tab === 'templates'
+                ? TemplatesTabIcon
+                : null;
             const tabTitle =
               tab === 'items'
                 ? 'Show Items organized by Category (drag to move tab)'
@@ -143,12 +156,13 @@ export default function PanelViewTabs({
                   type="button"
                   role="tab"
                   aria-selected={isTabActive}
+                  aria-label={tabLabel}
                   title={tabTitle}
                   onClick={() => onTabChange?.(tab)}
                   onPointerDown={(e) => {
                     if (tab !== 'empty') onStartTabDrag?.(tab, e);
                   }}
-                  className={`tree-folder-tab group/tab cursor-grab active:cursor-grabbing ${idx > 0 ? '-ml-3.5' : ''} ${
+                  className={`tree-folder-tab group/tab cursor-grab active:cursor-grabbing ${idx > 0 ? '-ml-[18px]' : ''} ${
                     isThisTabTarget
                       ? 'tree-folder-tab-reorder-target z-30'
                       : isTabActive
@@ -164,12 +178,12 @@ export default function PanelViewTabs({
                   />
                   <span className="relative z-10 flex items-center gap-1 px-0.5 select-none">
                     <span
-                      className="text-[9px] opacity-40 group-hover/tab:opacity-90 transition-opacity tracking-tighter"
+                      className="text-[11.5px] opacity-40 group-hover/tab:opacity-90 transition-opacity tracking-tighter"
                       aria-hidden="true"
                     >
                       ⋮⋮
                     </span>
-                    <span>{tabLabel}</span>
+                    {TabIcon ? <TabIcon className="w-[18px] h-[18px]" /> : <span>{tabLabel}</span>}
                   </span>
                 </button>
                 {showInsertAfter && (
