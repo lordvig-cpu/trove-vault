@@ -24,7 +24,7 @@ Reach the whole app (or the workspace), except where a narrower scope is noted.
 | 55 / 54    | Moving / displaced panel content      | Workspace; transient swap animation                  | page.tsx                                     |
 | 50 / 40    | Primary / secondary sidebar asides    | 50: open + unpinned; 40: pinned or closed             | PrimarySidePanel.tsx; SecondarySidePanel.tsx |
 | 45 / 35    | Tree action / search menus            | Body portals; unpinned / pinned; under panel edge     | Both Tree*Menu.tsx components                |
-| 36         | Bottom template editor toolbar slot   | Workspace; above the bottom panel it sits in front of | page.tsx; TemplateEditorBarBottom.tsx        |
+| 36         | Bottom template editor toolbar slot   | Workspace; above the bottom panel it sits in front of | page.tsx; TemplateEditorBar.tsx              |
 | 35         | Bottom panel aside                    | Workspace; same value pinned or unpinned              | BottomPanel.css                              |
 | 30         | Expand tabs / workspace header shadow | Workspace                                             | Panel CSS; navigationHeader.css              |
 | 10         | Center canvas wrapper                 | Workspace; owns MainContent local layers              | page.tsx                                     |
@@ -37,7 +37,7 @@ Local values cannot escape their parent stacking context.
 | z-index    | Element / state                       | Placement / scope                                  | Source                                       |
 |------------|----------------------------------------|------------------------------------------------------|-----------------------------------------------|
 | 160        | Cursor-following drag badge           | LOCAL to the z=150 dock overlay                       | PanelDockDropZones.tsx / CSS                 |
-| 85         | Top template editor toolbar slot      | LOCAL to header wrapper (thus above its 80)            | NavigationHeader.tsx; TemplateEditorBar.tsx  |
+| 85         | Top template editor toolbar slot      | LOCAL to header wrapper (thus above its 80)            | NavigationHeader.tsx; TemplateEditorContainerBar.tsx |
 | 80         | Tree flyout aside                     | LOCAL to header / flyout containers                   | PrimarySidePanel.tsx                         |
 | 60 / 50    | Active / inactive navigation tab      | LOCAL to the header; stable on hover                  | navigationHeader.css                         |
 | 50         | Panel resize handles                  | LOCAL to their isolated panel                         | ContentPrimitives.css                        |

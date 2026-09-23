@@ -27,10 +27,11 @@ import {
 } from '@/components/editorBarStyles';
 
 /* ==========================================================================
-   Template editor bar: the second panel, anchored to the workspace footer (see
-   TemplateEditorBar/TemplateEditorBarTop for the first, anchored to the header). Holds tools for
-   the selected container only — name, Size, Layout, Add, Split, properties gear, delete — grouped
-   and separated from the template-wide tools above by living in their own panel entirely.
+   Template editor bar: the container toolbar, anchored to the top navigation header (see
+   TemplateEditorBar/TemplateEditorBarTop for the template-wide toolbar, anchored to the workspace
+   footer instead). Holds tools for the selected container only — name, Size, Layout, Add, Split,
+   properties gear, delete — grouped and separated from the template-wide tools by living in their
+   own panel entirely.
    ========================================================================== */
 
 // No direction here: the editor picks one based on the parent (see defaultChildDirection)
@@ -127,9 +128,8 @@ function ToolGroup({
         <span aria-hidden="true" className="text-[8px] opacity-70">▾</span>
       </button>
       {isOpen && (
-        // pb-1 (not a margin) keeps the hover area continuous between the icon and its options,
-        // opening upward since this bar sits at the bottom edge of the workspace.
-        <div className="absolute bottom-full left-0 pb-1 z-10" role="menu">
+        // pt-1 (not a margin) keeps the hover area continuous between the icon and its options
+        <div className="absolute top-full left-0 pt-1 z-10" role="menu">
           <div className="tmpl-edge-panel tmpl-edge-menu rounded-xl p-1 flex flex-col gap-0.5 min-w-[9rem]">
             <ToolGroupContext.Provider value={close}>{children}</ToolGroupContext.Provider>
           </div>
@@ -224,7 +224,7 @@ function EditableName({ name, onCommit }: { name: string; onCommit: (label: stri
   );
 }
 
-interface TemplateEditorBarBottomProps {
+interface TemplateEditorContainerBarProps {
   /** The selected container, or null (nothing / a component is selected). */
   container: FlexContainerNode | null;
   isRoot: boolean;
@@ -249,7 +249,7 @@ interface TemplateEditorBarBottomProps {
   structurePanelSelector?: string;
 }
 
-export default function TemplateEditorBarBottom({
+export default function TemplateEditorContainerBar({
   container,
   isRoot,
   onUpdateContainer,
@@ -261,7 +261,7 @@ export default function TemplateEditorBarBottom({
   isStructurePanelOpen,
   onOpenStructurePanel,
   structurePanelSelector = '.primary-side-panel',
-}: TemplateEditorBarBottomProps) {
+}: TemplateEditorContainerBarProps) {
   const [isTreeMenuOpen, setIsTreeMenuOpen] = useState(false);
   const containerId = container?.id;
 
@@ -293,7 +293,7 @@ export default function TemplateEditorBarBottom({
 
   return (
     <div
-      className="tmpl-edge-panel tmpl-edge-panel-bottom select-none pointer-events-auto flex items-center px-2.5 py-1 max-w-[calc(100vw-2rem)]"
+      className="tmpl-edge-panel tmpl-edge-panel-top select-none pointer-events-auto flex items-center px-2.5 py-1 max-w-[calc(100vw-2rem)]"
       onClick={(e) => e.stopPropagation()}
     >
       <div className="flex items-center gap-1.5 shrink-0">
@@ -314,7 +314,7 @@ export default function TemplateEditorBarBottom({
       </div>
 
       {/* A fixed gap from the name (not one derived from matching column widths — see
-          TemplateEditorBarTop for why), matching the top toolbar's own section spacing. */}
+          TemplateEditorBarTop for why), matching the template-wide toolbar's own section spacing. */}
       <div className="flex items-center gap-1.5 ml-8 shrink-0">
         {/* Sizing mode (Auto / Custom) */}
         <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--primary-tree-item-text)] mr-1">Size:</span>

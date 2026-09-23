@@ -64,7 +64,7 @@ commit whenever you add, remove, split or rename a file — it goes stale otherw
 
 - Every container is a Row or a Column (`resolveDirection` in `types/layout.ts`); new containers start
   with the opposite of their parent's direction. The Body's own direction is locked to Column in the
-  UI (`disabled={isRoot}` in `TemplateEditorBarBottom.tsx`) — nothing in the layout engine requires this,
+  UI (`disabled={isRoot}` in `TemplateEditorContainerBar.tsx`) — nothing in the layout engine requires this,
   it's a deliberate choice to keep the top level reading like a page. A container only controls how
   *its own* children flow, not how it sits among its siblings, so two containers added directly to the
   Body will always stack vertically; to place things side-by-side, add one Row container and put both
@@ -83,12 +83,13 @@ commit whenever you add, remove, split or rename a file — it goes stale otherw
   false positives. A capped Height (Max H) already has its own scrollbar, so column overflow isn't
   flagged.
 - The template editor has two toolbars, so template-wide and container-specific tools never fight for
-  space in one bar. `TemplateEditorBar`/`TemplateEditorBarTop` (template name, View toggle, Zoom,
-  Width/Fit, Undo / Redo, Save) portals into the header slot (`#template-toolbar-slot`).
-  `TemplateEditorBarBottom` (selected container's name, Size, Layout, Add, Split, properties gear,
-  delete) portals into the workspace footer slot (`#template-toolbar-slot-bottom`, rendered in
-  `app/page.tsx`), which lifts clear of the bottom panel by `bottomPanelHeight` whenever that panel is
-  open or pinned.
+  space in one bar. `TemplateEditorContainerBar` (selected container's name, Size, Layout, Add,
+  Split, properties gear, delete — used more often, so it gets the header slot) portals into
+  `#template-toolbar-slot`. `TemplateEditorBar`/`TemplateEditorBarTop` (template name, View toggle,
+  Zoom, Width/Fit, Undo / Redo, Save) portals into the workspace footer slot
+  (`#template-toolbar-slot-bottom`, rendered in `app/page.tsx`), which lifts clear of the bottom
+  panel by `bottomPanelHeight` whenever that panel is open or pinned. Which toolbar gets which slot
+  is just where each is portaled in `TemplateEditorStage.tsx` — swap it there if that changes again.
 - Layout tree edits (add, insert sibling, split, update, remove) are pure functions in
   `lib/layoutTree.ts`, covered by `tests/layout-tree.spec.ts`; the flex layout tree's selection and
   CRUD around them lives in `hooks/useTemplateLayoutTree.ts`, which `useTemplateEditor` composes (it

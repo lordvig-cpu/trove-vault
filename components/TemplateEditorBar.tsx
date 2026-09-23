@@ -3,10 +3,11 @@
 import TemplateEditorBarTop from '@/components/TemplateEditorBarTop';
 
 /* ==========================================================================
-   Template editor bar: the chrome for the top panel, hanging from the top navigation header.
+   Template editor bar: the chrome for the template-wide panel, anchored to the workspace footer.
    Template-wide tools only (icon + name, View toggle, Zoom, Width/Fit, Undo/Redo, Save) — the
-   selected container's own tools live in their own panel anchored to the footer instead
-   (TemplateEditorBarBottom), so the two never fight for space in one bar.
+   selected container's own tools live in their own panel anchored to the header instead
+   (TemplateEditorContainerBar, used more often so it sits where it's easier to reach), so the two
+   never fight for space in one bar.
    ========================================================================== */
 
 interface TemplateEditorBarProps {
@@ -37,7 +38,7 @@ export default function TemplateEditorBar({
 }: TemplateEditorBarProps) {
   return (
     <div
-      className="tmpl-edge-panel tmpl-edge-panel-top select-none pointer-events-auto flex flex-col max-w-[calc(100vw-2rem)]"
+      className="tmpl-edge-panel tmpl-edge-panel-bottom select-none pointer-events-auto flex flex-col max-w-[calc(100vw-2rem)]"
       onClick={(e) => e.stopPropagation()}
     >
       <TemplateEditorBarTop

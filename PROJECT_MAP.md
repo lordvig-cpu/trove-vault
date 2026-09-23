@@ -54,13 +54,14 @@ Conventions and architecture (data access, theming, template editor internals, b
 - `TemplateBodyDimensions.tsx` — Body-only sizing controls (max content width) in the template
   properties inspector.
 - `TemplateContainerSizing.tsx` — Width/Height/Min/Max/Stack-below controls for a layout container.
-- `TemplateEditorBar.tsx` — the chrome for the template-wide toolbar, portaled into the header
-  (`#template-toolbar-slot`); its content is `TemplateEditorBarTop`.
-- `TemplateEditorBarTop.tsx` — the top toolbar's content: template icon + name, View toggle, Zoom,
-  Width/Fit, Undo / Redo and Save.
-- `TemplateEditorBarBottom.tsx` — the selected container's own toolbar, portaled into the workspace
-  footer slot (`#template-toolbar-slot-bottom`) above the bottom panel: name, Size, Layout, Add,
-  Split, properties gear and delete.
+- `TemplateEditorBar.tsx` — the chrome for the template-wide toolbar, portaled into the workspace
+  footer slot (`#template-toolbar-slot-bottom`) above the bottom panel; its content is
+  `TemplateEditorBarTop`.
+- `TemplateEditorBarTop.tsx` — the template-wide toolbar's content: template icon + name, View
+  toggle, Zoom, Width/Fit, Undo / Redo and Save.
+- `TemplateEditorContainerBar.tsx` — the selected container's own toolbar (used more often, so it
+  gets the header slot), portaled into `#template-toolbar-slot`: name, Size, Layout, Add, Split,
+  properties gear and delete.
 - `TemplateEditorStage.tsx` — the template editor's canvas: composes
   `components/template-canvas/*`; its header and mode toggle live in the toolbar.
 - `TemplateFieldActionMenu.tsx` / `TemplateLayoutActionMenu.tsx` / `TemplateRootActionMenu.tsx` —

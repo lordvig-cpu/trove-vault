@@ -694,9 +694,9 @@ export default function Home() {
             {bottomPanelContent !== 'empty' ? renderPanelBody(bottomPanelContent, 'bottom') : null}
           </BottomPanel>
 
-          {/* Slot for the template editor's container toolbar (portaled in by the editor), centered
-              the same way as the header's top slot and lifted clear of the bottom panel when it's
-              open (pinned or not) so the two never overlap. */}
+          {/* Slot for the template editor's template-wide toolbar (portaled in by the editor),
+              centered the same way as the header's top slot and lifted clear of the bottom panel
+              when it's open (pinned or not) so the two never overlap. */}
           <div
             id="template-toolbar-slot-bottom"
             className={`absolute bottom-0 -translate-x-1/2 z-[36] pointer-events-none ${

@@ -11,7 +11,7 @@ import {
 } from '@/types/layout';
 import { useCanvasZoom } from '@/context/CanvasZoomContext';
 import TemplateEditorBar from '@/components/TemplateEditorBar';
-import TemplateEditorBarBottom from '@/components/TemplateEditorBarBottom';
+import TemplateEditorContainerBar from '@/components/TemplateEditorContainerBar';
 import ScaledCanvas from '@/components/template-canvas/ScaledCanvas';
 import FlexContainerRenderer from '@/components/template-canvas/FlexContainerRenderer';
 
@@ -119,9 +119,9 @@ export default function TemplateEditorStage({
 
   const isFlexActive = Boolean(flexLayoutConfig?.root);
 
-  // The template-wide toolbar lives in the slot under the top header; the selected container's own
-  // toolbar lives in a matching slot at the workspace footer, above the bottom panel. Each hangs
-  // over its edge of this stage, hence the extra top *and* bottom padding.
+  // The selected container's own toolbar (used more often) lives in the slot under the top header;
+  // the template-wide toolbar lives in a matching slot at the workspace footer, above the bottom
+  // panel. Each hangs over its edge of this stage, hence the extra top *and* bottom padding.
   const toolbarSlot =
     typeof document !== 'undefined' ? document.getElementById('template-toolbar-slot') : null;
   const bottomToolbarSlot =
@@ -134,6 +134,25 @@ export default function TemplateEditorStage({
   return (
     <div className="w-full mx-auto p-3 pt-14 pb-14 flex-1 flex flex-col gap-6 select-none min-h-0">
       {toolbarSlot &&
+        isFlexActive &&
+        showContainerTools &&
+        createPortal(
+          <TemplateEditorContainerBar
+            container={toolbarContainer}
+            isRoot={!!toolbarContainer && toolbarContainer.id === flexLayoutConfig?.root.id}
+            onUpdateContainer={onUpdateFlexContainer}
+            onAddContainer={onAddFlexContainer}
+            onInsertContainerSibling={onInsertContainerSibling}
+            onSplitContainer={onSplitContainer}
+            onRemoveContainer={onRemoveFlexContainer}
+            onSelectNode={onSelectNode}
+            isStructurePanelOpen={isStructurePanelOpen}
+            onOpenStructurePanel={onOpenStructurePanel}
+            structurePanelSelector={structurePanelSelector}
+          />,
+          toolbarSlot
+        )}
+      {bottomToolbarSlot &&
         createPortal(
           <TemplateEditorBar
             templateIcon={template.icon}
@@ -146,25 +165,6 @@ export default function TemplateEditorStage({
             onRedo={onRedo}
             onSave={onDoneEditing}
             hasLayout={isFlexActive}
-          />,
-          toolbarSlot
-        )}
-      {bottomToolbarSlot &&
-        isFlexActive &&
-        showContainerTools &&
-        createPortal(
-          <TemplateEditorBarBottom
-            container={toolbarContainer}
-            isRoot={!!toolbarContainer && toolbarContainer.id === flexLayoutConfig?.root.id}
-            onUpdateContainer={onUpdateFlexContainer}
-            onAddContainer={onAddFlexContainer}
-            onInsertContainerSibling={onInsertContainerSibling}
-            onSplitContainer={onSplitContainer}
-            onRemoveContainer={onRemoveFlexContainer}
-            onSelectNode={onSelectNode}
-            isStructurePanelOpen={isStructurePanelOpen}
-            onOpenStructurePanel={onOpenStructurePanel}
-            structurePanelSelector={structurePanelSelector}
           />,
           bottomToolbarSlot
         )}

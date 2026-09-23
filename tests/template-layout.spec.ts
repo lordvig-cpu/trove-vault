@@ -295,8 +295,8 @@ test.describe('Template Layout Engine', () => {
     await expect(inspectorPanel).toContainText('TEMPLATE INSPECTOR');
     await expect(inspectorPanel).toContainText('Board Games & Tabletop');
 
-    // 7. Verify the editor toolbar shows the template's name
-    const editorToolbar = page.locator('#template-toolbar-slot');
+    // 7. Verify the editor toolbar shows the template's name (the template-wide toolbar, footer slot)
+    const editorToolbar = page.locator('#template-toolbar-slot-bottom');
     await expect(editorToolbar).toBeVisible();
     await expect(editorToolbar).toContainText('Board Games & Tabletop');
 
