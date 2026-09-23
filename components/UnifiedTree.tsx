@@ -190,9 +190,21 @@ function UnifiedTreeItem({
 
       {effectiveIsOpen && hasSubItems && (
         <div
-          style={isRightSide ? { marginLeft: depth * 24.5 + 44 } : undefined}
-          className={`tree-branch space-y-0.5 my-0.5 flex flex-col min-w-0 border-l pl-2.5 ${isRightSide ? '' : 'ml-[13.5px]'}`}
+          className={`tree-branch space-y-0.5 my-0.5 flex flex-col min-w-0 relative ${
+            isRightSide ? '' : 'border-l ml-[13.5px] pl-2.5'
+          }`}
         >
+          {/* Right-docked rows already carry their own absolute depth-based paddingLeft (see
+              above), so the guide line is an overlay at that same x -- indenting this wrapper
+              itself, like the left-docked border-l/ml does, would double up with each child row's
+              own already-correct offset. */}
+          {isRightSide && (
+            <div
+              aria-hidden="true"
+              className="tree-branch absolute top-0 bottom-0 border-l pointer-events-none"
+              style={{ left: depth * 24.5 + 44 }}
+            />
+          )}
           {visibleChildren.map((child) => (
             <UnifiedTreeItem
               key={`subitem-${child.id}`}
@@ -367,9 +379,20 @@ export default function UnifiedTree({
 
       {localIsOpen && hasChildren && (
         <div
-          style={isRightSide ? { marginLeft: depth * 24.5 + 44 } : undefined}
-          className={`tree-branch space-y-0.5 my-0.5 flex flex-col min-w-0 border-l pl-2.5 ${isRightSide ? '' : 'ml-[13.5px]'}`}
+          className={`tree-branch space-y-0.5 my-0.5 flex flex-col min-w-0 relative ${
+            isRightSide ? '' : 'border-l ml-[13.5px] pl-2.5'
+          }`}
         >
+          {/* See the matching comment in UnifiedTreeItem: right-docked rows already carry their
+              own absolute depth-based paddingLeft, so the guide line is an overlay at that same x
+              instead of indenting this wrapper (which would double up with each child's offset). */}
+          {isRightSide && (
+            <div
+              aria-hidden="true"
+              className="tree-branch absolute top-0 bottom-0 border-l pointer-events-none"
+              style={{ left: depth * 24.5 + 44 }}
+            />
+          )}
           {rawSubCollections.map((subCollection) => (
             <UnifiedTree
               key={`col-${subCollection.id}`}
