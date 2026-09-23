@@ -297,64 +297,47 @@ function ContainerNodeRow({
 
       {/* Render Children when Expanded */}
       {isExpanded && hasChildren && (
-        <div className="flex flex-col">
-          {/* Each sibling carries its own connector segment (full row height, or half for the last
-              one -- the "elbow" onto its own chevron) instead of one line spanning this whole
-              wrapper: the wrapper's height includes every expanded descendant, so a single line
-              would run alongside a child's own children too, not stop where that child hands off
-              to its own connector. See the matching comment in UnifiedTree.tsx. */}
-          {container.children.map((child, idx) => {
-            const isLastRow = idx === container.children.length - 1;
-            const connector = (
-              <div
-                aria-hidden="true"
-                className="tree-branch absolute top-0 border-l pointer-events-none"
-                style={{ left: depth * 18 + 6 + (isRightSide ? 32 : 0), height: isLastRow ? 14 : 28 }}
-              />
-            );
+        <div className="flex flex-col relative">
+          {container.children.map((child) => {
             if (child.nodeType === 'container') {
               return (
-                <div key={child.id} className="relative">
-                  {connector}
-                  <ContainerNodeRow
-                    container={child}
-                    parentContainer={container}
-                    depth={depth + 1}
-                    selectedNodeId={selectedNodeId}
-                    activeContainerId={activeContainerId}
-                    expandedIds={expandedIds}
-                    fields={fields}
-                    onToggleExpand={onToggleExpand}
-                    onSelectNode={onSelectNode}
-                    onOpenProperties={onOpenProperties}
-                    onAddContainer={onAddContainer}
-                    onUpdateContainer={onUpdateContainer}
-                    onUpdateComponent={onUpdateComponent}
-                    onRemoveContainer={onRemoveContainer}
-                    onRemoveComponent={onRemoveComponent}
-                    onPlaceField={onPlaceField}
-                    position={position}
-                    overflowingContainerIds={overflowingContainerIds}
-                  />
-                </div>
-              );
-            }
-            return (
-              <div key={child.id} className="relative">
-                {connector}
-                <ComponentNodeRow
-                  component={child}
+                <ContainerNodeRow
+                  key={child.id}
+                  container={child}
                   parentContainer={container}
                   depth={depth + 1}
                   selectedNodeId={selectedNodeId}
+                  activeContainerId={activeContainerId}
+                  expandedIds={expandedIds}
                   fields={fields}
+                  onToggleExpand={onToggleExpand}
                   onSelectNode={onSelectNode}
                   onOpenProperties={onOpenProperties}
+                  onAddContainer={onAddContainer}
+                  onUpdateContainer={onUpdateContainer}
                   onUpdateComponent={onUpdateComponent}
+                  onRemoveContainer={onRemoveContainer}
                   onRemoveComponent={onRemoveComponent}
+                  onPlaceField={onPlaceField}
                   position={position}
+                  overflowingContainerIds={overflowingContainerIds}
                 />
-              </div>
+              );
+            }
+            return (
+              <ComponentNodeRow
+                key={child.id}
+                component={child}
+                parentContainer={container}
+                depth={depth + 1}
+                selectedNodeId={selectedNodeId}
+                fields={fields}
+                onSelectNode={onSelectNode}
+                onOpenProperties={onOpenProperties}
+                onUpdateComponent={onUpdateComponent}
+                onRemoveComponent={onRemoveComponent}
+                position={position}
+              />
             );
           })}
         </div>
