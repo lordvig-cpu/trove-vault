@@ -295,10 +295,10 @@ test.describe('Template Layout Engine', () => {
     await expect(inspectorPanel).toContainText('TEMPLATE INSPECTOR');
     await expect(inspectorPanel).toContainText('Board Games & Tabletop');
 
-    // 7. Verify main canvas renders template editor banner
-    const canvasBanner = page.locator('.tmpl-editor-stage-banner');
-    await expect(canvasBanner).toBeVisible();
-    await expect(canvasBanner).toContainText('Board Games & Tabletop');
+    // 7. Verify the editor toolbar shows the template's name
+    const editorToolbar = page.locator('#template-toolbar-slot');
+    await expect(editorToolbar).toBeVisible();
+    await expect(editorToolbar).toContainText('Board Games & Tabletop');
 
     // Take screenshot showing successfully loaded template editor from category gear
     await page.screenshot({

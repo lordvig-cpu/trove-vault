@@ -59,7 +59,7 @@ export default function ScaledCanvas({ children }: { children: React.ReactNode }
     <div
       ref={hostRef}
       // -12px margins cancel the stage's side padding, so the canvas runs edge to edge
-      // (the banner above keeps its padding). Fit then uses all the space the panels leave.
+      // Fit then uses all the space the panels leave.
       className="overflow-x-auto -mx-3"
       style={{ paddingTop: 8 }}
     >

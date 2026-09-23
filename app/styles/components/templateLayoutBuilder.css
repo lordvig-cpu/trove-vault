@@ -2,23 +2,6 @@
    TEMPLATE LAYOUT BUILDER STYLES
    ========================================================================== */
 
-/* Template Editor Top Header Banner */
-.tmpl-editor-stage-banner {
-  background:
-    linear-gradient(180deg,
-      color-mix(in oklch, var(--text-fixed-white, #ffffff) 8%, transparent) 0%,
-      transparent 100%),
-    linear-gradient(115deg,
-      color-mix(in oklch, var(--primary-accent) 22%, var(--panel-surface-bg)),
-      color-mix(in oklch, var(--panel-surface-bg) 92%, transparent));
-  border: 1px solid color-mix(in oklch, var(--primary-accent) 45%, var(--primary-border-strong));
-  box-shadow:
-    0 10px 25px -5px oklch(from var(--oklch-blue-0-0-0) l c h / calc(0.5 * var(--oklch-shadow-opacity, 1))),
-    0 0 20px color-mix(in oklch, var(--primary-accent) 18%, transparent);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-}
-
 /* Edge panels in the Template Editor: the zoom panel hangs from the header (-top) and the
    container toolbar sits on the footer (-bottom). Both use the secondary OKLCH accent. */
 .tmpl-edge-panel {

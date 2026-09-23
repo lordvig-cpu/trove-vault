@@ -81,8 +81,9 @@ commit whenever you add, remove, split or rename a file — it goes stale otherw
   is Wrap Children working as designed, not a conflict, and flagging it would drown the real signal in
   false positives. A capped Height (Max H) already has its own scrollbar, so column overflow isn't
   flagged.
-- The editor bar (tools, preview width, zoom) is rendered by `TemplateEditorBar` into the slot under
-  the header (`#template-toolbar-slot`).
+- The editor bar (template name, Edit / Preview toggle, Undo / Redo / Save, tools, preview width, zoom) is
+  rendered by `TemplateEditorBar` into the slot under the
+  header (`#template-toolbar-slot`).
 - Layout tree edits (add, insert sibling, split, update, remove) are pure functions in
   `lib/layoutTree.ts`, covered by `tests/layout-tree.spec.ts`; the flex layout tree's selection and
   CRUD around them lives in `hooks/useTemplateLayoutTree.ts`, which `useTemplateEditor` composes (it
@@ -98,6 +99,10 @@ commit whenever you add, remove, split or rename a file — it goes stale otherw
   (`PanelToolbarRow`, `SearchAndFilterSection`, `PanelViewTabs`); it keeps the state (panel name,
   which tabs to show) they all need.
 - Edit Template does not auto-open the side panels (`AUTO_OPEN_TEMPLATE_PANELS` in `app/page.tsx`).
+- Undo / redo (toolbar top row) covers layout edits only, and lives in memory for the editing session: it
+  is cleared when the editor opens or closes and on refresh, and never saved. Field edits (add, rename,
+  delete, reorder) write straight to Supabase and are not part of it. A quick run of property tweaks
+  (a resize drag) is one step; adding, removing or splitting nodes is always its own.
 - Layout persistence: localStorage on every change, plus a debounced Supabase write. The
   `layout_config` column is not in `.supabase/schema.sql` yet, so remote saves currently fail (with
   one console warning per session).

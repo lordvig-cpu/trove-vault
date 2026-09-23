@@ -60,6 +60,10 @@ interface TemplateEditorStageProps {
   canvasMode: 'edit' | 'preview';
   onDoneEditing: () => void;
   onToggleCanvasMode: () => void;
+  canUndo?: boolean;
+  canRedo?: boolean;
+  onUndo?: () => void;
+  onRedo?: () => void;
   /** Whether the Structure tree's side panel is currently visible, and how to open it unpinned
       when it isn't — passed through to the toolbar gear. */
   isStructurePanelOpen?: boolean;
@@ -92,6 +96,10 @@ export default function TemplateEditorStage({
   canvasMode,
   onDoneEditing,
   onToggleCanvasMode,
+  canUndo,
+  canRedo,
+  onUndo,
+  onRedo,
   isStructurePanelOpen,
   onOpenStructurePanel,
   structurePanelSelector,
@@ -110,7 +118,8 @@ export default function TemplateEditorStage({
 
   const isFlexActive = Boolean(flexLayoutConfig?.root);
 
-  // The editor bar (container tools, preview width, zoom) lives in the slot under the top header.
+  // The editor bar (template name, mode toggle, save, container tools, preview width, zoom) lives
+  // in the slot under the top header. It hangs over the top of this stage, hence the extra top padding.
   const toolbarSlot =
     typeof document !== 'undefined' ? document.getElementById('template-toolbar-slot') : null;
   const selectedNode =
@@ -118,10 +127,20 @@ export default function TemplateEditorStage({
   const toolbarContainer = selectedNode?.nodeType === 'container' ? selectedNode : null;
 
   return (
-    <div className="w-full mx-auto p-3 flex-1 flex flex-col gap-6 select-none min-h-0">
-      {isFlexActive && toolbarSlot &&
+    <div className="w-full mx-auto p-3 pt-14 flex-1 flex flex-col gap-6 select-none min-h-0">
+      {toolbarSlot &&
         createPortal(
           <TemplateEditorBar
+            templateIcon={template.icon}
+            templateName={template.name}
+            canvasMode={canvasMode}
+            onToggleCanvasMode={onToggleCanvasMode}
+            canUndo={canUndo}
+            canRedo={canRedo}
+            onUndo={onUndo}
+            onRedo={onRedo}
+            onSave={onDoneEditing}
+            hasLayout={isFlexActive}
             container={toolbarContainer}
             isRoot={!!toolbarContainer && toolbarContainer.id === flexLayoutConfig?.root.id}
             showContainerTools={canvasMode === 'edit'}
@@ -138,76 +157,7 @@ export default function TemplateEditorStage({
           toolbarSlot
         )}
       {/* --------------------------------------------------------------------
-          1. BLUEPRINT HEADER BANNER & CANVAS TOOLBAR
-          -------------------------------------------------------------------- */}
-      <div className="tmpl-editor-stage-banner w-full max-w-6xl mx-auto flex flex-wrap items-center justify-between gap-4 p-4 rounded-2xl">
-        <div className="flex items-center gap-3.5 min-w-0">
-          <div className="w-12 h-12 rounded-xl bg-[color-mix(in_oklch,var(--primary-accent)_20%,transparent)] border border-[color-mix(in_oklch,var(--primary-accent)_40%,transparent)] flex items-center justify-center text-2xl shadow-md shrink-0">
-            {template.icon || '📦'}
-          </div>
-          <div className="min-w-0">
-            <div className="flex items-center gap-2">
-              <h1 className="text-lg font-bold text-white tracking-wide truncate">
-                {template.name}
-              </h1>
-              <span className="px-2 py-0.5 rounded-full text-[9.5px] font-bold tracking-wider uppercase bg-[color-mix(in_oklch,var(--primary-accent)_20%,transparent)] text-[var(--primary-accent)] border border-[color-mix(in_oklch,var(--primary-accent)_35%,transparent)] shrink-0">
-                Auto-Layout Builder
-              </span>
-            </div>
-            <p className="text-xs text-[var(--text-muted)] mt-0.5 line-clamp-1">
-              {template.description || 'Custom visual layout schema'}
-            </p>
-          </div>
-        </div>
-
-        {/* Toolbar Controls */}
-        <div className="flex items-center gap-2 shrink-0">
-          {/* Canvas Mode Toggle: Edit vs Preview */}
-          <div className="flex items-center bg-[color-mix(in_oklch,var(--panel-surface-bg)_80%,transparent)] p-0.5 rounded-xl border border-[color-mix(in_oklch,var(--primary-accent)_25%,var(--primary-border-subtle))]">
-            <button
-              type="button"
-              onClick={() => {
-                if (canvasMode !== 'edit') onToggleCanvasMode();
-              }}
-              className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer ${
-                canvasMode === 'edit'
-                  ? 'bg-[var(--primary-accent)] text-white shadow-sm'
-                  : 'text-[var(--text-muted)] hover:text-white'
-              }`}
-            >
-              <span>✏️</span>
-              <span>Builder Canvas</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                if (canvasMode !== 'preview') onToggleCanvasMode();
-              }}
-              className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer ${
-                canvasMode === 'preview'
-                  ? 'bg-[var(--primary-accent)] text-white shadow-sm'
-                  : 'text-[var(--text-muted)] hover:text-white'
-              }`}
-            >
-              <span>👁️</span>
-              <span>Live Item Preview</span>
-            </button>
-          </div>
-
-          <button
-            type="button"
-            onClick={onDoneEditing}
-            className="px-4 py-2 rounded-xl text-xs font-bold bg-[var(--primary-accent)] hover:bg-[var(--primary-accent-hover)] text-white shadow-lg shadow-[color-mix(in_oklch,var(--primary-accent)_25%,transparent)] flex items-center gap-1.5 transition hover:scale-[1.02] cursor-pointer"
-            title="Exit template editor and restore previous tab workspace"
-          >
-            <span>✓</span>
-            <span>Done Editing</span>
-          </button>
-        </div>
-      </div>
-
-      {/* --------------------------------------------------------------------
-          2. VISUAL CANVAS STAGE (Flexbox Engine or Legacy Grid Fallback)
+          VISUAL CANVAS STAGE (Flexbox Engine or Legacy Grid Fallback)
           -------------------------------------------------------------------- */}
       {isFlexActive && flexLayoutConfig?.root ? (
         <ScaledCanvas>

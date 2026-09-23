@@ -54,9 +54,12 @@ Conventions and architecture (data access, theming, template editor internals, b
 - `TemplateBodyDimensions.tsx` — Body-only sizing controls (max content width) in the template
   properties inspector.
 - `TemplateContainerSizing.tsx` — Width/Height/Min/Max/Stack-below controls for a layout container.
-- `TemplateEditorBar.tsx` — the editor toolbar portaled into the header (`#template-toolbar-slot`).
+- `TemplateEditorBar.tsx` — the editor toolbar portaled into the header (`#template-toolbar-slot`): a top
+  row (`TemplateEditorBarTop`) over the container tools, preview width and zoom.
+- `TemplateEditorBarTop.tsx` — the toolbar's top row: template icon + name, Edit / Preview toggle,
+  Undo / Redo and Save.
 - `TemplateEditorStage.tsx` — the template editor's canvas: composes
-  `components/template-canvas/*` around the Blueprint header banner and mode toggle.
+  `components/template-canvas/*`; its header and mode toggle live in the toolbar.
 - `TemplateFieldActionMenu.tsx` / `TemplateLayoutActionMenu.tsx` / `TemplateRootActionMenu.tsx` —
   the tree-gear popup menus for a field, a layout container/component, and the template root.
 - `TemplateFieldInspector.tsx` — the template editor's field schema tree (right panel).
@@ -132,8 +135,10 @@ resize handles), `FlexComponentRenderer.tsx` (a single field/table/media/stat/no
 - `useResizableDimension.ts` — shared drag/keyboard resize logic used by the width/height hooks below.
 - `useResizableHeight.ts` / `useResizablePanel.ts` — the bottom panel's height and a side panel's
   width resize behavior, built on `useResizableDimension`.
+- `useLayoutHistory.ts` — the layout editor's in-memory, session-only undo/redo history (wraps `lib/layoutHistory.ts`).
 - `useTemplateEditor.ts` — template editing: load/start/stop editing, metadata, field CRUD, and the
-  localStorage + debounced remote layout save. Composes `useTemplateLayoutTree` for the layout tree.
+  localStorage + debounced remote layout save. Composes `useTemplateLayoutTree` for the layout tree
+  and `useLayoutHistory` for undo/redo.
 - `useTemplateLayoutTree.ts` — the flex layout tree's selection and CRUD (add/insert/split/update/
   remove container or component, place a field, reset to default).
 - `useTreeActionMenu.ts` — a tree-gear popup's open/close/position state; broadcasts a window event
@@ -158,6 +163,8 @@ resize handles), `FlexComponentRenderer.tsx` (a single field/table/media/stat/no
 - `fieldTypeMetas.ts` — display metadata (label, icon) for each field type.
 - `filterTreeForest.ts` — builds the dynamic template-category nodes merged into the unified forest,
   and the forest search/filter logic.
+- `layoutHistory.ts` — pure undo/redo snapshot logic for the layout (coalesces drag bursts, caps depth);
+  covered by `tests/layout-history.spec.ts`.
 - `layoutTree.ts` — pure functions over the flex layout tree (build/insert/split/update/remove node,
   label helpers); covered by `tests/layout-tree.spec.ts`.
 - `panelTitles.ts` — `getPanelTitle()`: the header title for a panel's docked tab(s).
@@ -178,7 +185,7 @@ direction/sizing helpers), `database.ts` (the Supabase-shaped `Database` type, h
 Playwright specs, run against a production build on port 3100: `workspace.spec.ts` (docking,
 preferences, keyboard shortcuts), `collections-panel.spec.ts`, `template-layout.spec.ts` (the
 template editor), `template-drag-highlight.spec.ts`, `layout-tree.spec.ts` (the pure functions in
-`lib/layoutTree.ts`), `stacking.spec.ts` (responsive row-to-column stacking), `data.spec.ts`.
+`lib/layoutTree.ts`), `layout-history.spec.ts` (undo/redo history), `stacking.spec.ts` (responsive row-to-column stacking), `data.spec.ts`.
 
 ## Root & config
 

@@ -23,3 +23,10 @@ export const disabledBtn = 'opacity-35 cursor-not-allowed';
     text buttons and icon-only buttons — which naturally size differently — line up. The Fit
     checkbox is the one exception, kept at its own native size. */
 export const barControlHeight = 'h-[26px]';
+
+/** Segmented two-way toggle (Auto / Custom, Edit / Preview): a dark pill holding two buttons, the
+    chosen one shown as activeBtn and the other as ghostBtn. */
+export const barToggleGroup =
+  'flex items-center gap-0.5 bg-black/40 px-0.5 h-[26px] rounded-md border border-[color-mix(in_oklch,var(--secondary-accent)_35%,transparent)] shrink-0 text-[10px] font-semibold';
+
+export const barToggleBtn = 'px-1.5 h-[22px] flex items-center rounded transition';
