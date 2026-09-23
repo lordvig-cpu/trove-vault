@@ -56,7 +56,7 @@ export default function PanelDockDropZones({
       case 'template_properties':
         return 'Properties';
       case 'template_hierarchy':
-        return 'Content Hierarchy';
+        return 'Structure';
       case 'grabbed_content':
         return 'Grabbed Content';
       default:

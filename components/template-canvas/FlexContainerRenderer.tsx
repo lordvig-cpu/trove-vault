@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { FieldDefinition } from '@/types/field';
-import { FlexContainerNode, FlexComponentNode } from '@/types/layout';
+import { FlexContainerNode, FlexComponentNode, parsePxValue } from '@/types/layout';
 import { DashedSquareQuestionIcon } from '@/components/icons/LayoutIcons';
 import ContainerResizeHandles from '@/components/ContainerResizeHandles';
 import FlexComponentRenderer from '@/components/template-canvas/FlexComponentRenderer';
@@ -30,6 +30,7 @@ export default function FlexContainerRenderer({
   onRemoveComponent,
   onPlaceField,
   parentStacked,
+  onOverflowChange,
 }: {
   container: FlexContainerNode;
   isRoot?: boolean;
@@ -41,6 +42,9 @@ export default function FlexContainerRenderer({
   canvasMode: 'edit' | 'preview';
   fields: FieldDefinition[];
   onSelectNode?: (id: string | null) => void;
+  /** Reports whether this container's own row currently has more children than it has room for
+      (wrapped onto a second line, or overflowed with wrap off) -- see the dashed-red border below. */
+  onOverflowChange?: (containerId: string, isOverflowing: boolean) => void;
   onAddPrimitive?: (
     type: 'row' | 'column' | 'split-2' | 'split-3' | 'card',
     targetId?: string
@@ -82,6 +86,53 @@ export default function FlexContainerRenderer({
     ro.observe(el);
     return () => ro.disconnect();
   }, [stackBelow]);
+
+  // Flags a row whose children all have their own explicit pixel width, but together don't fit:
+  // wrapped onto a second line (Wrap Children on) or clipped past the edge (Wrap Children off).
+  // Scoped to rows where *every* child has a fixed px width -- that's the only case where "doesn't
+  // fit" means a real conflict, because it's the only case where every sibling committed to a
+  // specific size that should sit on one line. A percentage width (e.g. two children at 48% each,
+  // wrapping into a 2-per-row grid) is Wrap Children working exactly as designed, not a conflict --
+  // percentages scale with whatever room they get, so wrapping among them proves nothing. A capped
+  // Height (Max H) already has its own, intentional scrollbar, so column overflow isn't flagged.
+  // Measured on the actual rendered box, not derived from the layout data, since the parent's real
+  // available width isn't knowable without it (it cascades from the Body's width, the current
+  // preview width, and zoom).
+  const innerRef = useRef<HTMLDivElement>(null);
+  const isRowLayout = container.direction === 'row' && !isStacked;
+  const allChildrenFixedPx =
+    container.children.length >= 2 &&
+    container.children.every(
+      (child) => child.sizing?.type === 'fixed' && parsePxValue(child.sizing.value) !== null
+    );
+  const [isOverflowing, setIsOverflowing] = useState(false);
+  useEffect(() => {
+    const el = innerRef.current;
+    if (!el || !isRowLayout || !allChildrenFixedPx || container.children.length < 2) {
+      setIsOverflowing(false);
+      onOverflowChange?.(container.id, false);
+      return;
+    }
+    const measure = () => {
+      const kids = Array.from(el.children) as HTMLElement[];
+      const overflowed =
+        kids.length < 2
+          ? false
+          : container.wrap
+          ? kids.some((kid) => kid.offsetTop !== kids[0].offsetTop)
+          : el.scrollWidth > el.clientWidth + 1; // +1: subpixel rounding
+      setIsOverflowing(overflowed);
+      onOverflowChange?.(container.id, overflowed);
+    };
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(el);
+    Array.from(el.children).forEach((kid) => ro.observe(kid));
+    return () => {
+      ro.disconnect();
+      onOverflowChange?.(container.id, false);
+    };
+  }, [isRowLayout, allChildrenFixedPx, container.wrap, container.children.length, container.id, onOverflowChange]);
 
 
   useEffect(() => {
@@ -239,6 +290,8 @@ export default function FlexContainerRenderer({
             : ''
           : isDragOver
           ? 'rounded-2xl outline-2 outline-[var(--primary-accent)] -outline-offset-2 ring-2 ring-[var(--primary-accent)] ring-offset-2 ring-offset-[var(--surface-panel)] bg-[color-mix(in_oklch,var(--primary-accent)_16%,transparent)] shadow-2xl shadow-[color-mix(in_oklch,var(--primary-accent)_25%,transparent)]'
+          : isOverflowing
+          ? 'rounded-2xl outline-2 outline-dashed outline-[var(--editor-invalid)] -outline-offset-2 bg-[color-mix(in_oklch,var(--editor-invalid)_10%,transparent)] shadow-lg shadow-[color-mix(in_oklch,var(--editor-invalid)_20%,transparent)]'
           : isSelected
           ? 'rounded-2xl outline-2 outline-white -outline-offset-2 bg-[color-mix(in_oklch,var(--primary-accent)_8%,transparent)] shadow-xl shadow-white/10'
           : isActive
@@ -267,7 +320,7 @@ export default function FlexContainerRenderer({
         )}
 
       {/* Children or Empty State */}
-      <div style={innerFlexStyle} className="w-full flex-1 min-h-0">
+      <div ref={innerRef} style={innerFlexStyle} className="w-full flex-1 min-h-0">
         {container.children.length === 0 ? (
           canvasMode === 'edit' ? (
             <div
@@ -323,6 +376,7 @@ export default function FlexContainerRenderer({
                   onUpdateComponent={onUpdateComponent}
                   onRemoveComponent={onRemoveComponent}
                   onPlaceField={onPlaceField}
+                  onOverflowChange={onOverflowChange}
                 />
               );
             }

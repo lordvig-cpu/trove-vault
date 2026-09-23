@@ -120,7 +120,7 @@ export default function PrimarySidePanelHeader({
   const isInspector = activeTab === 'template_editor' || title === 'TEMPLATE INSPECTOR';
   const isBuilder = activeTab === 'template_builder' || title === 'LAYOUT BUILDER';
   const isProperties = activeTab === 'template_properties' || title === 'PROPERTIES';
-  const isHierarchy = activeTab === 'template_hierarchy' || title === 'STRUCTURE' || title === 'CONTENT' || title === 'CONTENT HIERARCHY';
+  const isHierarchy = activeTab === 'template_hierarchy' || title === 'STRUCTURE' || title === 'CONTENT' || title === 'STRUCTURE';
   const panelName = isCollections
     ? 'Collections'
     : isTemplates

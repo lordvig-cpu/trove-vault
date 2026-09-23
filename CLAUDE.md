@@ -70,7 +70,17 @@ commit whenever you add, remove, split or rename a file — it goes stale otherw
   always stack vertically; to place things side-by-side, add one Row container and put both inside it.
 - Templates are fluid. Preview width and zoom are editor-only state (`CanvasZoomContext`), reset to
   Fit / 100% when the editor closes. Container sizing (Width, Min/Max, Height, stack-below) is stored
-  on the container; drag handles only appear on Custom containers.
+  on the container; drag handles only appear on Custom containers. Zoom only ever scales the canvas
+  visually (a CSS `transform`); it must never change the layout itself, so above 100% the layout width
+  holds steady and the canvas overflows into a horizontal scrollbar instead of re-wrapping
+  (`ScaledCanvas`).
+- A row whose children *all* have their own explicit pixel width (Custom, not a %) but together don't
+  fit gets a dashed-red border and a Structure-tree warning badge (`FlexContainerRenderer`'s
+  `onOverflowChange`, surfaced via `useTemplateLayoutTree`'s `overflowingContainerIds`). It's scoped to
+  all-fixed-px rows on purpose: a percentage row wrapping into a grid (e.g. several 48%-wide children)
+  is Wrap Children working as designed, not a conflict, and flagging it would drown the real signal in
+  false positives. A capped Height (Max H) already has its own scrollbar, so column overflow isn't
+  flagged.
 - The editor bar (tools, preview width, zoom) is rendered by `TemplateEditorBar` into the slot under
   the header (`#template-toolbar-slot`).
 - Layout tree edits (add, insert sibling, split, update, remove) are pure functions in

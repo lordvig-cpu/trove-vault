@@ -631,6 +631,7 @@ export default function Home() {
               onRemoveFlexComponent={templateEditor.removeFlexComponent}
               onPlaceField={handlePlaceField}
               onResetFlexLayout={templateEditor.resetFlexLayoutToDefault}
+              onOverflowChange={templateEditor.reportContainerOverflow}
               canvasMode={templateEditor.canvasMode}
               onToggleCanvasMode={templateEditor.toggleCanvasMode}
               isStructurePanelOpen={isStructurePanelOpen}

@@ -152,6 +152,28 @@ export const DashedSquareQuestionIcon = ({ className = 'w-5 h-5', strokeWidth = 
     <circle cx="12" cy="16" r="0.75" fill="currentColor" stroke="none" />
   </svg>
 );
+
+/**
+ * ContainerOverflowIcon:
+ * Warning triangle (used in the Structure tree to flag a container whose children don't fit
+ * their own row at their set widths).
+ */
+export const ContainerOverflowIcon = ({ className = 'w-3.5 h-3.5', strokeWidth = 1.8 }: LayoutIconProps) => (
+  <svg
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth={strokeWidth}
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className={`origin-center shrink-0 ${className}`}
+    aria-hidden="true"
+  >
+    <path d="M12 3.5 2.5 20h19L12 3.5Z" />
+    <line x1="12" y1="9.5" x2="12" y2="14" />
+    <circle cx="12" cy="17" r="0.9" fill="currentColor" stroke="none" />
+  </svg>
+);
 /**
  * AddContainerBeforeIcon:
  * Clean plus sign on the left, with a solid container box on the right (+ [ ]).

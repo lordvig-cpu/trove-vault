@@ -278,6 +278,7 @@ export function usePanelRenderers({
             onRemoveComponent={templateEditor.removeFlexComponent}
             onPlaceField={handlePlaceField}
             position={pos === 'bottom' ? 'right' : pos}
+            overflowingContainerIds={templateEditor.overflowingContainerIds}
           />
         </TreePanelContext.Provider>
       );

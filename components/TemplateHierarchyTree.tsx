@@ -14,7 +14,7 @@ import {
   TemplateContainerActionMenu,
   TemplateComponentActionMenu,
 } from '@/components/TemplateLayoutActionMenu';
-import { BodyIcon, FlexRowIcon, FlexColumnIcon } from '@/components/icons/LayoutIcons';
+import { BodyIcon, FlexRowIcon, FlexColumnIcon, ContainerOverflowIcon } from '@/components/icons/LayoutIcons';
 import { activeIconColor } from '@/components/editorBarStyles';
 
 /* ==========================================================================
@@ -38,6 +38,8 @@ export interface TemplateHierarchyTreeProps {
   position?: 'left' | 'right';
   expandedIds?: Set<string>;
   onToggleExpand?: (id: string) => void;
+  /** Container ids whose own row currently has children that don't fit it (see FlexContainerRenderer). */
+  overflowingContainerIds?: Set<string>;
 }
 
 /* ==========================================================================
@@ -93,6 +95,7 @@ interface ContainerNodeRowProps {
   onRemoveComponent: (id: string) => void;
   onPlaceField?: (fieldId: number, targetContainerId?: string) => void;
   position?: 'left' | 'right';
+  overflowingContainerIds?: Set<string>;
 }
 
 function ContainerNodeRow({
@@ -113,6 +116,7 @@ function ContainerNodeRow({
   onRemoveComponent,
   onPlaceField,
   position = 'left',
+  overflowingContainerIds,
 }: ContainerNodeRowProps) {
   const isRightSide = position === 'right';
   const [isDragOver, setIsDragOver] = useState(false);
@@ -120,6 +124,7 @@ function ContainerNodeRow({
   const isSelected = selectedNodeId === container.id;
   const isExpanded = expandedIds.has(container.id);
   const hasChildren = container.children.length > 0;
+  const isOverflowing = overflowingContainerIds?.has(container.id) ?? false;
   // 328px (20.5rem): matches the .menuShellWide class TemplateContainerActionMenu renders with,
   // so a right-docked panel's flyout is positioned by its real width, not the 224px shell default.
   const menu = useTreeActionMenu(`tree-container-${container.id}`, 280, position, 328);
@@ -217,6 +222,16 @@ function ContainerNodeRow({
           {containerLabel}
         </span>
 
+        {/* Overflow Warning: this row's children don't fit it at their set widths */}
+        {isOverflowing && (
+          <span
+            title="This container's Custom width doesn't fit its children at their own set widths"
+            className="shrink-0 flex items-center justify-center text-[var(--editor-invalid)]"
+          >
+            <ContainerOverflowIcon className="w-3.5 h-3.5" />
+          </span>
+        )}
+
         {/* Child Count Badge */}
         {hasChildren && (
           <span
@@ -305,6 +320,7 @@ function ContainerNodeRow({
                   onRemoveComponent={onRemoveComponent}
                   onPlaceField={onPlaceField}
                   position={position}
+                  overflowingContainerIds={overflowingContainerIds}
                 />
               );
             }
@@ -499,6 +515,7 @@ export default function TemplateHierarchyTree({
   position = 'left',
   expandedIds: externalExpandedIds,
   onToggleExpand: externalOnToggleExpand,
+  overflowingContainerIds,
 }: TemplateHierarchyTreeProps) {
   const root = flexLayoutConfig?.root;
 
@@ -553,6 +570,7 @@ export default function TemplateHierarchyTree({
         onRemoveComponent={onRemoveComponent}
         onPlaceField={onPlaceField}
         position={position}
+        overflowingContainerIds={overflowingContainerIds}
       />
     </div>
   );

@@ -55,6 +55,7 @@ interface TemplateEditorStageProps {
   onPlaceField?: (fieldId: number, targetContainerId?: string) => void;
   onResetFlexLayout?: () => void;
   onSplitContainer?: (containerId: string, splitType: 'columns' | 'rows') => void;
+  onOverflowChange?: (containerId: string, isOverflowing: boolean) => void;
 
   canvasMode: 'edit' | 'preview';
   onDoneEditing: () => void;
@@ -86,6 +87,7 @@ export default function TemplateEditorStage({
   onPlaceField,
   onResetFlexLayout,
   onSplitContainer,
+  onOverflowChange,
 
   canvasMode,
   onDoneEditing,
@@ -226,6 +228,7 @@ export default function TemplateEditorStage({
             onUpdateComponent={onUpdateFlexComponent}
             onRemoveComponent={onRemoveFlexComponent}
             onPlaceField={onPlaceField}
+            onOverflowChange={onOverflowChange}
           />
         </ScaledCanvas>
       ) : (
