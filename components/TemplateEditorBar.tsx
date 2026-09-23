@@ -336,6 +336,23 @@ export default function TemplateEditorBar({
         <div className="flex items-center justify-center gap-1.5 px-2.5 py-1 border-t border-[color-mix(in_oklch,var(--secondary-accent)_25%,transparent)]">
           {tools && container && (
             <>
+              {isRoot ? (
+                <span className="text-[11px] font-bold text-white tracking-wide">Body</span>
+              ) : (
+                <EditableName
+                  key={container.id}
+                  name={container.label || 'Container'}
+                  onCommit={(label) => onUpdateContainer?.(container.id, { label })}
+                />
+              )}
+              {!isRoot && container.isCard && (
+                <span className="text-[9px] font-bold text-emerald-400 px-1 rounded bg-emerald-500/10 border border-emerald-500/20 shrink-0">
+                  Card
+                </span>
+              )}
+
+              <div className={divider} aria-hidden="true" />
+
               <ToolGroup
                 icon={flexIcon}
                 label={flexLabel}
@@ -415,23 +432,6 @@ export default function TemplateEditorBar({
                     />
                 </>
               </ToolGroup>
-
-              <div className={divider} aria-hidden="true" />
-
-              {isRoot ? (
-                <span className="text-[11px] font-bold text-white tracking-wide">Body</span>
-              ) : (
-                <EditableName
-                  key={container.id}
-                  name={container.label || 'Container'}
-                  onCommit={(label) => onUpdateContainer?.(container.id, { label })}
-                />
-              )}
-              {!isRoot && container.isCard && (
-                <span className="text-[9px] font-bold text-emerald-400 px-1 rounded bg-emerald-500/10 border border-emerald-500/20 shrink-0">
-                  Card
-                </span>
-              )}
 
               <div className={divider} aria-hidden="true" />
 
