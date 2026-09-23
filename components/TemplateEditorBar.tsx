@@ -10,10 +10,11 @@ import {
   AddContainerBeforeIcon,
   AddChildContainerIcon,
   AddContainerAfterIcon,
+  AutoSizingIcon,
+  CustomSizingIcon,
 } from '@/components/icons/LayoutIcons';
 import { GearIcon } from '@/components/icons/TreeIcons';
 import { TrashCanIcon } from '@/components/icons/PanelIcons';
-import { PreviewWidthPicker, ZoomControls } from '@/components/CanvasViewControls';
 import { useDismissOnOutsideOrEscape } from '@/hooks/useDismissOnOutsideOrEscape';
 import TemplateEditorBarTop from '@/components/TemplateEditorBarTop';
 import {
@@ -312,9 +313,6 @@ export default function TemplateEditorBar({
   const tools = showContainerTools && container ? container : null;
   // Every container is a row or a column
   const direction = tools ? resolveDirection(tools, isRoot) : undefined;
-  const flexIcon =
-    direction === 'row' ? <FlexRowIcon className="w-3.5 h-3.5" /> : <FlexColumnIcon className="w-3.5 h-3.5" />;
-  const flexLabel = direction === 'row' ? 'Row' : 'Column';
 
   return (
     <div
@@ -326,254 +324,261 @@ export default function TemplateEditorBar({
         name={templateName}
         canvasMode={canvasMode}
         onToggleCanvasMode={onToggleCanvasMode}
+        hasLayout={hasLayout}
         canUndo={canUndo}
         canRedo={canRedo}
         onUndo={onUndo}
         onRedo={onRedo}
         onSave={onSave}
       />
-      {hasLayout && (
+      {hasLayout && tools && container && (
         <div className="flex items-center justify-center gap-1.5 px-2.5 py-1 border-t border-[color-mix(in_oklch,var(--secondary-accent)_25%,transparent)]">
-          {tools && container && (
-            <>
-              {isRoot ? (
-                <span className="text-[11px] font-bold text-white tracking-wide">Body</span>
-              ) : (
-                <EditableName
-                  key={container.id}
-                  name={container.label || 'Container'}
-                  onCommit={(label) => onUpdateContainer?.(container.id, { label })}
-                />
-              )}
-              {!isRoot && container.isCard && (
-                <span className="text-[9px] font-bold text-emerald-400 px-1 rounded bg-emerald-500/10 border border-emerald-500/20 shrink-0">
-                  Card
-                </span>
-              )}
-
-              <div className={divider} aria-hidden="true" />
-
-              <ToolGroup
-                icon={flexIcon}
-                label={flexLabel}
-                title={
-                  isRoot
-                    ? 'The Body always flows top-to-bottom, like a page. To place items side-by-side, add a Row container and put them inside it.'
-                    : 'Flex direction: row or column'
-                }
-                disabled={isRoot}
-                set
-              >
-                <>
-                    <GroupOption
-                      icon={<FlexRowIcon className="w-3.5 h-3.5" />}
-                      label="Row"
-                      title="Row layout (horizontal flow)"
-                      active={direction === 'row'}
-                      onClick={() => { onUpdateContainer?.(container.id, { direction: 'row' }); }}
-                    />
-                    <GroupOption
-                      icon={<FlexColumnIcon className="w-3.5 h-3.5" />}
-                      label="Column"
-                      title="Column layout (vertical flow)"
-                      active={direction === 'column'}
-                      onClick={() => { onUpdateContainer?.(container.id, { direction: 'column' }); }}
-                    />
-                </>
-              </ToolGroup>
-
-              <ToolGroup
-                icon={<AddChildContainerIcon className="w-3.5 h-3.5" />}
-                label="Add"
-                title="Add a container"
-              >
-                <>
-                    <GroupOption
-                      icon={<AddContainerBeforeIcon className="w-3.5 h-3.5" />}
-                      label="Before"
-                      title={isRoot ? 'Not available for the Body' : 'Add Container Before'}
-                      disabled={isRoot}
-                      onClick={() => { onInsertContainerSibling?.(container.id, 'before', { ...NEW_CONTAINER }); }}
-                    />
-                    <GroupOption
-                      icon={<AddChildContainerIcon className="w-3.5 h-3.5" />}
-                      label="Inside"
-                      title="Add Child Container (nested inside)"
-                      onClick={() => { onAddContainer?.(container.id, { ...NEW_CONTAINER }); }}
-                    />
-                    <GroupOption
-                      icon={<AddContainerAfterIcon className="w-3.5 h-3.5" />}
-                      label="After"
-                      title={isRoot ? 'Not available for the Body' : 'Add Container After'}
-                      disabled={isRoot}
-                      onClick={() => { onInsertContainerSibling?.(container.id, 'after', { ...NEW_CONTAINER }); }}
-                    />
-                </>
-              </ToolGroup>
-
-              <ToolGroup
-                icon={<SplitColumnsIcon className="w-3.5 h-3.5" />}
-                label="Split"
-                title={isRoot ? 'The Body cannot be split' : 'Split this container'}
-                disabled={isRoot}
-              >
-                <>
-                    <GroupOption
-                      icon={<SplitColumnsIcon className="w-3.5 h-3.5" />}
-                      label="2 Columns"
-                      title="Split into 2 Columns (side-by-side)"
-                      onClick={() => { onSplitContainer?.(container.id, 'columns'); }}
-                    />
-                    <GroupOption
-                      icon={<SplitRowsIcon className="w-3.5 h-3.5" />}
-                      label="2 Rows"
-                      title="Split into 2 Rows (stacked)"
-                      onClick={() => { onSplitContainer?.(container.id, 'rows'); }}
-                    />
-                </>
-              </ToolGroup>
-
-              <div className={divider} aria-hidden="true" />
-
-              {/* Sizing mode (Auto / Custom) */}
-              <div
-                className={barToggleGroup}
-                role="group"
-                aria-label="Container sizing mode"
-              >
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (!isRoot) onUpdateContainer?.(container.id, { width: undefined, sizing: { type: 'fill' } });
-                  }}
-                  title={isRoot ? 'Auto: the Body stretches automatically with content' : 'Auto: fill the available parent space'}
-                  className={`${barToggleBtn} ${
-                    isRoot || (container.sizing?.type || 'fill') === 'fill'
-                      ? `border ${activeBtn} ${isRoot ? 'cursor-default' : 'cursor-pointer'}`
-                      : `${ghostBtn} cursor-pointer`
-                  }`}
-                >
-                  Auto
-                </button>
-                <button
-                  type="button"
-                  disabled={isRoot}
-                  onClick={() => {
-                    // Snapshot the on-screen width (unscaled layout px, not the zoomed CSS box) so
-                    // switching to Custom only reveals the resize handles — nothing jumps. A stale
-                    // remembered value from an earlier Custom session would otherwise pop back in.
-                    const el = document.querySelector<HTMLElement>(`[data-container-id="${container.id}"]`);
-                    const value = el?.offsetWidth
-                      ? `${Math.round(el.offsetWidth)}px`
-                      : container.sizing?.type === 'fixed'
-                      ? container.sizing.value || '50%'
-                      : '50%';
-                    onUpdateContainer?.(container.id, { width: value, sizing: { type: 'fixed', value } });
-                  }}
-                  title={isRoot ? 'Custom sizing is not available for the Body' : 'Custom: set your own width/height (e.g. 50%, 300px)'}
-                  className={`${barToggleBtn} ${
-                    isRoot
-                      ? `${disabledBtn} text-[var(--secondary-accent)]`
-                      : container.sizing?.type === 'fixed'
-                      ? `border ${activeBtn} cursor-pointer`
-                      : `${ghostBtn} cursor-pointer`
-                  }`}
-                >
-                  Custom
-                </button>
-              </div>
-
-              {/* Gear: opens the Structure tree's properties menu for this container */}
-              <button
-                type="button"
-                data-gear-trigger
-                onClick={() => {
-                  onSelectNode?.(container.id);
-                  const clickTreeGear = () =>
-                    document.querySelector<HTMLElement>(`[data-tree-gear-id="${container.id}"]`)?.click();
-                  if (isStructurePanelOpen) {
-                    clickTreeGear();
-                    return;
-                  }
-                  // The tree row (and its gear) isn't on screen yet: open the panel unpinned, then
-                  // wait for the *panel's own* slide-in transition to genuinely finish before syncing
-                  // to it. The menu's position is computed from the panel's live bounding rect at
-                  // click time, so clicking mid-transition (or even a couple of animation frames in —
-                  // a frame-to-frame "has it stopped moving" check can be fooled by the transition not
-                  // having visibly started yet) anchors it to the panel's still-collapsed position.
-                  onOpenStructurePanel?.();
-                  const waitForPanelThen = (cb: () => void) => {
-                    const panelEl = document.querySelector<HTMLElement>(structurePanelSelector);
-                    if (!panelEl) {
-                      requestAnimationFrame(() => waitForPanelThen(cb));
-                      return;
-                    }
-                    const transitionSeconds = parseFloat(getComputedStyle(panelEl).transitionDuration) || 0;
-                    if (transitionSeconds === 0) {
-                      cb();
-                      return;
-                    }
-                    let done = false;
-                    const finish = () => {
-                      if (done) return;
-                      done = true;
-                      panelEl.removeEventListener('transitionend', onEnd);
-                      cb();
-                    };
-                    const onEnd = (e: TransitionEvent) => {
-                      if (e.target === panelEl) finish();
-                    };
-                    panelEl.addEventListener('transitionend', onEnd);
-                    // Safety net if the transition never fires an end event (e.g. it gets interrupted).
-                    setTimeout(finish, transitionSeconds * 1000 + 100);
-                  };
-                  waitForPanelThen(clickTreeGear);
-                }}
-                title={isRoot ? 'Body Properties' : 'Container Properties'}
-                aria-label={isRoot ? 'Body properties' : 'Container properties'}
-                aria-expanded={isTreeMenuOpen}
-                className={`w-[26px] ${barControlHeight} rounded-md border transition cursor-pointer flex items-center justify-center shrink-0 ${
-                  isTreeMenuOpen ? activeBtn : idleBtn
-                }`}
-              >
-                <GearIcon
-                  isActive={isTreeMenuOpen}
-                  className={`w-3.5 h-3.5 transition-transform duration-300 ${isTreeMenuOpen ? 'rotate-90' : ''}`}
-                />
-              </button>
-
-              {isRoot ? (
-                <button
-                  type="button"
-                  disabled
-                  title="The Body cannot be deleted"
-                  aria-label="Delete (disabled for Body)"
-                  className={`w-[26px] ${barControlHeight} rounded-md border transition flex items-center justify-center shrink-0 ${idleBtn} ${disabledBtn}`}
-                >
-                  <TrashCanIcon className="w-3.5 h-3.5" />
-                </button>
-              ) : (
-                <button
-                  type="button"
-                  onClick={() => onRemoveContainer?.(container.id)}
-                  className={`w-[26px] ${barControlHeight} rounded-md border transition flex items-center justify-center cursor-pointer shrink-0 bg-black/40 border-[var(--secondary-accent)] text-[var(--secondary-accent)] hover:bg-[var(--tree-menu-danger-hover-bg)] hover:border-white hover:text-[var(--tree-menu-danger-hover-text)]`}
-                  title="Delete Container"
-                  aria-label="Delete Container"
-                >
-                  <TrashCanIcon className="w-3.5 h-3.5" />
-                </button>
-              )}
-
-              <div className={divider} aria-hidden="true" />
-            </>
+          {isRoot ? (
+            <span className="text-[11px] font-bold text-white tracking-wide">Body</span>
+          ) : (
+            <EditableName
+              key={container.id}
+              name={container.label || 'Container'}
+              onCommit={(label) => onUpdateContainer?.(container.id, { label })}
+            />
+          )}
+          {!isRoot && container.isCard && (
+            <span className="text-[9px] font-bold text-emerald-400 px-1 rounded bg-emerald-500/10 border border-emerald-500/20 shrink-0">
+              Card
+            </span>
           )}
 
-          {/* Preview width applies to the whole canvas, not the selected container, but stays visible
-              no matter what's selected so switching containers doesn't hide it. */}
-          <PreviewWidthPicker />
           <div className={divider} aria-hidden="true" />
 
-          <ZoomControls />
+          {/* Sizing mode (Auto / Custom) */}
+          <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--primary-tree-item-text)] mr-1">Size:</span>
+          <div
+            className={barToggleGroup}
+            role="group"
+            aria-label="Container sizing mode"
+          >
+            <button
+              type="button"
+              onClick={() => {
+                if (!isRoot) onUpdateContainer?.(container.id, { width: undefined, sizing: { type: 'fill' } });
+              }}
+              title={isRoot ? 'Auto: the Body stretches automatically with content' : 'Auto: fill the available parent space'}
+              className={`${barToggleBtn} ${
+                isRoot || (container.sizing?.type || 'fill') === 'fill'
+                  ? `border ${activeBtn} ${isRoot ? 'cursor-default' : 'cursor-pointer'}`
+                  : `${ghostBtn} cursor-pointer`
+              }`}
+            >
+              <AutoSizingIcon className="w-3.5 h-3.5" />
+              Auto
+            </button>
+            <button
+              type="button"
+              disabled={isRoot}
+              onClick={() => {
+                // Snapshot the on-screen width (unscaled layout px, not the zoomed CSS box) so
+                // switching to Custom only reveals the resize handles — nothing jumps. A stale
+                // remembered value from an earlier Custom session would otherwise pop back in.
+                const el = document.querySelector<HTMLElement>(`[data-container-id="${container.id}"]`);
+                const value = el?.offsetWidth
+                  ? `${Math.round(el.offsetWidth)}px`
+                  : container.sizing?.type === 'fixed'
+                  ? container.sizing.value || '50%'
+                  : '50%';
+                onUpdateContainer?.(container.id, { width: value, sizing: { type: 'fixed', value } });
+              }}
+              title={isRoot ? 'Custom sizing is not available for the Body' : 'Custom: set your own width/height (e.g. 50%, 300px)'}
+              className={`${barToggleBtn} ${
+                isRoot
+                  ? `${disabledBtn} text-[var(--secondary-accent)]`
+                  : container.sizing?.type === 'fixed'
+                  ? `border ${activeBtn} cursor-pointer`
+                  : `${ghostBtn} cursor-pointer`
+              }`}
+            >
+              <CustomSizingIcon className="w-3.5 h-3.5" />
+              Custom
+            </button>
+          </div>
+
+          <div className={divider} aria-hidden="true" />
+
+          {/* Flex direction: only two choices, so a pill toggle rather than a pulldown. */}
+          <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--primary-tree-item-text)] mr-1">Layout:</span>
+          <div className={barToggleGroup} role="group" aria-label="Flex direction">
+            <button
+              type="button"
+              disabled={isRoot}
+              onClick={() => { onUpdateContainer?.(container.id, { direction: 'row' }); }}
+              title={
+                isRoot
+                  ? 'The Body always flows top-to-bottom, like a page. To place items side-by-side, add a Row container and put them inside it.'
+                  : 'Row layout (horizontal flow)'
+              }
+              aria-label="Row"
+              className={`${barToggleBtn} ${
+                isRoot
+                  ? `${disabledBtn} text-[var(--secondary-accent)]`
+                  : direction === 'row'
+                  ? `border ${activeBtn} cursor-pointer`
+                  : `${ghostBtn} cursor-pointer`
+              }`}
+            >
+              <FlexRowIcon className="w-3.5 h-3.5" />
+            </button>
+            <button
+              type="button"
+              disabled={isRoot}
+              onClick={() => { onUpdateContainer?.(container.id, { direction: 'column' }); }}
+              title={
+                isRoot
+                  ? 'The Body always flows top-to-bottom, like a page. To place items side-by-side, add a Row container and put them inside it.'
+                  : 'Column layout (vertical flow)'
+              }
+              aria-label="Column"
+              className={`${barToggleBtn} ${
+                isRoot || direction === 'column'
+                  ? `border ${activeBtn} ${isRoot ? 'cursor-default' : 'cursor-pointer'}`
+                  : `${ghostBtn} cursor-pointer`
+              }`}
+            >
+              <FlexColumnIcon className="w-3.5 h-3.5" />
+            </button>
+          </div>
+
+          <ToolGroup
+            icon={<AddChildContainerIcon className="w-3.5 h-3.5" />}
+            label="Add"
+            title="Add a container"
+          >
+            <>
+                <GroupOption
+                  icon={<AddContainerBeforeIcon className="w-3.5 h-3.5" />}
+                  label="Before"
+                  title={isRoot ? 'Not available for the Body' : 'Add Container Before'}
+                  disabled={isRoot}
+                  onClick={() => { onInsertContainerSibling?.(container.id, 'before', { ...NEW_CONTAINER }); }}
+                />
+                <GroupOption
+                  icon={<AddChildContainerIcon className="w-3.5 h-3.5" />}
+                  label="Inside"
+                  title="Add Child Container (nested inside)"
+                  onClick={() => { onAddContainer?.(container.id, { ...NEW_CONTAINER }); }}
+                />
+                <GroupOption
+                  icon={<AddContainerAfterIcon className="w-3.5 h-3.5" />}
+                  label="After"
+                  title={isRoot ? 'Not available for the Body' : 'Add Container After'}
+                  disabled={isRoot}
+                  onClick={() => { onInsertContainerSibling?.(container.id, 'after', { ...NEW_CONTAINER }); }}
+                />
+            </>
+          </ToolGroup>
+
+          <ToolGroup
+            icon={<SplitColumnsIcon className="w-3.5 h-3.5" />}
+            label="Split"
+            title={isRoot ? 'The Body cannot be split' : 'Split this container'}
+            disabled={isRoot}
+          >
+            <>
+                <GroupOption
+                  icon={<SplitColumnsIcon className="w-3.5 h-3.5" />}
+                  label="2 Columns"
+                  title="Split into 2 Columns (side-by-side)"
+                  onClick={() => { onSplitContainer?.(container.id, 'columns'); }}
+                />
+                <GroupOption
+                  icon={<SplitRowsIcon className="w-3.5 h-3.5" />}
+                  label="2 Rows"
+                  title="Split into 2 Rows (stacked)"
+                  onClick={() => { onSplitContainer?.(container.id, 'rows'); }}
+                />
+            </>
+          </ToolGroup>
+
+          <div className={divider} aria-hidden="true" />
+
+          {/* Gear: opens the Structure tree's properties menu for this container */}
+          <button
+            type="button"
+            data-gear-trigger
+            onClick={() => {
+              onSelectNode?.(container.id);
+              const clickTreeGear = () =>
+                document.querySelector<HTMLElement>(`[data-tree-gear-id="${container.id}"]`)?.click();
+              if (isStructurePanelOpen) {
+                clickTreeGear();
+                return;
+              }
+              // The tree row (and its gear) isn't on screen yet: open the panel unpinned, then
+              // wait for the *panel's own* slide-in transition to genuinely finish before syncing
+              // to it. The menu's position is computed from the panel's live bounding rect at
+              // click time, so clicking mid-transition (or even a couple of animation frames in —
+              // a frame-to-frame "has it stopped moving" check can be fooled by the transition not
+              // having visibly started yet) anchors it to the panel's still-collapsed position.
+              onOpenStructurePanel?.();
+              const waitForPanelThen = (cb: () => void) => {
+                const panelEl = document.querySelector<HTMLElement>(structurePanelSelector);
+                if (!panelEl) {
+                  requestAnimationFrame(() => waitForPanelThen(cb));
+                  return;
+                }
+                const transitionSeconds = parseFloat(getComputedStyle(panelEl).transitionDuration) || 0;
+                if (transitionSeconds === 0) {
+                  cb();
+                  return;
+                }
+                let done = false;
+                const finish = () => {
+                  if (done) return;
+                  done = true;
+                  panelEl.removeEventListener('transitionend', onEnd);
+                  cb();
+                };
+                const onEnd = (e: TransitionEvent) => {
+                  if (e.target === panelEl) finish();
+                };
+                panelEl.addEventListener('transitionend', onEnd);
+                // Safety net if the transition never fires an end event (e.g. it gets interrupted).
+                setTimeout(finish, transitionSeconds * 1000 + 100);
+              };
+              waitForPanelThen(clickTreeGear);
+            }}
+            title={isRoot ? 'Body Properties' : 'Container Properties'}
+            aria-label={isRoot ? 'Body properties' : 'Container properties'}
+            aria-expanded={isTreeMenuOpen}
+            className={`w-[26px] ${barControlHeight} rounded-md border transition cursor-pointer flex items-center justify-center shrink-0 ${
+              isTreeMenuOpen ? activeBtn : idleBtn
+            }`}
+          >
+            <GearIcon
+              isActive={isTreeMenuOpen}
+              className={`w-3.5 h-3.5 transition-transform duration-300 ${isTreeMenuOpen ? 'rotate-90' : ''}`}
+            />
+          </button>
+
+          {isRoot ? (
+            <button
+              type="button"
+              disabled
+              title="The Body cannot be deleted"
+              aria-label="Delete (disabled for Body)"
+              className={`w-[26px] ${barControlHeight} rounded-md border transition flex items-center justify-center shrink-0 ${idleBtn} ${disabledBtn}`}
+            >
+              <TrashCanIcon className="w-3.5 h-3.5" />
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={() => onRemoveContainer?.(container.id)}
+              className={`w-[26px] ${barControlHeight} rounded-md border transition flex items-center justify-center cursor-pointer shrink-0 bg-black/40 border-[var(--secondary-accent)] text-[var(--secondary-accent)] hover:bg-[var(--tree-menu-danger-hover-bg)] hover:border-white hover:text-[var(--tree-menu-danger-hover-text)]`}
+              title="Delete Container"
+              aria-label="Delete Container"
+            >
+              <TrashCanIcon className="w-3.5 h-3.5" />
+            </button>
+          )}
         </div>
       )}
     </div>

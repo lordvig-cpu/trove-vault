@@ -247,6 +247,79 @@ export const AddContainerAfterIcon = ({ className = 'w-4 h-4', strokeWidth = 1.8
 );
 
 /**
+ * AutoSizingIcon:
+ * Three sparkle/star shapes, for automatic ("Auto") container sizing.
+ */
+export const AutoSizingIcon = ({ className = 'w-4 h-4', strokeWidth = 1.9 }: LayoutIconProps) => (
+  <svg
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth={strokeWidth}
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className={`origin-center shrink-0 ${className}`}
+    aria-hidden="true"
+  >
+    <path d="M12 3.5 13.3 7l3.5 1.3-3.5 1.3L12 13l-1.3-3.4-3.5-1.3L10.7 7 12 3.5Z" />
+    <path d="M18.5 13.5 19.2 15.3 21 16l-1.8.7-.7 1.8-.7-1.8-1.8-.7 1.8-.7.7-1.8Z" />
+    <path d="M6 14.5 6.8 16.5 8.8 17.3 6.8 18.1 6 20.1 5.2 18.1 3.2 17.3 5.2 16.5 6 14.5Z" />
+  </svg>
+);
+
+/**
+ * CustomSizingIcon:
+ * Three sliders (rows with dots at different positions), for manual ("Custom") container sizing.
+ */
+export const CustomSizingIcon = ({ className = 'w-4 h-4', strokeWidth = 1.9 }: LayoutIconProps) => (
+  <svg
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth={strokeWidth}
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className={`origin-center shrink-0 ${className}`}
+    aria-hidden="true"
+  >
+    <path d="M4 7h16" />
+    <path d="M4 12h16" />
+    <path d="M4 17h16" />
+    <circle cx="9" cy="7" r="1.7" />
+    <circle cx="15" cy="12" r="1.7" />
+    <circle cx="11" cy="17" r="1.7" />
+  </svg>
+);
+
+/**
+ * FitFrameIcon:
+ * Four corner brackets, for the preview-width Fit toggle. With `active`, a filled rounded square
+ * appears inside the brackets, showing the preview snugged to fit them.
+ */
+export const FitFrameIcon = ({
+  className = 'w-4 h-4',
+  strokeWidth = 2,
+  active,
+}: LayoutIconProps & { active?: boolean }) => (
+  <svg
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth={strokeWidth}
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className={`origin-center shrink-0 ${className}`}
+    aria-hidden="true"
+  >
+    <path d="M9 5H5v4" />
+    <path d="M15 5h4v4" />
+    <path d="M19 15v4h-4" />
+    <path d="M9 19H5v-4" />
+    {active && <rect x="8" y="8" width="8" height="8" rx="1.5" />}
+  </svg>
+);
+
+/**
  * UndoIcon:
  * A curved arrow turning back to the left.
  */

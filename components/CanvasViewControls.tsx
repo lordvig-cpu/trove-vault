@@ -2,6 +2,7 @@
 
 import React, { useRef, useState } from 'react';
 import { SearchGlassIcon } from '@/components/icons/TreeIcons';
+import { FitFrameIcon } from '@/components/icons/LayoutIcons';
 import { useCanvasZoom, ZOOM_MAX, ZOOM_MIN, ZOOM_STEP } from '@/context/CanvasZoomContext';
 import { BODY_WIDTH_PRESETS } from '@/types/layout';
 import { useDismissOnOutsideOrEscape } from '@/hooks/useDismissOnOutsideOrEscape';
@@ -50,7 +51,7 @@ export function PreviewWidthPicker() {
 
   return (
     <div className="flex items-center gap-0.5">
-      <span className="text-[10px] font-bold uppercase tracking-wider text-white mr-1">Width</span>
+      <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--primary-tree-item-text)] mr-1">Width</span>
       <div className="relative" ref={menuRef}>
         <button
           type="button"
@@ -112,15 +113,18 @@ export function PreviewWidthPicker() {
           </div>
         )}
       </div>
-      <label className="flex items-center gap-1 ml-1.5 text-[11px] font-semibold text-white cursor-pointer">
-        <input
-          type="checkbox"
-          checked={isFit}
-          onChange={(e) => toggleFit(e.target.checked)}
-          className="tree-filter-checkbox tmpl-blue-check w-3.5 h-3.5 rounded cursor-pointer shrink-0"
-        />
-        FIT
-      </label>
+      <button
+        type="button"
+        onClick={() => toggleFit(!isFit)}
+        aria-pressed={isFit}
+        title={isFit ? 'Fit: preview fills the editor area (click to set a fixed width)' : 'Fit: fill the editor area'}
+        aria-label="Fit"
+        className={`w-[26px] ${barControlHeight} ml-1.5 rounded-md border transition flex items-center justify-center shrink-0 cursor-pointer ${
+          isFit ? activeBtn : idleBtn
+        }`}
+      >
+        <FitFrameIcon className="w-3.5 h-3.5" active={isFit} />
+      </button>
     </div>
   );
 }

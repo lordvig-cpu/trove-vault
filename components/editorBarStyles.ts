@@ -29,4 +29,4 @@ export const barControlHeight = 'h-[26px]';
 export const barToggleGroup =
   'flex items-center gap-0.5 bg-black/40 px-0.5 h-[26px] rounded-md border border-[color-mix(in_oklch,var(--secondary-accent)_35%,transparent)] shrink-0 text-[10px] font-semibold';
 
-export const barToggleBtn = 'px-1.5 h-[22px] flex items-center rounded transition';
+export const barToggleBtn = 'px-1.5 h-[22px] flex items-center gap-1 rounded transition';
