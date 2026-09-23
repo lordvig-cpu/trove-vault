@@ -9,8 +9,11 @@ import React, { createContext, useCallback, useContext, useMemo, useState } from
    ========================================================================== */
 
 export const ZOOM_STEP = 0.1;
-export const ZOOM_MIN = 0.5;
-export const ZOOM_MAX = 3;
+// Symmetric around 1 (100%) so the reset tick sits exactly in the middle of the track. Not
+// literally 0: ScaledCanvas divides by `Math.min(zoom, 1)` for the 'fit' width calc, so an exact
+// zero would divide by zero.
+export const ZOOM_MIN = 0.1;
+export const ZOOM_MAX = 1.9;
 
 export type PreviewWidth = 'fit' | number;
 

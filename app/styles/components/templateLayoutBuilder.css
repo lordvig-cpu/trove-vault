@@ -46,3 +46,19 @@
     0 0 18px color-mix(in oklch, var(--secondary-accent) 35%, transparent);
 }
 
+/* The container toolbar, anchored to the workspace footer (see .tmpl-edge-panel-top above):
+   same chassis, corners and glow rotated to face up instead of down. */
+.tmpl-edge-panel-bottom {
+  background:
+    radial-gradient(ellipse 90% 140% at 50% 100%,
+      color-mix(in oklch, var(--secondary-accent) 38%, transparent) 0%,
+      transparent 75%),
+    var(--secondary-tree-menu-header-bg),
+    var(--secondary-tree-menu-shell-bg);
+  border-radius: 0.75rem 0.75rem 0 0;
+  border-bottom-width: 0;
+  box-shadow:
+    0 -8px 18px -2px oklch(from var(--oklch-blue-0-0-0) l c h / calc(0.6 * var(--oklch-shadow-opacity, 1))),
+    0 0 18px color-mix(in oklch, var(--secondary-accent) 35%, transparent);
+}
+

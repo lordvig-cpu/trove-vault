@@ -49,8 +49,8 @@ export default function TemplateEditorBarTop({
   onSave,
 }: TemplateEditorBarTopProps) {
   return (
-    <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-4 px-2.5 py-1.5 min-w-[30rem]">
-      <div className="flex items-center gap-2 min-w-0">
+    <div className="flex items-center px-2.5 py-1.5 min-w-[30rem]">
+      <div className="flex items-center gap-2 min-w-0 shrink-0">
         <span
           className="w-[26px] h-[26px] rounded-md bg-black/40 border border-[color-mix(in_oklch,var(--secondary-accent)_35%,transparent)] flex items-center justify-center text-sm shrink-0"
           aria-hidden="true"
@@ -62,8 +62,9 @@ export default function TemplateEditorBarTop({
         </h1>
       </div>
 
-      <div className="flex items-center gap-2">
-        <div className={divider} aria-hidden="true" />
+      {/* A fixed gap from the name (not one derived from matching column widths, which forced this
+          group's distance from each neighbor to track however wide that neighbor happened to be). */}
+      <div className="flex items-center gap-2 ml-8 shrink-0">
         <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--primary-tree-item-text)] mr-1">View:</span>
         <div className={barToggleGroup} role="group" aria-label="Canvas mode">
           <button
@@ -108,7 +109,7 @@ export default function TemplateEditorBarTop({
         )}
       </div>
 
-      <div className="flex items-center gap-1.5 justify-self-end">
+      <div className="flex items-center gap-1.5 shrink-0 ml-8">
         <button
           type="button"
           disabled={!canUndo}

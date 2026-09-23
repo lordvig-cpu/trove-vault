@@ -694,6 +694,20 @@ export default function Home() {
             {bottomPanelContent !== 'empty' ? renderPanelBody(bottomPanelContent, 'bottom') : null}
           </BottomPanel>
 
+          {/* Slot for the template editor's container toolbar (portaled in by the editor), centered
+              the same way as the header's top slot and lifted clear of the bottom panel when it's
+              open (pinned or not) so the two never overlap. */}
+          <div
+            id="template-toolbar-slot-bottom"
+            className={`absolute bottom-0 -translate-x-1/2 z-[36] pointer-events-none ${
+              animationsEnabled ? 'transition-[left,bottom] duration-500 ease-in-out' : ''
+            }`}
+            style={{
+              left: `calc(50% + ${(leftOccupiedWidth - rightOccupiedWidth) / 2}px)`,
+              bottom: isBottomActive ? `${bottomPanelHeight}px` : '0px',
+            }}
+          />
+
           {/* Secondary Side Panel (Details / Inspector Drawer / Grabbed Content) - Sits Above Main Content (z-40) */}
           <SecondarySidePanel
             title={getPanelTitle(secondaryTabs, secondaryActiveTab, 'SECONDARY SIDE PANEL')}

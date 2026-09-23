@@ -51,7 +51,7 @@ export function PreviewWidthPicker() {
 
   return (
     <div className="flex items-center gap-0.5">
-      <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--primary-tree-item-text)] mr-1">Width</span>
+      <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--primary-tree-item-text)] mr-1">Width:</span>
       <div className="relative" ref={menuRef}>
         <button
           type="button"
@@ -146,7 +146,7 @@ export function ZoomControls() {
   return (
     <div className="flex items-center gap-1.5" role="group" aria-label="Zoom">
       <SearchGlassIcon className="w-3.5 h-3.5 text-[var(--secondary-accent)] shrink-0" />
-      <div className="relative flex items-center w-24 h-4 shrink-0">
+      <div className="relative flex items-center w-20 h-4 shrink-0">
         <div
           aria-hidden="true"
           className="absolute top-1/2 -translate-y-1/2 w-px h-2.5 bg-white/80 pointer-events-none"

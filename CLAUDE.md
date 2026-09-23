@@ -64,10 +64,11 @@ commit whenever you add, remove, split or rename a file — it goes stale otherw
 
 - Every container is a Row or a Column (`resolveDirection` in `types/layout.ts`); new containers start
   with the opposite of their parent's direction. The Body's own direction is locked to Column in the
-  UI (`disabled={isRoot}` in `TemplateEditorBar.tsx`) — nothing in the layout engine requires this, it's
-  a deliberate choice to keep the top level reading like a page. A container only controls how *its own*
-  children flow, not how it sits among its siblings, so two containers added directly to the Body will
-  always stack vertically; to place things side-by-side, add one Row container and put both inside it.
+  UI (`disabled={isRoot}` in `TemplateEditorBarBottom.tsx`) — nothing in the layout engine requires this,
+  it's a deliberate choice to keep the top level reading like a page. A container only controls how
+  *its own* children flow, not how it sits among its siblings, so two containers added directly to the
+  Body will always stack vertically; to place things side-by-side, add one Row container and put both
+  inside it.
 - Templates are fluid. Preview width and zoom are editor-only state (`CanvasZoomContext`), reset to
   Fit / 100% when the editor closes. Container sizing (Width, Min/Max, Height, stack-below) is stored
   on the container; drag handles only appear on Custom containers. Zoom only ever scales the canvas
@@ -81,9 +82,13 @@ commit whenever you add, remove, split or rename a file — it goes stale otherw
   is Wrap Children working as designed, not a conflict, and flagging it would drown the real signal in
   false positives. A capped Height (Max H) already has its own scrollbar, so column overflow isn't
   flagged.
-- The editor bar (template name, Edit / Preview toggle, Undo / Redo / Save, tools, preview width, zoom) is
-  rendered by `TemplateEditorBar` into the slot under the
-  header (`#template-toolbar-slot`).
+- The template editor has two toolbars, so template-wide and container-specific tools never fight for
+  space in one bar. `TemplateEditorBar`/`TemplateEditorBarTop` (template name, View toggle, Zoom,
+  Width/Fit, Undo / Redo, Save) portals into the header slot (`#template-toolbar-slot`).
+  `TemplateEditorBarBottom` (selected container's name, Size, Layout, Add, Split, properties gear,
+  delete) portals into the workspace footer slot (`#template-toolbar-slot-bottom`, rendered in
+  `app/page.tsx`), which lifts clear of the bottom panel by `bottomPanelHeight` whenever that panel is
+  open or pinned.
 - Layout tree edits (add, insert sibling, split, update, remove) are pure functions in
   `lib/layoutTree.ts`, covered by `tests/layout-tree.spec.ts`; the flex layout tree's selection and
   CRUD around them lives in `hooks/useTemplateLayoutTree.ts`, which `useTemplateEditor` composes (it
