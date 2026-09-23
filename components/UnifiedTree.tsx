@@ -191,20 +191,19 @@ function UnifiedTreeItem({
       {effectiveIsOpen && hasSubItems && (
         <div
           className={`tree-branch space-y-0.5 my-0.5 flex flex-col min-w-0 relative ${
-            isRightSide ? '' : 'border-l ml-[13.5px] pl-2.5'
+            isRightSide ? '' : 'ml-[13.5px] pl-2.5'
           }`}
         >
-          {/* Right-docked rows already carry their own absolute depth-based paddingLeft (see
-              above), so the guide line is an overlay at that same x -- indenting this wrapper
-              itself, like the left-docked border-l/ml does, would double up with each child row's
-              own already-correct offset. */}
-          {isRightSide && (
-            <div
-              aria-hidden="true"
-              className="tree-branch absolute top-0 bottom-0 border-l pointer-events-none"
-              style={{ left: depth * 24.5 + 44 }}
-            />
-          )}
+          {/* The guide line is an absolutely-positioned overlay, not this wrapper's own border, so
+              its x can be tuned to meet the child rows' expand-chevron without moving the rows
+              themselves. Right-docked rows carry their own absolute depth-based paddingLeft (see
+              above); left-docked ones are indented via ml-[13.5px]/pl-2.5 on this wrapper, whose
+              border would otherwise sit at the wrapper's own left edge -- short of the chevron. */}
+          <div
+            aria-hidden="true"
+            className="tree-branch absolute top-0 bottom-0 border-l pointer-events-none left-6"
+            style={isRightSide ? { left: depth * 24.5 + 44 } : undefined}
+          />
           {visibleChildren.map((child) => (
             <UnifiedTreeItem
               key={`subitem-${child.id}`}
@@ -380,19 +379,18 @@ export default function UnifiedTree({
       {localIsOpen && hasChildren && (
         <div
           className={`tree-branch space-y-0.5 my-0.5 flex flex-col min-w-0 relative ${
-            isRightSide ? '' : 'border-l ml-[13.5px] pl-2.5'
+            isRightSide ? '' : 'ml-[13.5px] pl-2.5'
           }`}
         >
-          {/* See the matching comment in UnifiedTreeItem: right-docked rows already carry their
-              own absolute depth-based paddingLeft, so the guide line is an overlay at that same x
-              instead of indenting this wrapper (which would double up with each child's offset). */}
-          {isRightSide && (
-            <div
-              aria-hidden="true"
-              className="tree-branch absolute top-0 bottom-0 border-l pointer-events-none"
-              style={{ left: depth * 24.5 + 44 }}
-            />
-          )}
+          {/* See the matching comment in UnifiedTreeItem: the guide line is an absolutely-
+              positioned overlay so its x can meet the child rows' expand-chevron without moving
+              the rows, instead of this wrapper's own border (which would sit too far left,
+              left-docked, or double up with each child's own offset, right-docked). */}
+          <div
+            aria-hidden="true"
+            className="tree-branch absolute top-0 bottom-0 border-l pointer-events-none left-6"
+            style={isRightSide ? { left: depth * 24.5 + 44 } : undefined}
+          />
           {rawSubCollections.map((subCollection) => (
             <UnifiedTree
               key={`col-${subCollection.id}`}
