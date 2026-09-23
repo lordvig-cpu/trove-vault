@@ -190,33 +190,42 @@ function UnifiedTreeItem({
 
       {effectiveIsOpen && hasSubItems && (
         <div
-          className={`tree-branch space-y-0.5 my-0.5 flex flex-col min-w-0 relative ${
+          className={`tree-branch space-y-0.5 my-0.5 flex flex-col min-w-0 ${
             isRightSide ? '' : 'ml-[13.5px] pl-2.5'
           }`}
         >
-          {/* The guide line is an absolutely-positioned overlay, not this wrapper's own border, so
-              its x can be tuned to meet the child rows' expand-chevron without moving the rows
-              themselves. Right-docked rows carry their own absolute depth-based paddingLeft (see
-              above); left-docked ones are indented via ml-[13.5px]/pl-2.5 on this wrapper, whose
-              border would otherwise sit at the wrapper's own left edge -- short of the chevron. */}
-          <div
-            aria-hidden="true"
-            className="tree-branch absolute top-0 bottom-0 border-l pointer-events-none left-6"
-            style={isRightSide ? { left: depth * 24.5 + 44 } : undefined}
-          />
-          {visibleChildren.map((child) => (
-            <UnifiedTreeItem
-              key={`subitem-${child.id}`}
-              item={child}
-              collectionId={collectionId}
-              depth={depth + 1}
-            />
-          ))}
+          {/* Each sibling carries its own connector segment instead of one line spanning the whole
+              wrapper: the wrapper's own height includes every expanded descendant, so a single
+              line would run alongside a child's own children too, not stop where that child hands
+              off to its own connector. A non-last sibling's segment reaches past its own row into
+              the gap before the next one (ROW_H + gap); the last sibling's stops at its own row's
+              vertical center -- the "elbow" onto its chevron -- matching where guide lines
+              conventionally end. */}
+          {visibleChildren.map((child, idx) => {
+            const isLastRow = idx === visibleChildren.length - 1 && remainingChildren === 0;
+            return (
+              <div key={`subitem-${child.id}`} className="relative">
+                <div
+                  aria-hidden="true"
+                  className="tree-branch absolute top-0 border-l pointer-events-none left-3.5"
+                  style={{ height: isLastRow ? 14 : 30, ...(isRightSide ? { left: depth * 24.5 + 44 } : null) }}
+                />
+                <UnifiedTreeItem item={child} collectionId={collectionId} depth={depth + 1} />
+              </div>
+            );
+          })}
           {remainingChildren > 0 && (
-            <TreeLoadMoreNode
-              remainingCount={remainingChildren}
-              onLoadMore={() => setDisplayLimit((prev) => prev + CHUNK_SIZE)}
-            />
+            <div className="relative">
+              <div
+                aria-hidden="true"
+                className="tree-branch absolute top-0 border-l pointer-events-none left-3.5"
+                style={{ height: 14, ...(isRightSide ? { left: depth * 24.5 + 44 } : null) }}
+              />
+              <TreeLoadMoreNode
+                remainingCount={remainingChildren}
+                onLoadMore={() => setDisplayLimit((prev) => prev + CHUNK_SIZE)}
+              />
+            </div>
           )}
         </div>
       )}
@@ -378,40 +387,55 @@ export default function UnifiedTree({
 
       {localIsOpen && hasChildren && (
         <div
-          className={`tree-branch space-y-0.5 my-0.5 flex flex-col min-w-0 relative ${
+          className={`tree-branch space-y-0.5 my-0.5 flex flex-col min-w-0 ${
             isRightSide ? '' : 'ml-[13.5px] pl-2.5'
           }`}
         >
-          {/* See the matching comment in UnifiedTreeItem: the guide line is an absolutely-
-              positioned overlay so its x can meet the child rows' expand-chevron without moving
-              the rows, instead of this wrapper's own border (which would sit too far left,
-              left-docked, or double up with each child's own offset, right-docked). */}
-          <div
-            aria-hidden="true"
-            className="tree-branch absolute top-0 bottom-0 border-l pointer-events-none left-6"
-            style={isRightSide ? { left: depth * 24.5 + 44 } : undefined}
-          />
-          {rawSubCollections.map((subCollection) => (
-            <UnifiedTree
-              key={`col-${subCollection.id}`}
-              collection={subCollection}
-              depth={depth + 1}
-              treeType={treeType}
-            />
-          ))}
-          {visibleItems.map((item) => (
-            <UnifiedTreeItem
-              key={`item-${item.id}`}
-              item={item}
-              collectionId={effectiveCollectionId}
-              depth={depth + 1}
-            />
-          ))}
+          {/* See the matching comment in UnifiedTreeItem: each sibling (subcollections, then items,
+              then the Load More row) carries its own connector segment sized to its own row height,
+              reaching into the last one's vertical center rather than one line spanning the whole
+              wrapper (which would run through an expanded child's own descendants too). "Last"
+              means last across all three lists combined, so the trunk still continues correctly
+              between them. */}
+          {rawSubCollections.map((subCollection, idx) => {
+            const isLastRow =
+              idx === rawSubCollections.length - 1 && visibleItems.length === 0 && remainingItems === 0;
+            return (
+              <div key={`col-${subCollection.id}`} className="relative">
+                <div
+                  aria-hidden="true"
+                  className="tree-branch absolute top-0 border-l pointer-events-none left-3.5"
+                  style={{ height: isLastRow ? 16 : 34, ...(isRightSide ? { left: depth * 24.5 + 44 } : null) }}
+                />
+                <UnifiedTree collection={subCollection} depth={depth + 1} treeType={treeType} />
+              </div>
+            );
+          })}
+          {visibleItems.map((item, idx) => {
+            const isLastRow = idx === visibleItems.length - 1 && remainingItems === 0;
+            return (
+              <div key={`item-${item.id}`} className="relative">
+                <div
+                  aria-hidden="true"
+                  className="tree-branch absolute top-0 border-l pointer-events-none left-3.5"
+                  style={{ height: isLastRow ? 14 : 30, ...(isRightSide ? { left: depth * 24.5 + 44 } : null) }}
+                />
+                <UnifiedTreeItem item={item} collectionId={effectiveCollectionId} depth={depth + 1} />
+              </div>
+            );
+          })}
           {remainingItems > 0 && (
-            <TreeLoadMoreNode
-              remainingCount={remainingItems}
-              onLoadMore={() => setDisplayLimit((prev) => prev + CHUNK_SIZE)}
-            />
+            <div className="relative">
+              <div
+                aria-hidden="true"
+                className="tree-branch absolute top-0 border-l pointer-events-none left-3.5"
+                style={{ height: 14, ...(isRightSide ? { left: depth * 24.5 + 44 } : null) }}
+              />
+              <TreeLoadMoreNode
+                remainingCount={remainingItems}
+                onLoadMore={() => setDisplayLimit((prev) => prev + CHUNK_SIZE)}
+              />
+            </div>
           )}
         </div>
       )}
