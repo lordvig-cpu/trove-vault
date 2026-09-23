@@ -181,7 +181,7 @@ function ContainerNodeRow({
         }}
         data-tree-container-id={container.id}
         title={containerLabel}
-        style={{ paddingLeft: `${depth * 18 + 6 + (isRightSide ? 32 : 0)}px` }}
+        style={isRightSide ? { paddingLeft: depth * 24.5 + 44 } : undefined}
         className={[
           'tree-item group relative flex items-center h-7 px-1.5 gap-1.5 rounded-md cursor-pointer transition w-full min-w-0',
           isDragOver
@@ -209,7 +209,7 @@ function ContainerNodeRow({
           ].filter(Boolean).join(' ')}
           title={isExpanded ? 'Collapse container' : 'Expand container'}
         >
-          {isExpanded ? '▼' : '▶\uFE0E'}
+          {isExpanded ? '▼' : '▶︎'}
         </button>
 
         {/* Node Icon */}
@@ -218,7 +218,7 @@ function ContainerNodeRow({
         </span>
 
         {/* Node Label */}
-        <span className="text-[13px] tracking-tight truncate flex-1 min-w-0 tree-muted">
+        <span className="text-[13px] tracking-tight truncate flex-1 min-w-0">
           {containerLabel}
         </span>
 
@@ -297,7 +297,18 @@ function ContainerNodeRow({
 
       {/* Render Children when Expanded */}
       {isExpanded && hasChildren && (
-        <div className="flex flex-col relative">
+        <div className={`flex flex-col relative ${isRightSide ? '' : 'tree-branch border-l ml-[13.5px] pl-2.5'}`}>
+          {/* Same mechanism as UnifiedTree (see its matching comments): left-docked indents by
+              nesting this wrapper (ml/pl), so its own border-l is the guide, 16px left of each
+              child row's own chevron. Right-docked rows carry their own absolute depth-based
+              paddingLeft instead, so the guide is a full-height overlay at that same x. */}
+          {isRightSide && (
+            <div
+              aria-hidden="true"
+              className="tree-branch absolute top-0 bottom-0 border-l pointer-events-none"
+              style={{ left: depth * 24.5 + 52.5 }}
+            />
+          )}
           {container.children.map((child) => {
             if (child.nodeType === 'container') {
               return (
@@ -403,7 +414,7 @@ function ComponentNodeRow({
         onClick={() => onSelectNode(component.id)}
         data-tree-component-id={component.id}
         title={label}
-        style={{ paddingLeft: `${depth * 18 + 6 + (isRightSide ? 32 : 0)}px` }}
+        style={isRightSide ? { paddingLeft: depth * 24.5 + 44 } : undefined}
         className={[
           'tree-item group relative flex items-center h-7 px-1.5 gap-1.5 rounded-md cursor-pointer transition w-full min-w-0',
           isSelected

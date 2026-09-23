@@ -156,7 +156,7 @@ function UnifiedTreeItem({
           ].filter(Boolean).join(' ')}
           title={effectiveIsOpen ? 'Collapse item' : 'Expand item'}
         >
-          {effectiveIsOpen ? '▼' : '▶\uFE0E'}
+          {effectiveIsOpen ? '▼' : '▶︎'}
         </button>
 
         <span className="w-4 h-4 flex items-center justify-center text-xs opacity-80 shrink-0 select-none">
@@ -189,17 +189,17 @@ function UnifiedTreeItem({
       />
 
       {effectiveIsOpen && hasSubItems && (
-        <div className={`tree-branch space-y-0.5 my-0.5 flex flex-col min-w-0 ${isRightSide ? 'relative' : 'border-l ml-[13.5px] pl-2.5'}`}>
-          {/* Left-docked indents by nesting this wrapper (ml/pl), so its own border-l is the guide.
-              Right-docked rows instead carry their own absolute depth-based paddingLeft, so the
-              wrapper can't be indented without doubling up with them -- the guide is an overlay at
-              the same place relative to the child rows: 10px left of where their content starts,
-              matching the left-docked wrapper's own pl-2.5 gap. */}
+        <div className={`tree-branch space-y-0.5 my-0.5 flex flex-col min-w-0 relative ${isRightSide ? '' : 'border-l ml-[13.5px] pl-2.5'}`}>
+          {/* Left-docked indents by nesting this wrapper (ml/pl), so its own border-l is the
+              continuous guide for this depth -- 16px left of each child row's own chevron (10px
+              wrapper pl-2.5 + 6px row px-1.5). Right-docked rows carry their own absolute
+              depth-based paddingLeft instead (no nested pl to reuse), so the guide is a full-height
+              overlay at that child chevron x minus that same 16px, one continuous line per depth. */}
           {isRightSide && (
             <div
               aria-hidden="true"
               className="tree-branch absolute top-0 bottom-0 border-l pointer-events-none"
-              style={{ left: depth * 24.5 + 58.5 }}
+              style={{ left: depth * 24.5 + 52.5 }}
             />
           )}
           {visibleChildren.map((child) => (
@@ -327,7 +327,7 @@ export default function UnifiedTree({
           ].filter(Boolean).join(' ')}
           title={localIsOpen ? 'Collapse category' : 'Expand category'}
         >
-          {localIsOpen ? '▼' : '▶\uFE0E'}
+          {localIsOpen ? '▼' : '▶︎'}
         </button>
 
         <span className="w-4 h-4 flex items-center justify-center text-sm tree-category-icon shrink-0 select-none">
@@ -375,7 +375,15 @@ export default function UnifiedTree({
       )}
 
       {localIsOpen && hasChildren && (
-        <div className={`tree-branch space-y-0.5 my-0.5 flex flex-col min-w-0 ${isRightSide ? '' : 'border-l ml-[13.5px] pl-2.5'}`}>
+        <div className={`tree-branch space-y-0.5 my-0.5 flex flex-col min-w-0 relative ${isRightSide ? '' : 'border-l ml-[13.5px] pl-2.5'}`}>
+          {/* See the matching comment in UnifiedTreeItem above. */}
+          {isRightSide && (
+            <div
+              aria-hidden="true"
+              className="tree-branch absolute top-0 bottom-0 border-l pointer-events-none"
+              style={{ left: depth * 24.5 + 52.5 }}
+            />
+          )}
           {rawSubCollections.map((subCollection) => (
             <UnifiedTree
               key={`col-${subCollection.id}`}
