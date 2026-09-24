@@ -13,15 +13,29 @@ import {
   collectPlacedFieldIds,
 } from '@/types/layout';
 import {
-  buildContainer,
+  buildUniqueContainer,
   insertChild,
   insertSibling,
   newNodeId,
   removeNode,
+  resolveContentTarget,
   splitContainer,
   updateComponent,
   updateContainer,
 } from '@/lib/layoutTree';
+
+/** Two paragraphs of filler text for the Lorem Ipsum grabbable (TemplateFieldInspector), so its
+    wrapping/flow can be previewed inside a container without needing a real bound field. */
+export const LOREM_IPSUM_TEXT =
+  'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut ' +
+  'labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco ' +
+  'laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in ' +
+  'voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat ' +
+  'non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.\n\n' +
+  'Curabitur pretium tincidunt lacus, ut interdum tellus elit sed risus. Maecenas eget condimentum ' +
+  'velit, sit amet feugiat lectus. Class aptent taciti sociosqu ad litora torquent per conubia ' +
+  'nostra, per inceptos himenaeos. Praesent auctor purus luctus enim egestas, ac scelerisque ante ' +
+  'pulvinar. Donec ut rhoncus ex. Suspendisse ac rhoncus nisl, eu tempor urna.';
 
 interface UseTemplateLayoutTreeOptions {
   flexLayoutConfig: TemplateFlexLayoutConfig | null;
@@ -86,7 +100,11 @@ export function useTemplateLayoutTree({
       const root = flexLayoutConfig.root;
       const parentNode = findFlexNode(root, targetContainerId);
       const parentContainer = parentNode?.nodeType === 'container' ? parentNode : root;
-      const newContainer = buildContainer(
+      // Repeated "Add" (e.g. Inside, clicked several times in a row) always passes the same
+      // literal default label ("New Container"); dedupe it the same way Split already does,
+      // instead of leaving every one of them stuck with an identical name.
+      const newContainer = buildUniqueContainer(
+        root,
         options,
         'Container Box',
         defaultChildDirection(parentContainer, parentContainer.id === root.id)
@@ -120,7 +138,8 @@ export function useTemplateLayoutTree({
       const parent = findParentFlexContainer(flexLayoutConfig.root, targetContainerId);
       if (!parent) return '';
 
-      const newContainer = buildContainer(
+      const newContainer = buildUniqueContainer(
+        flexLayoutConfig.root,
         options,
         'New Container',
         defaultChildDirection(parent, parent.id === flexLayoutConfig.root.id)
@@ -334,8 +353,10 @@ export function useTemplateLayoutTree({
   const placeField = useCallback(
     (fieldId: number, targetContainerId?: string) => {
       const fieldDef = activeTemplate?.fields?.find((f) => f.id === fieldId);
-      if (!fieldDef) return;
-      const target = targetContainerId || activeContainerId;
+      if (!fieldDef || !flexLayoutConfig) return;
+      // A split wrapper holds exactly its two halves; content placed "into" it actually lands in
+      // its first half instead, same as dragging onto the canvas already can only ever do.
+      const target = resolveContentTarget(flexLayoutConfig.root, targetContainerId || activeContainerId);
       addFlexComponent(target, {
         componentType: 'field',
         field_id: fieldId,
@@ -344,7 +365,24 @@ export function useTemplateLayoutTree({
         sizing: { type: 'fixed', value: '48%' },
       });
     },
-    [activeTemplate, activeContainerId, addFlexComponent]
+    [activeTemplate, activeContainerId, flexLayoutConfig, addFlexComponent]
+  );
+
+  // Not bound to a real field: a quick way to drop filler text into a container to see how it
+  // actually flows/wraps (e.g. while testing a Split), independent of the template's own schema.
+  const placeLoremIpsum = useCallback(
+    (targetContainerId?: string) => {
+      if (!flexLayoutConfig) return;
+      const target = resolveContentTarget(flexLayoutConfig.root, targetContainerId || activeContainerId);
+      addFlexComponent(target, {
+        componentType: 'note',
+        label: 'Lorem Ipsum',
+        variant: 'standard',
+        sizing: { type: 'fill' },
+        custom_props: { text: LOREM_IPSUM_TEXT },
+      });
+    },
+    [activeContainerId, flexLayoutConfig, addFlexComponent]
   );
 
   const resetFlexLayoutToDefault = useCallback(() => {
@@ -388,6 +426,7 @@ export function useTemplateLayoutTree({
     updateFlexComponent,
     removeFlexComponent,
     placeField,
+    placeLoremIpsum,
     resetFlexLayoutToDefault,
     overflowingContainerIds,
     reportContainerOverflow,

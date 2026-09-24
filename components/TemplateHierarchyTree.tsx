@@ -34,6 +34,7 @@ export interface TemplateHierarchyTreeProps {
   onRemoveContainer: (containerId: string) => void;
   onRemoveComponent: (componentId: string) => void;
   onPlaceField?: (fieldId: number, targetContainerId?: string) => void;
+  onPlaceLoremIpsum?: (targetContainerId?: string) => void;
   /** Dock side: on the right, row gears move to the left edge and menus open rightward. */
   position?: 'left' | 'right';
   expandedIds?: Set<string>;
@@ -94,6 +95,7 @@ interface ContainerNodeRowProps {
   onRemoveContainer: (id: string) => void;
   onRemoveComponent: (id: string) => void;
   onPlaceField?: (fieldId: number, targetContainerId?: string) => void;
+  onPlaceLoremIpsum?: (targetContainerId?: string) => void;
   position?: 'left' | 'right';
   overflowingContainerIds?: Set<string>;
 }
@@ -115,6 +117,7 @@ function ContainerNodeRow({
   onRemoveContainer,
   onRemoveComponent,
   onPlaceField,
+  onPlaceLoremIpsum,
   position = 'left',
   overflowingContainerIds,
 }: ContainerNodeRowProps) {
@@ -168,6 +171,11 @@ function ContainerNodeRow({
           e.preventDefault();
           e.stopPropagation();
           setIsDragOver(false);
+          if (e.dataTransfer.getData('application/x-trove-lorem-ipsum')) {
+            onPlaceLoremIpsum?.(container.id);
+            onSelectNode(container.id);
+            return;
+          }
           const fieldIdStr =
             e.dataTransfer.getData('application/x-trove-field-id') ||
             e.dataTransfer.getData('text/plain');
@@ -330,6 +338,7 @@ function ContainerNodeRow({
                   onRemoveContainer={onRemoveContainer}
                   onRemoveComponent={onRemoveComponent}
                   onPlaceField={onPlaceField}
+                  onPlaceLoremIpsum={onPlaceLoremIpsum}
                   position={position}
                   overflowingContainerIds={overflowingContainerIds}
                 />
@@ -523,6 +532,7 @@ export default function TemplateHierarchyTree({
   onRemoveContainer,
   onRemoveComponent,
   onPlaceField,
+  onPlaceLoremIpsum,
   position = 'left',
   expandedIds: externalExpandedIds,
   onToggleExpand: externalOnToggleExpand,
@@ -580,6 +590,7 @@ export default function TemplateHierarchyTree({
         onRemoveContainer={onRemoveContainer}
         onRemoveComponent={onRemoveComponent}
         onPlaceField={onPlaceField}
+        onPlaceLoremIpsum={onPlaceLoremIpsum}
         position={position}
         overflowingContainerIds={overflowingContainerIds}
       />

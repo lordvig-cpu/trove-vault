@@ -133,27 +133,6 @@ export const SplitRowsIcon = ({ className = 'w-4 h-4', strokeWidth = 1.8 }: Layo
 );
 
 /**
- * DashedSquareQuestionIcon:
- * Empty dashed square with a question mark inside (used for empty container placeholders).
- */
-export const DashedSquareQuestionIcon = ({ className = 'w-5 h-5', strokeWidth = 1.8 }: LayoutIconProps) => (
-  <svg
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth={strokeWidth}
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    className={`origin-center shrink-0 ${className}`}
-    aria-hidden="true"
-  >
-    <rect x="3" y="3" width="18" height="18" rx="3" strokeDasharray="3 2" />
-    <path d="M9.5 9a2.5 2.5 0 0 1 5 0c0 1.5-2.5 2-2.5 3.5" />
-    <circle cx="12" cy="16" r="0.75" fill="currentColor" stroke="none" />
-  </svg>
-);
-
-/**
  * ContainerOverflowIcon:
  * Warning triangle (used in the Structure tree to flag a container whose children don't fit
  * their own row at their set widths).

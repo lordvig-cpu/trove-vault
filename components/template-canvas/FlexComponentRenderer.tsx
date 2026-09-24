@@ -164,11 +164,21 @@ export default function FlexComponentRenderer({
             <span>📝</span>
             <span>{label}</span>
           </div>
-          <p className="text-[11px] text-amber-200/80 leading-relaxed">
-            {canvasMode === 'preview'
-              ? 'Condition verified by official registry. Stored in temperature-controlled archive.'
-              : 'Add curator remarks, notes, or grading certificates.'}
-          </p>
+          {typeof component.custom_props?.text === 'string' ? (
+            // Real filler text (e.g. the Lorem Ipsum grabbable), not a mock placeholder -- shown
+            // as-is in both modes so its actual wrapping/flow is visible.
+            component.custom_props.text.split('\n\n').map((paragraph, i) => (
+              <p key={i} className="text-[11px] text-amber-200/80 leading-relaxed">
+                {paragraph}
+              </p>
+            ))
+          ) : (
+            <p className="text-[11px] text-amber-200/80 leading-relaxed">
+              {canvasMode === 'preview'
+                ? 'Condition verified by official registry. Stored in temperature-controlled archive.'
+                : 'Add curator remarks, notes, or grading certificates.'}
+            </p>
+          )}
         </div>
       ) : (
         /* Field Attribute Component */

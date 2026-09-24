@@ -194,7 +194,7 @@ export default function Home() {
   });
 
   const hierarchy = useHierarchyState(templateEditor);
-  const { hierarchyNodeCount, handleOpenProperties, handlePlaceField, handleAddContainer } = hierarchy;
+  const { hierarchyNodeCount, handleOpenProperties, handlePlaceField, handlePlaceLoremIpsum, handleAddContainer } = hierarchy;
 
   // The Structure tab can be docked to either side; the toolbar gear needs to open and sync to
   // whichever one actually holds it, not always the left.
@@ -630,6 +630,7 @@ export default function Home() {
               onUpdateFlexComponent={templateEditor.updateFlexComponent}
               onRemoveFlexComponent={templateEditor.removeFlexComponent}
               onPlaceField={handlePlaceField}
+              onPlaceLoremIpsum={handlePlaceLoremIpsum}
               onResetFlexLayout={templateEditor.resetFlexLayoutToDefault}
               onOverflowChange={templateEditor.reportContainerOverflow}
               canvasMode={templateEditor.canvasMode}

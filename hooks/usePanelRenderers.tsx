@@ -95,6 +95,7 @@ export function usePanelRenderers({
     toggleHierarchyExpand,
     handleOpenProperties,
     handlePlaceField,
+    handlePlaceLoremIpsum,
     handleAddContainer,
   } = hierarchy;
 
@@ -203,6 +204,7 @@ export function usePanelRenderers({
             filterFieldTypes={templateEditor.filterFieldTypes}
             placedFieldIds={templateEditor.placedFieldIds}
             onPlaceField={templateEditor.placeField}
+            onPlaceLoremIpsum={templateEditor.placeLoremIpsum}
             onSelectField={templateEditor.setSelectedFieldId}
             onSelectRoot={templateEditor.selectRoot}
             onUpdateField={templateEditor.updateField}
@@ -277,6 +279,7 @@ export function usePanelRenderers({
             onRemoveContainer={templateEditor.removeFlexContainer}
             onRemoveComponent={templateEditor.removeFlexComponent}
             onPlaceField={handlePlaceField}
+            onPlaceLoremIpsum={handlePlaceLoremIpsum}
             position={pos === 'bottom' ? 'right' : pos}
             overflowingContainerIds={templateEditor.overflowingContainerIds}
           />

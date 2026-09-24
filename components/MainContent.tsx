@@ -57,6 +57,7 @@ interface MainContentProps {
   ) => void;
   onRemoveFlexComponent?: (componentId: string) => void;
   onPlaceField?: (fieldId: number, targetContainerId?: string) => void;
+  onPlaceLoremIpsum?: (targetContainerId?: string) => void;
   onResetFlexLayout?: () => void;
   onOverflowChange?: (containerId: string, isOverflowing: boolean) => void;
   onSplitFlexContainer?: (containerId: string, splitType: 'columns' | 'rows', measuredPx: number) => void;
@@ -102,6 +103,7 @@ export default function MainContent({
   onUpdateFlexComponent,
   onRemoveFlexComponent,
   onPlaceField,
+  onPlaceLoremIpsum,
   onResetFlexLayout,
   onOverflowChange,
   canvasMode = 'edit',
@@ -151,6 +153,7 @@ export default function MainContent({
                   onUpdateFlexComponent={onUpdateFlexComponent}
                   onRemoveFlexComponent={onRemoveFlexComponent}
                   onPlaceField={onPlaceField}
+                  onPlaceLoremIpsum={onPlaceLoremIpsum}
                   onResetFlexLayout={onResetFlexLayout}
                   onOverflowChange={onOverflowChange}
                   canvasMode={canvasMode}

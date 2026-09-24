@@ -1,11 +1,14 @@
 import { test, expect } from '@playwright/test';
 import {
   buildContainer,
+  buildUniqueContainer,
   insertChild,
   nextNumberedLabel,
   insertSibling,
   removeNode,
+  resolveContentTarget,
   splitContainer,
+  uniqueLabel,
   updateComponent,
   updateContainer,
 } from '../lib/layoutTree';
@@ -40,6 +43,30 @@ test.describe('Layout tree operations (pure)', () => {
 
     const custom = buildContainer({ label: 'Mine', direction: 'column', gap: 8, wrap: false, isCard: true }, 'x', 'row');
     expect(custom).toMatchObject({ label: 'Mine', direction: 'column', gap: 8, wrap: false, isCard: true });
+  });
+
+  test('uniqueLabel leaves a free label alone, and only numbers it once taken', () => {
+    expect(uniqueLabel('New Container', new Set())).toBe('New Container');
+    expect(uniqueLabel('New Container', new Set(['New Container']))).toBe('New Container 2');
+    expect(uniqueLabel('New Container', new Set(['New Container', 'New Container 2']))).toBe('New Container 3');
+  });
+
+  test('buildUniqueContainer dedupes repeated "Add" clicks (same literal default label each time)', () => {
+    let root = freshRoot();
+    const add = () => {
+      const c = buildUniqueContainer(root, { label: 'New Container' }, 'New Container', 'row');
+      root = insertChild(root, 'container-general', c);
+      return c;
+    };
+
+    const first = add();
+    const second = add();
+    const third = add();
+    expect([first.label, second.label, third.label]).toEqual(['New Container', 'New Container 2', 'New Container 3']);
+
+    // An intentional, already-unique label passes through untouched.
+    const named = buildUniqueContainer(root, { label: 'Sidebar' }, 'New Container', 'row');
+    expect(named.label).toBe('Sidebar');
   });
 
   test('insertChild appends to the target container, falls back to the root, and does not mutate', () => {
@@ -116,6 +143,7 @@ test.describe('Layout tree operations (pure)', () => {
     expect(first.sizing).toMatchObject({ type: 'fixed', value: '200px' });
     expect(second.sizing).toMatchObject({ type: 'fixed', value: '200px' });
     expect(first.height).toBeUndefined(); // only the split axis (width) changes
+    expect(second.direction).toBe('column'); // alternates with its real (in-place) parent, a row
   });
 
   test('splitContainer: rows inside a row parent are wrapped so the parent is undisturbed', () => {
@@ -130,6 +158,7 @@ test.describe('Layout tree operations (pure)', () => {
     const wrapper = parent.children[2] as FlexContainerNode;
     expect(wrapper.label).toBe('Box Split');
     expect(wrapper.direction).toBe('column');
+    expect(wrapper.isSplitWrapper).toBe(true); // structural: never a direct content-placement target
     expect(wrapper.children.map((c) => c.id)).toEqual([box.id, result.newId]);
     expect(parent.direction).toBe('row');
 
@@ -138,6 +167,41 @@ test.describe('Layout tree operations (pure)', () => {
     expect(second.height).toBe('150px');
     expect(first.sizing.type).toBe('fill'); // only the split axis (height) changes; width stays Auto
     expect(second.sizing.type).toBe('fill');
+    // Both halves' own direction alternates with their actual parent (the wrapper, direction
+    // 'column'): the new half always does, and so does the source here too, since it's empty (an
+    // empty box has nothing of its own that alternating its direction could disturb).
+    expect(first.direction).toBe('row');
+    expect(second.direction).toBe('row');
+  });
+
+  test('splitContainer: an empty source alternates direction too; a non-empty one keeps its own', () => {
+    // The exact scenario that surfaced the bug: a Row container split into columns, wrapped
+    // because its parent (the root) is a column. The new half previously copied the source's own
+    // direction ('row') instead of alternating with the wrapper it actually landed in -- and the
+    // source itself always kept 'row', even when (as here) splitting it left nothing to disturb.
+    const emptyBox = buildContainer({ label: 'Box' }, 'x', 'row');
+    const emptyRoot = insertChild(freshRoot(), 'root-container', emptyBox);
+
+    const emptyResult = splitContainer(emptyRoot, emptyBox.id, 'columns', 400)!;
+    const emptyWrapper = emptyResult.root.children[1] as FlexContainerNode; // after container-general
+    expect(emptyWrapper.isSplitWrapper).toBe(true);
+    expect(emptyWrapper.direction).toBe('row'); // columns split -> row wrapper
+    const [emptyFirst, emptySecond] = emptyWrapper.children as FlexContainerNode[];
+    expect(emptyFirst.id).toBe(emptyBox.id);
+    expect(emptyFirst.direction).toBe('column'); // empty -> alternates with its real (wrapper) parent
+    expect(emptySecond.direction).toBe('column');
+
+    // Same setup, but the source already has a child of its own: its direction must survive the
+    // split untouched, or that child's arrangement would silently flip too.
+    const child = buildContainer({ label: 'Child' }, 'x', 'row');
+    const fullBox = buildContainer({ label: 'Box', children: [child] }, 'x', 'row');
+    const fullRoot = insertChild(freshRoot(), 'root-container', fullBox);
+
+    const fullResult = splitContainer(fullRoot, fullBox.id, 'columns', 400)!;
+    const fullWrapper = fullResult.root.children[1] as FlexContainerNode;
+    const [fullFirst] = fullWrapper.children as FlexContainerNode[];
+    expect(fullFirst.direction).toBe('row'); // non-empty -> unchanged
+    expect(fullFirst.children.map((c) => c.id)).toEqual([child.id]); // its child is undisturbed
   });
 
   test('splitContainer: rows inside a column parent split in place, halving the measured height', () => {
@@ -156,6 +220,37 @@ test.describe('Layout tree operations (pure)', () => {
     expect(second.height).toBe('150px');
     expect(first.sizing.type).toBe('fill'); // width untouched
     expect(second.sizing.type).toBe('fill');
+  });
+
+  test('splitContainer: wrapper labels never collide, even across repeated wraps', () => {
+    const box = buildContainer({ label: 'Box' }, 'x', 'row');
+    const root = insertChild(freshRoot(), 'root-container', box);
+
+    // First split wraps (columns under the column root) -> unnumbered "Box Split".
+    const firstResult = splitContainer(root, box.id, 'columns', 400)!;
+    const outerWrapper = firstResult.root.children[1] as FlexContainerNode; // after container-general
+    expect(outerWrapper.label).toBe('Box Split');
+
+    // Split the original half again, into rows this time -- its new parent (the first wrapper) is
+    // a row, so this needs its own wrapper too. Without the fix, that's a second, indistinguishable
+    // "Box Split" node right next to the first.
+    const secondResult = splitContainer(firstResult.root, box.id, 'rows', 300)!;
+    const stillOuterWrapper = secondResult.root.children[1] as FlexContainerNode;
+    const innerWrapper = stillOuterWrapper.children[0] as FlexContainerNode;
+    expect(stillOuterWrapper.label).toBe('Box Split'); // unaffected by the later, nested split
+    expect(innerWrapper.isSplitWrapper).toBe(true);
+    expect(innerWrapper.label).toBe('Box Split 2'); // disambiguated instead of colliding
+  });
+
+  test('resolveContentTarget redirects a split wrapper to its first half, and leaves everything else alone', () => {
+    const box = buildContainer({ label: 'Box' }, 'x', 'row');
+    const root = insertChild(freshRoot(), 'root-container', box);
+    const result = splitContainer(root, box.id, 'columns', 400)!;
+    const wrapper = result.root.children[1] as FlexContainerNode;
+
+    expect(resolveContentTarget(result.root, wrapper.id)).toBe(box.id); // wrapper -> its first half
+    expect(resolveContentTarget(result.root, box.id)).toBe(box.id); // an ordinary container -> itself
+    expect(resolveContentTarget(result.root, 'no-such-id')).toBe('no-such-id'); // unknown -> unchanged
   });
 
   test('nextNumberedLabel gives the next free number and never repeats a name', () => {

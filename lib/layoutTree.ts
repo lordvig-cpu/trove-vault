@@ -2,9 +2,9 @@ import {
   FlexComponentNode,
   FlexContainerNode,
   FlexSizing,
+  defaultChildDirection,
   findFlexNode,
   findParentFlexContainer,
-  resolveDirection,
 } from '@/types/layout';
 
 /* ==========================================================================
@@ -58,6 +58,15 @@ export function nextNumberedLabel(label: string, taken: Set<string>): string {
   return `${base} ${n}`;
 }
 
+/**
+ * `label` as-is if it's free, otherwise the next free numbered variant (`nextNumberedLabel`). For
+ * a generic/repeatable default like "New Container" -- the first one shouldn't be forced to "New
+ * Container 2" the way a Split's paired second half always is.
+ */
+export function uniqueLabel(label: string, taken: Set<string>): string {
+  return taken.has(label) ? nextNumberedLabel(label, taken) : label;
+}
+
 /** A new container with sensible defaults; `options` override any of them. */
 export function buildContainer(
   options: Partial<FlexContainerNode>,
@@ -78,6 +87,37 @@ export function buildContainer(
     isCard: options.isCard !== undefined ? options.isCard : false,
     children: options.children || [],
   };
+}
+
+/**
+ * A new container, like buildContainer, but with its label deduped against every label already in
+ * `root` (uniqueLabel) -- for wherever a container gets added with a generic, repeatable default
+ * label (e.g. "Add Inside" clicked several times in a row), so they don't all end up identically
+ * named "New Container".
+ */
+export function buildUniqueContainer(
+  root: FlexContainerNode,
+  options: Partial<FlexContainerNode>,
+  defaultLabel: string,
+  defaultDirection: 'row' | 'column'
+): FlexContainerNode {
+  const built = buildContainer(options, defaultLabel, defaultDirection);
+  return { ...built, label: uniqueLabel(built.label || defaultLabel, collectLabels(root)) };
+}
+
+/**
+ * Where content (a field, Lorem Ipsum, ...) actually lands when placed "into" `containerId`: that
+ * container, unless it's a split wrapper (isSplitWrapper), in which case its first child -- a
+ * wrapper holds exactly its two Split halves and is never itself a content slot (dropping a 3rd,
+ * un-halved child into it would break the split's 50/50 sizing). Falls through nested wrappers,
+ * though that shouldn't normally occur. Unknown ids pass through unchanged.
+ */
+export function resolveContentTarget(root: FlexContainerNode, containerId: string): string {
+  let current = findFlexNode(root, containerId);
+  while (current?.nodeType === 'container' && current.isSplitWrapper && current.children[0]) {
+    current = current.children[0];
+  }
+  return current?.id ?? containerId;
 }
 
 /** Appends `child` to the container `targetId` (the root when `targetId` does not exist). */
@@ -168,7 +208,8 @@ export function splitContainer(
 
   // The container being split keeps its name; the new half gets the next free number.
   const sourceLabel = target.label || 'Container';
-  const newContainerLabel = nextNumberedLabel(sourceLabel, collectLabels(root));
+  const takenLabels = collectLabels(root);
+  const newContainerLabel = nextNumberedLabel(sourceLabel, takenLabels);
 
   const parentDir = parent.direction;
   const targetSizing: FlexSizing = target.sizing || { type: 'fill' };
@@ -192,14 +233,32 @@ export function splitContainer(
     sizing: { ...sizing, height, minHeight: node.minHeight ?? sizing.minHeight },
   });
 
+  // The new half's own direction (how ITS future children will flow) follows the same
+  // alternate-with-your-parent convention as any other brand-new container (defaultChildDirection)
+  // -- based on whichever container will actually be its parent, not copied from the unrelated
+  // target. In place, that's the existing parent; wrapped, it's the new wrapper below.
+  const wrapperDirection: 'row' | 'column' = splitType === 'columns' ? 'row' : 'column';
+  const newContainerDirection: 'row' | 'column' = inPlace
+    ? defaultChildDirection(parent, parent.id === root.id)
+    : wrapperDirection === 'row' ? 'column' : 'row'; // opposite of the new wrapper it'll sit in
+
   const newId = newNodeId('cont');
-  const updatedTarget = withDims({ ...target }, halfSizing, halfHeight);
+  // The source keeps its own direction if it already has children (so their arrangement isn't
+  // disturbed) -- but if it's empty, as most freshly split containers are, there's nothing to
+  // disturb, so it gets the same alternating direction as the new half instead of an arbitrary
+  // leftover value from before the split (a Row container split into columns shouldn't end up
+  // holding one Row half and one Column half of the same, empty, split).
+  const updatedTarget = withDims(
+    { ...target, direction: target.children.length === 0 ? newContainerDirection : target.direction },
+    halfSizing,
+    halfHeight
+  );
   const newContainer = withDims(
     {
       id: newId,
       nodeType: 'container',
       label: newContainerLabel,
-      direction: resolveDirection(target, false),
+      direction: newContainerDirection,
       gap: target.gap !== undefined ? target.gap : 0,
       wrap: target.wrap !== undefined ? target.wrap : true,
       align: target.align || 'stretch',
@@ -213,16 +272,23 @@ export function splitContainer(
     halfHeight
   );
 
+  // Unnumbered ("Box Split") the first time; only numbered ("Box Split 2") once that's already
+  // taken -- splitting a container that's already inside a wrapper of its own produces two
+  // "Box Split" nodes otherwise, indistinguishable in the tree.
+  const wrapperLabel = uniqueLabel(`${sourceLabel} Split`, new Set(takenLabels).add(newContainerLabel));
+
   // Node(s) that replace the target inside its parent
   const replacement: FlexContainerNode[] = inPlace
     ? [updatedTarget, newContainer]
     : [
-        // The wrapper inherits the target's original footprint inside the parent
+        // The wrapper inherits the target's original footprint inside the parent. It's structural
+        // (isSplitWrapper): holds exactly these two halves, and is never itself a content-drop
+        // target -- see FlexContainerRenderer / useTemplateLayoutTree's placement guards.
         {
           id: newNodeId('cont-split'),
           nodeType: 'container',
-          label: `${sourceLabel} Split`,
-          direction: splitType === 'columns' ? 'row' : 'column',
+          label: wrapperLabel,
+          direction: wrapperDirection,
           gap: 0,
           wrap: false,
           align: 'stretch',
@@ -232,6 +298,7 @@ export function splitContainer(
           width: target.width,
           height: target.height,
           isCard: false,
+          isSplitWrapper: true,
           children: [updatedTarget, newContainer],
         },
       ];

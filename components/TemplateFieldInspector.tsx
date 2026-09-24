@@ -30,6 +30,9 @@ interface TemplateFieldInspectorProps {
   position?: 'left' | 'right';
   placedFieldIds?: Set<number> | number[];
   onPlaceField?: (fieldId: number) => void;
+  /** Not bound to a real field: drops 2 paragraphs of filler text, to preview how text actually
+      flows/wraps inside a container (e.g. while testing a Split). */
+  onPlaceLoremIpsum?: (targetContainerId?: string) => void;
 }
 
 const FIELD_TYPE_CONFIG: Record<
@@ -353,8 +356,10 @@ export default function TemplateFieldInspector({
   position = 'left',
   placedFieldIds,
   onPlaceField,
+  onPlaceLoremIpsum,
 }: TemplateFieldInspectorProps) {
   const [showAddMenu, setShowAddMenu] = useState<boolean>(false);
+  const [isLoremDragging, setIsLoremDragging] = useState(false);
 
   const fields = useMemo(() => template?.fields || [], [template?.fields]);
 
@@ -426,7 +431,43 @@ export default function TemplateFieldInspector({
       )}
 
       {/* --------------------------------------------------------------------
-          2. UNPLACED SCHEMA FIELDS TRAY (when fields remain to place)
+          2. LOREM IPSUM GRABBABLE (not a real field -- drag or click to drop 2 paragraphs of
+          filler text into a container, to preview how text actually flows/wraps)
+          -------------------------------------------------------------------- */}
+      {onPlaceLoremIpsum && (
+        <div className="p-2.5 rounded-xl bg-[color-mix(in_oklch,var(--primary-accent)_10%,transparent)] border border-[color-mix(in_oklch,var(--primary-accent)_25%,transparent)] flex items-center gap-2 shrink-0">
+          <span
+            draggable={true}
+            onDragStart={(e) => {
+              e.dataTransfer.setData('application/x-trove-lorem-ipsum', '1');
+              e.dataTransfer.effectAllowed = 'copy';
+              setIsLoremDragging(true);
+            }}
+            onDragEnd={() => setIsLoremDragging(false)}
+            className={`text-[10px] text-muted/50 hover:text-muted cursor-grab active:cursor-grabbing tracking-tighter shrink-0 select-none p-0.5 rounded hover:bg-slate-800 ${
+              isLoremDragging ? 'opacity-40' : ''
+            }`}
+            title="Drag to place in a container"
+            aria-label="Drag handle"
+          >
+            ⋮⋮
+          </span>
+          <span className="text-[11px] font-medium text-strong flex-1 min-w-0 truncate">
+            Lorem Ipsum <span className="text-muted font-normal">(filler text)</span>
+          </span>
+          <button
+            type="button"
+            onClick={() => onPlaceLoremIpsum()}
+            className="px-2 py-1 text-[11px] font-medium rounded-lg bg-[color-mix(in_oklch,var(--primary-accent)_18%,transparent)] hover:bg-[color-mix(in_oklch,var(--primary-accent)_32%,transparent)] border border-[color-mix(in_oklch,var(--primary-accent)_35%,transparent)] text-[var(--primary-accent)] hover:text-white transition cursor-pointer shrink-0"
+            title="Place into the active container"
+          >
+            + Place
+          </button>
+        </div>
+      )}
+
+      {/* --------------------------------------------------------------------
+          3. UNPLACED SCHEMA FIELDS TRAY (when fields remain to place)
           -------------------------------------------------------------------- */}
       {unplacedFields.length > 0 && onPlaceField && (
         <div className="p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/25 flex flex-col gap-2 shrink-0">
@@ -455,7 +496,7 @@ export default function TemplateFieldInspector({
       )}
 
       {/* --------------------------------------------------------------------
-          3. TEMPLATE SCHEMA HIERARCHY TREE
+          4. TEMPLATE SCHEMA HIERARCHY TREE
           -------------------------------------------------------------------- */}
       <div className="flex flex-col gap-1.5 flex-1 min-h-0">
         <div className="flex items-center justify-between px-0.5">

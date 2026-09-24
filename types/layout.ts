@@ -85,6 +85,9 @@ export interface FlexContainerNode {
   maxHeight?: string;   // optional max-height e.g. "600px"
   stackBelow?: number;  // row containers stack into a column when narrower than this many px
   isCard?: boolean;     // Whether container renders with card background & border
+  /** Set only by splitContainer's wrap path: holds exactly the two halves of a Split and nothing
+      else. Structural, not a content slot -- Add/Place should target a child of it, never it. */
+  isSplitWrapper?: boolean;
   children: (FlexContainerNode | FlexComponentNode)[];
 }
 

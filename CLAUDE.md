@@ -80,8 +80,44 @@ commit whenever you add, remove, split or rename a file — it goes stale otherw
   `onOverflowChange`, surfaced via `useTemplateLayoutTree`'s `overflowingContainerIds`). It's scoped to
   all-fixed-px rows on purpose: a percentage row wrapping into a grid (e.g. several 48%-wide children)
   is Wrap Children working as designed, not a conflict, and flagging it would drown the real signal in
-  false positives. A capped Height (Max H) already has its own scrollbar, so column overflow isn't
-  flagged.
+  false positives. A container with an explicit height — Max H, or a Custom height (Split, or the
+  Sizing panel's Height field) — already has its own scrollbar (`overflowY: 'auto'` whenever any of
+  those is set), so column overflow isn't flagged there either. Width is left to wrap instead: a
+  Custom width never scrolls, since normal content just re-wraps to fit it, which is why the
+  fixed-px-row case above is the one that actually needs a warning.
+- Symmetric with that: a child with no explicit height of its own (Auto) only grows to fill leftover
+  vertical space when its *parent* has an explicit (Custom) height — a fixed box, not a page. Under
+  an Auto-height parent (the Body, or any other undimensioned column) children keep their natural
+  content height instead and the parent scrolls/grows with them, same as normal document flow;
+  growing every section to fill whatever height happens to be available would open arbitrary gaps
+  between them. This mirrors how an Auto-*width* child already fills a Custom-width row — a child
+  with its own explicit height still keeps that size regardless, the same way a Custom-width child
+  does (`FlexContainerRenderer`'s `parentHasExplicitHeight` / `hasOwnHeight`).
+- An empty container's edit-mode placeholder has no icon or "EMPTY" label and no forced min-height
+  (only the drag-over hint text, shown while something is actually being dragged over it) — those
+  used to reserve 140/220px, which forced a scrollbar on any Custom-height container smaller than
+  that. "Has nothing in it yet" is instead read off the container's own border: dashed when it has
+  no children, solid once it holds at least one field or nested container.
+- Splitting a container (`splitContainer` in `lib/layoutTree.ts`) sometimes wraps the two halves in
+  a new container instead of placing them as direct siblings — only when the parent's own direction
+  doesn't already match the split axis (e.g. splitting into columns under a column parent, which is
+  the common case since the Body is always column). That wrapper is tagged `isSplitWrapper: true`:
+  it holds exactly those two halves and is never itself a valid drop/Place target — placing content
+  "into" one redirects to its first half instead (`resolveContentTarget`, used by `placeField` and
+  `placeLoremIpsum`), the same way dragging onto the canvas already can only ever hit a half (the
+  wrapper has no exposed area; its children fill it completely). A new half's own `direction`
+  (how *its* future children will flow) always alternates with whichever container actually becomes
+  its parent — the wrapper if one was created, otherwise the original parent — never copied from the
+  container being split, which is unrelated once the new half has its own separate parent. The
+  container being split keeps *its own* direction too, unless it's empty (the common case, since
+  splitting usually happens before a container has anything in it) — an empty source has nothing a
+  direction change could disturb, so it alternates the same way the new half does, rather than
+  keeping an arbitrary leftover value from before the split. A wrapper's own label is the plain
+  "Box Split" only when that's free; splitting an already-split container again reuses the same base
+  label, so `uniqueLabel` disambiguates it into "Box Split 2" (`lib/layoutTree.ts`). Every
+  container-adding path (Add Before/Inside/After, the layout palette) runs its label through the
+  same helper via `buildUniqueContainer`, so repeatedly clicking "Add Inside" doesn't produce a pile
+  of identically-named "New Container" nodes either.
 - The template editor has two toolbars, so template-wide and container-specific tools never fight for
   space in one bar. `TemplateEditorContainerBar` (selected container's name, Size, Layout, Add,
   Split, properties gear, delete — used more often, so it gets the header slot) portals into

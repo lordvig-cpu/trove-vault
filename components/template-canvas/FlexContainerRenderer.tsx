@@ -3,7 +3,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { FieldDefinition } from '@/types/field';
 import { FlexContainerNode, FlexComponentNode, parsePxValue } from '@/types/layout';
-import { DashedSquareQuestionIcon } from '@/components/icons/LayoutIcons';
 import ContainerResizeHandles from '@/components/ContainerResizeHandles';
 import FlexComponentRenderer from '@/components/template-canvas/FlexComponentRenderer';
 
@@ -29,6 +28,7 @@ export default function FlexContainerRenderer({
   onUpdateComponent,
   onRemoveComponent,
   onPlaceField,
+  onPlaceLoremIpsum,
   parentStacked,
   onOverflowChange,
 }: {
@@ -64,6 +64,7 @@ export default function FlexContainerRenderer({
   onUpdateComponent?: (id: string, partial: Partial<FlexComponentNode>) => void;
   onRemoveComponent?: (id: string) => void;
   onPlaceField?: (fieldId: number, targetContainerId?: string) => void;
+  onPlaceLoremIpsum?: (targetContainerId?: string) => void;
 }) {
   const [isDragOver, setIsDragOver] = useState(false);
   const isSelected = selectedNodeId === container.id;
@@ -170,16 +171,24 @@ export default function FlexContainerRenderer({
       : 'flex-start';
 
   // In a column parent the main axis is vertical: a container must keep its content height
-  // (the body scrolls) and take its width from cross-axis stretch, not from flex-basis.
+  // (the body scrolls) and take its width from cross-axis stretch, not from flex-basis -- unless
+  // the parent itself has an explicit (Custom) height: that's a fixed box, not a page, so an Auto
+  // child (no explicit height of its own) grows to fill it instead, the same way an Auto-width
+  // child already fills a Custom-width row. A child with its own explicit height still keeps that
+  // size regardless, same as a Custom-width child already does.
   const parentIsColumn =
     !!parentContainer &&
     (parentContainer.direction === 'column' ||
       ((!parentContainer.direction || parentContainer.direction === 'none') &&
         parentContainer.id === 'root-container'));
+  const parentHasExplicitHeight = !!(parentContainer?.height || parentContainer?.sizing?.height);
+  const hasOwnHeight = !!(container.height || container.sizing?.height);
 
   const outerStyle: React.CSSProperties = {
     flex: parentIsColumn
-      ? '0 0 auto'
+      ? parentHasExplicitHeight && !hasOwnHeight
+        ? '1 1 0%'
+        : '0 0 auto'
       : container.sizing?.type === 'fixed'
         ? `1 1 ${container.sizing.value || 'auto'}`
         : container.sizing?.type === 'auto'
@@ -198,8 +207,12 @@ export default function FlexContainerRenderer({
     height: container.height || container.sizing?.height || undefined,
     minHeight: container.minHeight || container.sizing?.minHeight || undefined,
     maxHeight: container.maxHeight || undefined,
-    // Now that the toolbar lives outside the container, a capped height can safely scroll.
-    overflowY: container.maxHeight ? 'auto' : undefined,
+    // Now that the toolbar lives outside the container, a capped height can safely scroll. A
+    // Custom height (explicit, whether from Split or the Sizing panel) is a commitment the same
+    // way Max H is: content that doesn't fit scrolls instead of silently stretching the box (and
+    // the layout around it) to whatever the dropped-in content needs. Auto containers are
+    // unaffected -- they have no explicit height, so they keep growing with their content.
+    overflowY: container.maxHeight || container.height || container.sizing?.height ? 'auto' : undefined,
     alignSelf: parentIsColumn && container.sizing?.type !== 'fixed' && !container.width ? 'stretch' : undefined,
     minWidth: container.minWidth || 0,
     // Children of a stacked row take the full width, ignoring their row-mode widths.
@@ -262,7 +275,13 @@ export default function FlexContainerRenderer({
         e.preventDefault();
         e.stopPropagation();
         setIsDragOver(false);
-        const fieldIdStr = e.dataTransfer.getData('text/field-id');
+        if (e.dataTransfer.getData('application/x-trove-lorem-ipsum')) {
+          onPlaceLoremIpsum?.(container.id);
+          onSelectNode?.(container.id);
+          return;
+        }
+        const fieldIdStr =
+          e.dataTransfer.getData('application/x-trove-field-id') || e.dataTransfer.getData('text/plain');
         if (fieldIdStr) {
           const fieldId = parseInt(fieldIdStr, 10);
           if (!isNaN(fieldId)) {
@@ -298,7 +317,10 @@ export default function FlexContainerRenderer({
           ? 'rounded-2xl outline outline-1 outline-[color-mix(in_oklch,var(--primary-accent)_50%,transparent)] -outline-offset-1 bg-[color-mix(in_oklch,var(--primary-accent)_6%,transparent)]'
           : isCard
           ? 'rounded-2xl bg-[color-mix(in_oklch,var(--panel-surface-bg)_60%,transparent)] hover:border-[color-mix(in_oklch,var(--primary-accent)_40%,var(--primary-border-subtle))]'
-          : 'rounded-2xl outline outline-1 outline-dashed outline-[var(--primary-border-subtle)] -outline-offset-1 bg-[color-mix(in_oklch,var(--panel-surface-bg)_25%,transparent)] hover:outline-[color-mix(in_oklch,var(--primary-accent)_40%,var(--primary-border-subtle))]'
+          : // Dashed = nothing dropped in here yet; solid = it holds at least one field/container.
+            container.children.length === 0
+          ? 'rounded-2xl outline outline-1 outline-dashed outline-[var(--primary-border-subtle)] -outline-offset-1 bg-[color-mix(in_oklch,var(--panel-surface-bg)_25%,transparent)] hover:outline-[color-mix(in_oklch,var(--primary-accent)_40%,var(--primary-border-subtle))]'
+          : 'rounded-2xl outline outline-1 outline-[var(--primary-border-subtle)] -outline-offset-1 bg-[color-mix(in_oklch,var(--panel-surface-bg)_25%,transparent)] hover:outline-[color-mix(in_oklch,var(--primary-accent)_40%,var(--primary-border-subtle))]'
       } ${
         // Editing outlines are drawn inset with `outline`, so they take no layout space and the
         // canvas matches the live preview to the pixel. A card frame is a real border in both modes.
@@ -323,34 +345,22 @@ export default function FlexContainerRenderer({
       <div ref={innerRef} style={innerFlexStyle} className="w-full flex-1 min-h-0">
         {container.children.length === 0 ? (
           canvasMode === 'edit' ? (
+            // No forced min-height: the empty state used to reserve 140/220px for its icon and
+            // "EMPTY" label, which forced a scrollbar on any Custom-height container smaller than
+            // that (e.g. one half of a Split). "Empty" is now shown by the container's own dashed
+            // border below instead, so this only needs room for the drag-over hint while it's
+            // actually relevant.
             <div
               title="Drag and drop to add content"
-              className={`w-full ${isRoot ? 'flex-1 min-h-[220px]' : 'min-h-[140px]'} py-6 px-4 rounded-xl border-2 border-dashed flex flex-col items-center justify-center text-center gap-2.5 select-none transition-all group cursor-pointer ${
-                isDragOver
-                  ? 'border-[var(--primary-accent)] bg-[color-mix(in_oklch,var(--primary-accent)_20%,transparent)] shadow-lg shadow-[color-mix(in_oklch,var(--primary-accent)_15%,transparent)]'
-                  : 'border-[color-mix(in_oklch,var(--primary-accent)_35%,transparent)] bg-[color-mix(in_oklch,var(--primary-accent)_5%,transparent)] hover:border-[color-mix(in_oklch,var(--primary-accent)_65%,transparent)] hover:bg-[color-mix(in_oklch,var(--primary-accent)_9%,transparent)]'
+              className={`w-full py-4 px-4 flex items-center justify-center text-center select-none transition-all cursor-pointer ${
+                isDragOver ? 'rounded-xl bg-[color-mix(in_oklch,var(--primary-accent)_20%,transparent)]' : ''
               }`}
             >
-              {/* Empty Container Icon Badge */}
-              <div
-                title="Drag and drop to add content"
-                className="w-11 h-11 rounded-xl border border-[color-mix(in_oklch,var(--primary-accent)_45%,transparent)] bg-[color-mix(in_oklch,var(--primary-accent)_12%,transparent)] text-[var(--primary-accent)] flex items-center justify-center shadow-lg shadow-black/25 group-hover:scale-105 transition-transform"
-              >
-                <DashedSquareQuestionIcon className="w-6 h-6" />
-              </div>
-
-              {/* Title / Drag Feedback */}
-              <div className="flex flex-col items-center gap-0.5" title="Drag and drop to add content">
-                {isDragOver ? (
-                  <span className="text-xs font-bold text-[var(--primary-accent)] flex items-center gap-1.5 animate-pulse">
-                    <span>📥</span> Drop field to insert into {container.label || (isRoot ? 'Body' : 'Container')}
-                  </span>
-                ) : (
-                  <h4 className="text-xs font-bold uppercase tracking-wider text-white">
-                    EMPTY
-                  </h4>
-                )}
-              </div>
+              {isDragOver && (
+                <span className="text-xs font-bold text-[var(--primary-accent)] flex items-center gap-1.5 animate-pulse">
+                  <span>📥</span> Drop field to insert into {container.label || (isRoot ? 'Body' : 'Container')}
+                </span>
+              )}
             </div>
           ) : null
         ) : (
@@ -376,6 +386,7 @@ export default function FlexContainerRenderer({
                   onUpdateComponent={onUpdateComponent}
                   onRemoveComponent={onRemoveComponent}
                   onPlaceField={onPlaceField}
+                  onPlaceLoremIpsum={onPlaceLoremIpsum}
                   onOverflowChange={onOverflowChange}
                 />
               );

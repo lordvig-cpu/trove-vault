@@ -115,6 +115,17 @@ export function useHierarchyState(templateEditor: TemplateEditor) {
     }
   }, [templateEditor]);
 
+  const handlePlaceLoremIpsum = useCallback((targetContainerId?: string) => {
+    templateEditor.placeLoremIpsum(targetContainerId);
+    if (targetContainerId) {
+      setHierarchyExpandedIds((prev) => {
+        const next = new Set(prev);
+        next.add(targetContainerId);
+        return next;
+      });
+    }
+  }, [templateEditor]);
+
   const handleAddContainer = useCallback(
     (targetContainerId: string, options?: Partial<FlexContainerNode>) => {
       const newId = templateEditor.addFlexContainer(targetContainerId, options);
@@ -138,6 +149,7 @@ export function useHierarchyState(templateEditor: TemplateEditor) {
     toggleHierarchyExpand,
     handleOpenProperties,
     handlePlaceField,
+    handlePlaceLoremIpsum,
     handleAddContainer,
   };
 }
