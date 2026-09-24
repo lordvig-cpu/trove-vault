@@ -9,7 +9,7 @@ export const idleBtn =
 export const activeBtn =
   'bg-[color-mix(in_oklch,var(--primary-accent)_34%,transparent)] border-[color-mix(in_oklch,var(--primary-accent)_35%,cyan)] text-[color-mix(in_oklch,var(--primary-accent)_35%,cyan)] shadow-[0_0_8px_color-mix(in_oklch,var(--primary-accent)_60%,transparent)]';
 
-/** Same light blue as activeBtn's text, for icons elsewhere (e.g. the Structure tree's Body/Row/
+/** Same light blue as activeBtn's text, for icons elsewhere (e.g. the Layout tree's Body/Row/
     Column glyphs) that should read as "this is a selected-style control" without the full pill. */
 export const activeIconColor = 'text-[color-mix(in_oklch,var(--primary-accent)_35%,cyan)]';
 

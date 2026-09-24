@@ -64,6 +64,10 @@ interface PrimarySidePanelProps {
   onClearFieldTypeFilters?: () => void;
   fieldTypeCounts?: Record<string, number>;
   onAddNewField?: () => void;
+  filterHierarchyTypes?: import('@/lib/hierarchyFilterMetas').HierarchyFilterCategory[];
+  onToggleFilterHierarchyType?: (type: import('@/lib/hierarchyFilterMetas').HierarchyFilterCategory) => void;
+  onClearHierarchyTypeFilters?: () => void;
+  hierarchyTypeCounts?: Record<string, number>;
   onHandlePointerDown?: (e: React.PointerEvent) => void;
   onStartTabDrag?: (tab: Exclude<DockContent, 'empty'>, e: React.PointerEvent) => void;
   isDragging?: boolean;
@@ -118,6 +122,10 @@ export default function PrimarySidePanel({
   onClearFieldTypeFilters,
   fieldTypeCounts,
   onAddNewField,
+  filterHierarchyTypes,
+  onToggleFilterHierarchyType,
+  onClearHierarchyTypeFilters,
+  hierarchyTypeCounts,
   onHandlePointerDown,
   onStartTabDrag,
   isDragging: isDockDragging = false,
@@ -265,6 +273,10 @@ export default function PrimarySidePanel({
         onClearFieldTypeFilters={onClearFieldTypeFilters}
         fieldTypeCounts={fieldTypeCounts}
         onAddNewField={onAddNewField}
+        filterHierarchyTypes={filterHierarchyTypes}
+        onToggleFilterHierarchyType={onToggleFilterHierarchyType}
+        onClearHierarchyTypeFilters={onClearHierarchyTypeFilters}
+        hierarchyTypeCounts={hierarchyTypeCounts}
         onHandlePointerDown={onHandlePointerDown}
         onStartTabDrag={onStartTabDrag}
         isDragging={isDockDragging}

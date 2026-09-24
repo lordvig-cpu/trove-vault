@@ -27,6 +27,14 @@ commit whenever you add, remove, split or rename a file — it goes stale otherw
 - **Naming:** the shared tree-view UI is called "Tree" (`TreeActionMenu`, `useTreeActionMenu`,
   `tree-*` CSS classes, `--tree-*` theme variables). The old "Explorer" name is gone; do not
   reintroduce it. The Items panel's dock id is `'items'`.
+- **Naming, template editor tabs:** the `template_hierarchy` dock content (`TemplateHierarchyTree.tsx`)
+  is labeled "Layout" in the UI; the old "Structure" name is gone, don't reintroduce it. The
+  `template_editor` dock content (`TemplateFieldInspector.tsx`) is labeled "Content"; the old
+  "Inspector"/"Template Inspector" name is gone too. The `template_builder` dock content
+  (`TemplateLayoutPalette.tsx`, the bottom-panel drag-primitives palette) is labeled "Components";
+  the old "Layout Builder" name is gone. None of these three is the separate "Properties" tab
+  (`template_properties` / `TemplatePropertiesInspector.tsx`) — that's a different concept, left
+  alone by this rename.
 - **Icons:** SVG components in `components/icons/`, not emoji or unicode symbols. (Some emoji remain
   and are being replaced over time.)
 - **Colors:** never write a hard-coded hex/rgb/hsl color in a component or a new CSS rule, not even
@@ -76,7 +84,7 @@ commit whenever you add, remove, split or rename a file — it goes stale otherw
   holds steady and the canvas overflows into a horizontal scrollbar instead of re-wrapping
   (`ScaledCanvas`).
 - A row whose children *all* have their own explicit pixel width (Custom, not a %) but together don't
-  fit gets a dashed-red border and a Structure-tree warning badge (`FlexContainerRenderer`'s
+  fit gets a dashed-red border and a Layout-tree warning badge (`FlexContainerRenderer`'s
   `onOverflowChange`, surfaced via `useTemplateLayoutTree`'s `overflowingContainerIds`). It's scoped to
   all-fixed-px rows on purpose: a percentage row wrapping into a grid (e.g. several 48%-wide children)
   is Wrap Children working as designed, not a conflict, and flagging it would drown the real signal in
@@ -118,6 +126,27 @@ commit whenever you add, remove, split or rename a file — it goes stale otherw
   container-adding path (Add Before/Inside/After, the layout palette) runs its label through the
   same helper via `buildUniqueContainer`, so repeatedly clicking "Add Inside" doesn't produce a pile
   of identically-named "New Container" nodes either.
+- The Layout tab's search bar filters by node name; its Advanced filter menu offers three
+  categories instead of the Content tab's field types (`lib/hierarchyFilterMetas.ts`): Layout items
+  (containers), Content items (`componentType === 'field'`, i.e. real bound template fields placed
+  from the Content tab), and Pre-defined Content (everything else — table/media/stat/note/divider,
+  whether it came from the Components palette or the Lorem Ipsum grabbable; there's no stored way to
+  tell those two origins apart, and both are equally "not a real field", so they're grouped
+  together). A search/filter prunes the tree to matches and their ancestors, force-expanding
+  whatever remains (`computeVisibleHierarchyIds` in `TemplateHierarchyTree.tsx`) so a match is never
+  hidden behind a collapsed container.
+- Every panel's filter menu (this one, the Content tab's field types, and the Items/Collections/
+  Templates trees' collection filter) shares one convention: an empty filter array means "nothing
+  excluded" and is shown as every checkbox checked, not every checkbox unchecked, because that's
+  what it actually matches (everything). Each domain's toggle handler
+  (`toggleHierarchyTypeFilter`/`toggleFieldTypeFilter` in `useTemplateEditor.ts`;
+  `handleToggleFilterCollection`/`handleToggleCollectionsFilter`/`handleToggleTemplatesFilter` in
+  `useTreePanels.ts`) treats an empty array as "everything currently selected" when toggling one
+  off, and collapses back to empty the moment every option is checked again — so the array is never
+  redundantly "all N options, written out", which would otherwise leave the "filter applied"
+  indicator lit for a filter that changes nothing. Each menu's "Show All" row
+  (`SearchAndFilterSection.tsx`, `CollectionFilterTree.tsx`) is a reset action when something's
+  excluded, not a from-scratch selection builder.
 - The template editor has two toolbars, so template-wide and container-specific tools never fight for
   space in one bar. `TemplateEditorContainerBar` (selected container's name, Size, Layout, Add,
   Split, properties gear, delete — used more often, so it gets the header slot) portals into
@@ -131,7 +160,7 @@ commit whenever you add, remove, split or rename a file — it goes stale otherw
   CRUD around them lives in `hooks/useTemplateLayoutTree.ts`, which `useTemplateEditor` composes (it
   keeps template loading, field CRUD and the localStorage/debounced-remote save).
 - `app/page.tsx` only composes: docking and panel state live in `hooks/useWorkspaceDock.ts`, the
-  Structure tree's expansion state in `hooks/useHierarchyState.ts`, the Items / Collections /
+  Layout tree's expansion state in `hooks/useHierarchyState.ts`, the Items / Collections /
   Templates tree state in `hooks/useTreePanels.ts`, and the tree/template panel renderers
   (`renderTreePanel`, `renderPanelBody`, `treeHeaderProps`) in `hooks/usePanelRenderers.tsx`, which
   takes those hooks' own return values as its arguments rather than their individual fields.

@@ -6,7 +6,7 @@ import { FlexContainerNode } from '@/types/layout';
 /**
  * Sizing rules for a container (not the Body): Width / Min. W / Max. W and Height / Min. H / Max. H,
  * plus "Stack below" for rows. A blank Width means Fill (the default); a blank Height means Auto.
- * Shared by the Structure-tree gear menu and the properties panel.
+ * Shared by the Layout-tree gear menu and the properties panel.
  */
 
 /** "320" -> "320px"; "50%" / "320px" kept; anything else (or blank) -> undefined. */

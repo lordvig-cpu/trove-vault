@@ -66,9 +66,9 @@ Conventions and architecture (data access, theming, template editor internals, b
   `components/template-canvas/*`; its header and mode toggle live in the toolbar.
 - `TemplateFieldActionMenu.tsx` / `TemplateLayoutActionMenu.tsx` / `TemplateRootActionMenu.tsx` —
   the tree-gear popup menus for a field, a layout container/component, and the template root.
-- `TemplateFieldInspector.tsx` — the template editor's field schema tree (right panel).
-- `TemplateHierarchyTree.tsx` — the template editor's layout structure tree (Structure panel).
-- `TemplateLayoutPalette.tsx` — the "Add container / Add component" palette (Builder panel).
+- `TemplateFieldInspector.tsx` — the template editor's field schema tree (Content tab).
+- `TemplateHierarchyTree.tsx` — the template editor's container hierarchy tree (Layout tab).
+- `TemplateLayoutPalette.tsx` — the "Add container / Add component" palette (Components tab).
 - `TemplateManagerModal.tsx` — browse/apply/create-custom template picker (from Collections menus).
 - `TemplatePropertiesInspector.tsx` — the selected layout node's property editor (Properties panel).
 - `TreeActionMenu.tsx` — the shared popup menu shell (positioning, portal, styling) every
@@ -122,7 +122,7 @@ resize handles), `FlexComponentRenderer.tsx` (a single field/table/media/stat/no
   unified forest, and exposes rename/delete mutations.
 - `useDismissOnOutsideOrEscape.ts` — calls a callback on outside-click or Escape while active.
 - `useFlyoutLifecycle.ts` — a flyout/sidebar's mount-and-animate-out lifecycle.
-- `useHierarchyState.ts` — the Structure tree's expansion state and open-properties/place-field/
+- `useHierarchyState.ts` — the Layout tree's expansion state and open-properties/place-field/
   add-container handlers; takes `useTemplateEditor`'s return value as its argument.
 - `useItemForm.ts` — shared state/logic for the Create and Edit item modals.
 - `useKeyboardShortcuts.ts` — registers a list of global key bindings.
@@ -167,6 +167,8 @@ resize handles), `FlexComponentRenderer.tsx` (a single field/table/media/stat/no
 - `fieldTypeMetas.ts` — display metadata (label, icon) for each field type.
 - `filterTreeForest.ts` — builds the dynamic template-category nodes merged into the unified forest,
   and the forest search/filter logic.
+- `hierarchyFilterMetas.ts` — the Layout tree's three node categories (Layout/Content/Pre-defined
+  Content) for its filter menu: display metadata and `hierarchyNodeCategory()`.
 - `layoutHistory.ts` — pure undo/redo snapshot logic for the layout (coalesces drag bursts, caps depth);
   covered by `tests/layout-history.spec.ts`.
 - `layoutTree.ts` — pure functions over the flex layout tree (build/insert/split/update/remove node,

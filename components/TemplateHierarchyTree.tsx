@@ -16,6 +16,7 @@ import {
 } from '@/components/TemplateLayoutActionMenu';
 import { BodyIcon, FlexRowIcon, FlexColumnIcon, ContainerOverflowIcon } from '@/components/icons/LayoutIcons';
 import { activeIconColor } from '@/components/editorBarStyles';
+import { HierarchyFilterCategory, hierarchyNodeCategory } from '@/lib/hierarchyFilterMetas';
 
 /* ==========================================================================
    1. PROPS INTERFACE
@@ -41,6 +42,9 @@ export interface TemplateHierarchyTreeProps {
   onToggleExpand?: (id: string) => void;
   /** Container ids whose own row currently has children that don't fit it (see FlexContainerRenderer). */
   overflowingContainerIds?: Set<string>;
+  /** Filters by node name; combined with filterHierarchyTypes (both must match). */
+  searchQuery?: string;
+  filterHierarchyTypes?: HierarchyFilterCategory[];
 }
 
 /* ==========================================================================
@@ -74,6 +78,54 @@ export function getAllContainerIds(node: FlexContainerNode): string[] {
   return ids;
 }
 
+/** The name shown for a node in the tree -- matches what each row actually renders. */
+function hierarchyNodeLabel(
+  node: FlexContainerNode | FlexComponentNode,
+  fields: FieldDefinition[],
+  isRoot: boolean
+): string {
+  if (node.nodeType === 'container') {
+    return isRoot ? 'Body' : node.label || 'Container';
+  }
+  const boundField = node.field_id ? fields.find((f) => f.id === node.field_id) : undefined;
+  return node.label || boundField?.label || node.componentType;
+}
+
+/**
+ * Which node ids survive the Layout panel's search + category filter: a node keeps its place when
+ * it matches itself, or when any of its descendants do (so the path down to a match stays visible
+ * even though the container itself didn't match). Returns null when neither a search term nor a
+ * category filter is active, meaning "show everything, respect the user's own expand/collapse".
+ */
+function computeVisibleHierarchyIds(
+  root: FlexContainerNode,
+  searchQuery: string,
+  filterTypes: HierarchyFilterCategory[],
+  fields: FieldDefinition[]
+): Set<string> | null {
+  const query = searchQuery.trim().toLowerCase();
+  if (!query && filterTypes.length === 0) return null;
+
+  const keep = new Set<string>();
+  const visit = (node: FlexContainerNode | FlexComponentNode, isRoot: boolean): boolean => {
+    let selfMatches = filterTypes.length === 0 || filterTypes.includes(hierarchyNodeCategory(node));
+    if (selfMatches && query) {
+      selfMatches = hierarchyNodeLabel(node, fields, isRoot).toLowerCase().includes(query);
+    }
+    let descendantMatches = false;
+    if (node.nodeType === 'container') {
+      for (const child of node.children) {
+        if (visit(child, false)) descendantMatches = true;
+      }
+    }
+    const keepThis = selfMatches || descendantMatches;
+    if (keepThis) keep.add(node.id);
+    return keepThis;
+  };
+  visit(root, true);
+  return keep;
+}
+
 /* ==========================================================================
    3. TREE NODE ROW: Container Node Item (Tree Visual Model)
    ========================================================================== */
@@ -98,6 +150,9 @@ interface ContainerNodeRowProps {
   onPlaceLoremIpsum?: (targetContainerId?: string) => void;
   position?: 'left' | 'right';
   overflowingContainerIds?: Set<string>;
+  /** Ids surviving the current search/filter (null = no filter active, show everything). Filtered
+      children stay force-expanded so a match is never hidden behind a collapsed ancestor. */
+  visibleIds?: Set<string> | null;
 }
 
 function ContainerNodeRow({
@@ -120,13 +175,15 @@ function ContainerNodeRow({
   onPlaceLoremIpsum,
   position = 'left',
   overflowingContainerIds,
+  visibleIds,
 }: ContainerNodeRowProps) {
   const isRightSide = position === 'right';
   const [isDragOver, setIsDragOver] = useState(false);
   const isRoot = container.id === 'root-container';
   const isSelected = selectedNodeId === container.id;
-  const isExpanded = expandedIds.has(container.id);
-  const hasChildren = container.children.length > 0;
+  const visibleChildren = visibleIds ? container.children.filter((c) => visibleIds.has(c.id)) : container.children;
+  const isExpanded = visibleIds ? true : expandedIds.has(container.id);
+  const hasChildren = visibleChildren.length > 0;
   const isOverflowing = overflowingContainerIds?.has(container.id) ?? false;
   // 328px (20.5rem): matches the .menuShellWide class TemplateContainerActionMenu renders with,
   // so a right-docked panel's flyout is positioned by its real width, not the 224px shell default.
@@ -243,10 +300,10 @@ function ContainerNodeRow({
         {/* Child Count Badge */}
         {hasChildren && (
           <span
-            title={`${container.children.length} sub-items`}
+            title={`${visibleChildren.length} sub-items`}
             className="tree-badge px-1.5 py-0.2 rounded text-[10px] font-mono shrink-0 select-none"
           >
-            {container.children.length}
+            {visibleChildren.length}
           </span>
         )}
 
@@ -317,7 +374,7 @@ function ContainerNodeRow({
               style={{ left: depth * 24.5 + 52.5 }}
             />
           )}
-          {container.children.map((child) => {
+          {visibleChildren.map((child) => {
             if (child.nodeType === 'container') {
               return (
                 <ContainerNodeRow
@@ -341,6 +398,7 @@ function ContainerNodeRow({
                   onPlaceLoremIpsum={onPlaceLoremIpsum}
                   position={position}
                   overflowingContainerIds={overflowingContainerIds}
+                  visibleIds={visibleIds}
                 />
               );
             }
@@ -537,12 +595,19 @@ export default function TemplateHierarchyTree({
   expandedIds: externalExpandedIds,
   onToggleExpand: externalOnToggleExpand,
   overflowingContainerIds,
+  searchQuery = '',
+  filterHierarchyTypes = [],
 }: TemplateHierarchyTreeProps) {
   const root = flexLayoutConfig?.root;
 
   // Fallback internal expansion tracking if not controlled externally
   const allIds = useMemo(() => (root ? getAllContainerIds(root) : []), [root]);
   const [internalExpandedIds, setInternalExpandedIds] = useState<Set<string>>(() => new Set(allIds));
+
+  const visibleIds = useMemo(
+    () => (root ? computeVisibleHierarchyIds(root, searchQuery, filterHierarchyTypes, fields) : null),
+    [root, searchQuery, filterHierarchyTypes, fields]
+  );
 
   const effectiveExpandedIds = externalExpandedIds ?? internalExpandedIds;
   const effectiveOnToggleExpand =
@@ -571,6 +636,18 @@ export default function TemplateHierarchyTree({
     );
   }
 
+  if (visibleIds && !visibleIds.has(root.id)) {
+    return (
+      <div className="p-4 flex flex-col items-center justify-center text-center gap-2 text-slate-500 h-full">
+        <span className="text-2xl">🔍</span>
+        <span className="text-xs font-semibold text-slate-400">No matches</span>
+        <p className="text-[11px] text-slate-500">
+          Nothing in this layout matches your search or filter.
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col h-full w-full select-none py-1.5">
       <ContainerNodeRow
@@ -592,6 +669,7 @@ export default function TemplateHierarchyTree({
         onPlaceField={onPlaceField}
         onPlaceLoremIpsum={onPlaceLoremIpsum}
         position={position}
+        visibleIds={visibleIds}
         overflowingContainerIds={overflowingContainerIds}
       />
     </div>

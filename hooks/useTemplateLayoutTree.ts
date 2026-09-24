@@ -395,7 +395,7 @@ export function useTemplateLayoutTree({
   // Which containers currently have children that don't fit their own row at their set widths
   // (wrapped onto a second line, or overflowed with wrap off) -- reported by FlexContainerRenderer,
   // which is the only thing that can actually measure it (it depends on the live rendered size,
-  // not anything derivable from the layout tree data alone). Read by the Structure tree for its
+  // not anything derivable from the layout tree data alone). Read by the Layout tree for its
   // warning badge, and by the container itself for its dashed-red border.
   const [overflowingContainerIds, setOverflowingContainerIds] = useState<Set<string>>(new Set());
   const reportContainerOverflow = useCallback((containerId: string, isOverflowing: boolean) => {

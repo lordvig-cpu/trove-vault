@@ -67,9 +67,9 @@ interface MainContentProps {
   canRedo?: boolean;
   onUndo?: () => void;
   onRedo?: () => void;
-  isStructurePanelOpen?: boolean;
-  onOpenStructurePanel?: () => void;
-  structurePanelSelector?: string;
+  isLayoutPanelOpen?: boolean;
+  onOpenLayoutPanel?: () => void;
+  layoutPanelSelector?: string;
   occupiedRightWidth?: number;
   occupiedLeftWidth?: number;
   rightPanelWidth?: number;
@@ -112,9 +112,9 @@ export default function MainContent({
   canRedo,
   onUndo,
   onRedo,
-  isStructurePanelOpen,
-  onOpenStructurePanel,
-  structurePanelSelector,
+  isLayoutPanelOpen,
+  onOpenLayoutPanel,
+  layoutPanelSelector,
 }: MainContentProps) {
 
   return (
@@ -163,9 +163,9 @@ export default function MainContent({
                   canRedo={canRedo}
                   onUndo={onUndo}
                   onRedo={onRedo}
-                  isStructurePanelOpen={isStructurePanelOpen}
-                  onOpenStructurePanel={onOpenStructurePanel}
-                  structurePanelSelector={structurePanelSelector}
+                  isLayoutPanelOpen={isLayoutPanelOpen}
+                  onOpenLayoutPanel={onOpenLayoutPanel}
+                  layoutPanelSelector={layoutPanelSelector}
                 />
               </div>
             ) : (

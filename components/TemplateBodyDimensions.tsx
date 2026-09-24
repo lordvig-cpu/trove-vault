@@ -12,7 +12,7 @@ const MIN_CONTENT_WIDTH = 320;
 const MAX_CONTENT_WIDTH = 7680;
 
 /**
- * Body sizing (shared by the Structure-tree gear menu and the properties panel).
+ * Body sizing (shared by the Layout-tree gear menu and the properties panel).
  * The Body is always fluid and grows vertically as needed, so there is no width or height to set.
  * The one optional rule is a max content width: blank stretches to fill the screen, a value caps the
  * layout at that width and centers it. (The screen size you preview is picked in the header zoom panel.)

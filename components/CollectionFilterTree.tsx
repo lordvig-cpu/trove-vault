@@ -49,14 +49,15 @@ export default function CollectionFilterTree({
   filterCollectionIds,
   onToggleFilterCollection,
 }: CollectionFilterTreeProps) {
-  const allSelected =
-    collections.length > 0 &&
-    collections.every((collection) => filterCollectionIds.includes(collection.id));
+  // An empty filter means "nothing excluded" -- shown as every box checked, not every box
+  // unchecked, since that's what it actually matches (every collection). See useTreePanels.ts's
+  // toggle handlers for the matching "empty means everything" logic on the write side.
+  const hasFilters = filterCollectionIds.length > 0;
   const roots = buildCollectionTree(collections);
   addOrphanCollections(roots, collections);
 
   const renderNode = (node: CollectionTreeNode, depth = 0): React.ReactNode => {
-    const isChecked = filterCollectionIds.includes(node.id);
+    const isChecked = !hasFilters || filterCollectionIds.includes(node.id);
     const hasChildren = Boolean(node.children && node.children.length > 0);
 
     return (
@@ -73,11 +74,7 @@ export default function CollectionFilterTree({
                 type="checkbox"
                 checked={isChecked}
                 onChange={() => onToggleFilterCollection(node.id)}
-                className={`tree-filter-checkbox w-3.5 h-3.5 rounded cursor-pointer transition-opacity duration-150 ${
-                  allSelected || isChecked
-                    ? 'pointer-events-auto'
-                    : 'tree-filter-checkbox-hidden pointer-events-none group-hover:pointer-events-auto'
-                }`}
+                className="tree-filter-checkbox w-3.5 h-3.5 rounded cursor-pointer"
               />
             </div>
 

@@ -66,11 +66,11 @@ interface TemplateEditorStageProps {
   canRedo?: boolean;
   onUndo?: () => void;
   onRedo?: () => void;
-  /** Whether the Structure tree's side panel is currently visible, and how to open it unpinned
+  /** Whether the Layout tree's side panel is currently visible, and how to open it unpinned
       when it isn't — passed through to the toolbar gear. */
-  isStructurePanelOpen?: boolean;
-  onOpenStructurePanel?: () => void;
-  structurePanelSelector?: string;
+  isLayoutPanelOpen?: boolean;
+  onOpenLayoutPanel?: () => void;
+  layoutPanelSelector?: string;
 }
 
 /* ==========================================================================
@@ -103,9 +103,9 @@ export default function TemplateEditorStage({
   canRedo,
   onUndo,
   onRedo,
-  isStructurePanelOpen,
-  onOpenStructurePanel,
-  structurePanelSelector,
+  isLayoutPanelOpen,
+  onOpenLayoutPanel,
+  layoutPanelSelector,
 }: TemplateEditorStageProps) {
   const fields = template.fields || [];
 
@@ -148,9 +148,9 @@ export default function TemplateEditorStage({
             onSplitContainer={onSplitContainer}
             onRemoveContainer={onRemoveFlexContainer}
             onSelectNode={onSelectNode}
-            isStructurePanelOpen={isStructurePanelOpen}
-            onOpenStructurePanel={onOpenStructurePanel}
-            structurePanelSelector={structurePanelSelector}
+            isLayoutPanelOpen={isLayoutPanelOpen}
+            onOpenLayoutPanel={onOpenLayoutPanel}
+            layoutPanelSelector={layoutPanelSelector}
           />,
           toolbarSlot
         )}

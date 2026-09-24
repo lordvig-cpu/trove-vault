@@ -10,6 +10,7 @@ import PanelToolbarRow from '@/components/panel-header/PanelToolbarRow';
 import SearchAndFilterSection from '@/components/panel-header/SearchAndFilterSection';
 import PanelViewTabs from '@/components/panel-header/PanelViewTabs';
 import { FIELD_TYPE_METAS } from '@/lib/fieldTypeMetas';
+import { HierarchyFilterCategory } from '@/lib/hierarchyFilterMetas';
 
 export { FIELD_TYPE_METAS };
 
@@ -48,12 +49,18 @@ export interface PrimarySidePanelHeaderProps {
   onToggleFilterCollection?: (collectionId: number) => void;
   onClearCollectionFilters?: () => void;
 
-  // Field Type Filter Props (Template Inspector Mode)
+  // Field Type Filter Props (Content tab mode)
   filterFieldTypes?: FieldType[];
   onToggleFilterFieldType?: (type: FieldType) => void;
   onClearFieldTypeFilters?: () => void;
   fieldTypeCounts?: Record<string, number>;
   onAddNewField?: () => void;
+
+  // Layout tree Filter Props (Layout tab mode)
+  filterHierarchyTypes?: HierarchyFilterCategory[];
+  onToggleFilterHierarchyType?: (type: HierarchyFilterCategory) => void;
+  onClearHierarchyTypeFilters?: () => void;
+  hierarchyTypeCounts?: Record<string, number>;
 
   onHandlePointerDown?: (e: React.PointerEvent) => void;
   onStartTabDrag?: (tab: Exclude<DockContent, 'empty'>, e: React.PointerEvent) => void;
@@ -108,6 +115,10 @@ export default function PrimarySidePanelHeader({
   onClearFieldTypeFilters = () => {},
   fieldTypeCounts = {},
   onAddNewField,
+  filterHierarchyTypes = [],
+  onToggleFilterHierarchyType = () => {},
+  onClearHierarchyTypeFilters = () => {},
+  hierarchyTypeCounts = {},
   onHandlePointerDown,
   onStartTabDrag,
   isDragging = false,
@@ -117,30 +128,32 @@ export default function PrimarySidePanelHeader({
   const isCollections = treeView === 'collections' || activeTab === 'collections' || title === 'COLLECTIONS';
   const isTemplates = treeView === 'templates' || activeTab === 'templates' || title === 'TEMPLATES';
   const isGrabbed = activeTab === 'grabbed_content' || title === 'GRABBED CONTENT';
-  const isInspector = activeTab === 'template_editor' || title === 'TEMPLATE INSPECTOR';
-  const isBuilder = activeTab === 'template_builder' || title === 'LAYOUT BUILDER';
+  const isContent = activeTab === 'template_editor' || title === 'CONTENT';
+  const isComponents = activeTab === 'template_builder' || title === 'COMPONENTS';
   const isProperties = activeTab === 'template_properties' || title === 'PROPERTIES';
-  const isHierarchy = activeTab === 'template_hierarchy' || title === 'STRUCTURE' || title === 'CONTENT' || title === 'STRUCTURE';
+  const isLayout = activeTab === 'template_hierarchy' || title === 'LAYOUT';
   const panelName = isCollections
     ? 'Collections'
     : isTemplates
     ? 'Templates'
     : isGrabbed
     ? 'Grabbed Content'
-    : isInspector
-    ? 'Template Inspector'
-    : isBuilder
-    ? 'Layout Builder'
+    : isContent
+    ? 'Content'
+    : isComponents
+    ? 'Components'
     : isProperties
     ? 'Properties'
-    : isHierarchy
-    ? 'Structure'
+    : isLayout
+    ? 'Layout'
     : 'Items';
   const isRight = position === 'right';
   const shortcutKey = isRight ? 'Ctrl-L' : 'Ctrl-K';
   const shortcutAria = isRight ? 'Control+L Meta+L' : 'Control+K Meta+K';
-  const searchInputTitle = isInspector
+  const searchInputTitle = isContent
     ? `Search Template Fields [shortcut: ${shortcutKey}]`
+    : isLayout
+    ? `Search Layout & Content [shortcut: ${shortcutKey}]`
     : isTemplates
     ? `Search Templates & Items [shortcut: ${shortcutKey}]`
     : isCollections
@@ -205,14 +218,15 @@ export default function PrimarySidePanelHeader({
       {/* ------------------------------------------------------------------
           Search Bar, Category Filters & Menus (Tree Only)
           ------------------------------------------------------------------ */}
-      {showSearchFilter && !isGrabbed && !isProperties && !isHierarchy && (
+      {showSearchFilter && !isGrabbed && !isProperties && (
         <SearchAndFilterSection
           variant={variant}
           position={position}
           isPinned={isPinned}
           headerId={headerId}
           headerContainerRef={headerContainerRef}
-          isInspector={isInspector}
+          isContent={isContent}
+          isLayout={isLayout}
           isCollections={isCollections}
           isTemplates={isTemplates}
           dataTreeSearchValue={treeView ?? activeTab}
@@ -224,6 +238,10 @@ export default function PrimarySidePanelHeader({
           onToggleFilterFieldType={onToggleFilterFieldType}
           onClearFieldTypeFilters={onClearFieldTypeFilters}
           fieldTypeCounts={fieldTypeCounts}
+          filterHierarchyTypes={filterHierarchyTypes}
+          onToggleFilterHierarchyType={onToggleFilterHierarchyType}
+          onClearHierarchyTypeFilters={onClearHierarchyTypeFilters}
+          hierarchyTypeCounts={hierarchyTypeCounts}
           collections={collections}
           filterCollectionIds={filterCollectionIds}
           onToggleFilterCollection={onToggleFilterCollection}
@@ -247,10 +265,10 @@ export default function PrimarySidePanelHeader({
         isCollections={isCollections}
         isTemplates={isTemplates}
         isGrabbed={isGrabbed}
-        isInspector={isInspector}
-        isBuilder={isBuilder}
+        isContent={isContent}
+        isComponents={isComponents}
         isProperties={isProperties}
-        isHierarchy={isHierarchy}
+        isLayout={isLayout}
         hierarchyNodeCount={hierarchyNodeCount}
         onAddNewField={onAddNewField}
         onAddNewTemplate={onAddNewTemplate}

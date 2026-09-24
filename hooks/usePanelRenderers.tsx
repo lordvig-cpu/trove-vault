@@ -15,6 +15,8 @@ import TemplateFieldInspector from '@/components/TemplateFieldInspector';
 import TemplateLayoutPalette from '@/components/TemplateLayoutPalette';
 import TemplatePropertiesInspector from '@/components/TemplatePropertiesInspector';
 import TemplateHierarchyTree from '@/components/TemplateHierarchyTree';
+import { FlexContainerNode, FlexComponentNode } from '@/types/layout';
+import { hierarchyNodeCategory } from '@/lib/hierarchyFilterMetas';
 
 type CollectionsApi = ReturnType<typeof useCollections>;
 type ModalsApi = ReturnType<typeof useModals>;
@@ -180,8 +182,8 @@ export function usePanelRenderers({
     );
   };
 
-  // Renders whatever a docked tab holds, tree views included: the template editor's inspector,
-  // properties panel, layout palette and structure tree, or the grabbed-content placeholder.
+  // Renders whatever a docked tab holds, tree views included: the template editor's Content tab,
+  // properties panel, layout palette and Layout tree, or the grabbed-content placeholder.
   const renderPanelBody = (content: DockContent, pos: 'left' | 'right' | 'bottom') => {
     if (content === 'items' || content === 'collections' || content === 'templates') {
       return renderTreePanel(pos === 'bottom' ? 'left' : pos, content);
@@ -282,6 +284,8 @@ export function usePanelRenderers({
             onPlaceLoremIpsum={handlePlaceLoremIpsum}
             position={pos === 'bottom' ? 'right' : pos}
             overflowingContainerIds={templateEditor.overflowingContainerIds}
+            searchQuery={templateEditor.hierarchySearchQuery}
+            filterHierarchyTypes={templateEditor.filterHierarchyTypes}
           />
         </TreePanelContext.Provider>
       );
@@ -308,14 +312,14 @@ export function usePanelRenderers({
 
   // The props PrimarySidePanelHeader/SecondarySidePanelHeader need for whatever content a docked
   // tab holds: which search/filter state to read and write (per-tab-type: Items, Collections,
-  // Templates and the template field inspector each keep their own), and the expand-all state.
+  // Templates and the Content tab's own field list each keep their own), and the expand-all state.
   // Spread onto the header with {...treeHeaderProps(content)}.
   const treeHeaderProps = (content: DockContent) => {
     const isCollections = content === 'collections';
     const isTemplates = content === 'templates';
-    const isInspector = content === 'template_editor';
-    const isBuilder = content === 'template_builder';
-    const isHierarchy = content === 'template_hierarchy';
+    const isContent = content === 'template_editor';
+    const isComponents = content === 'template_builder';
+    const isLayout = content === 'template_hierarchy';
     const isProperties = content === 'template_properties';
 
     // Calculate field type counts for template editor
@@ -326,35 +330,53 @@ export function usePanelRenderers({
       }
     }
 
+    // Calculate layout-tree node-category counts (Layout items / Content items / Pre-defined Content)
+    const hierarchyTypeCounts: Record<string, number> = {};
+    const hierarchyRoot = templateEditor.flexLayoutConfig?.root;
+    if (hierarchyRoot) {
+      const walk = (node: FlexContainerNode | FlexComponentNode) => {
+        const category = hierarchyNodeCategory(node);
+        hierarchyTypeCounts[category] = (hierarchyTypeCounts[category] || 0) + 1;
+        if (node.nodeType === 'container') {
+          for (const child of node.children) walk(child);
+        }
+      };
+      walk(hierarchyRoot);
+    }
+
     const isEmpty = content === 'empty';
 
     return {
       treeView: (isEmpty ? undefined : isCollections ? 'collections' : isTemplates ? 'templates' : 'items') as TreeTab,
       activeTab: (isEmpty
         ? 'empty'
-        : isInspector
+        : isContent
         ? 'template_editor'
-        : isBuilder
+        : isComponents
         ? 'template_builder'
         : isProperties
         ? 'template_properties'
-        : isHierarchy
+        : isLayout
         ? 'template_hierarchy'
         : isCollections
         ? 'collections'
         : isTemplates
         ? 'templates'
         : content) as TreeTab | DockContent,
-      searchQuery: isInspector
+      searchQuery: isContent
         ? templateEditor.fieldSearchQuery
+        : isLayout
+        ? templateEditor.hierarchySearchQuery
         : isCollections
         ? collectionsTree.searchQuery
         : isTemplates
         ? templatesTree.searchQuery
         : searchQuery,
       onSearchChange: (query: string) => {
-        if (isInspector) {
+        if (isContent) {
           templateEditor.setFieldSearchQuery(query);
+        } else if (isLayout) {
+          templateEditor.setHierarchySearchQuery(query);
         } else {
           setActiveSearchPanel(isCollections ? 'collections' : isTemplates ? 'templates' : 'items');
           if (isCollections) collectionsTree.setSearchQuery(query);
@@ -362,21 +384,21 @@ export function usePanelRenderers({
           else setSearchQuery(query);
         }
       },
-      isAnyCategoryExpanded: isHierarchy
+      isAnyCategoryExpanded: isLayout
         ? isAllHierarchyExpanded
         : isCollections
         ? collectionsTree.isAnyCategoryExpanded
         : isTemplates
         ? templatesTree.isAnyCategoryExpanded
         : isAnyCategoryExpanded,
-      onToggleAllCategories: isHierarchy
+      onToggleAllCategories: isLayout
         ? toggleAllHierarchy
         : isCollections
         ? collectionsTree.handleToggleAllCategories
         : isTemplates
         ? templatesTree.handleToggleAllCategories
         : handleToggleAllCategories,
-      hierarchyNodeCount: isHierarchy ? hierarchyNodeCount : undefined,
+      hierarchyNodeCount: isLayout ? hierarchyNodeCount : undefined,
       filterCollectionIds: isCollections ? collectionsFilterIds : isTemplates ? templatesFilterIds : filterCollectionIds,
       onToggleFilterCollection: isCollections ? handleToggleCollectionsFilter : isTemplates ? handleToggleTemplatesFilter : handleToggleFilterCollection,
       onClearCollectionFilters: isCollections ? () => setCollectionsFilterIds([]) : isTemplates ? () => setTemplatesFilterIds([]) : handleClearCollectionFilters,
@@ -385,6 +407,10 @@ export function usePanelRenderers({
       onClearFieldTypeFilters: templateEditor.clearFieldTypeFilters,
       fieldTypeCounts,
       onAddNewField: () => templateEditor.addField('text'),
+      filterHierarchyTypes: templateEditor.filterHierarchyTypes,
+      onToggleFilterHierarchyType: templateEditor.toggleHierarchyTypeFilter,
+      onClearHierarchyTypeFilters: templateEditor.clearHierarchyTypeFilters,
+      hierarchyTypeCounts,
     };
   };
 

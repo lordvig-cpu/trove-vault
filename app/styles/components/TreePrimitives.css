@@ -268,14 +268,6 @@
   border-color: var(--primary-tree-branch);
 }
 
-.tree-filter-checkbox-hidden {
-  opacity: 0;
-}
-
-.group:hover .tree-filter-checkbox-hidden {
-  opacity: 1;
-}
-
 .tree-filter-nested {
   border-color: var(--primary-border-subtle);
 }

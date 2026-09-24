@@ -11,6 +11,9 @@ import {
   ItemsTabIcon,
   CollectionsTabIcon,
   TemplatesTabIcon,
+  LayoutTabIcon,
+  ContentTabIcon,
+  ComponentsTabIcon,
 } from '@/components/icons/PanelIcons';
 import { DockContent, TabReorderInfo } from '@/hooks/usePanelDockDrag';
 import { PrimarySidebarPosition } from '@/types/layout';
@@ -28,10 +31,10 @@ interface PanelViewTabsProps {
   isCollections: boolean;
   isTemplates: boolean;
   isGrabbed: boolean;
-  isInspector: boolean;
-  isBuilder: boolean;
+  isContent: boolean;
+  isComponents: boolean;
   isProperties: boolean;
-  isHierarchy: boolean;
+  isLayout: boolean;
   hierarchyNodeCount?: number;
   onAddNewField?: () => void;
   onAddNewTemplate?: () => void;
@@ -56,10 +59,10 @@ export default function PanelViewTabs({
   isCollections,
   isTemplates,
   isGrabbed,
-  isInspector,
-  isBuilder,
+  isContent,
+  isComponents,
   isProperties,
-  isHierarchy,
+  isLayout,
   hierarchyNodeCount,
   onAddNewField,
   onAddNewTemplate,
@@ -82,13 +85,13 @@ export default function PanelViewTabs({
             ? 'Browse Templates'
             : isGrabbed
             ? 'Grabbed Content'
-            : isInspector
-            ? 'Field Schema Hierarchy'
-            : isBuilder
-            ? 'Layout & Palette'
+            : isContent
+            ? 'Fields & Content'
+            : isComponents
+            ? 'Component Palette'
             : isProperties
             ? 'Properties'
-            : isHierarchy
+            : isLayout
             ? (hierarchyNodeCount !== undefined ? `Layout & Content (${hierarchyNodeCount})` : 'Layout & Content')
             : 'Browse Items'}
         </h3>
@@ -106,13 +109,13 @@ export default function PanelViewTabs({
                 : tab === 'templates'
                 ? 'Templates'
                 : tab === 'template_editor'
-                ? 'Inspector'
+                ? 'Content'
                 : tab === 'template_builder'
-                ? 'Builder'
+                ? 'Components'
                 : tab === 'template_properties'
                 ? 'Properties'
                 : tab === 'template_hierarchy'
-                ? 'Structure'
+                ? 'Layout'
                 : 'Grabbed Content';
             const TabIcon =
               tab === 'items'
@@ -121,6 +124,12 @@ export default function PanelViewTabs({
                 ? CollectionsTabIcon
                 : tab === 'templates'
                 ? TemplatesTabIcon
+                : tab === 'template_hierarchy'
+                ? LayoutTabIcon
+                : tab === 'template_editor'
+                ? ContentTabIcon
+                : tab === 'template_builder'
+                ? ComponentsTabIcon
                 : null;
             const tabTitle =
               tab === 'items'
@@ -130,13 +139,13 @@ export default function PanelViewTabs({
                 : tab === 'templates'
                 ? 'Show Templates blueprint tree (drag to move tab)'
                 : tab === 'template_editor'
-                ? 'Show Template Field Inspector (drag to move tab)'
+                ? 'Show Content: fields and other droppable content (drag to move tab)'
                 : tab === 'template_builder'
-                ? 'Show Template Layout Builder (drag to move tab)'
+                ? 'Show Components (drag to move tab)'
                 : tab === 'template_properties'
                 ? 'Show Element Properties (drag to move tab)'
                 : tab === 'template_hierarchy'
-                ? 'Show Layout Structure (drag to move tab)'
+                ? 'Show Layout (drag to move tab)'
                 : 'Show Grabbed Content (drag to move tab)';
 
             const isThisTabDragging = isDragging && reorderInfo?.draggingTab === tab && reorderInfo?.side === position;
@@ -177,13 +186,7 @@ export default function PanelViewTabs({
                     variant="curved"
                   />
                   <span className="relative z-10 flex items-center gap-1 px-0.5 select-none">
-                    <span
-                      className="text-[11.5px] opacity-40 group-hover/tab:opacity-90 transition-opacity tracking-tighter"
-                      aria-hidden="true"
-                    >
-                      ⋮⋮
-                    </span>
-                    {TabIcon ? <TabIcon className="w-[18px] h-[18px]" /> : <span>{tabLabel}</span>}
+                    {TabIcon ? <TabIcon className="w-[22.5px] h-[22.5px]" /> : <span>{tabLabel}</span>}
                   </span>
                 </button>
                 {showInsertAfter && (
@@ -197,7 +200,7 @@ export default function PanelViewTabs({
         {/* Right: Contextual Add Action & Folder Toggle */}
         {activeTab !== 'empty' && (
           <div className="flex items-center gap-1.5 shrink-0 pr-1 pb-1">
-            {isInspector ? (
+            {isContent ? (
               onAddNewField && (
                 <button
                   type="button"
@@ -230,7 +233,7 @@ export default function PanelViewTabs({
                   <PlusIcon className="w-2.5 h-2.5 origin-center transition-transform duration-150 ease-out group-hover:scale-110 text-[var(--tree-action-icon,rgba(109,170,209,0.85))] group-hover:text-white" />
                 </button>
               )
-            ) : isHierarchy || isProperties ? (
+            ) : isLayout || isProperties ? (
               null
             ) : (
               onAddNewItem && (

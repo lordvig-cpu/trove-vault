@@ -134,7 +134,7 @@ export const SplitRowsIcon = ({ className = 'w-4 h-4', strokeWidth = 1.8 }: Layo
 
 /**
  * ContainerOverflowIcon:
- * Warning triangle (used in the Structure tree to flag a container whose children don't fit
+ * Warning triangle (used in the Layout tree to flag a container whose children don't fit
  * their own row at their set widths).
  */
 export const ContainerOverflowIcon = ({ className = 'w-3.5 h-3.5', strokeWidth = 1.8 }: LayoutIconProps) => (

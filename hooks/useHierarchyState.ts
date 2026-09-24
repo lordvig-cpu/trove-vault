@@ -6,7 +6,7 @@ import type { useTemplateEditor } from '@/hooks/useTemplateEditor';
 import { findAncestorContainerIds, type FlexContainerNode } from '@/types/layout';
 
 /* ==========================================================================
-   Structure tree state for the template editor: which containers are expanded, and the helpers
+   Layout tree state for the template editor: which containers are expanded, and the helpers
    that keep the tree in step with the canvas (opening a container when something is added to it,
    selecting a node). Moved out of app/page.tsx without changing behavior.
    ========================================================================== */

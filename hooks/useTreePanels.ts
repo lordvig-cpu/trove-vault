@@ -26,10 +26,18 @@ export function useTreePanels({ unifiedForest, allItems, allCollections, templat
   const [templatesFilterIds, setTemplatesFilterIds] = useState<number[]>([]);
   const [filterCollectionIds, setFilterCollectionIds] = useState<number[]>([]);
 
+  // An empty filter array means "nothing excluded" -- shown as every box checked, not every box
+  // unchecked, since that's what it actually does (matches every collection). Toggling treats
+  // "empty" as "everything currently selected" and unchecking one; toggling back up to the full
+  // set collapses back to empty rather than sitting at a redundant "all N listed" state, which
+  // would needlessly show the "filter applied" indicator for a filter that changes nothing.
   const handleToggleFilterCollection = (id: number) => {
-    setFilterCollectionIds((prev) => 
-      prev.includes(id) ? prev.filter((colId) => colId !== id) : [...prev, id]
-    );
+    setFilterCollectionIds((prev) => {
+      const allIds = allCollections.map((c) => c.id);
+      const effective = prev.length === 0 ? allIds : prev;
+      const next = effective.includes(id) ? effective.filter((v) => v !== id) : [...effective, id];
+      return next.length === allIds.length ? [] : next;
+    });
   };
 
   const handleClearCollectionFilters = () => {
@@ -59,7 +67,12 @@ export function useTreePanels({ unifiedForest, allItems, allCollections, templat
   ), [unifiedForest, collectionsFilterIds, allItems, allCollections, templates]);
   const collectionsTree = useTreeCategories(collectionsForest);
   const handleToggleCollectionsFilter = (id: number) => {
-    setCollectionsFilterIds(prev => prev.includes(id) ? prev.filter(value => value !== id) : [...prev, id]);
+    setCollectionsFilterIds((prev) => {
+      const allIds = allCollections.map((c) => c.id);
+      const effective = prev.length === 0 ? allIds : prev;
+      const next = effective.includes(id) ? effective.filter((v) => v !== id) : [...effective, id];
+      return next.length === allIds.length ? [] : next;
+    });
   };
 
   const templatesForest = useMemo(() => filterTreeForest(
@@ -67,7 +80,12 @@ export function useTreePanels({ unifiedForest, allItems, allCollections, templat
   ), [unifiedForest, templatesFilterIds, allItems, allCollections, templates]);
   const templatesTree = useTreeCategories(templatesForest, false);
   const handleToggleTemplatesFilter = (id: number) => {
-    setTemplatesFilterIds(prev => prev.includes(id) ? prev.filter(value => value !== id) : [...prev, id]);
+    setTemplatesFilterIds((prev) => {
+      const allIds = allCollections.map((c) => c.id);
+      const effective = prev.length === 0 ? allIds : prev;
+      const next = effective.includes(id) ? effective.filter((v) => v !== id) : [...effective, id];
+      return next.length === allIds.length ? [] : next;
+    });
   };
 
   return {

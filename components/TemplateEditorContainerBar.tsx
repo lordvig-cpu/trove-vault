@@ -246,15 +246,15 @@ interface TemplateEditorContainerBarProps {
   onSplitContainer?: (containerId: string, splitType: 'columns' | 'rows', measuredPx: number) => void;
   onRemoveContainer?: (id: string) => void;
   onSelectNode?: (id: string | null) => void;
-  /** Whether the Structure tree's side panel is currently visible (pinned or unpinned). */
-  isStructurePanelOpen?: boolean;
-  /** Opens the Structure panel unpinned. The gear needs it on-screen before it can sync to it. */
-  onOpenStructurePanel?: () => void;
+  /** Whether the Layout tree's side panel is currently visible (pinned or unpinned). */
+  isLayoutPanelOpen?: boolean;
+  /** Opens the Layout panel unpinned. The gear needs it on-screen before it can sync to it. */
+  onOpenLayoutPanel?: () => void;
   /**
    * The panel shell to wait on for its slide-in transition before syncing: whichever side
-   * (primary/left or secondary/right) the Structure tab is actually docked on.
+   * (primary/left or secondary/right) the Layout tab is actually docked on.
    */
-  structurePanelSelector?: string;
+  layoutPanelSelector?: string;
 }
 
 export default function TemplateEditorContainerBar({
@@ -266,14 +266,14 @@ export default function TemplateEditorContainerBar({
   onSplitContainer,
   onRemoveContainer,
   onSelectNode,
-  isStructurePanelOpen,
-  onOpenStructurePanel,
-  structurePanelSelector = '.primary-side-panel',
+  isLayoutPanelOpen,
+  onOpenLayoutPanel,
+  layoutPanelSelector = '.primary-side-panel',
 }: TemplateEditorContainerBarProps) {
   const [isTreeMenuOpen, setIsTreeMenuOpen] = useState(false);
   const containerId = container?.id;
 
-  // The gear mirrors the Structure tree's action menu for this container.
+  // The gear mirrors the Layout tree's action menu for this container.
   useEffect(() => {
     if (!containerId) return;
     const handleOpen = (e: Event) => {
@@ -473,7 +473,7 @@ export default function TemplateEditorContainerBar({
       </div>
 
       <div className="flex items-center gap-1.5 ml-8 shrink-0">
-        {/* Gear: opens the Structure tree's properties menu for this container */}
+        {/* Gear: opens the Layout tree's properties menu for this container */}
         <button
           type="button"
           data-gear-trigger
@@ -481,7 +481,7 @@ export default function TemplateEditorContainerBar({
             onSelectNode?.(container.id);
             const clickTreeGear = () =>
               document.querySelector<HTMLElement>(`[data-tree-gear-id="${container.id}"]`)?.click();
-            if (isStructurePanelOpen) {
+            if (isLayoutPanelOpen) {
               clickTreeGear();
               return;
             }
@@ -491,9 +491,9 @@ export default function TemplateEditorContainerBar({
             // click time, so clicking mid-transition (or even a couple of animation frames in —
             // a frame-to-frame "has it stopped moving" check can be fooled by the transition not
             // having visibly started yet) anchors it to the panel's still-collapsed position.
-            onOpenStructurePanel?.();
+            onOpenLayoutPanel?.();
             const waitForPanelThen = (cb: () => void) => {
-              const panelEl = document.querySelector<HTMLElement>(structurePanelSelector);
+              const panelEl = document.querySelector<HTMLElement>(layoutPanelSelector);
               if (!panelEl) {
                 requestAnimationFrame(() => waitForPanelThen(cb));
                 return;

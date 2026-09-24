@@ -14,6 +14,7 @@ import { PrimarySidebarPosition } from '@/types/layout';
 import { useUIPreferences } from '@/context/UIPreferencesContext';
 import { FieldType } from '@/types/field';
 import { FIELD_TYPE_METAS } from '@/lib/fieldTypeMetas';
+import { HIERARCHY_FILTER_METAS, HierarchyFilterCategory } from '@/lib/hierarchyFilterMetas';
 
 interface SearchAndFilterSectionProps {
   variant: 'flyout' | 'sidebar';
@@ -21,7 +22,8 @@ interface SearchAndFilterSectionProps {
   isPinned?: boolean;
   headerId: string;
   headerContainerRef: React.RefObject<HTMLDivElement | null>;
-  isInspector: boolean;
+  isContent: boolean;
+  isLayout: boolean;
   isCollections: boolean;
   isTemplates: boolean;
   /** Debug marker on the search input: the tree view if set, else the active dock tab. */
@@ -34,6 +36,10 @@ interface SearchAndFilterSectionProps {
   onToggleFilterFieldType: (type: FieldType) => void;
   onClearFieldTypeFilters: () => void;
   fieldTypeCounts: Record<string, number>;
+  filterHierarchyTypes: HierarchyFilterCategory[];
+  onToggleFilterHierarchyType: (type: HierarchyFilterCategory) => void;
+  onClearHierarchyTypeFilters: () => void;
+  hierarchyTypeCounts: Record<string, number>;
   collections: CollectionRecord[];
   filterCollectionIds: number[];
   onToggleFilterCollection: (collectionId: number) => void;
@@ -42,8 +48,8 @@ interface SearchAndFilterSectionProps {
 
 /**
  * The panel header's search bar, its collapsible "Filters Applied" chip list, and the Advanced
- * Search action-menu portal (field-type filters for the template inspector, collection filters
- * otherwise). Owns the menu's own open/closed and focus state.
+ * Search action-menu portal (field-type filters for the Content tab, node-category filters for
+ * the Layout tab, collection filters otherwise). Owns the menu's own open/closed and focus state.
  */
 export default function SearchAndFilterSection({
   variant,
@@ -51,7 +57,8 @@ export default function SearchAndFilterSection({
   isPinned,
   headerId,
   headerContainerRef,
-  isInspector,
+  isContent,
+  isLayout,
   isCollections,
   isTemplates,
   dataTreeSearchValue,
@@ -63,6 +70,10 @@ export default function SearchAndFilterSection({
   onToggleFilterFieldType,
   onClearFieldTypeFilters,
   fieldTypeCounts,
+  filterHierarchyTypes,
+  onToggleFilterHierarchyType,
+  onClearHierarchyTypeFilters,
+  hierarchyTypeCounts,
   collections,
   filterCollectionIds,
   onToggleFilterCollection,
@@ -82,13 +93,18 @@ export default function SearchAndFilterSection({
   const hasSearchFilter = searchPattern.length > 0;
   const hasCollectionFilters = filterCollectionIds.length > 0;
   const hasFieldTypeFilters = filterFieldTypes.length > 0;
-  const appliedFilterCount = isInspector
+  const hasHierarchyTypeFilters = filterHierarchyTypes.length > 0;
+  const appliedFilterCount = isContent
     ? filterFieldTypes.length + (hasSearchFilter ? 1 : 0)
+    : isLayout
+    ? filterHierarchyTypes.length + (hasSearchFilter ? 1 : 0)
     : filterCollectionIds.length + (hasSearchFilter ? 1 : 0);
   const isFilterActive = appliedFilterCount > 0;
   const clearAllFilters = () => {
-    if (isInspector) {
+    if (isContent) {
       onClearFieldTypeFilters();
+    } else if (isLayout) {
+      onClearHierarchyTypeFilters();
     } else {
       onClearCollectionFilters();
     }
@@ -124,7 +140,7 @@ export default function SearchAndFilterSection({
     <>
       <div className="tree-section-heading">
         <hr aria-hidden="true" />
-        <h3>Search and Filter ({isInspector ? 'Template Fields' : isCollections ? 'Collections' : isTemplates ? 'Templates' : 'Items'})</h3>
+        <h3>Search and Filter ({isContent ? 'Template Fields' : isLayout ? 'Layout & Content' : isCollections ? 'Collections' : isTemplates ? 'Templates' : 'Items'})</h3>
       </div>
       <div className="flex items-center gap-1.5 w-full">
         <div className={`tree-search-input tree-search-shell ${isRight ? 'tree-search-shell-right' : ''} relative flex-1 min-w-0 flex items-center ${searchQuery.length > 0 ? 'tree-search-input-active' : ''}`}>
@@ -177,17 +193,21 @@ export default function SearchAndFilterSection({
                   data-tree-search={dataTreeSearchValue}
                   data-search-position={isRight ? 'right' : 'left'}
                   aria-keyshortcuts={shortcutAria}
-                  aria-label={isInspector ? 'Search template fields' : isTemplates ? 'Search templates and items' : isCollections ? 'Search collections and items' : 'Search items'}
+                  aria-label={isContent ? 'Search template fields' : isLayout ? 'Search layout and content' : isTemplates ? 'Search templates and items' : isCollections ? 'Search collections and items' : 'Search items'}
                   value={searchQuery}
                   onChange={(e) => onSearchChange(e.target.value)}
                   onFocus={() => setIsSearchFocused(true)}
                   onBlur={() => setIsSearchFocused(false)}
                   title={searchInputTitle}
                   placeholder={
-                    isInspector
+                    isContent
                       ? hasFieldTypeFilters
                         ? 'Search filtered types...'
                         : 'Search fields...'
+                      : isLayout
+                      ? hasHierarchyTypeFilters
+                        ? 'Search filtered items...'
+                        : 'Search layout & content...'
                       : hasCollectionFilters
                       ? 'Search filtered collection...'
                       : 'Search...'
@@ -238,17 +258,21 @@ export default function SearchAndFilterSection({
                   data-tree-search={dataTreeSearchValue}
                   data-search-position={isRight ? 'right' : 'left'}
                   aria-keyshortcuts={shortcutAria}
-                  aria-label={isInspector ? 'Search template fields' : isTemplates ? 'Search templates and items' : isCollections ? 'Search collections and items' : 'Search items'}
+                  aria-label={isContent ? 'Search template fields' : isLayout ? 'Search layout and content' : isTemplates ? 'Search templates and items' : isCollections ? 'Search collections and items' : 'Search items'}
                   value={searchQuery}
                   onChange={(e) => onSearchChange(e.target.value)}
                   onFocus={() => setIsSearchFocused(true)}
                   onBlur={() => setIsSearchFocused(false)}
                   title={searchInputTitle}
                   placeholder={
-                    isInspector
+                    isContent
                       ? hasFieldTypeFilters
                         ? 'Search filtered types...'
                         : 'Search fields...'
+                      : isLayout
+                      ? hasHierarchyTypeFilters
+                        ? 'Search filtered items...'
+                        : 'Search layout & content...'
                       : hasCollectionFilters
                       ? 'Search filtered collection...'
                       : 'Search...'
@@ -358,7 +382,7 @@ export default function SearchAndFilterSection({
                 </span>
               </span>
             )}
-            {isInspector ? (
+            {isContent ? (
               filterFieldTypes.map((ft) => {
                 const meta = FIELD_TYPE_METAS.find((m) => m.type === ft);
                 if (!meta) return null;
@@ -371,6 +395,31 @@ export default function SearchAndFilterSection({
                     <button
                       type="button"
                       onClick={() => onToggleFilterFieldType?.(ft)}
+                      className="tree-filter-remove font-bold text-[10px] leading-none cursor-pointer pr-0.5 transition-colors"
+                      title={`Remove filter: ${meta.label}`}
+                    >
+                      ✕
+                    </button>
+                    <span className="text-[11px] tree-filter-indicator">{meta.icon}</span>
+                    <span className="tree-filter-name max-w-[110px] truncate font-medium transition-colors">
+                      {meta.label}
+                    </span>
+                  </span>
+                );
+              })
+            ) : isLayout ? (
+              filterHierarchyTypes.map((ht) => {
+                const meta = HIERARCHY_FILTER_METAS.find((m) => m.type === ht);
+                if (!meta) return null;
+
+                return (
+                  <span
+                    key={ht}
+                    className="group tree-filter-pill inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[11px] select-none transition-all"
+                  >
+                    <button
+                      type="button"
+                      onClick={() => onToggleFilterHierarchyType(ht)}
                       className="tree-filter-remove font-bold text-[10px] leading-none cursor-pointer pr-0.5 transition-colors"
                       title={`Remove filter: ${meta.label}`}
                     >
@@ -425,12 +474,12 @@ export default function SearchAndFilterSection({
         position={position}
         isPinned={isPinned}
         triggerRef={triggerBtnRef}
-        title={isInspector ? 'Filter Field Types' : 'Advanced Search'}
+        title={isContent ? 'Filter Field Types' : isLayout ? 'Filter Layout Items' : 'Advanced Search'}
         titleIcon={
           <SlidersHorizontalIcon className="w-3.5 h-3.5 text-[var(--brand-secondary-amber)]" isActive={true} />
         }
       >
-        {isInspector ? (
+        {isContent ? (
           <div className="flex flex-col gap-1.5 px-1 py-1">
             <div className="flex items-center justify-between px-2 py-1">
               <div className="flex items-center gap-2">
@@ -447,38 +496,26 @@ export default function SearchAndFilterSection({
 
             <div className="my-1 mx-2 tree-menu-divider" />
 
-            {/* Select All / Deselect All Toggle */}
+            {/* Nothing excluded by default -- every box starts checked (matches everything), so
+                this row is a reset-to-default action once something's been unchecked, not a
+                second way to build a selection from scratch. */}
             {(() => {
-              const allSelected =
-                FIELD_TYPE_METAS.length > 0 &&
-                FIELD_TYPE_METAS.every((m) => filterFieldTypes.includes(m.type));
-              const hasSome = filterFieldTypes.length > 0;
-              const isIndeterminate = hasSome && !allSelected;
-
               return (
                 <div className="mx-2 px-1 py-1 flex items-center justify-between">
                   <label className="flex items-center gap-2 cursor-pointer select-none">
                     <input
                       type="checkbox"
-                      checked={allSelected}
+                      checked={!hasFieldTypeFilters}
                       ref={(input) => {
-                        if (input) input.indeterminate = isIndeterminate;
+                        if (input) input.indeterminate = hasFieldTypeFilters;
                       }}
                       onChange={() => {
-                        if (allSelected || isIndeterminate) {
-                          onClearFieldTypeFilters();
-                        } else {
-                          FIELD_TYPE_METAS.forEach((m) => {
-                            if (!filterFieldTypes.includes(m.type)) {
-                              onToggleFilterFieldType(m.type);
-                            }
-                          });
-                        }
+                        if (hasFieldTypeFilters) onClearFieldTypeFilters();
                       }}
                       className="tree-filter-checkbox w-3.5 h-3.5 rounded cursor-pointer shrink-0"
                     />
                     <span className="text-[11px] font-semibold tree-filter-option-label transition-colors">
-                      {allSelected || isIndeterminate ? 'Deselect All' : 'Select All'}
+                      {hasFieldTypeFilters ? 'Show All' : 'Showing All'}
                     </span>
                   </label>
 
@@ -494,13 +531,109 @@ export default function SearchAndFilterSection({
             {/* Field Types List */}
             <div className="flex flex-col gap-0.5 max-h-56 overflow-y-auto px-1">
               {FIELD_TYPE_METAS.map(({ type, label, icon }) => {
-                const isChecked = filterFieldTypes.includes(type);
+                const isChecked = !hasFieldTypeFilters || filterFieldTypes.includes(type);
                 const count = fieldTypeCounts[type] ?? 0;
 
                 return (
                   <div
                     key={type}
                     onClick={() => onToggleFilterFieldType(type)}
+                    className={`tree-filter-row flex items-center justify-between px-2 py-1.5 rounded-lg text-xs cursor-pointer select-none transition ${
+                      isChecked ? 'tree-filter-row-selected' : ''
+                    }`}
+                  >
+                    <div className="flex items-center gap-2 min-w-0">
+                      <input
+                        type="checkbox"
+                        checked={isChecked}
+                        onChange={() => {}} // handled by parent div onClick
+                        className="tree-filter-checkbox w-3.5 h-3.5 rounded cursor-pointer shrink-0"
+                      />
+                      <span className="text-sm shrink-0">{icon}</span>
+                      <span className="font-medium text-xs truncate">{label}</span>
+                    </div>
+                    <span className="text-[10px] font-mono tree-panel-muted shrink-0 ml-2">
+                      ({count})
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+
+            {isFilterActive && (
+              <div className="border-t border-[var(--tree-menu-divider,rgba(245,158,11,0.2))] mt-0.5 pt-1.5 px-2 pb-0.5">
+                <button
+                  type="button"
+                  onClick={() => {
+                    clearAllFilters();
+                    setShowAdvancedSearch(false);
+                  }}
+                  className="tree-filter-clear text-[10px] w-full font-semibold transition text-right cursor-pointer"
+                >
+                  ✕ Clear Filters
+                </button>
+              </div>
+            )}
+          </div>
+        ) : isLayout ? (
+          <div className="flex flex-col gap-1.5 px-1 py-1">
+            <div className="flex items-center justify-between px-2 py-1">
+              <div className="flex items-center gap-2">
+                <span className="w-4 shrink-0 flex items-center justify-center text-sm">🎛️</span>
+                <span className="text-xs font-medium tree-panel-primary">Show:</span>
+              </div>
+              <span
+                title={`${HIERARCHY_FILTER_METAS.length} kinds of item`}
+                className="tree-filter-option px-2 py-0.5 rounded-md text-[10px] font-mono font-bold shrink-0 select-none"
+              >
+                {HIERARCHY_FILTER_METAS.length}
+              </span>
+            </div>
+
+            <div className="my-1 mx-2 tree-menu-divider" />
+
+            {/* Nothing excluded by default -- every box starts checked (matches everything), so
+                this row is a reset-to-default action once something's been unchecked, not a
+                second way to build a selection from scratch. */}
+            {(() => {
+              return (
+                <div className="mx-2 px-1 py-1 flex items-center justify-between">
+                  <label className="flex items-center gap-2 cursor-pointer select-none">
+                    <input
+                      type="checkbox"
+                      checked={!hasHierarchyTypeFilters}
+                      ref={(input) => {
+                        if (input) input.indeterminate = hasHierarchyTypeFilters;
+                      }}
+                      onChange={() => {
+                        if (hasHierarchyTypeFilters) onClearHierarchyTypeFilters();
+                      }}
+                      className="tree-filter-checkbox w-3.5 h-3.5 rounded cursor-pointer shrink-0"
+                    />
+                    <span className="text-[11px] font-semibold tree-filter-option-label transition-colors">
+                      {hasHierarchyTypeFilters ? 'Show All' : 'Showing All'}
+                    </span>
+                  </label>
+
+                  {hasHierarchyTypeFilters && (
+                    <span className="text-[10px] font-mono tree-panel-accent">
+                      {filterHierarchyTypes.length}/{HIERARCHY_FILTER_METAS.length}
+                    </span>
+                  )}
+                </div>
+              );
+            })()}
+
+            {/* Category List */}
+            <div className="flex flex-col gap-0.5 max-h-56 overflow-y-auto px-1">
+              {HIERARCHY_FILTER_METAS.map(({ type, label, icon }) => {
+                const isChecked = !hasHierarchyTypeFilters || filterHierarchyTypes.includes(type);
+                const count = hierarchyTypeCounts[type] ?? 0;
+
+                return (
+                  <div
+                    key={type}
+                    onClick={() => onToggleFilterHierarchyType(type)}
                     className={`tree-filter-row flex items-center justify-between px-2 py-1.5 rounded-lg text-xs cursor-pointer select-none transition ${
                       isChecked ? 'tree-filter-row-selected' : ''
                     }`}
@@ -555,48 +688,35 @@ export default function SearchAndFilterSection({
 
             <div className="my-1 mx-2 tree-menu-divider" />
 
-            {collections.length > 0 && (() => {
-              const allSelected =
-                collections.length > 0 &&
-                collections.every((col) => filterCollectionIds.includes(col.id));
-              const hasSome = collections.some((col) => filterCollectionIds.includes(col.id));
-              const isIndeterminate = hasSome && !allSelected;
+            {/* Nothing excluded by default -- every box starts checked (matches everything), so
+                this row is a reset-to-default action once something's been unchecked, not a
+                second way to build a selection from scratch. */}
+            {collections.length > 0 && (
+              <div className="mx-2 px-1 py-1 flex items-center justify-between">
+                <label className="flex items-center gap-2 cursor-pointer select-none">
+                  <input
+                    type="checkbox"
+                    checked={!hasCollectionFilters}
+                    ref={(input) => {
+                      if (input) input.indeterminate = hasCollectionFilters;
+                    }}
+                    onChange={() => {
+                      if (hasCollectionFilters) onClearCollectionFilters();
+                    }}
+                    className="tree-filter-checkbox w-3.5 h-3.5 rounded cursor-pointer shrink-0"
+                  />
+                  <span className="text-[11px] font-semibold tree-filter-option-label transition-colors">
+                    {hasCollectionFilters ? 'Show All' : 'Showing All'}
+                  </span>
+                </label>
 
-              return (
-                <div className="mx-2 px-1 py-1 flex items-center justify-between">
-                  <label className="flex items-center gap-2 cursor-pointer select-none">
-                    <input
-                      type="checkbox"
-                      checked={collections.length > 0 && allSelected}
-                      ref={(input) => {
-                        if (input) input.indeterminate = isIndeterminate;
-                      }}
-                      onChange={() => {
-                        if (allSelected || isIndeterminate) {
-                          onClearCollectionFilters();
-                        } else {
-                          collections.forEach((col) => {
-                            if (!filterCollectionIds.includes(col.id)) {
-                              onToggleFilterCollection(col.id);
-                            }
-                          });
-                        }
-                      }}
-                      className="tree-filter-checkbox w-3.5 h-3.5 rounded cursor-pointer shrink-0"
-                    />
-                    <span className="text-[11px] font-semibold tree-filter-option-label transition-colors">
-                      {allSelected || isIndeterminate ? 'Deselect All' : 'Select All'}
-                    </span>
-                  </label>
-
-                  {hasCollectionFilters && (
-                    <span className="text-[10px] font-mono tree-panel-accent">
-                      {filterCollectionIds.length}/{collections.length}
-                    </span>
-                  )}
-                </div>
-              );
-            })()}
+                {hasCollectionFilters && (
+                  <span className="text-[10px] font-mono tree-panel-accent">
+                    {filterCollectionIds.length}/{collections.length}
+                  </span>
+                )}
+              </div>
+            )}
 
             <CollectionFilterTree
               collections={collections}

@@ -280,6 +280,75 @@ export const TemplatesTabIcon = ({ className = 'w-3.5 h-3.5' }: { className?: st
   </svg>
 );
 
+/** LayoutTabIcon: three boxes (header + two footer columns) linked by connector lines, for the
+    template editor's Layout tab (the container tree, formerly "Structure"). */
+export const LayoutTabIcon = ({ className = 'w-3.5 h-3.5' }: { className?: string }) => (
+  <svg
+    className={className}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.8"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden="true"
+  >
+    <rect x="9" y="3" width="6" height="4" rx="1" />
+    <rect x="3" y="17" width="6" height="4" rx="1" />
+    <rect x="15" y="17" width="6" height="4" rx="1" />
+    <path d="M12 7v5" />
+    <path d="M6 12h12" />
+    <path d="M6 12v5" />
+    <path d="M18 12v5" />
+  </svg>
+);
+
+/** ContentTabIcon: a bulleted list beside two content blocks, for the template editor's Content
+    tab (fields and other droppable content, formerly "Inspector"). */
+export const ContentTabIcon = ({ className = 'w-3.5 h-3.5' }: { className?: string }) => (
+  <svg
+    className={className}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.8"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden="true"
+  >
+    <rect x="4" y="4" width="16" height="16" rx="2" />
+    <circle cx="7.5" cy="8" r=".6" fill="currentColor" stroke="none" />
+    <circle cx="7.5" cy="11" r=".6" fill="currentColor" stroke="none" />
+    <circle cx="7.5" cy="14" r=".6" fill="currentColor" stroke="none" />
+    <circle cx="7.5" cy="17" r=".6" fill="currentColor" stroke="none" />
+    <rect x="10" y="7" width="7" height="3" rx=".7" />
+    <rect x="10" y="12" width="7" height="5" rx=".7" />
+  </svg>
+);
+
+/** ComponentsTabIcon: a panel holding a media block, a couple of text lines, and two more
+    component blocks, for the template editor's Components tab (the pre-set drag-in content
+    palette, formerly "Layout Builder"). */
+export const ComponentsTabIcon = ({ className = 'w-3.5 h-3.5' }: { className?: string }) => (
+  <svg
+    className={className}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.8"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden="true"
+  >
+    <rect x="4" y="4" width="16" height="16" rx="2" />
+    <rect x="7" y="7" width="4" height="4" rx=".8" />
+    <path d="M13 8h4" />
+    <path d="M13 10h3" />
+    <rect x="7" y="14" width="4" height="3" rx=".8" />
+    <rect x="13" y="13.5" width="4" height="4" rx=".8" />
+  </svg>
+);
+
 /* PanelFolderTabSvg: Reusable paper folder tab shape for side and bottom panels */
 interface PanelFolderTabSvgProps {
   gradientId: string;

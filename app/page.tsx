@@ -12,6 +12,7 @@ import PrimarySidePanel from '@/components/PrimarySidePanel';
 import PrimarySidePanelHeader from '@/components/PrimarySidePanelHeader';
 import SecondarySidePanel from '@/components/SecondarySidePanel';
 import BottomPanel from '@/components/BottomPanel';
+import { ComponentsTabIcon } from '@/components/icons/PanelIcons';
 import PanelDockDropZones from '@/components/PanelDockDropZones';
 import ModalContainers from '@/components/ModalContainers';
 import DynamicWatermark from '@/components/DynamicWatermark';
@@ -196,16 +197,16 @@ export default function Home() {
   const hierarchy = useHierarchyState(templateEditor);
   const { hierarchyNodeCount, handleOpenProperties, handlePlaceField, handlePlaceLoremIpsum, handleAddContainer } = hierarchy;
 
-  // The Structure tab can be docked to either side; the toolbar gear needs to open and sync to
+  // The Layout tab can be docked to either side; the toolbar gear needs to open and sync to
   // whichever one actually holds it, not always the left.
-  const isStructureOnSecondary = secondaryTabs.includes('template_hierarchy');
-  const isStructurePanelOpen = isStructureOnSecondary ? isSecondaryActive : isPrimaryActive;
-  const structurePanelSelector = isStructureOnSecondary ? '.secondary-side-panel' : '.primary-side-panel';
+  const isLayoutOnSecondary = secondaryTabs.includes('template_hierarchy');
+  const isLayoutPanelOpen = isLayoutOnSecondary ? isSecondaryActive : isPrimaryActive;
+  const layoutPanelSelector = isLayoutOnSecondary ? '.secondary-side-panel' : '.primary-side-panel';
 
-  // Opens the side panel that holds the Structure tab, unpinned — used when the template editor's
+  // Opens the side panel that holds the Layout tab, unpinned — used when the template editor's
   // toolbar gear is clicked while that panel is closed.
-  const openStructurePanel = () => {
-    if (isStructureOnSecondary) {
+  const openLayoutPanel = () => {
+    if (isLayoutOnSecondary) {
       setSecondaryActiveTab('template_hierarchy');
       setIsSecondaryOpen(true);
       return;
@@ -471,7 +472,7 @@ export default function Home() {
       onTabChange={handlePrimaryTabChange}
       hasDockedContent={primaryTabs.length > 0}
       isContentSliding={slidingState !== null && !(slidingState.incomingContent && slidingState.from === 'left' && slidingState.isMoving)}
-      showSearchFilter={primaryActiveTab === 'items' || primaryActiveTab === 'collections' || primaryActiveTab === 'templates' || primaryActiveTab === 'template_editor'}
+      showSearchFilter={primaryActiveTab === 'items' || primaryActiveTab === 'collections' || primaryActiveTab === 'templates' || primaryActiveTab === 'template_editor' || primaryActiveTab === 'template_hierarchy'}
       hierarchyNodeCount={hierarchyNodeCount}
       variant="sidebar"
       position="left"
@@ -639,9 +640,9 @@ export default function Home() {
               canRedo={templateEditor.canRedoLayout}
               onUndo={templateEditor.undoLayout}
               onRedo={templateEditor.redoLayout}
-              isStructurePanelOpen={isStructurePanelOpen}
-              onOpenStructurePanel={openStructurePanel}
-              structurePanelSelector={structurePanelSelector}
+              isLayoutPanelOpen={isLayoutPanelOpen}
+              onOpenLayoutPanel={openLayoutPanel}
+              layoutPanelSelector={layoutPanelSelector}
             />
           </div>
 
@@ -651,24 +652,29 @@ export default function Home() {
             isPinned={isBottomPinned}
             title={
               bottomPanelContent === 'template_builder'
-                ? 'LAYOUT BUILDER'
+                ? 'COMPONENTS'
                 : bottomPanelContent === 'grabbed_content'
                 ? 'GRABBED CONTENT'
                 : 'BOTTOM PANEL'
             }
             tabLabel={
               bottomPanelContent === 'template_builder'
-                ? 'Builder'
+                ? 'Components'
                 : bottomPanelContent === 'grabbed_content'
                 ? 'Grabbed Content'
                 : undefined
             }
             tabTitle={
               bottomPanelContent === 'template_builder'
-                ? 'Template Layout Builder (drag to move tab)'
+                ? 'Components (drag to move tab)'
                 : bottomPanelContent === 'grabbed_content'
                 ? 'Grabbed Content (drag to move tab)'
                 : undefined
+            }
+            tabIcon={
+              bottomPanelContent === 'template_builder' ? (
+                <ComponentsTabIcon className="w-[22.5px] h-[22.5px]" />
+              ) : undefined
             }
             onStartTabDrag={(e) => {
               if (bottomPanelContent !== 'empty') {
@@ -718,7 +724,7 @@ export default function Home() {
             onTabChange={handleSecondaryTabChange}
             hasDockedContent={secondaryTabs.length > 0}
             isContentSliding={slidingState !== null && !(slidingState.incomingContent && slidingState.from === 'right' && slidingState.isMoving)}
-            showSearchFilter={secondaryActiveTab === 'items' || secondaryActiveTab === 'collections' || secondaryActiveTab === 'templates' || secondaryActiveTab === 'template_editor'}
+            showSearchFilter={secondaryActiveTab === 'items' || secondaryActiveTab === 'collections' || secondaryActiveTab === 'templates' || secondaryActiveTab === 'template_editor' || secondaryActiveTab === 'template_hierarchy'}
             hierarchyNodeCount={hierarchyNodeCount}
             isOpen={isSecondaryActive}
             isPinned={isSecondaryPinned}

@@ -6,6 +6,8 @@ import { createTemplateField, deleteTemplateField, reorderTemplateFields, update
 import { ItemTemplate } from '@/types/template';
 import { FieldDefinition, FieldType } from '@/types/field';
 import { TemplateFlexLayoutConfig, isFlexLayoutConfig, createDefaultFlexLayout, findFlexNode } from '@/types/layout';
+import { HierarchyFilterCategory, HIERARCHY_FILTER_METAS } from '@/lib/hierarchyFilterMetas';
+import { FIELD_TYPE_METAS } from '@/lib/fieldTypeMetas';
 import { DockContent } from '@/hooks/usePanelDockDrag';
 import { errorMessage } from '@/lib/errors';
 import { useTemplateLayoutTree } from '@/hooks/useTemplateLayoutTree';
@@ -48,6 +50,8 @@ export function useTemplateEditor({
   const [isRootSelected, setIsRootSelected] = useState<boolean>(false);
   const [fieldSearchQuery, setFieldSearchQuery] = useState<string>('');
   const [filterFieldTypes, setFilterFieldTypes] = useState<FieldType[]>([]);
+  const [hierarchySearchQuery, setHierarchySearchQuery] = useState<string>('');
+  const [filterHierarchyTypes, setFilterHierarchyTypes] = useState<HierarchyFilterCategory[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isSaving, setIsSaving] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -66,14 +70,35 @@ export function useTemplateEditor({
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
   const [canvasMode, setCanvasMode] = useState<'edit' | 'preview'>('edit');
 
+  // An empty filter array means "nothing excluded" -- shown as every box checked, not every box
+  // unchecked, since that's what it actually does (matches everything). So toggling treats "empty"
+  // as "everything currently selected" and unchecking one; toggling back up to the full set
+  // collapses back to empty rather than sitting at a redundant "all N explicitly listed" state,
+  // which would needlessly show the "filter applied" indicator for a filter that changes nothing.
   const toggleFieldTypeFilter = useCallback((type: FieldType) => {
-    setFilterFieldTypes((prev) =>
-      prev.includes(type) ? prev.filter((t) => t !== type) : [...prev, type]
-    );
+    setFilterFieldTypes((prev) => {
+      const allTypes = FIELD_TYPE_METAS.map((m) => m.type);
+      const effective = prev.length === 0 ? allTypes : prev;
+      const next = effective.includes(type) ? effective.filter((t) => t !== type) : [...effective, type];
+      return next.length === allTypes.length ? [] : next;
+    });
   }, []);
 
   const clearFieldTypeFilters = useCallback(() => {
     setFilterFieldTypes([]);
+  }, []);
+
+  const toggleHierarchyTypeFilter = useCallback((type: HierarchyFilterCategory) => {
+    setFilterHierarchyTypes((prev) => {
+      const allTypes = HIERARCHY_FILTER_METAS.map((m) => m.type);
+      const effective = prev.length === 0 ? allTypes : prev;
+      const next = effective.includes(type) ? effective.filter((t) => t !== type) : [...effective, type];
+      return next.length === allTypes.length ? [] : next;
+    });
+  }, []);
+
+  const clearHierarchyTypeFilters = useCallback(() => {
+    setFilterHierarchyTypes([]);
   }, []);
 
   const toggleCanvasMode = useCallback(() => {
@@ -219,7 +244,7 @@ export function useTemplateEditor({
    * 1. Takes snapshot of existing docked tabs
    * 2. Sets editingTemplateId
    * 3. Loads template & fields & layout
-   * 4. Focuses Inspector and Properties tabs in right sidebar, and Builder in bottom panel
+   * 4. Focuses Content and Properties tabs in right sidebar, and Components in bottom panel
    */
   const startEditing = useCallback(
     async (templateId: number) => {
@@ -235,21 +260,23 @@ export function useTemplateEditor({
       setEditingTemplateId(rawId);
       setFieldSearchQuery('');
       setFilterFieldTypes([]);
+      setHierarchySearchQuery('');
+      setFilterHierarchyTypes([]);
       setSuccessMsg(null);
       setCanvasMode('edit');
       clearLayoutHistory();
 
-      // 2. Open left panel with Content (Hierarchy)
+      // 2. Open left panel with Layout (the container hierarchy)
       if (onOpenPrimaryPanel) {
         onOpenPrimaryPanel(['template_hierarchy'], 'template_hierarchy');
       }
 
-      // 3. Open right panel with Template Inspector
+      // 3. Open right panel with Content
       if (onOpenSecondaryPanel) {
         onOpenSecondaryPanel(['template_editor'], 'template_editor');
       }
 
-      // 4. Open bottom panel with Builder (Layout & Components tabs)
+      // 4. Open bottom panel with Components (its own Layout & Components sub-tabs)
       if (onOpenBottomPanel) {
         onOpenBottomPanel('template_builder');
       }
@@ -276,6 +303,8 @@ export function useTemplateEditor({
     setIsRootSelected(false);
     setFieldSearchQuery('');
     setFilterFieldTypes([]);
+    setHierarchySearchQuery('');
+    setFilterHierarchyTypes([]);
     setError(null);
     setSuccessMsg(null);
     clearLayoutHistory();
@@ -523,12 +552,18 @@ export function useTemplateEditor({
     filterFieldTypes,
     toggleFieldTypeFilter,
     clearFieldTypeFilters,
+    hierarchySearchQuery,
+    filterHierarchyTypes,
+    toggleHierarchyTypeFilter,
+    clearHierarchyTypeFilters,
     isLoading,
     isSaving,
     error,
     successMsg,
     setFieldSearchQuery,
     setFilterFieldTypes,
+    setHierarchySearchQuery,
+    setFilterHierarchyTypes,
     setSelectedFieldId: (id: number | null) => {
       setSelectedFieldId(id);
       setIsRootSelected(id === null);

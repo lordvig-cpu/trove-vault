@@ -81,7 +81,7 @@ test.describe('Template Layout Engine', () => {
     expect(isDockZoneAllowed('template_hierarchy', 'bottom')).toBe(false);
   });
 
-  test('displays paper folder tabs in both Structure (left) and Inspector (right) panels during template editing', async ({ page }) => {
+  test('displays paper folder tabs in both Layout (left) and Content (right) panels during template editing', async ({ page }) => {
     await page.goto('/');
     await page.waitForLoadState('networkidle');
 
@@ -96,18 +96,18 @@ test.describe('Template Layout Engine', () => {
     await page.locator('button', { hasText: 'Edit Template' }).click();
     await page.waitForTimeout(1000);
 
-    // 1. Structure tab in left panel
+    // 1. Layout tab in left panel (icon-only, so check its aria-label rather than rendered text)
     const leftTab = page.locator('.primary-side-panel button[role="tab"]');
     await expect(leftTab).toHaveCount(1);
-    await expect(leftTab.first()).toContainText('Structure');
+    await expect(leftTab.first()).toHaveAttribute('aria-label', 'Layout');
 
     const leftHeading = page.locator('.primary-side-panel .tree-section-heading h3');
     await expect(leftHeading).toContainText('Layout & Content');
 
-    // 2. Only Inspector tab in right panel (Properties tab has been safely removed)
+    // 2. Only Content tab in right panel (Properties tab has been safely removed)
     const rightTabs = page.locator('.secondary-side-panel button[role="tab"]');
     await expect(rightTabs).toHaveCount(1);
-    await expect(rightTabs.nth(0)).toContainText('Inspector');
+    await expect(rightTabs.nth(0)).toHaveAttribute('aria-label', 'Content');
     await expect(rightTabs.nth(0)).toHaveAttribute('aria-selected', 'true');
   });
 
@@ -232,7 +232,7 @@ test.describe('Template Layout Engine', () => {
     await page.keyboard.press('Control+l');
     await expect(rightSearch).toBeFocused();
 
-    // Now open template editor so right panel has Inspector search
+    // Now open template editor so right panel has Content search
     const templatesNav = page.locator('header button', { hasText: 'TEMPLATES' });
     await templatesNav.click();
     await page.waitForTimeout(500);
@@ -243,19 +243,19 @@ test.describe('Template Layout Engine', () => {
     await page.locator('button', { hasText: 'Edit Template' }).click();
     await page.waitForTimeout(1000);
 
-    // In template editor: right panel has Inspector search with Ctrl-L
-    const inspectorSearch = page.locator('.secondary-side-panel [data-search-position="right"]');
-    await expect(inspectorSearch).toBeVisible();
-    await expect(inspectorSearch).toHaveAttribute('aria-keyshortcuts', 'Control+L Meta+L');
-    await expect(inspectorSearch).toHaveAttribute('title', /Ctrl-L/);
+    // In template editor: right panel has Content search with Ctrl-L
+    const contentSearch = page.locator('.secondary-side-panel [data-search-position="right"]');
+    await expect(contentSearch).toBeVisible();
+    await expect(contentSearch).toHaveAttribute('aria-keyshortcuts', 'Control+L Meta+L');
+    await expect(contentSearch).toHaveAttribute('title', /Ctrl-L/);
 
-    // Press Ctrl+L -> Inspector search gets focused
+    // Press Ctrl+L -> Content search gets focused
     await page.keyboard.press('Control+l');
-    await expect(inspectorSearch).toBeFocused();
+    await expect(contentSearch).toBeFocused();
 
     // Type a query in right search
     await page.keyboard.type('play_time');
-    await expect(inspectorSearch).toHaveValue('play_time');
+    await expect(contentSearch).toHaveValue('play_time');
   });
 
   test('opens template editor from Items panel category gear -> Edit Item Template without error', async ({ page }) => {
@@ -285,15 +285,15 @@ test.describe('Template Layout Engine', () => {
     await editTemplateBtn.click();
     await page.waitForTimeout(1000);
 
-    // 5. Verify Structure panel is loaded on the left (contains Body)
-    const structurePanel = page.locator('.primary-side-panel');
-    await expect(structurePanel).toContainText('STRUCTURE');
-    await expect(structurePanel).toContainText('Body');
+    // 5. Verify Layout panel is loaded on the left (contains Body)
+    const layoutPanel = page.locator('.primary-side-panel');
+    await expect(layoutPanel).toContainText('LAYOUT');
+    await expect(layoutPanel).toContainText('Body');
 
-    // 6. Verify Template Inspector is loaded on the right (contains Board Games & Tabletop)
-    const inspectorPanel = page.locator('.secondary-side-panel');
-    await expect(inspectorPanel).toContainText('TEMPLATE INSPECTOR');
-    await expect(inspectorPanel).toContainText('Board Games & Tabletop');
+    // 6. Verify Content panel is loaded on the right (contains Board Games & Tabletop)
+    const contentPanel = page.locator('.secondary-side-panel');
+    await expect(contentPanel).toContainText('CONTENT');
+    await expect(contentPanel).toContainText('Board Games & Tabletop');
 
     // 7. Verify the editor toolbar shows the template's name (the template-wide toolbar, footer slot)
     const editorToolbar = page.locator('#template-toolbar-slot-bottom');

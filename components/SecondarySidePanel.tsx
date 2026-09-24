@@ -66,6 +66,10 @@ interface SecondarySidePanelProps {
   onClearFieldTypeFilters?: () => void;
   fieldTypeCounts?: Record<string, number>;
   onAddNewField?: () => void;
+  filterHierarchyTypes?: import('@/lib/hierarchyFilterMetas').HierarchyFilterCategory[];
+  onToggleFilterHierarchyType?: (type: import('@/lib/hierarchyFilterMetas').HierarchyFilterCategory) => void;
+  onClearHierarchyTypeFilters?: () => void;
+  hierarchyTypeCounts?: Record<string, number>;
   onStartTabDrag?: (tab: Exclude<DockContent, 'empty'>, e: React.PointerEvent) => void;
   isDragging?: boolean;
   reorderInfo?: TabReorderInfo | null;
@@ -123,6 +127,10 @@ export default function SecondarySidePanel({
   onClearFieldTypeFilters,
   fieldTypeCounts,
   onAddNewField,
+  filterHierarchyTypes,
+  onToggleFilterHierarchyType,
+  onClearHierarchyTypeFilters,
+  hierarchyTypeCounts,
   onStartTabDrag,
   isDragging: isDockDragging = false,
   reorderInfo = null,
@@ -303,6 +311,10 @@ export default function SecondarySidePanel({
           onClearFieldTypeFilters={onClearFieldTypeFilters}
           fieldTypeCounts={fieldTypeCounts}
           onAddNewField={onAddNewField}
+          filterHierarchyTypes={filterHierarchyTypes}
+          onToggleFilterHierarchyType={onToggleFilterHierarchyType}
+          onClearHierarchyTypeFilters={onClearHierarchyTypeFilters}
+          hierarchyTypeCounts={hierarchyTypeCounts}
           onHandlePointerDown={onHandlePointerDown}
           onStartTabDrag={onStartTabDrag}
           isDragging={isDockDragging}
