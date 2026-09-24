@@ -60,7 +60,7 @@ export default function FlexContainerRenderer({
   ) => string;
   onUpdateContainer?: (id: string, partial: Partial<FlexContainerNode>) => void;
   onRemoveContainer?: (id: string) => void;
-  onSplitContainer?: (containerId: string, splitType: 'columns' | 'rows') => void;
+  onSplitContainer?: (containerId: string, splitType: 'columns' | 'rows', measuredPx: number) => void;
   onUpdateComponent?: (id: string, partial: Partial<FlexComponentNode>) => void;
   onRemoveComponent?: (id: string) => void;
   onPlaceField?: (fieldId: number, targetContainerId?: string) => void;

@@ -35,25 +35,6 @@ export function parsePxValue(raw?: string | null): number | null {
   return m ? parseFloat(m[1]) : null;
 }
 
-const fmtNum = (n: number) => `${Math.round(n * 10) / 10}`;
-
-/**
- * Size of ONE of two equal halves of `raw`. Supports px, %, and calc(P% - Qpx);
- * anything else (fill/unknown) is simply half the parent: 50%.
- */
-export function halveCssLength(raw?: string | null): string {
-  const val = (raw || '').trim();
-  const px = parsePxValue(val);
-  if (px !== null && /px$/i.test(val)) return `${fmtNum(px / 2)}px`;
-  const pct = val.match(/^(\d+(?:\.\d+)?)%$/);
-  if (pct) return `${fmtNum(parseFloat(pct[1]) / 2)}%`;
-  const calc = val.match(/^calc\(\s*(\d+(?:\.\d+)?)%\s*-\s*(\d+(?:\.\d+)?)px\s*\)$/i);
-  if (calc) {
-    return `calc(${fmtNum(parseFloat(calc[1]) / 2)}% - ${fmtNum(parseFloat(calc[2]) / 2)}px)`;
-  }
-  return '50%';
-}
-
 /** Preview widths offered in the editor zoom panel (editor-only; templates themselves are fluid). */
 export const BODY_WIDTH_PRESETS = [2560, 1920, 1440, 1280, 1024, 768, 390];
 

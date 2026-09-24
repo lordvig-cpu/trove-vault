@@ -245,9 +245,9 @@ export function useTemplateLayoutTree({
   );
 
   const splitFlexContainer = useCallback(
-    (targetContainerId: string, splitType: 'columns' | 'rows'): string => {
+    (targetContainerId: string, splitType: 'columns' | 'rows', measuredPx: number): string => {
       if (!flexLayoutConfig) return '';
-      const result = splitContainer(flexLayoutConfig.root, targetContainerId, splitType);
+      const result = splitContainer(flexLayoutConfig.root, targetContainerId, splitType, measuredPx);
       if (!result) return '';
       saveFlexLayoutConfig({ ...flexLayoutConfig, root: result.root });
       // The container that was split stays selected, not the new half

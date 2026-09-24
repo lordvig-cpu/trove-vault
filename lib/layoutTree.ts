@@ -4,8 +4,6 @@ import {
   FlexSizing,
   findFlexNode,
   findParentFlexContainer,
-  halveCssLength,
-  parsePxValue,
   resolveDirection,
 } from '@/types/layout';
 
@@ -150,7 +148,14 @@ export interface SplitResult {
 export function splitContainer(
   root: FlexContainerNode,
   targetId: string,
-  splitType: 'columns' | 'rows'
+  splitType: 'columns' | 'rows',
+  /**
+   * The container's current on-screen size in px along the axis being split: width for columns,
+   * height for rows. Most containers are Auto/fill with no stored width or height to derive a half
+   * from, so the caller measures the real rendered box (like the Custom-sizing toolbar button
+   * does) and passes it in; this function only ever halves that live number.
+   */
+  measuredPx: number
 ): SplitResult | null {
   if (targetId === root.id) return null;
 
@@ -167,31 +172,18 @@ export function splitContainer(
 
   const parentDir = parent.direction;
   const targetSizing: FlexSizing = target.sizing || { type: 'fill' };
-  const targetWidthRaw = (targetSizing.type === 'fixed' && targetSizing.value) || target.width || undefined;
-  const targetHeightRaw = target.height || targetSizing.height || undefined;
-  const targetHeightPx = /px$/i.test(targetHeightRaw || '') ? parsePxValue(targetHeightRaw) : null;
 
   // Rows stack children of a column parent; columns sit side by side in a row parent.
   // In any other parent, wrap the two halves in a new container so neither the parent's
   // direction nor its other children are disturbed.
   const inPlace = splitType === 'columns' ? parentDir === 'row' : parentDir === 'column';
 
-  // Height: columns share the target's height; rows split it (px only).
-  const halfHeight =
-    splitType === 'rows' && targetHeightPx !== null
-      ? `${Math.max(0, targetHeightPx / 2)}px`
-      : targetHeightRaw;
+  const halfPx = `${Math.max(0, measuredPx / 2)}px`;
 
-  // Width / basis of each half
-  let halfSizing: FlexSizing;
-  if (splitType === 'columns') {
-    halfSizing = { type: 'fixed', value: inPlace ? halveCssLength(targetWidthRaw) : '50%' };
-  } else {
-    halfSizing =
-      inPlace && targetSizing.type === 'fixed' && targetSizing.value
-        ? { type: 'fixed', value: targetSizing.value }
-        : { type: 'fixed', value: '100%' };
-  }
+  // Only the axis being split changes: columns go Custom-width and leave height alone; rows go
+  // Custom-height and leave width/sizing alone (so an Auto-width row split stays Auto-width).
+  const halfSizing: FlexSizing = splitType === 'columns' ? { ...targetSizing, type: 'fixed', value: halfPx } : targetSizing;
+  const halfHeight = splitType === 'rows' ? halfPx : target.height;
 
   const withDims = (node: FlexContainerNode, sizing: FlexSizing, height?: string): FlexContainerNode => ({
     ...node,

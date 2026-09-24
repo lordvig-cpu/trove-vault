@@ -37,6 +37,14 @@ import {
 // No direction here: the editor picks one based on the parent (see defaultChildDirection)
 const NEW_CONTAINER = { label: 'New Container', padding: 0, sizing: { type: 'fill' } } as const;
 
+/** The container's current rendered size (unscaled layout px, not the zoomed CSS box) along the
+    axis a split needs -- most containers are Auto with no stored width/height to halve otherwise. */
+function measureContainerPx(containerId: string, axis: 'width' | 'height'): number {
+  const el = document.querySelector<HTMLElement>(`[data-container-id="${containerId}"]`);
+  const measured = axis === 'width' ? el?.offsetWidth : el?.offsetHeight;
+  return measured || 0;
+}
+
 const iconBtn =
   `px-1.5 ${barControlHeight} rounded-md border transition flex items-center gap-1 text-[11px] font-semibold`;
 const divider = 'h-4 w-px bg-[color-mix(in_oklch,var(--secondary-accent)_40%,transparent)] shrink-0 mx-0.5';
@@ -235,7 +243,7 @@ interface TemplateEditorContainerBarProps {
     position: 'before' | 'after',
     options?: Partial<FlexContainerNode>
   ) => string;
-  onSplitContainer?: (containerId: string, splitType: 'columns' | 'rows') => void;
+  onSplitContainer?: (containerId: string, splitType: 'columns' | 'rows', measuredPx: number) => void;
   onRemoveContainer?: (id: string) => void;
   onSelectNode?: (id: string | null) => void;
   /** Whether the Structure tree's side panel is currently visible (pinned or unpinned). */
@@ -452,13 +460,13 @@ export default function TemplateEditorContainerBar({
                 icon={<SplitColumnsIcon className="w-3.5 h-3.5" />}
                 label="2 Columns"
                 title="Split into 2 Columns (side-by-side)"
-                onClick={() => { onSplitContainer?.(container.id, 'columns'); }}
+                onClick={() => { onSplitContainer?.(container.id, 'columns', measureContainerPx(container.id, 'width')); }}
               />
               <GroupOption
                 icon={<SplitRowsIcon className="w-3.5 h-3.5" />}
                 label="2 Rows"
                 title="Split into 2 Rows (stacked)"
-                onClick={() => { onSplitContainer?.(container.id, 'rows'); }}
+                onClick={() => { onSplitContainer?.(container.id, 'rows', measureContainerPx(container.id, 'height')); }}
               />
           </>
         </ToolGroup>

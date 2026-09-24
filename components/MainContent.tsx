@@ -59,7 +59,7 @@ interface MainContentProps {
   onPlaceField?: (fieldId: number, targetContainerId?: string) => void;
   onResetFlexLayout?: () => void;
   onOverflowChange?: (containerId: string, isOverflowing: boolean) => void;
-  onSplitFlexContainer?: (containerId: string, splitType: 'columns' | 'rows') => void;
+  onSplitFlexContainer?: (containerId: string, splitType: 'columns' | 'rows', measuredPx: number) => void;
   canvasMode?: 'edit' | 'preview';
   onToggleCanvasMode?: () => void;
   canUndo?: boolean;

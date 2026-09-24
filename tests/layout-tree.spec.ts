@@ -104,7 +104,8 @@ test.describe('Layout tree operations (pure)', () => {
     const box = buildContainer({ label: 'Box' }, 'x', 'column');
     const root = insertChild(freshRoot(), 'container-general', box);
 
-    const result = splitContainer(root, box.id, 'columns');
+    // 400px measured width -> two 200px-wide halves, in place (the parent is already a row).
+    const result = splitContainer(root, box.id, 'columns', 400);
     expect(result).not.toBeNull();
     const parent = general(result!.root);
     const [first, second] = parent.children.slice(2) as FlexContainerNode[];
@@ -112,15 +113,17 @@ test.describe('Layout tree operations (pure)', () => {
     expect(first.id).toBe(box.id);
     expect(second.id).toBe(result!.newId);
     expect([first.label, second.label]).toEqual(['Box', 'Box 2']); // the source keeps its name
-    expect(first.sizing).toMatchObject({ type: 'fixed', value: '50%' });
-    expect(second.sizing).toMatchObject({ type: 'fixed', value: '50%' });
+    expect(first.sizing).toMatchObject({ type: 'fixed', value: '200px' });
+    expect(second.sizing).toMatchObject({ type: 'fixed', value: '200px' });
+    expect(first.height).toBeUndefined(); // only the split axis (width) changes
   });
 
   test('splitContainer: rows inside a row parent are wrapped so the parent is undisturbed', () => {
     const box = buildContainer({ label: 'Box' }, 'x', 'column');
     const root = insertChild(freshRoot(), 'container-general', box);
 
-    const result = splitContainer(root, box.id, 'rows')!;
+    // 300px measured height -> two 150px-tall halves, wrapped (the parent is a row, not a column).
+    const result = splitContainer(root, box.id, 'rows', 300)!;
     const parent = general(result.root);
     expect(parent.children).toHaveLength(3); // comp-1, comp-2, and one wrapper in place of the box
 
@@ -129,6 +132,30 @@ test.describe('Layout tree operations (pure)', () => {
     expect(wrapper.direction).toBe('column');
     expect(wrapper.children.map((c) => c.id)).toEqual([box.id, result.newId]);
     expect(parent.direction).toBe('row');
+
+    const [first, second] = wrapper.children as FlexContainerNode[];
+    expect(first.height).toBe('150px');
+    expect(second.height).toBe('150px');
+    expect(first.sizing.type).toBe('fill'); // only the split axis (height) changes; width stays Auto
+    expect(second.sizing.type).toBe('fill');
+  });
+
+  test('splitContainer: rows inside a column parent split in place, halving the measured height', () => {
+    const box = buildContainer({ label: 'Box' }, 'x', 'row');
+    const root = insertChild(freshRoot(), 'root-container', box);
+
+    // The bug this guards against: an Auto-height container has no stored height to derive a half
+    // from, so splitting rows must measure the real rendered box instead of falling back to a
+    // full-size guess.
+    const result = splitContainer(root, box.id, 'rows', 300)!;
+    const [, first, second] = result.root.children as FlexContainerNode[]; // after container-general
+
+    expect(first.id).toBe(box.id);
+    expect(second.id).toBe(result.newId);
+    expect(first.height).toBe('150px');
+    expect(second.height).toBe('150px');
+    expect(first.sizing.type).toBe('fill'); // width untouched
+    expect(second.sizing.type).toBe('fill');
   });
 
   test('nextNumberedLabel gives the next free number and never repeats a name', () => {
@@ -143,11 +170,11 @@ test.describe('Layout tree operations (pure)', () => {
     const box = buildContainer({ label: 'Box' }, 'x', 'column');
     let root = insertChild(freshRoot(), 'container-general', box);
 
-    const first = splitContainer(root, box.id, 'columns')!; // Box | Box 2
+    const first = splitContainer(root, box.id, 'columns', 400)!; // Box | Box 2
     root = first.root;
-    const second = splitContainer(root, box.id, 'columns')!; // split the source again: Box | Box 3 | Box 2
+    const second = splitContainer(root, box.id, 'columns', 400)!; // split the source again: Box | Box 3 | Box 2
     root = second.root;
-    const third = splitContainer(root, first.newId, 'columns')!; // split the new half: Box 2 | Box 4
+    const third = splitContainer(root, first.newId, 'columns', 400)!; // split the new half: Box 2 | Box 4
     root = third.root;
 
     const labels = (general(root).children.slice(2) as FlexContainerNode[]).map((c) => c.label);
@@ -158,8 +185,8 @@ test.describe('Layout tree operations (pure)', () => {
 
   test('splitContainer refuses the root and unknown containers', () => {
     const root = freshRoot();
-    expect(splitContainer(root, 'root-container', 'columns')).toBeNull();
-    expect(splitContainer(root, 'no-such-id', 'columns')).toBeNull();
-    expect(splitContainer(root, 'comp-1', 'columns')).toBeNull(); // a component is not a container
+    expect(splitContainer(root, 'root-container', 'columns', 400)).toBeNull();
+    expect(splitContainer(root, 'no-such-id', 'columns', 400)).toBeNull();
+    expect(splitContainer(root, 'comp-1', 'columns', 400)).toBeNull(); // a component is not a container
   });
 });

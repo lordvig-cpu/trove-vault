@@ -55,7 +55,7 @@ interface TemplateEditorStageProps {
   onRemoveFlexComponent?: (componentId: string) => void;
   onPlaceField?: (fieldId: number, targetContainerId?: string) => void;
   onResetFlexLayout?: () => void;
-  onSplitContainer?: (containerId: string, splitType: 'columns' | 'rows') => void;
+  onSplitContainer?: (containerId: string, splitType: 'columns' | 'rows', measuredPx: number) => void;
   onOverflowChange?: (containerId: string, isOverflowing: boolean) => void;
 
   canvasMode: 'edit' | 'preview';
