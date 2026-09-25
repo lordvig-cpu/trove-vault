@@ -22,7 +22,9 @@ import TreeActionMenu, {
 } from '@/components/TreeActionMenu';
 import TemplateBodyDimensions from '@/components/TemplateBodyDimensions';
 import TemplateContainerSizing from '@/components/TemplateContainerSizing';
-import { activeBtn, ghostBtn } from '@/components/editorBarStyles';
+import { activeBtn } from '@/components/editorBarStyles';
+import UnitSelect from '@/components/UnitSelect';
+import type { HintContent } from '@/components/HoverHint';
 import {
   BodyIcon,
   FlexRowIcon,
@@ -34,6 +36,44 @@ import {
   AutoSizingIcon,
   CustomSizingIcon,
 } from '@/components/icons/LayoutIcons';
+
+/* Help bubbles for the Body flyout's Properties sections (see HoverHint for the shape). */
+const BODY_SIZE_HINT: HintContent = {
+  title: 'Size',
+  settings: [
+    { name: 'Auto', text: 'Enables the Body to stretch automatically to accommodate child content.' },
+    { name: 'Custom', text: 'Enables custom width and height settings.' },
+  ],
+  notes: (
+    <>
+      <strong>Custom</strong> sizing is not available for the <em>Body</em>. Set <strong>Maximum Content Width</strong> to
+      set a maximum width instead; the Body will center by default.
+    </>
+  ),
+};
+
+const BODY_LAYOUT_HINT: HintContent = {
+  title: 'Layout',
+  settings: [
+    { name: 'Horizontal', text: 'Lays child containers out side by side, in a row.' },
+    { name: 'Vertical', text: 'Stacks child containers top to bottom, in a column.' },
+  ],
+  notes: (
+    <>
+      The <em>Body</em> always flows <strong>Vertical</strong>, like a page. To place items side by side, add a Row
+      container inside it.
+    </>
+  ),
+};
+
+const BODY_PADDING_HINT: HintContent = {
+  title: 'Padding',
+  settings: [
+    { name: 'px', text: 'A fixed amount of space, in pixels.' },
+    { name: '%', text: "A share of the Body's width, so it scales with the screen." },
+  ],
+  notes: <>Padding is the space between the <em>Body</em>&apos;s edge and its content. Type an exact value or drag the slider.</>,
+};
 
 const GAP_OPTIONS: { value: FlexGap; label: string }[] = [
   { value: 0, label: '0px' },
@@ -158,9 +198,8 @@ export function TemplateContainerActionMenu({
         top={menu.menuCoords.top}
         left={menu.menuCoords.left}
         position={position}
-        title="Body"
+        title="Body Properties"
         titleIcon={<BodyIcon className="w-4 h-4" />}
-        titleStyle="plain"
         subheader={
           <ActionMenuTabs
             tabs={[
@@ -232,8 +271,8 @@ export function TemplateContainerActionMenu({
 
         {activeTab === 'properties' && (
           <>
-            <ActionMenuSection label="Size" isOpen={openSections.size} onToggle={() => toggleSection('size')}>
-              <div className="grid grid-cols-2 gap-1.5 px-3 py-2.5">
+            <ActionMenuSection label="Size" hint={BODY_SIZE_HINT} isOpen={openSections.size} onToggle={() => toggleSection('size')}>
+              <div className="grid grid-cols-2 gap-1.5 px-3 pt-0 pb-2">
                 <button
                   type="button"
                   title="Auto: the Body stretches automatically with content"
@@ -260,8 +299,8 @@ export function TemplateContainerActionMenu({
               />
             </ActionMenuSection>
 
-            <ActionMenuSection label="Layout" isOpen={openSections.layout} onToggle={() => toggleSection('layout')}>
-              <div className="grid grid-cols-2 gap-1.5 px-3 py-2.5">
+            <ActionMenuSection label="Layout" hint={BODY_LAYOUT_HINT} isOpen={openSections.layout} onToggle={() => toggleSection('layout')}>
+              <div className="grid grid-cols-2 gap-1.5 px-3 pt-0 pb-2">
                 <button
                   type="button"
                   disabled
@@ -282,8 +321,8 @@ export function TemplateContainerActionMenu({
               </div>
             </ActionMenuSection>
 
-            <ActionMenuSection label="Padding" isOpen={openSections.padding} onToggle={() => toggleSection('padding')}>
-              <div className="flex flex-col gap-1.5 px-3 py-2.5">
+            <ActionMenuSection label="Padding" hint={BODY_PADDING_HINT} isOpen={openSections.padding} onToggle={() => toggleSection('padding')}>
+              <div className="flex flex-col gap-1.5 px-3 pt-0 pb-2">
                 <div className="flex items-center gap-1.5">
                   <input
                     type="text"
@@ -296,36 +335,9 @@ export function TemplateContainerActionMenu({
                     }}
                     aria-label="Padding amount"
                     title="Type an exact padding amount"
-                    className="w-14 px-2 py-1 text-xs font-mono text-strong text-right bg-surface-secondary border border-subtle rounded-lg focus:outline-none focus:border-[var(--secondary-accent)]"
+                    className="w-14 px-2 py-1 text-xs font-mono text-strong text-right bg-surface-secondary border border-subtle rounded-l-lg rounded-r-none relative focus:z-10 focus:outline-none focus:border-[var(--secondary-accent)]"
                   />
-                  <div
-                    className="flex flex-col rounded-md overflow-hidden border border-[color-mix(in_oklch,var(--secondary-accent)_35%,transparent)] bg-black/40 shrink-0"
-                    role="group"
-                    aria-label="Padding unit"
-                  >
-                    <button
-                      type="button"
-                      onClick={() => setPaddingUnit('px')}
-                      aria-pressed={paddingUnit === 'px'}
-                      title="Pixels"
-                      className={`px-1.5 py-0.5 text-[9px] font-bold leading-none transition cursor-pointer ${
-                        paddingUnit === 'px' ? `border ${activeBtn}` : ghostBtn
-                      }`}
-                    >
-                      px
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setPaddingUnit('%')}
-                      aria-pressed={paddingUnit === '%'}
-                      title="Percent"
-                      className={`px-1.5 py-0.5 text-[9px] font-bold leading-none transition cursor-pointer ${
-                        paddingUnit === '%' ? `border ${activeBtn}` : ghostBtn
-                      }`}
-                    >
-                      %
-                    </button>
-                  </div>
+                  <UnitSelect value={paddingUnit} onChange={setPaddingUnit} label="Padding unit" />
                   <span className="text-[10px] font-mono text-[var(--secondary-accent)] font-bold ml-auto">
                     {paddingRaw}
                   </span>

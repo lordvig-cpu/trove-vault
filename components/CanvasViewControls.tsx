@@ -2,7 +2,8 @@
 
 import React, { useRef, useState } from 'react';
 import { SearchGlassIcon } from '@/components/icons/TreeIcons';
-import { FitFrameIcon } from '@/components/icons/LayoutIcons';
+import { FitFrameIcon, HelpCircleIcon } from '@/components/icons/LayoutIcons';
+import HoverHint, { type HintContent } from '@/components/HoverHint';
 import { useCanvasZoom, ZOOM_MAX, ZOOM_MIN, ZOOM_STEP } from '@/context/CanvasZoomContext';
 import { BODY_WIDTH_PRESETS } from '@/types/layout';
 import { useDismissOnOutsideOrEscape } from '@/hooks/useDismissOnOutsideOrEscape';
@@ -17,6 +18,33 @@ import { activeBtn, barControlHeight, ghostBtn, idleBtn } from '@/components/edi
 const MIN_PREVIEW_WIDTH = 320;
 // Fallback cap for SSR / browsers that don't expose screen.width; actual cap below tracks the user's monitor.
 const FALLBACK_MAX_PREVIEW_WIDTH = 3840;
+const WIDTH_HINT: HintContent = {
+  title: 'Width',
+  settings: [
+    { name: 'Fit', text: 'The preview fills the whole editor area.' },
+    { name: 'A width', text: 'Previews at a specific screen width: pick a preset or type your own.' },
+  ],
+  notes: (
+    <>
+      Preview only; templates stay fluid. A <strong>Maximum Content Width</strong> set on the Body (Body Properties, Size
+      section) overrides this: the layout stays capped at that width, and is centered when the preview is wider.
+    </>
+  ),
+};
+const FIT_SETTINGS = [
+  { name: 'On', text: 'The preview fills the whole editor area.' },
+  { name: 'Off', text: 'The preview uses the fixed screen width chosen under Width.' },
+];
+const FIT_ON_HINT: HintContent = {
+  title: 'Fit',
+  settings: FIT_SETTINGS,
+  notes: <>Fit is <strong>on</strong>. Click to turn it off and choose a fixed screen width.</>,
+};
+const FIT_OFF_HINT: HintContent = {
+  title: 'Fit',
+  settings: FIT_SETTINGS,
+  notes: <>Fit is <strong>off</strong>. Click to turn it on and fill the editor area.</>,
+};
 const ACCENT_BORDER = 'border-[color-mix(in_oklch,var(--secondary-accent)_45%,transparent)]';
 
 /** Screen width being previewed: pick a hard width, or check Fit to use the whole editor area. */
@@ -51,7 +79,12 @@ export function PreviewWidthPicker() {
 
   return (
     <div className="flex items-center gap-0.5">
-      <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--primary-tree-item-text)] mr-1">Width:</span>
+      <span className="flex items-center gap-1 mr-1 text-[var(--primary-tree-item-text)]">
+        <span className="text-[10px] font-bold uppercase tracking-wider">Width:</span>
+        <HoverHint hint={WIDTH_HINT}>
+          <HelpCircleIcon className="w-3 h-3" />
+        </HoverHint>
+      </span>
       <div className="relative" ref={menuRef}>
         <button
           type="button"
@@ -60,17 +93,17 @@ export function PreviewWidthPicker() {
             setDraft(String(previewWidth));
             setMenuOpen((o) => !o);
           }}
-          title={isFit ? 'Uncheck Fit to preview a specific screen width' : 'Choose a screen width to preview'}
+          aria-label={isFit ? 'Preview width (uncheck Fit to choose one)' : 'Preview width'}
           aria-haspopup="listbox"
           aria-expanded={menuOpen}
           className={`min-w-[4.5rem] px-2 ${barControlHeight} rounded-md border text-[11px] font-mono font-semibold flex items-center justify-between gap-1 cursor-pointer disabled:opacity-60 disabled:cursor-default ${idleBtn}`}
         >
           <span>{shownWidth ? `${shownWidth}px` : '—'}</span>
-          <span aria-hidden="true" className="text-[9px]">▾</span>
+          <span aria-hidden="true" className="text-[9px]">▴</span>
         </button>
         {menuOpen && !isFit && (
-          <div className="absolute top-full left-0 pt-1 z-10">
-            <div role="listbox" className="tmpl-edge-panel tmpl-edge-menu rounded-xl w-32 p-1 flex flex-col gap-0.5">
+          <div className="absolute bottom-full left-0 pb-1 z-10">
+            <div role="listbox" className="tmpl-edge-panel tmpl-edge-menu tmpl-edge-menu-up rounded-xl w-32 p-1 flex flex-col gap-0.5">
               {BODY_WIDTH_PRESETS.map((px) => (
                 <button
                   key={px}
@@ -113,18 +146,19 @@ export function PreviewWidthPicker() {
           </div>
         )}
       </div>
-      <button
-        type="button"
-        onClick={() => toggleFit(!isFit)}
-        aria-pressed={isFit}
-        title={isFit ? 'Fit: preview fills the editor area (click to set a fixed width)' : 'Fit: fill the editor area'}
-        aria-label="Fit"
-        className={`w-[26px] ${barControlHeight} ml-1.5 rounded-md border transition flex items-center justify-center shrink-0 cursor-pointer ${
-          isFit ? activeBtn : idleBtn
-        }`}
-      >
-        <FitFrameIcon className="w-3.5 h-3.5" active={isFit} />
-      </button>
+      <HoverHint hint={isFit ? FIT_ON_HINT : FIT_OFF_HINT} interactive>
+        <button
+          type="button"
+          onClick={() => toggleFit(!isFit)}
+          aria-pressed={isFit}
+          aria-label="Fit"
+          className={`w-[26px] ${barControlHeight} ml-1.5 rounded-md border transition flex items-center justify-center shrink-0 cursor-pointer ${
+            isFit ? activeBtn : idleBtn
+          }`}
+        >
+          <FitFrameIcon className="w-3.5 h-3.5" active={isFit} />
+        </button>
+      </HoverHint>
     </div>
   );
 }

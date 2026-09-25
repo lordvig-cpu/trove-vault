@@ -51,8 +51,11 @@ Conventions and architecture (data access, theming, template editor internals, b
   (open/pinned/flyout state, resize, tab bar); both use `PrimarySidePanelHeader`.
 - `PrimarySidePanelHeader.tsx` — composes a panel's header from `components/panel-header/*`
   (toolbar row, search/filter section, view tabs).
-- `TemplateBodyDimensions.tsx` — Body-only sizing controls (max content width) in the template
-  properties inspector.
+- `TemplateBodyDimensions.tsx` — Body-only sizing controls (Content Width: input, px/% pulldown,
+  slider, Fill) in the Body flyout and the template properties inspector.
+- `HoverHint.tsx` — the help bubble for an inline `?` icon or a button: action-menu-styled popup with a title bar, a Settings list and a Notes paragraph (portaled, opens on hover/focus).
+- `UnitSelect.tsx` — the px / % pulldown beside a length input (Padding, Content Width), styled
+  like the top toolbar's pulldown buttons.
 - `TemplateContainerSizing.tsx` — Width/Height/Min/Max/Stack-below controls for a layout container.
 - `TemplateEditorBar.tsx` — the chrome for the template-wide toolbar, portaled into the workspace
   footer slot (`#template-toolbar-slot-bottom`) above the bottom panel; its content is

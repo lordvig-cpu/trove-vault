@@ -1,4 +1,4 @@
-import React, { useId } from 'react';
+import React from 'react';
 
 interface LayoutIconProps {
   className?: string;
@@ -7,38 +7,26 @@ interface LayoutIconProps {
 
 /**
  * BodyIcon:
- * The root template layout, drawn as a filled page: a header strip with two dots, a doorway-like
- * block and three text lines cut out of it. A filled shape (a mask over a currentColor rect), so
- * it takes no strokeWidth. The mask id is per-instance (useId) since this icon renders many times
- * at once and duplicate ids would make every copy depend on the first one in the document.
+ * The root template layout: an outlined page with a header strip, a footer split and a center
+ * divider -- outline only, like the rest of the layout icons.
  */
-export const BodyIcon = ({ className = 'w-4 h-4' }: Pick<LayoutIconProps, 'className'>) => {
-  const maskId = useId();
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      className={`origin-center shrink-0 ${className}`}
-      aria-hidden="true"
-    >
-      <mask id={maskId}>
-        {/* start hidden */}
-        <rect width="24" height="24" fill="black" />
-        {/* visible outer body */}
-        <rect x="4" y="3.5" width="16" height="17" rx="2" fill="white" />
-        {/* cutouts/details */}
-        <rect x="4" y="8.3" width="16" height="1.2" fill="black" />
-        <circle cx="7" cy="6" r=".6" fill="black" />
-        <circle cx="9" cy="6" r=".6" fill="black" />
-        <rect x="7" y="11" width="4" height="6" rx=".8" fill="black" />
-        <rect x="13.5" y="12" width="3.5" height="1" rx=".5" fill="black" />
-        <rect x="13.5" y="14" width="3.5" height="1" rx=".5" fill="black" />
-        <rect x="13.5" y="16" width="2.5" height="1" rx=".5" fill="black" />
-      </mask>
-      <rect width="24" height="24" fill="currentColor" mask={`url(#${maskId})`} />
-    </svg>
-  );
-};
+export const BodyIcon = ({ className = 'w-4 h-4', strokeWidth = 1.8 }: LayoutIconProps) => (
+  <svg
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth={strokeWidth}
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className={`origin-center shrink-0 ${className}`}
+    aria-hidden="true"
+  >
+    <rect x="4" y="3.5" width="16" height="17" rx="2" />
+    <path d="M4 8.5h16" />
+    <path d="M12 8.5v12" />
+    <path d="M4 14.5h16" />
+  </svg>
+);
 
 /**
  * LayoutContainerIcon:

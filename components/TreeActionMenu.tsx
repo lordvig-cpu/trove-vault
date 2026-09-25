@@ -5,6 +5,8 @@ import { usePresence } from '@/hooks/usePresence';
 import { createPortal } from 'react-dom';
 import '@/app/styles/components/TreeActionMenu.css';
 import { ChevronDownIcon } from '@/components/icons/PanelIcons';
+import { HelpCircleIcon } from '@/components/icons/LayoutIcons';
+import HoverHint, { type HintContent } from '@/components/HoverHint';
 import { useUIPreferences } from '@/context/UIPreferencesContext';
 import { useTreePanel } from '@/context/TreePanelContext';
 
@@ -21,9 +23,6 @@ interface TreeActionMenuProps {
   left: number;
   title: string;
   titleIcon?: React.ReactNode;
-  /** 'pill' (default): boxed amber title bar, icon on the right. 'plain': no box, white title with
-   *  the icon in front -- used by the tabbed Actions/Properties flyouts (see ActionMenuTabs). */
-  titleStyle?: 'pill' | 'plain';
   /** Fixed strip under the title bar (e.g. ActionMenuTabs): stays put while `children` scrolls. */
   subheader?: React.ReactNode;
   position?: 'left' | 'right';
@@ -39,7 +38,6 @@ export default function TreeActionMenu({
   left,
   title,
   titleIcon,
-  titleStyle = 'pill',
   subheader,
   position,
   className,
@@ -125,7 +123,7 @@ export default function TreeActionMenu({
 
       {/* Inner Content Wrapper */}
       <div className="innerContent">
-        <div className={`headerPill ${titleStyle === 'plain' ? 'headerPill-plain' : ''}`}>
+        <div className="headerPill">
           <span className="headerTitle">{title}</span>
           <span className="headerIcon">{titleIcon}</span>
         </div>
@@ -252,14 +250,18 @@ export function ActionMenuTabs<T extends string>({
 // A collapsible group of controls: a shadowed-rule heading with a chevron, and a body that shows
 // only while `isOpen`. Controlled (the caller owns open/closed) so the state survives the menu
 // closing and reopening. Sections stack directly, the heading's rule doubling as the horizontal
-// bar between them.
+// bar between them. An optional `hint` adds a `?` beside the label that opens a HoverHint popup;
+// it's a sibling of the toggle button (not inside it -- no interactive content in a button, and
+// clicking it shouldn't collapse the section), laid over a spacer the button reserves for it.
 export function ActionMenuSection({
   label,
+  hint,
   isOpen,
   onToggle,
   children,
 }: {
   label: string;
+  hint?: HintContent;
   isOpen: boolean;
   onToggle: () => void;
   children: React.ReactNode;
@@ -267,17 +269,27 @@ export function ActionMenuSection({
   const bodyId = useId();
   return (
     <div className="menuSection">
-      <button
-        type="button"
-        onClick={onToggle}
-        aria-expanded={isOpen}
-        aria-controls={bodyId}
-        className="menuSectionToggle"
-      >
-        <span className="menuSectionRule" aria-hidden="true" />
-        <span className="menuSectionLabel">{label}</span>
-        <ChevronDownIcon className={`menuSectionChevron ${isOpen ? 'menuSectionChevron-open' : ''}`} />
-      </button>
+      <div className="menuSectionHeader">
+        <button
+          type="button"
+          onClick={onToggle}
+          aria-expanded={isOpen}
+          aria-controls={bodyId}
+          className="menuSectionToggle"
+        >
+          <span className="menuSectionRule" aria-hidden="true" />
+          <span className="menuSectionLabel">{label}</span>
+          {hint && <span className="menuSectionHintSlot" aria-hidden="true" />}
+          <ChevronDownIcon className={`menuSectionChevron ${isOpen ? 'menuSectionChevron-open' : ''}`} />
+        </button>
+        {hint && (
+          <span className="menuSectionHint">
+            <HoverHint hint={hint}>
+              <HelpCircleIcon className="w-3 h-3" />
+            </HoverHint>
+          </span>
+        )}
+      </div>
       {isOpen && <div id={bodyId}>{children}</div>}
     </div>
   );

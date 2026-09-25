@@ -25,6 +25,22 @@
     var(--secondary-tree-menu-shell-bg);
 }
 
+/* Pull-up menus (opening above the bottom toolbar): the same chassis with its glow flipped, so the
+   brightest part sits at the bottom, against the bar the menu grew from, and it darkens upward. */
+.tmpl-edge-panel.tmpl-edge-menu.tmpl-edge-menu-up {
+  background:
+    linear-gradient(color-mix(in oklch, black 50%, transparent), color-mix(in oklch, black 50%, transparent)),
+    radial-gradient(ellipse 130% 90% at 50% 120%,
+      color-mix(in oklch, var(--secondary-accent) 55%, transparent) 0%,
+      color-mix(in oklch, var(--secondary-accent) 26%, transparent) 50%,
+      transparent 85%),
+    linear-gradient(0deg,
+      color-mix(in oklch, white 8%, transparent) 0%,
+      color-mix(in oklch, white 2%, transparent) 15%,
+      transparent 30%),
+    var(--surface-panel);
+}
+
 /* The tree checkbox style, in the editor bar's light blue instead of yellow */
 .tree-filter-checkbox.tmpl-blue-check {
   border-color: color-mix(in oklch, var(--primary-accent) 35%, cyan);

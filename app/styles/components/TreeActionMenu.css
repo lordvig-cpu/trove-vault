@@ -191,27 +191,69 @@
   color: var(--secondary-tree-menu-header-icon);
 }
 
-/* Plain title variant (TreeActionMenu titleStyle="plain"): no box, white title, icon in front
-   (moved ahead of the label via flex order, so DOM order stays title-then-icon). */
-.headerPill-plain {
-  background: transparent;
-  border-color: transparent;
-  justify-content: flex-start;
-  gap: 0.5rem;
-  padding-left: 0.75rem;
+/* HoverHint popup (components/HoverHint.tsx): the action menus' amber frosted chassis holding a title
+   pill (.headerPill) and shadowed-rule sub-headings (.properties-section-heading) over a Settings
+   list and a Notes paragraph. Fixed and portaled; ignores the pointer so it never steals the hover. */
+.hoverHint {
+  position: fixed;
+  z-index: 90;
+  width: 19.2rem;
+  padding: 0.375rem 0.5rem 0.625rem;
+  background: var(--secondary-tree-menu-shell-bg);
+  border: 1.5px solid var(--secondary-tree-menu-shell-border);
+  border-radius: 0.75rem;
+  box-shadow: var(--tree-menu-shell-shadow);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  color: var(--tree-menu-item-text);
+  font-size: 0.6875rem;
+  line-height: 1.4;
+  pointer-events: none;
 }
 
-.headerPill-plain .headerTitle {
-  color: var(--text-strong);
-  text-transform: none;
-  letter-spacing: 0.01em;
-  font-size: 0.8125rem;
-  font-weight: 600;
+.hoverHint .properties-section-heading {
+  margin: 0.5rem 0.25rem 0.3rem;
 }
 
-.headerPill-plain .headerIcon {
-  order: -1;
+/* Settings as a borderless two-column table: option names on the left, what they do on the right,
+   so the descriptions line up. The name column is as wide as the longest name. */
+.hoverHintList {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  column-gap: 0.75rem;
+  row-gap: 0.3rem;
+  margin: 0;
+  padding: 0 0.25rem;
+}
+
+/* Option names take the light blue of a selected control (editorBarStyles.ts activeBtn). */
+.hoverHintList dt {
+  color: color-mix(in oklch, var(--primary-accent) 35%, cyan);
+  font-weight: 700;
+}
+
+.hoverHintList dd {
+  margin: 0;
+  text-align: justify;
+}
+
+.hoverHintNotes {
+  margin: 0;
+  padding: 0 0.25rem;
+  text-align: justify;
+}
+
+/* Any mention of a setting or property (the Settings names, and inside Notes) is bold light blue,
+   the color of a selected control (editorBarStyles.ts activeBtn). Emphasis on plain words (an
+   object like the Body) is italic <em> instead. */
+.hoverHint strong {
+  color: color-mix(in oklch, var(--primary-accent) 35%, cyan);
+  font-weight: 700;
+}
+
+.hoverHint em {
   color: var(--text-strong);
+  font-style: italic;
 }
 
 /* Fixed strip under the title bar (TreeActionMenu's `subheader`); never shrinks, so it stays put
@@ -275,7 +317,26 @@
 /* ActionMenuSection: collapsible group. Same shadowed rule + label as .properties-section-heading
    (primarySidePanel.css), as a button with a chevron at the far right. */
 .menuSection + .menuSection {
-  margin-top: 0.125rem;
+  margin-top: 0.1rem;
+}
+
+.menuSectionHeader {
+  position: relative;
+}
+
+/* Spacer the toggle reserves, and the hint laid over it: right edge = the toggle's 0.75rem side
+   padding + the 0.75rem chevron + a 0.5rem gap. */
+.menuSectionHintSlot {
+  width: 0.75rem;
+  flex-shrink: 0;
+}
+
+.menuSectionHint {
+  position: absolute;
+  top: 50%;
+  right: 2rem;
+  transform: translateY(-50%);
+  color: var(--secondary-tree-menu-header-title);
 }
 
 .menuSectionToggle {
@@ -283,7 +344,8 @@
   align-items: center;
   gap: 0.5rem;
   width: 100%;
-  padding: 0.375rem 0.75rem;
+  /* bottom = 0.375rem: the same 6px label-to-controls gap as Maximum Content Width's own gap-1.5 */
+  padding: 0.3rem 0.75rem 0.375rem;
   border: 0;
   background: transparent;
   color: var(--secondary-tree-menu-header-title);

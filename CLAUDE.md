@@ -177,10 +177,11 @@ commit whenever you add, remove, split or rename a file — it goes stale otherw
   padding, sizing) follow one standard: two tabs, Actions and Properties (`ActionMenuTabs`, passed
   as `TreeActionMenu`'s `subheader` so the title bar and tabs stay fixed while the tab's body
   scrolls; `ActionIcon`/`PropertiesIcon` in `LayoutIcons.tsx`), with the title bar naming the
-  object itself ("Body"), in the `titleStyle="plain"` look (no pill box, white title, icon in
-  front) rather than every other flyout's boxed amber title with the icon at the far right. The
-  tabs sit in a darker recessed strip with a light divider, the active one brightened with a shine
-  and glow (`.menuTabs` / `.menuTab-active` in `TreeActionMenu.css`). The Actions tab is plain full-width rows (`ActionMenuItem`, no borders).
+  object itself ("Body Properties", in the same boxed amber pill with the icon at the far right as
+  every other flyout, matching "Container Properties"). The tabs are bordered buttons in a
+  full-width, amber-tinted dark band (top and bottom edges only), the active one brightened with a
+  shine and glow (`.menuTabs` / `.menuTab-active` in `TreeActionMenu.css`). The Actions tab is
+  plain full-width rows (`ActionMenuItem`, no borders).
   The Properties tab is a stack of collapsible `ActionMenuSection`s: a shadowed-rule heading with a
   chevron, whose rule doubles as the horizontal bar between sections. Sections are controlled --
   the flyout component owns the open/closed and active-tab state, so they survive the flyout
@@ -190,6 +191,12 @@ commit whenever you add, remove, split or rename a file — it goes stale otherw
   title already says "Actions". Currently only the root/Body flyout (`TemplateLayoutActionMenu.tsx`)
   has the tabs/sections; the non-root Container and Component Properties flyouts still use their
   original single mixed panel and haven't been converted yet.
+- Help for a control is a `HoverHint` bubble (`components/HoverHint.tsx`), not a native `title`
+  tooltip, whenever it's more than a few words: an action-menu-styled popup with a title bar (the `?`
+  at the right), then an optional "Settings" section (one bold name + what it does per line) and an
+  optional "Notes" paragraph, under the same shadowed-rule sub-headings as the Properties sections.
+  Every bubble has that one shape (`HintContent`); wrap a `?` icon in it, or a button
+  (`interactive`). `ActionMenuSection` takes an optional `hint` for a `?` beside its heading.
 - Layout tree edits (add, insert sibling, split, update, remove) are pure functions in
   `lib/layoutTree.ts`, covered by `tests/layout-tree.spec.ts`; the flex layout tree's selection and
   CRUD around them lives in `hooks/useTemplateLayoutTree.ts`, which `useTemplateEditor` composes (it
