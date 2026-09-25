@@ -83,15 +83,18 @@ commit whenever you add, remove, split or rename a file — it goes stale otherw
   visually (a CSS `transform`); it must never change the layout itself, so above 100% the layout width
   holds steady and the canvas overflows into a horizontal scrollbar instead of re-wrapping
   (`ScaledCanvas`).
-- `padding` is a CSS-length string ("16px", "10%"), the same convention Width/Min/Max/Height already
-  use, not a bare px number -- `resolvePaddingCss` in `types/layout.ts` is what actually renders it,
-  and also accepts a bare legacy number defensively (layouts saved before %% support was added).
-  Only the Body/root flyout's Padding control (`TemplateLayoutActionMenu.tsx`) has the full
-  input+slider+unit-toggle redesign so far, themed like the top toolbar's Zoom slider
-  (`accent-[var(--secondary-accent)] bg-black/40`, 0-50px / 0-100% in steps of 5); the non-root
-  Container Padding section in the same file, and the docked Properties tab's equivalent
-  (`TemplatePropertiesInspector.tsx`), still use the older preset-buttons-only UI and haven't been
-  converted yet, though both were updated to read/write the new string type correctly.
+- `padding` and `margin` are CSS box values, not bare px numbers: a length ("16px", "10%") or the
+  1-4 value shorthand ("8px 16px", "0 4px 8px 12px") -- the same convention Width/Min/Max/Height
+  use for lengths. A single length is simply "all sides", so padding saved before per-side support
+  still means what it did. `parseBoxValue` / `formatBoxValue` in `types/layout.ts` split a value into
+  four sides and collapse it back to the shortest shorthand; `resolvePaddingCss` renders padding (and
+  also accepts a bare legacy number from layouts saved before % support); `margin` is applied by
+  `FlexContainerRenderer` on every container except the Body, which has none. The per-side editor is
+  `TemplateSpacingBox.tsx` (Margin box around Padding box, side inputs, a slider/unit for the
+  selected side, and a link-sides toggle); the Body flyout shows it with margin disabled. The
+  non-root Container Padding section in `TemplateLayoutActionMenu.tsx` and the docked Properties
+  tab (`TemplatePropertiesInspector.tsx`) still use the older preset-buttons-only, all-sides UI and
+  haven't been converted yet, though both read/write the string type correctly.
 - A row whose children *all* have their own explicit pixel width (Custom, not a %) but together don't
   fit gets a dashed-red border and a Layout-tree warning badge (`FlexContainerRenderer`'s
   `onOverflowChange`, surfaced via `useTemplateLayoutTree`'s `overflowingContainerIds`). It's scoped to
@@ -184,7 +187,11 @@ commit whenever you add, remove, split or rename a file — it goes stale otherw
   plain full-width rows (`ActionMenuItem`, no borders).
   Inputs, pulldowns and buttons in the Properties tab share the top toolbar's control height
   (`barControlHeight`, 26px) so rows of mixed controls line up.
-  The Properties tab is a stack of collapsible `ActionMenuSection`s: a shadowed-rule heading with a
+  The title bar and tabs are a narrow "head" card that keeps its size on both tabs, and the body is a
+  second card under it (`TreeActionMenu`'s `splitBody`) that can be wider; the two share one border
+  line so they read as an L-shaped panel. The Properties body is a wider (`menuShellXWide`) two-column layout (`.menuColumns`, split by a
+  vertical rule matching the sub-headings' shadowed line): Size and Layout on the left, Spacing on the
+  right. Each column is a stack of collapsible `ActionMenuSection`s: a shadowed-rule heading with a
   chevron, whose rule doubles as the horizontal bar between sections. Sections are controlled --
   the flyout component owns the open/closed and active-tab state, so they survive the flyout
   closing and reopening. Pure Actions-only menus (Item/Collection/Category/Template Actions in

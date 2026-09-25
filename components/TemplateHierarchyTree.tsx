@@ -185,9 +185,9 @@ function ContainerNodeRow({
   const isExpanded = visibleIds ? true : expandedIds.has(container.id);
   const hasChildren = visibleChildren.length > 0;
   const isOverflowing = overflowingContainerIds?.has(container.id) ?? false;
-  // 328px (20.5rem): matches the .menuShellWide class TemplateContainerActionMenu renders with,
-  // so a right-docked panel's flyout is positioned by its real width, not the 224px shell default.
-  const menu = useTreeActionMenu(`tree-container-${container.id}`, 280, position, 328);
+  // Right-docked panels position the flyout by its real width: a container's uses .menuShellWide
+  // (328px / 20.5rem), the Body's is the 224px (14rem) shell default.
+  const menu = useTreeActionMenu(`tree-container-${container.id}`, 280, position, isRoot ? 224 : 328);
 
   // Semantic layout icon
   const containerIcon = isRoot ? (

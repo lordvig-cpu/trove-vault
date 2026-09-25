@@ -215,6 +215,8 @@ export default function FlexContainerRenderer({
     overflowY: container.maxHeight || container.height || container.sizing?.height ? 'auto' : undefined,
     alignSelf: parentIsColumn && container.sizing?.type !== 'fixed' && !container.width ? 'stretch' : undefined,
     minWidth: container.minWidth || 0,
+    // Outside spacing, set from the flyout's Spacing box; never on the Body.
+    ...(!isRoot && container.margin ? { margin: container.margin } : null),
     // Children of a stacked row take the full width, ignoring their row-mode widths.
     ...(parentStacked ? { width: '100%', maxWidth: container.maxWidth || undefined, flex: '0 0 auto' } : null),
   };

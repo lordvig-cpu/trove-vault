@@ -49,6 +49,47 @@ export function resolvePaddingCss(padding: string | number | undefined | null): 
   return padding;
 }
 
+export type BoxSide = 'top' | 'right' | 'bottom' | 'left';
+export const BOX_SIDES: BoxSide[] = ['top', 'right', 'bottom', 'left'];
+/** A box value split into its four sides, each a "16px" / "10%" length. */
+export type BoxValues = Record<BoxSide, string>;
+
+/**
+ * Split a CSS box shorthand (padding / margin) into its four sides. The shorthand takes 1 value
+ * (all sides), 2 (top+bottom, left+right), 3 (top, left+right, bottom) or 4 (top, right, bottom,
+ * left), so a plain "16px" -- how padding was always stored -- is just the all-sides case. A bare
+ * legacy number reads as px; anything unparseable reads as 0px.
+ */
+export function parseBoxValue(raw: string | number | undefined | null): BoxValues {
+  const zero = '0px';
+  const parts = (raw == null ? '' : String(raw))
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean)
+    .map((p) => (/^\d+(?:\.\d+)?$/.test(p) ? `${p}px` : p))
+    .map((p) => (/^\d+(?:\.\d+)?(?:px|%)$/i.test(p) ? p.toLowerCase() : zero));
+  const [a = zero, b = a, c = a, d = b] = parts;
+  switch (parts.length) {
+    case 0:
+    case 1:
+      return { top: a, right: a, bottom: a, left: a };
+    case 2:
+      return { top: a, right: b, bottom: a, left: b };
+    case 3:
+      return { top: a, right: b, bottom: c, left: b };
+    default:
+      return { top: a, right: b, bottom: c, left: d };
+  }
+}
+
+/** The shortest CSS shorthand for four sides: one value if they all match, two if top/bottom and
+ *  left/right pair up, otherwise all four. */
+export function formatBoxValue(v: BoxValues): string {
+  if (v.top === v.right && v.right === v.bottom && v.bottom === v.left) return v.top;
+  if (v.top === v.bottom && v.right === v.left) return `${v.top} ${v.right}`;
+  return `${v.top} ${v.right} ${v.bottom} ${v.left}`;
+}
+
 /** Preview widths offered in the editor zoom panel (editor-only; templates themselves are fluid). */
 export const BODY_WIDTH_PRESETS = [2560, 1920, 1440, 1280, 1024, 768, 390];
 
@@ -89,7 +130,8 @@ export interface FlexContainerNode {
   wrap: boolean;
   align: FlexAlign;
   justify: FlexJustify;
-  padding?: string;     // CSS length e.g. "16px", "10%"; undefined = 0px
+  padding?: string;     // CSS length or box shorthand, e.g. "16px", "10%", "8px 16px", "0 4px 8px 12px"; undefined = 0px
+  margin?: string;      // same format as padding; undefined = none. Not offered on the Body
   sizing: FlexSizing;
   width?: string;       // optional explicit width e.g. "400px", "50%"
   height?: string;      // optional explicit height e.g. "250px"

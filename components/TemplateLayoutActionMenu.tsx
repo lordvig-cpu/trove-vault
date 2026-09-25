@@ -22,8 +22,8 @@ import TreeActionMenu, {
 } from '@/components/TreeActionMenu';
 import TemplateBodyDimensions from '@/components/TemplateBodyDimensions';
 import TemplateContainerSizing from '@/components/TemplateContainerSizing';
-import { activeBtn, barControlHeight, barToggleBtn, barToggleGroup, disabledBtn } from '@/components/editorBarStyles';
-import UnitSelect from '@/components/UnitSelect';
+import { activeBtn, barToggleBtn, barToggleGroup, disabledBtn } from '@/components/editorBarStyles';
+import TemplateSpacingBox from '@/components/TemplateSpacingBox';
 import type { HintContent } from '@/components/HoverHint';
 import {
   BodyIcon,
@@ -66,14 +66,24 @@ const BODY_LAYOUT_HINT: HintContent = {
   ),
 };
 
-const BODY_PADDING_HINT: HintContent = {
-  title: 'Padding',
+const SPACING_HINT: HintContent = {
+  title: 'Spacing',
   settings: [
-    { name: 'px', text: 'A fixed amount of space, in pixels.' },
-    { name: '%', text: <>A share of the <em>Body</em>&apos;s width, so it scales with the screen.</> },
+    { name: 'Margin', text: 'Space outside the container, between it and whatever sits next to it.' },
+    { name: 'Padding', text: 'Space inside the container, between its edge and its content.' },
   ],
-  notes: <>Padding is the space between the <em>Body</em>&apos;s edge and its content. Type an exact value or drag the slider.</>,
+  notes: (
+    <>
+      Click a side to select it, then use the slider and unit to set it (<code>px</code> or <code>%</code>), or type a
+      value in its box. Turn on <strong>Link sides</strong> to change all four together. The <em>Body</em> has no
+      margin, only padding.
+    </>
+  ),
 };
+
+// menuShellXWide (31.5rem = 504px) minus the Body flyout's normal 14rem (224px): how much further left a
+// right-docked flyout must start so the wider Properties tab still ends at the panel seam.
+const PROPERTIES_EXTRA_WIDTH_PX = 280;
 
 const GAP_OPTIONS: { value: FlexGap; label: string }[] = [
   { value: 0, label: '0px' },
@@ -129,7 +139,7 @@ export function TemplateContainerActionMenu({
   // Body flyout's Actions / Properties tabs and which Properties sections are expanded. Kept here
   // (not inside the menu shell) so they survive the flyout closing and reopening.
   const [activeTab, setActiveTab] = useState<'actions' | 'properties'>('actions');
-  const [openSections, setOpenSections] = useState({ size: true, layout: true, padding: true });
+  const [openSections, setOpenSections] = useState({ size: true, layout: true, spacing: true });
   const toggleSection = (key: keyof typeof openSections) =>
     setOpenSections((prev) => ({ ...prev, [key]: !prev[key] }));
 
@@ -157,37 +167,8 @@ export function TemplateContainerActionMenu({
     setLabel(defaultLabel);
   }
 
-  // Body's Padding control (px/% unit toggle + typed input, below). Parsed from the stored CSS
-  // length so the input, slider and unit toggle all read the same source of truth.
+  // Read by the non-root Container Padding section below (the Body's padding lives in the Spacing box).
   const paddingRaw = resolvePaddingCss(container.padding);
-  const paddingMatch = paddingRaw.match(/^(\d+(?:\.\d+)?)(px|%)?$/i);
-  const paddingNum = paddingMatch ? parseFloat(paddingMatch[1]) : 0;
-  const paddingUnit: 'px' | '%' = (paddingMatch?.[2] as 'px' | '%') || 'px';
-  const paddingMax = paddingUnit === '%' ? 100 : 50;
-
-  const [paddingDraft, setPaddingDraft] = useState(String(paddingNum));
-  // Re-sync the draft when the stored value changes from elsewhere (slider drag, unit toggle,
-  // undo) -- same "adjust state during render" pattern as label/defaultLabel above.
-  const [prevPaddingNum, setPrevPaddingNum] = useState(paddingNum);
-  if (prevPaddingNum !== paddingNum) {
-    setPrevPaddingNum(paddingNum);
-    setPaddingDraft(String(paddingNum));
-  }
-
-  const commitPaddingNum = (num: number) => {
-    const clamped = Math.min(Math.max(Math.round(num), 0), paddingMax);
-    onUpdateContainer?.(container.id, { padding: `${clamped}${paddingUnit}` });
-  };
-  const commitPaddingDraft = () => {
-    const parsed = parseFloat(paddingDraft);
-    if (isNaN(parsed)) setPaddingDraft(String(paddingNum));
-    else commitPaddingNum(parsed);
-  };
-  const setPaddingUnit = (unit: 'px' | '%') => {
-    if (unit === paddingUnit) return;
-    const max = unit === '%' ? 100 : 50;
-    onUpdateContainer?.(container.id, { padding: `${Math.min(paddingNum, max)}${unit}` });
-  };
 
   if (isRoot) {
     return (
@@ -196,8 +177,10 @@ export function TemplateContainerActionMenu({
         onMouseEnter={menu.handleMenuMouseEnter}
         onMouseLeave={menu.handleMouseLeave}
         top={menu.menuCoords.top}
-        left={menu.menuCoords.left}
+        left={menu.menuCoords.left - (position === 'right' && activeTab === 'properties' ? PROPERTIES_EXTRA_WIDTH_PX : 0)}
         position={position}
+        splitBody
+        className={activeTab === 'properties' ? 'menuShellXWide' : undefined}
         title="Body Properties"
         titleIcon={<BodyIcon className="w-4 h-4" />}
         subheader={
@@ -270,96 +253,75 @@ export function TemplateContainerActionMenu({
         )}
 
         {activeTab === 'properties' && (
-          <>
-            <ActionMenuSection label="Size" hint={BODY_SIZE_HINT} isOpen={openSections.size} onToggle={() => toggleSection('size')}>
-              <div className="px-3 pt-0 pb-2">
-                <div className={`${barToggleGroup} w-full`} role="group" aria-label="Sizing mode">
-                  <button
-                    type="button"
-                    title="Auto: the Body stretches automatically with content"
-                    className={`${barToggleBtn} flex-1 justify-center border cursor-default ${activeBtn}`}
-                  >
-                    <AutoSizingIcon className="w-3.5 h-3.5" />
-                    Auto
-                  </button>
-                  <button
-                    type="button"
-                    disabled
-                    title="Custom sizing is not available for the Body"
-                    className={`${barToggleBtn} flex-1 justify-center ${disabledBtn} text-[var(--secondary-accent)]`}
-                  >
-                    <CustomSizingIcon className="w-3.5 h-3.5" />
-                    Custom
-                  </button>
-                </div>
-              </div>
+          <div className="menuColumns">
+            <div className="menuColumn">
+                <ActionMenuSection label="Size" hint={BODY_SIZE_HINT} isOpen={openSections.size} onToggle={() => toggleSection('size')}>
+                  <div className="px-3 pt-0 pb-2">
+                    <div className={`${barToggleGroup} w-full`} role="group" aria-label="Sizing mode">
+                      <button
+                        type="button"
+                        title="Auto: the Body stretches automatically with content"
+                        className={`${barToggleBtn} flex-1 justify-center border cursor-default ${activeBtn}`}
+                      >
+                        <AutoSizingIcon className="w-3.5 h-3.5" />
+                        Auto
+                      </button>
+                      <button
+                        type="button"
+                        disabled
+                        title="Custom sizing is not available for the Body"
+                        className={`${barToggleBtn} flex-1 justify-center ${disabledBtn} text-[var(--secondary-accent)]`}
+                      >
+                        <CustomSizingIcon className="w-3.5 h-3.5" />
+                        Custom
+                      </button>
+                    </div>
+                  </div>
 
-              {/* Max Content Width -- also a Size setting (caps/centers the Body's content). */}
-              <TemplateBodyDimensions
-                root={container}
-                onUpdate={(partial) => onUpdateContainer?.(container.id, partial)}
-              />
-            </ActionMenuSection>
-
-            <ActionMenuSection label="Layout" hint={BODY_LAYOUT_HINT} isOpen={openSections.layout} onToggle={() => toggleSection('layout')}>
-              <div className="px-3 pt-0 pb-2">
-                <div className={`${barToggleGroup} w-full`} role="group" aria-label="Flex direction">
-                  <button
-                    type="button"
-                    disabled
-                    title="The Body always flows top-to-bottom, like a page. To place items side-by-side, add a Row container and put them inside it."
-                    className={`${barToggleBtn} flex-1 justify-center ${disabledBtn} text-[var(--secondary-accent)]`}
-                  >
-                    <FlexRowIcon className="w-3.5 h-3.5" />
-                    Row
-                  </button>
-                  <button
-                    type="button"
-                    title="The Body always flows top-to-bottom, like a page."
-                    className={`${barToggleBtn} flex-1 justify-center border cursor-default ${activeBtn}`}
-                  >
-                    <FlexColumnIcon className="w-3.5 h-3.5" />
-                    Column
-                  </button>
-                </div>
-              </div>
-            </ActionMenuSection>
-
-            <ActionMenuSection label="Padding" hint={BODY_PADDING_HINT} isOpen={openSections.padding} onToggle={() => toggleSection('padding')}>
-              <div className="flex flex-col gap-1.5 px-3 pt-0 pb-2">
-                <div className="flex items-center gap-1.5">
-                  <input
-                    type="text"
-                    inputMode="numeric"
-                    value={paddingDraft}
-                    onChange={(e) => setPaddingDraft(e.target.value)}
-                    onBlur={commitPaddingDraft}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter') (e.target as HTMLInputElement).blur();
-                    }}
-                    aria-label="Padding amount"
-                    title="Type an exact padding amount"
-                    className={`w-14 px-2 ${barControlHeight} text-xs font-mono text-strong text-right bg-surface-secondary border border-subtle rounded-l-lg rounded-r-none relative focus:z-10 focus:outline-none focus:border-[var(--secondary-accent)]`}
+                  {/* Max Content Width -- also a Size setting (caps/centers the Body's content). */}
+                  <TemplateBodyDimensions
+                    root={container}
+                    onUpdate={(partial) => onUpdateContainer?.(container.id, partial)}
                   />
-                  <UnitSelect value={paddingUnit} onChange={setPaddingUnit} label="Padding unit" />
-                  <span className="text-[10px] font-mono text-[var(--secondary-accent)] font-bold ml-auto">
-                    {paddingRaw}
-                  </span>
-                </div>
-                <input
-                  type="range"
-                  min={0}
-                  max={paddingMax}
-                  step={5}
-                  value={Math.min(paddingNum, paddingMax)}
-                  onChange={(e) => commitPaddingNum(parseInt(e.target.value, 10))}
-                  aria-label="Padding amount"
-                  className="w-full h-1.5 rounded-full cursor-pointer accent-[var(--secondary-accent)] bg-black/40"
-                  title={`Adjust Body padding: ${paddingRaw}`}
+                </ActionMenuSection>
+
+                <ActionMenuSection label="Layout" hint={BODY_LAYOUT_HINT} isOpen={openSections.layout} onToggle={() => toggleSection('layout')}>
+                  <div className="px-3 pt-0 pb-2">
+                    <div className={`${barToggleGroup} w-full`} role="group" aria-label="Flex direction">
+                      <button
+                        type="button"
+                        disabled
+                        title="The Body always flows top-to-bottom, like a page. To place items side-by-side, add a Row container and put them inside it."
+                        className={`${barToggleBtn} flex-1 justify-center ${disabledBtn} text-[var(--secondary-accent)]`}
+                      >
+                        <FlexRowIcon className="w-3.5 h-3.5" />
+                        Row
+                      </button>
+                      <button
+                        type="button"
+                        title="The Body always flows top-to-bottom, like a page."
+                        className={`${barToggleBtn} flex-1 justify-center border cursor-default ${activeBtn}`}
+                      >
+                        <FlexColumnIcon className="w-3.5 h-3.5" />
+                        Column
+                      </button>
+                    </div>
+                  </div>
+                </ActionMenuSection>
+            </div>
+
+            <div className="menuColumnDivider" aria-hidden="true" />
+
+            <div className="menuColumn">
+              <ActionMenuSection label="Spacing" hint={SPACING_HINT} isOpen={openSections.spacing} onToggle={() => toggleSection('spacing')}>
+                <TemplateSpacingBox
+                  container={container}
+                  onUpdate={(partial) => onUpdateContainer?.(container.id, partial)}
+                  marginDisabled
                 />
-              </div>
-            </ActionMenuSection>
-          </>
+              </ActionMenuSection>
+            </div>
+          </div>
         )}
       </TreeActionMenu>
     );

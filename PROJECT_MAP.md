@@ -54,6 +54,8 @@ Conventions and architecture (data access, theming, template editor internals, b
 - `TemplateBodyDimensions.tsx` — Body-only sizing controls (Content Width: input, px/% pulldown,
   slider, Fill) in the Body flyout and the template properties inspector.
 - `HoverHint.tsx` — the help bubble for an inline `?` icon or a button: action-menu-styled popup with a title bar, a Settings list and a Notes paragraph (portaled, opens on hover/focus).
+- `TemplateSpacingBox.tsx` — the box-model Spacing control (Margin around Padding, per-side inputs,
+  slider + unit + link-sides for the selected side); styles in `styles/components/spacingBox.css`.
 - `UnitSelect.tsx` — the px / % pulldown beside a length input (Padding, Content Width), styled
   like the top toolbar's pulldown buttons.
 - `TemplateContainerSizing.tsx` — Width/Height/Min/Max/Stack-below controls for a layout container.

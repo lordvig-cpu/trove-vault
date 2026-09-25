@@ -26,7 +26,14 @@ interface TreeActionMenuProps {
   /** Fixed strip under the title bar (e.g. ActionMenuTabs): stays put while `children` scrolls. */
   subheader?: React.ReactNode;
   position?: 'left' | 'right';
+  /** Width class etc. for the menu (with `splitBody`, for the body card only). */
   className?: string;
+  /**
+   * Render the title bar + `subheader` as one narrow card and `children` as a second card below it
+   * that can be wider (set its width with `className`). The cards touch and share a border line, so
+   * together they read as one L-shaped panel: a wide body under a header that keeps its size.
+   */
+  splitBody?: boolean;
   children: React.ReactNode;
 }
 
@@ -41,6 +48,7 @@ export default function TreeActionMenu({
   subheader,
   position,
   className,
+  splitBody = false,
   children,
 }: TreeActionMenuProps) {
   const { animationsEnabled, isPinned: primaryPinned } = useUIPreferences();
@@ -95,6 +103,14 @@ export default function TreeActionMenu({
 
   // Render outside the tree's overflow container so the menu can cross panel
   // boundaries and remain positioned against the viewport.
+  const header = (
+    <div className="headerPill">
+      <span className="headerTitle">{title}</span>
+      <span className="headerIcon">{titleIcon}</span>
+    </div>
+  );
+  const bridge = !isClosing && <div className={`bridge ${bridgeClass}`} aria-hidden="true" />;
+
   return createPortal(
     <div
       ref={menuRef}
@@ -111,27 +127,36 @@ export default function TreeActionMenu({
         margin: 0,
         zIndex: panel?.isFlyout ? 70 : isPinned ? 35 : 45,
       }}
-      className={`menuShell ${animationClass} ${className || ''}`}
+      className={
+        splitBody
+          ? `menuShellSplit ${effectivePosition === 'right' ? 'menuShellSplit-right' : ''} ${animationClass}` : `menuShell ${animationClass} ${className || ''}`
+      }
     >
       {/* Catchment Hover Bridge (disabled during exit to prevent sticking) */}
-      {!isClosing && (
-        <div
-          className={`bridge ${bridgeClass}`}
-          aria-hidden="true"
-        />
-      )}
+      {bridge}
 
-      {/* Inner Content Wrapper */}
-      <div className="innerContent">
-        <div className="headerPill">
-          <span className="headerTitle">{title}</span>
-          <span className="headerIcon">{titleIcon}</span>
+      {splitBody ? (
+        <>
+          <div className="menuShell menuShellHead">
+            <div className="innerContent">
+              {header}
+              {subheader && <div className="menuSubheader">{subheader}</div>}
+            </div>
+          </div>
+          <div className={`menuShell menuShellBody ${className || ''}`}>
+            <div className="innerContent">
+              <div className="childrenContainer">{children}</div>
+            </div>
+          </div>
+        </>
+      ) : (
+        /* Inner Content Wrapper */
+        <div className="innerContent">
+          {header}
+          {subheader && <div className="menuSubheader">{subheader}</div>}
+          <div className="childrenContainer">{children}</div>
         </div>
-
-        {subheader && <div className="menuSubheader">{subheader}</div>}
-
-        <div className="childrenContainer">{children}</div>
-      </div>
+      )}
     </div>,
     document.body
   );

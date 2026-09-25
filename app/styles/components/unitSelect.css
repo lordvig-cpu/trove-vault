@@ -1,0 +1,12 @@
+/* UnitSelect's native list (components/UnitSelect.tsx). Without a dark color scheme the browser draws
+   the opened list on a bright white system background, and the translucent theme surfaces the
+   options used before don't help there. color-scheme: dark gives it a dark system palette, and
+   each option gets an opaque dark, amber-tinted fill with the amber text of the closed control. */
+.unitSelect {
+  color-scheme: dark;
+}
+
+.unitSelect option {
+  background-color: color-mix(in oklch, var(--secondary-accent) 12%, black);
+  color: var(--secondary-accent);
+}

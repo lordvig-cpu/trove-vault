@@ -375,6 +375,26 @@ export const FillIcon = ({ className = 'w-4 h-4', strokeWidth = 1.8 }: LayoutIco
 );
 
 /**
+ * LinkIcon:
+ * Two chain links, for "link these values together" (e.g. edit all four sides at once).
+ */
+export const LinkIcon = ({ className = 'w-3.5 h-3.5', strokeWidth = 1.8 }: LayoutIconProps) => (
+  <svg
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth={strokeWidth}
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className={`origin-center shrink-0 ${className}`}
+    aria-hidden="true"
+  >
+    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+  </svg>
+);
+
+/**
  * HelpCircleIcon:
  * A circled question mark, for an inline hint that would otherwise need a paragraph of help text.
  */

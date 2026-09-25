@@ -101,6 +101,79 @@
   width: 20.5rem;
 }
 
+/* Split flyout (TreeActionMenu splitBody): a narrow head card (title + tabs) sitting on a body card that
+   can be wider. No chrome of its own -- each card is a full .menuShell -- and the head overlaps the
+   body's top border by its own width (-1.5px) so the two share one line, forming an L-shaped panel. */
+.menuShellSplit {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  max-height: calc(100vh - 72px);
+  pointer-events: auto;
+  position: relative;
+}
+
+.menuShellHead {
+  flex-shrink: 0;
+  padding-bottom: 0;
+  margin-bottom: -1.5px;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.menuShellHead .menuSubheader {
+  margin-bottom: 0;
+}
+
+/* The tab band's own bottom edge is the joint line between the two cards. */
+.menuShellHead .menuTabs {
+  border-bottom: 0;
+}
+
+.menuShellBody {
+  min-height: 0;
+  border-top-left-radius: 0;
+}
+
+/* Right-docked panel: the flyout opens leftward, so the head card sits at the panel-side (right) end
+   and the body's squared corner moves to match. */
+.menuShellSplit-right {
+  align-items: flex-end;
+}
+
+.menuShellSplit-right .menuShellBody {
+  border-top-left-radius: 0.75rem;
+  border-top-right-radius: 0;
+}
+
+/* The wide body card of a split flyout (see TreeActionMenu's splitBody): the narrow flyout's content
+   width (left column, see .menuColumns) + divider + a right column wide enough for the Spacing box. */
+.menuShellXWide {
+  width: 31.5rem;
+}
+
+.menuColumns {
+  display: grid;
+  /* Left column: exactly the narrow flyout's content width (the 14rem Body shell - 3px border - 1rem of
+     side padding = 13rem - 3px), so Size/Layout keep the horizontal room they had before the second column. */
+  grid-template-columns: calc(13rem - 3px) auto minmax(0, 1fr);
+}
+
+.menuColumn {
+  min-width: 0;
+}
+
+/* Vertical counterpart of the shadowed rule that leads each sub-heading. */
+.menuColumnDivider {
+  width: 1px;
+  margin: 0.25rem 0.5rem;
+  background: color-mix(in oklch, var(--secondary-accent) 35%, transparent);
+  box-shadow:
+    -1px 0 0 var(--shadow-black-50),
+    1px 0 0 var(--shadow-black-50),
+    2px 0 4px var(--shadow-black-35);
+}
+
 /* --------------------------------------------------------------------------
    Hover Catchment Bridge
    Invisible hitboxes spanning the space between the tree row gear button
