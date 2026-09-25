@@ -33,17 +33,17 @@ const WIDTH_HINT: HintContent = {
 };
 const FIT_SETTINGS = [
   { name: 'On', text: 'The preview fills the whole editor area.' },
-  { name: 'Off', text: 'The preview uses the fixed screen width chosen under Width.' },
+  { name: 'Off', text: <>The preview uses the fixed screen width chosen under <strong>Width</strong>.</> },
 ];
 const FIT_ON_HINT: HintContent = {
   title: 'Fit',
   settings: FIT_SETTINGS,
-  notes: <>Fit is <strong>on</strong>. Click to turn it off and choose a fixed screen width.</>,
+  notes: <><strong>Fit</strong> is <strong>on</strong>. Click to turn it off and choose a fixed screen width.</>,
 };
 const FIT_OFF_HINT: HintContent = {
   title: 'Fit',
   settings: FIT_SETTINGS,
-  notes: <>Fit is <strong>off</strong>. Click to turn it on and fill the editor area.</>,
+  notes: <><strong>Fit</strong> is <strong>off</strong>. Click to turn it on and fill the editor area.</>,
 };
 const ACCENT_BORDER = 'border-[color-mix(in_oklch,var(--secondary-accent)_45%,transparent)]';
 

@@ -205,7 +205,8 @@
   box-shadow: var(--tree-menu-shell-shadow);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  color: var(--tree-menu-item-text);
+  /* Body text is the toolbar label color (the "SIZE:" / "LAYOUT:" labels). */
+  color: var(--primary-tree-item-text);
   font-size: 0.6875rem;
   line-height: 1.4;
   pointer-events: none;
@@ -217,9 +218,15 @@
 
 /* Settings as a borderless two-column table: option names on the left, what they do on the right,
    so the descriptions line up. The name column is as wide as the longest name. */
+/* Extra air before the Notes section that follows the Settings table. */
+.hoverHintList + .properties-section-heading {
+  margin-top: 0.875rem;
+}
+
 .hoverHintList {
   display: grid;
   grid-template-columns: max-content 1fr;
+  align-items: center; /* names stay vertically centered on their (possibly wrapped) description */
   column-gap: 0.75rem;
   row-gap: 0.3rem;
   margin: 0;
@@ -244,16 +251,25 @@
 }
 
 /* Any mention of a setting or property (the Settings names, and inside Notes) is bold light blue,
-   the color of a selected control (editorBarStyles.ts activeBtn). Emphasis on plain words (an
-   object like the Body) is italic <em> instead. */
+   the color of a selected control (editorBarStyles.ts activeBtn). An object or literal
+   value is <em>, bold white, instead. */
 .hoverHint strong {
   color: color-mix(in oklch, var(--primary-accent) 35%, cyan);
   font-weight: 700;
 }
 
+/* A component being referred to (the Body) is <em>: bold italic amber. A literal value (100%, px, Row)
+   is <code>: bold white. Neither is a setting, so neither takes the light blue. */
 .hoverHint em {
-  color: var(--text-strong);
+  color: var(--secondary-accent);
   font-style: italic;
+  font-weight: 700;
+}
+
+.hoverHint code {
+  color: var(--text-strong);
+  font-family: inherit;
+  font-weight: 700;
 }
 
 /* Fixed strip under the title bar (TreeActionMenu's `subheader`); never shrinks, so it stays put

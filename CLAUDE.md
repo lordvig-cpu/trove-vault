@@ -182,6 +182,8 @@ commit whenever you add, remove, split or rename a file — it goes stale otherw
   full-width, amber-tinted dark band (top and bottom edges only), the active one brightened with a
   shine and glow (`.menuTabs` / `.menuTab-active` in `TreeActionMenu.css`). The Actions tab is
   plain full-width rows (`ActionMenuItem`, no borders).
+  Inputs, pulldowns and buttons in the Properties tab share the top toolbar's control height
+  (`barControlHeight`, 26px) so rows of mixed controls line up.
   The Properties tab is a stack of collapsible `ActionMenuSection`s: a shadowed-rule heading with a
   chevron, whose rule doubles as the horizontal bar between sections. Sections are controlled --
   the flyout component owns the open/closed and active-tab state, so they survive the flyout

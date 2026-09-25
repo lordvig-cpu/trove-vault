@@ -18,8 +18,9 @@ export interface HintSetting {
 /**
  * What a help bubble says. Every bubble has the same shape: a title bar (with the `?` at the
  * right), then an optional "Settings" section (one line per option) and an optional "Notes"
- * section. Inside `text` / `notes`, wrap any mention of a setting or property in <strong> (bold light
- * blue, matching the Settings names) and any object being described, like the Body, in <em>.
+ * section. Inside `text` / `notes`: wrap a setting or property name in <strong> (bold light blue, like
+ * the Settings names), a component being referred to (the Body) in <em> (bold italic amber), and a
+ * literal value (100%, px, Row) in <code> (bold white).
  */
 export interface HintContent {
   title: string;

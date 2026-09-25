@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { FlexContainerNode } from '@/types/layout';
 import { useCanvasZoom } from '@/context/CanvasZoomContext';
 import { HelpCircleIcon, FillIcon } from '@/components/icons/LayoutIcons';
-import { activeBtn, idleBtn } from '@/components/editorBarStyles';
+import { activeBtn, barControlHeight, idleBtn } from '@/components/editorBarStyles';
 import HoverHint, { type HintContent } from '@/components/HoverHint';
 import UnitSelect from '@/components/UnitSelect';
 
@@ -21,11 +21,11 @@ const CONTENT_WIDTH_HINT: HintContent = {
   title: 'Maximum Content Width',
   settings: [
     { name: 'Fill', text: 'No cap: the layout stretches to fill the screen.' },
-    { name: 'A value', text: 'Caps the layout at that width (px or %) and centers it on wider screens.' },
+    { name: '[value]', text: <>Caps the layout at that width (<code>px</code> or <code>%</code>) and centers it on wider screens.</> },
   ],
   notes: (
     <>
-      A cap of <strong>100%</strong> is the same as Fill. This overrides the preview <strong>Width</strong> on the bottom
+      A cap of <code>100%</code> is the same as <strong>Fill</strong>. This overrides the preview <strong>Width</strong> on the bottom
       toolbar whenever it is narrower.
     </>
   ),
@@ -137,7 +137,7 @@ export default function TemplateBodyDimensions({ root, onUpdate }: TemplateBodyD
               if (e.key === 'Enter') (e.target as HTMLInputElement).blur();
             }}
             aria-label="Maximum content width"
-            className="min-w-0 flex-1 px-2 py-1 text-xs font-mono text-strong text-right bg-surface-secondary border border-subtle rounded-l-lg rounded-r-none relative focus:z-10 focus:outline-none focus:border-[var(--secondary-accent)]"
+            className={`min-w-0 flex-1 px-2 ${barControlHeight} text-xs font-mono text-strong text-right bg-surface-secondary border border-subtle rounded-l-lg rounded-r-none relative focus:z-10 focus:outline-none focus:border-[var(--secondary-accent)]`}
           />
           <UnitSelect value={unit} onChange={setUnit} label="Content width unit" />
         </div>
@@ -145,7 +145,7 @@ export default function TemplateBodyDimensions({ root, onUpdate }: TemplateBodyD
           type="button"
           onClick={() => onUpdate({ maxWidth: undefined })}
           title="Stretch the layout to fill the screen"
-          className={`flex items-center justify-center gap-1.5 p-1.5 rounded-lg border text-xs font-bold transition cursor-pointer ${
+          className={`flex items-center justify-center gap-1.5 px-2 ${barControlHeight} rounded-lg border text-xs font-bold transition cursor-pointer ${
             isFill ? activeBtn : idleBtn
           }`}
         >

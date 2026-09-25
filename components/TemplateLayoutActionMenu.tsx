@@ -22,7 +22,7 @@ import TreeActionMenu, {
 } from '@/components/TreeActionMenu';
 import TemplateBodyDimensions from '@/components/TemplateBodyDimensions';
 import TemplateContainerSizing from '@/components/TemplateContainerSizing';
-import { activeBtn } from '@/components/editorBarStyles';
+import { activeBtn, barControlHeight, barToggleBtn, barToggleGroup, disabledBtn } from '@/components/editorBarStyles';
 import UnitSelect from '@/components/UnitSelect';
 import type { HintContent } from '@/components/HoverHint';
 import {
@@ -41,7 +41,7 @@ import {
 const BODY_SIZE_HINT: HintContent = {
   title: 'Size',
   settings: [
-    { name: 'Auto', text: 'Enables the Body to stretch automatically to accommodate child content.' },
+    { name: 'Auto', text: <>Enables the <em>Body</em> to stretch automatically to accommodate child content.</> },
     { name: 'Custom', text: 'Enables custom width and height settings.' },
   ],
   notes: (
@@ -55,13 +55,13 @@ const BODY_SIZE_HINT: HintContent = {
 const BODY_LAYOUT_HINT: HintContent = {
   title: 'Layout',
   settings: [
-    { name: 'Horizontal', text: 'Lays child containers out side by side, in a row.' },
-    { name: 'Vertical', text: 'Stacks child containers top to bottom, in a column.' },
+    { name: 'Row', text: 'Lays child containers out side by side, from left to right.' },
+    { name: 'Column', text: 'Stacks child containers on top of each other, from top to bottom.' },
   ],
   notes: (
     <>
-      The <em>Body</em> always flows <strong>Vertical</strong>, like a page. To place items side by side, add a Row
-      container inside it.
+      The <em>Body</em> always flows using <code>Column</code>, like a page in a book. To place items side by side,
+      add a container with <strong>Layout</strong> set to <code>Row</code>.
     </>
   ),
 };
@@ -70,7 +70,7 @@ const BODY_PADDING_HINT: HintContent = {
   title: 'Padding',
   settings: [
     { name: 'px', text: 'A fixed amount of space, in pixels.' },
-    { name: '%', text: "A share of the Body's width, so it scales with the screen." },
+    { name: '%', text: <>A share of the <em>Body</em>&apos;s width, so it scales with the screen.</> },
   ],
   notes: <>Padding is the space between the <em>Body</em>&apos;s edge and its content. Type an exact value or drag the slider.</>,
 };
@@ -272,24 +272,26 @@ export function TemplateContainerActionMenu({
         {activeTab === 'properties' && (
           <>
             <ActionMenuSection label="Size" hint={BODY_SIZE_HINT} isOpen={openSections.size} onToggle={() => toggleSection('size')}>
-              <div className="grid grid-cols-2 gap-1.5 px-3 pt-0 pb-2">
-                <button
-                  type="button"
-                  title="Auto: the Body stretches automatically with content"
-                  className={`flex items-center justify-center gap-1.5 p-1.5 rounded-lg border text-xs font-bold cursor-default ${activeBtn}`}
-                >
-                  <AutoSizingIcon className="w-3.5 h-3.5" />
-                  <span>Auto</span>
-                </button>
-                <button
-                  type="button"
-                  disabled
-                  title="Custom sizing is not available for the Body"
-                  className="flex items-center justify-center gap-1.5 p-1.5 rounded-lg border text-xs font-bold bg-surface-secondary border-subtle text-muted opacity-50 cursor-not-allowed"
-                >
-                  <CustomSizingIcon className="w-3.5 h-3.5" />
-                  <span>Custom</span>
-                </button>
+              <div className="px-3 pt-0 pb-2">
+                <div className={`${barToggleGroup} w-full`} role="group" aria-label="Sizing mode">
+                  <button
+                    type="button"
+                    title="Auto: the Body stretches automatically with content"
+                    className={`${barToggleBtn} flex-1 justify-center border cursor-default ${activeBtn}`}
+                  >
+                    <AutoSizingIcon className="w-3.5 h-3.5" />
+                    Auto
+                  </button>
+                  <button
+                    type="button"
+                    disabled
+                    title="Custom sizing is not available for the Body"
+                    className={`${barToggleBtn} flex-1 justify-center ${disabledBtn} text-[var(--secondary-accent)]`}
+                  >
+                    <CustomSizingIcon className="w-3.5 h-3.5" />
+                    Custom
+                  </button>
+                </div>
               </div>
 
               {/* Max Content Width -- also a Size setting (caps/centers the Body's content). */}
@@ -300,24 +302,26 @@ export function TemplateContainerActionMenu({
             </ActionMenuSection>
 
             <ActionMenuSection label="Layout" hint={BODY_LAYOUT_HINT} isOpen={openSections.layout} onToggle={() => toggleSection('layout')}>
-              <div className="grid grid-cols-2 gap-1.5 px-3 pt-0 pb-2">
-                <button
-                  type="button"
-                  disabled
-                  title="The Body always flows top-to-bottom, like a page. To place items side-by-side, add a Row container and put them inside it."
-                  className="flex items-center justify-center gap-1.5 p-1.5 rounded-lg border text-xs font-bold bg-surface-secondary border-subtle text-muted opacity-50 cursor-not-allowed"
-                >
-                  <FlexRowIcon className="w-3.5 h-3.5" />
-                  <span>Horizontal</span>
-                </button>
-                <button
-                  type="button"
-                  title="The Body always flows top-to-bottom, like a page."
-                  className={`flex items-center justify-center gap-1.5 p-1.5 rounded-lg border text-xs font-bold cursor-default ${activeBtn}`}
-                >
-                  <FlexColumnIcon className="w-3.5 h-3.5" />
-                  <span>Vertical</span>
-                </button>
+              <div className="px-3 pt-0 pb-2">
+                <div className={`${barToggleGroup} w-full`} role="group" aria-label="Flex direction">
+                  <button
+                    type="button"
+                    disabled
+                    title="The Body always flows top-to-bottom, like a page. To place items side-by-side, add a Row container and put them inside it."
+                    className={`${barToggleBtn} flex-1 justify-center ${disabledBtn} text-[var(--secondary-accent)]`}
+                  >
+                    <FlexRowIcon className="w-3.5 h-3.5" />
+                    Row
+                  </button>
+                  <button
+                    type="button"
+                    title="The Body always flows top-to-bottom, like a page."
+                    className={`${barToggleBtn} flex-1 justify-center border cursor-default ${activeBtn}`}
+                  >
+                    <FlexColumnIcon className="w-3.5 h-3.5" />
+                    Column
+                  </button>
+                </div>
               </div>
             </ActionMenuSection>
 
@@ -335,7 +339,7 @@ export function TemplateContainerActionMenu({
                     }}
                     aria-label="Padding amount"
                     title="Type an exact padding amount"
-                    className="w-14 px-2 py-1 text-xs font-mono text-strong text-right bg-surface-secondary border border-subtle rounded-l-lg rounded-r-none relative focus:z-10 focus:outline-none focus:border-[var(--secondary-accent)]"
+                    className={`w-14 px-2 ${barControlHeight} text-xs font-mono text-strong text-right bg-surface-secondary border border-subtle rounded-l-lg rounded-r-none relative focus:z-10 focus:outline-none focus:border-[var(--secondary-accent)]`}
                   />
                   <UnitSelect value={paddingUnit} onChange={setPaddingUnit} label="Padding unit" />
                   <span className="text-[10px] font-mono text-[var(--secondary-accent)] font-bold ml-auto">
