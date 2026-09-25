@@ -2,7 +2,14 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { FieldDefinition } from '@/types/field';
-import { FlexContainerNode, FlexComponentNode, parsePxValue, resolvePaddingCss } from '@/types/layout';
+import {
+  FlexContainerNode,
+  FlexComponentNode,
+  normalizeAlign,
+  normalizeJustify,
+  parsePxValue,
+  resolvePaddingCss,
+} from '@/types/layout';
 import ContainerResizeHandles from '@/components/ContainerResizeHandles';
 import FlexComponentRenderer from '@/components/template-canvas/FlexComponentRenderer';
 
@@ -159,16 +166,19 @@ export default function FlexContainerRenderer({
     };
   }, [canvasMode, container.id]);
 
+  const justify = normalizeJustify(container.justify);
   const justifyStyle =
-    container.justify === 'between'
+    justify === 'between'
       ? 'space-between'
-      : container.justify === 'around'
+      : justify === 'around'
       ? 'space-around'
-      : container.justify === 'center'
+      : justify === 'center'
       ? 'center'
-      : container.justify === 'end'
+      : justify === 'end'
       ? 'flex-end'
       : 'flex-start';
+  const align = normalizeAlign(container.align);
+  const alignItemsStyle = align === 'start' ? 'flex-start' : align === 'end' ? 'flex-end' : align;
 
   // In a column parent the main axis is vertical: a container must keep its content height
   // (the body scrolls) and take its width from cross-axis stretch, not from flex-basis -- unless
@@ -185,15 +195,15 @@ export default function FlexContainerRenderer({
   const hasOwnHeight = !!(container.height || container.sizing?.height);
 
   const outerStyle: React.CSSProperties = {
-    flex: parentIsColumn
+    flex: container.sizing?.type === 'auto'
+      ? '0 0 auto'
+      : parentIsColumn
       ? parentHasExplicitHeight && !hasOwnHeight
         ? '1 1 0%'
         : '0 0 auto'
       : container.sizing?.type === 'fixed'
-        ? `1 1 ${container.sizing.value || 'auto'}`
-        : container.sizing?.type === 'auto'
-        ? '0 0 auto'
-        : '1 1 0%',
+      ? `1 1 ${container.sizing.value || 'auto'}`
+      : '1 1 0%',
     width:
       container.sizing?.type === 'fixed' && container.sizing.value
         ? container.sizing.value
@@ -213,7 +223,16 @@ export default function FlexContainerRenderer({
     // the layout around it) to whatever the dropped-in content needs. Auto containers are
     // unaffected -- they have no explicit height, so they keep growing with their content.
     overflowY: container.maxHeight || container.height || container.sizing?.height ? 'auto' : undefined,
-    alignSelf: parentIsColumn && container.sizing?.type !== 'fixed' && !container.width ? 'stretch' : undefined,
+    // Auto/Custom-less Fit containers hug their content across a column too, unless the parent's own
+    // Align Items already positions its children (then that alignment decides).
+    alignSelf:
+      parentIsColumn && container.sizing?.type === 'auto'
+        ? normalizeAlign(parentContainer?.align) === 'stretch'
+          ? 'flex-start'
+          : undefined
+        : parentIsColumn && container.sizing?.type !== 'fixed' && !container.width
+        ? 'stretch'
+        : undefined,
     minWidth: container.minWidth || 0,
     // Outside spacing, set from the flyout's Spacing box; never on the Body.
     ...(!isRoot && container.margin ? { margin: container.margin } : null),
@@ -235,7 +254,7 @@ export default function FlexContainerRenderer({
         : undefined,
     gap: `${container.gap ?? 0}px`,
     flexWrap: container.wrap ? 'wrap' : 'nowrap',
-    alignItems: container.align,
+    alignItems: alignItemsStyle,
     justifyContent: justifyStyle,
     padding: resolvePaddingCss(container.padding),
   };

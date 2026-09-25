@@ -68,6 +68,10 @@ export function uniqueLabel(label: string, taken: Set<string>): string {
 }
 
 /** A new container with sensible defaults; `options` override any of them. */
+/** Options for a container added from the toolbar or the container flyout. No direction: the editor
+ *  picks one based on the parent (see defaultChildDirection). */
+export const NEW_CONTAINER_OPTIONS = { label: 'New Container', padding: '0px', sizing: { type: 'fill' } } as const;
+
 export function buildContainer(
   options: Partial<FlexContainerNode>,
   defaultLabel: string,

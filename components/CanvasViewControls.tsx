@@ -3,7 +3,7 @@
 import React, { useRef, useState } from 'react';
 import { SearchGlassIcon } from '@/components/icons/TreeIcons';
 import { FitFrameIcon, HelpCircleIcon } from '@/components/icons/LayoutIcons';
-import HoverHint, { type HintContent } from '@/components/HoverHint';
+import HoverHint, { HintRef, type HintContent } from '@/components/HoverHint';
 import { useCanvasZoom, ZOOM_MAX, ZOOM_MIN, ZOOM_STEP } from '@/context/CanvasZoomContext';
 import { BODY_WIDTH_PRESETS } from '@/types/layout';
 import { useDismissOnOutsideOrEscape } from '@/hooks/useDismissOnOutsideOrEscape';
@@ -21,15 +21,13 @@ const FALLBACK_MAX_PREVIEW_WIDTH = 3840;
 const WIDTH_HINT: HintContent = {
   title: 'Width',
   settings: [
-    { name: 'Fit', text: 'The preview fills the whole editor area.' },
+    { name: 'Fit', icon: <FitFrameIcon className="w-2.5 h-2.5" />, text: 'The preview fills the whole editor area.' },
     { name: 'A width', text: 'Previews at a specific screen width: pick a preset or type your own.' },
   ],
-  notes: (
-    <>
-      Preview only; templates stay fluid. A <strong>Maximum Content Width</strong> set on the Body (Body Properties, Size
-      section) overrides this: the layout stays capped at that width, and is centered when the preview is wider.
-    </>
-  ),
+  notes: [
+    { kind: 'tip', text: <>Preview only; templates stay fluid.</> },
+    { kind: 'caution', text: <>A <strong>Maximum Content Width</strong> set on the Body (Body Properties, Size section) overrides this: the layout stays capped at that width, and is centered when the preview is wider.</> },
+  ],
 };
 const FIT_SETTINGS = [
   { name: 'On', text: 'The preview fills the whole editor area.' },
@@ -38,12 +36,12 @@ const FIT_SETTINGS = [
 const FIT_ON_HINT: HintContent = {
   title: 'Fit',
   settings: FIT_SETTINGS,
-  notes: <><strong>Fit</strong> is <strong>on</strong>. Click to turn it off and choose a fixed screen width.</>,
+  notes: [{ kind: 'use', text: <><HintRef icon={<FitFrameIcon className="w-2.5 h-2.5" />}>Fit</HintRef> is <strong>on</strong>. Click to turn it off and choose a fixed screen width.</> }],
 };
 const FIT_OFF_HINT: HintContent = {
   title: 'Fit',
   settings: FIT_SETTINGS,
-  notes: <><strong>Fit</strong> is <strong>off</strong>. Click to turn it on and fill the editor area.</>,
+  notes: [{ kind: 'use', text: <><HintRef icon={<FitFrameIcon className="w-2.5 h-2.5" />}>Fit</HintRef> is <strong>off</strong>. Click to turn it on and fill the editor area.</> }],
 };
 const ACCENT_BORDER = 'border-[color-mix(in_oklch,var(--secondary-accent)_45%,transparent)]';
 

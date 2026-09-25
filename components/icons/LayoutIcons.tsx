@@ -251,6 +251,30 @@ export const AutoSizingIcon = ({ className = 'w-4 h-4', strokeWidth = 1.9 }: Lay
 );
 
 /**
+ * FitContentIcon:
+ * A small block with arrows closing in on it from both sides, for "Fit" container sizing (the
+ * container shrinks to hug its content -- the opposite of FillIcon's arrows pointing outward).
+ */
+export const FitContentIcon = ({ className = 'w-4 h-4', strokeWidth = 1.8 }: LayoutIconProps) => (
+  <svg
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth={strokeWidth}
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className={`origin-center shrink-0 ${className}`}
+    aria-hidden="true"
+  >
+    <rect x="9.5" y="8" width="5" height="8" rx="1" />
+    <path d="M2.5 12H7" />
+    <path d="m5 9.5 2.5 2.5L5 14.5" />
+    <path d="M21.5 12H17" />
+    <path d="m19 9.5-2.5 2.5 2.5 2.5" />
+  </svg>
+);
+
+/**
  * CustomSizingIcon:
  * Three sliders (rows with dots at different positions), for manual ("Custom") container sizing.
  */

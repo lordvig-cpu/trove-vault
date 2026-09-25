@@ -91,10 +91,10 @@ commit whenever you add, remove, split or rename a file — it goes stale otherw
   also accepts a bare legacy number from layouts saved before % support); `margin` is applied by
   `FlexContainerRenderer` on every container except the Body, which has none. The per-side editor is
   `TemplateSpacingBox.tsx` (Margin box around Padding box, side inputs, a slider/unit for the
-  selected side, and a link-sides toggle); the Body flyout shows it with margin disabled. The
-  non-root Container Padding section in `TemplateLayoutActionMenu.tsx` and the docked Properties
-  tab (`TemplatePropertiesInspector.tsx`) still use the older preset-buttons-only, all-sides UI and
-  haven't been converted yet, though both read/write the string type correctly.
+  selected side, and a link-sides toggle); the Body flyout shows it with margin disabled and every
+  other container's flyout with margin enabled. The docked Properties tab
+  (`TemplatePropertiesInspector.tsx`) still uses the older preset-buttons-only, all-sides padding UI
+  and hasn't been converted yet, though it reads/writes the string type correctly.
 - A row whose children *all* have their own explicit pixel width (Custom, not a %) but together don't
   fit gets a dashed-red border and a Layout-tree warning badge (`FlexContainerRenderer`'s
   `onOverflowChange`, surfaced via `useTemplateLayoutTree`'s `overflowingContainerIds`). It's scoped to
@@ -197,13 +197,37 @@ commit whenever you add, remove, split or rename a file — it goes stale otherw
   closing and reopening. Pure Actions-only menus (Item/Collection/Category/Template Actions in
   `TreeItemActionMenu.tsx`/`TreeCollectionActionMenu.tsx`/`TreeTemplateActionMenu.tsx`) have no
   tabs and use the same `ActionIcon` as their title icon, rather than a per-type emoji, since the
-  title already says "Actions". Currently only the root/Body flyout (`TemplateLayoutActionMenu.tsx`)
-  has the tabs/sections; the non-root Container and Component Properties flyouts still use their
-  original single mixed panel and haven't been converted yet.
+  title already says "Actions". The Body and standard-container flyouts (`TemplateLayoutActionMenu.tsx`) both use
+  it. A standard container's Actions tab is Add Before / Inside / After, Split into 2 Columns /
+  Rows, and Delete Container (always last); its Properties tab has Container Name, Size (Auto/Fit/Custom
+  plus the Width/Min/Max and Height/Min/Max fields) and Layout (Row/Column, then two icon-button
+  groups for alignment) on the left, and Spacing on the right. Deliberately absent: Child Item Gap (the `gap`
+  value itself is unchanged, it just has no UI), Wrap Children and Card Frame Style (cards are
+  expected to become draggable components rather than a per-container option), a Select Parent
+  action (click the parent instead), and Maximum Content Width (Body-only). The Component Properties flyout is the one still on its original single mixed panel.
+- A container has three sizing modes, in both the flyout and the top toolbar: Auto (`sizing.type`
+  'fill': fills the space its parent gives it), Fit ('auto': `flex: 0 0 auto`, shrinks to its content,
+  and in a column parent hugs its width too unless the parent's Align Items positions its children)
+  and Custom ('fixed': your own width/height). Fit is only enabled once the container has children.
+- Container alignment is set on the container, not on each child: `align` (Align Items, the cross
+  axis) and `justify` (Justify Content, the main axis) are stored as canonical `start`/`center`/`end`
+  (+ `stretch`, `between`, `around`) and rendered by `FlexContainerRenderer` via `normalizeAlign` /
+  `normalizeJustify`, which also accept the `flex-start`/`flex-end` spellings an earlier flyout saved.
+  The flyout shows them as icon button groups labelled by direction ("Horizontal align" /
+  "Vertical align", swapped for Row vs Column, horizontal first) using `AlignIcons.tsx`, drawn for a Row
+  and rotated a quarter turn for a Column. They only show when children don't already fill the
+  container (Auto children stretch); a per-item override (`align-self`) is a possible later addition.
 - Help for a control is a `HoverHint` bubble (`components/HoverHint.tsx`), not a native `title`
   tooltip, whenever it's more than a few words: an action-menu-styled popup with a title bar (the `?`
   at the right), then an optional "Settings" section (one bold name + what it does per line) and an
-  optional "Notes" paragraph, under the same shadowed-rule sub-headings as the Properties sections.
+  optional "Notes" list, under the same shadowed-rule sub-headings as the Properties sections. Each
+  note is one point of a kind -- `use` (how to use it), `tip` (a helpful hint) or `caution` (a
+  limitation or override to watch for) -- led by that kind's icon (`icons/HintIcons.tsx`); `HoverHint` always lists them in that order (use,
+  tip, caution) whatever order they were written in. When a note refers to a control the user can see (Link
+  sides, Fill, Auto, Custom, Fit), wrap it in `HintRef` with that control's own icon, which shows a
+  mini version of its button before the name, so nobody has to guess which one is meant. The same goes for a
+  Settings row that is itself a button (Auto, Fit, Custom, Row, Column, Fill, Link sides): give its
+  `HintSetting` the button's `icon`.
   Every bubble has that one shape (`HintContent`); wrap a `?` icon in it, or a button
   (`interactive`). `ActionMenuSection` takes an optional `hint` for a `?` beside its heading.
 - Layout tree edits (add, insert sibling, split, update, remove) are pure functions in

@@ -317,10 +317,61 @@
   text-align: justify;
 }
 
+/* Notes: one point per row, led by an icon for its kind (how to use / tip / caution) instead of a
+   bullet; the text is justified like the Settings descriptions. */
 .hoverHintNotes {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
   margin: 0;
   padding: 0 0.25rem;
+  list-style: none;
+}
+
+.hoverHintNote {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.4rem;
+  align-items: start;
   text-align: justify;
+}
+
+.hoverHintNoteIcon {
+  display: flex;
+  margin-top: 0.1rem;
+}
+
+.hoverHintNote-use .hoverHintNoteIcon {
+  color: var(--text-strong);
+}
+
+.hoverHintNote-tip .hoverHintNoteIcon {
+  color: var(--secondary-accent);
+}
+
+/* HintRef: a control mentioned inside a note -- a mini version of its button, then its name. */
+.hintRef {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+.hintRefIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.125rem;
+  height: 1.125rem;
+  border: 1px solid color-mix(in oklch, var(--secondary-accent) 55%, transparent);
+  border-radius: 0.3rem;
+  background: color-mix(in oklch, black 40%, transparent);
+  color: var(--secondary-accent);
+}
+
+.hoverHintNote-caution .hoverHintNoteIcon {
+  color: var(--tree-menu-danger-icon);
 }
 
 /* Any mention of a setting or property (the Settings names, and inside Notes) is bold light blue,
@@ -511,6 +562,16 @@
 
 .actionMenuItem:hover {
   background-color: var(--secondary-tree-menu-item-hover-bg);
+}
+
+/* The icon reads as muted until the ROW is hovered, then turns the same color as the label. */
+.actionMenuItemIcon {
+  color: var(--text-muted);
+  transition: color 150ms ease;
+}
+
+.actionMenuItem:hover .actionMenuItemIcon {
+  color: var(--tree-menu-item-hover-text);
 }
 
 .actionMenuItemLabel {

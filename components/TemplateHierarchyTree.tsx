@@ -30,6 +30,12 @@ export interface TemplateHierarchyTreeProps {
   onSelectNode: (nodeId: string | null) => void;
   onOpenProperties?: (nodeId: string) => void;
   onAddContainer?: (targetContainerId: string, options?: Partial<FlexContainerNode>) => string;
+  onInsertContainerSibling?: (
+    targetContainerId: string,
+    position: 'before' | 'after',
+    options?: Partial<FlexContainerNode>
+  ) => string;
+  onSplitContainer?: (containerId: string, splitType: 'columns' | 'rows', measuredPx: number) => void;
   onUpdateContainer?: (containerId: string, partial: Partial<FlexContainerNode>) => void;
   onUpdateComponent?: (componentId: string, partial: Partial<FlexComponentNode>) => void;
   onRemoveContainer: (containerId: string) => void;
@@ -132,7 +138,6 @@ function computeVisibleHierarchyIds(
 
 interface ContainerNodeRowProps {
   container: FlexContainerNode;
-  parentContainer?: FlexContainerNode | null;
   depth: number;
   selectedNodeId: string | null;
   activeContainerId?: string;
@@ -142,6 +147,12 @@ interface ContainerNodeRowProps {
   onSelectNode: (id: string | null) => void;
   onOpenProperties?: (id: string) => void;
   onAddContainer?: (targetContainerId: string, options?: Partial<FlexContainerNode>) => string;
+  onInsertContainerSibling?: (
+    targetContainerId: string,
+    position: 'before' | 'after',
+    options?: Partial<FlexContainerNode>
+  ) => string;
+  onSplitContainer?: (containerId: string, splitType: 'columns' | 'rows', measuredPx: number) => void;
   onUpdateContainer?: (id: string, partial: Partial<FlexContainerNode>) => void;
   onUpdateComponent?: (id: string, partial: Partial<FlexComponentNode>) => void;
   onRemoveContainer: (id: string) => void;
@@ -157,7 +168,6 @@ interface ContainerNodeRowProps {
 
 function ContainerNodeRow({
   container,
-  parentContainer,
   depth,
   selectedNodeId,
   activeContainerId,
@@ -167,6 +177,8 @@ function ContainerNodeRow({
   onSelectNode,
   onOpenProperties,
   onAddContainer,
+  onInsertContainerSibling,
+  onSplitContainer,
   onUpdateContainer,
   onUpdateComponent,
   onRemoveContainer,
@@ -185,9 +197,10 @@ function ContainerNodeRow({
   const isExpanded = visibleIds ? true : expandedIds.has(container.id);
   const hasChildren = visibleChildren.length > 0;
   const isOverflowing = overflowingContainerIds?.has(container.id) ?? false;
-  // Right-docked panels position the flyout by its real width: a container's uses .menuShellWide
-  // (328px / 20.5rem), the Body's is the 224px (14rem) shell default.
-  const menu = useTreeActionMenu(`tree-container-${container.id}`, 280, position, isRoot ? 224 : 328);
+  // Right-docked panels position the flyout by its real width: every container's flyout (Body or not)
+  // is the 224px (14rem) shell default -- its wider Properties tab shifts itself left (see
+  // PROPERTIES_EXTRA_WIDTH_PX in TemplateLayoutActionMenu).
+  const menu = useTreeActionMenu(`tree-container-${container.id}`, 280, position, 224);
 
   // Semantic layout icon
   const containerIcon = isRoot ? (
@@ -351,13 +364,13 @@ function ContainerNodeRow({
       {/* Container Flyout Action Menu */}
       <TemplateContainerActionMenu
         container={container}
-        parentContainer={parentContainer}
         menu={menu}
         position={position}
         onAddContainer={onAddContainer}
+        onInsertContainerSibling={onInsertContainerSibling}
+        onSplitContainer={onSplitContainer}
         onUpdateContainer={onUpdateContainer}
         onRemoveContainer={onRemoveContainer}
-        onSelectNode={onSelectNode}
       />
 
       {/* Render Children when Expanded */}
@@ -380,7 +393,6 @@ function ContainerNodeRow({
                 <ContainerNodeRow
                   key={child.id}
                   container={child}
-                  parentContainer={container}
                   depth={depth + 1}
                   selectedNodeId={selectedNodeId}
                   activeContainerId={activeContainerId}
@@ -390,6 +402,8 @@ function ContainerNodeRow({
                   onSelectNode={onSelectNode}
                   onOpenProperties={onOpenProperties}
                   onAddContainer={onAddContainer}
+                  onInsertContainerSibling={onInsertContainerSibling}
+                  onSplitContainer={onSplitContainer}
                   onUpdateContainer={onUpdateContainer}
                   onUpdateComponent={onUpdateComponent}
                   onRemoveContainer={onRemoveContainer}
@@ -585,6 +599,8 @@ export default function TemplateHierarchyTree({
   onSelectNode,
   onOpenProperties,
   onAddContainer,
+  onInsertContainerSibling,
+  onSplitContainer,
   onUpdateContainer,
   onUpdateComponent,
   onRemoveContainer,
@@ -652,7 +668,6 @@ export default function TemplateHierarchyTree({
     <div className="flex flex-col h-full w-full select-none py-1.5">
       <ContainerNodeRow
         container={root}
-        parentContainer={null}
         depth={0}
         selectedNodeId={selectedNodeId}
         activeContainerId={activeContainerId}
@@ -662,6 +677,8 @@ export default function TemplateHierarchyTree({
         onSelectNode={onSelectNode}
         onOpenProperties={onOpenProperties}
         onAddContainer={onAddContainer}
+        onInsertContainerSibling={onInsertContainerSibling}
+        onSplitContainer={onSplitContainer}
         onUpdateContainer={onUpdateContainer}
         onUpdateComponent={onUpdateComponent}
         onRemoveContainer={onRemoveContainer}

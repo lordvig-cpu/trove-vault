@@ -10,7 +10,8 @@ import {
   parseBoxValue,
 } from '@/types/layout';
 import UnitSelect from '@/components/UnitSelect';
-import { LinkIcon } from '@/components/icons/LayoutIcons';
+import { HelpCircleIcon, LinkIcon } from '@/components/icons/LayoutIcons';
+import HoverHint, { type HintContent } from '@/components/HoverHint';
 import { activeBtn, barControlHeight, idleBtn } from '@/components/editorBarStyles';
 
 /**
@@ -93,6 +94,28 @@ function SideInput({
     />
   );
 }
+
+/** Help for the layer currently selected in the diagram (see HoverHint for the shape). */
+const LAYER_HINTS: Record<Layer, HintContent> = {
+  padding: {
+    title: 'Padding',
+    settings: [
+      { name: 'px', text: 'A fixed amount of space, in pixels.' },
+      { name: '%', text: "A share of the parent's width, so it scales with the screen." },
+      { name: 'Link sides', icon: <LinkIcon className="w-2.5 h-2.5" />, text: 'Changes all four sides together.' },
+    ],
+    notes: [{ kind: 'tip', text: <>Space <em>inside</em> the container, between its edge and its content.</> }],
+  },
+  margin: {
+    title: 'Margin',
+    settings: [
+      { name: 'px', text: 'A fixed amount of space, in pixels.' },
+      { name: '%', text: "A share of the parent's width, so it scales with the screen." },
+      { name: 'Link sides', icon: <LinkIcon className="w-2.5 h-2.5" />, text: 'Changes all four sides together.' },
+    ],
+    notes: [{ kind: 'tip', text: <>Space <em>outside</em> the container, between it and whatever sits next to it.</> }],
+  },
+};
 
 interface TemplateSpacingBoxProps {
   container: FlexContainerNode;
@@ -185,23 +208,13 @@ export default function TemplateSpacingBox({ container, onUpdate, marginDisabled
         </div>
       </div>
 
-      <div className="flex items-center justify-between gap-2">
+      <div className="flex items-center justify-end gap-1">
         <span className="text-[10px] font-semibold tracking-[0.04em] text-[var(--secondary-tree-menu-header-title)]">
           {capitalize(selected.layer)} · {isLinked ? 'All sides' : capitalize(selected.side)}
         </span>
-        <button
-          type="button"
-          onClick={toggleLink}
-          aria-pressed={isLinked}
-          disabled={selected.layer === 'margin' && marginDisabled}
-          title={isLinked ? 'Sides are linked: editing one changes all four. Click to edit them separately.' : 'Link the four sides so they change together'}
-          aria-label="Link sides"
-          className={`w-[26px] ${barControlHeight} rounded-md border transition flex items-center justify-center shrink-0 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed ${
-            isLinked ? activeBtn : idleBtn
-          }`}
-        >
-          <LinkIcon />
-        </button>
+        <HoverHint hint={LAYER_HINTS[selected.layer]}>
+          <HelpCircleIcon className="w-3 h-3 text-[var(--secondary-tree-menu-header-title)]" />
+        </HoverHint>
       </div>
 
       <div className="flex items-center gap-2">
@@ -223,6 +236,19 @@ export default function TemplateSpacingBox({ container, onUpdate, marginDisabled
           }
           label={`${capitalize(selected.layer)} unit`}
         />
+        <button
+          type="button"
+          onClick={toggleLink}
+          aria-pressed={isLinked}
+          disabled={selected.layer === 'margin' && marginDisabled}
+          title={isLinked ? 'Sides are linked: editing one changes all four. Click to edit them separately.' : 'Link the four sides so they change together'}
+          aria-label="Link sides"
+          className={`w-[26px] ${barControlHeight} rounded-md border transition flex items-center justify-center shrink-0 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed ${
+            isLinked ? activeBtn : idleBtn
+          }`}
+        >
+          <LinkIcon />
+        </button>
       </div>
     </div>
   );

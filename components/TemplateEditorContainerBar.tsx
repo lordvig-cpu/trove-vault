@@ -11,6 +11,7 @@ import {
   AddChildContainerIcon,
   AddContainerAfterIcon,
   AutoSizingIcon,
+  FitContentIcon,
   CustomSizingIcon,
 } from '@/components/icons/LayoutIcons';
 import { GearIcon } from '@/components/icons/TreeIcons';
@@ -25,6 +26,8 @@ import {
   ghostBtn,
   idleBtn,
 } from '@/components/editorBarStyles';
+import { NEW_CONTAINER_OPTIONS } from '@/lib/layoutTree';
+import { measureContainerPx } from '@/lib/measureContainer';
 
 /* ==========================================================================
    Template editor bar: the container toolbar, anchored to the top navigation header (see
@@ -33,17 +36,6 @@ import {
    properties gear, delete — grouped and separated from the template-wide tools by living in their
    own panel entirely.
    ========================================================================== */
-
-// No direction here: the editor picks one based on the parent (see defaultChildDirection)
-const NEW_CONTAINER = { label: 'New Container', padding: '0px', sizing: { type: 'fill' } } as const;
-
-/** The container's current rendered size (unscaled layout px, not the zoomed CSS box) along the
-    axis a split needs -- most containers are Auto with no stored width/height to halve otherwise. */
-function measureContainerPx(containerId: string, axis: 'width' | 'height'): number {
-  const el = document.querySelector<HTMLElement>(`[data-container-id="${containerId}"]`);
-  const measured = axis === 'width' ? el?.offsetWidth : el?.offsetHeight;
-  return measured || 0;
-}
 
 const iconBtn =
   `px-1.5 ${barControlHeight} rounded-md border transition flex items-center gap-1 text-[11px] font-semibold`;
@@ -298,6 +290,8 @@ export default function TemplateEditorContainerBar({
 
   // Every container is a row or a column
   const direction = resolveDirection(container, isRoot);
+  // Fit shrinks a container to its content, so it only means something once there is some.
+  const hasContent = container.children.length > 0;
 
   return (
     <div
@@ -345,6 +339,30 @@ export default function TemplateEditorContainerBar({
           >
             <AutoSizingIcon className="w-3.5 h-3.5" />
             Auto
+          </button>
+          <button
+            type="button"
+            disabled={isRoot || !hasContent}
+            onClick={() => {
+              onUpdateContainer?.(container.id, { width: undefined, sizing: { ...container.sizing, type: 'auto', value: undefined } });
+            }}
+            title={
+              isRoot
+                ? 'Fit is not available for the Body'
+                : !hasContent
+                ? 'Fit: add content to this container first'
+                : 'Fit: shrink the container to fit its content'
+            }
+            className={`${barToggleBtn} ${
+              isRoot || !hasContent
+                ? `${disabledBtn} text-[var(--secondary-accent)]`
+                : container.sizing?.type === 'auto'
+                ? `border ${activeBtn} cursor-pointer`
+                : `${ghostBtn} cursor-pointer`
+            }`}
+          >
+            <FitContentIcon className="w-3.5 h-3.5" />
+            Fit
           </button>
           <button
             type="button"
@@ -431,20 +449,20 @@ export default function TemplateEditorContainerBar({
                 label="Before"
                 title={isRoot ? 'Not available for the Body' : 'Add Container Before'}
                 disabled={isRoot}
-                onClick={() => { onInsertContainerSibling?.(container.id, 'before', { ...NEW_CONTAINER }); }}
+                onClick={() => { onInsertContainerSibling?.(container.id, 'before', { ...NEW_CONTAINER_OPTIONS }); }}
               />
               <GroupOption
                 icon={<AddChildContainerIcon className="w-3.5 h-3.5" />}
                 label="Inside"
                 title="Add Child Container (nested inside)"
-                onClick={() => { onAddContainer?.(container.id, { ...NEW_CONTAINER }); }}
+                onClick={() => { onAddContainer?.(container.id, { ...NEW_CONTAINER_OPTIONS }); }}
               />
               <GroupOption
                 icon={<AddContainerAfterIcon className="w-3.5 h-3.5" />}
                 label="After"
                 title={isRoot ? 'Not available for the Body' : 'Add Container After'}
                 disabled={isRoot}
-                onClick={() => { onInsertContainerSibling?.(container.id, 'after', { ...NEW_CONTAINER }); }}
+                onClick={() => { onInsertContainerSibling?.(container.id, 'after', { ...NEW_CONTAINER_OPTIONS }); }}
               />
           </>
         </ToolGroup>

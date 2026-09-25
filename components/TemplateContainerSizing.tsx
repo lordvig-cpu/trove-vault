@@ -2,6 +2,8 @@
 
 import React, { useState } from 'react';
 import { FlexContainerNode } from '@/types/layout';
+import { barControlHeight } from '@/components/editorBarStyles';
+import { HelpCircleIcon } from '@/components/icons/LayoutIcons';
 
 /**
  * Sizing rules for a container (not the Body): Width / Min. W / Max. W and Height / Min. H / Max. H,
@@ -50,12 +52,12 @@ function SizeField({
   return (
     <div className="flex flex-col gap-1 min-w-0" title={title}>
       {label && (
-        <label className="text-[10px] font-bold text-muted flex items-center gap-1">
+        <label className="text-[10px] font-semibold tracking-[0.04em] text-[var(--secondary-tree-menu-header-title)] flex items-center justify-end gap-1">
           {label}
-          <span aria-hidden="true" className="opacity-60 font-normal">ⓘ</span>
+          <HelpCircleIcon className="w-3 h-3" />
         </label>
       )}
-      <div className="flex items-center gap-0.5 bg-slate-950 border border-subtle rounded-lg px-1.5 py-1 focus-within:border-[var(--primary-accent)]">
+      <div className={`flex items-center gap-0.5 ${barControlHeight} bg-surface-secondary border border-subtle rounded-lg px-1.5 focus-within:border-[var(--secondary-accent)]`}>
         <input
           type="text"
           inputMode="numeric"
@@ -78,9 +80,12 @@ function SizeField({
 interface TemplateContainerSizingProps {
   container: FlexContainerNode;
   onUpdate: (partial: Partial<FlexContainerNode>) => void;
+  /** Inside a flyout section: no card chrome or "Sizing" title, two columns (Width/Min/Max, then
+   *  Height/Min/Max) that fit a narrow column, and "Stack when narrower than" on its own row. */
+  bare?: boolean;
 }
 
-export default function TemplateContainerSizing({ container, onUpdate }: TemplateContainerSizingProps) {
+export default function TemplateContainerSizing({ container, onUpdate, bare = false }: TemplateContainerSizingProps) {
   // Width: sizing.value (fixed) is what the canvas renders; keep legacy `width` in step.
   const width = (container.sizing?.type === 'fixed' && container.sizing.value) || container.width || undefined;
   const height = container.sizing?.height || container.height || undefined;
@@ -95,9 +100,9 @@ export default function TemplateContainerSizing({ container, onUpdate }: Templat
   const setMinHeight = (v?: string) => onUpdate({ minHeight: v, sizing: { ...container.sizing, minHeight: v } });
 
   return (
-    <div className="flex flex-col gap-2.5 p-2.5 rounded-xl bg-slate-900/50 border border-subtle">
-      <span className="text-[11px] font-bold text-white">Sizing</span>
-      <div className="grid grid-cols-3 gap-2">
+    <div className={bare ? 'flex flex-col gap-2 px-3 pt-0 pb-2' : 'flex flex-col gap-2.5 p-2.5 rounded-xl bg-slate-900/50 border border-subtle'}>
+      {!bare && <span className="text-[11px] font-bold text-white">Sizing</span>}
+      <div className={bare ? 'grid grid-cols-2 grid-rows-3 grid-flow-col gap-2' : 'grid grid-cols-3 gap-2'}>
         <SizeField label="Width" value={width} placeholder="fill" title="Blank = fill the available space. Enter px or %." onCommit={setWidth} />
         <SizeField label="Min. W" value={container.minWidth} placeholder="none" title="Never narrower than this." onCommit={(v) => onUpdate({ minWidth: v })} />
         <SizeField label="Max. W" value={container.maxWidth} placeholder="none" title="Never wider than this." onCommit={(v) => onUpdate({ maxWidth: v })} />
@@ -107,9 +112,9 @@ export default function TemplateContainerSizing({ container, onUpdate }: Templat
       </div>
 
       {container.direction === 'row' && (
-        <div className="pt-2 border-t border-[var(--primary-border-subtle)] flex items-center justify-between gap-2">
+        <div className={bare ? 'flex flex-col gap-1' : 'pt-2 border-t border-[var(--primary-border-subtle)] flex items-center justify-between gap-2'}>
           <label
-            className="text-[10px] font-bold text-muted"
+            className="text-[10px] font-semibold tracking-[0.04em] text-[var(--secondary-tree-menu-header-title)] text-right"
             title="When this row gets narrower than this width, its children stack vertically."
           >
             Stack when narrower than

@@ -5,7 +5,7 @@ import { FlexContainerNode } from '@/types/layout';
 import { useCanvasZoom } from '@/context/CanvasZoomContext';
 import { HelpCircleIcon, FillIcon } from '@/components/icons/LayoutIcons';
 import { activeBtn, barControlHeight, idleBtn } from '@/components/editorBarStyles';
-import HoverHint, { type HintContent } from '@/components/HoverHint';
+import HoverHint, { HintRef, type HintContent } from '@/components/HoverHint';
 import UnitSelect from '@/components/UnitSelect';
 
 interface TemplateBodyDimensionsProps {
@@ -20,15 +20,13 @@ const MAX_CONTENT_WIDTH_PCT = 100;
 const CONTENT_WIDTH_HINT: HintContent = {
   title: 'Maximum Content Width',
   settings: [
-    { name: 'Fill', text: 'No cap: the layout stretches to fill the screen.' },
+    { name: 'Fill', icon: <FillIcon className="w-2.5 h-2.5" />, text: 'No cap: the layout stretches to fill the screen.' },
     { name: '[value]', text: <>Caps the layout at that width (<code>px</code> or <code>%</code>) and centers it on wider screens.</> },
   ],
-  notes: (
-    <>
-      A cap of <code>100%</code> is the same as <strong>Fill</strong>. This overrides the preview <strong>Width</strong> on the bottom
-      toolbar whenever it is narrower.
-    </>
-  ),
+  notes: [
+    { kind: 'tip', text: <>A cap of <code>100%</code> is the same as <HintRef icon={<FillIcon className="w-2.5 h-2.5" />}>Fill</HintRef>.</> },
+    { kind: 'caution', text: <>This overrides the preview <strong>Width</strong> on the bottom toolbar whenever it is narrower.</> },
+  ],
 };
 
 /**

@@ -279,6 +279,8 @@ export function usePanelRenderers({
             onSelectNode={templateEditor.selectNode}
             onOpenProperties={handleOpenProperties}
             onAddContainer={handleAddContainer}
+            onInsertContainerSibling={templateEditor.insertFlexContainerSibling}
+            onSplitContainer={templateEditor.splitFlexContainer}
             onUpdateContainer={templateEditor.updateFlexContainer}
             onUpdateComponent={templateEditor.updateFlexComponent}
             onRemoveContainer={templateEditor.removeFlexContainer}

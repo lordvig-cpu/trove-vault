@@ -28,6 +28,22 @@ export interface FlexSizing {
   minHeight?: string;   // optional min-height e.g. "160px"
 }
 
+/** A container's Align Items as one of the canonical values. Layouts saved from an earlier flyout may
+ *  hold the CSS spellings 'flex-start' / 'flex-end'. */
+export function normalizeAlign(value: string | undefined | null): FlexAlign {
+  if (value === 'start' || value === 'flex-start') return 'start';
+  if (value === 'end' || value === 'flex-end') return 'end';
+  if (value === 'center') return 'center';
+  return 'stretch';
+}
+
+/** A container's Justify Content as one of the canonical values (see normalizeAlign). */
+export function normalizeJustify(value: string | undefined | null): FlexJustify {
+  if (value === 'center' || value === 'between' || value === 'around') return value;
+  if (value === 'end' || value === 'flex-end') return 'end';
+  return 'start';
+}
+
 /** Parse a plain "NNNpx" (or bare number) CSS length; returns null for %, calc(), etc. Takes a
  *  wider runtime type than callers normally hold (a plain number, not just a string) since a
  *  length-typed field can still be a bare number at runtime from an old persisted layout. */
