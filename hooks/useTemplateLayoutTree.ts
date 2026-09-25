@@ -165,7 +165,7 @@ export function useTemplateLayoutTree({
           gap: 0,
           wrap: true,
           isCard: false,
-          padding: 0,
+          padding: '0px',
         });
       }
       if (primitiveType === 'column') {
@@ -175,7 +175,7 @@ export function useTemplateLayoutTree({
           gap: 0,
           wrap: false,
           isCard: false,
-          padding: 0,
+          padding: '0px',
         });
       }
       if (primitiveType === 'card') {
@@ -185,7 +185,7 @@ export function useTemplateLayoutTree({
           gap: 0,
           wrap: false,
           isCard: true,
-          padding: 0,
+          padding: '0px',
         });
       }
       if (primitiveType === 'split-2') {
@@ -199,7 +199,7 @@ export function useTemplateLayoutTree({
           wrap: false,
           align: 'stretch',
           justify: 'start',
-          padding: 0,
+          padding: '0px',
           sizing: { type: 'fixed', value: '50%' },
           isCard: true,
           children: [],
@@ -213,7 +213,7 @@ export function useTemplateLayoutTree({
           wrap: false,
           align: 'stretch',
           justify: 'start',
-          padding: 0,
+          padding: '0px',
           sizing: { type: 'fixed', value: '50%' },
           isCard: true,
           children: [],
@@ -225,7 +225,7 @@ export function useTemplateLayoutTree({
           wrap: false,
           align: 'stretch',
           justify: 'between',
-          padding: 0,
+          padding: '0px',
           isCard: false,
           children: [leftCol, rightCol],
         });
@@ -241,7 +241,7 @@ export function useTemplateLayoutTree({
           wrap: false,
           align: 'stretch',
           justify: 'start',
-          padding: 0,
+          padding: '0px',
           sizing: { type: 'fixed', value: '33.333%' },
           isCard: true,
           children: [],
@@ -253,7 +253,7 @@ export function useTemplateLayoutTree({
           wrap: false,
           align: 'stretch',
           justify: 'between',
-          padding: 0,
+          padding: '0px',
           isCard: false,
           children: [makeCol(1, 'Column 1'), makeCol(2, 'Column 2'), makeCol(3, 'Column 3')],
         });

@@ -5,6 +5,7 @@ import DeleteTemplateModal from '@/components/DeleteTemplateModal';
 import { CollectionRecord } from '@/types/collection';
 import { useTreeActions } from '@/context/TreeActionsContext';
 import { useTreeActionMenu } from '@/hooks/useTreeActionMenu';
+import { ActionIcon } from '@/components/icons/LayoutIcons';
 import TreeActionMenu, {
   ActionMenuDangerItem,
   ActionMenuDivider,
@@ -43,7 +44,7 @@ export default function TreeTemplateActionMenu({
       left={menu.menuCoords.left}
       position={position}
       title="Template Actions"
-      titleIcon={template.icon || '📑'}
+      titleIcon={<ActionIcon className="w-4 h-4" />}
     >
       <ActionMenuItem
         icon={<span>📄</span>}

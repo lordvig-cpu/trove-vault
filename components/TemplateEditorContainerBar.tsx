@@ -35,7 +35,7 @@ import {
    ========================================================================== */
 
 // No direction here: the editor picks one based on the parent (see defaultChildDirection)
-const NEW_CONTAINER = { label: 'New Container', padding: 0, sizing: { type: 'fill' } } as const;
+const NEW_CONTAINER = { label: 'New Container', padding: '0px', sizing: { type: 'fill' } } as const;
 
 /** The container's current rendered size (unscaled layout px, not the zoomed CSS box) along the
     axis a split needs -- most containers are Auto with no stored width/height to halve otherwise. */

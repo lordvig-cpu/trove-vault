@@ -34,7 +34,7 @@ test.describe('Layout tree operations (pure)', () => {
       wrap: true,
       align: 'stretch',
       justify: 'start',
-      padding: 0,
+      padding: '0px',
       isCard: false,
       sizing: { type: 'fill' },
       children: [],

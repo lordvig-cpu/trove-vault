@@ -10,6 +10,8 @@ import {
   FlexJustify,
   LayoutVariant,
   resolveDirection,
+  parsePxValue,
+  resolvePaddingCss,
 } from '@/types/layout';
 import TemplateBodyDimensions from '@/components/TemplateBodyDimensions';
 import TemplateContainerSizing from '@/components/TemplateContainerSizing';
@@ -119,17 +121,18 @@ export default function TemplatePropertiesInspector({
           -------------------------------------------------------------------- */}
       {isContainer && (
         <>
-          {/* Container Label */}
-          <div className="flex flex-col gap-1">
-            <label className="text-[10px] font-bold text-muted uppercase tracking-wider">
-              Container Name
-            </label>
+          {/* Container Name */}
+          <div className="flex flex-col gap-1.5">
+            <div className="properties-section-heading">
+              <hr aria-hidden="true" />
+              <h3>Container Name</h3>
+            </div>
             <input
               type="text"
               value={selectedNode.label || ''}
               onChange={(e) => onUpdateContainer(selectedNode.id, { label: e.target.value })}
               placeholder="e.g. Header Section, Sidebar, Card Row"
-              className="px-2.5 py-1.5 text-xs bg-surface-secondary border border-subtle rounded-lg text-strong focus:outline-none focus:border-[var(--primary-accent)] font-medium"
+              className="actionMenuRenameInput"
             />
           </div>
 
@@ -283,7 +286,7 @@ export default function TemplatePropertiesInspector({
                 Padding
               </label>
               <span className="text-[10px] font-mono text-[var(--primary-accent)] font-semibold">
-                {(selectedNode.padding ?? 0)}px
+                {resolvePaddingCss(selectedNode.padding)}
               </span>
             </div>
             <div className="grid grid-cols-4 gap-1.5">
@@ -291,9 +294,9 @@ export default function TemplatePropertiesInspector({
                 <button
                   key={pad}
                   type="button"
-                  onClick={() => onUpdateContainer(selectedNode.id, { padding: pad })}
+                  onClick={() => onUpdateContainer(selectedNode.id, { padding: `${pad}px` })}
                   className={`py-1 text-xs font-semibold rounded-lg border transition cursor-pointer text-center ${
-                    (selectedNode.padding ?? 0) === pad
+                    resolvePaddingCss(selectedNode.padding) === `${pad}px`
                       ? 'bg-[var(--primary-accent)] text-white border-[var(--primary-accent)] shadow-xs'
                       : 'bg-surface-secondary text-muted border-subtle hover:text-white hover:border-[var(--primary-accent)]'
                   }`}
@@ -307,13 +310,13 @@ export default function TemplatePropertiesInspector({
               min="0"
               max="48"
               step="4"
-              value={selectedNode.padding ?? 0}
+              value={parsePxValue(resolvePaddingCss(selectedNode.padding)) ?? 0}
               onChange={(e) => {
                 const val = parseInt(e.target.value, 10);
-                onUpdateContainer(selectedNode.id, { padding: isNaN(val) ? 0 : val });
+                onUpdateContainer(selectedNode.id, { padding: isNaN(val) ? '0px' : `${val}px` });
               }}
               className="w-full accent-[var(--primary-accent)] cursor-pointer h-1.5 bg-surface-secondary rounded-lg mt-0.5"
-              title={`Adjust padding: ${selectedNode.padding ?? 0}px`}
+              title={`Adjust padding: ${resolvePaddingCss(selectedNode.padding)}`}
             />
           </div>
 

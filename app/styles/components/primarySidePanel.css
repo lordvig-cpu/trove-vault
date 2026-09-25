@@ -618,6 +618,37 @@
     0 2px 4px var(--shadow-black-35);
 }
 
+/* Same shadowed-line heading as .tree-section-heading, tinted amber instead of blue -- used by
+   panels whose main header is already amber (e.g. the Properties panel, matching the "Container
+   Properties" action-menu title's --secondary-tree-menu-header-title). */
+.properties-section-heading {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--secondary-tree-menu-header-title);
+}
+
+.properties-section-heading h3 {
+  margin: 0;
+  flex-shrink: 0;
+  font-size: 0.625rem;
+  line-height: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-shadow: 0 1px 2px var(--shadow-black-35);
+}
+
+.properties-section-heading hr {
+  flex: 1;
+  margin: 0;
+  border: 0;
+  border-top: 1px solid color-mix(in oklch, var(--secondary-accent) 35%, transparent);
+  box-shadow:
+    0 -1px 0 var(--shadow-black-50),
+    0 1px 0 var(--shadow-black-50),
+    0 2px 4px var(--shadow-black-35);
+}
+
 /* Compact Search Input */
 .tree-search-input {
   width: 100%;

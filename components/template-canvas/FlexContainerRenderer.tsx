@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { FieldDefinition } from '@/types/field';
-import { FlexContainerNode, FlexComponentNode, parsePxValue } from '@/types/layout';
+import { FlexContainerNode, FlexComponentNode, parsePxValue, resolvePaddingCss } from '@/types/layout';
 import ContainerResizeHandles from '@/components/ContainerResizeHandles';
 import FlexComponentRenderer from '@/components/template-canvas/FlexComponentRenderer';
 
@@ -235,10 +235,7 @@ export default function FlexContainerRenderer({
     flexWrap: container.wrap ? 'wrap' : 'nowrap',
     alignItems: container.align,
     justifyContent: justifyStyle,
-    padding:
-      container.padding !== undefined
-        ? `${container.padding}px`
-        : '0px',
+    padding: resolvePaddingCss(container.padding),
   };
 
   const isCard = container.isCard;

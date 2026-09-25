@@ -28,11 +28,25 @@ export interface FlexSizing {
   minHeight?: string;   // optional min-height e.g. "160px"
 }
 
-/** Parse a plain "NNNpx" (or bare number) CSS length; returns null for %, calc(), etc. */
-export function parsePxValue(raw?: string | null): number | null {
-  if (!raw) return null;
+/** Parse a plain "NNNpx" (or bare number) CSS length; returns null for %, calc(), etc. Takes a
+ *  wider runtime type than callers normally hold (a plain number, not just a string) since a
+ *  length-typed field can still be a bare number at runtime from an old persisted layout. */
+export function parsePxValue(raw?: string | number | null): number | null {
+  if (raw === undefined || raw === null || raw === '') return null;
+  if (typeof raw === 'number') return raw;
   const m = raw.trim().match(/^(\d+(?:\.\d+)?)(?:px)?$/i);
   return m ? parseFloat(m[1]) : null;
+}
+
+/** Resolve a container's `padding` into a CSS length for rendering: undefined/blank -> "0px"; a
+ *  bare legacy number (saved before %% support, when padding was always px) -> "Npx"; a string is
+ *  used as-is ("16px", "10%"). Takes a wider runtime type than the field's own `string` so old
+ *  persisted layouts (localStorage / Supabase) still render correctly even though they predate
+ *  this type. */
+export function resolvePaddingCss(padding: string | number | undefined | null): string {
+  if (padding === undefined || padding === null || padding === '') return '0px';
+  if (typeof padding === 'number') return `${padding}px`;
+  return padding;
 }
 
 /** Preview widths offered in the editor zoom panel (editor-only; templates themselves are fluid). */
@@ -75,7 +89,7 @@ export interface FlexContainerNode {
   wrap: boolean;
   align: FlexAlign;
   justify: FlexJustify;
-  padding?: number;     // e.g. 0, 8, 12, 16, 24
+  padding?: string;     // CSS length e.g. "16px", "10%"; undefined = 0px
   sizing: FlexSizing;
   width?: string;       // optional explicit width e.g. "400px", "50%"
   height?: string;      // optional explicit height e.g. "250px"
@@ -151,7 +165,7 @@ export function createDefaultFlexLayout(
       wrap: false,
       align: 'stretch',
       justify: 'start',
-      padding: 0,
+      padding: '0px',
       sizing: { type: 'fill' },
       children: [
         {
@@ -163,7 +177,7 @@ export function createDefaultFlexLayout(
           wrap: true,
           align: 'stretch',
           justify: 'start',
-          padding: 0,
+          padding: '0px',
           isCard: true,
           sizing: { type: 'fill' },
           children: componentChildren,

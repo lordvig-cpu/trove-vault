@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useId } from 'react';
 
 interface LayoutIconProps {
   className?: string;
@@ -7,22 +7,38 @@ interface LayoutIconProps {
 
 /**
  * BodyIcon:
- * The root template layout, drawn as a plain tall frame — no internal detail implied.
+ * The root template layout, drawn as a filled page: a header strip with two dots, a doorway-like
+ * block and three text lines cut out of it. A filled shape (a mask over a currentColor rect), so
+ * it takes no strokeWidth. The mask id is per-instance (useId) since this icon renders many times
+ * at once and duplicate ids would make every copy depend on the first one in the document.
  */
-export const BodyIcon = ({ className = 'w-4 h-4', strokeWidth = 1.8 }: LayoutIconProps) => (
-  <svg
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth={strokeWidth}
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    className={`origin-center shrink-0 ${className}`}
-    aria-hidden="true"
-  >
-    <rect x="5" y="2" width="14" height="20" rx="2" />
-  </svg>
-);
+export const BodyIcon = ({ className = 'w-4 h-4' }: Pick<LayoutIconProps, 'className'>) => {
+  const maskId = useId();
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      className={`origin-center shrink-0 ${className}`}
+      aria-hidden="true"
+    >
+      <mask id={maskId}>
+        {/* start hidden */}
+        <rect width="24" height="24" fill="black" />
+        {/* visible outer body */}
+        <rect x="4" y="3.5" width="16" height="17" rx="2" fill="white" />
+        {/* cutouts/details */}
+        <rect x="4" y="8.3" width="16" height="1.2" fill="black" />
+        <circle cx="7" cy="6" r=".6" fill="black" />
+        <circle cx="9" cy="6" r=".6" fill="black" />
+        <rect x="7" y="11" width="4" height="6" rx=".8" fill="black" />
+        <rect x="13.5" y="12" width="3.5" height="1" rx=".5" fill="black" />
+        <rect x="13.5" y="14" width="3.5" height="1" rx=".5" fill="black" />
+        <rect x="13.5" y="16" width="2.5" height="1" rx=".5" fill="black" />
+      </mask>
+      <rect width="24" height="24" fill="currentColor" mask={`url(#${maskId})`} />
+    </svg>
+  );
+};
 
 /**
  * LayoutContainerIcon:
@@ -295,6 +311,99 @@ export const FitFrameIcon = ({
     <path d="M19 15v4h-4" />
     <path d="M9 19H5v-4" />
     {active && <rect x="8" y="8" width="8" height="8" rx="1.5" />}
+  </svg>
+);
+
+/**
+ * ActionIcon:
+ * A lightning bolt, for a menu section grouping actions (e.g. "Add Child Container").
+ */
+export const ActionIcon = ({ className = 'w-4 h-4', strokeWidth = 1.8 }: LayoutIconProps) => (
+  <svg
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth={strokeWidth}
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className={`origin-center shrink-0 ${className}`}
+    aria-hidden="true"
+  >
+    <path d="M13.5 2.8 5.8 13h5.5l-.8 8.2L18.2 11h-5.5l.8-8.2Z" />
+  </svg>
+);
+
+/**
+ * PropertiesIcon:
+ * Three rows with a dot on each at a different position, like a set of sliders -- for a menu
+ * section grouping property/setting controls.
+ */
+export const PropertiesIcon = ({ className = 'w-4 h-4', strokeWidth = 1.8 }: LayoutIconProps) => (
+  <svg
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth={strokeWidth}
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className={`origin-center shrink-0 ${className}`}
+    aria-hidden="true"
+  >
+    <path d="M4 7h16" />
+    <path d="M4 12h16" />
+    <path d="M4 17h16" />
+    <circle cx="9" cy="7" r="1.7" />
+    <circle cx="15" cy="12" r="1.7" />
+    <circle cx="11" cy="17" r="1.7" />
+  </svg>
+);
+
+/**
+ * FillIcon:
+ * Two vertical bars (the available width) with a horizontal line and outward-pointing arrows
+ * spanning between them, for "Fill" sizing (stretches to fill the available space).
+ */
+export const FillIcon = ({ className = 'w-4 h-4', strokeWidth = 1.8 }: LayoutIconProps) => (
+  <svg
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth={strokeWidth}
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className={`origin-center shrink-0 ${className}`}
+    aria-hidden="true"
+  >
+    {/* outer available width */}
+    <path d="M3 6v12" />
+    <path d="M21 6v12" />
+    {/* horizontal fill */}
+    <path d="M7 12h10" />
+    {/* left arrow */}
+    <path d="m7 9-3 3 3 3" />
+    {/* right arrow */}
+    <path d="m17 9 3 3-3 3" />
+  </svg>
+);
+
+/**
+ * HelpCircleIcon:
+ * A circled question mark, for an inline hint that would otherwise need a paragraph of help text.
+ */
+export const HelpCircleIcon = ({ className = 'w-3.5 h-3.5', strokeWidth = 1.8 }: LayoutIconProps) => (
+  <svg
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth={strokeWidth}
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className={`origin-center shrink-0 ${className}`}
+    aria-hidden="true"
+  >
+    <circle cx="12" cy="12" r="9" />
+    <path d="M9.5 9a2.5 2.5 0 1 1 3.4 2.3c-.9.4-1.4 1-1.4 1.9" />
+    <circle cx="12" cy="16.7" r="0.9" fill="currentColor" stroke="none" />
   </svg>
 );
 

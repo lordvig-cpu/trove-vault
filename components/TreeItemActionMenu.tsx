@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { AddSubItemIcon } from '@/components/icons/TreeIcons';
+import { ActionIcon } from '@/components/icons/LayoutIcons';
 import TreeActionMenu, {
   ActionMenuDangerItem,
   ActionMenuDivider,
@@ -36,7 +37,7 @@ export default function TreeItemActionMenu({
       left={menu.menuCoords.left}
       position={position}
       title="Item Actions"
-      titleIcon="📄"
+      titleIcon={<ActionIcon className="w-4 h-4" />}
     >
       <ActionMenuItem
         icon={<AddSubItemIcon className="w-3.5 h-3.5" />}

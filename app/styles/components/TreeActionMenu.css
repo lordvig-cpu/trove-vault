@@ -101,21 +101,6 @@
   width: 20.5rem;
 }
 
-.innerContent {
-  display: flex;
-  flex-direction: column;
-  max-height: 100%;
-  min-height: 0;
-  overflow: hidden;
-}
-
-.childrenContainer {
-  display: flex;
-  flex-direction: column;
-  overflow-y: auto;
-  min-height: 0;
-}
-
 /* --------------------------------------------------------------------------
    Hover Catchment Bridge
    Invisible hitboxes spanning the space between the tree row gear button
@@ -160,17 +145,26 @@
    Menu Structure
    Lifts interactive rows above the invisible hover catchment bridge.
    -------------------------------------------------------------------------- */
+/* Flex column filling .menuShell's max-height; overflow:hidden here (rather than letting
+   .childrenContainer's own scrollbar spill past the shell's rounded corners) is what forces
+   .childrenContainer, below, to be the one that shrinks and scrolls once content is taller than
+   the shell -- .headerPill stays put since it's flex-shrink:0. */
 .innerContent {
   position: relative;
   z-index: 10;
   display: flex;
   flex-direction: column;
+  max-height: 100%;
+  min-height: 0;
+  overflow: hidden;
   padding-left: 0.5rem;
   padding-right: 0.5rem;
 }
 
-/* Top pill banner denoting current action context (Category vs Item) */
+/* Top pill banner denoting current action context (Category vs Item). Never shrinks, so it stays
+   fixed in place while .childrenContainer, below, scrolls under it. */
 .headerPill {
+  flex-shrink: 0;
   padding-left: 0.75rem;
   padding-right: 0.75rem;
   padding-top: 0.375rem;
@@ -197,10 +191,148 @@
   color: var(--secondary-tree-menu-header-icon);
 }
 
-/* Action button list slot */
+/* Plain title variant (TreeActionMenu titleStyle="plain"): no box, white title, icon in front
+   (moved ahead of the label via flex order, so DOM order stays title-then-icon). */
+.headerPill-plain {
+  background: transparent;
+  border-color: transparent;
+  justify-content: flex-start;
+  gap: 0.5rem;
+  padding-left: 0.75rem;
+}
+
+.headerPill-plain .headerTitle {
+  color: var(--text-strong);
+  text-transform: none;
+  letter-spacing: 0.01em;
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+.headerPill-plain .headerIcon {
+  order: -1;
+  color: var(--text-strong);
+}
+
+/* Fixed strip under the title bar (TreeActionMenu's `subheader`); never shrinks, so it stays put
+   while .childrenContainer scrolls beneath it. */
+.menuSubheader {
+  flex-shrink: 0;
+  margin-bottom: 0.375rem;
+}
+
+/* ActionMenuTabs: a full-length, amber-tinted dark band (only its top and bottom edges drawn)
+   holding equal-width tabs (icon beside label), each a button with its own subtle rounded border. It runs edge to edge by
+   cancelling .innerContent's side padding. The active tab lifts out of it: brighter amber fill and
+   border, a top-edge shine and a soft glow. */
+.menuTabs {
+  display: flex;
+  gap: 0.25rem;
+  margin-inline: -0.5rem;
+  padding: 0.25rem 0.875rem;
+  border-block: 1px solid color-mix(in oklch, var(--secondary-accent) 40%, transparent);
+  background: color-mix(in oklch, var(--secondary-accent) 14%, color-mix(in oklch, black 50%, transparent));
+  box-shadow: inset 0 1px 3px color-mix(in oklch, black 45%, transparent);
+}
+
+.menuTab {
+  position: relative;
+  flex: 1 1 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  padding: 0.4375rem 0.5rem;
+  border: 1px solid color-mix(in oklch, var(--secondary-accent) 20%, transparent);
+  border-radius: 0.5rem;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  background: color-mix(in oklch, black 30%, transparent);
+  cursor: pointer;
+  transition: color 150ms ease, border-color 150ms ease, background 150ms ease, box-shadow 150ms ease;
+}
+
+.menuTab:hover {
+  color: var(--text-strong);
+  border-color: color-mix(in oklch, var(--secondary-accent) 45%, transparent);
+}
+
+.menuTab-active,
+.menuTab-active:hover {
+  color: color-mix(in oklch, var(--secondary-accent) 85%, white);
+  border-color: var(--secondary-accent);
+  background: linear-gradient(
+    180deg,
+    color-mix(in oklch, var(--secondary-accent) 50%, transparent),
+    color-mix(in oklch, var(--secondary-accent) 22%, transparent)
+  );
+  box-shadow:
+    inset 0 1px 0 color-mix(in oklch, white 35%, transparent),
+    0 0 10px color-mix(in oklch, var(--secondary-accent) 50%, transparent);
+}
+
+/* ActionMenuSection: collapsible group. Same shadowed rule + label as .properties-section-heading
+   (primarySidePanel.css), as a button with a chevron at the far right. */
+.menuSection + .menuSection {
+  margin-top: 0.125rem;
+}
+
+.menuSectionToggle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.375rem 0.75rem;
+  border: 0;
+  background: transparent;
+  color: var(--secondary-tree-menu-header-title);
+  cursor: pointer;
+  transition: color 150ms ease;
+}
+
+.menuSectionToggle:hover {
+  color: var(--text-strong);
+}
+
+.menuSectionRule {
+  flex: 1;
+  border-top: 1px solid color-mix(in oklch, var(--secondary-accent) 35%, transparent);
+  box-shadow:
+    0 -1px 0 var(--shadow-black-50),
+    0 1px 0 var(--shadow-black-50),
+    0 2px 4px var(--shadow-black-35);
+}
+
+.menuSectionLabel {
+  flex-shrink: 0;
+  font-size: 0.625rem;
+  line-height: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-shadow: 0 1px 2px var(--shadow-black-35);
+}
+
+.menuSectionChevron {
+  width: 0.75rem;
+  height: 0.75rem;
+  flex-shrink: 0;
+  transition: transform 150ms ease;
+}
+
+.menuSectionChevron-open {
+  transform: rotate(180deg);
+}
+
+/* Action/content list slot -- the scrollable region. min-height:0 overrides the flex-item default
+   of min-height:auto (which would otherwise force this to grow to its content's full height and
+   defeat the scrollbar); overflow-y:auto is what actually scrolls once .innerContent's
+   overflow:hidden has clamped this container shorter than its content. */
 .childrenContainer {
   display: flex;
   flex-direction: column;
+  min-height: 0;
+  overflow-y: auto;
 }
 
 /* Action Rows & Dividers */

@@ -1,9 +1,10 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useId } from 'react';
 import { usePresence } from '@/hooks/usePresence';
 import { createPortal } from 'react-dom';
 import '@/app/styles/components/TreeActionMenu.css';
+import { ChevronDownIcon } from '@/components/icons/PanelIcons';
 import { useUIPreferences } from '@/context/UIPreferencesContext';
 import { useTreePanel } from '@/context/TreePanelContext';
 
@@ -20,6 +21,11 @@ interface TreeActionMenuProps {
   left: number;
   title: string;
   titleIcon?: React.ReactNode;
+  /** 'pill' (default): boxed amber title bar, icon on the right. 'plain': no box, white title with
+   *  the icon in front -- used by the tabbed Actions/Properties flyouts (see ActionMenuTabs). */
+  titleStyle?: 'pill' | 'plain';
+  /** Fixed strip under the title bar (e.g. ActionMenuTabs): stays put while `children` scrolls. */
+  subheader?: React.ReactNode;
   position?: 'left' | 'right';
   className?: string;
   children: React.ReactNode;
@@ -33,6 +39,8 @@ export default function TreeActionMenu({
   left,
   title,
   titleIcon,
+  titleStyle = 'pill',
+  subheader,
   position,
   className,
   children,
@@ -117,10 +125,12 @@ export default function TreeActionMenu({
 
       {/* Inner Content Wrapper */}
       <div className="innerContent">
-        <div className="headerPill">
+        <div className={`headerPill ${titleStyle === 'plain' ? 'headerPill-plain' : ''}`}>
           <span className="headerTitle">{title}</span>
           <span className="headerIcon">{titleIcon}</span>
         </div>
+
+        {subheader && <div className="menuSubheader">{subheader}</div>}
 
         <div className="childrenContainer">{children}</div>
       </div>
@@ -206,6 +216,71 @@ export function ActionMenuDangerItem({
 // Visual separator between groups of related menu actions.
 export function ActionMenuDivider() {
   return <div className="my-1 mx-2 tree-menu-divider" />;
+}
+
+// Two-or-more tab switcher for a menu that mixes kinds of content (e.g. Actions / Properties).
+// Pass it as TreeActionMenu's `subheader` so it stays fixed while the tab's body scrolls. The
+// caller owns which tab is active and renders the matching body itself.
+export function ActionMenuTabs<T extends string>({
+  tabs,
+  active,
+  onChange,
+}: {
+  tabs: { id: T; label: string; icon: React.ReactNode }[];
+  active: T;
+  onChange: (id: T) => void;
+}) {
+  return (
+    <div className="menuTabs" role="tablist">
+      {tabs.map((tab) => (
+        <button
+          key={tab.id}
+          type="button"
+          role="tab"
+          aria-selected={active === tab.id}
+          onClick={() => onChange(tab.id)}
+          className={`menuTab ${active === tab.id ? 'menuTab-active' : ''}`}
+        >
+          {tab.icon}
+          <span>{tab.label}</span>
+        </button>
+      ))}
+    </div>
+  );
+}
+
+// A collapsible group of controls: a shadowed-rule heading with a chevron, and a body that shows
+// only while `isOpen`. Controlled (the caller owns open/closed) so the state survives the menu
+// closing and reopening. Sections stack directly, the heading's rule doubling as the horizontal
+// bar between them.
+export function ActionMenuSection({
+  label,
+  isOpen,
+  onToggle,
+  children,
+}: {
+  label: string;
+  isOpen: boolean;
+  onToggle: () => void;
+  children: React.ReactNode;
+}) {
+  const bodyId = useId();
+  return (
+    <div className="menuSection">
+      <button
+        type="button"
+        onClick={onToggle}
+        aria-expanded={isOpen}
+        aria-controls={bodyId}
+        className="menuSectionToggle"
+      >
+        <span className="menuSectionRule" aria-hidden="true" />
+        <span className="menuSectionLabel">{label}</span>
+        <ChevronDownIcon className={`menuSectionChevron ${isOpen ? 'menuSectionChevron-open' : ''}`} />
+      </button>
+      {isOpen && <div id={bodyId}>{children}</div>}
+    </div>
+  );
 }
 
 // Inline rename editor used inside collection and item action menus.

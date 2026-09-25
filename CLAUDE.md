@@ -83,6 +83,15 @@ commit whenever you add, remove, split or rename a file — it goes stale otherw
   visually (a CSS `transform`); it must never change the layout itself, so above 100% the layout width
   holds steady and the canvas overflows into a horizontal scrollbar instead of re-wrapping
   (`ScaledCanvas`).
+- `padding` is a CSS-length string ("16px", "10%"), the same convention Width/Min/Max/Height already
+  use, not a bare px number -- `resolvePaddingCss` in `types/layout.ts` is what actually renders it,
+  and also accepts a bare legacy number defensively (layouts saved before %% support was added).
+  Only the Body/root flyout's Padding control (`TemplateLayoutActionMenu.tsx`) has the full
+  input+slider+unit-toggle redesign so far, themed like the top toolbar's Zoom slider
+  (`accent-[var(--secondary-accent)] bg-black/40`, 0-50px / 0-100% in steps of 5); the non-root
+  Container Padding section in the same file, and the docked Properties tab's equivalent
+  (`TemplatePropertiesInspector.tsx`), still use the older preset-buttons-only UI and haven't been
+  converted yet, though both were updated to read/write the new string type correctly.
 - A row whose children *all* have their own explicit pixel width (Custom, not a %) but together don't
   fit gets a dashed-red border and a Layout-tree warning badge (`FlexContainerRenderer`'s
   `onOverflowChange`, surfaced via `useTemplateLayoutTree`'s `overflowingContainerIds`). It's scoped to
@@ -144,9 +153,17 @@ commit whenever you add, remove, split or rename a file — it goes stale otherw
   `useTreePanels.ts`) treats an empty array as "everything currently selected" when toggling one
   off, and collapses back to empty the moment every option is checked again — so the array is never
   redundantly "all N options, written out", which would otherwise leave the "filter applied"
-  indicator lit for a filter that changes nothing. Each menu's "Show All" row
-  (`SearchAndFilterSection.tsx`, `CollectionFilterTree.tsx`) is a reset action when something's
-  excluded, not a from-scratch selection builder.
+  indicator lit for a filter that changes nothing. Each menu's master row
+  (`SearchAndFilterSection.tsx`) is a real select-all/select-none toggle, not just a reset action:
+  unchecked (nothing excluded, "Showing All") flips to "select none", and checked or indeterminate
+  flips back to "select all" (the empty-array reset). "Select none" needs a state distinct from the
+  reserved "empty = everything" one, so it's a single-entry array holding a sentinel that can never
+  equal a real option (`selectNoneFieldTypeFilter`/`selectNoneHierarchyTypeFilter` in
+  `useTemplateEditor.ts`; the collection filters' shared `NONE_COLLECTION_FILTER_ID = -1` in
+  `useTreePanels.ts`) — every `.includes()` check downstream then naturally excludes every real
+  option while the array stays non-empty. `CollectionFilterTree.tsx`'s per-row checkboxes need no
+  special-casing for this: they already read `filterCollectionIds.includes(node.id)`, which is
+  false for the sentinel the same as for any other id that isn't checked.
 - The template editor has two toolbars, so template-wide and container-specific tools never fight for
   space in one bar. `TemplateEditorContainerBar` (selected container's name, Size, Layout, Add,
   Split, properties gear, delete — used more often, so it gets the header slot) portals into
@@ -155,6 +172,24 @@ commit whenever you add, remove, split or rename a file — it goes stale otherw
   (`#template-toolbar-slot-bottom`, rendered in `app/page.tsx`), which lifts clear of the bottom
   panel by `bottomPanelHeight` whenever that panel is open or pinned. Which toolbar gets which slot
   is just where each is portaled in `TemplateEditorStage.tsx` — swap it there if that changes again.
+- The tree/template gear-icon flyouts (built on the shared `TreeActionMenu`) that mix Actions
+  (things you click, e.g. Add Child Container, Delete Item) with Properties (things you set, e.g.
+  padding, sizing) follow one standard: two tabs, Actions and Properties (`ActionMenuTabs`, passed
+  as `TreeActionMenu`'s `subheader` so the title bar and tabs stay fixed while the tab's body
+  scrolls; `ActionIcon`/`PropertiesIcon` in `LayoutIcons.tsx`), with the title bar naming the
+  object itself ("Body"), in the `titleStyle="plain"` look (no pill box, white title, icon in
+  front) rather than every other flyout's boxed amber title with the icon at the far right. The
+  tabs sit in a darker recessed strip with a light divider, the active one brightened with a shine
+  and glow (`.menuTabs` / `.menuTab-active` in `TreeActionMenu.css`). The Actions tab is plain full-width rows (`ActionMenuItem`, no borders).
+  The Properties tab is a stack of collapsible `ActionMenuSection`s: a shadowed-rule heading with a
+  chevron, whose rule doubles as the horizontal bar between sections. Sections are controlled --
+  the flyout component owns the open/closed and active-tab state, so they survive the flyout
+  closing and reopening. Pure Actions-only menus (Item/Collection/Category/Template Actions in
+  `TreeItemActionMenu.tsx`/`TreeCollectionActionMenu.tsx`/`TreeTemplateActionMenu.tsx`) have no
+  tabs and use the same `ActionIcon` as their title icon, rather than a per-type emoji, since the
+  title already says "Actions". Currently only the root/Body flyout (`TemplateLayoutActionMenu.tsx`)
+  has the tabs/sections; the non-root Container and Component Properties flyouts still use their
+  original single mixed panel and haven't been converted yet.
 - Layout tree edits (add, insert sibling, split, update, remove) are pure functions in
   `lib/layoutTree.ts`, covered by `tests/layout-tree.spec.ts`; the flex layout tree's selection and
   CRUD around them lives in `hooks/useTemplateLayoutTree.ts`, which `useTemplateEditor` composes (it
