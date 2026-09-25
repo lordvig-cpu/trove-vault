@@ -25,7 +25,8 @@ import { NEW_CONTAINER_OPTIONS } from '@/lib/layoutTree';
 import { AlignItemsIcon, JustifyContentIcon } from '@/components/icons/AlignIcons';
 import { measureContainerPx } from '@/lib/measureContainer';
 import TemplateSpacingBox from '@/components/TemplateSpacingBox';
-import { HintRef, type HintContent } from '@/components/HoverHint';
+import TemplateAppearanceControls from '@/components/TemplateAppearanceControls';
+import HoverHint, { HintRef, type HintContent } from '@/components/HoverHint';
 import {
   BodyIcon,
   FlexRowIcon,
@@ -40,6 +41,7 @@ import {
   AutoSizingIcon,
   CustomSizingIcon,
   LinkIcon,
+  HelpCircleIcon,
   FitContentIcon,
 } from '@/components/icons/LayoutIcons';
 
@@ -85,15 +87,67 @@ const SPACING_HINT: HintContent = {
 // right-docked flyout must start so the wider Properties tab still ends at the panel seam.
 const PROPERTIES_EXTRA_WIDTH_PX = 280;
 
+/**
+ * Help for one alignment group, worded for the container's direction: "Align items" runs across the
+ * flow (up/down in a Row, left/right in a Column) and "Justify content" along it, so the same option
+ * reads "top" in one and "left" in the other. Each option shows the icon its button has.
+ */
+function alignmentHint(kind: 'align' | 'justify', isRow: boolean): HintContent {
+  const across = kind === 'align';
+  const vertical = across === isRow; // across a Row, or along a Column
+  const cls = (rotate: string) => `w-2.5 h-2.5 ${rotate}`.trim();
+  const rot = across ? (isRow ? '' : '-rotate-90') : isRow ? '' : 'rotate-90';
+  const start = vertical ? 'top' : 'left';
+  const middle = vertical ? 'middle' : 'center';
+  const end = vertical ? 'bottom' : 'right';
+  const notes: HintContent['notes'] = [
+    {
+      kind: 'tip',
+      text: (
+        <>
+          Only shows when children don&apos;t already fill the container:{' '}
+          <HintRef icon={<AutoSizingIcon className="w-2.5 h-2.5" />}>Auto</HintRef> children stretch to fill it, so
+          give them a <HintRef icon={<CustomSizingIcon className="w-2.5 h-2.5" />}>Custom</HintRef> size to see it.
+        </>
+      ),
+    },
+  ];
+  if (across) {
+    return {
+      title: vertical ? 'Vertical align' : 'Horizontal align',
+      settings: [
+        { name: 'Stretch', icon: <AlignItemsIcon value="stretch" className={cls(rot)} />, text: `Children stretch to fill the container's ${vertical ? 'height' : 'width'}.` },
+        { name: 'Start', icon: <AlignItemsIcon value="start" className={cls(rot)} />, text: `Children line up at the ${start}.` },
+        { name: 'Center', icon: <AlignItemsIcon value="center" className={cls(rot)} />, text: `Children line up in the ${middle}.` },
+        { name: 'End', icon: <AlignItemsIcon value="end" className={cls(rot)} />, text: `Children line up at the ${end}.` },
+      ],
+      notes,
+    };
+  }
+  return {
+    title: vertical ? 'Vertical align' : 'Horizontal align',
+    settings: [
+      { name: 'Start', icon: <JustifyContentIcon value="start" className={cls(rot)} />, text: `Children are grouped at the ${start}.` },
+      { name: 'Center', icon: <JustifyContentIcon value="center" className={cls(rot)} />, text: `Children are grouped in the ${middle}.` },
+      { name: 'End', icon: <JustifyContentIcon value="end" className={cls(rot)} />, text: `Children are grouped at the ${end}.` },
+      { name: 'Between', icon: <JustifyContentIcon value="between" className={cls(rot)} />, text: 'Children are spread out, the first and last against the edges.' },
+      { name: 'Around', icon: <JustifyContentIcon value="around" className={cls(rot)} />, text: 'Children are spread out with equal space around each one.' },
+    ],
+    notes,
+  };
+}
+
 /** A labeled segmented group of icon buttons for one alignment property (see the Layout section). */
 function AlignmentButtons<T extends string>({
   label,
+  hint,
   value,
   options,
   onChange,
   renderIcon,
 }: {
   label: string;
+  hint: HintContent;
   value: T;
   options: { value: T; title: string }[];
   onChange: (value: T) => void;
@@ -101,7 +155,12 @@ function AlignmentButtons<T extends string>({
 }) {
   return (
     <div className="flex flex-col gap-1">
-      <span className="text-[10px] font-bold text-muted">{label}</span>
+      <span className="flex items-center justify-end gap-1 text-[10px] font-semibold tracking-[0.04em] text-[var(--secondary-tree-menu-header-title)]">
+        {label}
+        <HoverHint hint={hint}>
+          <HelpCircleIcon className="w-3 h-3" />
+        </HoverHint>
+      </span>
       <div className={`${barToggleGroup} w-full`} role="group" aria-label={label}>
         {options.map((opt) => (
           <button
@@ -225,7 +284,7 @@ export function TemplateContainerActionMenu({
   // Body flyout's Actions / Properties tabs and which Properties sections are expanded. Kept here
   // (not inside the menu shell) so they survive the flyout closing and reopening.
   const [activeTab, setActiveTab] = useState<'actions' | 'properties'>('actions');
-  const [openSections, setOpenSections] = useState({ name: true, size: true, layout: true, spacing: true });
+  const [openSections, setOpenSections] = useState({ name: true, size: true, layout: true, spacing: true, appearance: true });
   const toggleSection = (key: keyof typeof openSections) =>
     setOpenSections((prev) => ({ ...prev, [key]: !prev[key] }));
 
@@ -619,6 +678,18 @@ export function TemplateContainerActionMenu({
               />
             </ActionMenuSection>
 
+          </div>
+
+          <div className="menuColumnDivider" aria-hidden="true" />
+
+          <div className="menuColumn">
+            <ActionMenuSection label="Spacing" hint={CONTAINER_SPACING_HINT} isOpen={openSections.spacing} onToggle={() => toggleSection('spacing')}>
+              <TemplateSpacingBox
+                container={container}
+                onUpdate={(partial) => onUpdateContainer?.(container.id, partial)}
+              />
+            </ActionMenuSection>
+
             <ActionMenuSection label="Layout" hint={CONTAINER_LAYOUT_HINT} isOpen={openSections.layout} onToggle={() => toggleSection('layout')}>
               <div className="flex flex-col gap-2 px-3 pt-0 pb-2">
                 <div className={`${barToggleGroup} w-full`} role="group" aria-label="Flex direction">
@@ -653,6 +724,7 @@ export function TemplateContainerActionMenu({
                   const align = (
                     <AlignmentButtons
                       key="align"
+                      hint={alignmentHint('align', isRow)}
                       label={isRow ? 'Vertical align' : 'Horizontal align'}
                       value={normalizeAlign(container.align)}
                       onChange={(v) => onUpdateContainer?.(container.id, { align: v })}
@@ -670,6 +742,7 @@ export function TemplateContainerActionMenu({
                   const justify = (
                     <AlignmentButtons
                       key="justify"
+                      hint={alignmentHint('justify', isRow)}
                       label={isRow ? 'Horizontal align' : 'Vertical align'}
                       value={normalizeJustify(container.justify)}
                       onChange={(v) => onUpdateContainer?.(container.id, { justify: v })}
@@ -690,13 +763,8 @@ export function TemplateContainerActionMenu({
               </div>
             </ActionMenuSection>
 
-          </div>
-
-          <div className="menuColumnDivider" aria-hidden="true" />
-
-          <div className="menuColumn">
-            <ActionMenuSection label="Spacing" hint={CONTAINER_SPACING_HINT} isOpen={openSections.spacing} onToggle={() => toggleSection('spacing')}>
-              <TemplateSpacingBox
+            <ActionMenuSection label="Appearance" isOpen={openSections.appearance} onToggle={() => toggleSection('appearance')}>
+              <TemplateAppearanceControls
                 container={container}
                 onUpdate={(partial) => onUpdateContainer?.(container.id, partial)}
               />

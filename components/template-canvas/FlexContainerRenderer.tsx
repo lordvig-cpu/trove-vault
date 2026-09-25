@@ -236,6 +236,20 @@ export default function FlexContainerRenderer({
     minWidth: container.minWidth || 0,
     // Outside spacing, set from the flyout's Spacing box; never on the Body.
     ...(!isRoot && container.margin ? { margin: container.margin } : null),
+    // Look (Appearance section). Inline, so it wins over the edit-mode tints and the card frame's
+    // classes in both modes. The shadow is drawn at 40% strength so it stays soft in any color.
+    ...(container.background ? { backgroundColor: container.background } : null),
+    ...(container.borderWidth
+      ? { border: `${container.borderWidth}px solid ${container.borderColor || 'var(--primary-border-subtle)'}` }
+      : null),
+    ...(container.borderRadius ? { borderRadius: `${container.borderRadius}px` } : null),
+    ...(container.shadowY || container.shadowBlur
+      ? {
+          boxShadow: `0 ${container.shadowY ?? 0}px ${container.shadowBlur ?? 0}px color-mix(in srgb, ${
+            container.shadowColor || 'black'
+          } 40%, transparent)`,
+        }
+      : null),
     // Children of a stacked row take the full width, ignoring their row-mode widths.
     ...(parentStacked ? { width: '100%', maxWidth: container.maxWidth || undefined, flex: '0 0 auto' } : null),
   };

@@ -199,12 +199,22 @@ commit whenever you add, remove, split or rename a file — it goes stale otherw
   tabs and use the same `ActionIcon` as their title icon, rather than a per-type emoji, since the
   title already says "Actions". The Body and standard-container flyouts (`TemplateLayoutActionMenu.tsx`) both use
   it. A standard container's Actions tab is Add Before / Inside / After, Split into 2 Columns /
-  Rows, and Delete Container (always last); its Properties tab has Container Name, Size (Auto/Fit/Custom
-  plus the Width/Min/Max and Height/Min/Max fields) and Layout (Row/Column, then two icon-button
-  groups for alignment) on the left, and Spacing on the right. Deliberately absent: Child Item Gap (the `gap`
+  Rows, and Delete Container (always last); its Properties tab has Container Name and Size (Auto/Fit/Custom,
+  Width, a Min/Max width slider, Height, a Min/Max height slider) on the left, and Spacing, then
+  Layout (Row/Column, then two icon-button groups for alignment) on the right (the Body's Layout,
+  a locked toggle, stays on the left under Size). Deliberately absent: Child Item Gap (the `gap`
   value itself is unchanged, it just has no UI), Wrap Children and Card Frame Style (cards are
   expected to become draggable components rather than a per-container option), a Select Parent
   action (click the parent instead), and Maximum Content Width (Body-only). The Component Properties flyout is the one still on its original single mixed panel.
+- A standard container's look is set in the flyout's Appearance section (`TemplateAppearanceControls.tsx`,
+  right column under Layout): `background`, `borderWidth` / `borderColor` / `borderRadius`, and
+  `shadowY` / `shadowBlur` / `shadowColor` on the node. Colors are `#RRGGBB` picked with the footer's
+  `SeedColorPicker` (which has an `empty` state for "none") and belong to the template -- they are user
+  data, so they don't follow the app's light/dark theme, and are the one place a literal color is
+  stored rather than a theme variable. Sizes are plain px numbers (no %), 0 = unset. Nothing is stored
+  for an unset value. `FlexContainerRenderer` applies them inline (so they win over the edit-mode
+  tints and the card frame's classes in both modes), draws the shadow at 40% strength, and falls back
+  to a neutral theme border color when a width is set without a color. Not on the Body yet.
 - A container has three sizing modes, in both the flyout and the top toolbar: Auto (`sizing.type`
   'fill': fills the space its parent gives it), Fit ('auto': `flex: 0 0 auto`, shrinks to its content,
   and in a column parent hugs its width too unless the parent's Align Items positions its children)

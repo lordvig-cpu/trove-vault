@@ -157,6 +157,15 @@ export interface FlexContainerNode {
   maxHeight?: string;   // optional max-height e.g. "600px"
   stackBelow?: number;  // row containers stack into a column when narrower than this many px
   isCard?: boolean;     // Whether container renders with card background & border
+  /** Look, set from the flyout's Appearance section (never on the Body). Colors are "#RRGGBB" and
+      belong to the template (they don't follow the app's light/dark theme); sizes are plain px. */
+  background?: string;
+  borderWidth?: number;
+  borderColor?: string;
+  borderRadius?: number;
+  shadowY?: number;
+  shadowBlur?: number;
+  shadowColor?: string;
   /** Set only by splitContainer's wrap path: holds exactly the two halves of a Split and nothing
       else. Structural, not a content slot -- Add/Place should target a child of it, never it. */
   isSplitWrapper?: boolean;

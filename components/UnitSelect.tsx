@@ -11,6 +11,8 @@ interface UnitSelectProps {
   label: string;
   /** Sits flush against a length input to its left (default), or stands alone with its own corners. */
   attached?: boolean;
+  /** Shown but not changeable (a field that only takes pixels). */
+  disabled?: boolean;
 }
 
 /**
@@ -19,7 +21,7 @@ interface UnitSelectProps {
  * is never clipped by the flyout's scroll area; the closed control wears the top toolbar's
  * pulldown-button look (`idleBtn`: amber outline on a dark fill, white on hover).
  */
-export default function UnitSelect({ value, onChange, label, attached = true }: UnitSelectProps) {
+export default function UnitSelect({ value, onChange, label, attached = true, disabled = false }: UnitSelectProps) {
   return (
     <div className={`relative shrink-0 ${attached ? '-ml-px' : ''}`}>
       <select
@@ -27,7 +29,8 @@ export default function UnitSelect({ value, onChange, label, attached = true }: 
         onChange={(e) => onChange(e.target.value as 'px' | '%')}
         aria-label={label}
         title={label}
-        className={`unitSelect appearance-none ${barControlHeight} pl-2 pr-5 ${attached ? 'rounded-r-lg rounded-l-none' : 'rounded-md'} border text-xs font-semibold cursor-pointer transition focus:outline-none focus:border-white ${idleBtn}`}
+        disabled={disabled}
+        className={`unitSelect appearance-none ${barControlHeight} pl-2 pr-5 ${attached ? 'rounded-r-lg rounded-l-none' : 'rounded-md'} border text-xs font-semibold cursor-pointer transition focus:outline-none focus:border-white disabled:opacity-50 disabled:cursor-not-allowed ${idleBtn}`}
       >
         <option value="px">px</option>
         <option value="%">%</option>

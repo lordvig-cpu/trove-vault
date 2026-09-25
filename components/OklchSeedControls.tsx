@@ -3,14 +3,7 @@
 import { useEffect, useId, useState } from 'react';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import SeedColorPicker from '@/components/SeedColorPicker';
-import { DEFAULT_PRIMARY_COLOR, DEFAULT_SECONDARY_COLOR, hexToRgba, rgbaToHex } from '@/lib/color';
-
-function normalizeHex(value: unknown): string | null {
-  if (typeof value !== 'string') return null;
-  const hex = value.trim().replace(/^#/, '');
-  if (!/^(?:[\da-f]{3}|[\da-f]{6})$/i.test(hex)) return null;
-  return `#${(hex.length === 3 ? [...hex].map(c => c + c).join('') : hex).toUpperCase()}`;
-}
+import { DEFAULT_PRIMARY_COLOR, DEFAULT_SECONDARY_COLOR, hexToRgba, normalizeHex, rgbaToHex } from '@/lib/color';
 
 function HexSeedInput({ label, value, onChange }: {
   label: string;

@@ -104,11 +104,13 @@
 /* Split flyout (TreeActionMenu splitBody): a narrow head card (title + tabs) sitting on a body card that
    can be wider. No chrome of its own -- each card is a full .menuShell -- and the head overlaps the
    body's top border by its own width (-1.5px) so the two share one line, forming an L-shaped panel. */
+/* Capped at 70% of the viewport height (never under 20rem, never taller than the screen allows): the
+   body card shrinks to fit and its content scrolls, under the fixed head card. */
 .menuShellSplit {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  max-height: calc(100vh - 72px);
+  max-height: min(max(70vh, 20rem), calc(100vh - 72px));
   pointer-events: auto;
   position: relative;
 }
@@ -132,6 +134,7 @@
 
 .menuShellBody {
   min-height: 0;
+  max-height: none; /* the wrapper sets the limit */
   border-top-left-radius: 0;
 }
 
@@ -152,15 +155,42 @@
   width: 31.5rem;
 }
 
+/* Each column scrolls on its own, so scrolling the right one leaves the left one where it is (and the
+   left only scrolls when it is itself too tall). The grid takes its content's height but shrinks to
+   whatever the flyout's height cap leaves, and each column then fills that height. */
 .menuColumns {
   display: grid;
   /* Left column: exactly the narrow flyout's content width (the 14rem Body shell - 3px border - 1rem of
      side padding = 13rem - 3px), so Size/Layout keep the horizontal room they had before the second column. */
   grid-template-columns: calc(13rem - 3px) auto minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr);
+  flex: 0 1 auto;
+  min-height: 0;
 }
 
 .menuColumn {
   min-width: 0;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+/* Amber scrollbars for everything that scrolls inside a flyout, in place of the app's default blue
+   (globals.css). scrollbar-color is what current browsers honor; the ::-webkit-scrollbar rules cover
+   older ones (and give the hover shade, which scrollbar-color can't). */
+.childrenContainer,
+.menuColumn {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in oklch, var(--secondary-accent) 70%, transparent) transparent;
+}
+
+.childrenContainer::-webkit-scrollbar-thumb,
+.menuColumn::-webkit-scrollbar-thumb {
+  background-color: color-mix(in oklch, var(--secondary-accent) 70%, transparent);
+}
+
+.childrenContainer::-webkit-scrollbar-thumb:hover,
+.menuColumn::-webkit-scrollbar-thumb:hover {
+  background-color: var(--secondary-accent);
 }
 
 /* Vertical counterpart of the shadowed rule that leads each sub-heading. */

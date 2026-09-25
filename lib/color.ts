@@ -13,3 +13,11 @@ export function hexToRgba(hex: string): string {
   const channels = hex.slice(1).match(/../g)!.map(channel => parseInt(channel, 16));
   return `rgba(${channels.join(', ')}, 1)`;
 }
+
+/** A 3- or 6-digit HEX color, with or without "#", as an uppercase "#RRGGBB"; null if it isn't one. */
+export function normalizeHex(value: unknown): string | null {
+  if (typeof value !== 'string') return null;
+  const hex = value.trim().replace(/^#/, '');
+  if (!/^(?:[\da-f]{3}|[\da-f]{6})$/i.test(hex)) return null;
+  return `#${(hex.length === 3 ? [...hex].map(c => c + c).join('') : hex).toUpperCase()}`;
+}

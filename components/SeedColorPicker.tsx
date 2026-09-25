@@ -22,10 +22,13 @@ function toHex({ h, s, v }: Hsv): string {
   return '#' + rgb.map(n => Math.round((n + m) * 255).toString(16).padStart(2, '0')).join('').toUpperCase();
 }
 
-export default function SeedColorPicker({ label, value, onChange }: {
+export default function SeedColorPicker({ label, value, onChange, empty = false }: {
   label: string;
   value: string;
   onChange: (value: string) => void;
+  /** No color is set yet: the swatch shows a slashed-out "none" instead of `value` (which the popover
+   *  still starts from once opened). */
+  empty?: boolean;
 }) {
   const id = useId();
   const trigger = useRef<HTMLButtonElement>(null);
@@ -50,9 +53,9 @@ export default function SeedColorPicker({ label, value, onChange }: {
     <>
       <button
         ref={trigger}
-        className="oklch-seed-picker"
+        className={`oklch-seed-picker ${empty ? 'oklch-seed-picker-empty' : ''}`}
         type="button"
-        style={{ backgroundColor: hexToRgba(value) }}
+        style={empty ? undefined : { backgroundColor: hexToRgba(value) }}
         aria-label={`Choose ${label.toLowerCase()} color`}
         title={`Choose ${label.toLowerCase()} color`}
         aria-expanded={!!position}

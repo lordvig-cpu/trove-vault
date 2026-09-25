@@ -208,6 +208,17 @@
   cursor: pointer;
 }
 
+/* No color set: a slash through the swatch (SeedColorPicker's `empty`). */
+.oklch-seed-picker-empty {
+  background-image: linear-gradient(
+    135deg,
+    transparent 45%,
+    var(--editor-invalid) 45%,
+    var(--editor-invalid) 55%,
+    transparent 55%
+  );
+}
+
 .oklch-seed-field input[type='text'] {
   width: 4.6rem;
   padding: 0.1rem;
