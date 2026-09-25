@@ -13,6 +13,11 @@ import { errorMessage } from '@/lib/errors';
 import { useTemplateLayoutTree } from '@/hooks/useTemplateLayoutTree';
 import { useLayoutHistory } from '@/hooks/useLayoutHistory';
 
+// Sentinels for the "select none" filter state -- see selectNoneFieldTypeFilter /
+// selectNoneHierarchyTypeFilter below.
+const NONE_FIELD_TYPE_FILTER = '__none__' as FieldType;
+const NONE_HIERARCHY_TYPE_FILTER = '__none__' as HierarchyFilterCategory;
+
 export interface WorkspaceTabSnapshot {
   primaryTabs: DockContent[];
   primaryActiveTab: DockContent;
@@ -88,6 +93,14 @@ export function useTemplateEditor({
     setFilterFieldTypes([]);
   }, []);
 
+  // "Select none" needs a state distinct from the reserved "empty = everything" one, so it's
+  // represented as a single-entry array holding a value that can never equal a real FieldType --
+  // every `.includes()` check downstream then naturally excludes every real type, while the array
+  // stays non-empty (so it isn't mistaken for "no filter applied").
+  const selectNoneFieldTypeFilter = useCallback(() => {
+    setFilterFieldTypes([NONE_FIELD_TYPE_FILTER]);
+  }, []);
+
   const toggleHierarchyTypeFilter = useCallback((type: HierarchyFilterCategory) => {
     setFilterHierarchyTypes((prev) => {
       const allTypes = HIERARCHY_FILTER_METAS.map((m) => m.type);
@@ -99,6 +112,11 @@ export function useTemplateEditor({
 
   const clearHierarchyTypeFilters = useCallback(() => {
     setFilterHierarchyTypes([]);
+  }, []);
+
+  // Same "select none" sentinel trick as selectNoneFieldTypeFilter, above.
+  const selectNoneHierarchyTypeFilter = useCallback(() => {
+    setFilterHierarchyTypes([NONE_HIERARCHY_TYPE_FILTER]);
   }, []);
 
   const toggleCanvasMode = useCallback(() => {
@@ -552,10 +570,12 @@ export function useTemplateEditor({
     filterFieldTypes,
     toggleFieldTypeFilter,
     clearFieldTypeFilters,
+    selectNoneFieldTypeFilter,
     hierarchySearchQuery,
     filterHierarchyTypes,
     toggleHierarchyTypeFilter,
     clearHierarchyTypeFilters,
+    selectNoneHierarchyTypeFilter,
     isLoading,
     isSaving,
     error,

@@ -35,15 +35,18 @@ interface SearchAndFilterSectionProps {
   filterFieldTypes: FieldType[];
   onToggleFilterFieldType: (type: FieldType) => void;
   onClearFieldTypeFilters: () => void;
+  onSelectNoneFieldTypeFilter: () => void;
   fieldTypeCounts: Record<string, number>;
   filterHierarchyTypes: HierarchyFilterCategory[];
   onToggleFilterHierarchyType: (type: HierarchyFilterCategory) => void;
   onClearHierarchyTypeFilters: () => void;
+  onSelectNoneHierarchyTypeFilter: () => void;
   hierarchyTypeCounts: Record<string, number>;
   collections: CollectionRecord[];
   filterCollectionIds: number[];
   onToggleFilterCollection: (collectionId: number) => void;
   onClearCollectionFilters: () => void;
+  onSelectNoneCollectionFilter: () => void;
 }
 
 /**
@@ -69,15 +72,18 @@ export default function SearchAndFilterSection({
   filterFieldTypes,
   onToggleFilterFieldType,
   onClearFieldTypeFilters,
+  onSelectNoneFieldTypeFilter,
   fieldTypeCounts,
   filterHierarchyTypes,
   onToggleFilterHierarchyType,
   onClearHierarchyTypeFilters,
+  onSelectNoneHierarchyTypeFilter,
   hierarchyTypeCounts,
   collections,
   filterCollectionIds,
   onToggleFilterCollection,
   onClearCollectionFilters,
+  onSelectNoneCollectionFilter,
 }: SearchAndFilterSectionProps) {
   const { animationsEnabled } = useUIPreferences();
   const isRight = position === 'right';
@@ -496,10 +502,14 @@ export default function SearchAndFilterSection({
 
             <div className="my-1 mx-2 tree-menu-divider" />
 
-            {/* Nothing excluded by default -- every box starts checked (matches everything), so
-                this row is a reset-to-default action once something's been unchecked, not a
-                second way to build a selection from scratch. */}
+            {/* Nothing excluded by default -- every box starts checked (matches everything). This
+                row is itself a real select-all/select-none toggle: unchecked (nothing excluded)
+                flips to "select none" (a sentinel array that matches no real type, see
+                selectNoneFieldTypeFilter); checked or indeterminate flips back to "select all"
+                (the reset action). */}
             {(() => {
+              const selectedCount = FIELD_TYPE_METAS.filter((m) => filterFieldTypes.includes(m.type)).length;
+              const isNoneSelected = hasFieldTypeFilters && selectedCount === 0;
               return (
                 <div className="mx-2 px-1 py-1 flex items-center justify-between">
                   <label className="flex items-center gap-2 cursor-pointer select-none">
@@ -507,21 +517,22 @@ export default function SearchAndFilterSection({
                       type="checkbox"
                       checked={!hasFieldTypeFilters}
                       ref={(input) => {
-                        if (input) input.indeterminate = hasFieldTypeFilters;
+                        if (input) input.indeterminate = hasFieldTypeFilters && !isNoneSelected;
                       }}
                       onChange={() => {
                         if (hasFieldTypeFilters) onClearFieldTypeFilters();
+                        else onSelectNoneFieldTypeFilter();
                       }}
                       className="tree-filter-checkbox w-3.5 h-3.5 rounded cursor-pointer shrink-0"
                     />
                     <span className="text-[11px] font-semibold tree-filter-option-label transition-colors">
-                      {hasFieldTypeFilters ? 'Show All' : 'Showing All'}
+                      {!hasFieldTypeFilters ? 'Showing All' : isNoneSelected ? 'Showing None' : 'Show All'}
                     </span>
                   </label>
 
                   {hasFieldTypeFilters && (
                     <span className="text-[10px] font-mono tree-panel-accent">
-                      {filterFieldTypes.length}/{FIELD_TYPE_METAS.length}
+                      {selectedCount}/{FIELD_TYPE_METAS.length}
                     </span>
                   )}
                 </div>
@@ -592,10 +603,14 @@ export default function SearchAndFilterSection({
 
             <div className="my-1 mx-2 tree-menu-divider" />
 
-            {/* Nothing excluded by default -- every box starts checked (matches everything), so
-                this row is a reset-to-default action once something's been unchecked, not a
-                second way to build a selection from scratch. */}
+            {/* Nothing excluded by default -- every box starts checked (matches everything). This
+                row is itself a real select-all/select-none toggle: unchecked (nothing excluded)
+                flips to "select none" (a sentinel array that matches no real category, see
+                selectNoneHierarchyTypeFilter); checked or indeterminate flips back to "select
+                all" (the reset action). */}
             {(() => {
+              const selectedCount = HIERARCHY_FILTER_METAS.filter((m) => filterHierarchyTypes.includes(m.type)).length;
+              const isNoneSelected = hasHierarchyTypeFilters && selectedCount === 0;
               return (
                 <div className="mx-2 px-1 py-1 flex items-center justify-between">
                   <label className="flex items-center gap-2 cursor-pointer select-none">
@@ -603,21 +618,22 @@ export default function SearchAndFilterSection({
                       type="checkbox"
                       checked={!hasHierarchyTypeFilters}
                       ref={(input) => {
-                        if (input) input.indeterminate = hasHierarchyTypeFilters;
+                        if (input) input.indeterminate = hasHierarchyTypeFilters && !isNoneSelected;
                       }}
                       onChange={() => {
                         if (hasHierarchyTypeFilters) onClearHierarchyTypeFilters();
+                        else onSelectNoneHierarchyTypeFilter();
                       }}
                       className="tree-filter-checkbox w-3.5 h-3.5 rounded cursor-pointer shrink-0"
                     />
                     <span className="text-[11px] font-semibold tree-filter-option-label transition-colors">
-                      {hasHierarchyTypeFilters ? 'Show All' : 'Showing All'}
+                      {!hasHierarchyTypeFilters ? 'Showing All' : isNoneSelected ? 'Showing None' : 'Show All'}
                     </span>
                   </label>
 
                   {hasHierarchyTypeFilters && (
                     <span className="text-[10px] font-mono tree-panel-accent">
-                      {filterHierarchyTypes.length}/{HIERARCHY_FILTER_METAS.length}
+                      {selectedCount}/{HIERARCHY_FILTER_METAS.length}
                     </span>
                   )}
                 </div>
@@ -688,35 +704,41 @@ export default function SearchAndFilterSection({
 
             <div className="my-1 mx-2 tree-menu-divider" />
 
-            {/* Nothing excluded by default -- every box starts checked (matches everything), so
-                this row is a reset-to-default action once something's been unchecked, not a
-                second way to build a selection from scratch. */}
-            {collections.length > 0 && (
-              <div className="mx-2 px-1 py-1 flex items-center justify-between">
-                <label className="flex items-center gap-2 cursor-pointer select-none">
-                  <input
-                    type="checkbox"
-                    checked={!hasCollectionFilters}
-                    ref={(input) => {
-                      if (input) input.indeterminate = hasCollectionFilters;
-                    }}
-                    onChange={() => {
-                      if (hasCollectionFilters) onClearCollectionFilters();
-                    }}
-                    className="tree-filter-checkbox w-3.5 h-3.5 rounded cursor-pointer shrink-0"
-                  />
-                  <span className="text-[11px] font-semibold tree-filter-option-label transition-colors">
-                    {hasCollectionFilters ? 'Show All' : 'Showing All'}
-                  </span>
-                </label>
+            {/* Nothing excluded by default -- every box starts checked (matches everything). This
+                row is itself a real select-all/select-none toggle: unchecked (nothing excluded)
+                flips to "select none" (a sentinel id that matches no real collection); checked or
+                indeterminate flips back to "select all" (the reset action). */}
+            {collections.length > 0 && (() => {
+              const selectedCount = collections.filter((c) => filterCollectionIds.includes(c.id)).length;
+              const isNoneSelected = hasCollectionFilters && selectedCount === 0;
+              return (
+                <div className="mx-2 px-1 py-1 flex items-center justify-between">
+                  <label className="flex items-center gap-2 cursor-pointer select-none">
+                    <input
+                      type="checkbox"
+                      checked={!hasCollectionFilters}
+                      ref={(input) => {
+                        if (input) input.indeterminate = hasCollectionFilters && !isNoneSelected;
+                      }}
+                      onChange={() => {
+                        if (hasCollectionFilters) onClearCollectionFilters();
+                        else onSelectNoneCollectionFilter();
+                      }}
+                      className="tree-filter-checkbox w-3.5 h-3.5 rounded cursor-pointer shrink-0"
+                    />
+                    <span className="text-[11px] font-semibold tree-filter-option-label transition-colors">
+                      {!hasCollectionFilters ? 'Showing All' : isNoneSelected ? 'Showing None' : 'Show All'}
+                    </span>
+                  </label>
 
-                {hasCollectionFilters && (
-                  <span className="text-[10px] font-mono tree-panel-accent">
-                    {filterCollectionIds.length}/{collections.length}
-                  </span>
-                )}
-              </div>
-            )}
+                  {hasCollectionFilters && (
+                    <span className="text-[10px] font-mono tree-panel-accent">
+                      {selectedCount}/{collections.length}
+                    </span>
+                  )}
+                </div>
+              );
+            })()}
 
             <CollectionFilterTree
               collections={collections}

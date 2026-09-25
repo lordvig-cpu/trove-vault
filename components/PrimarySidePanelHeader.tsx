@@ -48,11 +48,13 @@ export interface PrimarySidePanelHeaderProps {
   filterCollectionIds?: number[];
   onToggleFilterCollection?: (collectionId: number) => void;
   onClearCollectionFilters?: () => void;
+  onSelectNoneCollectionFilter?: () => void;
 
   // Field Type Filter Props (Content tab mode)
   filterFieldTypes?: FieldType[];
   onToggleFilterFieldType?: (type: FieldType) => void;
   onClearFieldTypeFilters?: () => void;
+  onSelectNoneFieldTypeFilter?: () => void;
   fieldTypeCounts?: Record<string, number>;
   onAddNewField?: () => void;
 
@@ -60,6 +62,7 @@ export interface PrimarySidePanelHeaderProps {
   filterHierarchyTypes?: HierarchyFilterCategory[];
   onToggleFilterHierarchyType?: (type: HierarchyFilterCategory) => void;
   onClearHierarchyTypeFilters?: () => void;
+  onSelectNoneHierarchyTypeFilter?: () => void;
   hierarchyTypeCounts?: Record<string, number>;
 
   onHandlePointerDown?: (e: React.PointerEvent) => void;
@@ -110,14 +113,17 @@ export default function PrimarySidePanelHeader({
   filterCollectionIds = [],
   onToggleFilterCollection = () => {},
   onClearCollectionFilters = () => {},
+  onSelectNoneCollectionFilter = () => {},
   filterFieldTypes = [],
   onToggleFilterFieldType = () => {},
   onClearFieldTypeFilters = () => {},
+  onSelectNoneFieldTypeFilter = () => {},
   fieldTypeCounts = {},
   onAddNewField,
   filterHierarchyTypes = [],
   onToggleFilterHierarchyType = () => {},
   onClearHierarchyTypeFilters = () => {},
+  onSelectNoneHierarchyTypeFilter = () => {},
   hierarchyTypeCounts = {},
   onHandlePointerDown,
   onStartTabDrag,
@@ -237,15 +243,18 @@ export default function PrimarySidePanelHeader({
           filterFieldTypes={filterFieldTypes}
           onToggleFilterFieldType={onToggleFilterFieldType}
           onClearFieldTypeFilters={onClearFieldTypeFilters}
+          onSelectNoneFieldTypeFilter={onSelectNoneFieldTypeFilter}
           fieldTypeCounts={fieldTypeCounts}
           filterHierarchyTypes={filterHierarchyTypes}
           onToggleFilterHierarchyType={onToggleFilterHierarchyType}
           onClearHierarchyTypeFilters={onClearHierarchyTypeFilters}
+          onSelectNoneHierarchyTypeFilter={onSelectNoneHierarchyTypeFilter}
           hierarchyTypeCounts={hierarchyTypeCounts}
           collections={collections}
           filterCollectionIds={filterCollectionIds}
           onToggleFilterCollection={onToggleFilterCollection}
           onClearCollectionFilters={onClearCollectionFilters}
+          onSelectNoneCollectionFilter={onSelectNoneCollectionFilter}
         />
       )}
 

@@ -19,6 +19,11 @@ interface TreeData {
   templates: ItemTemplate[];
 }
 
+// Sentinel for the "select none" filter state: an id no real collection can ever have, so
+// `.includes()` checks downstream naturally exclude every collection while the array stays
+// non-empty (distinct from the reserved "empty = show all" state). See the handlers below.
+const NONE_COLLECTION_FILTER_ID = -1;
+
 export function useTreePanels({ unifiedForest, allItems, allCollections, templates }: TreeData) {
   const activeTreeTab: TreeTab = 'items';
   const [activeSearchPanel, setActiveSearchPanel] = useState<'items' | 'collections' | 'templates'>('items');
@@ -42,6 +47,10 @@ export function useTreePanels({ unifiedForest, allItems, allCollections, templat
 
   const handleClearCollectionFilters = () => {
     setFilterCollectionIds([]);
+  };
+
+  const handleSelectNoneFilterCollection = () => {
+    setFilterCollectionIds([NONE_COLLECTION_FILTER_ID]);
   };
 
   const filteredForest = useMemo(() => filterTreeForest(
@@ -75,6 +84,10 @@ export function useTreePanels({ unifiedForest, allItems, allCollections, templat
     });
   };
 
+  const handleSelectNoneCollectionsFilter = () => {
+    setCollectionsFilterIds([NONE_COLLECTION_FILTER_ID]);
+  };
+
   const templatesForest = useMemo(() => filterTreeForest(
     unifiedForest, templatesFilterIds, 'templates', allItems, allCollections, templates
   ), [unifiedForest, templatesFilterIds, allItems, allCollections, templates]);
@@ -88,6 +101,10 @@ export function useTreePanels({ unifiedForest, allItems, allCollections, templat
     });
   };
 
+  const handleSelectNoneTemplatesFilter = () => {
+    setTemplatesFilterIds([NONE_COLLECTION_FILTER_ID]);
+  };
+
   return {
     activeSearchPanel,
     setActiveSearchPanel,
@@ -98,13 +115,16 @@ export function useTreePanels({ unifiedForest, allItems, allCollections, templat
     filterCollectionIds,
     handleToggleFilterCollection,
     handleClearCollectionFilters,
+    handleSelectNoneFilterCollection,
     filteredForest,
     collectionsForest,
     collectionsTree,
     handleToggleCollectionsFilter,
+    handleSelectNoneCollectionsFilter,
     templatesForest,
     templatesTree,
     handleToggleTemplatesFilter,
+    handleSelectNoneTemplatesFilter,
     searchQuery,
     setSearchQuery,
     expandedCategoryIds,

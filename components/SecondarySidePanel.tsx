@@ -61,14 +61,17 @@ interface SecondarySidePanelProps {
   filterCollectionIds?: number[];
   onToggleFilterCollection?: (collectionId: number) => void;
   onClearCollectionFilters?: () => void;
+  onSelectNoneCollectionFilter?: () => void;
   filterFieldTypes?: import('@/types/field').FieldType[];
   onToggleFilterFieldType?: (type: import('@/types/field').FieldType) => void;
   onClearFieldTypeFilters?: () => void;
+  onSelectNoneFieldTypeFilter?: () => void;
   fieldTypeCounts?: Record<string, number>;
   onAddNewField?: () => void;
   filterHierarchyTypes?: import('@/lib/hierarchyFilterMetas').HierarchyFilterCategory[];
   onToggleFilterHierarchyType?: (type: import('@/lib/hierarchyFilterMetas').HierarchyFilterCategory) => void;
   onClearHierarchyTypeFilters?: () => void;
+  onSelectNoneHierarchyTypeFilter?: () => void;
   hierarchyTypeCounts?: Record<string, number>;
   onStartTabDrag?: (tab: Exclude<DockContent, 'empty'>, e: React.PointerEvent) => void;
   isDragging?: boolean;
@@ -122,14 +125,17 @@ export default function SecondarySidePanel({
   filterCollectionIds = [],
   onToggleFilterCollection,
   onClearCollectionFilters,
+  onSelectNoneCollectionFilter,
   filterFieldTypes,
   onToggleFilterFieldType,
   onClearFieldTypeFilters,
+  onSelectNoneFieldTypeFilter,
   fieldTypeCounts,
   onAddNewField,
   filterHierarchyTypes,
   onToggleFilterHierarchyType,
   onClearHierarchyTypeFilters,
+  onSelectNoneHierarchyTypeFilter,
   hierarchyTypeCounts,
   onStartTabDrag,
   isDragging: isDockDragging = false,
@@ -306,14 +312,17 @@ export default function SecondarySidePanel({
           filterCollectionIds={filterCollectionIds}
           onToggleFilterCollection={onToggleFilterCollection}
           onClearCollectionFilters={onClearCollectionFilters}
+          onSelectNoneCollectionFilter={onSelectNoneCollectionFilter}
           filterFieldTypes={filterFieldTypes}
           onToggleFilterFieldType={onToggleFilterFieldType}
           onClearFieldTypeFilters={onClearFieldTypeFilters}
+          onSelectNoneFieldTypeFilter={onSelectNoneFieldTypeFilter}
           fieldTypeCounts={fieldTypeCounts}
           onAddNewField={onAddNewField}
           filterHierarchyTypes={filterHierarchyTypes}
           onToggleFilterHierarchyType={onToggleFilterHierarchyType}
           onClearHierarchyTypeFilters={onClearHierarchyTypeFilters}
+          onSelectNoneHierarchyTypeFilter={onSelectNoneHierarchyTypeFilter}
           hierarchyTypeCounts={hierarchyTypeCounts}
           onHandlePointerDown={onHandlePointerDown}
           onStartTabDrag={onStartTabDrag}

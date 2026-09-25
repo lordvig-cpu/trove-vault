@@ -86,8 +86,11 @@ export function usePanelRenderers({
     filterCollectionIds,
     handleToggleFilterCollection,
     handleClearCollectionFilters,
+    handleSelectNoneFilterCollection,
     handleToggleCollectionsFilter,
+    handleSelectNoneCollectionsFilter,
     handleToggleTemplatesFilter,
+    handleSelectNoneTemplatesFilter,
   } = treePanels;
   const {
     hierarchyExpandedIds,
@@ -402,14 +405,17 @@ export function usePanelRenderers({
       filterCollectionIds: isCollections ? collectionsFilterIds : isTemplates ? templatesFilterIds : filterCollectionIds,
       onToggleFilterCollection: isCollections ? handleToggleCollectionsFilter : isTemplates ? handleToggleTemplatesFilter : handleToggleFilterCollection,
       onClearCollectionFilters: isCollections ? () => setCollectionsFilterIds([]) : isTemplates ? () => setTemplatesFilterIds([]) : handleClearCollectionFilters,
+      onSelectNoneCollectionFilter: isCollections ? handleSelectNoneCollectionsFilter : isTemplates ? handleSelectNoneTemplatesFilter : handleSelectNoneFilterCollection,
       filterFieldTypes: templateEditor.filterFieldTypes,
       onToggleFilterFieldType: templateEditor.toggleFieldTypeFilter,
       onClearFieldTypeFilters: templateEditor.clearFieldTypeFilters,
+      onSelectNoneFieldTypeFilter: templateEditor.selectNoneFieldTypeFilter,
       fieldTypeCounts,
       onAddNewField: () => templateEditor.addField('text'),
       filterHierarchyTypes: templateEditor.filterHierarchyTypes,
       onToggleFilterHierarchyType: templateEditor.toggleHierarchyTypeFilter,
       onClearHierarchyTypeFilters: templateEditor.clearHierarchyTypeFilters,
+      onSelectNoneHierarchyTypeFilter: templateEditor.selectNoneHierarchyTypeFilter,
       hierarchyTypeCounts,
     };
   };
