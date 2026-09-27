@@ -3,12 +3,13 @@
 import React from 'react';
 import { AddSubItemIcon } from '@/components/icons/TreeIcons';
 import { ActionIcon } from '@/components/icons/LayoutIcons';
-import TreeActionMenu, {
+import TreeSubMenu, {
   ActionMenuDangerItem,
   ActionMenuDivider,
   ActionMenuItem,
   ActionMenuRenameForm,
-} from '@/components/TreeActionMenu';
+  ActionMenuTabs,
+} from '@/components/TreeSubMenu';
 import { useTreeActions } from '@/context/TreeActionsContext';
 import { ItemRecord } from '@/types/item';
 import { useTreeActionMenu } from '@/hooks/useTreeActionMenu';
@@ -29,15 +30,17 @@ export default function TreeItemActionMenu({
   const { onAddSubItem, onEditItem, onRenameItem, onDeleteItem } = useTreeActions();
 
   return (
-    <TreeActionMenu
+    <TreeSubMenu
       isOpen={menu.isMenuOpen}
       onMouseEnter={menu.handleMenuMouseEnter}
       onMouseLeave={menu.handleMouseLeave}
       top={menu.menuCoords.top}
       left={menu.menuCoords.left}
       position={position}
-      title="Item Actions"
+      splitBody
+      title="Item: Actions"
       titleIcon={<ActionIcon className="w-4 h-4" />}
+      subheader={<ActionMenuTabs tabs={[{ id: 'actions', label: 'Actions', icon: <ActionIcon className="w-4 h-4" /> }]} />}
     >
       <ActionMenuItem
         icon={<AddSubItemIcon className="w-3.5 h-3.5" />}
@@ -88,6 +91,6 @@ export default function TreeItemActionMenu({
           menu.closeMenu();
         }}
       />
-    </TreeActionMenu>
+    </TreeSubMenu>
   );
 }

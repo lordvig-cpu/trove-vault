@@ -142,12 +142,14 @@
   --flyout-tile-bg: color-mix(in srgb, var(--oklch-yellow-217-119-6) 30%, black);
   --flyout-tile-border: color-mix(in srgb, var(--oklch-yellow-217-119-6) 72%, black);
   --flyout-divider: color-mix(in srgb, var(--oklch-yellow-217-119-6) 40%, transparent);
-  /* Shell colors are built from the secondary seed's own hue at fixed lightness/chroma, so any seed you pick gives a brown panel, a bright border and a bright title in that same hue. */
-  --flyout-shell-bg: linear-gradient(180deg, oklch(from var(--secondary-accent) 0.5 0.125 h) 0%, oklch(from var(--secondary-accent) 0.34 0.085 h) 22%, oklch(from var(--secondary-accent) 0.24 0.055 h) 55%, oklch(from var(--secondary-accent) 0.19 0.043 h) 100%);
-  --flyout-shell-border: oklch(from var(--secondary-accent) 0.74 0.165 calc(h + 8));
-  --flyout-shell-glow: 0 0 22px 0 oklch(from var(--secondary-accent) 0.7 0.16 h / 0.4), 0 16px 32px oklch(0 0 0 / 0.6);
+  /* Flyout shell = the template editor toolbars' chassis (.tmpl-edge-panel): the seed's glow at the top over the menus' header tint and shell surface, with the same border and outer glow. */
+  --flyout-shell-bg: radial-gradient(ellipse 130% 40% at 50% 0%, color-mix(in oklch, var(--secondary-accent) 38%, transparent) 0%, transparent 100%), var(--secondary-tree-menu-header-bg), var(--secondary-tree-menu-shell-bg);
+  --flyout-body-top: color-mix(in srgb, var(--oklch-yellow-217-119-6) 26%, black);
+  --flyout-body-bottom: color-mix(in srgb, var(--oklch-yellow-217-119-6) 9%, black);
+  --flyout-shell-border: var(--secondary-tree-menu-shell-border);
+  --flyout-shell-glow: 0 0 18px color-mix(in oklch, var(--secondary-accent) 35%, transparent), 0 16px 32px color-mix(in oklch, black 55%, transparent);
   --flyout-title: oklch(from var(--secondary-accent) 0.84 0.16 calc(h + 12));
-  --flyout-tab-band: linear-gradient(180deg, color-mix(in srgb, var(--oklch-yellow-217-119-6) 12%, black), color-mix(in srgb, var(--oklch-yellow-217-119-6) 26%, black));
+  --flyout-tab-band: linear-gradient(180deg, color-mix(in srgb, var(--oklch-yellow-217-119-6) 26%, black), color-mix(in srgb, var(--oklch-yellow-217-119-6) 12%, black));
   --flyout-tab-idle: color-mix(in srgb, var(--oklch-yellow-217-119-6) 6%, black);
   --flyout-tab-active-top: color-mix(in srgb, var(--oklch-yellow-217-119-6) 58%, black);
   --flyout-tab-active-bottom: color-mix(in srgb, var(--oklch-yellow-217-119-6) 42%, black);

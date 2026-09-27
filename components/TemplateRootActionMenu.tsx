@@ -5,11 +5,11 @@ import { ItemTemplate } from '@/types/template';
 import { FieldType } from '@/types/field';
 import { useTreeActionMenu } from '@/hooks/useTreeActionMenu';
 import DeleteTemplateModal from '@/components/DeleteTemplateModal';
-import TreeActionMenu, {
+import TreeSubMenu, {
   ActionMenuDangerItem,
   ActionMenuDivider,
   ActionMenuItem,
-} from '@/components/TreeActionMenu';
+} from '@/components/TreeSubMenu';
 
 interface TemplateRootActionMenuProps {
   template: ItemTemplate;
@@ -61,7 +61,7 @@ export default function TemplateRootActionMenu({
 
   return (
     <>
-    <TreeActionMenu
+    <TreeSubMenu
       isOpen={menu.isMenuOpen}
       onMouseEnter={menu.handleMenuMouseEnter}
       onMouseLeave={menu.handleMouseLeave}
@@ -162,7 +162,7 @@ export default function TemplateRootActionMenu({
           />
         </>
       )}
-    </TreeActionMenu>
+    </TreeSubMenu>
     {confirmingDelete && onDeleteTemplate && (
       <DeleteTemplateModal
         templateName={template.name}

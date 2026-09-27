@@ -11,13 +11,13 @@ import {
 } from '@/types/layout';
 import { FieldDefinition } from '@/types/field';
 import { useTreeActionMenu } from '@/hooks/useTreeActionMenu';
-import TreeActionMenu, {
+import TreeSubMenu, {
   ActionMenuDangerItem,
   ActionMenuDivider,
   ActionMenuItem,
   ActionMenuSection,
   ActionMenuTabs,
-} from '@/components/TreeActionMenu';
+} from '@/components/TreeSubMenu';
 import TemplateBodyDimensions from '@/components/TemplateBodyDimensions';
 import TemplateContainerSizing from '@/components/TemplateContainerSizing';
 import { activeBtn, barToggleBtn, barToggleGroup, disabledBtn, ghostBtn } from '@/components/editorBarStyles';
@@ -90,7 +90,7 @@ const SPACING_HINT: HintContent = {
 };
 
 // menuShellXWide (17.5rem = 280px) minus the flyout's normal 14rem (224px): how much further left a
-// right-docked flyout must start so the wider Properties tab still ends at the panel seam.
+// right-docked flyout must start so the wide shell still ends at the panel seam.
 const PROPERTIES_EXTRA_WIDTH_PX = 56;
 
 /**
@@ -320,15 +320,15 @@ export function TemplateContainerActionMenu({
 
   if (isRoot) {
     return (
-      <TreeActionMenu
+      <TreeSubMenu
         isOpen={menu.isMenuOpen}
         onMouseEnter={menu.handleMenuMouseEnter}
         onMouseLeave={menu.handleMouseLeave}
         top={menu.menuCoords.top}
-        left={menu.menuCoords.left - (position === 'right' && activeTab === 'properties' ? PROPERTIES_EXTRA_WIDTH_PX : 0)}
+        left={menu.menuCoords.left - (position === 'right' ? PROPERTIES_EXTRA_WIDTH_PX : 0)}
         position={position}
         splitBody
-        className={activeTab === 'properties' ? 'menuShellXWide' : undefined}
+        className="menuShellXWide"
         title="Body Properties"
         titleIcon={<BodyIcon className="w-4 h-4" />}
         subheader={
@@ -465,7 +465,7 @@ export function TemplateContainerActionMenu({
               </ActionMenuSection>
           </>
         )}
-      </TreeActionMenu>
+      </TreeSubMenu>
     );
   }
 
@@ -514,15 +514,15 @@ export function TemplateContainerActionMenu({
   };
 
   return (
-    <TreeActionMenu
+    <TreeSubMenu
       isOpen={menu.isMenuOpen}
       onMouseEnter={menu.handleMenuMouseEnter}
       onMouseLeave={menu.handleMouseLeave}
       top={menu.menuCoords.top}
-      left={menu.menuCoords.left - (position === 'right' && activeTab === 'properties' ? PROPERTIES_EXTRA_WIDTH_PX : 0)}
+      left={menu.menuCoords.left - (position === 'right' ? PROPERTIES_EXTRA_WIDTH_PX : 0)}
       position={position}
       splitBody
-      className={activeTab === 'properties' ? 'menuShellXWide' : undefined}
+      className="menuShellXWide"
       title="Container Properties"
       titleIcon={containerIcon}
       subheader={
@@ -587,7 +587,7 @@ export function TemplateContainerActionMenu({
 
       {activeTab === 'properties' && (
         <>
-            <div className="flex flex-col gap-1 px-1 pb-2">
+            <div className="flex flex-col gap-1 px-3 pb-2">
               <span className="text-[10px] font-semibold tracking-[0.04em] text-[var(--secondary-tree-menu-header-title)]">
                 Container Name
               </span>
@@ -768,7 +768,7 @@ export function TemplateContainerActionMenu({
             </ActionMenuSection>
         </>
       )}
-    </TreeActionMenu>
+    </TreeSubMenu>
   );
 }
 
@@ -826,7 +826,7 @@ export function TemplateComponentActionMenu({
       : '💡';
 
   return (
-    <TreeActionMenu
+    <TreeSubMenu
       isOpen={menu.isMenuOpen}
       onMouseEnter={menu.handleMenuMouseEnter}
       onMouseLeave={menu.handleMouseLeave}
@@ -1010,6 +1010,6 @@ export function TemplateComponentActionMenu({
           </div>
         )}
       </div>
-    </TreeActionMenu>
+    </TreeSubMenu>
   );
 }

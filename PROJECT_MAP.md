@@ -84,13 +84,15 @@ Conventions and architecture (data access, theming, template editor internals, b
 - `TemplateLayoutPalette.tsx` — the "Add container / Add component" palette (Components tab).
 - `TemplateManagerModal.tsx` — browse/apply/create-custom template picker (from Collections menus).
 - `TemplatePropertiesInspector.tsx` — the selected layout node's property editor (Properties panel).
-- `TreeActionMenu.tsx` — the shared popup menu shell (positioning, portal, styling) every
-  `Tree*ActionMenu` and `Template*ActionMenu` renders into.
 - `TreeCollectionActionMenu.tsx` / `TreeItemActionMenu.tsx` / `TreeTemplateActionMenu.tsx` — the
   tree-gear popup menus for a collection, item, and template row.
 - `TreeContent.tsx` — the shared tree view (Items/Collections/Templates), rendered per dock/flyout.
 - `TreeSearchMenu.tsx` — the advanced-search popup shell (positioning, portal) that
   `SearchAndFilterSection` renders its filter UI into.
+- `TreeSubMenu.tsx` — the shared popup menu shell (positioning, portal, styling) every
+  `Tree*ActionMenu` and `Template*ActionMenu` renders into, always as a `splitBody` two-card menu
+  styled from `TreeSubMenu.css`; `ActionMenuTabs` renders real tab buttons once there are two or
+  more, or an empty divider band for just one, so the head card's own chrome never has to vary.
 - `UnifiedTree.tsx` — the recursive tree-row renderer `TreeContent` builds on.
 - `editorBarStyles.ts` — shared Tailwind class strings for the template editor toolbar's buttons.
 

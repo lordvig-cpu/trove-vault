@@ -6,12 +6,18 @@ import { CollectionRecord } from '@/types/collection';
 import { useTreeActions } from '@/context/TreeActionsContext';
 import { useTreeActionMenu } from '@/hooks/useTreeActionMenu';
 import { ActionIcon } from '@/components/icons/LayoutIcons';
-import TreeActionMenu, {
+import TreeSubMenu, {
   ActionMenuDangerItem,
   ActionMenuDivider,
   ActionMenuItem,
   ActionMenuRenameForm,
-} from '@/components/TreeActionMenu';
+  ActionMenuTabs,
+} from '@/components/TreeSubMenu';
+
+// Only one tab exists today, so ActionMenuTabs renders this as a plain divider band rather than a
+// single oversized tab button -- but it's still the exact same splitBody shell and .menuTabs CSS
+// every tabbed flyout uses, so a future Properties tab is a drop-in rather than a rewrite.
+const ACTIONS_ONLY_TABS = [{ id: 'actions' as const, label: 'Actions', icon: <ActionIcon className="w-4 h-4" /> }];
 
 interface TreeTemplateActionMenuProps {
   template: CollectionRecord;
@@ -36,15 +42,17 @@ export default function TreeTemplateActionMenu({
 
   return (
     <>
-    <TreeActionMenu
+    <TreeSubMenu
       isOpen={menu.isMenuOpen}
       onMouseEnter={menu.handleMenuMouseEnter}
       onMouseLeave={menu.handleMouseLeave}
       top={menu.menuCoords.top}
       left={menu.menuCoords.left}
       position={position}
-      title="Template Actions"
+      splitBody
+      title="Template: Actions"
       titleIcon={<ActionIcon className="w-4 h-4" />}
+      subheader={<ActionMenuTabs tabs={ACTIONS_ONLY_TABS} />}
     >
       <ActionMenuItem
         icon={<span>📄</span>}
@@ -99,7 +107,7 @@ export default function TreeTemplateActionMenu({
           }}
         />
       )}
-    </TreeActionMenu>
+    </TreeSubMenu>
     {confirmingDelete && onDeleteTemplate && (
       <DeleteTemplateModal
         templateName={template.name}

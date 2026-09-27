@@ -24,9 +24,12 @@ commit whenever you add, remove, split or rename a file — it goes stale otherw
 
 ## Code conventions
 
-- **Naming:** the shared tree-view UI is called "Tree" (`TreeActionMenu`, `useTreeActionMenu`,
+- **Naming:** the shared tree-view UI is called "Tree" (`TreeSubMenu`, `useTreeActionMenu`,
   `tree-*` CSS classes, `--tree-*` theme variables). The old "Explorer" name is gone; do not
-  reintroduce it. The Items panel's dock id is `'items'`.
+  reintroduce it. The Items panel's dock id is `'items'`. The gear-icon popup shell itself is
+  `TreeSubMenu` (not `TreeActionMenu` -- renamed because it's just as often an Actions +
+  Properties menu as an Actions-only one); `useTreeActionMenu` is a separate, unrenamed hook
+  (open/close/position state) that both kinds of menu call, so its name doesn't imply Actions-only.
 - **Naming, template editor tabs:** the `template_hierarchy` dock content (`TemplateHierarchyTree.tsx`)
   is labeled "Layout" in the UI; the old "Structure" name is gone, don't reintroduce it. The
   `template_editor` dock content (`TemplateFieldInspector.tsx`) is labeled "Content"; the old
@@ -175,34 +178,53 @@ commit whenever you add, remove, split or rename a file — it goes stale otherw
   (`#template-toolbar-slot-bottom`, rendered in `app/page.tsx`), which lifts clear of the bottom
   panel by `bottomPanelHeight` whenever that panel is open or pinned. Which toolbar gets which slot
   is just where each is portaled in `TemplateEditorStage.tsx` — swap it there if that changes again.
-- The tree/template gear-icon flyouts (built on the shared `TreeActionMenu`) that mix Actions
-  (things you click, e.g. Add Child Container, Delete Item) with Properties (things you set, e.g.
-  padding, sizing) follow one standard: two tabs, Actions and Properties (`ActionMenuTabs`, passed
-  as `TreeActionMenu`'s `subheader` so the title bar and tabs stay fixed while the tab's body
-  scrolls; `ActionIcon`/`PropertiesIcon` in `LayoutIcons.tsx`), with the title bar naming the
-  object itself ("Body Properties", in the same boxed amber pill with the icon at the far right as
-  every other flyout, matching "Container Properties"). The tabs are bordered buttons in a
-  full-width, amber-tinted dark band (top and bottom edges only), the active one brightened with a
-  shine and glow (`.menuTabs` / `.menuTab-active` in `TreeActionMenu.css`). The Actions tab is
+- Every tree/template gear-icon flyout -- whether it's pure Actions (Item, Collection, Category,
+  Template) or mixes Actions with Properties (Body, a standard container, a Content-tab field) --
+  is built from exactly one shared shell and CSS file, `TreeSubMenu.tsx`
+  (`app/styles/components/TreeSubMenu.css`), always in `splitBody` mode: a narrow "head" card
+  (title bar + a band under it) sits on a body card that can be wider, the two sharing one border
+  line so together they read as one L-shaped panel. There is no second, alternate shell for a menu
+  with nothing to switch between -- that was tried (a plain, un-split `.menuShell` card with its
+  own bespoke header class) and produced exactly the kind of drift a single definition is supposed
+  to prevent, plus its own new bugs (a divider shadow with nowhere to fade into, clipped into a
+  hard line at the card's top edge). `.menuShellHead`'s own chrome -- background gradient, corner
+  radius, title bar height/padding, the yellow-shifted title color, vertical centering -- is
+  defined once, unconditionally, and never varies by tab count; its background can't lean on
+  `.menuShell`'s default radial glow, whose size is a percentage of the card's own height (fine for
+  a card this tall, but the original bug when a much shorter head reused the same rule), so it's
+  fixed in absolute px instead. `subheader` (`ActionMenuTabs`) always renders, giving the head card
+  its band and divider unconditionally too -- what varies is only its *content*: with two or more
+  tabs (Body/Container Properties; `TemplateFieldActionMenu.tsx`'s Content field editor, which
+  already had real properties -- label, key, type, required, options -- and real actions -- move
+  up/down, delete -- so it kept both as genuine tabs) it renders real, clickable tab buttons
+  (bordered, in a full-width amber-tinted dark band, top and bottom edges only, plus a shadow above
+  it; the active one brightened with a shine and glow -- `.menuTabs` / `.menuTab-active` in
+  `TreeSubMenu.css`). With fewer than two tabs, `ActionMenuTabs` itself renders that same `.menuTabs`
+  element with no buttons inside it at all -- a plain divider band, not a single oversized "tab" to
+  click. `TreeItemActionMenu.tsx`, `TreeCollectionActionMenu.tsx` (Collection and Category) and
+  `TreeTemplateActionMenu.tsx` all pass a single-entry tabs array for exactly this reason, titled
+  "Item: Actions", "Collection: Actions", "Category: Actions", "Template: Actions" ("Actions" folds
+  into the title since there's no tab label to say it), each with the plain `ActionIcon` as its
+  title icon (no per-type icon exists for them yet). The one-CSS-definition rule this preserves:
+  never add a second shell, a bespoke header class, or a per-menu override for a card that happens
+  to be shorter -- if a head card ever looks wrong again, the fix is either in `.menuShellHead`'s
+  own unconditional rule, or in giving `ActionMenuTabs` more to render, never a new special case.
+  The title bar names the object itself ("Body Properties", in the same boxed amber pill with the
+  icon at the far right as every other flyout, matching "Container Properties"). The Actions tab is
   plain full-width rows (`ActionMenuItem`, no borders).
   Inputs, pulldowns and buttons in the Properties tab share the top toolbar's control height
   (`barControlHeight`, 26px) so rows of mixed controls line up.
-  The title bar and tabs are a "head" card and the body is a second card under it
-  (`TreeActionMenu`'s `splitBody`); the two share one border line. On the Actions tab both are the
-  14rem default; on Properties both take `menuShellXWide` (17.5rem), so the title bar and tab band
-  stretch while the tab buttons keep their size, centered. The Properties body is one column of
-  collapsible `ActionMenuSection` cards: an icon tile (`icons/SectionIcons.tsx`), the title with a
-  one-line subtitle while collapsed, a `?` bubble and an up/down chevron, in an amber-bordered card
-  over a dark fill. Inside a split flyout's body, inputs, selects and segmented buttons are themed
-  dark (dark navy fill, thin light border, white on hover, light blue on focus) by the
-  `.menuShellBody` rules in `TreeActionMenu.css` -- deliberately not amber, for contrast with the cards
-  around them; the Spacing box's borderless side inputs opt out. Sections are controlled --
-  the flyout component owns the open/closed and active-tab state, so they survive the flyout
-  closing and reopening. Pure Actions-only menus (Item/Collection/Category/Template Actions in
-  `TreeItemActionMenu.tsx`/`TreeCollectionActionMenu.tsx`/`TreeTemplateActionMenu.tsx`) have no
-  tabs and use the same `ActionIcon` as their title icon, rather than a per-type emoji, since the
-  title already says "Actions". The Body and standard-container flyouts (`TemplateLayoutActionMenu.tsx`) both use
-  it. A standard container's Actions tab is Add Before / Inside / After, Split into 2 Columns /
+  Both tabs always take `menuShellXWide` (17.5rem), so switching tabs never changes the flyout's
+  width; the tab buttons keep their smaller 14rem-band size, centered, within that wider head. The
+  Properties body is one column of collapsible `ActionMenuSection` cards: an icon tile
+  (`icons/SectionIcons.tsx`), the title with a one-line subtitle while collapsed, a `?` bubble and
+  an up/down chevron, in an amber-bordered card over a dark fill. Inside a split flyout's body,
+  inputs, selects and segmented buttons are themed dark (dark navy fill, thin light border, white
+  on hover, light blue on focus) by the `.menuShellBody` rules in `TreeSubMenu.css` -- deliberately
+  not amber, for contrast with the cards around them; the Spacing box's borderless side inputs opt
+  out. Sections are controlled -- the flyout component owns the open/closed and active-tab state,
+  so they survive the flyout closing and reopening. The Body and standard-container flyouts
+  (`TemplateLayoutActionMenu.tsx`) both use it. A standard container's Actions tab is Add Before / Inside / After, Split into 2 Columns /
   Rows, and Delete Container (always last); its Properties tab is Container Name (a plain field), then the cards Size
   (Auto/Fit/Custom, Width, a Min/Max width slider, Height, a Min/Max height slider), Spacing, Layout
   (Row/Column, then two icon-button groups for alignment) and Appearance. The Body's is Size, Layout

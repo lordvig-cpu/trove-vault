@@ -3,7 +3,7 @@
 import React, { useState, useRef, useEffect, useId } from 'react';
 import { usePresence } from '@/hooks/usePresence';
 import { createPortal } from 'react-dom';
-import '@/app/styles/components/TreeActionMenu.css';
+import '@/app/styles/components/TreeSubMenu.css';
 import { ChevronDownIcon } from '@/components/icons/PanelIcons';
 import { HelpCircleIcon } from '@/components/icons/LayoutIcons';
 import HoverHint, { type HintContent } from '@/components/HoverHint';
@@ -11,11 +11,11 @@ import { useUIPreferences } from '@/context/UIPreferencesContext';
 import { useTreePanel } from '@/context/TreePanelContext';
 
 /* --------------------------------------------------------------------------
-  ACTION MENU CONTRACT
+  SUB MENU CONTRACT
   The parent tree row owns menu state and coordinates. This component owns
   rendering, portal mounting, positioning offsets, and open/close animation.
   -------------------------------------------------------------------------- */
-interface TreeActionMenuProps {
+interface TreeSubMenuProps {
   isOpen: boolean;
   onMouseEnter: () => void;
   onMouseLeave: () => void;
@@ -37,7 +37,7 @@ interface TreeActionMenuProps {
   children: React.ReactNode;
 }
 
-export default function TreeActionMenu({
+export default function TreeSubMenu({
   isOpen,
   onMouseEnter,
   onMouseLeave,
@@ -50,7 +50,7 @@ export default function TreeActionMenu({
   className,
   splitBody = false,
   children,
-}: TreeActionMenuProps) {
+}: TreeSubMenuProps) {
   const { animationsEnabled, isPinned: primaryPinned } = useUIPreferences();
   const panel = useTreePanel();
   const isPinned = panel?.isPinned ?? primaryPinned;
@@ -242,17 +242,25 @@ export function ActionMenuDivider() {
 }
 
 // Two-or-more tab switcher for a menu that mixes kinds of content (e.g. Actions / Properties).
-// Pass it as TreeActionMenu's `subheader` so it stays fixed while the tab's body scrolls. The
+// Pass it as TreeSubMenu's `subheader` so it stays fixed while the tab's body scrolls. The
 // caller owns which tab is active and renders the matching body itself.
+// With fewer than two tabs there's nothing to switch between, so this renders as a plain, empty
+// divider band instead of a single oversized "tab" button -- but it's still the exact same
+// `.menuTabs` element and CSS as the real tab band, not a different rule for a different shape, so
+// every splitBody flyout's head card ends up the same height/proportions regardless of how many
+// tabs it actually has. `active`/`onChange` only matter once there's a real choice to make.
 export function ActionMenuTabs<T extends string>({
   tabs,
   active,
   onChange,
 }: {
   tabs: { id: T; label: string; icon: React.ReactNode }[];
-  active: T;
-  onChange: (id: T) => void;
+  active?: T;
+  onChange?: (id: T) => void;
 }) {
+  if (tabs.length < 2) {
+    return <div className="menuTabs" aria-hidden="true" />;
+  }
   return (
     <div className="menuTabs" role="tablist">
       {tabs.map((tab) => (
@@ -261,7 +269,7 @@ export function ActionMenuTabs<T extends string>({
           type="button"
           role="tab"
           aria-selected={active === tab.id}
-          onClick={() => onChange(tab.id)}
+          onClick={() => onChange?.(tab.id)}
           className={`menuTab ${active === tab.id ? 'menuTab-active' : ''}`}
         >
           {tab.icon}

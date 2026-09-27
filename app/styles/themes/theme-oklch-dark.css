@@ -3,7 +3,7 @@
    Light mode transforms the same dark recipe through role coefficients. */
 :is([data-theme='theme-oklch-dark'], [data-theme='theme-oklch-light']) {
   --oklch-blue: rgba(0, 119, 255, 1);
-  --oklch-yellow: rgba(217, 122, 8, 1);
+  --oklch-yellow: rgba(255, 157, 0, 1);
 
   /* L_out = offset + L_dark * scale; C_out = C_dark * chroma. */
   --oklch-surface-offset: 0;

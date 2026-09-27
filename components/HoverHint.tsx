@@ -2,7 +2,7 @@
 
 import React, { useId, useState } from 'react';
 import { createPortal } from 'react-dom';
-import '@/app/styles/components/TreeActionMenu.css';
+import '@/app/styles/components/TreeSubMenu.css';
 import { HelpCircleIcon } from '@/components/icons/LayoutIcons';
 import { HintCautionIcon, HintTipIcon, HintUseIcon } from '@/components/icons/HintIcons';
 
@@ -67,7 +67,7 @@ export interface HintContent {
 
 /**
  * A small help popup for an inline icon (the `?` beside a label) or a button, for help too long for
- * a native tooltip. Styled like the tree action menus (`.hoverHint` in TreeActionMenu.css: title
+ * a native tooltip. Styled like the tree action menus (`.hoverHint` in TreeSubMenu.css: title
  * pill, then the same shadowed-rule sub-headings as the Properties sections) and portaled to the
  * body so it isn't clipped by a scrolling flyout. Opens on hover or keyboard focus; below the
  * trigger (above it when the trigger is low on the screen), right-aligned to it.

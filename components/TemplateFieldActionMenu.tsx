@@ -3,11 +3,13 @@
 import React, { useState } from 'react';
 import { FieldDefinition, FieldType } from '@/types/field';
 import { useTreeActionMenu } from '@/hooks/useTreeActionMenu';
-import TreeActionMenu, {
+import { ActionIcon, PropertiesIcon } from '@/components/icons/LayoutIcons';
+import TreeSubMenu, {
   ActionMenuDangerItem,
   ActionMenuDivider,
   ActionMenuItem,
-} from '@/components/TreeActionMenu';
+  ActionMenuTabs,
+} from '@/components/TreeSubMenu';
 
 interface TemplateFieldActionMenuProps {
   field: FieldDefinition;
@@ -43,6 +45,7 @@ export default function TemplateFieldActionMenu({
   const [fieldType, setFieldType] = useState<FieldType>(field.field_type);
   const [isRequired, setIsRequired] = useState(field.is_required);
   const [newOption, setNewOption] = useState('');
+  const [activeTab, setActiveTab] = useState<'actions' | 'properties'>('actions');
 
   // Sync state when field prop updates (adjusting state during render, not in an effect,
   // per https://react.dev/learn/you-might-not-need-an-effect#adjusting-some-state-when-a-prop-changes)
@@ -109,17 +112,29 @@ export default function TemplateFieldActionMenu({
   const activeTypeMeta = FIELD_TYPES.find((t) => t.type === field.field_type) || FIELD_TYPES[0];
 
   return (
-    <TreeActionMenu
+    <TreeSubMenu
       isOpen={menu.isMenuOpen}
       onMouseEnter={menu.handleMenuMouseEnter}
       onMouseLeave={menu.handleMouseLeave}
       top={menu.menuCoords.top}
       left={menu.menuCoords.left}
       position={position}
-      title="Field Properties"
+      splitBody
+      title="Field"
       titleIcon={activeTypeMeta.icon}
       className="menuShellWide"
+      subheader={
+        <ActionMenuTabs
+          tabs={[
+            { id: 'actions', label: 'Actions', icon: <ActionIcon className="w-4 h-4" /> },
+            { id: 'properties', label: 'Properties', icon: <PropertiesIcon className="w-4 h-4" /> },
+          ]}
+          active={activeTab}
+          onChange={setActiveTab}
+        />
+      }
     >
+      {activeTab === 'properties' && (
       <div className="flex flex-col gap-2.5 p-2 text-xs">
         {/* Field Label Input */}
         <div className="flex flex-col gap-1">
@@ -244,9 +259,10 @@ export default function TemplateFieldActionMenu({
           </div>
         )}
       </div>
+      )}
 
-      <ActionMenuDivider />
-
+      {activeTab === 'actions' && (
+      <>
       {/* Move Actions */}
       {onMoveField && (
         <div className="flex flex-col">
@@ -285,7 +301,9 @@ export default function TemplateFieldActionMenu({
           menu.closeMenu();
         }}
       />
-    </TreeActionMenu>
+      </>
+      )}
+    </TreeSubMenu>
   );
 }
 
