@@ -149,6 +149,9 @@
   --flyout-shell-border: var(--secondary-tree-menu-shell-border);
   --flyout-shell-glow: 0 0 18px color-mix(in oklch, var(--secondary-accent) 35%, transparent), 0 16px 32px color-mix(in oklch, black 55%, transparent);
   --flyout-title: oklch(from var(--secondary-accent) 0.84 0.16 calc(h + 12));
+  /* A touch more yellow still than --flyout-title -- the flyout header text/icon color, an active
+     tab's color, and (elsewhere) a toolbar control's selected/set state all share this one value. */
+  --flyout-selected: oklch(from var(--flyout-title) l c calc(h + 12));
   --flyout-tab-band: linear-gradient(180deg, color-mix(in srgb, var(--oklch-yellow-217-119-6) 26%, black), color-mix(in srgb, var(--oklch-yellow-217-119-6) 12%, black));
   --flyout-tab-idle: color-mix(in srgb, var(--oklch-yellow-217-119-6) 6%, black);
   --flyout-tab-active-top: color-mix(in srgb, var(--oklch-yellow-217-119-6) 58%, black);

@@ -325,7 +325,7 @@
    scoped to this split-flyout head so other flyouts' titles are untouched. Matches that rule's own
    specificity plus one, so it wins regardless of source order. */
 .menuShellHead.menuShell .headerPill .headerTitle {
-  color: oklch(from var(--flyout-title) l c calc(h + 12));
+  color: var(--flyout-selected);
 }
 
 .headerTitle {
@@ -529,8 +529,8 @@
 
 .menuTab-active,
 .menuTab-active:hover {
-  /* Same +12deg-toward-yellow shift as the split-head title bar's text/icon color. */
-  color: oklch(from var(--flyout-title) l c calc(h + 12));
+  /* Same color as the split-head title bar's text/icon. */
+  color: var(--flyout-selected);
   border-color: var(--flyout-tab-active-border);
   background: linear-gradient(180deg, var(--flyout-tab-active-top), var(--flyout-tab-active-bottom));
   box-shadow: inset 0 1px 0 color-mix(in oklch, white 22%, transparent);
@@ -675,18 +675,24 @@
   opacity: 0.7;
 }
 
+/* A toggle group (barToggleGroup) is the one .menuShellBody control that stays the same warm amber
+   track as the top toolbar's, rather than the navy theme every other control here uses for contrast
+   -- Auto/Fit/Custom, Row/Column and the like are a bar-style standard the app already has, not a
+   flyout-specific control, so they shouldn't look different just because this one happens to render
+   inside a flyout. Only the colors are overridden here, never barToggleGroup/barToggleBtn/ghostBtn
+   themselves -- those stay exactly what the top and bottom toolbars use. */
 .menuShellBody [role='group'] {
-  background: color-mix(in oklch, black 62%, transparent);
-  border-color: color-mix(in oklch, var(--text-strong) 24%, transparent);
+  background: color-mix(in oklch, black 78%, var(--secondary-accent) 22%);
+  border-color: color-mix(in oklch, var(--secondary-accent) 35%, transparent);
 }
 
 .menuShellBody [role='group'] > button.cursor-pointer {
-  background: color-mix(in oklch, black 40%, transparent);
-  border-color: color-mix(in oklch, var(--text-strong) 22%, transparent);
+  background: transparent;
+  border-color: transparent;
 }
 
 .menuShellBody [role='group'] > button.cursor-pointer:hover {
-  border-color: color-mix(in oklch, var(--text-strong) 60%, transparent);
+  border-color: white;
 }
 
 /* Action/content list slot -- the scrollable region. min-height:0 overrides the flex-item default

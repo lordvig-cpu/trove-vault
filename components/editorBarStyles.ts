@@ -1,17 +1,23 @@
-/* Shared class strings for the template editor bar: orange base, blue for hover / selected.
+/* Shared class strings for the template editor bar: orange base, yellow for hover / selected.
    Written out in full (no interpolation) so Tailwind can detect every class. */
 
 /** Idle control: amber outline and text on the orange bar; white on hover. */
 export const idleBtn =
   'bg-black/40 border-[var(--secondary-accent)] text-[var(--secondary-accent)] hover:border-white hover:text-white hover:bg-white/10';
 
-/** Selected / open control: light-blue fill, blue outline, light-blue text and a soft glow. */
+/** Selected / open control: the same fill and inset highlight as a flyout's active tab
+    (.menuTab-active in TreeSubMenu.css) -- a solid warm-gold gradient, not a translucent mix of
+    --flyout-selected over the dark bar, which read as yellow-green rather than gold. The border is
+    the pure --flyout-selected yellow rather than the tab's own --flyout-tab-active-border (that one
+    leans orange, mixed 55/45 with --secondary-accent) -- the bar's selected border reads as yellow,
+    not amber, to stay distinct from the idle amber border around it. Text stays --flyout-selected
+    too, matching the tab's own text color. */
 export const activeBtn =
-  'bg-[color-mix(in_oklch,var(--primary-accent)_34%,transparent)] border-[color-mix(in_oklch,var(--primary-accent)_35%,cyan)] text-[color-mix(in_oklch,var(--primary-accent)_35%,cyan)] shadow-[0_0_8px_color-mix(in_oklch,var(--primary-accent)_60%,transparent)]';
+  'bg-[linear-gradient(180deg,var(--flyout-tab-active-top),var(--flyout-tab-active-bottom))] border-[var(--flyout-selected)] text-[var(--flyout-selected)] shadow-[inset_0_1px_0_color-mix(in_oklch,white_22%,transparent)]';
 
-/** Same light blue as activeBtn's text, for icons elsewhere (e.g. the Layout tree's Body/Row/
+/** Same yellow as activeBtn's text, for icons elsewhere (e.g. the Layout tree's Body/Row/
     Column glyphs) that should read as "this is a selected-style control" without the full pill. */
-export const activeIconColor = 'text-[color-mix(in_oklch,var(--primary-accent)_35%,cyan)]';
+export const activeIconColor = 'text-[var(--flyout-selected)]';
 
 /** Borderless menu row / icon button (zoom, sub-panel options). */
 export const ghostBtn =

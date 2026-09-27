@@ -68,8 +68,12 @@ commit whenever you add, remove, split or rename a file — it goes stale otherw
   and portals all change what a z-index can actually reach). A new stacking layer gets added there
   in the same commit, and the tree-menu/sidebar overlap it documents (menus render a few pixels
   *under* their own panel's edge) is intentional, not a bug to fix.
-- **Styling states:** controls are amber by default, white on hover, light blue when they represent a
-  selected/set value; destructive hover uses the `--tree-menu-danger-*` variables.
+- **Styling states:** controls are amber by default, white on hover, `--flyout-selected` yellow
+  (`editorBarStyles.ts`'s `activeBtn`/`activeIconColor` -- the same yellow as a flyout's header
+  text/icon and an active tab) when they represent a selected/set value; destructive hover uses the
+  `--tree-menu-danger-*` variables. (A separate light-blue focus ring on plain inputs/selects inside
+  a flyout's Properties body -- `.menuShellBody`'s own rules in `TreeSubMenu.css` -- is unrelated
+  and unchanged: it's a focus state, not a selected/set one.)
 
 ## Template editor
 

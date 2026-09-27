@@ -6,8 +6,12 @@
    container toolbar sits on the footer (-bottom). Both use the secondary OKLCH accent. */
 .tmpl-edge-panel {
   /* The menus' orange header tint over their chassis, plus their top glow (the glow is sized
-     for tall menus, so it is re-stated here for a short, wide bar) */
+     for tall menus, so it is re-stated here for a short, wide bar), with a thin, flat black wash
+     over the whole thing -- just enough to sit at the same darkness as the toggle-group track now
+     used inside a flyout's Properties body ([role='group'] in TreeSubMenu.css), not a visible tint
+     of its own. */
   background:
+    linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1)),
     radial-gradient(ellipse 90% 140% at 50% 0%,
       color-mix(in oklch, var(--secondary-accent) 38%, transparent) 0%,
       transparent 75%),
