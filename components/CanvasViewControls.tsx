@@ -195,7 +195,7 @@ export function ZoomControls() {
           aria-label="Zoom level"
           aria-valuetext={`${Math.round(zoom * 100)}%`}
           title="Drag to zoom; double-click to reset to 100%"
-          className="w-full h-1.5 rounded-full cursor-pointer accent-[var(--secondary-accent)] bg-black/40"
+          className="w-full h-1.5 rounded-full cursor-pointer accent-[var(--flyout-selected)] bg-black/40"
         />
       </div>
       <button

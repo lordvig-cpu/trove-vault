@@ -351,25 +351,38 @@
   line-height: 1;
 }
 
-/* HoverHint popup (components/HoverHint.tsx): the action menus' amber frosted chassis holding a title
-   pill (.headerPill) and shadowed-rule sub-headings (.properties-section-heading) over a Settings
-   list and a Notes paragraph. Fixed and portaled; ignores the pointer so it never steals the hover. */
-.hoverHint {
+/* HoverHint popup (components/HoverHint.tsx): renders the exact same split head/body shell a
+   headless TreeSubMenu does (menuShellSplit / menuShell.menuShellHead / menuShell.menuShellBody,
+   with the same empty .menuTabs divider band) -- so its title bar is never a second, hand-tuned
+   definition of the same look; it's the same CSS, picked up automatically, including the top glow,
+   the --flyout-selected title color, the divider and its shadow, and the seam-hiding rule for an
+   empty tab band. Only what makes it a help bubble instead of a menu is added here, via the extra
+   .hoverHint class kept on the outer wrapper (compound selectors below beat menuShellSplit's own
+   plain-class rules by specificity, not by source order): fixed positioning (the inline `style`
+   prop supplies top/left or bottom/left) and pointer-events:none throughout, since a bubble must
+   never itself capture the hover that opened it or block a click on whatever's under it; one fixed
+   width for both cards, since a bubble has no separate wider Properties tab to size differently;
+   and no height cap on the body, since a help bubble should never clip its own content the way a
+   scrolling flyout can. */
+.menuShellSplit.hoverHint {
   position: fixed;
   z-index: 90;
+  pointer-events: none;
+  max-height: none;
+}
+
+.hoverHint .menuShellHead,
+.hoverHint .menuShellBody {
   width: 19.2rem;
-  padding: 0.375rem 0.5rem 0.625rem;
-  background: var(--secondary-tree-menu-shell-bg);
-  border: 1.5px solid var(--secondary-tree-menu-shell-border);
-  border-radius: 0.75rem;
-  box-shadow: var(--tree-menu-shell-shadow);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  /* Body text is the toolbar label color (the "SIZE:" / "LAYOUT:" labels). */
+}
+
+.hoverHint .menuShellBody {
+  max-height: none;
+  /* Body text is the toolbar label color (the "SIZE:" / "LAYOUT:" labels), smaller than a flyout's
+     own Properties-tab text. */
   color: var(--primary-tree-item-text);
   font-size: 0.6875rem;
   line-height: 1.4;
-  pointer-events: none;
 }
 
 .hoverHint .properties-section-heading {
@@ -393,9 +406,10 @@
   padding: 0 0.25rem;
 }
 
-/* Option names take the light blue of a selected control (editorBarStyles.ts activeBtn). */
+/* Option names take the --flyout-selected yellow of a selected control (editorBarStyles.ts
+   activeBtn). */
 .hoverHintList dt {
-  color: color-mix(in oklch, var(--primary-accent) 35%, cyan);
+  color: var(--flyout-selected);
   font-weight: 700;
 }
 
@@ -461,11 +475,11 @@
   color: var(--tree-menu-danger-icon);
 }
 
-/* Any mention of a setting or property (the Settings names, and inside Notes) is bold light blue,
-   the color of a selected control (editorBarStyles.ts activeBtn). An object or literal
-   value is <em>, bold white, instead. */
+/* Any mention of a setting or property (the Settings names, and inside Notes) is bold
+   --flyout-selected yellow, the color of a selected control (editorBarStyles.ts activeBtn). An
+   object or literal value is <em>, bold white, instead. */
 .hoverHint strong {
-  color: color-mix(in oklch, var(--primary-accent) 35%, cyan);
+  color: var(--flyout-selected);
   font-weight: 700;
 }
 

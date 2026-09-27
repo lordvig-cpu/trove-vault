@@ -115,54 +115,73 @@ export default function HoverHint({
       </span>
       {style &&
         createPortal(
-          <div id={id} role="tooltip" className="hoverHint" style={style}>
-            <div className="headerPill">
-              <span className="headerTitle">{hint.title}</span>
-              <span className="headerIcon">
-                <HelpCircleIcon className="w-4 h-4" />
-              </span>
+          // Reuses the exact same split head/body shell a headless TreeSubMenu (Item: Actions etc.)
+          // renders -- menuShellSplit / menuShell.menuShellHead / menuShell.menuShellBody, with the
+          // same empty (no real tabs) .menuTabs divider band -- so the title bar is never a second,
+          // hand-tuned definition of the same look; it's the same CSS, picked up automatically. See
+          // the .hoverHint rules in TreeSubMenu.css for what's added on top (pointer-events:none, a
+          // fixed width, no height cap) to make that shell work as a bubble instead of a menu.
+          <div id={id} role="tooltip" className="menuShellSplit hoverHint" style={style}>
+            <div className="menuShell menuShellHead">
+              <div className="innerContent">
+                <div className="headerPill">
+                  <span className="headerTitle">{hint.title}</span>
+                  <span className="headerIcon">
+                    <HelpCircleIcon className="w-4 h-4" />
+                  </span>
+                </div>
+                <div className="menuSubheader">
+                  <div className="menuTabs" aria-hidden="true" />
+                </div>
+              </div>
             </div>
-            {hint.settings && hint.settings.length > 0 && (
-              <>
-                <div className="properties-section-heading">
-                  <hr aria-hidden="true" />
-                  <h3>Settings</h3>
+            <div className="menuShell menuShellBody">
+              <div className="innerContent">
+                <div className="childrenContainer">
+                  {hint.settings && hint.settings.length > 0 && (
+                    <>
+                      <div className="properties-section-heading">
+                        <hr aria-hidden="true" />
+                        <h3>Settings</h3>
+                      </div>
+                      <dl className="hoverHintList">
+                        {hint.settings.map((setting) => (
+                          <React.Fragment key={setting.name}>
+                            <dt>
+                              {setting.icon ? (
+                                <span className="hintRef">
+                                  <span className="hintRefIcon">{setting.icon}</span>
+                                  {setting.name}
+                                </span>
+                              ) : (
+                                setting.name
+                              )}
+                            </dt>
+                            <dd>{setting.text}</dd>
+                          </React.Fragment>
+                        ))}
+                      </dl>
+                    </>
+                  )}
+                  {hint.notes && (
+                    <>
+                      <div className="properties-section-heading">
+                        <hr aria-hidden="true" />
+                        <h3>Notes</h3>
+                      </div>
+                      <ul className="hoverHintNotes">
+                        {sortNotes(hint.notes).map((note, i) => (
+                          <li key={i} className={`hoverHintNote hoverHintNote-${note.kind}`}>
+                            <span className="hoverHintNoteIcon">{NOTE_ICONS[note.kind]}</span>
+                            <span>{note.text}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </>
+                  )}
                 </div>
-                <dl className="hoverHintList">
-                  {hint.settings.map((setting) => (
-                    <React.Fragment key={setting.name}>
-                      <dt>
-                        {setting.icon ? (
-                          <span className="hintRef">
-                            <span className="hintRefIcon">{setting.icon}</span>
-                            {setting.name}
-                          </span>
-                        ) : (
-                          setting.name
-                        )}
-                      </dt>
-                      <dd>{setting.text}</dd>
-                    </React.Fragment>
-                  ))}
-                </dl>
-              </>
-            )}
-            {hint.notes && (
-              <>
-                <div className="properties-section-heading">
-                  <hr aria-hidden="true" />
-                  <h3>Notes</h3>
-                </div>
-                <ul className="hoverHintNotes">
-                  {sortNotes(hint.notes).map((note, i) => (
-                    <li key={i} className={`hoverHintNote hoverHintNote-${note.kind}`}>
-                      <span className="hoverHintNoteIcon">{NOTE_ICONS[note.kind]}</span>
-                      <span>{note.text}</span>
-                    </li>
-                  ))}
-                </ul>
-              </>
-            )}
+              </div>
+            </div>
           </div>,
           document.body
         )}

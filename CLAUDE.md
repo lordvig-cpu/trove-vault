@@ -258,9 +258,14 @@ commit whenever you add, remove, split or rename a file — it goes stale otherw
   and rotated a quarter turn for a Column. They only show when children don't already fill the
   container (Auto children stretch); a per-item override (`align-self`) is a possible later addition.
 - Help for a control is a `HoverHint` bubble (`components/HoverHint.tsx`), not a native `title`
-  tooltip, whenever it's more than a few words: an action-menu-styled popup with a title bar (the `?`
-  at the right), then an optional "Settings" section (one bold name + what it does per line) and an
-  optional "Notes" list, under the same shadowed-rule sub-headings as the Properties sections. Each
+  tooltip, whenever it's more than a few words. It renders the exact same split head/body shell as a
+  headless `TreeSubMenu` (`menuShellSplit` / `menuShell.menuShellHead` / `menuShell.menuShellBody`,
+  with the same empty `.menuTabs` divider band) rather than a shell of its own, so its title bar (the
+  `?` at the right) is never a second, hand-tuned definition of the same look -- the `.hoverHint`
+  rules in `TreeSubMenu.css` add only what makes it a bubble instead of a menu (fixed positioning,
+  `pointer-events: none`, one width for both cards, no height cap). Then an optional "Settings"
+  section (one bold name + what it does per line) and an optional "Notes" list, under the same
+  shadowed-rule sub-headings as the Properties sections. Each
   note is one point of a kind -- `use` (how to use it), `tip` (a helpful hint) or `caution` (a
   limitation or override to watch for) -- led by that kind's icon (`icons/HintIcons.tsx`); `HoverHint` always lists them in that order (use,
   tip, caution) whatever order they were written in. When a note refers to a control the user can see (Link

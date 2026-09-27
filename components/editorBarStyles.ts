@@ -31,8 +31,11 @@ export const disabledBtn = 'opacity-35 cursor-not-allowed';
 export const barControlHeight = 'h-[26px]';
 
 /** Segmented two-way toggle (Auto / Custom, Edit / Preview): a dark pill holding two buttons, the
-    chosen one shown as activeBtn and the other as ghostBtn. */
+    chosen one shown as activeBtn and the other as ghostBtn. items-stretch (not items-center) plus
+    barToggleBtn's own h-full is what makes the buttons fill the full 26px track instead of sitting
+    a few px shorter than it -- matching barControlHeight's other 26px controls (Add, Split, the
+    gear/delete icons) exactly, rather than just matching the track around them. */
 export const barToggleGroup =
-  'flex items-center gap-0.5 bg-black/40 px-0.5 h-[26px] rounded-md border border-[color-mix(in_oklch,var(--secondary-accent)_35%,transparent)] shrink-0 text-[10px] font-semibold';
+  'flex items-stretch gap-0.5 bg-black/40 px-0.5 h-[26px] rounded-md border border-[color-mix(in_oklch,var(--secondary-accent)_35%,transparent)] shrink-0 text-[10px] font-semibold';
 
-export const barToggleBtn = 'px-1.5 h-[22px] flex items-center gap-1 rounded transition';
+export const barToggleBtn = 'px-1.5 h-full flex items-center gap-1 rounded transition';
