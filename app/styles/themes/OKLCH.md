@@ -25,6 +25,12 @@ green/red/violet colors, while preserving gradient positions, textures and
 opacity. The RGB suffixes on internal sample names identify the original
 calibration color; their values are relative OKLCH expressions.
 
+The secondary (amber-family) hue offsets are scaled by how far the seed's hue is above 35°
+(`clamp(0, (h - 35) / 50, 1)`): full strength for a gold seed (hue about 85°, where the original
+palette was calibrated), shrinking toward zero for orange and red seeds. Without that, the fixed
+-15° to -39° offsets that turn gold into brown-orange pushed an orange seed into red. Red seeds
+(hue 35° or less) now keep every amber-family color at the seed's own hue.
+
 Light mode applies these rules to the same dark samples:
 
 | Role | Lightness | Chroma |

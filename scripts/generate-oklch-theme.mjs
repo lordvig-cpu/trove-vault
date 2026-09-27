@@ -38,7 +38,7 @@ function replaceColor(literal, token) {
   const name = `--oklch-${family}-${rgb.join('-')}`;
   if (!palette.has(name)) {
     const hueShift = chroma < 0.00001 ? 0 : round(hue - seedH);
-    palette.set(name, `oklch(from var(--oklch-${family}) calc(l * ${round(lightness / seedL)}) calc(c * ${chroma < 0.00001 ? 0 : round(chroma / seedC)}) calc(h + ${hueShift}))`);
+    palette.set(name, `oklch(from var(--oklch-${family}) calc(l * ${round(lightness / seedL)}) calc(c * ${chroma < 0.00001 ? 0 : round(chroma / seedC)}) calc(h + ${hueShift}${family === 'yellow' ? ' * clamp(0, (h - 35) / 50, 1)' : ''}))`);
   }
 
   // Shadows remain dark and highlights remain white in both modes.

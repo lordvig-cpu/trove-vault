@@ -1,6 +1,6 @@
 /** Default seeds are shared by the editor; CSS uses the same RGBA values. */
 export const DEFAULT_PRIMARY_COLOR = 'rgba(0, 119, 255, 1)';
-export const DEFAULT_SECONDARY_COLOR = 'rgba(248, 188, 9, 1)';
+export const DEFAULT_SECONDARY_COLOR = 'rgba(217, 122, 8, 1)';
 
 /** Convert an opaque RGBA seed to the HEX format used by the editor. */
 export function rgbaToHex(rgba: string): string {
