@@ -111,8 +111,8 @@
 .searchMenuHeaderPill {
     padding-left: 0.75rem;
     padding-right: 0.75rem;
-    padding-top: 0.1875rem;
-    padding-bottom: 0.1875rem;
+    padding-top: 0.0625rem;
+    padding-bottom: 0.0625rem;
     border: 0;
     border-bottom: 1px solid var(--flyout-card-border);
     margin-inline: -0.5rem;
