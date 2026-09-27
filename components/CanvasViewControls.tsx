@@ -80,7 +80,7 @@ export function PreviewWidthPicker() {
       <span className="flex items-center gap-1 mr-1 text-[var(--primary-tree-item-text)]">
         <span className="text-[10px] font-bold uppercase tracking-wider">Width:</span>
         <HoverHint hint={WIDTH_HINT}>
-          <HelpCircleIcon className="w-3 h-3" />
+          <HelpCircleIcon className="w-3 h-3 text-[var(--secondary-tree-menu-header-title)]" />
         </HoverHint>
       </span>
       <div className="relative" ref={menuRef}>

@@ -51,13 +51,13 @@ const HINTS = {
   },
 } satisfies Record<string, HintContent>;
 
-/** A group's heading: amber, right-aligned, with its help bubble. */
+/** A group's heading: white, left-aligned, with its (still amber) help bubble icon. */
 function GroupLabel({ label, hint }: { label: string; hint: HintContent }) {
   return (
-    <span className="flex items-center justify-end gap-1 text-[10px] font-semibold tracking-[0.04em] text-[var(--secondary-tree-menu-header-title)]">
+    <span className="flex items-center gap-1 text-[10px] font-semibold tracking-[0.04em] text-[var(--text-strong)]">
       {label}
       <HoverHint hint={hint}>
-        <HelpCircleIcon className="w-3 h-3" />
+        <HelpCircleIcon className="w-3 h-3 text-[var(--secondary-tree-menu-header-title)]" />
       </HoverHint>
     </span>
   );
@@ -102,7 +102,7 @@ function PxField({
 
   return (
     <div className="flex flex-col gap-1 min-w-0">
-      <span className="text-[10px] font-semibold tracking-[0.04em] text-[var(--secondary-tree-menu-header-title)] text-right">
+      <span className="text-[10px] font-semibold tracking-[0.04em] text-[var(--text-strong)]">
         {label}
       </span>
       <div className="flex items-center min-w-0">
@@ -136,7 +136,12 @@ function ColorRow({
   onChange: (hex: string | undefined) => void;
 }) {
   const [draft, setDraft] = useState<string | null>(null);
-  const shown = draft ?? value ?? '';
+  const shownRaw = draft ?? value ?? '';
+  // The stored/committed value is a normalizeHex() result, always "#RRGGBB" -- stripped here so the
+  // "#" shown below is the only one, a static, always-there visual cue rather than part of the
+  // editable text (which would either double up into "##RRGGBB" or have to be re-inserted on every
+  // keystroke, both of which risk snagging on normalizeHex's own with-or-without-# parsing).
+  const shown = shownRaw.startsWith('#') ? shownRaw.slice(1) : shownRaw;
 
   const commit = () => {
     const text = (draft ?? '').trim();
@@ -151,7 +156,7 @@ function ColorRow({
 
   return (
     <div className="flex items-center gap-1.5">
-      <span className="text-[10px] font-semibold tracking-[0.04em] text-[var(--secondary-tree-menu-header-title)] w-9 shrink-0">
+      <span className="text-[10px] font-semibold tracking-[0.04em] text-[var(--text-strong)] w-9 shrink-0">
         {label}
       </span>
       <SeedColorPicker
@@ -163,22 +168,32 @@ function ColorRow({
           onChange(hex);
         }}
       />
-      <input
-        type="text"
-        value={shown}
-        placeholder="none"
-        spellCheck={false}
-        autoComplete="off"
-        onFocus={() => setDraft(value ?? '')}
-        onChange={(e) => setDraft(e.target.value)}
-        onBlur={commit}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter') (e.target as HTMLInputElement).blur();
-        }}
-        aria-label={`${label} (HEX)`}
-        title="Enter a 3- or 6-digit HEX color, with or without #"
-        className={`min-w-0 flex-1 px-1.5 ${barControlHeight} text-xs font-mono text-strong bg-surface-secondary border border-subtle rounded-lg focus:outline-none focus:border-[var(--secondary-accent)] placeholder:text-muted/60`}
-      />
+      <div className="relative min-w-0 flex-1">
+        {shown && (
+          <span
+            aria-hidden="true"
+            className="pointer-events-none absolute left-1.5 top-1/2 -translate-y-1/2 text-xs font-mono text-muted"
+          >
+            #
+          </span>
+        )}
+        <input
+          type="text"
+          value={shown}
+          placeholder="none"
+          spellCheck={false}
+          autoComplete="off"
+          onFocus={() => setDraft(value ?? '')}
+          onChange={(e) => setDraft(e.target.value)}
+          onBlur={commit}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') (e.target as HTMLInputElement).blur();
+          }}
+          aria-label={`${label} (HEX)`}
+          title="Enter a 3- or 6-digit HEX color, with or without #"
+          className={`w-full ${shown ? 'pl-3.5' : 'pl-1.5'} pr-1.5 ${barControlHeight} text-xs font-mono text-strong bg-surface-secondary border border-subtle rounded-lg focus:outline-none focus:border-[var(--secondary-accent)] placeholder:text-muted/60`}
+        />
+      </div>
       <button
         type="button"
         onClick={() => onChange(undefined)}

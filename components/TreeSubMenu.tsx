@@ -307,28 +307,40 @@ export function ActionMenuSection({
   return (
     <div className="menuSection">
       <div className="menuSectionHeader">
-        <button
-          type="button"
+        {/* A div, not a button: the hint icon sits inline right after the title, inside this row, and
+            it's its own interactive control (HoverHint's trigger has its own tabIndex) -- nesting
+            that inside a real <button> would be invalid HTML and would toggle the section on every
+            hover/click of the hint too. role="button" + onKeyDown keeps it keyboard-operable. */}
+        <div
+          role="button"
+          tabIndex={0}
           onClick={onToggle}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              onToggle();
+            }
+          }}
           aria-expanded={isOpen}
           aria-controls={bodyId}
           className="menuSectionToggle"
         >
           {icon && <span className="menuSectionIconTile">{icon}</span>}
           <span className="menuSectionText">
-            <span className="menuSectionTitle">{label}</span>
+            <span className="menuSectionTitleRow">
+              <span className="menuSectionTitle">{label}</span>
+              {hint && (
+                <span className="menuSectionHint" onClick={(e) => e.stopPropagation()}>
+                  <HoverHint hint={hint}>
+                    <HelpCircleIcon className="w-3 h-3" />
+                  </HoverHint>
+                </span>
+              )}
+            </span>
             {!isOpen && subtitle && <span className="menuSectionSubtitle">{subtitle}</span>}
           </span>
-          {hint && <span className="menuSectionHintSlot" aria-hidden="true" />}
           <ChevronDownIcon className={`menuSectionChevron ${isOpen ? 'menuSectionChevron-open' : ''}`} />
-        </button>
-        {hint && (
-          <span className="menuSectionHint">
-            <HoverHint hint={hint}>
-              <HelpCircleIcon className="w-3 h-3" />
-            </HoverHint>
-          </span>
-        )}
+        </div>
       </div>
       {isOpen && (
         <div id={bodyId} className="menuSectionBody">

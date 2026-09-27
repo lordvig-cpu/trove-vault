@@ -1,12 +1,55 @@
-/* UnitSelect's native list (components/UnitSelect.tsx). Without a dark color scheme the browser draws
-   the opened list on a bright white system background, and the translucent theme surfaces the
-   options used before don't help there. color-scheme: dark gives it a dark system palette, and
-   each option gets an opaque dark, amber-tinted fill with the amber text of the closed control. */
-.unitSelect {
-  color-scheme: dark;
+/* UnitSelect's custom pulldown (components/UnitSelect.tsx). Previously a native <select>: Chromium's
+   support for styling an open option list turned out unreliable in practice (background-color/color
+   on <option>, even with color-scheme: dark and !important, still rendered a plain black-on-white
+   system list), so there was no way to guarantee it matched the closed control's colors. Trigger and
+   list are both defined here, once, in the same dark-navy scheme every other Properties-tab input
+   uses (.menuShellBody's own input theming in TreeSubMenu.css) -- since the list is portaled to
+   <body> to avoid being clipped by a flyout's scrolling body (the reason the native <select> was
+   chosen originally), it's no longer a DOM descendant of .menuShellBody and can't pick up that
+   ambient styling by ancestry the way the trigger still can; defining both explicitly here is what
+   keeps them matching instead of one silently drifting from the other. */
+.unitSelectTrigger {
+  background: color-mix(in oklch, var(--primary-accent) 26%, black);
+  border-color: color-mix(in oklch, var(--text-strong) 24%, transparent);
+  color: var(--text-strong);
 }
 
-.unitSelect option {
-  background-color: color-mix(in oklch, var(--secondary-accent) 12%, black);
-  color: var(--secondary-accent);
+.unitSelectTrigger:hover {
+  border-color: color-mix(in oklch, var(--text-strong) 55%, transparent);
+}
+
+.unitSelectTrigger:focus {
+  border-color: color-mix(in oklch, var(--flyout-selected) 55%, transparent);
+  box-shadow: 0 0 0 1px color-mix(in oklch, var(--flyout-selected) 35%, transparent);
+}
+
+.unitSelectTrigger svg {
+  color: var(--text-strong);
+  opacity: 0.7;
+}
+
+.unitSelectMenu {
+  min-width: 3.5rem;
+  border-radius: 0;
+}
+
+/* Options sit flush against the shell and each other -- no rounding, no padding around them (the
+   shell's own tmpl-edge-panel padding is a Tailwind class dropped in UnitSelect.tsx, not set here). */
+.unitSelectOption {
+  background: color-mix(in oklch, var(--primary-accent) 26%, black);
+  border-color: color-mix(in oklch, var(--text-strong) 24%, transparent);
+  color: var(--text-strong);
+  border-radius: 0;
+}
+
+.unitSelectOption:hover {
+  border-color: color-mix(in oklch, var(--text-strong) 55%, transparent);
+  background: color-mix(in oklch, var(--primary-accent) 34%, black);
+}
+
+.unitSelectOption-selected,
+.unitSelectOption-selected:hover {
+  border-color: var(--flyout-selected);
+  color: var(--flyout-selected);
+  background: color-mix(in oklch, var(--primary-accent) 34%, black);
 }

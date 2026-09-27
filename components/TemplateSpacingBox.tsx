@@ -183,7 +183,7 @@ export default function TemplateSpacingBox({ container, onUpdate, marginDisabled
   const isLinked = linked[selected.layer];
 
   return (
-    <div className="flex flex-col gap-2 px-3 pt-0 pb-2">
+    <div className="flex flex-col gap-2 px-2 pt-0 pb-2">
       <div className="spacingBox">
         <div className={`spacingLayer spacingLayer-margin ${marginDisabled ? 'spacingLayer-disabled' : ''}`}>
           <span className="spacingLayerLabel">Margin</span>
@@ -208,8 +208,8 @@ export default function TemplateSpacingBox({ container, onUpdate, marginDisabled
         </div>
       </div>
 
-      <div className="flex items-center justify-end gap-1">
-        <span className="text-[10px] font-semibold tracking-[0.04em] text-[var(--secondary-tree-menu-header-title)]">
+      <div className="flex items-center gap-1">
+        <span className="text-[10px] font-semibold tracking-[0.04em] text-[var(--text-strong)]">
           {capitalize(selected.layer)} · {isLinked ? 'All sides' : capitalize(selected.side)}
         </span>
         <HoverHint hint={LAYER_HINTS[selected.layer]}>
@@ -226,7 +226,7 @@ export default function TemplateSpacingBox({ container, onUpdate, marginDisabled
           value={Math.min(current.num, sliderMax)}
           onChange={(e) => setSide(selected.layer, selected.side, parseInt(e.target.value, 10), current.unit)}
           aria-label={`${capitalize(selected.layer)} ${isLinked ? 'all sides' : selected.side}`}
-          className="min-w-0 flex-1 h-1.5 rounded-full cursor-pointer accent-[var(--secondary-accent)] bg-black/40"
+          className="min-w-0 flex-1 h-1.5 rounded-full cursor-pointer accent-[var(--flyout-selected)] bg-black/40"
         />
         <UnitSelect
           attached={false}

@@ -1,6 +1,6 @@
 'use client';
 
-import { PencilIcon, EyeIcon, UndoIcon, RedoIcon, SaveIcon } from '@/components/icons/LayoutIcons';
+import { PencilIcon, EyeIcon, UndoIcon, RedoIcon, SaveIcon, HelpCircleIcon } from '@/components/icons/LayoutIcons';
 import { PreviewWidthPicker, ZoomControls } from '@/components/CanvasViewControls';
 import {
   activeBtn,
@@ -11,12 +11,25 @@ import {
   ghostBtn,
   idleBtn,
 } from '@/components/editorBarStyles';
+import HoverHint, { HintRef, type HintContent } from '@/components/HoverHint';
 
 /* ==========================================================================
    Top row of the template editor bar.
    Left: template icon + name. Center: Edit / Preview toggle, then Width / Fit (both apply
    universally, unlike the second row's container-specific tools). Right: Undo / Redo, then Save.
    ========================================================================== */
+
+const VIEW_HINT: HintContent = {
+  title: 'View',
+  settings: [
+    { name: 'Edit', icon: <PencilIcon className="w-2.5 h-2.5" />, text: 'Build the layout: select, drag, resize and configure containers and fields.' },
+    { name: 'Preview', icon: <EyeIcon className="w-2.5 h-2.5" />, text: 'See the template rendered with a live item’s real data, as it will actually look.' },
+  ],
+  notes: [
+    { kind: 'tip', text: <>Switch to <HintRef icon={<EyeIcon className="w-2.5 h-2.5" />}>Preview</HintRef> to check spacing, alignment and content overflow before saving.</> },
+    { kind: 'caution', text: <>Selecting and editing containers only works in <HintRef icon={<PencilIcon className="w-2.5 h-2.5" />}>Edit</HintRef>.</> },
+  ],
+};
 
 const iconOnlyBtn = `w-[26px] ${barControlHeight} rounded-md border transition flex items-center justify-center shrink-0`;
 const divider = 'h-4 w-px bg-[color-mix(in_oklch,var(--secondary-accent)_40%,transparent)] shrink-0 mx-0.5';
@@ -65,7 +78,12 @@ export default function TemplateEditorBarTop({
       {/* A fixed gap from the name (not one derived from matching column widths, which forced this
           group's distance from each neighbor to track however wide that neighbor happened to be). */}
       <div className="flex items-center gap-2 ml-8 shrink-0">
-        <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--primary-tree-item-text)] mr-1">View:</span>
+        <span className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-[var(--primary-tree-item-text)] mr-1">
+          View:
+          <HoverHint hint={VIEW_HINT}>
+            <HelpCircleIcon className="w-3 h-3 text-[var(--secondary-tree-menu-header-title)]" />
+          </HoverHint>
+        </span>
         <div className={barToggleGroup} role="group" aria-label="Canvas mode">
           <button
             type="button"

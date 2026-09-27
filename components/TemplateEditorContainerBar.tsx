@@ -13,10 +13,12 @@ import {
   AutoSizingIcon,
   FitContentIcon,
   CustomSizingIcon,
+  HelpCircleIcon,
 } from '@/components/icons/LayoutIcons';
 import { GearIcon } from '@/components/icons/TreeIcons';
 import { TrashCanIcon } from '@/components/icons/PanelIcons';
 import { useDismissOnOutsideOrEscape } from '@/hooks/useDismissOnOutsideOrEscape';
+import HoverHint, { HintRef, type HintContent } from '@/components/HoverHint';
 import {
   activeBtn,
   barControlHeight,
@@ -36,6 +38,34 @@ import { measureContainerPx } from '@/lib/measureContainer';
    properties gear, delete — grouped and separated from the template-wide tools by living in their
    own panel entirely.
    ========================================================================== */
+
+/* Help bubbles for this bar's own Size/Layout controls -- narrower than the Properties flyout's own
+   Size/Layout hints (TemplateLayoutActionMenu.tsx), since the bar only ever shows Auto/Fit/Custom
+   and Row/Column, never Width/Min/Max or alignment; a tip on each points at the flyout for those. */
+const TOOLBAR_SIZE_HINT: HintContent = {
+  title: 'Size',
+  settings: [
+    { name: 'Auto', icon: <AutoSizingIcon className="w-2.5 h-2.5" />, text: 'Fills the space its parent gives it, and grows with its content.' },
+    { name: 'Fit', icon: <FitContentIcon className="w-2.5 h-2.5" />, text: 'Shrinks the container to fit its content. Available once it has content.' },
+    { name: 'Custom', icon: <CustomSizingIcon className="w-2.5 h-2.5" />, text: 'Lets you set your own width and height, and shows drag handles on the canvas.' },
+  ],
+  notes: [
+    { kind: 'caution', text: <><HintRef icon={<FitContentIcon className="w-2.5 h-2.5" />}>Fit</HintRef> and <HintRef icon={<CustomSizingIcon className="w-2.5 h-2.5" />}>Custom</HintRef> aren&apos;t available for the <em>Body</em>.</> },
+    { kind: 'tip', text: <>For <strong>Width</strong>, <strong>Min</strong>, <strong>Max</strong> and <strong>Stack when narrower than</strong>, open this container&apos;s own Properties (the gear icon).</> },
+  ],
+};
+
+const TOOLBAR_LAYOUT_HINT: HintContent = {
+  title: 'Layout',
+  settings: [
+    { name: 'Row', icon: <FlexRowIcon className="w-2.5 h-2.5" />, text: 'Lays child containers out side by side, from left to right.' },
+    { name: 'Column', icon: <FlexColumnIcon className="w-2.5 h-2.5" />, text: 'Stacks child containers on top of each other, from top to bottom.' },
+  ],
+  notes: [
+    { kind: 'caution', text: <>The <em>Body</em> always flows using <code>Column</code>, like a page in a book.</> },
+    { kind: 'tip', text: <>For child alignment (<strong>Align items</strong>, <strong>Justify content</strong>), open this container&apos;s own Properties (the gear icon).</> },
+  ],
+};
 
 const iconBtn =
   `px-1.5 ${barControlHeight} rounded-md border transition flex items-center gap-1 text-[11px] font-semibold`;
@@ -319,7 +349,12 @@ export default function TemplateEditorContainerBar({
           TemplateEditorBarTop for why), matching the template-wide toolbar's own section spacing. */}
       <div className="flex items-center gap-1.5 ml-8 shrink-0">
         {/* Sizing mode (Auto / Custom) */}
-        <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--primary-tree-item-text)] mr-1">Size:</span>
+        <span className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-[var(--primary-tree-item-text)] mr-1">
+          Size:
+          <HoverHint hint={TOOLBAR_SIZE_HINT}>
+            <HelpCircleIcon className="w-3 h-3 text-[var(--secondary-tree-menu-header-title)]" />
+          </HoverHint>
+        </span>
         <div
           className={barToggleGroup}
           role="group"
@@ -396,7 +431,12 @@ export default function TemplateEditorContainerBar({
         <div className={divider} aria-hidden="true" />
   
         {/* Flex direction: only two choices, so a pill toggle rather than a pulldown. */}
-        <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--primary-tree-item-text)] mr-1">Layout:</span>
+        <span className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-[var(--primary-tree-item-text)] mr-1">
+          Layout:
+          <HoverHint hint={TOOLBAR_LAYOUT_HINT}>
+            <HelpCircleIcon className="w-3 h-3 text-[var(--secondary-tree-menu-header-title)]" />
+          </HoverHint>
+        </span>
         <div className={barToggleGroup} role="group" aria-label="Flex direction">
           <button
             type="button"

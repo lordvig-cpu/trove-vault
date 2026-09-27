@@ -376,6 +376,14 @@
   width: 19.2rem;
 }
 
+/* White instead of the --flyout-selected yellow every other flyout's title uses -- scoped to
+   .hoverHint specifically (matching the compound .hoverHint.menuShellSplit selector's specificity
+   plus one, so it wins over .menuShellHead.menuShell .headerPill .headerTitle regardless of source
+   order) rather than changing that shared rule, which every other flyout's title still uses. */
+.hoverHint.menuShellSplit .menuShellHead .headerPill .headerTitle {
+  color: var(--text-strong);
+}
+
 .hoverHint .menuShellBody {
   max-height: none;
   /* Body text is the toolbar label color (the "SIZE:" / "LAYOUT:" labels), smaller than a flyout's
@@ -415,11 +423,11 @@
 
 .hoverHintList dd {
   margin: 0;
-  text-align: justify;
+  text-align: left;
 }
 
 /* Notes: one point per row, led by an icon for its kind (how to use / tip / caution) instead of a
-   bullet; the text is justified like the Settings descriptions. */
+   bullet. */
 .hoverHintNotes {
   display: flex;
   flex-direction: column;
@@ -434,7 +442,7 @@
   grid-template-columns: auto 1fr;
   gap: 0.4rem;
   align-items: start;
-  text-align: justify;
+  text-align: left;
 }
 
 .hoverHintNoteIcon {
@@ -554,7 +562,9 @@
    icon tile, the title (and a subtitle while collapsed), a help bubble and an up/down chevron. */
 .menuSection {
   margin-bottom: 0.5rem;
-  border: 1px solid var(--flyout-card-border);
+  /* Same border as the flyout shell itself (.menuShell), not the lighter --flyout-card-border these
+     cards used before, so a subsection reads as a smaller version of the same chassis. */
+  border: 1.5px solid var(--flyout-shell-border);
   border-radius: 0.75rem;
   /* Its own amber glow, strongest at the card's top edge and fading out by two-thirds of the way down,
      over a dark base. */
@@ -595,7 +605,7 @@
   border: 1px solid var(--flyout-tile-border);
   border-radius: 0.5rem;
   background: var(--flyout-tile-bg);
-  color: var(--secondary-accent);
+  color: var(--flyout-selected);
   transition: border-color 150ms ease, background-color 150ms ease;
 }
 
@@ -611,6 +621,15 @@
   line-height: 1.2;
 }
 
+/* The title and its hint icon sit inline, in normal flow -- the icon is a fixed distance after
+   whatever the title text's own width happens to be, not pinned to a fixed spot near the chevron
+   the way it used to be. */
+.menuSectionTitleRow {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+
 .menuSectionTitle {
   font-size: 0.8125rem;
   font-weight: 700;
@@ -622,18 +641,9 @@
   color: var(--text-muted);
 }
 
-/* Spacer the toggle reserves, and the hint laid over it: right edge = the toggle's 0.625rem side
-   padding + the 0.875rem chevron + a 0.625rem gap. */
-.menuSectionHintSlot {
-  width: 0.75rem;
-  flex-shrink: 0;
-}
-
 .menuSectionHint {
-  position: absolute;
-  top: 50%;
-  right: 2.125rem;
-  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
   color: var(--secondary-tree-menu-header-title);
 }
 
@@ -656,37 +666,27 @@
   box-shadow: inset 0 1px 0 var(--shadow-black-35);
 }
 
-/* Dark inputs, selects and segmented buttons inside a split flyout's body: a dark navy fill (a little blue in black) with a
-   thin light border (white on hover, light blue when focused), so they contrast with the all-amber
-   cards around them instead of adding more amber. Inputs that opt out (the Spacing box's borderless
-   side inputs) keep their own look. */
-.menuShellBody input[type='text']:not(.spacingInput),
-.menuShellBody select.unitSelect {
+/* Dark inputs and segmented buttons inside a split flyout's body: a dark navy fill (a little blue
+   in black) with a thin light border (white on hover, light blue when focused), so they contrast
+   with the all-amber cards around them instead of adding more amber. Inputs that opt out (the
+   Spacing box's borderless side inputs) keep their own look. UnitSelect (the px / % pulldown) uses
+   this same dark-navy scheme too, but defines it unconditionally in unitSelect.css instead of by
+   ancestry here -- its list is portaled to <body>, so it's never actually a descendant of
+   .menuShellBody for a rule like this to reach. */
+.menuShellBody input[type='text']:not(.spacingInput) {
   background: color-mix(in oklch, var(--primary-accent) 16%, black);
   border: 1px solid color-mix(in oklch, var(--text-strong) 24%, transparent);
   color: var(--text-strong);
 }
 
-/* The px / % pulldowns a touch lighter than the number boxes beside them. */
-.menuShellBody select.unitSelect {
-  background: color-mix(in oklch, var(--primary-accent) 26%, black);
-}
-
-.menuShellBody input[type='text']:not(.spacingInput):hover,
-.menuShellBody select.unitSelect:hover {
+.menuShellBody input[type='text']:not(.spacingInput):hover {
   border-color: color-mix(in oklch, var(--text-strong) 55%, transparent);
 }
 
-.menuShellBody input[type='text']:not(.spacingInput):focus,
-.menuShellBody select.unitSelect:focus {
+.menuShellBody input[type='text']:not(.spacingInput):focus {
   outline: none;
   border-color: color-mix(in oklch, var(--primary-accent) 35%, cyan);
   box-shadow: 0 0 0 1px color-mix(in oklch, var(--primary-accent) 35%, transparent);
-}
-
-.menuShellBody .unitSelect + svg {
-  color: var(--text-strong);
-  opacity: 0.7;
 }
 
 /* A toggle group (barToggleGroup) is the one .menuShellBody control that stays the same warm amber

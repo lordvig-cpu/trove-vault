@@ -73,6 +73,12 @@ export default function SeedColorPicker({ label, value, onChange, empty = false 
       {position && createPortal(
         <div
           ref={panel}
+          // When this trigger sits inside a TreeSubMenu flyout, that flyout's own outside-click
+          // dismissal (useTreeActionMenu.ts) checks for `[data-tree-menu]` to decide whether a click
+          // is "still inside the menu". This panel is portaled to <body>, so without this attribute
+          // it's outside the flyout's own DOM subtree, and picking a color read as a click outside
+          // the flyout and closed the whole flyout along with the color popover.
+          data-tree-menu
           id={id}
           role="dialog"
           aria-label={`${label} color`}

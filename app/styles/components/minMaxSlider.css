@@ -22,7 +22,7 @@
 }
 
 .minMaxFill {
-  background: color-mix(in oklch, var(--secondary-accent) 70%, transparent);
+  background: color-mix(in oklch, var(--flyout-selected) 70%, transparent);
 }
 
 .minMaxSlider input[type='range'] {
@@ -55,8 +55,8 @@
   height: 0.875rem;
   margin-top: 0.1875rem;
   border-radius: 9999px;
-  border: 2px solid color-mix(in oklch, black 55%, var(--secondary-accent));
-  background: var(--secondary-accent);
+  border: 2px solid color-mix(in oklch, black 55%, var(--flyout-selected));
+  background: var(--flyout-selected);
   cursor: grab;
 }
 
@@ -66,8 +66,8 @@
   height: 0.875rem;
   box-sizing: border-box;
   border-radius: 9999px;
-  border: 2px solid color-mix(in oklch, black 55%, var(--secondary-accent));
-  background: var(--secondary-accent);
+  border: 2px solid color-mix(in oklch, black 55%, var(--flyout-selected));
+  background: var(--flyout-selected);
   cursor: grab;
 }
 

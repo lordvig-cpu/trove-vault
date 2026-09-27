@@ -15,9 +15,11 @@ export const idleBtn =
 export const activeBtn =
   'bg-[linear-gradient(180deg,var(--flyout-tab-active-top),var(--flyout-tab-active-bottom))] border-[var(--flyout-selected)] text-[var(--flyout-selected)] shadow-[inset_0_1px_0_color-mix(in_oklch,white_22%,transparent)]';
 
-/** Same yellow as activeBtn's text, for icons elsewhere (e.g. the Layout tree's Body/Row/
-    Column glyphs) that should read as "this is a selected-style control" without the full pill. */
-export const activeIconColor = 'text-[var(--flyout-selected)]';
+/** The plain secondary OKLCH accent (not activeBtn's yellow), for icons elsewhere (e.g. the Layout
+    tree's Body/Row/Column glyphs) that should read as "this is a selected-style control" without
+    the full pill -- the tree keeps the amber family throughout rather than picking up the toolbar's
+    yellow. */
+export const activeIconColor = 'text-[var(--secondary-accent)]';
 
 /** Borderless menu row / icon button (zoom, sub-panel options). */
 export const ghostBtn =
