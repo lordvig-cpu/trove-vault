@@ -187,27 +187,31 @@ commit whenever you add, remove, split or rename a file — it goes stale otherw
   plain full-width rows (`ActionMenuItem`, no borders).
   Inputs, pulldowns and buttons in the Properties tab share the top toolbar's control height
   (`barControlHeight`, 26px) so rows of mixed controls line up.
-  The title bar and tabs are a narrow "head" card that keeps its size on both tabs, and the body is a
-  second card under it (`TreeActionMenu`'s `splitBody`) that can be wider; the two share one border
-  line so they read as an L-shaped panel. The Properties body is a wider (`menuShellXWide`) two-column layout (`.menuColumns`, split by a
-  vertical rule matching the sub-headings' shadowed line): Size and Layout on the left, Spacing on the
-  right. Each column is a stack of collapsible `ActionMenuSection`s: a shadowed-rule heading with a
-  chevron, whose rule doubles as the horizontal bar between sections. Sections are controlled --
+  The title bar and tabs are a "head" card and the body is a second card under it
+  (`TreeActionMenu`'s `splitBody`); the two share one border line. On the Actions tab both are the
+  14rem default; on Properties both take `menuShellXWide` (17.5rem), so the title bar and tab band
+  stretch while the tab buttons keep their size, centered. The Properties body is one column of
+  collapsible `ActionMenuSection` cards: an icon tile (`icons/SectionIcons.tsx`), the title with a
+  one-line subtitle while collapsed, a `?` bubble and an up/down chevron, in an amber-bordered card
+  over a dark fill. Inside a split flyout's body, inputs, selects and segmented buttons are themed
+  dark (dark navy fill, thin light border, white on hover, light blue on focus) by the
+  `.menuShellBody` rules in `TreeActionMenu.css` -- deliberately not amber, for contrast with the cards
+  around them; the Spacing box's borderless side inputs opt out. Sections are controlled --
   the flyout component owns the open/closed and active-tab state, so they survive the flyout
   closing and reopening. Pure Actions-only menus (Item/Collection/Category/Template Actions in
   `TreeItemActionMenu.tsx`/`TreeCollectionActionMenu.tsx`/`TreeTemplateActionMenu.tsx`) have no
   tabs and use the same `ActionIcon` as their title icon, rather than a per-type emoji, since the
   title already says "Actions". The Body and standard-container flyouts (`TemplateLayoutActionMenu.tsx`) both use
   it. A standard container's Actions tab is Add Before / Inside / After, Split into 2 Columns /
-  Rows, and Delete Container (always last); its Properties tab has Container Name and Size (Auto/Fit/Custom,
-  Width, a Min/Max width slider, Height, a Min/Max height slider) on the left, and Spacing, then
-  Layout (Row/Column, then two icon-button groups for alignment) on the right (the Body's Layout,
-  a locked toggle, stays on the left under Size). Deliberately absent: Child Item Gap (the `gap`
+  Rows, and Delete Container (always last); its Properties tab is Container Name (a plain field), then the cards Size
+  (Auto/Fit/Custom, Width, a Min/Max width slider, Height, a Min/Max height slider), Spacing, Layout
+  (Row/Column, then two icon-button groups for alignment) and Appearance. The Body's is Size, Layout
+  (a locked toggle) and Spacing. Deliberately absent: Child Item Gap (the `gap`
   value itself is unchanged, it just has no UI), Wrap Children and Card Frame Style (cards are
   expected to become draggable components rather than a per-container option), a Select Parent
   action (click the parent instead), and Maximum Content Width (Body-only). The Component Properties flyout is the one still on its original single mixed panel.
 - A standard container's look is set in the flyout's Appearance section (`TemplateAppearanceControls.tsx`,
-  right column under Layout): `background`, `borderWidth` / `borderColor` / `borderRadius`, and
+  the last card): `background`, `borderWidth` / `borderColor` / `borderRadius`, and
   `shadowY` / `shadowBlur` / `shadowColor` on the node. Colors are `#RRGGBB` picked with the footer's
   `SeedColorPicker` (which has an `empty` state for "none") and belong to the template -- they are user
   data, so they don't follow the app's light/dark theme, and are the one place a literal color is

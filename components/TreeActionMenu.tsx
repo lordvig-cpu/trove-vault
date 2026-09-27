@@ -137,7 +137,7 @@ export default function TreeActionMenu({
 
       {splitBody ? (
         <>
-          <div className="menuShell menuShellHead">
+          <div className={`menuShell menuShellHead ${className || ''}`}>
             <div className="innerContent">
               {header}
               {subheader && <div className="menuSubheader">{subheader}</div>}
@@ -272,20 +272,24 @@ export function ActionMenuTabs<T extends string>({
   );
 }
 
-// A collapsible group of controls: a shadowed-rule heading with a chevron, and a body that shows
-// only while `isOpen`. Controlled (the caller owns open/closed) so the state survives the menu
-// closing and reopening. Sections stack directly, the heading's rule doubling as the horizontal
-// bar between them. An optional `hint` adds a `?` beside the label that opens a HoverHint popup;
-// it's a sibling of the toggle button (not inside it -- no interactive content in a button, and
-// clicking it shouldn't collapse the section), laid over a spacer the button reserves for it.
+// A collapsible group of controls, drawn as a card: an icon tile, the title (with a one-line subtitle
+// while collapsed), a `?` help bubble and an up/down chevron, over a body that shows only while
+// `isOpen`. Controlled (the caller owns open/closed) so the state survives the menu closing and
+// reopening. The `?` (`hint`) is a sibling of the toggle button, not inside it -- no interactive
+// content in a button, and clicking it shouldn't collapse the section -- laid over a spacer the
+// button reserves for it.
 export function ActionMenuSection({
   label,
+  icon,
+  subtitle,
   hint,
   isOpen,
   onToggle,
   children,
 }: {
   label: string;
+  icon?: React.ReactNode;
+  subtitle?: string;
   hint?: HintContent;
   isOpen: boolean;
   onToggle: () => void;
@@ -302,8 +306,11 @@ export function ActionMenuSection({
           aria-controls={bodyId}
           className="menuSectionToggle"
         >
-          <span className="menuSectionRule" aria-hidden="true" />
-          <span className="menuSectionLabel">{label}</span>
+          {icon && <span className="menuSectionIconTile">{icon}</span>}
+          <span className="menuSectionText">
+            <span className="menuSectionTitle">{label}</span>
+            {!isOpen && subtitle && <span className="menuSectionSubtitle">{subtitle}</span>}
+          </span>
           {hint && <span className="menuSectionHintSlot" aria-hidden="true" />}
           <ChevronDownIcon className={`menuSectionChevron ${isOpen ? 'menuSectionChevron-open' : ''}`} />
         </button>
@@ -315,7 +322,11 @@ export function ActionMenuSection({
           </span>
         )}
       </div>
-      {isOpen && <div id={bodyId}>{children}</div>}
+      {isOpen && (
+        <div id={bodyId} className="menuSectionBody">
+          {children}
+        </div>
+      )}
     </div>
   );
 }

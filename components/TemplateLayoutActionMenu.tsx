@@ -23,6 +23,12 @@ import TemplateContainerSizing from '@/components/TemplateContainerSizing';
 import { activeBtn, barToggleBtn, barToggleGroup, disabledBtn, ghostBtn } from '@/components/editorBarStyles';
 import { NEW_CONTAINER_OPTIONS } from '@/lib/layoutTree';
 import { AlignItemsIcon, JustifyContentIcon } from '@/components/icons/AlignIcons';
+import {
+  SectionAppearanceIcon,
+  SectionLayoutIcon,
+  SectionSizeIcon,
+  SectionSpacingIcon,
+} from '@/components/icons/SectionIcons';
 import { measureContainerPx } from '@/lib/measureContainer';
 import TemplateSpacingBox from '@/components/TemplateSpacingBox';
 import TemplateAppearanceControls from '@/components/TemplateAppearanceControls';
@@ -83,9 +89,9 @@ const SPACING_HINT: HintContent = {
   ],
 };
 
-// menuShellXWide (31.5rem = 504px) minus the Body flyout's normal 14rem (224px): how much further left a
+// menuShellXWide (17.5rem = 280px) minus the flyout's normal 14rem (224px): how much further left a
 // right-docked flyout must start so the wider Properties tab still ends at the panel seam.
-const PROPERTIES_EXTRA_WIDTH_PX = 280;
+const PROPERTIES_EXTRA_WIDTH_PX = 56;
 
 /**
  * Help for one alignment group, worded for the container's direction: "Align items" runs across the
@@ -284,7 +290,7 @@ export function TemplateContainerActionMenu({
   // Body flyout's Actions / Properties tabs and which Properties sections are expanded. Kept here
   // (not inside the menu shell) so they survive the flyout closing and reopening.
   const [activeTab, setActiveTab] = useState<'actions' | 'properties'>('actions');
-  const [openSections, setOpenSections] = useState({ name: true, size: true, layout: true, spacing: true, appearance: true });
+  const [openSections, setOpenSections] = useState({ size: true, layout: true, spacing: true, appearance: true });
   const toggleSection = (key: keyof typeof openSections) =>
     setOpenSections((prev) => ({ ...prev, [key]: !prev[key] }));
 
@@ -395,9 +401,8 @@ export function TemplateContainerActionMenu({
         )}
 
         {activeTab === 'properties' && (
-          <div className="menuColumns">
-            <div className="menuColumn">
-                <ActionMenuSection label="Size" hint={BODY_SIZE_HINT} isOpen={openSections.size} onToggle={() => toggleSection('size')}>
+          <>
+                <ActionMenuSection label="Size" icon={<SectionSizeIcon />} subtitle="Auto and content width" hint={BODY_SIZE_HINT} isOpen={openSections.size} onToggle={() => toggleSection('size')}>
                   <div className="px-3 pt-0 pb-2">
                     <div className={`${barToggleGroup} w-full`} role="group" aria-label="Sizing mode">
                       <button
@@ -427,7 +432,7 @@ export function TemplateContainerActionMenu({
                   />
                 </ActionMenuSection>
 
-                <ActionMenuSection label="Layout" hint={BODY_LAYOUT_HINT} isOpen={openSections.layout} onToggle={() => toggleSection('layout')}>
+                <ActionMenuSection label="Layout" icon={<SectionLayoutIcon />} subtitle="Direction" hint={BODY_LAYOUT_HINT} isOpen={openSections.layout} onToggle={() => toggleSection('layout')}>
                   <div className="px-3 pt-0 pb-2">
                     <div className={`${barToggleGroup} w-full`} role="group" aria-label="Flex direction">
                       <button
@@ -450,20 +455,15 @@ export function TemplateContainerActionMenu({
                     </div>
                   </div>
                 </ActionMenuSection>
-            </div>
 
-            <div className="menuColumnDivider" aria-hidden="true" />
-
-            <div className="menuColumn">
-              <ActionMenuSection label="Spacing" hint={SPACING_HINT} isOpen={openSections.spacing} onToggle={() => toggleSection('spacing')}>
+              <ActionMenuSection label="Spacing" icon={<SectionSpacingIcon />} subtitle="Padding" hint={SPACING_HINT} isOpen={openSections.spacing} onToggle={() => toggleSection('spacing')}>
                 <TemplateSpacingBox
                   container={container}
                   onUpdate={(partial) => onUpdateContainer?.(container.id, partial)}
                   marginDisabled
                 />
               </ActionMenuSection>
-            </div>
-          </div>
+          </>
         )}
       </TreeActionMenu>
     );
@@ -586,15 +586,17 @@ export function TemplateContainerActionMenu({
       )}
 
       {activeTab === 'properties' && (
-        <div className="menuColumns">
-          <div className="menuColumn">
-            <ActionMenuSection label="Container Name" isOpen={openSections.name} onToggle={() => toggleSection('name')}>
+        <>
+            <div className="flex flex-col gap-1 px-1 pb-2">
+              <span className="text-[10px] font-semibold tracking-[0.04em] text-[var(--secondary-tree-menu-header-title)]">
+                Container Name
+              </span>
               <form
                 onSubmit={(e) => {
                   e.preventDefault();
                   handleLabelSave();
                 }}
-                className="flex flex-col gap-1.5 px-3 pt-0 pb-2"
+                className="flex flex-col gap-1.5"
               >
                 <input
                   type="text"
@@ -621,9 +623,9 @@ export function TemplateContainerActionMenu({
                   </div>
                 )}
               </form>
-            </ActionMenuSection>
+            </div>
 
-            <ActionMenuSection label="Size" hint={CONTAINER_SIZE_HINT} isOpen={openSections.size} onToggle={() => toggleSection('size')}>
+            <ActionMenuSection label="Size" icon={<SectionSizeIcon />} subtitle="Width, height and limits" hint={CONTAINER_SIZE_HINT} isOpen={openSections.size} onToggle={() => toggleSection('size')}>
               <div className="px-3 pt-0 pb-2">
                 <div className={`${barToggleGroup} w-full`} role="group" aria-label="Sizing mode">
                   <button
@@ -678,19 +680,14 @@ export function TemplateContainerActionMenu({
               />
             </ActionMenuSection>
 
-          </div>
-
-          <div className="menuColumnDivider" aria-hidden="true" />
-
-          <div className="menuColumn">
-            <ActionMenuSection label="Spacing" hint={CONTAINER_SPACING_HINT} isOpen={openSections.spacing} onToggle={() => toggleSection('spacing')}>
+            <ActionMenuSection label="Spacing" icon={<SectionSpacingIcon />} subtitle="Margin and padding" hint={CONTAINER_SPACING_HINT} isOpen={openSections.spacing} onToggle={() => toggleSection('spacing')}>
               <TemplateSpacingBox
                 container={container}
                 onUpdate={(partial) => onUpdateContainer?.(container.id, partial)}
               />
             </ActionMenuSection>
 
-            <ActionMenuSection label="Layout" hint={CONTAINER_LAYOUT_HINT} isOpen={openSections.layout} onToggle={() => toggleSection('layout')}>
+            <ActionMenuSection label="Layout" icon={<SectionLayoutIcon />} subtitle="Direction and alignment" hint={CONTAINER_LAYOUT_HINT} isOpen={openSections.layout} onToggle={() => toggleSection('layout')}>
               <div className="flex flex-col gap-2 px-3 pt-0 pb-2">
                 <div className={`${barToggleGroup} w-full`} role="group" aria-label="Flex direction">
                   <button
@@ -763,14 +760,13 @@ export function TemplateContainerActionMenu({
               </div>
             </ActionMenuSection>
 
-            <ActionMenuSection label="Appearance" isOpen={openSections.appearance} onToggle={() => toggleSection('appearance')}>
+            <ActionMenuSection label="Appearance" icon={<SectionAppearanceIcon />} subtitle="Background and styling" isOpen={openSections.appearance} onToggle={() => toggleSection('appearance')}>
               <TemplateAppearanceControls
                 container={container}
                 onUpdate={(partial) => onUpdateContainer?.(container.id, partial)}
               />
             </ActionMenuSection>
-          </div>
-        </div>
+        </>
       )}
     </TreeActionMenu>
   );
