@@ -3,6 +3,7 @@
 import React, { useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { usePresence } from '@/hooks/usePresence';
+import '@/app/styles/components/TreeSubMenu.css';
 import '@/app/styles/components/TreeSearchMenu.css';
 import { useUIPreferences } from '@/context/UIPreferencesContext';
 
@@ -13,6 +14,12 @@ interface TreeSearchMenuProps {
   left: number;
   title?: string;
   titleIcon?: React.ReactNode;
+  /**
+   * Rendered inside the head card's dark tab-band strip, in the same spot a gear-icon flyout's
+   * ActionMenuTabs would sit -- there's nothing to switch between here, so it holds the filtered
+   * item-type count instead of tab buttons.
+   */
+  subheader?: React.ReactNode;
   isPinned?: boolean;
   isFlyout?: boolean;
   triggerRef?: React.RefObject<HTMLElement | null>;
@@ -27,6 +34,7 @@ export default function TreeSearchMenu({
   left,
   title = 'Advanced Search',
   titleIcon,
+  subheader,
   isPinned = true,
   isFlyout = false,
   triggerRef,
@@ -38,9 +46,9 @@ export default function TreeSearchMenu({
   const { mounted, renderMenu, isClosing } = usePresence(isOpen, 500, animationsEnabled);
   const menuRef = useRef<HTMLDivElement>(null);
 
-  /* ------------------------------------------------------------------------ 
-  2. CLICK-OUTSIDE & ESCAPE DISMISSAL 
-  Excludes clicks on the trigger button to prevent the re-open race condition 
+  /* ------------------------------------------------------------------------
+  2. CLICK-OUTSIDE & ESCAPE DISMISSAL
+  Excludes clicks on the trigger button to prevent the re-open race condition
   ------------------------------------------------------------------------ */
   useEffect(() => {
     if (!isOpen || isClosing) return;
@@ -48,7 +56,7 @@ export default function TreeSearchMenu({
     const handleClickOutside = (e: MouseEvent) => {
       const targetNode = e.target as Node;
       if (
-        menuRef.current && 
+        menuRef.current &&
         !menuRef.current.contains(targetNode) &&
         (!triggerRef?.current || !triggerRef.current.contains(targetNode))
       ) {
@@ -79,14 +87,14 @@ export default function TreeSearchMenu({
   if (!renderMenu || !mounted || typeof document === 'undefined') return null;
 
   const animationClass = !animationsEnabled
-    ? 'searchMenuNoAnimation'
+    ? 'menuNoAnimation'
     : effectivePosition === 'right'
     ? isClosing
-      ? 'searchMenuSlideOutRight'
-      : 'searchMenuSlideInRight'
+      ? 'menuSlideOutRight'
+      : 'menuSlideInRight'
     : isClosing
-    ? 'searchMenuSlideOut'
-    : 'searchMenuSlideIn';
+    ? 'menuSlideOut'
+    : 'menuSlideIn';
 
   // Menu coordinates already account for panel width and docking side
   const adjustedLeft = left;
@@ -103,18 +111,22 @@ export default function TreeSearchMenu({
         margin: 0,
         zIndex: isFlyout ? 70 : isPinned ? 35 : 45,
       }}
-      className={`searchMenuShell ${animationClass}`}
+      className={`searchMenuShell menuShellSplit ${effectivePosition === 'right' ? 'menuShellSplit-right' : ''} ${animationClass}`}
     >
-      <div className="searchMenuInner">
-        <div className="searchMenuHeaderPill">
-          <span className="searchMenuHeaderTitle">{title}</span>
-          <span className="searchMenuHeaderIcon flex items-center justify-center">
-            {titleIcon}
-          </span>
+      <div className="menuShell menuShellHead menuShellXWide">
+        <div className="innerContent">
+          <div className="headerPill">
+            <span className="headerTitle">{title}</span>
+            <span className="headerIcon">{titleIcon}</span>
+          </div>
+          <div className="menuSubheader">
+            <div className="menuTabs items-center">{subheader}</div>
+          </div>
         </div>
-
-        <div className="searchMenuBody gap-1.5 mt-1">
-          {children}
+      </div>
+      <div className="menuShell menuShellBody menuShellXWide">
+        <div className="innerContent">
+          <div className="childrenContainer">{children}</div>
         </div>
       </div>
     </div>,

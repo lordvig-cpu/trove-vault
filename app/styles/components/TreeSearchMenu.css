@@ -1,171 +1,103 @@
 /* ==========================================================================
    TREE ADVANCED SEARCH DROPDOWN MENU
-   Dropdown portal anchored below the PrimarySidePanel search header.
+   Dropdown portal anchored below the PrimarySidePanel search header. Its shell (the split head
+   card + body card, header pill, tab-band strip) is TreeSubMenu.css's own -- TreeSearchMenu.tsx
+   renders the same menuShellSplit/menuShell/menuShellHead/menuShellBody/headerPill/menuTabs
+   markup a gear-icon flyout does, just with the tab band's buttons swapped out for the filtered
+   item-type count. This file only adds the handful of rules specific to that content: the
+   scrollbar treatment for its scrolling lists, and the yellow selected-state accent for its
+   checkboxes -- scoped under `.searchMenuShell` (a bare marker class on the portal root, carrying
+   no layout of its own) so the same tree-filter-* classes used outside a flyout (docked panel
+   filter chips) keep the plain amber they've always had.
    ========================================================================== */
 
-/* Smooth horizontal slide-in matching TreeActionMenu (Left dock) */
-@keyframes searchMenuSlideIn {
-    0% {
-        opacity: 0;
-        transform: translateX(-300px);
-    }
-
-    100% {
-        opacity: 1;
-        transform: translateX(0);
-    }
-}
-
-/* Exit Animation: Slides left back behind panel (Left dock) */
-@keyframes searchMenuSlideOut {
-    0% {
-        opacity: 1;
-        transform: translateX(0);
-    }
-
-    100% {
-        opacity: 0;
-        transform: translateX(-300px);
-    }
-}
-
-/* Smooth horizontal slide-in matching TreeActionMenu (Right dock) */
-@keyframes searchMenuSlideInRight {
-    0% {
-        opacity: 0;
-        transform: translateX(300px);
-    }
-
-    100% {
-        opacity: 1;
-        transform: translateX(0);
-    }
-}
-
-/* Exit Animation: Slides right back behind panel (Right dock) */
-@keyframes searchMenuSlideOutRight {
-    0% {
-        opacity: 1;
-        transform: translateX(0);
-    }
-
-    100% {
-        opacity: 0;
-        transform: translateX(300px);
-    }
-}
-
-.searchMenuSlideIn {
-    animation: searchMenuSlideIn 800ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-.searchMenuSlideOut {
-    animation: searchMenuSlideOut 500ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-.searchMenuSlideInRight {
-    animation: searchMenuSlideInRight 800ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-.searchMenuSlideOutRight {
-    animation: searchMenuSlideOutRight 500ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-.searchMenuNoAnimation {
-    animation: none !important;
-    transform: none !important;
-    transition: none !important;
-}
-
-/* --------------------------------------------------------------------------
-   Outer Search Menu Shell
-   -------------------------------------------------------------------------- */
-.searchMenuShell {
-    width: 17.5rem;
-    /* ~280px to comfortably fit selects & labels */
-    background: var(--flyout-shell-bg);
-    border: 1.5px solid var(--flyout-shell-border);
-    box-shadow: var(--flyout-shell-glow);
-    border-radius: 0.75rem;
-    display: flex;
-    flex-direction: column;
-    padding-top: 0.375rem;
-    padding-bottom: 0.375rem;
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    pointer-events: auto;
-    position: relative;
-}
-
-/* Inner content clearance (symmetrical horizontal padding) */
-.searchMenuInner {
-    position: relative;
-    z-index: 10;
-    display: flex;
-    flex-direction: column;
-    padding-left: 0.5rem;
-    padding-right: 0.5rem;
-}
-
-/* Header pill banner */
-.searchMenuHeaderPill {
-    padding-left: 0.75rem;
-    padding-right: 0.75rem;
-    padding-top: 0.0625rem;
-    padding-bottom: 0.0625rem;
-    border: 0;
-    border-bottom: 1px solid var(--flyout-card-border);
-    margin-inline: -0.5rem;
-    padding-inline: 1.25rem;
-    margin-bottom: 0.375rem;
-    display: flex;
-    align-items: center;
+/* .menuShellHead.menuShellXWide .menuTabs (TreeSubMenu.css) centers its content -- built for
+   centering a short row of tab buttons within a wider head. The search menu's band holds a
+   label/count pair instead, which should read like the rest of the app's label-left,
+   value-right rows, so this scoped override (one class more specific, so it wins regardless of
+   source order) puts them back at the band's opposite edges. */
+.searchMenuShell .menuShellHead.menuShellXWide .menuTabs {
     justify-content: space-between;
-    background: none;
 }
 
-.searchMenuHeaderTitle {
-    font-size: 10.5px;
-    font-weight: 700;
-    color: var(--flyout-title);
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
+/* TreeSubMenu.css's default .menuTabs padding-inline (0.875rem) is tuned for a row of bordered
+   tab buttons, which have their own internal padding buffering them from the card's rounded
+   corner. Our plain icon+label content has no such buffer, so at that inset its icon reads as
+   nearly touching (visually overlapping) the corner -- a little extra inset clears it. */
+.searchMenuShell .menuShellHead .menuTabs {
+    padding-inline: 1.125rem;
 }
 
-.searchMenuHeaderIcon {
-    font-size: 11px;
-    color: var(--text-strong);
+/* The Collections filter list's row cards (CollectionFilterTree's .tree-filter-root-card) use
+   the app's primary blue elsewhere (the docked sidebar panel) -- inside the flyout they should
+   read as smaller versions of the same amber chassis as the Properties tab's Size/Spacing/Layout
+   cards (TreeSubMenu.css's .menuSection), not a different, blue family. */
+.searchMenuShell .tree-filter-root-card {
+    border: 1.5px solid var(--flyout-shell-border);
+    background:
+        linear-gradient(
+            180deg,
+            var(--flyout-card-glow) 0%,
+            var(--flyout-card-glow-fade) 40%,
+            transparent 75%
+        ),
+        var(--flyout-card-base);
+    box-shadow: none;
 }
 
-.searchMenuBody {
-    display: flex;
-    flex-direction: column;
-}
-
-/* Standardized inputs & selects inside Search Menu */
-.searchMenuShell input[type="text"],
-.searchMenuShell input[type="search"],
-.searchMenuShell select {
-    background-color: var(--secondary-tree-menu-input-bg);
-    border: 1px solid var(--primary-border-input);
-    border-radius: 0.375rem;
-    padding: 0.25rem 0.5rem;
-    font-size: 0.75rem;
-    line-height: 1rem;
-    color: var(--secondary-accent);
-    outline: none;
-    transition: border-color 150ms ease, box-shadow 150ms ease;
-}
-
-.searchMenuShell input[type="text"]:hover,
-.searchMenuShell input[type="search"]:hover,
-.searchMenuShell select:hover {
-    border-color: var(--primary-border-input-hover);
-}
-
-.searchMenuShell input[type="text"]:focus,
-.searchMenuShell input[type="search"]:focus,
-.searchMenuShell select:focus {
+.searchMenuShell .tree-filter-root-card:hover {
     border-color: var(--secondary-accent);
-    box-shadow: var(--secondary-focus-ring);
+    background:
+        linear-gradient(
+            180deg,
+            var(--flyout-card-glow) 0%,
+            var(--flyout-card-glow-fade) 55%,
+            transparent 85%
+        ),
+        var(--flyout-card-base);
+    box-shadow: none;
+}
+
+/* TreeSubMenu.css only drops the body card's own top border when the head's tab band is truly
+   `:empty` (no tabs at all) -- ours always has content (the item-type count), so that seam would
+   otherwise double up: the tab band's own bottom border/shadow, plus the body card's plain top
+   border right underneath it. Same fix, just not conditioned on emptiness, since a search menu's
+   band never has real tab buttons either way. */
+.searchMenuShell .menuShellHead + .menuShellBody {
+    border-top: 0;
+}
+
+/* Amber scrollbars for everything that scrolls inside the menu, matching TreeSubMenu's
+   .childrenContainer treatment (in place of the app's default blue -- globals.css). */
+.searchMenuShell .searchMenuScrollList,
+.searchMenuShell .tree-filter-shell {
+    scrollbar-width: thin;
+    scrollbar-color: color-mix(in oklch, var(--secondary-accent) 70%, transparent) transparent;
+}
+
+.searchMenuShell .searchMenuScrollList::-webkit-scrollbar-thumb,
+.searchMenuShell .tree-filter-shell::-webkit-scrollbar-thumb {
+    background-color: color-mix(in oklch, var(--secondary-accent) 70%, transparent);
+}
+
+.searchMenuShell .searchMenuScrollList::-webkit-scrollbar-thumb:hover,
+.searchMenuShell .tree-filter-shell::-webkit-scrollbar-thumb:hover {
+    background-color: var(--secondary-accent);
+}
+
+/* Checked/selected filter rows take the same --flyout-selected yellow as a flyout's header
+   text/icon and active tab, matching the app-wide selected/set-value convention (CLAUDE.md
+   "Styling states"). */
+.searchMenuShell .tree-filter-row-selected {
+    color: var(--flyout-selected);
+}
+
+.searchMenuShell .tree-filter-checkbox {
+    color: var(--flyout-selected);
+    accent-color: var(--flyout-selected);
+}
+
+.searchMenuShell .tree-filter-checkbox:focus {
+    border-color: var(--flyout-selected);
+    box-shadow: 0 0 0 2px color-mix(in oklch, var(--flyout-selected) 35%, transparent);
 }

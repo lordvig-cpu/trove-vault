@@ -117,6 +117,49 @@ export default function SearchAndFilterSection({
     onSearchChange('');
   };
 
+  // The head card's tab-band strip has nothing to switch between here, so it shows the filtered
+  // item-type count instead of tabs (see TreeSearchMenu's `subheader`).
+  const advancedSearchSubheader = isContent ? (
+    <>
+      <span className="flex items-center gap-2 min-w-0">
+        <span className="w-4 shrink-0 flex items-center justify-center text-sm">🎛️</span>
+        <span className="text-xs font-medium tree-panel-primary truncate">Field Type(s):</span>
+      </span>
+      <span
+        title={`${FIELD_TYPE_METAS.length} field types available`}
+        className="tree-filter-option px-2 py-0.5 rounded-md text-[10px] font-mono font-bold shrink-0 select-none"
+      >
+        {FIELD_TYPE_METAS.length}
+      </span>
+    </>
+  ) : isLayout ? (
+    <>
+      <span className="flex items-center gap-2 min-w-0">
+        <span className="w-4 shrink-0 flex items-center justify-center text-sm">🎛️</span>
+        <span className="text-xs font-medium tree-panel-primary truncate">Show:</span>
+      </span>
+      <span
+        title={`${HIERARCHY_FILTER_METAS.length} kinds of item`}
+        className="tree-filter-option px-2 py-0.5 rounded-md text-[10px] font-mono font-bold shrink-0 select-none"
+      >
+        {HIERARCHY_FILTER_METAS.length}
+      </span>
+    </>
+  ) : (
+    <>
+      <span className="flex items-center gap-2 min-w-0">
+        <span className="w-4 shrink-0 flex items-center justify-center text-sm">📁</span>
+        <span className="text-xs font-medium tree-panel-primary truncate">Collection(s):</span>
+      </span>
+      <span
+        title={`${collections.length} ${collections.length === 1 ? 'collection' : 'collections'}`}
+        className="tree-filter-option px-2 py-0.5 rounded-md text-[10px] font-mono font-bold shrink-0 select-none"
+      >
+        {collections.length}
+      </span>
+    </>
+  );
+
   const handleToggleAdvancedSearch = () => {
     if (!showAdvancedSearch && triggerBtnRef.current) {
       const btnRect = triggerBtnRef.current.getBoundingClientRect();
@@ -482,26 +525,12 @@ export default function SearchAndFilterSection({
         triggerRef={triggerBtnRef}
         title={isContent ? 'Filter Field Types' : isLayout ? 'Filter Layout Items' : 'Advanced Search'}
         titleIcon={
-          <SlidersHorizontalIcon className="w-3.5 h-3.5 text-[var(--brand-secondary-amber)]" isActive={true} />
+          <SlidersHorizontalIcon className="w-3.5 h-3.5" isActive={true} />
         }
+        subheader={advancedSearchSubheader}
       >
         {isContent ? (
           <div className="flex flex-col gap-1.5 px-1 py-1">
-            <div className="flex items-center justify-between px-2 py-1">
-              <div className="flex items-center gap-2">
-                <span className="w-4 shrink-0 flex items-center justify-center text-sm">🎛️</span>
-                <span className="text-xs font-medium tree-panel-primary">Field Type(s):</span>
-              </div>
-              <span
-                title={`${FIELD_TYPE_METAS.length} field types available`}
-                className="tree-filter-option px-2 py-0.5 rounded-md text-[10px] font-mono font-bold shrink-0 select-none"
-              >
-                {FIELD_TYPE_METAS.length}
-              </span>
-            </div>
-
-            <div className="my-1 mx-2 tree-menu-divider" />
-
             {/* Nothing excluded by default -- every box starts checked (matches everything). This
                 row is itself a real select-all/select-none toggle: unchecked (nothing excluded)
                 flips to "select none" (a sentinel array that matches no real type, see
@@ -540,7 +569,7 @@ export default function SearchAndFilterSection({
             })()}
 
             {/* Field Types List */}
-            <div className="flex flex-col gap-0.5 max-h-56 overflow-y-auto px-1">
+            <div className="searchMenuScrollList flex flex-col gap-0.5 max-h-56 overflow-y-auto px-1">
               {FIELD_TYPE_METAS.map(({ type, label, icon }) => {
                 const isChecked = !hasFieldTypeFilters || filterFieldTypes.includes(type);
                 const count = fieldTypeCounts[type] ?? 0;
@@ -588,21 +617,6 @@ export default function SearchAndFilterSection({
           </div>
         ) : isLayout ? (
           <div className="flex flex-col gap-1.5 px-1 py-1">
-            <div className="flex items-center justify-between px-2 py-1">
-              <div className="flex items-center gap-2">
-                <span className="w-4 shrink-0 flex items-center justify-center text-sm">🎛️</span>
-                <span className="text-xs font-medium tree-panel-primary">Show:</span>
-              </div>
-              <span
-                title={`${HIERARCHY_FILTER_METAS.length} kinds of item`}
-                className="tree-filter-option px-2 py-0.5 rounded-md text-[10px] font-mono font-bold shrink-0 select-none"
-              >
-                {HIERARCHY_FILTER_METAS.length}
-              </span>
-            </div>
-
-            <div className="my-1 mx-2 tree-menu-divider" />
-
             {/* Nothing excluded by default -- every box starts checked (matches everything). This
                 row is itself a real select-all/select-none toggle: unchecked (nothing excluded)
                 flips to "select none" (a sentinel array that matches no real category, see
@@ -641,7 +655,7 @@ export default function SearchAndFilterSection({
             })()}
 
             {/* Category List */}
-            <div className="flex flex-col gap-0.5 max-h-56 overflow-y-auto px-1">
+            <div className="searchMenuScrollList flex flex-col gap-0.5 max-h-56 overflow-y-auto px-1">
               {HIERARCHY_FILTER_METAS.map(({ type, label, icon }) => {
                 const isChecked = !hasHierarchyTypeFilters || filterHierarchyTypes.includes(type);
                 const count = hierarchyTypeCounts[type] ?? 0;
@@ -689,21 +703,6 @@ export default function SearchAndFilterSection({
           </div>
         ) : (
           <div className="flex flex-col gap-1.5 px-1 py-1">
-            <div className="flex items-center justify-between px-2 py-1">
-              <div className="flex items-center gap-2">
-                <span className="w-4 shrink-0 flex items-center justify-center text-sm">📁</span>
-                <span className="text-xs font-medium tree-panel-primary">Collection(s):</span>
-              </div>
-              <span
-                title={`${collections.length} ${collections.length === 1 ? 'collection' : 'collections'}`}
-                className="tree-filter-option px-2 py-0.5 rounded-md text-[10px] font-mono font-bold shrink-0 select-none"
-              >
-                {collections.length}
-              </span>
-            </div>
-
-            <div className="my-1 mx-2 tree-menu-divider" />
-
             {/* Nothing excluded by default -- every box starts checked (matches everything). This
                 row is itself a real select-all/select-none toggle: unchecked (nothing excluded)
                 flips to "select none" (a sentinel id that matches no real collection); checked or
