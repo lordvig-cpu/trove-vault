@@ -30,7 +30,7 @@
    -------------------------------------------------------------------------- */
 .main-content-scroll {
   scrollbar-width: thin;
-  scrollbar-color: var(--primary-border-strong) transparent;
+  scrollbar-color: var(--content-border-strong) transparent;
 }
 
 .main-content-scroll::-webkit-scrollbar {
@@ -43,22 +43,22 @@
 }
 
 .main-content-scroll::-webkit-scrollbar-thumb {
-  background: var(--primary-border-strong) !important;
+  background: var(--content-border-strong) !important;
   border-radius: 9999px;
   border: none !important;
   transition: background-color 200ms ease;
 }
 
 .main-content-scroll::-webkit-scrollbar-thumb:hover {
-  background: var(--primary-accent-hover) !important;
+  background: color-mix(in oklch, var(--content-border-strong) 70%, var(--pole-sheen)) !important;
 }
 
 /* --------------------------------------------------------------------------
    Cards & Section Containers
    -------------------------------------------------------------------------- */
 .content-card {
-  background-color: var(--primary-content-card-bg);
-  border: 1px solid var(--primary-border-subtle);
+  background-color: var(--content-card-bg);
+  border: 1px solid var(--content-border-subtle);
   box-shadow: var(--content-card-shadow);
   border-radius: 0.75rem; /* rounded-xl */
 }
@@ -67,16 +67,16 @@
    Attribute & Sub-Item Interactive Pills
    -------------------------------------------------------------------------- */
 .content-pill {
-  background-color: var(--primary-content-pill-bg);
-  border: 1px solid var(--primary-content-pill-border);
+  background-color: var(--content-pill-bg);
+  border: 1px solid var(--content-pill-border);
   border-radius: 0.5rem; /* rounded-lg */
   padding: 0.75rem;
   transition: border-color 150ms ease, background-color 150ms ease;
 }
 
 .content-pill:hover {
-  border-color: var(--primary-border-strong);
-  background-color: var(--primary-content-pill-hover-bg);
+  border-color: var(--content-border-strong);
+  background-color: var(--content-pill-hover-bg);
 }
 
 /* --------------------------------------------------------------------------

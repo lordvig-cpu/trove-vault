@@ -85,6 +85,10 @@
   --right-panel-flare-bg: var(--shiny-none);
   --right-panel-texture-bg: var(--shiny-none);
 
+  /* Main content (item view): rules and hover fill from the Primary seed, like the bars. */
+  --content-border-subtle: color-mix(in oklch, var(--oklch-primary) 55%, var(--oklch-bg));
+  --content-border-strong: color-mix(in oklch, var(--oklch-primary) 80%, var(--oklch-bg));
+
   /* Selection: an amber outline over a faint amber fill. */
   --tree-item-active-bg: color-mix(in oklch, var(--brand-secondary-amber) 6%, transparent);
   --tree-item-active-border: var(--shiny-amber-edge);

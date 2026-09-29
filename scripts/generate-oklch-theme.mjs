@@ -28,11 +28,11 @@ const colorPattern = /rgba?\([^)]*\)|#[\da-f]{6}\b/gi;
 
 // Samples are calibrated against the blue/yellow seeds. Two more families use the same ratios
 // against their own seeds, which default to blue/yellow (theme-oklch-dark.css), so the default
-// palette is unchanged: "primary" recolors the header/footer bars, "secondary" the surfaces of the
+// palette is unchanged: "primary" recolors the header/footer bars and the main content (item cards, pills, canvas glow), "secondary" the surfaces of the
 // tree submenus and search menus.
 const seedVars = { blue: '--oklch-blue', yellow: '--oklch-yellow', primary: '--oklch-primary', secondary: '--oklch-secondary' };
 const calibration = { blue: 'blue', yellow: 'yellow', primary: 'blue', secondary: 'yellow' };
-const primaryTokens = /^--(nav-(header|footer)|col-dropdown)-/;
+const primaryTokens = /^--(nav-(header|footer)|col-dropdown|content-(card|pill))-|^--studio-grid-(glow-top|line|vignette)/;
 const menuTokens = /^--(tree-menu|tree-filter)-/;
 
 function sample(family, rgb) {
@@ -85,6 +85,9 @@ const declarations = source.slice(source.indexOf('{') + 1, source.lastIndexOf('}
 // default palette is unchanged. The grid sample is the canvas, a little darker and less saturated.
 // Flyout surface mixes in theme-semantic.css need this sample from the secondary family.
 sample('secondary', [217, 119, 6]);
+// The main content's border aliases (theme-semantic.css) need these two from the primary family.
+sample('primary', [0, 140, 255]);
+sample('primary', [0, 180, 255]);
 const canvasName = '--oklch-blue-10-15-24';
 const gridName = '--oklch-blue-8-12-20';
 if (palette.has(canvasName) && palette.has(gridName)) {

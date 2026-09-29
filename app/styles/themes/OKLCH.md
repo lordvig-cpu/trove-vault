@@ -100,8 +100,8 @@ split-flyout title color.
 | Picker | Seed | Drives |
 | --- | --- | --- |
 | Background | `--oklch-bg` | canvas and grid, behind everything |
-| Primary | `--oklch-primary` | header and footer bars |
-| Primary Accent | `--oklch-blue` | side and bottom panels and their rules; buttons, focus |
+| Primary | `--oklch-primary` | header and footer bars; main content (item cards, pills, rules, canvas glow) |
+| Primary Accent | `--oklch-blue` | side and bottom panels and their rules; buttons, focus (not the main content) |
 | Secondary | `--oklch-secondary` | tree submenus, search menus, template toolbars and their drop-downs |
 | Secondary Accent | `--oklch-yellow` | default text, edges and selected states inside those menus/toolbars |
 
@@ -112,7 +112,7 @@ color shows as a dark tint of itself.
 
 Dark and Light use the same five pickers and the same mapping. `--oklch-primary` and
 `--oklch-secondary` default to `var(--oklch-blue)` and `var(--oklch-yellow)`, so an untouched
-palette is unchanged; setting them recolors only the header/footer (`--nav-header-*`,
+palette is unchanged; setting them recolors only the header/footer and main content (`--nav-header-*`, `--content-card-*`, `--content-pill-*`, `--studio-grid-*` glow, `--content-border-*`,
 `--nav-footer-*`, `--col-dropdown-*`) and the surfaces of the tree submenus and search menus
 (`--tree-menu-*`, `--tree-filter-*`, the `--flyout-*` body/tab fills). The generator emits those as
 `--oklch-primary-*` / `--oklch-secondary-*` samples with the same ratios as the blue/yellow ones.

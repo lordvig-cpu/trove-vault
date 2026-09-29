@@ -25,8 +25,8 @@
   color: var(--secondary-accent);
 }
 .detail-parent-badge {
-  background-color: var(--surface-primary-hover);
-  border: 1px solid var(--primary-border-subtle);
+  background-color: var(--content-hover-bg);
+  border: 1px solid var(--content-border-subtle);
   color: var(--text-muted);
 }
 .detail-standalone-badge {
@@ -38,15 +38,15 @@
 .detail-muted { color: var(--text-muted); }
 .detail-accent { color: var(--secondary-accent); }
 .detail-action-secondary {
-  background-color: var(--surface-primary-hover);
-  border: 1px solid var(--primary-border-subtle);
+  background-color: var(--content-hover-bg);
+  border: 1px solid var(--content-border-subtle);
   color: var(--text-soft);
 }
-.detail-action-secondary:hover { color: var(--text-strong); background-color: var(--surface-primary-hover); }
-.detail-image { border-color: var(--primary-border-subtle); box-shadow: var(--content-card-shadow); }
-.detail-empty-image { color: var(--text-muted); border-color: var(--primary-border-subtle); }
+.detail-action-secondary:hover { color: var(--text-strong); background-color: var(--content-hover-bg); }
+.detail-image { border-color: var(--content-border-subtle); box-shadow: var(--content-card-shadow); }
+.detail-empty-image { color: var(--text-muted); border-color: var(--content-border-subtle); }
 .detail-empty-icon { opacity: 0.4; }
-.detail-divider { border-color: var(--primary-border-subtle); }
+.detail-divider { border-color: var(--content-border-subtle); }
 
 /* --------------------------------------------------------------------------
    Isolated Center Seam Resize Handle

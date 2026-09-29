@@ -108,6 +108,10 @@
   --secondary-selection-border: var(--tree-item-active-border);
   --secondary-studio-grid-glow-bottom-right-core: var(--studio-grid-glow-bottom-right-core);
   --secondary-studio-grid-glow-bottom-right-edge: var(--studio-grid-glow-bottom-right-edge);
+  /* Main content (item view) rules follow the Primary picker, not the Primary Accent that colors the side panels. */
+  --content-border-subtle: oklch(from var(--oklch-primary-0-140-255) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 0.4);
+  --content-border-strong: oklch(from var(--oklch-primary-0-180-255) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 0.85);
+  --content-hover-bg: var(--content-pill-hover-bg);
   --surface-canvas: var(--canvas-bg-primary);
   --surface-panel: var(--panel-surface-bg);
   --surface-popover: var(--popover-surface-bg);
