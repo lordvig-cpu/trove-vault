@@ -100,12 +100,12 @@
 
 .spacingInput:hover:not(:disabled) {
   border-color: color-mix(in oklch, var(--text-strong) 45%, transparent);
-  background: color-mix(in oklch, black 30%, transparent);
+  background: color-mix(in oklch, var(--pole-shade) 30%, transparent);
 }
 
 .spacingInput:focus {
-  border-color: color-mix(in oklch, var(--primary-accent) 35%, cyan);
-  background: color-mix(in oklch, black 40%, transparent);
+  border-color: var(--focus-blue);
+  background: color-mix(in oklch, var(--pole-shade) 40%, transparent);
 }
 
 .spacingInput-selected {

@@ -24,10 +24,10 @@ export default function EmptyPanelDropZone({
           </span>
         </div>
         <div className="flex flex-col items-center gap-1 max-w-[220px]">
-          <h4 className="text-xs font-bold uppercase tracking-wider text-[var(--text-strong,rgba(226,232,240,1))]">
+          <h4 className="text-xs font-bold uppercase tracking-wider text-[var(--text-strong)]">
             {panelTitle} is empty
           </h4>
-          <p className="text-[11px] text-[var(--text-muted,rgba(148,163,184,1))] leading-relaxed">
+          <p className="text-[11px] text-[var(--text-muted)] leading-relaxed">
             {description}
           </p>
         </div>

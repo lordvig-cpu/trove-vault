@@ -1,9 +1,14 @@
-/* Edit these two seeds to recolor BOTH modes. No regeneration is needed.
+/* Edit these seeds (blue = primary accent, yellow = secondary accent; primary/secondary follow them unless set) to recolor BOTH modes. No regeneration is needed.
    Defaults correspond to Premium Contrast's rgba(0, 119, 255, 1) and rgba(248, 188, 9, 1).
    Light mode transforms the same dark recipe through role coefficients. */
-:is([data-theme='theme-oklch-dark'], [data-theme='theme-oklch-light']) {
+:is([data-theme='theme-oklch-dark'], [data-theme='theme-oklch-light'], [data-theme='theme-oklch-new-n-shiny']) {
   --oklch-blue: rgba(0, 119, 255, 1);
   --oklch-yellow: rgba(255, 157, 0, 1);
+  /* Surface colors default to the accents (header/footer follow the blue seed, menus the yellow one),
+     so an untouched palette is unchanged. Primary = header and footer; Secondary = tree submenus,
+     search menus and template toolbars. Accents: blue = panels, yellow = menu text and edges. */
+  --oklch-primary: var(--oklch-blue);
+  --oklch-secondary: var(--oklch-yellow);
 
   /* L_out = offset + L_dark * scale; C_out = C_dark * chroma. */
   --oklch-surface-offset: 0;
@@ -17,8 +22,66 @@
   --oklch-accent-chroma: 1;
   --oklch-shadow-opacity: 1;
   --oklch-glow-opacity: 1;
+
+  /* Neutral "poles": the only places a black/white/cyan color literal may be written. Components
+     mix toward or paint with these instead of the keywords black/white/cyan or rgba() values, so
+     light mode can flip them (theme-oklch-light.css) and nothing else needs to know the mode.
+       surface    = what a dark fill mixes toward (flyout cards, dark input wells): black / white
+       shade      = sunken tint and inner shadow under controls and tracks
+       glint      = hover border/text/tint on an amber control: white / deep ink
+       sheen      = translucent top highlight (white in both modes)
+       label      = text/knob drawn on a solid accent fill: white in both modes
+       label-dark = text drawn on a solid amber fill
+       focus      = the light-blue partner a focus ring mixes the primary toward */
+  --pole-surface: oklch(0 0 0);
+  --pole-shade: oklch(0 0 0);
+  --pole-glint: oklch(1 0 0);
+  --pole-sheen: oklch(1 0 0);
+  --pole-label: oklch(1 0 0);
+  --pole-label-dark: oklch(0.16 0.04 255);
+  --pole-focus: oklch(0.905 0.154 195);
+
+  /* Fixed-alpha neutrals used for depth (shadows, overlays, picker chrome). Moved here from
+     theme-semantic.css so that file holds no color literals. */
+  --shadow-black-5: rgba(0, 0, 0, 0.05);
+  --shadow-black-20: rgba(0, 0, 0, 0.2);
+  --shadow-black-25: rgba(0, 0, 0, 0.25);
+  --shadow-black-30: rgba(0, 0, 0, 0.3);
+  --shadow-black-35: rgba(0, 0, 0, 0.35);
+  --shadow-black-50: rgba(0, 0, 0, 0.5);
+  --shadow-black-55: rgba(0, 0, 0, 0.55);
+  --text-fixed-white: rgba(255, 255, 255, 1);
+  --highlight-white-10: rgba(255, 255, 255, 0.1);
+  --editor-picker-black: rgba(0, 0, 0, 1);
+  --editor-hue-spectrum: linear-gradient(to right,
+    rgba(255, 0, 0, 1), rgba(255, 255, 0, 1), rgba(0, 255, 0, 1),
+    rgba(0, 255, 255, 1), rgba(0, 0, 255, 1), rgba(255, 0, 255, 1), rgba(255, 0, 0, 1));
+
+  /* Status colors (dock drop zones, destructive drops). Warning is the secondary seed itself
+     (var(--secondary-accent)); these are the other roles. Alpha variants are made at the point of
+     use with oklch(from … / a). */
+  --status-ok: oklch(0.78 0.17 155);
+  --status-danger: oklch(0.64 0.22 25);
+  --status-danger-soft: oklch(0.71 0.17 22);
+  --status-danger-strong: oklch(0.58 0.22 27);
+  --status-danger-tint: oklch(0.81 0.1 19);
+
+  /* Flyout / toolbar title and selected-state ink (lightness, chroma). Light mode deepens them. */
+  /* Amber wash strength at the top of a flyout / toolbar, and of the glow around it. */
+  --flyout-glow-top: 38%;
+  --flyout-glow-outer: 35%;
+  --flyout-ink-l: 0.84;
+  --flyout-ink-c: 0.16;
+
+  /* Content-tab field type badges: ink lightness/chroma shared by all, hue offsets for the types that
+     are not the primary/secondary seed itself. Light mode deepens the ink. */
+  --badge-ink-l: 0.78;
+  --badge-ink-c: 0.13;
+  --badge-number-hue: 160;
+  --badge-boolean-hue: 293;
+  --badge-date-hue: 350;
 }
 
-[data-theme='theme-oklch-dark'] {
+:is([data-theme='theme-oklch-dark'], [data-theme='theme-oklch-new-n-shiny']) {
   color-scheme: dark;
 }

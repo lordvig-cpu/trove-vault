@@ -15,6 +15,16 @@
   --oklch-shadow-opacity: 0.18;
   --oklch-glow-opacity: 0.55;
 
+  /* Poles flip: fills mix toward white, sunken tints and hover ink go deep, highlights stay white. */
+  --pole-surface: oklch(1 0 0);
+  --pole-shade: oklch(0.3 0.04 60);
+  --pole-glint: oklch(0.2 0.03 60);
+
+  /* Titles/selected states sit on pale amber, so their ink is darker. */
+  --flyout-ink-l: 0.42;
+  --flyout-ink-c: 0.13;
+  --badge-ink-l: 0.45;
+
   /* This accent also serves as small label text: use deeper ochre in light. */
   --brand-secondary-amber: oklch(from var(--oklch-yellow) calc(l * 0.60) calc(c * 0.75) h);
 

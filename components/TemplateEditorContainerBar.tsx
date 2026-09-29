@@ -147,9 +147,9 @@ function ToolGroup({
             : disabled
             ? `${idleBtn} ${disabledBtn}`
             : set
-            ? `${activeBtn} cursor-pointer hover:border-white hover:text-white`
+            ? `${activeBtn} cursor-pointer hover:border-glint hover:text-[var(--text-strong)]`
             : isOpen
-            ? `${idleBtn} cursor-pointer border-white text-white bg-white/10`
+            ? `${idleBtn} cursor-pointer border-glint text-[var(--text-strong)] bg-glint/10`
             : `${idleBtn} cursor-pointer`
         }`}
       >
@@ -234,7 +234,7 @@ function EditableName({ name, onCommit }: { name: string; onCommit: (label: stri
           if (e.key === 'Escape') finish(false);
         }}
         aria-label="Container name"
-        className="w-36 px-1.5 py-0.5 rounded-md bg-black/40 border border-[color-mix(in_oklch,var(--primary-accent)_35%,cyan)] text-[11px] font-bold text-white focus:outline-none"
+        className="w-36 px-1.5 py-0.5 rounded-md bg-shade/40 border border-[var(--focus-blue)] text-[11px] font-bold text-[var(--text-strong)] focus:outline-none"
       />
     );
   }
@@ -247,7 +247,7 @@ function EditableName({ name, onCommit }: { name: string; onCommit: (label: stri
         setEditing(true);
       }}
       title="Click to rename"
-      className={`truncate max-w-[130px] px-1.5 py-0.5 rounded-md text-[11px] font-bold text-white tracking-wide cursor-text border border-transparent hover:border-white hover:bg-white/10`}
+      className={`truncate max-w-[130px] px-1.5 py-0.5 rounded-md text-[11px] font-bold text-[var(--text-strong)] tracking-wide cursor-text border border-transparent hover:border-glint hover:bg-glint/10`}
     >
       {name}
     </button>
@@ -330,7 +330,7 @@ export default function TemplateEditorContainerBar({
     >
       <div className="flex items-center gap-1.5 shrink-0">
         {isRoot ? (
-          <span className="text-[11px] font-bold text-white tracking-wide">Body</span>
+          <span className="text-[11px] font-bold text-[var(--text-strong)] tracking-wide">Body</span>
         ) : (
           <EditableName
             key={container.id}
@@ -604,7 +604,7 @@ export default function TemplateEditorContainerBar({
           <button
             type="button"
             onClick={() => onRemoveContainer?.(container.id)}
-            className={`w-[26px] ${barControlHeight} rounded-md border transition flex items-center justify-center cursor-pointer shrink-0 bg-black/40 border-[var(--secondary-accent)] text-[var(--secondary-accent)] hover:bg-[var(--tree-menu-danger-hover-bg)] hover:border-white hover:text-[var(--tree-menu-danger-hover-text)]`}
+            className={`w-[26px] ${barControlHeight} rounded-md border transition flex items-center justify-center cursor-pointer shrink-0 bg-shade/40 border-[var(--secondary-accent)] text-[var(--secondary-accent)] hover:bg-[var(--tree-menu-danger-hover-bg)] hover:border-glint hover:text-[var(--tree-menu-danger-hover-text)]`}
             title="Delete Container"
             aria-label="Delete Container"
           >

@@ -263,7 +263,7 @@ function ContainerNodeRow({
         className={[
           'tree-item group relative flex items-center h-7 px-1.5 gap-1.5 rounded-md cursor-pointer transition w-full min-w-0',
           isDragOver
-            ? 'ring-1 ring-[var(--primary-accent)] bg-[color-mix(in_oklch,var(--primary-accent)_25%,transparent)] text-white font-semibold'
+            ? 'ring-1 ring-[var(--primary-accent)] bg-[color-mix(in_oklch,var(--primary-accent)_25%,transparent)] text-[var(--text-strong)] font-semibold'
             : isSelected
             ? 'tree-item-selected font-medium'
             : '',

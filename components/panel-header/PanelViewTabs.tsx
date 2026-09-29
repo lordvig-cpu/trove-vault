@@ -208,7 +208,7 @@ export default function PanelViewTabs({
                   className="tree-tab-action-btn group"
                   title="Add New Field Definition"
                 >
-                  <PlusIcon className="w-2.5 h-2.5 origin-center transition-transform duration-150 ease-out group-hover:scale-110 text-[var(--tree-action-icon,rgba(109,170,209,0.85))] group-hover:text-white" />
+                  <PlusIcon className="w-2.5 h-2.5 origin-center transition-transform duration-150 ease-out group-hover:scale-110 text-[var(--tree-action-icon)] group-hover:text-[var(--text-strong)]" />
                 </button>
               )
             ) : isTemplates ? (
@@ -219,7 +219,7 @@ export default function PanelViewTabs({
                   className="tree-tab-action-btn group"
                   title="Create New Item Template"
                 >
-                  <PlusIcon className="w-2.5 h-2.5 origin-center transition-transform duration-150 ease-out group-hover:scale-110 text-[var(--tree-action-icon,rgba(109,170,209,0.85))] group-hover:text-white" />
+                  <PlusIcon className="w-2.5 h-2.5 origin-center transition-transform duration-150 ease-out group-hover:scale-110 text-[var(--tree-action-icon)] group-hover:text-[var(--text-strong)]" />
                 </button>
               )
             ) : isCollections ? (
@@ -230,7 +230,7 @@ export default function PanelViewTabs({
                   className="tree-tab-action-btn group"
                   title="Create New Collection"
                 >
-                  <PlusIcon className="w-2.5 h-2.5 origin-center transition-transform duration-150 ease-out group-hover:scale-110 text-[var(--tree-action-icon,rgba(109,170,209,0.85))] group-hover:text-white" />
+                  <PlusIcon className="w-2.5 h-2.5 origin-center transition-transform duration-150 ease-out group-hover:scale-110 text-[var(--tree-action-icon)] group-hover:text-[var(--text-strong)]" />
                 </button>
               )
             ) : isLayout || isProperties ? (
@@ -243,7 +243,7 @@ export default function PanelViewTabs({
                   className="tree-tab-action-btn group"
                   title="Create New Item"
                 >
-                  <PlusIcon className="w-2.5 h-2.5 origin-center transition-transform duration-150 ease-out group-hover:scale-110 text-[var(--tree-action-icon,rgba(109,170,209,0.85))] group-hover:text-white" />
+                  <PlusIcon className="w-2.5 h-2.5 origin-center transition-transform duration-150 ease-out group-hover:scale-110 text-[var(--tree-action-icon)] group-hover:text-[var(--text-strong)]" />
                 </button>
               )
             )}
@@ -263,9 +263,9 @@ export default function PanelViewTabs({
                 }
               >
                 {activeIsExpanded ? (
-                  <FolderCollapseIcon className="w-3 h-3 text-[var(--tree-action-icon,rgba(109,170,209,0.85))] group-hover:text-white" />
+                  <FolderCollapseIcon className="w-3 h-3 text-[var(--tree-action-icon)] group-hover:text-[var(--text-strong)]" />
                 ) : (
-                  <FolderExpandIcon className="w-3 h-3 text-[var(--tree-action-icon,rgba(109,170,209,0.85))] group-hover:text-white" />
+                  <FolderExpandIcon className="w-3 h-3 text-[var(--tree-action-icon)] group-hover:text-[var(--text-strong)]" />
                 )}
               </button>
             )}

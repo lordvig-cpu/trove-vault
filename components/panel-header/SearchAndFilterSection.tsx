@@ -601,7 +601,7 @@ export default function SearchAndFilterSection({
             </div>
 
             {isFilterActive && (
-              <div className="border-t border-[var(--tree-menu-divider,rgba(245,158,11,0.2))] mt-0.5 pt-1.5 px-2 pb-0.5">
+              <div className="border-t border-[var(--tree-menu-divider)] mt-0.5 pt-1.5 px-2 pb-0.5">
                 <button
                   type="button"
                   onClick={() => {
@@ -687,7 +687,7 @@ export default function SearchAndFilterSection({
             </div>
 
             {isFilterActive && (
-              <div className="border-t border-[var(--tree-menu-divider,rgba(245,158,11,0.2))] mt-0.5 pt-1.5 px-2 pb-0.5">
+              <div className="border-t border-[var(--tree-menu-divider)] mt-0.5 pt-1.5 px-2 pb-0.5">
                 <button
                   type="button"
                   onClick={() => {
@@ -746,7 +746,7 @@ export default function SearchAndFilterSection({
             />
 
             {isFilterActive && (
-              <div className="border-t border-[var(--tree-menu-divider,rgba(245,158,11,0.2))] mt-0.5 pt-1.5 px-2 pb-0.5">
+              <div className="border-t border-[var(--tree-menu-divider)] mt-0.5 pt-1.5 px-2 pb-0.5">
                 <button
                   type="button"
                   onClick={() => {

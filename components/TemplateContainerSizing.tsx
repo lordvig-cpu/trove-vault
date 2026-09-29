@@ -202,7 +202,7 @@ export default function TemplateContainerSizing({ container, onUpdate, bare = fa
 
   return (
     <div className={bare ? 'flex flex-col gap-2 px-3 pt-0 pb-2' : 'flex flex-col gap-2.5 p-2.5 rounded-xl bg-slate-900/50 border border-subtle'}>
-      {!bare && <span className="text-[11px] font-bold text-white">Sizing</span>}
+      {!bare && <span className="text-[11px] font-bold text-[var(--text-strong)]">Sizing</span>}
       {bare ? (
         <>
           <SizeField label="Width" value={width} placeholder="fill" hint={FIELD_HINTS.width} onCommit={setWidth} />

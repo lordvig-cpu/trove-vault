@@ -9,7 +9,7 @@
    ambient styling by ancestry the way the trigger still can; defining both explicitly here is what
    keeps them matching instead of one silently drifting from the other. */
 .unitSelectTrigger {
-  background: color-mix(in oklch, var(--primary-accent) 26%, black);
+  background: color-mix(in oklch, var(--primary-accent) 26%, var(--pole-surface));
   border-color: color-mix(in oklch, var(--text-strong) 24%, transparent);
   color: var(--text-strong);
 }
@@ -36,7 +36,7 @@
 /* Options sit flush against the shell and each other -- no rounding, no padding around them (the
    shell's own tmpl-edge-panel padding is a Tailwind class dropped in UnitSelect.tsx, not set here). */
 .unitSelectOption {
-  background: color-mix(in oklch, var(--primary-accent) 26%, black);
+  background: color-mix(in oklch, var(--primary-accent) 26%, var(--pole-surface));
   border-color: color-mix(in oklch, var(--text-strong) 24%, transparent);
   color: var(--text-strong);
   border-radius: 0;
@@ -44,12 +44,12 @@
 
 .unitSelectOption:hover {
   border-color: color-mix(in oklch, var(--text-strong) 55%, transparent);
-  background: color-mix(in oklch, var(--primary-accent) 34%, black);
+  background: color-mix(in oklch, var(--primary-accent) 34%, var(--pole-surface));
 }
 
 .unitSelectOption-selected,
 .unitSelectOption-selected:hover {
   border-color: var(--flyout-selected);
   color: var(--flyout-selected);
-  background: color-mix(in oklch, var(--primary-accent) 34%, black);
+  background: color-mix(in oklch, var(--primary-accent) 34%, var(--pole-surface));
 }

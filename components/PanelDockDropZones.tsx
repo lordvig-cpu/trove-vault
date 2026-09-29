@@ -188,7 +188,7 @@ export default function PanelDockDropZones({
           <div className="dock-zone-side-container">
             {/* Tab Drop Zone */}
             <div
-              style={{ '--dock-target-color': isLeftTabAllowed ? 'var(--dock-valid-color)' : 'rgba(248,188,9,1)' } as React.CSSProperties}
+              style={{ '--dock-target-color': isLeftTabAllowed ? 'var(--dock-valid-color)' : 'var(--secondary-accent)' } as React.CSSProperties}
               className={`dock-zone-side-tab ${
                 !isLeftTabAllowed ? 'dock-zone-side-tab-prohibited' : ''
               } ${
@@ -402,7 +402,7 @@ export default function PanelDockDropZones({
           <div className="dock-zone-side-container">
             {/* Tab Drop Zone */}
             <div
-              style={{ '--dock-target-color': isRightTabAllowed ? 'var(--dock-valid-color)' : 'rgba(248,188,9,1)' } as React.CSSProperties}
+              style={{ '--dock-target-color': isRightTabAllowed ? 'var(--dock-valid-color)' : 'var(--secondary-accent)' } as React.CSSProperties}
               className={`dock-zone-side-tab ${
                 !isRightTabAllowed ? 'dock-zone-side-tab-prohibited' : ''
               } ${

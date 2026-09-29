@@ -167,8 +167,8 @@ export default function ContainerResizeHandles({
         <span
           className={`block rounded-full transition-colors ${
             active
-              ? 'bg-[color-mix(in_oklch,var(--primary-accent)_35%,cyan)]'
-              : 'bg-[var(--secondary-accent)] group-hover:bg-white'
+              ? 'bg-[var(--focus-blue)]'
+              : 'bg-[var(--secondary-accent)] group-hover:bg-glint'
           }`}
           style={
             vertical
@@ -191,7 +191,7 @@ export default function ContainerResizeHandles({
         typeof document !== 'undefined' &&
         createPortal(
           <div
-            className="fixed z-[200] pointer-events-none whitespace-nowrap px-2 py-1 rounded-md text-[11px] font-mono font-semibold text-white bg-black/80 border border-[var(--secondary-accent)] shadow-lg"
+            className="fixed z-[200] pointer-events-none whitespace-nowrap px-2 py-1 rounded-md text-[11px] font-mono font-semibold text-label bg-shade/80 border border-[var(--secondary-accent)] shadow-lg"
             // Flip to the other side of the cursor near the window edges so it is never cut off
             style={{
               left: readout.x > window.innerWidth - 200 ? readout.x - 14 : readout.x + 14,

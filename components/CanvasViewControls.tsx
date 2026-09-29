@@ -181,7 +181,7 @@ export function ZoomControls() {
       <div className="relative flex items-center w-20 h-4 shrink-0">
         <div
           aria-hidden="true"
-          className="absolute top-1/2 -translate-y-1/2 w-px h-2.5 bg-white/80 pointer-events-none"
+          className="absolute top-1/2 -translate-y-1/2 w-px h-2.5 bg-glint/80 pointer-events-none"
           style={{ left: tickLeft }}
         />
         <input
@@ -195,7 +195,7 @@ export function ZoomControls() {
           aria-label="Zoom level"
           aria-valuetext={`${Math.round(zoom * 100)}%`}
           title="Drag to zoom; double-click to reset to 100%"
-          className="w-full h-1.5 rounded-full cursor-pointer accent-[var(--flyout-selected)] bg-black/40"
+          className="w-full h-1.5 rounded-full cursor-pointer accent-[var(--flyout-selected)] bg-shade/40"
         />
       </div>
       <button

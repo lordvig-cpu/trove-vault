@@ -15,7 +15,7 @@ Conventions and architecture (data access, theming, template editor internals, b
   tree/template panel bodies to `hooks/usePanelRenderers.tsx`.
 - `test_connection/page.tsx` — a diagnostic route that pings Supabase; unavailable in production.
 - `globals.css` — Tailwind entry point; imports the theme and component CSS files below.
-- `styles/themes/*.css` — the two runtime themes (OKLCH dark/light), their shared OKLCH recipe,
+- `styles/themes/*.css` — the three runtime themes (OKLCH dark, light and new-n-shiny), their shared OKLCH recipe,
   the semantic variable aliases components consume, and the Premium Contrast generator input.
   `styles/themes/OKLCH.md` explains how they relate and how to recolor; `styles/themes/README.md`
   is the `--primary-*`/`--secondary-*`/`--surface-*`/`--text-*` naming guide for new component CSS.
@@ -43,8 +43,9 @@ Conventions and architecture (data access, theming, template editor internals, b
 - `MainContent.tsx` — chooses between ItemDetailView, the template editor stage, or the empty state.
 - `ModalContainers.tsx` — mounts whichever modal `useModals()` says is active.
 - `NavigationHeader.tsx` / `NavigationFooter.tsx` — the app's top bar and bottom status/dock bar.
-- `OklchSeedControls.tsx` / `SeedColorPicker.tsx` — the footer's primary/secondary color pickers
-  that override the two OKLCH seeds.
+- `OklchSeedControls.tsx` / `SeedColorPicker.tsx` — the footer's primary/secondary/background color pickers
+  that override the three OKLCH seeds (saved per theme family).
+- `ThemeSelector.tsx` — the footer's Dark / Light / New 'n Shiny segmented control.
 - `PanelContentTransition.tsx` — keeps outgoing panel content mounted briefly during a tab switch.
 - `PanelDockDropZones.tsx` — the drop-target overlays shown while dragging a panel/tab to dock it.
 - `PrimarySidePanel.tsx` / `SecondarySidePanel.tsx` — the left/right dockable side panel shells

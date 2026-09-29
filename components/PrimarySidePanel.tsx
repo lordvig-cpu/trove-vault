@@ -212,9 +212,9 @@ export default function PrimarySidePanel({
           <div className="panel-resize-pill flex items-center justify-center">
             {/* 3 tactile grip dots inside the pill */}
             <div className="flex flex-col gap-1 items-center justify-center opacity-70">
-              <span className="w-1 h-1 rounded-full bg-black/60 dark:bg-black/80" />
-              <span className="w-1 h-1 rounded-full bg-black/60 dark:bg-black/80" />
-              <span className="w-1 h-1 rounded-full bg-black/60 dark:bg-black/80" />
+              <span className="w-1 h-1 rounded-full bg-shade/60" />
+              <span className="w-1 h-1 rounded-full bg-shade/60" />
+              <span className="w-1 h-1 rounded-full bg-shade/60" />
             </div>
           </div>
         </div>

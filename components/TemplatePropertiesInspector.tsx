@@ -108,7 +108,7 @@ export default function TemplatePropertiesInspector({
           <button
             type="button"
             onClick={() => onRemoveNode(selectedNode.id)}
-            className="p-1 px-2 text-[10.5px] font-semibold text-rose-400 hover:text-white hover:bg-rose-500/20 rounded border border-rose-500/30 transition cursor-pointer"
+            className="p-1 px-2 text-[10.5px] font-semibold text-rose-400 hover:text-[var(--text-strong)] hover:bg-rose-500/20 rounded border border-rose-500/30 transition cursor-pointer"
             title="Remove from layout"
           >
             ✕ Remove
@@ -147,8 +147,8 @@ export default function TemplatePropertiesInspector({
                 onClick={() => onUpdateContainer(selectedNode.id, { direction: 'row' })}
                 className={`flex flex-col items-center justify-center gap-1 p-2 rounded-lg border text-[11px] font-bold transition cursor-pointer ${
                   resolveDirection(selectedNode as FlexContainerNode, selectedNode.id === 'root-container') === 'row'
-                    ? 'bg-[color-mix(in_oklch,var(--primary-accent)_25%,transparent)] border-[var(--primary-accent)] text-white shadow-sm'
-                    : 'bg-surface-secondary border-subtle text-muted hover:text-white'
+                    ? 'bg-[color-mix(in_oklch,var(--primary-accent)_25%,transparent)] border-[var(--primary-accent)] text-[var(--text-strong)] shadow-sm'
+                    : 'bg-surface-secondary border-subtle text-muted hover:text-[var(--text-strong)]'
                 }`}
                 title="Row (Horizontal)"
               >
@@ -160,8 +160,8 @@ export default function TemplatePropertiesInspector({
                 onClick={() => onUpdateContainer(selectedNode.id, { direction: 'column' })}
                 className={`flex flex-col items-center justify-center gap-1 p-2 rounded-lg border text-[11px] font-bold transition cursor-pointer ${
                   resolveDirection(selectedNode as FlexContainerNode, selectedNode.id === 'root-container') === 'column'
-                    ? 'bg-[color-mix(in_oklch,var(--primary-accent)_25%,transparent)] border-[var(--primary-accent)] text-white shadow-sm'
-                    : 'bg-surface-secondary border-subtle text-muted hover:text-white'
+                    ? 'bg-[color-mix(in_oklch,var(--primary-accent)_25%,transparent)] border-[var(--primary-accent)] text-[var(--text-strong)] shadow-sm'
+                    : 'bg-surface-secondary border-subtle text-muted hover:text-[var(--text-strong)]'
                 }`}
                 title="Column (Vertical)"
               >
@@ -189,7 +189,7 @@ export default function TemplatePropertiesInspector({
                   onClick={() => onUpdateContainer(selectedNode.id, { gap: opt.value })}
                   className={`flex-1 min-w-[36px] py-1 text-[11px] font-semibold rounded border transition cursor-pointer ${
                     selectedNode.gap === opt.value
-                      ? 'bg-[color-mix(in_oklch,var(--primary-accent)_30%,transparent)] text-white border-[var(--primary-accent)]'
+                      ? 'bg-[color-mix(in_oklch,var(--primary-accent)_30%,transparent)] text-[var(--text-strong)] border-[var(--primary-accent)]'
                       : 'bg-surface-secondary text-muted border-subtle hover:text-strong'
                   }`}
                 >
@@ -214,7 +214,7 @@ export default function TemplatePropertiesInspector({
                 }`}
               >
                 <span
-                  className={`absolute top-1 left-1 w-4 h-4 rounded-full bg-white transition-transform ${
+                  className={`absolute top-1 left-1 w-4 h-4 rounded-full bg-label transition-transform ${
                     selectedNode.wrap ? 'translate-x-5' : 'translate-x-0'
                   }`}
                 />
@@ -272,7 +272,7 @@ export default function TemplatePropertiesInspector({
               }`}
             >
               <span
-                className={`absolute top-1 left-1 w-4 h-4 rounded-full bg-white transition-transform ${
+                className={`absolute top-1 left-1 w-4 h-4 rounded-full bg-label transition-transform ${
                   selectedNode.isCard ? 'translate-x-5' : 'translate-x-0'
                 }`}
               />
@@ -297,8 +297,8 @@ export default function TemplatePropertiesInspector({
                   onClick={() => onUpdateContainer(selectedNode.id, { padding: `${pad}px` })}
                   className={`py-1 text-xs font-semibold rounded-lg border transition cursor-pointer text-center ${
                     resolvePaddingCss(selectedNode.padding) === `${pad}px`
-                      ? 'bg-[var(--primary-accent)] text-white border-[var(--primary-accent)] shadow-xs'
-                      : 'bg-surface-secondary text-muted border-subtle hover:text-white hover:border-[var(--primary-accent)]'
+                      ? 'bg-[var(--primary-accent)] text-label border-[var(--primary-accent)] shadow-xs'
+                      : 'bg-surface-secondary text-muted border-subtle hover:text-[var(--text-strong)] hover:border-[var(--primary-accent)]'
                   }`}
                 >
                   {pad}px
@@ -370,8 +370,8 @@ export default function TemplatePropertiesInspector({
                 onClick={() => onUpdateComponent(selectedNode.id, { sizing: { type: 'fill' } })}
                 className={`py-1.5 px-2 rounded-lg text-[11px] font-semibold border transition cursor-pointer text-center ${
                   selectedNode.sizing.type === 'fill'
-                    ? 'bg-[color-mix(in_oklch,var(--primary-accent)_30%,transparent)] text-white border-[var(--primary-accent)]'
-                    : 'bg-surface-secondary text-muted border-subtle hover:text-white'
+                    ? 'bg-[color-mix(in_oklch,var(--primary-accent)_30%,transparent)] text-[var(--text-strong)] border-[var(--primary-accent)]'
+                    : 'bg-surface-secondary text-muted border-subtle hover:text-[var(--text-strong)]'
                 }`}
                 title="Expands to fill available row or column space"
               >
@@ -383,8 +383,8 @@ export default function TemplatePropertiesInspector({
                 onClick={() => onUpdateComponent(selectedNode.id, { sizing: { type: 'fixed', value: '300px' } })}
                 className={`py-1.5 px-2 rounded-lg text-[11px] font-semibold border transition cursor-pointer text-center ${
                   selectedNode.sizing.type === 'fixed'
-                    ? 'bg-[color-mix(in_oklch,var(--primary-accent)_30%,transparent)] text-white border-[var(--primary-accent)]'
-                    : 'bg-surface-secondary text-muted border-subtle hover:text-white'
+                    ? 'bg-[color-mix(in_oklch,var(--primary-accent)_30%,transparent)] text-[var(--text-strong)] border-[var(--primary-accent)]'
+                    : 'bg-surface-secondary text-muted border-subtle hover:text-[var(--text-strong)]'
                 }`}
                 title="Fixed width (e.g. 300px for sidebar or media)"
               >
@@ -396,8 +396,8 @@ export default function TemplatePropertiesInspector({
                 onClick={() => onUpdateComponent(selectedNode.id, { sizing: { type: 'auto' } })}
                 className={`py-1.5 px-2 rounded-lg text-[11px] font-semibold border transition cursor-pointer text-center ${
                   selectedNode.sizing.type === 'auto'
-                    ? 'bg-[color-mix(in_oklch,var(--primary-accent)_30%,transparent)] text-white border-[var(--primary-accent)]'
-                    : 'bg-surface-secondary text-muted border-subtle hover:text-white'
+                    ? 'bg-[color-mix(in_oklch,var(--primary-accent)_30%,transparent)] text-[var(--text-strong)] border-[var(--primary-accent)]'
+                    : 'bg-surface-secondary text-muted border-subtle hover:text-[var(--text-strong)]'
                 }`}
                 title="Sizes naturally to content"
               >
@@ -436,8 +436,8 @@ export default function TemplatePropertiesInspector({
                   onClick={() => onUpdateComponent(selectedNode.id, { variant: opt.variant })}
                   className={`flex items-center gap-2 p-2 rounded-lg border text-xs font-medium transition cursor-pointer text-left ${
                     selectedNode.variant === opt.variant
-                      ? 'bg-[color-mix(in_oklch,var(--primary-accent)_25%,transparent)] border-[var(--primary-accent)] text-white'
-                      : 'bg-surface-secondary border-subtle text-muted hover:text-white'
+                      ? 'bg-[color-mix(in_oklch,var(--primary-accent)_25%,transparent)] border-[var(--primary-accent)] text-[var(--text-strong)]'
+                      : 'bg-surface-secondary border-subtle text-muted hover:text-[var(--text-strong)]'
                   }`}
                 >
                   <span className="text-sm">{opt.icon}</span>

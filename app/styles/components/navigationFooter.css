@@ -322,3 +322,42 @@
   outline: 2px solid var(--editor-focus);
   outline-offset: 3px;
 }
+
+/* Theme selector: Dark / Light / New 'n Shiny, beside the seed color controls. */
+.theme-selector {
+  display: flex;
+  align-items: center;
+  gap: 0.125rem;
+  flex-shrink: 0;
+  padding: 0.2rem;
+  background: var(--editor-surface);
+  border: 1px solid var(--editor-border);
+  border-radius: 0.5rem;
+}
+
+.theme-selector-btn {
+  padding: 0.25rem 0.5rem;
+  border: 1px solid transparent;
+  border-radius: 0.3rem;
+  font-size: 0.65rem;
+  font-weight: 600;
+  line-height: 1.1;
+  white-space: nowrap;
+  color: var(--editor-text);
+  cursor: pointer;
+}
+
+.theme-selector-btn:hover {
+  border-color: var(--pole-glint);
+}
+
+.theme-selector-btn-active {
+  color: var(--flyout-selected);
+  border-color: var(--flyout-selected);
+  background: color-mix(in oklch, var(--secondary-accent) 18%, transparent);
+}
+
+.theme-selector-btn:focus-visible {
+  outline: 2px solid var(--editor-focus);
+  outline-offset: 1px;
+}

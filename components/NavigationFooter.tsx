@@ -16,6 +16,7 @@ import {
 } from '@/components/icons/PanelIcons';
 import { useUIPreferences } from '@/context/UIPreferencesContext';
 import OklchSeedControls from '@/components/OklchSeedControls';
+import ThemeSelector from '@/components/ThemeSelector';
 
 /* ==========================================================================
    1. TYPE DEFINITIONS & INTERFACES
@@ -130,8 +131,9 @@ export default function NavigationFooter({
       {/* --------------------------------------------------------------------
           2.3 CENTER: LIVE THEME COLORS
           -------------------------------------------------------------------- */}
-      <div className="relative z-10">
+      <div className="relative z-10 flex items-center gap-2">
         <OklchSeedControls />
+        <ThemeSelector />
       </div>
 
       {/* --------------------------------------------------------------------

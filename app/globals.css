@@ -6,6 +6,7 @@
 @import "./styles/themes/theme-oklch.css";
 @import "./styles/themes/theme-oklch-light.css";
 @import "./styles/themes/theme-semantic.css";
+@import "./styles/themes/theme-oklch-new-n-shiny.css";
 
 /* 2. Functional Component Stylesheets */
 @import "./styles/components/TreePrimitives.css";
@@ -94,6 +95,41 @@ body {
   --color-content-primary: var(--text-primary);
   --color-content-secondary: var(--text-secondary);
   --color-content-muted: var(--text-muted);
+}
+
+/* Neutral poles (theme-oklch-dark.css / -light.css) as Tailwind colors: bg-shade/40, hover:border-glint,
+   text-label. Inline so they resolve where used and follow the active light/dark mode. */
+@theme inline {
+  --color-shade: var(--pole-shade);
+  --color-glint: var(--pole-glint);
+  --color-sheen: var(--pole-sheen);
+  --color-label: var(--pole-label);
+  --color-surface-pole: var(--pole-surface);
+
+  /* Tailwind's stock slate/amber/red/emerald/rose shades are fixed colors, so the template editor's
+     utility classes (text-slate-400, bg-amber-500/10, ...) are re-pointed at theme roles instead.
+     Only the shades the app uses are remapped; add one here rather than using a new stock shade. */
+  --color-slate-950: var(--popover-surface-bg);
+  --color-slate-900: var(--panel-surface-bg);
+  --color-slate-800: var(--card-surface-hover);
+  --color-slate-700: var(--panel-border-subtle);
+  --color-slate-500: var(--text-muted);
+  --color-slate-400: var(--text-muted);
+  --color-slate-300: var(--text-secondary);
+  --color-slate-200: var(--text-primary);
+  --color-amber-950: color-mix(in oklch, var(--brand-secondary-amber) 20%, var(--pole-surface));
+  --color-amber-500: var(--brand-secondary-amber);
+  --color-amber-400: var(--brand-secondary-amber);
+  --color-amber-300: var(--flyout-title);
+  --color-amber-200: var(--flyout-title);
+  --color-red-500: var(--status-danger);
+  --color-red-400: var(--tree-menu-danger-text);
+  --color-red-200: var(--tree-menu-danger-text);
+  --color-rose-500: var(--status-danger);
+  --color-rose-400: var(--tree-menu-danger-text);
+  --color-rose-300: var(--tree-menu-danger-text);
+  --color-emerald-500: var(--status-ok);
+  --color-emerald-400: var(--tmpl-alert-success-text);
 }
 
 /* ==========================================================================

@@ -1,0 +1,138 @@
+/* New 'n Shiny: a near-black workspace with slate panels and amber accents, after the design mockup.
+   It reuses the shared OKLCH recipe (theme-oklch.css) and Dark's role coefficients, then re-states
+   the chrome that recipe would otherwise tint with the blue seed.
+
+   Five colors (the footer's pickers override them at runtime):
+     --oklch-bg        Background        behind everything: canvas, grid
+     --oklch-primary   Primary           header and footer bars
+     --oklch-blue      Primary Accent    side and bottom panels, their rules; buttons, focus
+     --oklch-secondary Secondary         tree submenus, search menus, template toolbars/drop-downs
+     --oklch-yellow    Secondary Accent  text, edges and selected states inside those menus/toolbars
+   Surfaces are the color mixed into the background, so a picked color reads as a dark tint of
+   itself rather than a bright slab. */
+[data-theme='theme-oklch-new-n-shiny'] {
+  --oklch-bg: rgba(8, 13, 16, 1);
+  --oklch-primary: rgba(51, 65, 85, 1);
+  --oklch-blue: rgba(100, 116, 139, 1);
+  --oklch-secondary: rgba(68, 64, 60, 1);
+  --oklch-yellow: rgba(245, 158, 11, 1);
+
+  /* Header / footer (Primary) */
+  --shiny-bar: color-mix(in oklch, var(--oklch-primary) 30%, var(--oklch-bg));
+  --shiny-bar-deep: color-mix(in oklch, var(--oklch-primary) 16%, var(--oklch-bg));
+  --shiny-bar-line: color-mix(in oklch, var(--oklch-primary) 55%, var(--oklch-bg));
+
+  /* Side and bottom panels (Primary Accent) */
+  --shiny-panel: color-mix(in oklch, var(--oklch-blue) 15%, var(--oklch-bg));
+  --shiny-panel-raised: color-mix(in oklch, var(--oklch-blue) 24%, var(--oklch-bg));
+  --shiny-popover: color-mix(in oklch, var(--oklch-blue) 11%, var(--oklch-bg));
+  --shiny-line: color-mix(in oklch, var(--oklch-blue) 35%, var(--oklch-bg));
+  --shiny-line-strong: color-mix(in oklch, var(--oklch-blue) 58%, var(--oklch-bg));
+
+  /* Menus and toolbars (Secondary), with the Secondary Accent as their ink and edge */
+  --shiny-menu: color-mix(in oklch, var(--oklch-secondary) 28%, var(--oklch-bg));
+  --shiny-menu-deep: color-mix(in oklch, var(--oklch-secondary) 18%, var(--oklch-bg));
+  --shiny-menu-line: color-mix(in oklch, var(--brand-secondary-amber) 28%, var(--shiny-menu));
+  --shiny-amber-edge: color-mix(in oklch, var(--brand-secondary-amber) 70%, var(--oklch-bg));
+  --shiny-menu-ink: var(--brand-secondary-amber);
+  --shiny-menu-ink-soft: color-mix(in oklch, var(--brand-secondary-amber) 72%, var(--shiny-menu));
+  --menu-ink-soft: var(--shiny-menu-ink-soft);
+  --shiny-none: linear-gradient(transparent, transparent);
+
+  /* Flyouts and the two editor toolbars: no wash, a whisper of glow. */
+  --flyout-glow-top: 0%;
+  --flyout-glow-outer: 22%;
+
+  /* Ink outside the menus */
+  --text-primary: oklch(from var(--oklch-bg) 0.96 0.008 h);
+  --text-secondary: oklch(from var(--oklch-bg) 0.84 0.02 h);
+  --text-muted: oklch(from var(--oklch-bg) 0.68 0.03 h);
+
+  /* Background */
+  --canvas-bg-primary: var(--oklch-bg);
+  --studio-grid-bg: var(--oklch-bg);
+  --studio-grid-line: oklch(from var(--oklch-bg) calc(l + 0.05) c h / 0.7);
+  --studio-grid-glow-top-left-core: transparent;
+  --studio-grid-glow-top-left-edge: transparent;
+  --studio-grid-glow-bottom-right-core: transparent;
+  --studio-grid-glow-bottom-right-edge: transparent;
+  --studio-grid-vignette: transparent;
+
+  /* Header and footer bars */
+  --nav-header-background: linear-gradient(180deg, var(--shiny-bar), var(--shiny-bar-deep));
+  --nav-header-border-bottom: 1px solid var(--shiny-bar-line);
+  --nav-header-shadow: 0 1px 0 var(--shadow-black-50);
+  --nav-header-flare-bg: var(--shiny-none);
+  --nav-header-texture-bg: var(--shiny-none);
+  --nav-footer-background: linear-gradient(0deg, var(--shiny-bar), var(--shiny-bar-deep));
+  --nav-footer-border-top: 1px solid var(--shiny-bar-line);
+  --nav-footer-shadow: 0 -1px 0 var(--shadow-black-50);
+  --nav-footer-flare-bg: var(--shiny-none);
+  --nav-footer-texture-bg: var(--shiny-none);
+
+  /* Side and bottom panels */
+  --panel-surface-bg: var(--shiny-panel);
+  --card-surface-hover: var(--shiny-panel-raised);
+  --popover-surface-bg: var(--shiny-popover);
+  --panel-border-subtle: var(--shiny-line);
+  --panel-border-strong: var(--shiny-line-strong);
+  --tree-panel-bg: var(--shiny-panel);
+  --tree-panel-border: var(--shiny-line);
+  --tree-panel-flare-bg: var(--shiny-none);
+  --tree-panel-texture-bg: var(--shiny-none);
+  --right-panel-bg: var(--shiny-panel);
+  --right-panel-border: var(--shiny-line);
+  --right-panel-flare-bg: var(--shiny-none);
+  --right-panel-texture-bg: var(--shiny-none);
+
+  /* Selection: an amber outline over a faint amber fill. */
+  --tree-item-active-bg: color-mix(in oklch, var(--brand-secondary-amber) 6%, transparent);
+  --tree-item-active-border: var(--shiny-amber-edge);
+  --tree-item-hover-bg: color-mix(in oklch, var(--text-primary) 6%, transparent);
+  --tree-search-input-bg: var(--oklch-bg);
+  --tree-search-input-border: var(--shiny-line);
+  --tmpl-item-selected-bg: color-mix(in oklch, var(--brand-secondary-amber) 9%, var(--shiny-panel));
+  --tmpl-item-selected-border: var(--shiny-amber-edge);
+
+  /* Solid action buttons (Place, Done) stay a true blue whatever the slate primary accent is. */
+  --content-btn-primary-bg: oklch(0.58 0.19 259);
+  --content-btn-primary-hover: oklch(0.64 0.19 259);
+
+  /* Tree gear menus and Advanced Search (Secondary + Secondary Accent) */
+  --tree-menu-shell-bg: var(--shiny-menu);
+  --tree-menu-shell-border: var(--shiny-amber-edge);
+  --tree-menu-shell-shadow: 0 0 22px 0 oklch(from var(--brand-secondary-amber) l c h / 0.22), 0 16px 32px var(--shadow-black-50);
+  --tree-menu-header-bg: var(--shiny-none);
+  --tree-menu-header-border: var(--shiny-menu-line);
+  --tree-menu-header-title: var(--shiny-menu-ink);
+  --tree-menu-divider: var(--shiny-menu-line);
+  --tree-menu-form-bg: var(--shiny-menu);
+  --tree-menu-input-bg: var(--shiny-menu-deep);
+  --tree-menu-item-text: var(--shiny-menu-ink);
+  --tree-menu-item-subtext: var(--shiny-menu-ink-soft);
+  --tree-menu-item-hover-text: var(--text-primary);
+  --tree-menu-item-hover-subtext: var(--text-secondary);
+  --tree-filter-option-label: var(--shiny-menu-ink);
+
+  /* The flyout family (TreeSubMenu, HoverHint, the toolbars' drop-downs). */
+  --flyout-card-border: var(--shiny-menu-line);
+  --flyout-card-glow: transparent;
+  --flyout-card-glow-fade: transparent;
+  --flyout-card-base: var(--shiny-menu);
+  --flyout-tile-bg: var(--shiny-menu-deep);
+  --flyout-tile-border: var(--shiny-amber-edge);
+  --flyout-divider: var(--shiny-menu-line);
+  --flyout-shell-bg: var(--shiny-menu);
+  --flyout-shell-border: var(--shiny-amber-edge);
+  --flyout-body-top: var(--shiny-menu);
+  --flyout-body-bottom: var(--shiny-menu);
+  --flyout-title: var(--shiny-menu-ink);
+  --flyout-selected: var(--shiny-menu-ink);
+  --flyout-heading: var(--shiny-menu-ink);
+  --flyout-tab-band: var(--shiny-menu-deep);
+  --flyout-tab-idle: var(--shiny-menu);
+  --flyout-tab-active-top: color-mix(in oklch, var(--brand-secondary-amber) 16%, var(--shiny-menu));
+  --flyout-tab-active-bottom: color-mix(in oklch, var(--brand-secondary-amber) 9%, var(--shiny-menu));
+  --flyout-tab-active-border: var(--shiny-amber-edge);
+}
+

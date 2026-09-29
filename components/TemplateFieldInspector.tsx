@@ -136,7 +136,7 @@ function TemplateRootTreeRow({
                 onCloseEditor();
               }}
               title="Done editing template (restores workspace pins & tabs)"
-              className="text-[10px] font-bold px-2 py-0.5 rounded bg-[var(--primary-accent)] text-white hover:opacity-90 transition cursor-pointer flex items-center gap-1 shadow-sm"
+              className="text-[10px] font-bold px-2 py-0.5 rounded bg-[var(--primary-accent)] text-label hover:opacity-90 transition cursor-pointer flex items-center gap-1 shadow-sm"
             >
               <span>✓</span>
               <span>Done</span>
@@ -262,7 +262,7 @@ function TemplateFieldTreeRow({
           <div className="min-w-0 flex-1">
             <span
               className={`text-xs font-medium truncate block ${
-                isSelected ? 'text-white font-bold' : 'text-slate-200'
+                isSelected ? 'text-[var(--text-strong)] font-bold' : 'text-slate-200'
               }`}
             >
               {field.label}
@@ -295,7 +295,7 @@ function TemplateFieldTreeRow({
                 onMoveField(field.id, 'up');
               }}
               disabled={idx === 0}
-              className="p-1 text-[10px] text-muted hover:text-white disabled:opacity-20 cursor-pointer"
+              className="p-1 text-[10px] text-muted hover:text-[var(--text-strong)] disabled:opacity-20 cursor-pointer"
               title="Move Up"
             >
               ▲
@@ -307,7 +307,7 @@ function TemplateFieldTreeRow({
                 onMoveField(field.id, 'down');
               }}
               disabled={idx === totalCount - 1}
-              className="p-1 text-[10px] text-muted hover:text-white disabled:opacity-20 cursor-pointer"
+              className="p-1 text-[10px] text-muted hover:text-[var(--text-strong)] disabled:opacity-20 cursor-pointer"
               title="Move Down"
             >
               ▼
@@ -458,7 +458,7 @@ export default function TemplateFieldInspector({
           <button
             type="button"
             onClick={() => onPlaceLoremIpsum()}
-            className="px-2 py-1 text-[11px] font-medium rounded-lg bg-[color-mix(in_oklch,var(--primary-accent)_18%,transparent)] hover:bg-[color-mix(in_oklch,var(--primary-accent)_32%,transparent)] border border-[color-mix(in_oklch,var(--primary-accent)_35%,transparent)] text-[var(--primary-accent)] hover:text-white transition cursor-pointer shrink-0"
+            className="px-2 py-1 text-[11px] font-medium rounded-lg bg-[color-mix(in_oklch,var(--primary-accent)_18%,transparent)] hover:bg-[color-mix(in_oklch,var(--primary-accent)_32%,transparent)] border border-[color-mix(in_oklch,var(--primary-accent)_35%,transparent)] text-[var(--primary-accent)] hover:text-[var(--text-strong)] transition cursor-pointer shrink-0"
             title="Place into the active container"
           >
             + Place
@@ -484,7 +484,7 @@ export default function TemplateFieldInspector({
                 key={f.id}
                 type="button"
                 onClick={() => onPlaceField(f.id)}
-                className="px-2 py-1 text-[11px] font-medium rounded-lg bg-amber-500/15 hover:bg-amber-500/30 border border-amber-500/30 text-amber-200 hover:text-white transition cursor-pointer flex items-center gap-1.5 shadow-sm"
+                className="px-2 py-1 text-[11px] font-medium rounded-lg bg-amber-500/15 hover:bg-amber-500/30 border border-amber-500/30 text-amber-200 hover:text-[var(--text-strong)] transition cursor-pointer flex items-center gap-1.5 shadow-sm"
                 title={`Place ${f.label} into active container`}
               >
                 <span className="font-bold text-amber-400">+</span>
@@ -507,7 +507,7 @@ export default function TemplateFieldInspector({
             <button
               type="button"
               onClick={() => setShowAddMenu((p) => !p)}
-              className="text-[10px] font-semibold text-[var(--primary-accent)] hover:text-white flex items-center gap-1 px-2 py-0.5 rounded-md bg-[color-mix(in_oklch,var(--primary-accent)_15%,transparent)] hover:bg-[var(--primary-accent)] border border-[color-mix(in_oklch,var(--primary-accent)_30%,transparent)] transition cursor-pointer"
+              className="text-[10px] font-semibold text-[var(--primary-accent)] hover:text-[var(--text-strong)] flex items-center gap-1 px-2 py-0.5 rounded-md bg-[color-mix(in_oklch,var(--primary-accent)_15%,transparent)] hover:bg-[var(--primary-accent)] border border-[color-mix(in_oklch,var(--primary-accent)_30%,transparent)] transition cursor-pointer"
             >
               <span>➕</span>
               <span>Add Field</span>
@@ -516,7 +516,7 @@ export default function TemplateFieldInspector({
             {/* Quick Add Field Type Menu */}
             {showAddMenu && (
               <div
-                className="absolute right-0 top-full mt-1 w-44 bg-[var(--surface-panel,#0f172a)] border border-[var(--primary-border-strong,#334155)] rounded-xl shadow-2xl z-50 p-1 flex flex-col gap-0.5"
+                className="absolute right-0 top-full mt-1 w-44 bg-[var(--surface-panel)] border border-[var(--primary-border-strong)] rounded-xl shadow-2xl z-50 p-1 flex flex-col gap-0.5"
                 onMouseLeave={() => setShowAddMenu(false)}
               >
                 <div className="px-2 py-1 text-[10px] font-bold text-muted uppercase tracking-wider border-b border-subtle mb-1">

@@ -130,7 +130,7 @@
 .tree-applied-filters,
 .tree-item-selected,
 .tree-item-selected:hover {
-  --applied-filter-highlight: color-mix(in oklch, var(--primary-accent) 65%, white);
+  --applied-filter-highlight: color-mix(in oklch, var(--primary-accent) 65%, var(--pole-sheen));
   border: 1.5px solid var(--applied-filter-highlight);
   background: linear-gradient(
     135deg,

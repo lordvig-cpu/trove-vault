@@ -389,9 +389,9 @@ export const PanelFolderTabSvg = ({
   >
     <defs>
       <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stopColor="var(--tree-tab-active-top, rgba(18, 94, 158, 1))" className="tab-grad-top" />
-        <stop offset="45%" stopColor="var(--tree-tab-active-mid, rgba(10, 64, 112, 1))" className="tab-grad-mid" />
-        <stop offset="100%" stopColor="var(--tree-tab-active-bottom, rgba(5, 36, 70, 1))" className="tab-grad-bottom" />
+        <stop offset="0%" stopColor="var(--tree-tab-active-top)" className="tab-grad-top" />
+        <stop offset="45%" stopColor="var(--tree-tab-active-mid)" className="tab-grad-mid" />
+        <stop offset="100%" stopColor="var(--tree-tab-active-bottom)" className="tab-grad-bottom" />
       </linearGradient>
     </defs>
 

@@ -150,7 +150,7 @@ export default function TemplateFieldActionMenu({
               if (e.key === 'Enter') handleLabelBlur();
             }}
             placeholder="e.g. Player Count"
-            className="w-full px-2 py-1 bg-surface-panel border border-[var(--primary-border-strong,#334155)] rounded-md text-xs text-strong focus:border-[var(--primary-accent)] focus:outline-none transition"
+            className="w-full px-2 py-1 bg-surface-panel border border-[var(--primary-border-strong)] rounded-md text-xs text-strong focus:border-[var(--primary-accent)] focus:outline-none transition"
           />
         </div>
 
@@ -168,7 +168,7 @@ export default function TemplateFieldActionMenu({
               if (e.key === 'Enter') handleKeyBlur();
             }}
             placeholder="e.g. player_count"
-            className="w-full px-2 py-1 font-mono bg-surface-panel border border-[var(--primary-border-strong,#334155)] rounded-md text-[11px] text-muted focus:text-strong focus:border-[var(--primary-accent)] focus:outline-none transition"
+            className="w-full px-2 py-1 font-mono bg-surface-panel border border-[var(--primary-border-strong)] rounded-md text-[11px] text-muted focus:text-strong focus:border-[var(--primary-accent)] focus:outline-none transition"
           />
         </div>
 
@@ -185,7 +185,7 @@ export default function TemplateFieldActionMenu({
                 onClick={() => handleTypeChange(ft.type)}
                 className={`flex items-center gap-1.5 px-2 py-1 rounded-md text-[11px] border transition cursor-pointer text-left ${
                   fieldType === ft.type
-                    ? 'bg-[color-mix(in_oklch,var(--primary-accent)_20%,transparent)] border-[var(--primary-accent)] text-white font-bold'
+                    ? 'bg-[color-mix(in_oklch,var(--primary-accent)_20%,transparent)] border-[var(--primary-accent)] text-[var(--text-strong)] font-bold'
                     : 'bg-surface-panel border-subtle text-muted hover:text-strong hover:bg-slate-800'
                 }`}
               >

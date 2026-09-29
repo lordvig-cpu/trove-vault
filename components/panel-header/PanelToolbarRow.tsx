@@ -102,9 +102,9 @@ export default function PanelToolbarRow({
             }
           >
             {position === 'left' ? (
-              <DockRightPanelIcon className="w-3.5 h-3.5 text-[var(--tree-action-icon,rgba(109,170,209,0.85))] group-hover:text-white" isOpen={true} />
+              <DockRightPanelIcon className="w-3.5 h-3.5 text-[var(--tree-action-icon)] group-hover:text-[var(--text-strong)]" isOpen={true} />
             ) : (
-              <DockLeftPanelIcon className="w-3.5 h-3.5 text-[var(--tree-action-icon,rgba(109,170,209,0.85))] group-hover:text-white" isOpen={true} />
+              <DockLeftPanelIcon className="w-3.5 h-3.5 text-[var(--tree-action-icon)] group-hover:text-[var(--text-strong)]" isOpen={true} />
             )}
           </button>
         )}
@@ -119,7 +119,7 @@ export default function PanelToolbarRow({
               title={`Dock ${panelName} to Left`}
               aria-label={`Dock ${panelName} to Left`}
             >
-              <DockLeftPanelIcon className="w-3.5 h-3.5 text-[var(--tree-action-icon,rgba(109,170,209,0.85))] group-hover:text-white" isOpen={true} />
+              <DockLeftPanelIcon className="w-3.5 h-3.5 text-[var(--tree-action-icon)] group-hover:text-[var(--text-strong)]" isOpen={true} />
             </button>
             <button
               type="button"
@@ -128,7 +128,7 @@ export default function PanelToolbarRow({
               title={`Dock ${panelName} to Right`}
               aria-label={`Dock ${panelName} to Right`}
             >
-              <DockRightPanelIcon className="w-3.5 h-3.5 text-[var(--tree-action-icon,rgba(109,170,209,0.85))] group-hover:text-white" isOpen={true} />
+              <DockRightPanelIcon className="w-3.5 h-3.5 text-[var(--tree-action-icon)] group-hover:text-[var(--text-strong)]" isOpen={true} />
             </button>
           </>
         )}
@@ -144,12 +144,12 @@ export default function PanelToolbarRow({
           {!isPinned ? (
             <PinOutlineIcon
               position={position}
-              className="w-3.5 h-3.5 text-[var(--tree-action-icon,rgba(109,170,209,0.85))] group-hover:text-white"
+              className="w-3.5 h-3.5 text-[var(--tree-action-icon)] group-hover:text-[var(--text-strong)]"
             />
           ) : (
             <PinFilledIcon
               position={position}
-              className="w-3.5 h-3.5 text-[var(--tree-action-icon,rgba(109,170,209,0.85))] group-hover:text-white"
+              className="w-3.5 h-3.5 text-[var(--tree-action-icon)] group-hover:text-[var(--text-strong)]"
             />
           )}
         </button>
@@ -163,7 +163,7 @@ export default function PanelToolbarRow({
             className="primary-side-panel-pin-btn group"
             title={`Close ${panelName}`}
           >
-            <span className="inline-block origin-center transition-all duration-200 ease-out group-hover:scale-115 text-xs text-[var(--tree-action-icon,rgba(109,170,209,0.85))] group-hover:text-white px-1 select-none">
+            <span className="inline-block origin-center transition-all duration-200 ease-out group-hover:scale-115 text-xs text-[var(--tree-action-icon)] group-hover:text-[var(--text-strong)] px-1 select-none">
               ✕
             </span>
           </button>

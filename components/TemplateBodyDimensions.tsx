@@ -159,7 +159,7 @@ export default function TemplateBodyDimensions({ root, onUpdate }: TemplateBodyD
         value={sliderValue}
         onChange={(e) => commitNum(parseInt(e.target.value, 10))}
         aria-label="Maximum content width"
-        className="w-full h-1.5 rounded-full cursor-pointer accent-[var(--flyout-selected)] bg-black/40"
+        className="w-full h-1.5 rounded-full cursor-pointer accent-[var(--flyout-selected)] bg-shade/40"
         title={`Adjust content width: ${isFill ? 'Fill' : `${Math.round(num!)}${unit}`}`}
       />
     </div>

@@ -18,21 +18,21 @@
   justify-content: space-between;
   padding: 0.5rem 0.625rem;
   border-radius: 0.625rem;
-  background-color: var(--surface-secondary, rgba(15, 23, 42, 0.6));
-  border: 1px solid var(--primary-border-subtle, rgba(51, 65, 85, 0.5));
+  background-color: var(--surface-panel);
+  border: 1px solid var(--primary-border-subtle);
   transition: all 180ms ease;
   cursor: pointer;
 }
 
 .tmpl-tree-root:hover {
-  border-color: var(--primary-border-strong, rgba(99, 102, 241, 0.4));
-  background-color: var(--surface-primary-hover, rgba(30, 41, 59, 0.7));
+  border-color: var(--primary-border-strong);
+  background-color: var(--surface-primary-hover);
 }
 
 .tmpl-tree-root-selected {
-  border-color: var(--secondary-accent, #60a5fa);
-  background-color: var(--secondary-selection-bg, rgba(59, 130, 246, 0.12));
-  box-shadow: 0 0 0 1px var(--secondary-accent, #60a5fa);
+  border-color: var(--secondary-accent);
+  background-color: var(--secondary-selection-bg);
+  box-shadow: 0 0 0 1px var(--secondary-accent);
 }
 
 /* Tree Children Container */
@@ -42,7 +42,7 @@
   gap: 0.375rem;
   padding-left: 0.75rem;
   margin-left: 0.625rem;
-  border-left: 1px dashed var(--primary-border-subtle, rgba(71, 85, 105, 0.4));
+  border-left: 1px dashed var(--primary-border-subtle);
 }
 
 /* Tree Field Item Row */
@@ -52,23 +52,23 @@
   justify-content: space-between;
   padding: 0.4rem 0.5rem;
   border-radius: 0.5rem;
-  background-color: var(--primary-tmpl-item-bg, rgba(15, 23, 42, 0.45));
-  border: 1px solid var(--primary-border-subtle, rgba(51, 65, 85, 0.4));
+  background-color: var(--primary-tmpl-item-bg);
+  border: 1px solid var(--primary-border-subtle);
   transition: all 150ms cubic-bezier(0.16, 1, 0.3, 1);
   cursor: pointer;
   gap: 0.5rem;
 }
 
 .tmpl-field-item:hover {
-  background-color: var(--primary-tree-item-hover-bg, rgba(30, 41, 59, 0.7));
-  border-color: var(--primary-border-strong, rgba(100, 116, 139, 0.6));
+  background-color: var(--primary-tree-item-hover-bg);
+  border-color: var(--primary-border-strong);
   transform: translateX(1px);
 }
 
 .tmpl-field-item-selected {
-  background-color: var(--secondary-selection-bg, rgba(59, 130, 246, 0.15));
-  border-color: var(--secondary-accent, #60a5fa);
-  box-shadow: 0 0 0 1px var(--secondary-accent, #60a5fa);
+  background-color: var(--secondary-selection-bg);
+  border-color: var(--secondary-accent);
+  box-shadow: 0 0 0 1px var(--secondary-accent);
 }
 
 /* Field Type Badges */
@@ -86,42 +86,42 @@
 }
 
 .tmpl-type-badge-text {
-  color: #60a5fa;
-  background-color: rgba(59, 130, 246, 0.15);
-  border: 1px solid rgba(59, 130, 246, 0.3);
+  color: oklch(from var(--primary-accent) var(--badge-ink-l) var(--badge-ink-c) h);
+  background-color: oklch(from var(--primary-accent) var(--badge-ink-l) var(--badge-ink-c) h / 0.15);
+  border: 1px solid oklch(from var(--primary-accent) var(--badge-ink-l) var(--badge-ink-c) h / 0.3);
 }
 
 .tmpl-type-badge-number {
-  color: #34d399;
-  background-color: rgba(16, 185, 129, 0.15);
-  border: 1px solid rgba(16, 185, 129, 0.3);
+  color: oklch(from var(--primary-accent) var(--badge-ink-l) var(--badge-ink-c) var(--badge-number-hue));
+  background-color: oklch(from var(--primary-accent) var(--badge-ink-l) var(--badge-ink-c) var(--badge-number-hue) / 0.15);
+  border: 1px solid oklch(from var(--primary-accent) var(--badge-ink-l) var(--badge-ink-c) var(--badge-number-hue) / 0.3);
 }
 
 .tmpl-type-badge-select {
-  color: #fbbf24;
-  background-color: rgba(245, 158, 11, 0.15);
-  border: 1px solid rgba(245, 158, 11, 0.3);
+  color: oklch(from var(--secondary-accent) var(--badge-ink-l) var(--badge-ink-c) h);
+  background-color: oklch(from var(--secondary-accent) var(--badge-ink-l) var(--badge-ink-c) h / 0.15);
+  border: 1px solid oklch(from var(--secondary-accent) var(--badge-ink-l) var(--badge-ink-c) h / 0.3);
 }
 
 .tmpl-type-badge-boolean {
-  color: #a78bfa;
-  background-color: rgba(139, 92, 246, 0.15);
-  border: 1px solid rgba(139, 92, 246, 0.3);
+  color: oklch(from var(--primary-accent) var(--badge-ink-l) var(--badge-ink-c) var(--badge-boolean-hue));
+  background-color: oklch(from var(--primary-accent) var(--badge-ink-l) var(--badge-ink-c) var(--badge-boolean-hue) / 0.15);
+  border: 1px solid oklch(from var(--primary-accent) var(--badge-ink-l) var(--badge-ink-c) var(--badge-boolean-hue) / 0.3);
 }
 
 .tmpl-type-badge-date {
-  color: #f472b6;
-  background-color: rgba(236, 72, 153, 0.15);
-  border: 1px solid rgba(236, 72, 153, 0.3);
+  color: oklch(from var(--primary-accent) var(--badge-ink-l) var(--badge-ink-c) var(--badge-date-hue));
+  background-color: oklch(from var(--primary-accent) var(--badge-ink-l) var(--badge-ink-c) var(--badge-date-hue) / 0.15);
+  border: 1px solid oklch(from var(--primary-accent) var(--badge-ink-l) var(--badge-ink-c) var(--badge-date-hue) / 0.3);
 }
 
 /* Required Indicator */
 .tmpl-badge-required {
   font-size: 8.5px;
   font-weight: 800;
-  color: #f87171;
-  background-color: rgba(239, 68, 68, 0.15);
-  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: var(--status-danger-soft);
+  background-color: oklch(from var(--status-danger) l c h / 0.15);
+  border: 1px solid oklch(from var(--status-danger) l c h / 0.3);
   padding: 0.05rem 0.3rem;
   border-radius: 0.25rem;
   text-transform: uppercase;

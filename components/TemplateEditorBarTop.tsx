@@ -65,12 +65,12 @@ export default function TemplateEditorBarTop({
     <div className="flex items-center px-2.5 py-1.5 min-w-[30rem]">
       <div className="flex items-center gap-2 min-w-0 shrink-0">
         <span
-          className="w-[26px] h-[26px] rounded-md bg-black/40 border border-[color-mix(in_oklch,var(--secondary-accent)_35%,transparent)] flex items-center justify-center text-sm shrink-0"
+          className="w-[26px] h-[26px] rounded-md bg-shade/40 border border-[color-mix(in_oklch,var(--secondary-accent)_35%,transparent)] flex items-center justify-center text-sm shrink-0"
           aria-hidden="true"
         >
           {icon || '📦'}
         </span>
-        <h1 className="text-[13px] font-bold text-white tracking-wide truncate max-w-[30ch]" title={name}>
+        <h1 className="text-[13px] font-bold text-[var(--text-strong)] tracking-wide truncate max-w-[30ch]" title={name}>
           {name}
         </h1>
       </div>

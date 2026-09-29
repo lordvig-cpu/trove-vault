@@ -875,8 +875,8 @@ export function TemplateComponentActionMenu({
               onClick={() => onUpdateComponent?.(component.id, { sizing: { type: 'fill' } })}
               className={`py-1 px-1.5 rounded-md text-[10.5px] font-semibold border transition cursor-pointer text-center ${
                 (component.sizing?.type || 'fill') === 'fill'
-                  ? 'bg-[color-mix(in_oklch,var(--primary-accent)_30%,transparent)] text-white border-[var(--primary-accent)] shadow-sm'
-                  : 'bg-surface-secondary text-muted border-subtle hover:text-white'
+                  ? 'bg-[color-mix(in_oklch,var(--primary-accent)_30%,transparent)] text-[var(--text-strong)] border-[var(--primary-accent)] shadow-sm'
+                  : 'bg-surface-secondary text-muted border-subtle hover:text-[var(--text-strong)]'
               }`}
             >
               Fill
@@ -886,8 +886,8 @@ export function TemplateComponentActionMenu({
               onClick={() => onUpdateComponent?.(component.id, { sizing: { type: 'auto' } })}
               className={`py-1 px-1.5 rounded-md text-[10.5px] font-semibold border transition cursor-pointer text-center ${
                 component.sizing?.type === 'auto'
-                  ? 'bg-[color-mix(in_oklch,var(--primary-accent)_30%,transparent)] text-white border-[var(--primary-accent)] shadow-sm'
-                  : 'bg-surface-secondary text-muted border-subtle hover:text-white'
+                  ? 'bg-[color-mix(in_oklch,var(--primary-accent)_30%,transparent)] text-[var(--text-strong)] border-[var(--primary-accent)] shadow-sm'
+                  : 'bg-surface-secondary text-muted border-subtle hover:text-[var(--text-strong)]'
               }`}
             >
               Auto
@@ -897,8 +897,8 @@ export function TemplateComponentActionMenu({
               onClick={() => onUpdateComponent?.(component.id, { sizing: { type: 'fixed', value: '160px' } })}
               className={`py-1 px-1.5 rounded-md text-[10.5px] font-semibold border transition cursor-pointer text-center ${
                 component.sizing?.type === 'fixed'
-                  ? 'bg-[color-mix(in_oklch,var(--primary-accent)_30%,transparent)] text-white border-[var(--primary-accent)] shadow-sm'
-                  : 'bg-surface-secondary text-muted border-subtle hover:text-white'
+                  ? 'bg-[color-mix(in_oklch,var(--primary-accent)_30%,transparent)] text-[var(--text-strong)] border-[var(--primary-accent)] shadow-sm'
+                  : 'bg-surface-secondary text-muted border-subtle hover:text-[var(--text-strong)]'
               }`}
             >
               Fixed
@@ -919,8 +919,8 @@ export function TemplateComponentActionMenu({
                 onClick={() => onUpdateComponent?.(component.id, { variant: v.variant })}
                 className={`flex items-center gap-1.5 p-1.5 rounded-md border text-[11px] font-medium transition cursor-pointer text-left ${
                   (component.variant || 'standard') === v.variant
-                    ? 'bg-[color-mix(in_oklch,var(--primary-accent)_30%,transparent)] border-[var(--primary-accent)] text-white shadow-sm font-bold'
-                    : 'bg-surface-secondary border-subtle text-muted hover:text-white'
+                    ? 'bg-[color-mix(in_oklch,var(--primary-accent)_30%,transparent)] border-[var(--primary-accent)] text-[var(--text-strong)] shadow-sm font-bold'
+                    : 'bg-surface-secondary border-subtle text-muted hover:text-[var(--text-strong)]'
                 }`}
               >
                 <span>{v.icon}</span>

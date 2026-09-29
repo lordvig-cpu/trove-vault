@@ -246,7 +246,7 @@ export default function FlexContainerRenderer({
     ...(container.shadowY || container.shadowBlur
       ? {
           boxShadow: `0 ${container.shadowY ?? 0}px ${container.shadowBlur ?? 0}px color-mix(in srgb, ${
-            container.shadowColor || 'black'
+            container.shadowColor || 'var(--pole-shade)'
           } 40%, transparent)`,
         }
       : null),
@@ -344,7 +344,7 @@ export default function FlexContainerRenderer({
           : isOverflowing
           ? 'rounded-2xl outline-2 outline-dashed outline-[var(--editor-invalid)] -outline-offset-2 bg-[color-mix(in_oklch,var(--editor-invalid)_10%,transparent)] shadow-lg shadow-[color-mix(in_oklch,var(--editor-invalid)_20%,transparent)]'
           : isSelected
-          ? 'rounded-2xl outline-2 outline-white -outline-offset-2 bg-[color-mix(in_oklch,var(--primary-accent)_8%,transparent)] shadow-xl shadow-white/10'
+          ? 'rounded-2xl outline-2 outline-glint -outline-offset-2 bg-[color-mix(in_oklch,var(--primary-accent)_8%,transparent)] shadow-xl shadow-glint/10'
           : isActive
           ? 'rounded-2xl outline outline-1 outline-[color-mix(in_oklch,var(--primary-accent)_50%,transparent)] -outline-offset-1 bg-[color-mix(in_oklch,var(--primary-accent)_6%,transparent)]'
           : isCard

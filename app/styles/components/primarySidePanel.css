@@ -343,12 +343,12 @@
 }
 
 .tree-folder-tab-reorder-target .tree-tab-svg-stroke {
-  stroke: rgba(255, 255, 255, 0.95) !important;
+  stroke: var(--pole-glint) !important;
   stroke-width: 2px !important;
 }
 
 .tree-folder-tab-reorder-target svg {
-  filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.7)) drop-shadow(0 0 3px rgba(56, 189, 248, 0.9)) !important;
+  filter: drop-shadow(0 0 8px color-mix(in oklch, var(--pole-glint) 70%, transparent)) drop-shadow(0 0 3px var(--focus-blue)) !important;
 }
 
 .tree-tab-insert-marker {
@@ -356,8 +356,8 @@
   top: 1px;
   bottom: 1px;
   width: 3px;
-  background: #ffffff;
-  box-shadow: 0 0 8px rgba(255, 255, 255, 0.95), 0 0 14px rgba(56, 189, 248, 0.9);
+  background: var(--pole-glint);
+  box-shadow: 0 0 8px var(--pole-glint), 0 0 14px var(--focus-blue);
   border-radius: 9999px;
   z-index: 45;
   pointer-events: none;

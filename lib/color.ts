@@ -2,6 +2,9 @@
 export const DEFAULT_PRIMARY_COLOR = 'rgba(0, 119, 255, 1)';
 export const DEFAULT_SECONDARY_COLOR = 'rgba(255, 157, 0, 1)';
 
+/** Default Background seed of Dark/Light: the calibrated canvas sample rgb(10, 15, 24). */
+export const DEFAULT_BACKGROUND_COLOR = 'rgba(10, 15, 24, 1)';
+
 /** Convert an opaque RGBA seed to the HEX format used by the editor. */
 export function rgbaToHex(rgba: string): string {
   const channels = rgba.match(/[\d.]+/g)!.slice(0, 3).map(Number);

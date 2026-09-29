@@ -57,3 +57,64 @@ Component styles consume the readable aliases in `theme-semantic.css`.
 `--primary-*` follows the first seed and `--secondary-*` follows the second;
 shared text and surface roles have their own prefixes. See
 [`README.md`](README.md) for the naming guide.
+
+## Neutral poles and status colors
+
+The only literal black/white/cyan/`rgba()` values live in `theme-oklch-dark.css` (defaults) and
+`theme-oklch-light.css` (overrides). Everything else consumes them:
+
+| Token | Dark | Light | Use |
+| --- | --- | --- | --- |
+| `--pole-surface` | black | white | what dark fills mix toward (flyout cards, input wells, dropdown wash) |
+| `--pole-shade` | black | deep brown | sunken tint / inner shadow (`bg-shade/40`) |
+| `--pole-glint` | white | deep ink | hover border/text/tint on amber controls (`hover:border-glint`) |
+| `--pole-sheen` | white | white | translucent top highlights |
+| `--pole-label` | white | white | text/knob on a solid accent fill (`text-label`, `bg-label`) |
+| `--status-*` | | | dock drop-zone ok/danger roles (warning is `--secondary-accent`) |
+| `--flyout-ink-l/-c`, `--badge-ink-l/-c` | | | title / badge ink lightness, deepened in light |
+
+Tailwind exposes the poles as `shade`, `glint`, `sheen`, `label` colors (`@theme inline` in
+`globals.css`), which also re-points the stock slate/amber/red/rose/emerald shades the template
+editor uses at theme roles. Don't write `black`, `white`, `cyan`, hex or `rgba()` in a component.
+Known exceptions: `lib/color.ts` default seeds and `PICKER_START` in `TemplateAppearanceControls.tsx`
+(JS needs a real hex), and template-owned colors stored as user data.
+
+## Third theme and the Background seed
+
+`theme-oklch-new-n-shiny.css` is the third theme (footer selector: Dark / Light / New 'n Shiny).
+It shares the recipe and Dark's role coefficients, then re-states the chrome as flat slate panels
+lifted from a third seed, `--oklch-bg`, with charcoal flyouts and amber edges. Its seeds are slate
+`#64748B` (primary), amber `#F59E0B` (secondary) and `#080D10` (background); `SHINY_SEEDS` in
+`OklchSeedControls.tsx` mirrors them for the picker display.
+
+`--oklch-bg` is optional in Dark/Light: unset, the calibrated canvas samples
+(`--oklch-blue-10-15-24`, `--oklch-blue-8-12-20`) fall back to their blue-derived expressions
+(`scripts/generate-oklch-theme.mjs` emits that); set, the Background picker replaces them, and
+Light still flips it through the surface coefficients. Each theme family saves its own seeds
+(`uc_oklch_*` for Dark/Light, `uc_oklch_*_shiny` for New 'n Shiny). Wash strength at the top and
+around flyouts/toolbars is `--flyout-glow-top` / `--flyout-glow-outer`; `--flyout-heading` is the
+split-flyout title color.
+
+### New 'n Shiny: five colors
+
+| Picker | Seed | Drives |
+| --- | --- | --- |
+| Background | `--oklch-bg` | canvas and grid, behind everything |
+| Primary | `--oklch-primary` | header and footer bars |
+| Primary Accent | `--oklch-blue` | side and bottom panels and their rules; buttons, focus |
+| Secondary | `--oklch-secondary` | tree submenus, search menus, template toolbars and their drop-downs |
+| Secondary Accent | `--oklch-yellow` | default text, edges and selected states inside those menus/toolbars |
+
+Surface colors are the seed mixed into the background (`--shiny-*` in the theme file), so a picked
+color shows as a dark tint of itself.
+
+### Five colors in Dark and Light
+
+Dark and Light use the same five pickers and the same mapping. `--oklch-primary` and
+`--oklch-secondary` default to `var(--oklch-blue)` and `var(--oklch-yellow)`, so an untouched
+palette is unchanged; setting them recolors only the header/footer (`--nav-header-*`,
+`--nav-footer-*`, `--col-dropdown-*`) and the surfaces of the tree submenus and search menus
+(`--tree-menu-*`, `--tree-filter-*`, the `--flyout-*` body/tab fills). The generator emits those as
+`--oklch-primary-*` / `--oklch-secondary-*` samples with the same ratios as the blue/yellow ones.
+Default text in menus and toolbars is the secondary accent (`--menu-ink` in `theme-semantic.css`).
+Menu edges and glows stay on the secondary accent.

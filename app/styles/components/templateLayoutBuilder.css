@@ -11,9 +11,9 @@
      used inside a flyout's Properties body ([role='group'] in TreeSubMenu.css), not a visible tint
      of its own. */
   background:
-    linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1)),
+    linear-gradient(color-mix(in oklch, var(--pole-shade) 10%, transparent), color-mix(in oklch, var(--pole-shade) 10%, transparent)),
     radial-gradient(ellipse 90% 140% at 50% 0%,
-      color-mix(in oklch, var(--secondary-accent) 38%, transparent) 0%,
+      color-mix(in oklch, var(--secondary-accent) var(--flyout-glow-top), transparent) 0%,
       transparent 75%),
     var(--secondary-tree-menu-header-bg),
     var(--secondary-tree-menu-shell-bg);
@@ -25,7 +25,7 @@
 /* Drop-down menus under the bar: same amber chassis, noticeably darker so the options read clearly */
 .tmpl-edge-panel.tmpl-edge-menu {
   background:
-    linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+    linear-gradient(color-mix(in oklch, var(--pole-surface) 50%, transparent), color-mix(in oklch, var(--pole-surface) 50%, transparent)),
     var(--secondary-tree-menu-shell-bg);
 }
 
@@ -33,28 +33,28 @@
    brightest part sits at the bottom, against the bar the menu grew from, and it darkens upward. */
 .tmpl-edge-panel.tmpl-edge-menu.tmpl-edge-menu-up {
   background:
-    linear-gradient(color-mix(in oklch, black 50%, transparent), color-mix(in oklch, black 50%, transparent)),
+    linear-gradient(color-mix(in oklch, var(--pole-shade) 50%, transparent), color-mix(in oklch, var(--pole-shade) 50%, transparent)),
     radial-gradient(ellipse 130% 90% at 50% 120%,
       color-mix(in oklch, var(--secondary-accent) 55%, transparent) 0%,
       color-mix(in oklch, var(--secondary-accent) 26%, transparent) 50%,
       transparent 85%),
     linear-gradient(0deg,
-      color-mix(in oklch, white 8%, transparent) 0%,
-      color-mix(in oklch, white 2%, transparent) 15%,
+      color-mix(in oklch, var(--pole-sheen) 8%, transparent) 0%,
+      color-mix(in oklch, var(--pole-sheen) 2%, transparent) 15%,
       transparent 30%),
     var(--surface-panel);
 }
 
 /* The tree checkbox style, in the editor bar's light blue instead of yellow */
 .tree-filter-checkbox.tmpl-blue-check {
-  border-color: color-mix(in oklch, var(--primary-accent) 35%, cyan);
-  color: color-mix(in oklch, var(--primary-accent) 35%, cyan);
-  accent-color: color-mix(in oklch, var(--primary-accent) 35%, cyan);
+  border-color: var(--focus-blue);
+  color: var(--focus-blue);
+  accent-color: var(--focus-blue);
 }
 
 .tree-filter-checkbox.tmpl-blue-check:hover,
 .tree-filter-checkbox.tmpl-blue-check:focus {
-  border-color: white;
+  border-color: var(--pole-glint);
   box-shadow: none;
 }
 
@@ -63,7 +63,7 @@
   border-top-width: 0;
   box-shadow:
     0 8px 18px -2px oklch(from var(--oklch-blue-0-0-0) l c h / calc(0.6 * var(--oklch-shadow-opacity, 1))),
-    0 0 18px color-mix(in oklch, var(--secondary-accent) 35%, transparent);
+    0 0 18px color-mix(in oklch, var(--secondary-accent) var(--flyout-glow-outer), transparent);
 }
 
 /* The container toolbar, anchored to the workspace footer (see .tmpl-edge-panel-top above):
@@ -71,7 +71,7 @@
 .tmpl-edge-panel-bottom {
   background:
     radial-gradient(ellipse 90% 140% at 50% 100%,
-      color-mix(in oklch, var(--secondary-accent) 38%, transparent) 0%,
+      color-mix(in oklch, var(--secondary-accent) var(--flyout-glow-top), transparent) 0%,
       transparent 75%),
     var(--secondary-tree-menu-header-bg),
     var(--secondary-tree-menu-shell-bg);
@@ -79,6 +79,6 @@
   border-bottom-width: 0;
   box-shadow:
     0 -8px 18px -2px oklch(from var(--oklch-blue-0-0-0) l c h / calc(0.6 * var(--oklch-shadow-opacity, 1))),
-    0 0 18px color-mix(in oklch, var(--secondary-accent) 35%, transparent);
+    0 0 18px color-mix(in oklch, var(--secondary-accent) var(--flyout-glow-outer), transparent);
 }
 

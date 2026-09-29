@@ -3,7 +3,7 @@
 
 /** Idle control: amber outline and text on the orange bar; white on hover. */
 export const idleBtn =
-  'bg-black/40 border-[var(--secondary-accent)] text-[var(--secondary-accent)] hover:border-white hover:text-white hover:bg-white/10';
+  'bg-shade/40 border-[var(--secondary-accent)] text-[var(--secondary-accent)] hover:border-glint hover:text-[var(--text-strong)] hover:bg-glint/10';
 
 /** Selected / open control: the same fill and inset highlight as a flyout's active tab
     (.menuTab-active in TreeSubMenu.css) -- a solid warm-gold gradient, not a translucent mix of
@@ -13,7 +13,7 @@ export const idleBtn =
     not amber, to stay distinct from the idle amber border around it. Text stays --flyout-selected
     too, matching the tab's own text color. */
 export const activeBtn =
-  'bg-[linear-gradient(180deg,var(--flyout-tab-active-top),var(--flyout-tab-active-bottom))] border-[var(--flyout-selected)] text-[var(--flyout-selected)] shadow-[inset_0_1px_0_color-mix(in_oklch,white_22%,transparent)]';
+  'bg-[linear-gradient(180deg,var(--flyout-tab-active-top),var(--flyout-tab-active-bottom))] border-[var(--flyout-selected)] text-[var(--flyout-selected)] shadow-[inset_0_1px_0_color-mix(in_oklch,var(--pole-sheen)_22%,transparent)]';
 
 /** The plain secondary OKLCH accent (not activeBtn's yellow), for icons elsewhere (e.g. the Layout
     tree's Body/Row/Column glyphs) that should read as "this is a selected-style control" without
@@ -23,7 +23,7 @@ export const activeIconColor = 'text-[var(--secondary-accent)]';
 
 /** Borderless menu row / icon button (zoom, sub-panel options). */
 export const ghostBtn =
-  'border border-transparent text-[var(--secondary-accent)] hover:border-white hover:text-white hover:bg-white/10';
+  'border border-transparent text-[var(--secondary-accent)] hover:border-glint hover:text-[var(--text-strong)] hover:bg-glint/10';
 
 export const disabledBtn = 'opacity-35 cursor-not-allowed';
 
@@ -38,6 +38,6 @@ export const barControlHeight = 'h-[26px]';
     a few px shorter than it -- matching barControlHeight's other 26px controls (Add, Split, the
     gear/delete icons) exactly, rather than just matching the track around them. */
 export const barToggleGroup =
-  'flex items-stretch gap-0.5 bg-black/40 px-0.5 h-[26px] rounded-md border border-[color-mix(in_oklch,var(--secondary-accent)_35%,transparent)] shrink-0 text-[10px] font-semibold';
+  'flex items-stretch gap-0.5 bg-shade/40 px-0.5 h-[26px] rounded-md border border-[color-mix(in_oklch,var(--secondary-accent)_35%,transparent)] shrink-0 text-[10px] font-semibold';
 
 export const barToggleBtn = 'px-1.5 h-full flex items-center gap-1 rounded transition';

@@ -2,7 +2,7 @@
    Edit seeds in theme-oklch-dark.css and mode rules in theme-oklch-light.css.
    RGB suffixes identify calibration samples, not runtime color literals.
    Green/red/violet semantic colors are hue rotations of the blue seed. */
-:is([data-theme='theme-oklch-dark'], [data-theme='theme-oklch-light']) {
+:is([data-theme='theme-oklch-dark'], [data-theme='theme-oklch-light'], [data-theme='theme-oklch-new-n-shiny']) {
   /* Calibrated dark palette: L/C ratios and hue offsets from two seeds. */
   --oklch-blue-0-119-255: oklch(from var(--oklch-blue) calc(l * 1) calc(c * 1) calc(h + 0));
   --oklch-blue-0-162-255: oklch(from var(--oklch-blue) calc(l * 1.15496) calc(c * 0.79114) calc(h + -12.61481));
@@ -16,30 +16,57 @@
   --oklch-blue-0-140-255: oklch(from var(--oklch-blue) calc(l * 1.0737) calc(c * 0.89235) calc(h + -5.05814));
   --oklch-blue-0-180-255: oklch(from var(--oklch-blue) calc(l * 1.22348) calc(c * 0.72452) calc(h + -20.67513));
   --oklch-blue-2-70-145: oklch(from var(--oklch-blue) calc(l * 0.67786) calc(c * 0.62401) calc(h + -1.70232));
+  --oklch-primary-2-70-145: oklch(from var(--oklch-primary) calc(l * 0.67786) calc(c * 0.62401) calc(h + -1.70232));
   --oklch-blue-1-45-100: oklch(from var(--oklch-blue) calc(l * 0.51447) calc(c * 0.48561) calc(h + -1.01158));
+  --oklch-primary-1-45-100: oklch(from var(--oklch-primary) calc(l * 0.51447) calc(c * 0.48561) calc(h + -1.01158));
   --oklch-blue-0-20-55: oklch(from var(--oklch-blue) calc(l * 0.33633) calc(c * 0.33753) calc(h + 0.08056));
+  --oklch-primary-0-20-55: oklch(from var(--oklch-primary) calc(l * 0.33633) calc(c * 0.33753) calc(h + 0.08056));
   --oklch-blue-1-20-48: oklch(from var(--oklch-blue) calc(l * 0.32603) calc(c * 0.28267) calc(h + -2.10128));
+  --oklch-primary-1-20-48: oklch(from var(--oklch-primary) calc(l * 0.32603) calc(c * 0.28267) calc(h + -2.10128));
   --oklch-blue-1-28-62: oklch(from var(--oklch-blue) calc(l * 0.38459) calc(c * 0.33201) calc(h + -2.8629));
+  --oklch-primary-1-28-62: oklch(from var(--oklch-primary) calc(l * 0.38459) calc(c * 0.33201) calc(h + -2.8629));
   --oklch-blue-2-60-124: oklch(from var(--oklch-blue) calc(l * 0.60983) calc(c * 0.5502) calc(h + -2.11245));
+  --oklch-primary-2-60-124: oklch(from var(--oklch-primary) calc(l * 0.60983) calc(c * 0.5502) calc(h + -2.11245));
   --oklch-blue-0-54-114: oklch(from var(--oklch-blue) calc(l * 0.57098) calc(c * 0.5236) calc(h + -2.14792));
+  --oklch-primary-0-54-114: oklch(from var(--oklch-primary) calc(l * 0.57098) calc(c * 0.5236) calc(h + -2.14792));
   --oklch-blue-1-49-101: oklch(from var(--oklch-blue) calc(l * 0.53253) calc(c * 0.46781) calc(h + -2.98001));
+  --oklch-primary-1-49-101: oklch(from var(--oklch-primary) calc(l * 0.53253) calc(c * 0.46781) calc(h + -2.98001));
   --oklch-blue-0-36-75: oklch(from var(--oklch-blue) calc(l * 0.43902) calc(c * 0.37426) calc(h + -4.2543));
+  --oklch-primary-0-36-75: oklch(from var(--oklch-primary) calc(l * 0.43902) calc(c * 0.37426) calc(h + -4.2543));
   --oklch-blue-0-31-66: oklch(from var(--oklch-blue) calc(l * 0.4034) calc(c * 0.34331) calc(h + -4.30733));
+  --oklch-primary-0-31-66: oklch(from var(--oklch-primary) calc(l * 0.4034) calc(c * 0.34331) calc(h + -4.30733));
   --oklch-blue-0-27-58: oklch(from var(--oklch-blue) calc(l * 0.37315) calc(c * 0.31231) calc(h + -4.83179));
+  --oklch-primary-0-27-58: oklch(from var(--oklch-primary) calc(l * 0.37315) calc(c * 0.31231) calc(h + -4.83179));
   --oklch-blue-0-102-204: oklch(from var(--oklch-blue) calc(l * 0.87481) calc(c * 0.80065) calc(h + -2.20058));
+  --oklch-primary-0-102-204: oklch(from var(--oklch-primary) calc(l * 0.87481) calc(c * 0.80065) calc(h + -2.20058));
   --oklch-blue-0-0-0: oklch(from var(--oklch-blue) calc(l * 0) calc(c * 0) calc(h + 0));
+  --oklch-primary-0-180-255: oklch(from var(--oklch-primary) calc(l * 1.22348) calc(c * 0.72452) calc(h + -20.67513));
   --oklch-blue-0-110-220: oklch(from var(--oklch-blue) calc(l * 0.92395) calc(c * 0.85005) calc(h + -2.0602));
+  --oklch-primary-0-110-220: oklch(from var(--oklch-primary) calc(l * 0.92395) calc(c * 0.85005) calc(h + -2.0602));
   --oklch-blue-0-160-255: oklch(from var(--oklch-blue) calc(l * 1.14744) calc(c * 0.79958) calc(h + -11.82441));
+  --oklch-primary-0-160-255: oklch(from var(--oklch-primary) calc(l * 1.14744) calc(c * 0.79958) calc(h + -11.82441));
   --oklch-blue-7-72-140: oklch(from var(--oklch-blue) calc(l * 0.6805) calc(c * 0.57791) calc(h + -3.07454));
+  --oklch-primary-7-72-140: oklch(from var(--oklch-primary) calc(l * 0.6805) calc(c * 0.57791) calc(h + -3.07454));
   --oklch-blue-0-210-255: oklch(from var(--oklch-blue) calc(l * 1.34009) calc(c * 0.66154) calc(h + -37.31662));
+  --oklch-primary-0-210-255: oklch(from var(--oklch-primary) calc(l * 1.34009) calc(c * 0.66154) calc(h + -37.31662));
   --oklch-blue-0-130-210: oklch(from var(--oklch-blue) calc(l * 0.98768) calc(c * 0.69462) calc(h + -11.41037));
+  --oklch-primary-0-130-210: oklch(from var(--oklch-primary) calc(l * 0.98768) calc(c * 0.69462) calc(h + -11.41037));
   --oklch-blue-4-20-48: oklch(from var(--oklch-blue) calc(l * 0.32955) calc(c * 0.27397) calc(h + 1.46263));
+  --oklch-primary-4-20-48: oklch(from var(--oklch-primary) calc(l * 0.32955) calc(c * 0.27397) calc(h + 1.46263));
   --oklch-blue-8-36-78: oklch(from var(--oklch-blue) calc(l * 0.44845) calc(c * 0.38189) calc(h + 0.76759));
+  --oklch-primary-8-36-78: oklch(from var(--oklch-primary) calc(l * 0.44845) calc(c * 0.38189) calc(h + 0.76759));
   --oklch-blue-14-52-108: oklch(from var(--oklch-blue) calc(l * 0.56026) calc(c * 0.48167) calc(h + 0.64878));
+  --oklch-primary-14-52-108: oklch(from var(--oklch-primary) calc(l * 0.56026) calc(c * 0.48167) calc(h + 0.64878));
+  --oklch-primary-0-140-255: oklch(from var(--oklch-primary) calc(l * 1.0737) calc(c * 0.89235) calc(h + -5.05814));
+  --oklch-primary-4-22-54: oklch(from var(--oklch-primary) calc(l * 0.34796) calc(c * 0.30605) calc(h + 1.8793));
   --oklch-blue-52-211-153: oklch(from var(--oklch-blue) calc(l * 1.29545) calc(c * 0.69396) calc(h + -94.80723));
+  --oklch-primary-52-211-153: oklch(from var(--oklch-primary) calc(l * 1.29545) calc(c * 0.69396) calc(h + -94.80723));
+  --oklch-primary-0-119-255: oklch(from var(--oklch-primary) calc(l * 1) calc(c * 1) calc(h + 0));
   --oklch-blue-10-45-95: oklch(from var(--oklch-blue) calc(l * 0.51162) calc(c * 0.44116) calc(h + 0.30452));
-  --oklch-blue-10-15-24: oklch(from var(--oklch-blue) calc(l * 0.2815) calc(c * 0.09324) calc(h + 3.86357));
-  --oklch-blue-8-12-20: oklch(from var(--oklch-blue) calc(l * 0.25845) calc(c * 0.08382) calc(h + 5.20206));
+  --oklch-primary-10-45-95: oklch(from var(--oklch-primary) calc(l * 0.51162) calc(c * 0.44116) calc(h + 0.30452));
+  --oklch-primary-14-55-115: oklch(from var(--oklch-primary) calc(l * 0.58191) calc(c * 0.51018) calc(h + 0.64877));
+  --oklch-blue-10-15-24: oklch(from var(--oklch-bg, oklch(from var(--oklch-blue) calc(l * 0.2815) calc(c * 0.09324) calc(h + 3.86357))) l c h);
+  --oklch-blue-8-12-20: oklch(from var(--oklch-bg, oklch(from var(--oklch-blue) calc(l * 0.2815) calc(c * 0.09324) calc(h + 3.86357))) calc(l * 0.918) calc(c * 0.899) calc(h + 1.34));
   --oklch-blue-0-120-225: oklch(from var(--oklch-blue) calc(l * 0.96639) calc(c * 0.82622) calc(h + -4.1654));
   --oklch-blue-0-70-160: oklch(from var(--oklch-blue) calc(l * 0.69831) calc(c * 0.71733) calc(h + 0.59457));
   --oklch-yellow-217-119-6: oklch(from var(--oklch-yellow) calc(l * 0.80481) calc(c * 0.93492) calc(h + -26.76258 * clamp(0, (h - 35) / 50, 1)));
@@ -98,15 +125,22 @@
   --oklch-blue-165-180-252: oklch(from var(--oklch-blue) calc(l * 1.31616) calc(c * 0.47081) calc(h + 16.68312));
   --oklch-blue-110-231-183: oklch(from var(--oklch-blue) calc(l * 1.41653) calc(c * 0.58752) calc(h + -93.05214));
   --oklch-yellow-146-64-14: oklch(from var(--oklch-yellow) calc(l * 0.57195) calc(c * 0.74058) calc(h + -38.88027 * clamp(0, (h - 35) / 50, 1)));
+  --oklch-secondary-146-64-14: oklch(from var(--oklch-secondary) calc(l * 0.57195) calc(c * 0.74058) calc(h + -38.88027 * clamp(0, (h - 35) / 50, 1)));
   --oklch-yellow-180-83-9: oklch(from var(--oklch-yellow) calc(l * 0.67118) calc(c * 0.86415) calc(h + -36.08339 * clamp(0, (h - 35) / 50, 1)));
   --oklch-yellow-56-26-4: oklch(from var(--oklch-yellow) calc(l * 0.30961) calc(c * 0.34383) calc(h + -31.34652 * clamp(0, (h - 35) / 50, 1)));
+  --oklch-secondary-56-26-4: oklch(from var(--oklch-secondary) calc(l * 0.30961) calc(c * 0.34383) calc(h + -31.34652 * clamp(0, (h - 35) / 50, 1)));
   --oklch-yellow-36-16-2: oklch(from var(--oklch-yellow) calc(l * 0.24056) calc(c * 0.25495) calc(h + -27.94909 * clamp(0, (h - 35) / 50, 1)));
+  --oklch-secondary-36-16-2: oklch(from var(--oklch-secondary) calc(l * 0.24056) calc(c * 0.25495) calc(h + -27.94909 * clamp(0, (h - 35) / 50, 1)));
   --oklch-yellow-24-11-3: oklch(from var(--oklch-yellow) calc(l * 0.20066) calc(c * 0.17518) calc(h + -27.48885 * clamp(0, (h - 35) / 50, 1)));
+  --oklch-secondary-24-11-3: oklch(from var(--oklch-secondary) calc(l * 0.20066) calc(c * 0.17518) calc(h + -27.48885 * clamp(0, (h - 35) / 50, 1)));
   --oklch-yellow-16-6-1: oklch(from var(--oklch-yellow) calc(l * 0.16458) calc(c * 0.15721) calc(h + -24.12101 * clamp(0, (h - 35) / 50, 1)));
+  --oklch-secondary-16-6-1: oklch(from var(--oklch-secondary) calc(l * 0.16458) calc(c * 0.15721) calc(h + -24.12101 * clamp(0, (h - 35) / 50, 1)));
   --oklch-yellow-10-4-1: oklch(from var(--oklch-yellow) calc(l * 0.14101) calc(c * 0.11951) calc(h + -23.14676 * clamp(0, (h - 35) / 50, 1)));
+  --oklch-secondary-10-4-1: oklch(from var(--oklch-secondary) calc(l * 0.14101) calc(c * 0.11951) calc(h + -23.14676 * clamp(0, (h - 35) / 50, 1)));
   --oklch-yellow-245-158-11: oklch(from var(--oklch-yellow) calc(l * 0.92901) calc(c * 0.9779) calc(h + -15.00053 * clamp(0, (h - 35) / 50, 1)));
   --oklch-yellow-255-235-175: oklch(from var(--oklch-yellow) calc(l * 1.13873) calc(c * 0.47142) calc(h + 6.73179 * clamp(0, (h - 35) / 50, 1)));
   --oklch-yellow-69-26-3: oklch(from var(--oklch-yellow) calc(l * 0.33738) calc(c * 0.44065) calc(h + -39.44576 * clamp(0, (h - 35) / 50, 1)));
+  --oklch-secondary-69-26-3: oklch(from var(--oklch-secondary) calc(l * 0.33738) calc(c * 0.44065) calc(h + -39.44576 * clamp(0, (h - 35) / 50, 1)));
   --oklch-yellow-251-191-36: oklch(from var(--oklch-yellow) calc(l * 1.01153) calc(c * 0.97649) calc(h + -0.6523 * clamp(0, (h - 35) / 50, 1)));
   --oklch-blue-14-8-3: oklch(from var(--oklch-blue) calc(l * 0.23573) calc(c * 0.0819) calc(h + -187.53658));
   --oklch-blue-6-4-1: oklch(from var(--oklch-blue) calc(l * 0.18211) calc(c * 0.07026) calc(h + -171.0932));
@@ -116,6 +150,7 @@
   --oklch-blue-3-38-90: oklch(from var(--oklch-blue) calc(l * 0.47174) calc(c * 0.45961) calc(h + 0.80837));
   --oklch-blue-2-22-56: oklch(from var(--oklch-blue) calc(l * 0.34907) calc(c * 0.32588) calc(h + 0.75975));
   --oklch-blue-30-58-95: oklch(from var(--oklch-blue) calc(l * 0.5802) calc(c * 0.33254) calc(h + -1.9906));
+  --oklch-secondary-217-119-6: oklch(from var(--oklch-secondary) calc(l * 0.80481) calc(c * 0.93492) calc(h + -26.76258 * clamp(0, (h - 35) / 50, 1)));
 
   /* Component recipes preserve the original gradients, textures and geometry. */
 
@@ -135,30 +170,30 @@
        oklch(from var(--oklch-blue-255-255-255) l c h / 0.03) 24%,
        transparent 55%),
      radial-gradient(ellipse 110% 160% at 50% -30%,
-       oklch(from var(--oklch-blue-2-70-145) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.85) 0%,
-       oklch(from var(--oklch-blue-1-45-100) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.55) 45%,
-       oklch(from var(--oklch-blue-0-20-55) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.1) 85%),
+       oklch(from var(--oklch-primary-2-70-145) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.85) 0%,
+       oklch(from var(--oklch-primary-1-45-100) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.55) 45%,
+       oklch(from var(--oklch-primary-0-20-55) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.1) 85%),
      linear-gradient(90deg,
-       oklch(from var(--oklch-blue-1-20-48) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.7) 0%,
-       oklch(from var(--oklch-blue-1-28-62) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.2) 18%,
+       oklch(from var(--oklch-primary-1-20-48) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.7) 0%,
+       oklch(from var(--oklch-primary-1-28-62) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.2) 18%,
        transparent 38%,
        transparent 62%,
-       oklch(from var(--oklch-blue-1-28-62) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.2) 82%,
-       oklch(from var(--oklch-blue-1-20-48) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.7) 100%),
+       oklch(from var(--oklch-primary-1-28-62) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.2) 82%,
+       oklch(from var(--oklch-primary-1-20-48) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.7) 100%),
      linear-gradient(180deg,
-       oklch(from var(--oklch-blue-2-60-124) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 1) 0%,
-       oklch(from var(--oklch-blue-0-54-114) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 1) 16%,
-       oklch(from var(--oklch-blue-1-49-101) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 1) 32%,
-       oklch(from var(--oklch-blue-0-36-75) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 1) 55%,
-       oklch(from var(--oklch-blue-0-31-66) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 1) 76%,
-       oklch(from var(--oklch-blue-0-27-58) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 1) 100%);
+       oklch(from var(--oklch-primary-2-60-124) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 1) 0%,
+       oklch(from var(--oklch-primary-0-54-114) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 1) 16%,
+       oklch(from var(--oklch-primary-1-49-101) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 1) 32%,
+       oklch(from var(--oklch-primary-0-36-75) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 1) 55%,
+       oklch(from var(--oklch-primary-0-31-66) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 1) 76%,
+       oklch(from var(--oklch-primary-0-27-58) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 1) 100%);
    --nav-header-border-bottom: var(--panel-border-strong);
    --nav-header-shadow: inset 0 1px 0 oklch(from var(--oklch-blue-255-255-255) l c h / 0.14),
-     inset 0 -1px 0 oklch(from var(--oklch-blue-0-102-204) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 0.25),
+     inset 0 -1px 0 oklch(from var(--oklch-primary-0-102-204) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 0.25),
      0 4px 16px -2px oklch(from var(--oklch-blue-0-0-0) l c h / calc(0.65 * var(--oklch-shadow-opacity)));
    --nav-header-flare-bg: radial-gradient(ellipse 140% 160% at 50% -45%,
-       oklch(from var(--oklch-blue-0-180-255) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / calc(0.25 * var(--oklch-glow-opacity))) 0%,
-       oklch(from var(--oklch-blue-0-110-220) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / calc(0.12 * var(--oklch-glow-opacity))) 45%,
+       oklch(from var(--oklch-primary-0-180-255) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / calc(0.25 * var(--oklch-glow-opacity))) 0%,
+       oklch(from var(--oklch-primary-0-110-220) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / calc(0.12 * var(--oklch-glow-opacity))) 45%,
        transparent 75%);
    --nav-header-flare-blend: screen;
    --nav-header-flare-opacity: 0.90;
@@ -174,75 +209,75 @@
    --nav-header-texture-filter: url("#navigationBarTexture");
    --nav-header-texture-opacity: 0.20;
    --nav-header-texture-blend: overlay;
-   --nav-header-glow-core: oklch(from var(--oklch-blue-0-160-255) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / calc(0.6 * var(--oklch-glow-opacity)));
-   --nav-header-glow-mid: oklch(from var(--oklch-blue-0-110-220) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / calc(0.3 * var(--oklch-glow-opacity)));
-   --nav-header-glow-deep: oklch(from var(--oklch-blue-7-72-140) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / calc(0.15 * var(--oklch-glow-opacity)));
-   --nav-header-edge-dark: oklch(from var(--oklch-blue-1-20-48) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 0.7);
-   --nav-header-edge-fade: oklch(from var(--oklch-blue-1-28-62) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 0.2);
-   --nav-header-accent-bright: oklch(from var(--oklch-blue-0-210-255) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 0.35);
-   --nav-header-accent-subtle: oklch(from var(--oklch-blue-0-130-210) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 0.18);
-   --nav-header-accent-line: oklch(from var(--oklch-blue-0-160-255) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 0.85);
+   --nav-header-glow-core: oklch(from var(--oklch-primary-0-160-255) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / calc(0.6 * var(--oklch-glow-opacity)));
+   --nav-header-glow-mid: oklch(from var(--oklch-primary-0-110-220) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / calc(0.3 * var(--oklch-glow-opacity)));
+   --nav-header-glow-deep: oklch(from var(--oklch-primary-7-72-140) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / calc(0.15 * var(--oklch-glow-opacity)));
+   --nav-header-edge-dark: oklch(from var(--oklch-primary-1-20-48) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 0.7);
+   --nav-header-edge-fade: oklch(from var(--oklch-primary-1-28-62) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 0.2);
+   --nav-header-accent-bright: oklch(from var(--oklch-primary-0-210-255) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 0.35);
+   --nav-header-accent-subtle: oklch(from var(--oklch-primary-0-130-210) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 0.18);
+   --nav-header-accent-line: oklch(from var(--oklch-primary-0-160-255) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 0.85);
    --nav-header-tab-indicator: oklch(from var(--oklch-yellow-248-188-9) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 1);
-   --nav-header-tab-baseline: oklch(from var(--oklch-blue-0-160-255) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 0.28);
+   --nav-header-tab-baseline: oklch(from var(--oklch-primary-0-160-255) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 0.28);
    --nav-header-tab-bg-active: linear-gradient(180deg,
-       oklch(from var(--oklch-blue-4-20-48) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.98) 0%,
-       oklch(from var(--oklch-blue-8-36-78) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.96) 55%,
-       oklch(from var(--oklch-blue-14-52-108) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.96) 100%);
+       oklch(from var(--oklch-primary-4-20-48) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.98) 0%,
+       oklch(from var(--oklch-primary-8-36-78) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.96) 55%,
+       oklch(from var(--oklch-primary-14-52-108) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.96) 100%);
    --nav-header-tab-border: var(--panel-border-strong);
    --nav-header-tab-shadow: inset 0 1px 0 oklch(from var(--oklch-blue-255-255-255) l c h / 0.15),
-     0 -2px 10px oklch(from var(--oklch-blue-0-160-255) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 0.25),
-     0 0 15px oklch(from var(--oklch-blue-0-140-255) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 0.2);
-   --nav-header-flyout-bg: oklch(from var(--oklch-blue-4-22-54) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.92);
+     0 -2px 10px oklch(from var(--oklch-primary-0-160-255) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 0.25),
+     0 0 15px oklch(from var(--oklch-primary-0-140-255) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 0.2);
+   --nav-header-flyout-bg: oklch(from var(--oklch-primary-4-22-54) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.92);
    --nav-header-flyout-border: var(--panel-border-strong);
-   --nav-header-flyout-shadow: 0 20px 50px oklch(from var(--oklch-blue-0-0-0) l c h / calc(0.85 * var(--oklch-shadow-opacity))), 0 0 25px oklch(from var(--oklch-blue-0-140-255) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 0.25);
+   --nav-header-flyout-shadow: 0 20px 50px oklch(from var(--oklch-blue-0-0-0) l c h / calc(0.85 * var(--oklch-shadow-opacity))), 0 0 25px oklch(from var(--oklch-primary-0-140-255) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 0.25);
    --nav-header-search-bg: var(--canvas-bg-primary);
    --nav-header-search-border: var(--panel-border-subtle);
    --nav-header-search-focus: var(--brand-primary);
-   --nav-header-status-dot: oklch(from var(--oklch-blue-52-211-153) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 1);
+   --nav-header-status-dot: oklch(from var(--oklch-primary-52-211-153) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 1);
    --nav-header-status-text: oklch(from var(--oklch-blue-52-211-153) clamp(0, calc(var(--oklch-ink-offset) + l * var(--oklch-ink-scale)), 1) calc(c * var(--oklch-ink-chroma)) h / 1);
-   --nav-header-profile-bg: oklch(from var(--oklch-blue-0-119-255) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 0.2);
-   --nav-header-profile-border: oklch(from var(--oklch-blue-0-160-255) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 0.7);
+   --nav-header-profile-bg: oklch(from var(--oklch-primary-0-119-255) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 0.2);
+   --nav-header-profile-border: oklch(from var(--oklch-primary-0-160-255) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 0.7);
    --nav-header-profile-border-hover: var(--brand-primary-hover);
    --nav-header-profile-text: var(--brand-secondary-amber);
-   --col-dropdown-btn-bg: oklch(from var(--oklch-blue-10-45-95) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.85);
-   --col-dropdown-btn-hover-bg: oklch(from var(--oklch-blue-14-55-115) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 1);
+   --col-dropdown-btn-bg: oklch(from var(--oklch-primary-10-45-95) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.85);
+   --col-dropdown-btn-hover-bg: oklch(from var(--oklch-primary-14-55-115) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 1);
    --col-dropdown-btn-border: var(--panel-border-subtle);
    --col-dropdown-panel-bg: var(--popover-surface-bg);
    --col-dropdown-panel-border: var(--panel-border-strong);
-   --col-dropdown-panel-shadow: 0 20px 50px oklch(from var(--oklch-blue-0-0-0) l c h / calc(0.85 * var(--oklch-shadow-opacity))), 0 0 20px oklch(from var(--oklch-blue-0-140-255) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 0.3);
-   --col-dropdown-item-active-bg: oklch(from var(--oklch-blue-0-119-255) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 0.25);
-   --col-dropdown-item-active-border: oklch(from var(--oklch-blue-0-180-255) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 0.75);
+   --col-dropdown-panel-shadow: 0 20px 50px oklch(from var(--oklch-blue-0-0-0) l c h / calc(0.85 * var(--oklch-shadow-opacity))), 0 0 20px oklch(from var(--oklch-primary-0-140-255) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 0.3);
+   --col-dropdown-item-active-bg: oklch(from var(--oklch-primary-0-119-255) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 0.25);
+   --col-dropdown-item-active-border: oklch(from var(--oklch-primary-0-180-255) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 0.75);
    --col-dropdown-form-bg: var(--panel-surface-bg);
-   --col-dropdown-form-border: oklch(from var(--oklch-blue-0-140-255) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 0.5);
+   --col-dropdown-form-border: oklch(from var(--oklch-primary-0-140-255) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 0.5);
    --nav-footer-background: linear-gradient(0deg,
        oklch(from var(--oklch-blue-255-255-255) l c h / 0.12) 0%,
        oklch(from var(--oklch-blue-255-255-255) l c h / 0.03) 24%,
        transparent 55%),
      radial-gradient(ellipse 110% 160% at 50% 130%,
-       oklch(from var(--oklch-blue-2-70-145) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.85) 0%,
-       oklch(from var(--oklch-blue-1-45-100) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.55) 45%,
-       oklch(from var(--oklch-blue-0-20-55) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.1) 85%),
+       oklch(from var(--oklch-primary-2-70-145) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.85) 0%,
+       oklch(from var(--oklch-primary-1-45-100) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.55) 45%,
+       oklch(from var(--oklch-primary-0-20-55) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.1) 85%),
      linear-gradient(90deg,
-       oklch(from var(--oklch-blue-1-20-48) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.7) 0%,
-       oklch(from var(--oklch-blue-1-28-62) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.2) 18%,
+       oklch(from var(--oklch-primary-1-20-48) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.7) 0%,
+       oklch(from var(--oklch-primary-1-28-62) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.2) 18%,
        transparent 38%,
        transparent 62%,
-       oklch(from var(--oklch-blue-1-28-62) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.2) 82%,
-       oklch(from var(--oklch-blue-1-20-48) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.7) 100%),
+       oklch(from var(--oklch-primary-1-28-62) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.2) 82%,
+       oklch(from var(--oklch-primary-1-20-48) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.7) 100%),
      linear-gradient(0deg,
-       oklch(from var(--oklch-blue-2-60-124) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 1) 0%,
-       oklch(from var(--oklch-blue-0-54-114) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 1) 16%,
-       oklch(from var(--oklch-blue-1-49-101) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 1) 32%,
-       oklch(from var(--oklch-blue-0-36-75) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 1) 55%,
-       oklch(from var(--oklch-blue-0-31-66) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 1) 76%,
-       oklch(from var(--oklch-blue-0-27-58) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 1) 100%);
+       oklch(from var(--oklch-primary-2-60-124) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 1) 0%,
+       oklch(from var(--oklch-primary-0-54-114) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 1) 16%,
+       oklch(from var(--oklch-primary-1-49-101) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 1) 32%,
+       oklch(from var(--oklch-primary-0-36-75) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 1) 55%,
+       oklch(from var(--oklch-primary-0-31-66) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 1) 76%,
+       oklch(from var(--oklch-primary-0-27-58) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 1) 100%);
    --nav-footer-border-top: var(--panel-border-strong);
    --nav-footer-shadow: inset 0 -1px 0 oklch(from var(--oklch-blue-255-255-255) l c h / 0.14),
-     inset 0 1px 0 oklch(from var(--oklch-blue-0-102-204) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 0.25),
+     inset 0 1px 0 oklch(from var(--oklch-primary-0-102-204) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 0.25),
      0 -4px 16px -2px oklch(from var(--oklch-blue-0-0-0) l c h / calc(0.65 * var(--oklch-shadow-opacity)));
    --nav-footer-flare-bg: radial-gradient(ellipse 140% 160% at 50% 145%,
-       oklch(from var(--oklch-blue-0-180-255) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / calc(0.25 * var(--oklch-glow-opacity))) 0%,
-       oklch(from var(--oklch-blue-0-110-220) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / calc(0.12 * var(--oklch-glow-opacity))) 45%,
+       oklch(from var(--oklch-primary-0-180-255) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / calc(0.25 * var(--oklch-glow-opacity))) 0%,
+       oklch(from var(--oklch-primary-0-110-220) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / calc(0.12 * var(--oklch-glow-opacity))) 45%,
        transparent 75%);
    --nav-footer-flare-blend: screen;
    --nav-footer-flare-opacity: 0.90;
@@ -258,17 +293,17 @@
    --nav-footer-texture-filter: url("#navigationBarTexture");
    --nav-footer-texture-opacity: 0.20;
    --nav-footer-texture-blend: overlay;
-   --nav-footer-glow-core: oklch(from var(--oklch-blue-0-160-255) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / calc(0.6 * var(--oklch-glow-opacity)));
-   --nav-footer-glow-mid: oklch(from var(--oklch-blue-0-110-220) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / calc(0.3 * var(--oklch-glow-opacity)));
-   --nav-footer-glow-deep: oklch(from var(--oklch-blue-7-72-140) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / calc(0.15 * var(--oklch-glow-opacity)));
-   --nav-footer-edge-dark: oklch(from var(--oklch-blue-1-20-48) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 0.7);
-   --nav-footer-edge-fade: oklch(from var(--oklch-blue-1-28-62) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 0.2);
-   --nav-footer-accent-bright: oklch(from var(--oklch-blue-0-210-255) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 0.35);
-   --nav-footer-accent-subtle: oklch(from var(--oklch-blue-0-130-210) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 0.18);
+   --nav-footer-glow-core: oklch(from var(--oklch-primary-0-160-255) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / calc(0.6 * var(--oklch-glow-opacity)));
+   --nav-footer-glow-mid: oklch(from var(--oklch-primary-0-110-220) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / calc(0.3 * var(--oklch-glow-opacity)));
+   --nav-footer-glow-deep: oklch(from var(--oklch-primary-7-72-140) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / calc(0.15 * var(--oklch-glow-opacity)));
+   --nav-footer-edge-dark: oklch(from var(--oklch-primary-1-20-48) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 0.7);
+   --nav-footer-edge-fade: oklch(from var(--oklch-primary-1-28-62) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 0.2);
+   --nav-footer-accent-bright: oklch(from var(--oklch-primary-0-210-255) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 0.35);
+   --nav-footer-accent-subtle: oklch(from var(--oklch-primary-0-130-210) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 0.18);
    --nav-footer-bg-surface: var(--panel-surface-bg);
    --nav-footer-border-subtle: var(--panel-border-subtle);
    --nav-footer-border-strong: var(--panel-border-strong);
-   --nav-footer-status-dot: oklch(from var(--oklch-blue-52-211-153) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 1);
+   --nav-footer-status-dot: oklch(from var(--oklch-primary-52-211-153) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 1);
    --nav-footer-status-text: var(--text-primary);
    --nav-footer-btn-bg: transparent;
    --nav-footer-btn-border: transparent;
@@ -515,17 +550,17 @@
        transparent 30%),
      radial-gradient(ellipse 130% 90% at 50% -20%,
        oklch(from var(--oklch-yellow-217-119-6) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 0.45) 0%,
-       oklch(from var(--oklch-yellow-146-64-14) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.22) 50%,
+       oklch(from var(--oklch-secondary-146-64-14) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.22) 50%,
        transparent 85%),
      radial-gradient(ellipse 110% 40% at 50% 100%,
        oklch(from var(--oklch-yellow-180-83-9) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 0.2) 0%,
        transparent 70%),
      linear-gradient(180deg,
-       oklch(from var(--oklch-yellow-56-26-4) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 1) 0%,
-       oklch(from var(--oklch-yellow-36-16-2) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 1) 18%,
-       oklch(from var(--oklch-yellow-24-11-3) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 1) 42%,
-       oklch(from var(--oklch-yellow-16-6-1) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 1) 70%,
-       oklch(from var(--oklch-yellow-10-4-1) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 1) 100%);
+       oklch(from var(--oklch-secondary-56-26-4) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 1) 0%,
+       oklch(from var(--oklch-secondary-36-16-2) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 1) 18%,
+       oklch(from var(--oklch-secondary-24-11-3) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 1) 42%,
+       oklch(from var(--oklch-secondary-16-6-1) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 1) 70%,
+       oklch(from var(--oklch-secondary-10-4-1) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 1) 100%);
    --tree-menu-shell-border: oklch(from var(--oklch-yellow-245-158-11) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 1);
    --tree-menu-shell-shadow: 0 0 25px 0 oklch(from var(--oklch-yellow-245-158-11) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 0.45),
      0 0 8px 0 oklch(from var(--oklch-yellow-245-158-11) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 0.35),
@@ -533,8 +568,8 @@
      0 20px 40px oklch(from var(--oklch-blue-0-0-0) l c h / calc(0.85 * var(--oklch-shadow-opacity))),
      inset 0 1px 0 oklch(from var(--oklch-yellow-255-235-175) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 0.28);
    --tree-menu-header-bg: linear-gradient(180deg,
-       oklch(from var(--oklch-yellow-146-64-14) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.5) 0%,
-       oklch(from var(--oklch-yellow-69-26-3) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.65) 100%);
+       oklch(from var(--oklch-secondary-146-64-14) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.5) 0%,
+       oklch(from var(--oklch-secondary-69-26-3) clamp(0, calc(var(--oklch-surface-offset) + l * var(--oklch-surface-scale)), 1) calc(c * var(--oklch-surface-chroma)) h / 0.65) 100%);
    --tree-menu-header-border: oklch(from var(--oklch-yellow-245-158-11) clamp(0, calc(var(--oklch-accent-offset) + l * var(--oklch-accent-scale)), 1) calc(c * var(--oklch-accent-chroma)) h / 0.45);
    --tree-menu-header-title: oklch(from var(--oklch-yellow-251-191-36) clamp(0, calc(var(--oklch-ink-offset) + l * var(--oklch-ink-scale)), 1) calc(c * var(--oklch-ink-chroma)) h / 1);
    --tree-menu-header-icon: oklch(from var(--oklch-yellow-245-158-11) clamp(0, calc(var(--oklch-ink-offset) + l * var(--oklch-ink-scale)), 1) calc(c * var(--oklch-ink-chroma)) h / 1);

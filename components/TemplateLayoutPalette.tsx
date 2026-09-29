@@ -155,7 +155,7 @@ export default function TemplateLayoutPalette({
             onClick={() => setActiveTab('layout')}
             className={`py-1 px-3 rounded-lg text-xs font-bold transition cursor-pointer flex items-center gap-1.5 ${
               activeTab === 'layout'
-                ? 'bg-[color-mix(in_oklch,var(--primary-accent)_30%,transparent)] text-white border border-[var(--primary-accent)] shadow-sm'
+                ? 'bg-[color-mix(in_oklch,var(--primary-accent)_30%,transparent)] text-[var(--text-strong)] border border-[var(--primary-accent)] shadow-sm'
                 : 'text-muted hover:text-strong hover:bg-slate-800/60'
             }`}
           >
@@ -168,7 +168,7 @@ export default function TemplateLayoutPalette({
             onClick={() => setActiveTab('components')}
             className={`py-1 px-3 rounded-lg text-xs font-bold transition cursor-pointer flex items-center gap-1.5 ${
               activeTab === 'components'
-                ? 'bg-[color-mix(in_oklch,var(--primary-accent)_30%,transparent)] text-white border border-[var(--primary-accent)] shadow-sm'
+                ? 'bg-[color-mix(in_oklch,var(--primary-accent)_30%,transparent)] text-[var(--text-strong)] border border-[var(--primary-accent)] shadow-sm'
                 : 'text-muted hover:text-strong hover:bg-slate-800/60'
             }`}
           >
@@ -215,7 +215,7 @@ export default function TemplateLayoutPalette({
                   <span className="w-7 h-7 flex items-center justify-center rounded-lg bg-[color-mix(in_oklch,var(--primary-accent)_15%,transparent)] border border-[color-mix(in_oklch,var(--primary-accent)_30%,transparent)] group-hover:scale-105 transition-transform shrink-0">
                     {prim.icon}
                   </span>
-                  <span className="text-xs font-bold text-strong group-hover:text-white truncate">
+                  <span className="text-xs font-bold text-strong group-hover:text-[var(--text-strong)] truncate">
                     {prim.label}
                   </span>
                 </div>
@@ -260,7 +260,7 @@ export default function TemplateLayoutPalette({
                       >
                         <div className="flex items-center gap-2">
                           <span className="text-base">{item.icon}</span>
-                          <span className="text-xs font-bold text-strong group-hover:text-white truncate">
+                          <span className="text-xs font-bold text-strong group-hover:text-[var(--text-strong)] truncate">
                             {item.label}
                           </span>
                         </div>

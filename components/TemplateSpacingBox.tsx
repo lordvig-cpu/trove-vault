@@ -226,7 +226,7 @@ export default function TemplateSpacingBox({ container, onUpdate, marginDisabled
           value={Math.min(current.num, sliderMax)}
           onChange={(e) => setSide(selected.layer, selected.side, parseInt(e.target.value, 10), current.unit)}
           aria-label={`${capitalize(selected.layer)} ${isLinked ? 'all sides' : selected.side}`}
-          className="min-w-0 flex-1 h-1.5 rounded-full cursor-pointer accent-[var(--flyout-selected)] bg-black/40"
+          className="min-w-0 flex-1 h-1.5 rounded-full cursor-pointer accent-[var(--flyout-selected)] bg-shade/40"
         />
         <UnitSelect
           attached={false}
