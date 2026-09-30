@@ -145,3 +145,17 @@
   --flyout-tab-active-border: var(--shiny-amber-edge);
 }
 
+
+/* Menu text that reads white (deep ink in light mode): the flyout title, the active tab, each section
+   heading and the label above every Properties input. */
+[data-theme='theme-oklch-new-n-shiny'] .menuShellHead.menuShell .headerPill .headerTitle,
+[data-theme='theme-oklch-new-n-shiny'] .menuSectionTitle,
+[data-theme='theme-oklch-new-n-shiny'] .menuShellBody label {
+  color: var(--flyout-white);
+}
+
+[data-theme='theme-oklch-new-n-shiny'] .menuTab-active,
+[data-theme='theme-oklch-new-n-shiny'] .menuTab-active:hover {
+  color: var(--flyout-white);
+  text-shadow: 0 0 8px color-mix(in oklab, var(--secondary-accent) 55%, transparent);
+}

@@ -166,6 +166,8 @@
   --flyout-selected: oklch(from var(--flyout-title) l c calc(h + 12));
   /* Split-flyout head title (Container Properties): the selected yellow unless a theme says otherwise. */
   --flyout-heading: var(--flyout-selected);
+  /* Menu "white" text: white in dark mode, deep ink in light mode (the glint pole flips). */
+  --flyout-white: var(--pole-glint);
   --flyout-tab-band: linear-gradient(180deg, color-mix(in srgb, var(--oklch-secondary-217-119-6) 26%, var(--pole-surface)), color-mix(in srgb, var(--oklch-secondary-217-119-6) 12%, var(--pole-surface)));
   --flyout-tab-idle: color-mix(in srgb, var(--oklch-secondary-217-119-6) 6%, var(--pole-surface));
   --flyout-tab-active-top: color-mix(in srgb, var(--oklch-secondary-217-119-6) 58%, var(--pole-surface));
