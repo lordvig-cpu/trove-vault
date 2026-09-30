@@ -140,9 +140,9 @@
   --flyout-heading: var(--shiny-menu-ink);
   --flyout-tab-band: var(--shiny-menu-deep);
   --flyout-tab-idle: var(--shiny-menu);
-  --flyout-tab-active-top: color-mix(in oklab, var(--brand-secondary-amber) 16%, var(--shiny-menu));
-  --flyout-tab-active-bottom: color-mix(in oklab, var(--brand-secondary-amber) 9%, var(--shiny-menu));
-  --flyout-tab-active-border: var(--shiny-amber-edge);
+  --flyout-tab-active-top: color-mix(in oklab, var(--secondary-accent) 42%, var(--shiny-menu));
+  --flyout-tab-active-bottom: color-mix(in oklab, var(--secondary-accent) 26%, var(--shiny-menu));
+  --flyout-tab-active-border: var(--secondary-accent);
 }
 
 
@@ -158,4 +158,12 @@
 [data-theme='theme-oklch-new-n-shiny'] .menuTab-active:hover {
   color: var(--flyout-white);
   text-shadow: 0 0 8px color-mix(in oklab, var(--secondary-accent) 55%, transparent);
+  box-shadow:
+    inset 0 1px 0 color-mix(in oklab, var(--secondary-accent) 45%, transparent),
+    0 0 10px color-mix(in oklab, var(--secondary-accent) 35%, transparent);
+}
+
+/* An idle tab keeps a fainter amber edge so the row reads as amber buttons. */
+[data-theme='theme-oklch-new-n-shiny'] .menuTab:not(.menuTab-active) {
+  border-color: color-mix(in oklab, var(--secondary-accent) 45%, var(--shiny-menu));
 }
