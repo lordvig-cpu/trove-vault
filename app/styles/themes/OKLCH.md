@@ -105,7 +105,7 @@ split-flyout title color.
 | Secondary | `--oklch-secondary` | tree submenus, search menus, template toolbars and their drop-downs |
 | Secondary Accent | `--oklch-yellow` | default text, edges and selected states inside those menus/toolbars |
 
-Surface colors are the seed mixed into the background (`--shiny-*` in the theme file), so a picked
+Surface colors are the seed mixed into a fixed dark base (`--shiny-base`, the default background; `--shiny-*` in the theme file), so the Background picker recolors only the canvas and grid, and a picked
 color shows as a dark tint of itself.
 
 ### Five colors in Dark and Light

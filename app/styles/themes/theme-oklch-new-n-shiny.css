@@ -12,28 +12,31 @@
    itself rather than a bright slab. */
 [data-theme='theme-oklch-new-n-shiny'] {
   --oklch-bg: rgba(8, 13, 16, 1);
+  /* What every surface mix below darkens toward: the default Background, held fixed so the Background
+     picker recolors only the canvas and grid, not every panel, menu and ink built on top of it. */
+  --shiny-base: rgba(8, 13, 16, 1);
   --oklch-primary: rgba(51, 65, 85, 1);
   --oklch-blue: rgba(100, 116, 139, 1);
   --oklch-secondary: rgba(68, 64, 60, 1);
   --oklch-yellow: rgba(245, 158, 11, 1);
 
   /* Header / footer (Primary) */
-  --shiny-bar: color-mix(in oklch, var(--oklch-primary) 30%, var(--oklch-bg));
-  --shiny-bar-deep: color-mix(in oklch, var(--oklch-primary) 16%, var(--oklch-bg));
-  --shiny-bar-line: color-mix(in oklch, var(--oklch-primary) 55%, var(--oklch-bg));
+  --shiny-bar: color-mix(in oklch, var(--oklch-primary) 30%, var(--shiny-base));
+  --shiny-bar-deep: color-mix(in oklch, var(--oklch-primary) 16%, var(--shiny-base));
+  --shiny-bar-line: color-mix(in oklch, var(--oklch-primary) 55%, var(--shiny-base));
 
   /* Side and bottom panels (Primary Accent) */
-  --shiny-panel: color-mix(in oklch, var(--oklch-blue) 15%, var(--oklch-bg));
-  --shiny-panel-raised: color-mix(in oklch, var(--oklch-blue) 24%, var(--oklch-bg));
-  --shiny-popover: color-mix(in oklch, var(--oklch-blue) 11%, var(--oklch-bg));
-  --shiny-line: color-mix(in oklch, var(--oklch-blue) 35%, var(--oklch-bg));
-  --shiny-line-strong: color-mix(in oklch, var(--oklch-blue) 58%, var(--oklch-bg));
+  --shiny-panel: color-mix(in oklch, var(--oklch-blue) 15%, var(--shiny-base));
+  --shiny-panel-raised: color-mix(in oklch, var(--oklch-blue) 24%, var(--shiny-base));
+  --shiny-popover: color-mix(in oklch, var(--oklch-blue) 11%, var(--shiny-base));
+  --shiny-line: color-mix(in oklch, var(--oklch-blue) 35%, var(--shiny-base));
+  --shiny-line-strong: color-mix(in oklch, var(--oklch-blue) 58%, var(--shiny-base));
 
   /* Menus and toolbars (Secondary), with the Secondary Accent as their ink and edge */
-  --shiny-menu: color-mix(in oklch, var(--oklch-secondary) 50%, var(--oklch-bg));
-  --shiny-menu-deep: color-mix(in oklch, var(--oklch-secondary) 36%, var(--oklch-bg));
+  --shiny-menu: color-mix(in oklch, var(--oklch-secondary) 50%, var(--shiny-base));
+  --shiny-menu-deep: color-mix(in oklch, var(--oklch-secondary) 36%, var(--shiny-base));
   --shiny-menu-line: color-mix(in oklch, var(--brand-secondary-amber) 28%, var(--shiny-menu));
-  --shiny-amber-edge: color-mix(in oklch, var(--brand-secondary-amber) 70%, var(--oklch-bg));
+  --shiny-amber-edge: color-mix(in oklch, var(--brand-secondary-amber) 70%, var(--shiny-base));
   --shiny-menu-ink: var(--brand-secondary-amber);
   --shiny-menu-ink-soft: color-mix(in oklch, var(--brand-secondary-amber) 72%, var(--shiny-menu));
   --menu-ink-soft: var(--shiny-menu-ink-soft);
@@ -44,9 +47,9 @@
   --flyout-glow-outer: 22%;
 
   /* Ink outside the menus */
-  --text-primary: oklch(from var(--oklch-bg) 0.96 0.008 h);
-  --text-secondary: oklch(from var(--oklch-bg) 0.84 0.02 h);
-  --text-muted: oklch(from var(--oklch-bg) 0.68 0.03 h);
+  --text-primary: oklch(from var(--shiny-base) 0.96 0.008 h);
+  --text-secondary: oklch(from var(--shiny-base) 0.84 0.02 h);
+  --text-muted: oklch(from var(--shiny-base) 0.68 0.03 h);
 
   /* Background */
   --canvas-bg-primary: var(--oklch-bg);
@@ -86,14 +89,14 @@
   --right-panel-texture-bg: var(--shiny-none);
 
   /* Main content (item view): rules and hover fill from the Primary seed, like the bars. */
-  --content-border-subtle: color-mix(in oklch, var(--oklch-primary) 55%, var(--oklch-bg));
-  --content-border-strong: color-mix(in oklch, var(--oklch-primary) 80%, var(--oklch-bg));
+  --content-border-subtle: color-mix(in oklch, var(--oklch-primary) 55%, var(--shiny-base));
+  --content-border-strong: color-mix(in oklch, var(--oklch-primary) 80%, var(--shiny-base));
 
   /* Selection: an amber outline over a faint amber fill. */
   --tree-item-active-bg: color-mix(in oklch, var(--brand-secondary-amber) 6%, transparent);
   --tree-item-active-border: var(--shiny-amber-edge);
   --tree-item-hover-bg: color-mix(in oklch, var(--text-primary) 6%, transparent);
-  --tree-search-input-bg: var(--oklch-bg);
+  --tree-search-input-bg: var(--shiny-base);
   --tree-search-input-border: var(--shiny-line);
   --tmpl-item-selected-bg: color-mix(in oklch, var(--brand-secondary-amber) 9%, var(--shiny-panel));
   --tmpl-item-selected-border: var(--shiny-amber-edge);
