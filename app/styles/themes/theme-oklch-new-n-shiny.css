@@ -21,8 +21,9 @@
   --oklch-yellow: rgba(245, 158, 11, 1);
 
   /* Header / footer (Primary) */
-  --shiny-bar: color-mix(in oklch, var(--oklch-primary) 30%, var(--shiny-base));
-  --shiny-bar-deep: color-mix(in oklch, var(--oklch-primary) 16%, var(--shiny-base));
+  /* The Primary seed exactly, at the bar's outer edge (header top, footer top), shading toward the workspace. */
+  --shiny-bar: var(--oklch-primary);
+  --shiny-bar-deep: color-mix(in oklch, var(--oklch-primary) 55%, var(--shiny-base));
   --shiny-bar-line: color-mix(in oklch, var(--oklch-primary) 55%, var(--shiny-base));
 
   /* Side and bottom panels (Primary Accent) */
@@ -67,7 +68,7 @@
   --nav-header-shadow: 0 1px 0 var(--shadow-black-50);
   --nav-header-flare-bg: var(--shiny-none);
   --nav-header-texture-bg: var(--shiny-none);
-  --nav-footer-background: linear-gradient(0deg, var(--shiny-bar), var(--shiny-bar-deep));
+  --nav-footer-background: linear-gradient(180deg, var(--shiny-bar), var(--shiny-bar-deep));
   --nav-footer-border-top: 1px solid var(--shiny-bar-line);
   --nav-footer-shadow: 0 -1px 0 var(--shadow-black-50);
   --nav-footer-flare-bg: var(--shiny-none);
