@@ -5,6 +5,7 @@ import { useLocalStorage } from '@/hooks/useLocalStorage';
 import SeedColorPicker from '@/components/SeedColorPicker';
 import { DEFAULT_BACKGROUND_COLOR, DEFAULT_PRIMARY_COLOR, DEFAULT_SECONDARY_COLOR, hexToRgba, normalizeHex, rgbaToHex } from '@/lib/color';
 import { useUIPreferences } from '@/context/UIPreferencesContext';
+import { DiceIcon } from '@/components/icons/NavigationIcons';
 import type { ThemePreset } from '@/types/theme';
 
 /** Seeds each theme starts from when nothing is saved. Must match the CSS defaults: Dark/Light in
@@ -26,6 +27,20 @@ function defaultSeeds(theme: ThemePreset) {
         primaryColor: rgbaToHex(DEFAULT_PRIMARY_COLOR),
         secondaryColor: rgbaToHex(DEFAULT_SECONDARY_COLOR),
       };
+}
+
+/** A random hex color with mid-range saturation and lightness, so the derived OKLCH recipe stays readable. */
+function randomHex() {
+  const h = Math.random() * 360;
+  const s = 0.45 + Math.random() * 0.4;
+  const l = 0.3 + Math.random() * 0.3;
+  const a = s * Math.min(l, 1 - l);
+  const channel = (n: number) => {
+    const k = (n + h / 30) % 12;
+    const v = l - a * Math.max(-1, Math.min(k - 3, 9 - k, 1));
+    return Math.round(v * 255).toString(16).padStart(2, '0');
+  };
+  return `#${channel(0)}${channel(8)}${channel(4)}`.toUpperCase();
 }
 
 function HexSeedInput({ label, value, onChange }: {
@@ -125,6 +140,18 @@ export default function OklchSeedControls() {
       <HexSeedInput label="Primary Accent" value={accentAHex ?? defaults.primary} onChange={setAccentA} />
       <HexSeedInput label="Secondary" value={secondaryColorHex ?? defaults.secondaryColor} onChange={setSecondaryColor} />
       <HexSeedInput label="Secondary Accent" value={accentBHex ?? defaults.secondary} onChange={setAccentB} />
+      <button
+        type="button"
+        className="oklch-seed-dice"
+        title="Randomize all five colors"
+        aria-label="Randomize all five colors"
+        onClick={() => {
+          setAccentA(randomHex()); setAccentB(randomHex()); setBackground(randomHex());
+          setPrimaryColor(randomHex()); setSecondaryColor(randomHex());
+        }}
+      >
+        <DiceIcon className="w-4 h-4" />
+      </button>
       <button
         type="button"
         className="oklch-seed-reset"

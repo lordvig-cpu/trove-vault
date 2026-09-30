@@ -100,3 +100,24 @@ export const NavigationBarTextureFilter = () => (
   </svg>
 );
 
+
+/* Dice Icon: randomizes the footer's theme seed colors */
+export const DiceIcon = ({ className = '' }: { className?: string }) => (
+  <svg
+    className={`origin-center shrink-0 ${className}`}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth={1.8}
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden="true"
+  >
+    <rect x="3.5" y="3.5" width="17" height="17" rx="3" />
+    <circle cx="8.5" cy="8.5" r="1" fill="currentColor" stroke="none" />
+    <circle cx="15.5" cy="8.5" r="1" fill="currentColor" stroke="none" />
+    <circle cx="12" cy="12" r="1" fill="currentColor" stroke="none" />
+    <circle cx="8.5" cy="15.5" r="1" fill="currentColor" stroke="none" />
+    <circle cx="15.5" cy="15.5" r="1" fill="currentColor" stroke="none" />
+  </svg>
+);

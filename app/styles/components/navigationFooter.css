@@ -249,6 +249,7 @@
 
 .oklch-seed-field input:focus-visible,
 .oklch-seed-picker:focus-visible,
+.oklch-seed-dice:focus-visible,
 .oklch-seed-reset:focus-visible {
   outline: 2px solid var(--editor-focus);
   outline-offset: 1px;
@@ -258,6 +259,17 @@
   padding: 0.2rem;
   font-size: 0.65rem;
   cursor: pointer;
+}
+
+.oklch-seed-dice {
+  display: inline-flex;
+  padding: 0.2rem;
+  color: var(--secondary-accent);
+  cursor: pointer;
+}
+
+.oklch-seed-dice:hover {
+  color: var(--editor-text);
 }
 
 .oklch-seed-reset:hover {
