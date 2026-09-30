@@ -64,6 +64,7 @@ function HexSeedInput({ label, value, onChange, locked, onToggleLock }: {
         <SeedColorPicker
           label={label}
           value={value}
+          disabled={locked}
           onChange={hex => {
             setDraft(null);
             onChange(hex);
@@ -74,6 +75,7 @@ function HexSeedInput({ label, value, onChange, locked, onToggleLock }: {
           type="text"
           value={displayed}
           spellCheck={false}
+          disabled={locked}
           autoComplete="off"
           aria-invalid={invalid}
           aria-describedby={`${id}-hint`}

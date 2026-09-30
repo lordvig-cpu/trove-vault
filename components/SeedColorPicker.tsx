@@ -22,7 +22,7 @@ function toHex({ h, s, v }: Hsv): string {
   return '#' + rgb.map(n => Math.round((n + m) * 255).toString(16).padStart(2, '0')).join('').toUpperCase();
 }
 
-export default function SeedColorPicker({ label, value, onChange, empty = false, alpha = false }: {
+export default function SeedColorPicker({ label, value, onChange, empty = false, alpha = false, disabled = false }: {
   label: string;
   value: string;
   onChange: (value: string) => void;
@@ -31,6 +31,8 @@ export default function SeedColorPicker({ label, value, onChange, empty = false,
   empty?: boolean;
   /** Adds an opacity slider. `value` and `onChange` then carry "#RRGGBB" or, below 100%, "#RRGGBBAA". */
   alpha?: boolean;
+  /** The color is locked: the swatch can't open the picker. */
+  disabled?: boolean;
 }) {
   const id = useId();
   const trigger = useRef<HTMLButtonElement>(null);
@@ -63,6 +65,7 @@ export default function SeedColorPicker({ label, value, onChange, empty = false,
         aria-expanded={!!position}
         aria-controls={position ? id : undefined}
         aria-haspopup="dialog"
+        disabled={disabled}
         onClick={() => {
           if (position) { setPosition(null); return; }
           const rect = trigger.current!.getBoundingClientRect();
@@ -72,7 +75,7 @@ export default function SeedColorPicker({ label, value, onChange, empty = false,
           });
         }}
       />
-      {position && createPortal(
+      {position && !disabled && createPortal(
         <div
           ref={panel}
           // When this trigger sits inside a TreeSubMenu flyout, that flyout's own outside-click

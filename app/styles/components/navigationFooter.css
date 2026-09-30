@@ -279,6 +279,12 @@
   opacity: 1;
 }
 
+.oklch-seed-picker:disabled,
+.oklch-seed-field input:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
 .oklch-seed-dice {
   display: inline-flex;
   padding: 0.2rem;
