@@ -150,13 +150,13 @@
   --flyout-body-top: color-mix(in srgb, var(--oklch-secondary-217-119-6) 26%, var(--pole-surface));
   --flyout-body-bottom: color-mix(in srgb, var(--oklch-secondary-217-119-6) 9%, var(--pole-surface));
   --flyout-shell-border: var(--secondary-tree-menu-shell-border);
-  /* Flyout section cards (Size / Spacing / Layout / Appearance): the Primary seed for the fill and the
-     Primary Accent for the edges, icons and dividers, so they contrast with the Secondary-colored flyout. */
+  /* Flyout section cards (Size / Spacing / Layout / Appearance): the Primary Accent seed for the fill and
+     for the edges, icons and dividers, so they contrast with the Secondary-colored flyout. */
   --section-card-border: color-mix(in srgb, var(--primary-accent) 70%, var(--pole-surface));
-  --section-card-glow: color-mix(in srgb, var(--oklch-primary) 45%, transparent);
-  --section-card-glow-fade: color-mix(in srgb, var(--oklch-primary) 16%, transparent);
-  --section-card-base: color-mix(in srgb, var(--oklch-primary) 14%, var(--pole-surface));
-  --section-tile-bg: color-mix(in srgb, var(--oklch-primary) 40%, var(--pole-surface));
+  --section-card-glow: color-mix(in srgb, var(--oklch-blue) 45%, transparent);
+  --section-card-glow-fade: color-mix(in srgb, var(--oklch-blue) 16%, transparent);
+  --section-card-base: color-mix(in srgb, var(--oklch-blue) 14%, var(--pole-surface));
+  --section-tile-bg: color-mix(in srgb, var(--oklch-blue) 40%, var(--pole-surface));
   --section-tile-border: color-mix(in srgb, var(--primary-accent) 75%, var(--pole-surface));
   --section-divider: color-mix(in srgb, var(--primary-accent) 40%, transparent);
   --flyout-shell-glow: 0 0 18px color-mix(in oklab, var(--secondary-accent) var(--flyout-glow-outer), transparent), 0 16px 32px color-mix(in oklab, var(--pole-shade) 55%, transparent);
