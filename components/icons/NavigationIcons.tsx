@@ -121,3 +121,29 @@ export const DiceIcon = ({ className = '' }: { className?: string }) => (
     <circle cx="15.5" cy="15.5" r="1" fill="currentColor" stroke="none" />
   </svg>
 );
+
+/* Lock / Unlock Icons: pin a seed color so the dice skips it */
+const lockProps = (className: string) => ({
+  className: `origin-center shrink-0 ${className}`,
+  viewBox: '0 0 24 24',
+  fill: 'none',
+  stroke: 'currentColor',
+  strokeWidth: 1.8,
+  strokeLinecap: 'round' as const,
+  strokeLinejoin: 'round' as const,
+  'aria-hidden': true as const,
+});
+
+export const LockIcon = ({ className = '' }: { className?: string }) => (
+  <svg {...lockProps(className)}>
+    <rect x="5" y="11" width="14" height="9.5" rx="2" />
+    <path d="M8 11V7.5a4 4 0 0 1 8 0V11" />
+  </svg>
+);
+
+export const UnlockIcon = ({ className = '' }: { className?: string }) => (
+  <svg {...lockProps(className)}>
+    <rect x="5" y="11" width="14" height="9.5" rx="2" />
+    <path d="M8 11V7.5a4 4 0 0 1 7.5-1.9" />
+  </svg>
+);

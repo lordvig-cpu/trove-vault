@@ -249,6 +249,7 @@
 
 .oklch-seed-field input:focus-visible,
 .oklch-seed-picker:focus-visible,
+.oklch-seed-lock:focus-visible,
 .oklch-seed-dice:focus-visible,
 .oklch-seed-reset:focus-visible {
   outline: 2px solid var(--editor-focus);
@@ -259,6 +260,23 @@
   padding: 0.2rem;
   font-size: 0.65rem;
   cursor: pointer;
+}
+
+.oklch-seed-lock {
+  display: inline-flex;
+  padding: 0.1rem;
+  color: var(--editor-text);
+  opacity: 0.6;
+  cursor: pointer;
+}
+
+.oklch-seed-lock:hover {
+  opacity: 1;
+}
+
+.oklch-seed-lock[aria-pressed='true'] {
+  color: var(--secondary-accent);
+  opacity: 1;
 }
 
 .oklch-seed-dice {

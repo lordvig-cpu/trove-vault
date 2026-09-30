@@ -5,7 +5,7 @@ import { useLocalStorage } from '@/hooks/useLocalStorage';
 import SeedColorPicker from '@/components/SeedColorPicker';
 import { DEFAULT_BACKGROUND_COLOR, DEFAULT_PRIMARY_COLOR, DEFAULT_SECONDARY_COLOR, hexToRgba, normalizeHex, rgbaToHex } from '@/lib/color';
 import { useUIPreferences } from '@/context/UIPreferencesContext';
-import { DiceIcon } from '@/components/icons/NavigationIcons';
+import { DiceIcon, LockIcon, UnlockIcon } from '@/components/icons/NavigationIcons';
 import type { ThemePreset } from '@/types/theme';
 
 /** Seeds each theme starts from when nothing is saved. Must match the CSS defaults: Dark/Light in
@@ -43,10 +43,14 @@ function randomHex() {
   return `#${channel(0)}${channel(8)}${channel(4)}`.toUpperCase();
 }
 
-function HexSeedInput({ label, value, onChange }: {
+const NO_LOCKS: string[] = [];
+
+function HexSeedInput({ label, value, onChange, locked, onToggleLock }: {
   label: string;
   value: string;
   onChange: (value: string) => void;
+  locked: boolean;
+  onToggleLock: () => void;
 }) {
   const id = useId();
   const [draft, setDraft] = useState<string | null>(null);
@@ -86,6 +90,16 @@ function HexSeedInput({ label, value, onChange }: {
             if (event.key === 'Enter' || event.key === 'Escape') event.currentTarget.blur();
           }}
         />
+        <button
+          type="button"
+          className="oklch-seed-lock"
+          aria-pressed={locked}
+          title={locked ? `Unlock ${label} (the dice can change it)` : `Lock ${label} (the dice will skip it)`}
+          aria-label={locked ? `Unlock ${label}` : `Lock ${label}`}
+          onClick={onToggleLock}
+        >
+          {locked ? <LockIcon className="w-3.5 h-3.5" /> : <UnlockIcon className="w-3.5 h-3.5" />}
+        </button>
       </span>
       <span id={`${id}-hint`} className="sr-only">
         Enter 3 or 6 hexadecimal digits. Valid colors apply immediately to OKLCH.
@@ -107,6 +121,10 @@ export default function OklchSeedControls() {
   // The header/footer/main-content color and the menu/toolbar color: independent of the two accents.
   const [primaryColor, setPrimaryColor] = useLocalStorage<string | null>(`uc_oklch_primary_color${suffix}`, null);
   const [secondaryColor, setSecondaryColor] = useLocalStorage<string | null>(`uc_oklch_secondary_color${suffix}`, null);
+  // Names of the seeds the dice must leave alone.
+  const [locks, setLocks] = useLocalStorage<string[]>(`uc_oklch_locks${suffix}`, NO_LOCKS);
+  const toggleLock = (name: string) =>
+    setLocks(current => (current.includes(name) ? current.filter(n => n !== name) : [...current, name]));
   const accentAHex = normalizeHex(accentA);
   const accentBHex = normalizeHex(accentB);
   const backgroundHex = normalizeHex(background);
@@ -135,19 +153,22 @@ export default function OklchSeedControls() {
 
   return (
     <div className="oklch-seed-controls" role="group" aria-label="OKLCH seed colors">
-      <HexSeedInput label="Background" value={backgroundHex ?? defaults.background} onChange={setBackground} />
-      <HexSeedInput label="Primary" value={primaryColorHex ?? defaults.primaryColor} onChange={setPrimaryColor} />
-      <HexSeedInput label="Primary Accent" value={accentAHex ?? defaults.primary} onChange={setAccentA} />
-      <HexSeedInput label="Secondary" value={secondaryColorHex ?? defaults.secondaryColor} onChange={setSecondaryColor} />
-      <HexSeedInput label="Secondary Accent" value={accentBHex ?? defaults.secondary} onChange={setAccentB} />
+      <HexSeedInput label="Background" value={backgroundHex ?? defaults.background} onChange={setBackground} locked={locks.includes('background')} onToggleLock={() => toggleLock('background')} />
+      <HexSeedInput label="Primary" value={primaryColorHex ?? defaults.primaryColor} onChange={setPrimaryColor} locked={locks.includes('primary')} onToggleLock={() => toggleLock('primary')} />
+      <HexSeedInput label="Primary Accent" value={accentAHex ?? defaults.primary} onChange={setAccentA} locked={locks.includes('accentA')} onToggleLock={() => toggleLock('accentA')} />
+      <HexSeedInput label="Secondary" value={secondaryColorHex ?? defaults.secondaryColor} onChange={setSecondaryColor} locked={locks.includes('secondary')} onToggleLock={() => toggleLock('secondary')} />
+      <HexSeedInput label="Secondary Accent" value={accentBHex ?? defaults.secondary} onChange={setAccentB} locked={locks.includes('accentB')} onToggleLock={() => toggleLock('accentB')} />
       <button
         type="button"
         className="oklch-seed-dice"
         title="Randomize all five colors"
         aria-label="Randomize all five colors"
         onClick={() => {
-          setAccentA(randomHex()); setAccentB(randomHex()); setBackground(randomHex());
-          setPrimaryColor(randomHex()); setSecondaryColor(randomHex());
+          if (!locks.includes('accentA')) setAccentA(randomHex());
+          if (!locks.includes('accentB')) setAccentB(randomHex());
+          if (!locks.includes('background')) setBackground(randomHex());
+          if (!locks.includes('primary')) setPrimaryColor(randomHex());
+          if (!locks.includes('secondary')) setSecondaryColor(randomHex());
         }}
       >
         <DiceIcon className="w-4 h-4" />
