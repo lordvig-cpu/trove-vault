@@ -12,9 +12,7 @@
      of its own. */
   background:
     linear-gradient(color-mix(in oklch, var(--pole-shade) 10%, transparent), color-mix(in oklch, var(--pole-shade) 10%, transparent)),
-    radial-gradient(ellipse 90% 140% at 50% 0%,
-      color-mix(in oklch, var(--secondary-accent) var(--flyout-glow-top), transparent) 0%,
-      transparent 75%),
+    linear-gradient(180deg, var(--flyout-head-top) 0%, var(--flyout-head-bottom) 1.25rem),
     var(--secondary-tree-menu-header-bg),
     var(--secondary-tree-menu-shell-bg);
   border: 1.5px solid var(--secondary-tree-menu-shell-border);
@@ -70,9 +68,7 @@
    same chassis, corners and glow rotated to face up instead of down. */
 .tmpl-edge-panel-bottom {
   background:
-    radial-gradient(ellipse 90% 140% at 50% 100%,
-      color-mix(in oklch, var(--secondary-accent) var(--flyout-glow-top), transparent) 0%,
-      transparent 75%),
+    linear-gradient(0deg, var(--flyout-head-top) 0%, var(--flyout-head-bottom) 1.25rem),
     var(--secondary-tree-menu-header-bg),
     var(--secondary-tree-menu-shell-bg);
   border-radius: 0.75rem 0.75rem 0 0;
