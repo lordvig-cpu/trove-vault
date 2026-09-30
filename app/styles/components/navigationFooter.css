@@ -449,7 +449,7 @@
 .theme-selector-btn-active {
   color: var(--flyout-selected);
   border-color: var(--flyout-selected);
-  background: color-mix(in oklch, var(--secondary-accent) 18%, transparent);
+  background: color-mix(in oklab, var(--secondary-accent) 18%, transparent);
 }
 
 .theme-selector-btn:focus-visible {

@@ -130,17 +130,17 @@
 .tree-applied-filters,
 .tree-item-selected,
 .tree-item-selected:hover {
-  --applied-filter-highlight: color-mix(in oklch, var(--primary-accent) 65%, var(--pole-sheen));
+  --applied-filter-highlight: color-mix(in oklab, var(--primary-accent) 65%, var(--pole-sheen));
   border: 1.5px solid var(--applied-filter-highlight);
   background: linear-gradient(
     135deg,
-    color-mix(in oklch, var(--primary-accent) 28%, var(--surface-panel)),
-    color-mix(in oklch, var(--primary-accent) 14%, var(--surface-panel))
+    color-mix(in oklab, var(--primary-accent) 28%, var(--surface-panel)),
+    color-mix(in oklab, var(--primary-accent) 14%, var(--surface-panel))
   );
   box-shadow:
-    inset 0 1px 5px color-mix(in oklch, var(--applied-filter-highlight) 45%, transparent),
-    0 0 5px color-mix(in oklch, var(--primary-accent) 45%, transparent),
-    0 0 12px color-mix(in oklch, var(--primary-accent) 20%, transparent);
+    inset 0 1px 5px color-mix(in oklab, var(--applied-filter-highlight) 45%, transparent),
+    0 0 5px color-mix(in oklab, var(--primary-accent) 45%, transparent),
+    0 0 12px color-mix(in oklab, var(--primary-accent) 20%, transparent);
 }
 
 .tree-applied-filters-header {
@@ -170,7 +170,7 @@
   border-radius: 0.5rem;
   background: var(--surface-panel);
   border-color: var(--primary-border-strong);
-  box-shadow: inset 0 1px 3px color-mix(in oklch, var(--primary-accent) 8%, transparent);
+  box-shadow: inset 0 1px 3px color-mix(in oklab, var(--primary-accent) 8%, transparent);
 }
 
 .tree-applied-filters .tree-filter-pill:hover {

@@ -11,7 +11,7 @@
      used inside a flyout's Properties body ([role='group'] in TreeSubMenu.css), not a visible tint
      of its own. */
   background:
-    linear-gradient(color-mix(in oklch, var(--pole-shade) 10%, transparent), color-mix(in oklch, var(--pole-shade) 10%, transparent)),
+    linear-gradient(color-mix(in oklab, var(--pole-shade) 10%, transparent), color-mix(in oklab, var(--pole-shade) 10%, transparent)),
     linear-gradient(180deg, var(--flyout-head-top) 0%, var(--flyout-head-bottom) 1.25rem),
     var(--secondary-tree-menu-header-bg),
     var(--secondary-tree-menu-shell-bg);
@@ -23,7 +23,7 @@
 /* Drop-down menus under the bar: same amber chassis, noticeably darker so the options read clearly */
 .tmpl-edge-panel.tmpl-edge-menu {
   background:
-    linear-gradient(color-mix(in oklch, var(--pole-surface) 50%, transparent), color-mix(in oklch, var(--pole-surface) 50%, transparent)),
+    linear-gradient(color-mix(in oklab, var(--pole-surface) 50%, transparent), color-mix(in oklab, var(--pole-surface) 50%, transparent)),
     var(--secondary-tree-menu-shell-bg);
 }
 
@@ -31,14 +31,14 @@
    brightest part sits at the bottom, against the bar the menu grew from, and it darkens upward. */
 .tmpl-edge-panel.tmpl-edge-menu.tmpl-edge-menu-up {
   background:
-    linear-gradient(color-mix(in oklch, var(--pole-shade) 50%, transparent), color-mix(in oklch, var(--pole-shade) 50%, transparent)),
+    linear-gradient(color-mix(in oklab, var(--pole-shade) 50%, transparent), color-mix(in oklab, var(--pole-shade) 50%, transparent)),
     radial-gradient(ellipse 130% 90% at 50% 120%,
-      color-mix(in oklch, var(--secondary-accent) 55%, transparent) 0%,
-      color-mix(in oklch, var(--secondary-accent) 26%, transparent) 50%,
+      color-mix(in oklab, var(--secondary-accent) 55%, transparent) 0%,
+      color-mix(in oklab, var(--secondary-accent) 26%, transparent) 50%,
       transparent 85%),
     linear-gradient(0deg,
-      color-mix(in oklch, var(--pole-sheen) 8%, transparent) 0%,
-      color-mix(in oklch, var(--pole-sheen) 2%, transparent) 15%,
+      color-mix(in oklab, var(--pole-sheen) 8%, transparent) 0%,
+      color-mix(in oklab, var(--pole-sheen) 2%, transparent) 15%,
       transparent 30%),
     var(--surface-panel);
 }
@@ -61,7 +61,7 @@
   border-top-width: 0;
   box-shadow:
     0 8px 18px -2px oklch(from var(--oklch-blue-0-0-0) l c h / calc(0.6 * var(--oklch-shadow-opacity, 1))),
-    0 0 18px color-mix(in oklch, var(--secondary-accent) var(--flyout-glow-outer), transparent);
+    0 0 18px color-mix(in oklab, var(--secondary-accent) var(--flyout-glow-outer), transparent);
 }
 
 /* The container toolbar, anchored to the workspace footer (see .tmpl-edge-panel-top above):
@@ -75,6 +75,6 @@
   border-bottom-width: 0;
   box-shadow:
     0 -8px 18px -2px oklch(from var(--oklch-blue-0-0-0) l c h / calc(0.6 * var(--oklch-shadow-opacity, 1))),
-    0 0 18px color-mix(in oklch, var(--secondary-accent) var(--flyout-glow-outer), transparent);
+    0 0 18px color-mix(in oklab, var(--secondary-accent) var(--flyout-glow-outer), transparent);
 }
 

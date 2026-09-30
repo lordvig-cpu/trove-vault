@@ -348,7 +348,7 @@
 }
 
 .tree-folder-tab-reorder-target svg {
-  filter: drop-shadow(0 0 8px color-mix(in oklch, var(--pole-glint) 70%, transparent)) drop-shadow(0 0 3px var(--focus-blue)) !important;
+  filter: drop-shadow(0 0 8px color-mix(in oklab, var(--pole-glint) 70%, transparent)) drop-shadow(0 0 3px var(--focus-blue)) !important;
 }
 
 .tree-tab-insert-marker {
@@ -454,10 +454,10 @@
   flex-shrink: 0;
   background:
     linear-gradient(to top,
-      color-mix(in oklch, var(--text-fixed-white) 8%, transparent),
+      color-mix(in oklab, var(--text-fixed-white) 8%, transparent),
       transparent 75%),
     linear-gradient(115deg,
-      color-mix(in oklch, var(--primary-accent) 12%, var(--surface-panel)),
+      color-mix(in oklab, var(--primary-accent) 12%, var(--surface-panel)),
       var(--surface-panel));
   clip-path: inset(0 round 0 0 var(--panel-bottom-right-radius, 0) var(--panel-bottom-left-radius, 0));
   overflow: hidden;
@@ -477,9 +477,9 @@
   right: 0;
   height: 0.3rem;
   background: linear-gradient(to top,
-    color-mix(in oklch, var(--primary-accent-hover) 75%, var(--text-fixed-white)),
+    color-mix(in oklab, var(--primary-accent-hover) 75%, var(--text-fixed-white)),
     var(--primary-accent-hover));
-  box-shadow: 0 -1px 4px color-mix(in oklch, var(--primary-accent-hover) 40%, transparent);
+  box-shadow: 0 -1px 4px color-mix(in oklab, var(--primary-accent-hover) 40%, transparent);
   pointer-events: none;
 }
 
@@ -489,16 +489,16 @@
 
 .panel-bottom-topper-empty::after {
   background: linear-gradient(to top,
-    color-mix(in oklch, var(--panel-border-strong) 75%, var(--surface-panel)),
-    color-mix(in oklch, var(--panel-border-strong) 45%, var(--surface-panel)));
+    color-mix(in oklab, var(--panel-border-strong) 75%, var(--surface-panel)),
+    color-mix(in oklab, var(--panel-border-strong) 45%, var(--surface-panel)));
   box-shadow: none;
 }
 
 .panel-bottom-topper-occupied::after {
   background: linear-gradient(to top,
-    color-mix(in oklch, var(--primary-accent-hover) 75%, var(--text-fixed-white)),
+    color-mix(in oklab, var(--primary-accent-hover) 75%, var(--text-fixed-white)),
     var(--primary-accent-hover));
-  box-shadow: 0 -1px 4px color-mix(in oklch, var(--primary-accent-hover) 40%, transparent);
+  box-shadow: 0 -1px 4px color-mix(in oklab, var(--primary-accent-hover) 40%, transparent);
 }
 
 .tree-header-toolbar::before {
@@ -510,9 +510,9 @@
   height: 0.3rem;
   border-radius: 0;
   background: linear-gradient(to bottom,
-    color-mix(in oklch, var(--primary-accent-hover) 75%, var(--text-fixed-white)),
+    color-mix(in oklab, var(--primary-accent-hover) 75%, var(--text-fixed-white)),
     var(--primary-accent-hover));
-  box-shadow: 0 1px 4px color-mix(in oklch, var(--primary-accent-hover) 40%, transparent);
+  box-shadow: 0 1px 4px color-mix(in oklab, var(--primary-accent-hover) 40%, transparent);
   pointer-events: none;
 }
 
@@ -523,10 +523,10 @@
   z-index: -1;
   background:
     linear-gradient(to bottom,
-      color-mix(in oklch, var(--text-fixed-white) 8%, transparent),
+      color-mix(in oklab, var(--text-fixed-white) 8%, transparent),
       transparent 75%),
     linear-gradient(115deg,
-      color-mix(in oklch, var(--primary-accent) 12%, var(--surface-panel)),
+      color-mix(in oklab, var(--primary-accent) 12%, var(--surface-panel)),
       var(--surface-panel));
   pointer-events: none;
 }
@@ -534,16 +534,16 @@
 /* Use the scrollbar aqua, rather than the primary seed's deeper blue. */
 .tree-header-empty .tree-header-toolbar::before {
   background: linear-gradient(to bottom,
-    color-mix(in oklch, var(--panel-border-strong) 75%, var(--surface-panel)),
-    color-mix(in oklch, var(--panel-border-strong) 45%, var(--surface-panel)));
+    color-mix(in oklab, var(--panel-border-strong) 75%, var(--surface-panel)),
+    color-mix(in oklab, var(--panel-border-strong) 45%, var(--surface-panel)));
   box-shadow: none;
 }
 
 .tree-header-occupied .tree-header-toolbar::before {
   background: linear-gradient(to bottom,
-    color-mix(in oklch, var(--primary-accent-hover) 75%, var(--text-fixed-white)),
+    color-mix(in oklab, var(--primary-accent-hover) 75%, var(--text-fixed-white)),
     var(--primary-accent-hover));
-  box-shadow: 0 1px 4px color-mix(in oklch, var(--primary-accent-hover) 40%, transparent);
+  box-shadow: 0 1px 4px color-mix(in oklab, var(--primary-accent-hover) 40%, transparent);
 }
 
 .tree-header-title {
@@ -581,12 +581,12 @@
   width: calc(100% + 1.25rem);
   margin: 0 -0.625rem;
   border: 0;
-  border-top: 1px solid color-mix(in oklch, var(--primary-accent-hover) 65%, transparent);
+  border-top: 1px solid color-mix(in oklab, var(--primary-accent-hover) 65%, transparent);
   box-shadow:
     0 -1px 0 var(--shadow-black-50),
     0 1px 0 var(--shadow-black-50),
     0 2px 4px var(--shadow-black-35),
-    0 1px 3px color-mix(in oklch, var(--primary-accent-hover) 20%, transparent);
+    0 1px 3px color-mix(in oklab, var(--primary-accent-hover) 20%, transparent);
 }
 
 .tree-section-heading {
@@ -611,7 +611,7 @@
   flex: 1;
   margin: 0;
   border: 0;
-  border-top: 1px solid color-mix(in oklch, var(--primary-tree-title-text) 30%, transparent);
+  border-top: 1px solid color-mix(in oklab, var(--primary-tree-title-text) 30%, transparent);
   box-shadow:
     0 -1px 0 var(--shadow-black-50),
     0 1px 0 var(--shadow-black-50),
@@ -642,7 +642,7 @@
   flex: 1;
   margin: 0;
   border: 0;
-  border-top: 1px solid color-mix(in oklch, var(--secondary-accent) 35%, transparent);
+  border-top: 1px solid color-mix(in oklab, var(--secondary-accent) 35%, transparent);
   box-shadow:
     0 -1px 0 var(--shadow-black-50),
     0 1px 0 var(--shadow-black-50),
@@ -710,7 +710,7 @@
   border-radius: 0.5rem;
   background: var(--surface-panel);
   color: var(--text-strong);
-  box-shadow: inset 0 1px 3px color-mix(in oklch, var(--primary-accent) 8%, transparent);
+  box-shadow: inset 0 1px 3px color-mix(in oklab, var(--primary-accent) 8%, transparent);
 }
 
 .tree-search-query-input {
@@ -757,7 +757,7 @@
   align-self: stretch;
   min-width: 1.75rem;
   padding-left: 0.5rem;
-  border-left: 1px solid color-mix(in oklch, var(--text-soft) 35%, transparent);
+  border-left: 1px solid color-mix(in oklab, var(--text-soft) 35%, transparent);
   background: transparent;
   color: var(--primary-tree-action-icon);
   transition: color 150ms ease;
@@ -768,7 +768,7 @@
   padding-left: 0;
   padding-right: 0.5rem;
   border-left: none;
-  border-right: 1px solid color-mix(in oklch, var(--text-soft) 35%, transparent);
+  border-right: 1px solid color-mix(in oklab, var(--text-soft) 35%, transparent);
 }
 
 .tree-search-advanced:hover {

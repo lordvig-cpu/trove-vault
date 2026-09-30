@@ -117,7 +117,7 @@ body {
   --color-slate-400: var(--text-muted);
   --color-slate-300: var(--text-secondary);
   --color-slate-200: var(--text-primary);
-  --color-amber-950: color-mix(in oklch, var(--brand-secondary-amber) 20%, var(--pole-surface));
+  --color-amber-950: color-mix(in oklab, var(--brand-secondary-amber) 20%, var(--pole-surface));
   --color-amber-500: var(--brand-secondary-amber);
   --color-amber-400: var(--brand-secondary-amber);
   --color-amber-300: var(--flyout-title);

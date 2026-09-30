@@ -72,12 +72,12 @@
 .searchMenuShell .searchMenuScrollList,
 .searchMenuShell .tree-filter-shell {
     scrollbar-width: thin;
-    scrollbar-color: color-mix(in oklch, var(--secondary-accent) 70%, transparent) transparent;
+    scrollbar-color: color-mix(in oklab, var(--secondary-accent) 70%, transparent) transparent;
 }
 
 .searchMenuShell .searchMenuScrollList::-webkit-scrollbar-thumb,
 .searchMenuShell .tree-filter-shell::-webkit-scrollbar-thumb {
-    background-color: color-mix(in oklch, var(--secondary-accent) 70%, transparent);
+    background-color: color-mix(in oklab, var(--secondary-accent) 70%, transparent);
 }
 
 .searchMenuShell .searchMenuScrollList::-webkit-scrollbar-thumb:hover,
@@ -99,5 +99,5 @@
 
 .searchMenuShell .tree-filter-checkbox:focus {
     border-color: var(--flyout-selected);
-    box-shadow: 0 0 0 2px color-mix(in oklch, var(--flyout-selected) 35%, transparent);
+    box-shadow: 0 0 0 2px color-mix(in oklab, var(--flyout-selected) 35%, transparent);
 }

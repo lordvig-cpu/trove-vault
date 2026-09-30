@@ -9,18 +9,18 @@
    ambient styling by ancestry the way the trigger still can; defining both explicitly here is what
    keeps them matching instead of one silently drifting from the other. */
 .unitSelectTrigger {
-  background: color-mix(in oklch, var(--primary-accent) 26%, var(--pole-surface));
-  border-color: color-mix(in oklch, var(--text-strong) 24%, transparent);
+  background: color-mix(in oklab, var(--primary-accent) 26%, var(--pole-surface));
+  border-color: color-mix(in oklab, var(--text-strong) 24%, transparent);
   color: var(--text-strong);
 }
 
 .unitSelectTrigger:hover {
-  border-color: color-mix(in oklch, var(--text-strong) 55%, transparent);
+  border-color: color-mix(in oklab, var(--text-strong) 55%, transparent);
 }
 
 .unitSelectTrigger:focus {
-  border-color: color-mix(in oklch, var(--flyout-selected) 55%, transparent);
-  box-shadow: 0 0 0 1px color-mix(in oklch, var(--flyout-selected) 35%, transparent);
+  border-color: color-mix(in oklab, var(--flyout-selected) 55%, transparent);
+  box-shadow: 0 0 0 1px color-mix(in oklab, var(--flyout-selected) 35%, transparent);
 }
 
 .unitSelectTrigger svg {
@@ -36,20 +36,20 @@
 /* Options sit flush against the shell and each other -- no rounding, no padding around them (the
    shell's own tmpl-edge-panel padding is a Tailwind class dropped in UnitSelect.tsx, not set here). */
 .unitSelectOption {
-  background: color-mix(in oklch, var(--primary-accent) 26%, var(--pole-surface));
-  border-color: color-mix(in oklch, var(--text-strong) 24%, transparent);
+  background: color-mix(in oklab, var(--primary-accent) 26%, var(--pole-surface));
+  border-color: color-mix(in oklab, var(--text-strong) 24%, transparent);
   color: var(--text-strong);
   border-radius: 0;
 }
 
 .unitSelectOption:hover {
-  border-color: color-mix(in oklch, var(--text-strong) 55%, transparent);
-  background: color-mix(in oklch, var(--primary-accent) 34%, var(--pole-surface));
+  border-color: color-mix(in oklab, var(--text-strong) 55%, transparent);
+  background: color-mix(in oklab, var(--primary-accent) 34%, var(--pole-surface));
 }
 
 .unitSelectOption-selected,
 .unitSelectOption-selected:hover {
   border-color: var(--flyout-selected);
   color: var(--flyout-selected);
-  background: color-mix(in oklch, var(--primary-accent) 34%, var(--pole-surface));
+  background: color-mix(in oklab, var(--primary-accent) 34%, var(--pole-surface));
 }

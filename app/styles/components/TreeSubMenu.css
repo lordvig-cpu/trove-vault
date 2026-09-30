@@ -162,9 +162,9 @@
   border-bottom: 1px solid var(--flyout-card-border);
   /* The first, non-inset shadow casts upward, landing just above the tab band's own top edge
      (its border-block line) rather than inside the band. */
-  box-shadow: 0 -1px 2px color-mix(in oklch, var(--pole-shade) 45%, transparent),
-    inset 0 1px 3px color-mix(in oklch, var(--pole-shade) 45%, transparent),
-    inset 0 -1px 3px color-mix(in oklch, var(--pole-shade) 45%, transparent);
+  box-shadow: 0 -1px 2px color-mix(in oklab, var(--pole-shade) 45%, transparent),
+    inset 0 1px 3px color-mix(in oklab, var(--pole-shade) 45%, transparent),
+    inset 0 -1px 3px color-mix(in oklab, var(--pole-shade) 45%, transparent);
 }
 
 /* An empty band (fewer than two tabs) has no buttons to show, so it keeps just that divider line
@@ -216,11 +216,11 @@
    older ones (and give the hover shade, which scrollbar-color can't). */
 .childrenContainer {
   scrollbar-width: thin;
-  scrollbar-color: color-mix(in oklch, var(--secondary-accent) 70%, transparent) transparent;
+  scrollbar-color: color-mix(in oklab, var(--secondary-accent) 70%, transparent) transparent;
 }
 
 .childrenContainer::-webkit-scrollbar-thumb {
-  background-color: color-mix(in oklch, var(--secondary-accent) 70%, transparent);
+  background-color: color-mix(in oklab, var(--secondary-accent) 70%, transparent);
 }
 
 .childrenContainer::-webkit-scrollbar-thumb:hover {
@@ -476,9 +476,9 @@
   justify-content: center;
   width: 1.125rem;
   height: 1.125rem;
-  border: 1px solid color-mix(in oklch, var(--secondary-accent) 55%, transparent);
+  border: 1px solid color-mix(in oklab, var(--secondary-accent) 55%, transparent);
   border-radius: 0.3rem;
-  background: color-mix(in oklch, var(--pole-shade) 40%, transparent);
+  background: color-mix(in oklab, var(--pole-shade) 40%, transparent);
   color: var(--secondary-accent);
 }
 
@@ -526,7 +526,7 @@
   padding: 0.5rem 0.875rem;
   border-block: 1px solid var(--flyout-card-border);
   background: var(--flyout-tab-band);
-  box-shadow: inset 0 1px 3px color-mix(in oklch, var(--pole-shade) 45%, transparent);
+  box-shadow: inset 0 1px 3px color-mix(in oklab, var(--pole-shade) 45%, transparent);
 }
 
 .menuTab {
@@ -558,7 +558,7 @@
   color: var(--flyout-selected);
   border-color: var(--flyout-tab-active-border);
   background: linear-gradient(180deg, var(--flyout-tab-active-top), var(--flyout-tab-active-bottom));
-  box-shadow: inset 0 1px 0 color-mix(in oklch, var(--pole-sheen) 22%, transparent);
+  box-shadow: inset 0 1px 0 color-mix(in oklab, var(--pole-sheen) 22%, transparent);
 }
 
 /* ActionMenuSection: a collapsible card -- amber border over a dark, faintly amber fill, with a large
@@ -677,19 +677,19 @@
    ancestry here -- its list is portaled to <body>, so it's never actually a descendant of
    .menuShellBody for a rule like this to reach. */
 .menuShellBody input[type='text']:not(.spacingInput) {
-  background: color-mix(in oklch, var(--primary-accent) 16%, var(--pole-surface));
-  border: 1px solid color-mix(in oklch, var(--text-strong) 24%, transparent);
+  background: color-mix(in oklab, var(--primary-accent) 16%, var(--pole-surface));
+  border: 1px solid color-mix(in oklab, var(--text-strong) 24%, transparent);
   color: var(--text-strong);
 }
 
 .menuShellBody input[type='text']:not(.spacingInput):hover {
-  border-color: color-mix(in oklch, var(--text-strong) 55%, transparent);
+  border-color: color-mix(in oklab, var(--text-strong) 55%, transparent);
 }
 
 .menuShellBody input[type='text']:not(.spacingInput):focus {
   outline: none;
   border-color: var(--focus-blue);
-  box-shadow: 0 0 0 1px color-mix(in oklch, var(--primary-accent) 35%, transparent);
+  box-shadow: 0 0 0 1px color-mix(in oklab, var(--primary-accent) 35%, transparent);
 }
 
 /* A toggle group (barToggleGroup) is the one .menuShellBody control that stays the same warm amber
@@ -699,8 +699,8 @@
    inside a flyout. Only the colors are overridden here, never barToggleGroup/barToggleBtn/ghostBtn
    themselves -- those stay exactly what the top and bottom toolbars use. */
 .menuShellBody [role='group'] {
-  background: color-mix(in oklch, var(--pole-surface) 78%, var(--secondary-accent) 22%);
-  border-color: color-mix(in oklch, var(--secondary-accent) 35%, transparent);
+  background: color-mix(in oklab, var(--pole-surface) 78%, var(--secondary-accent) 22%);
+  border-color: color-mix(in oklab, var(--secondary-accent) 35%, transparent);
 }
 
 .menuShellBody [role='group'] > button.cursor-pointer {
@@ -918,12 +918,12 @@
 
 .menuShell .headerPill .headerTitle {
   color: var(--flyout-title);
-  text-shadow: 0 1px 3px color-mix(in oklch, var(--pole-shade) 70%, transparent);
+  text-shadow: 0 1px 3px color-mix(in oklab, var(--pole-shade) 70%, transparent);
 }
 
 .menuShell .headerPill .headerIcon {
   color: var(--flyout-title);
-  filter: drop-shadow(0 1px 2px color-mix(in oklch, var(--pole-shade) 70%, transparent));
+  filter: drop-shadow(0 1px 2px color-mix(in oklab, var(--pole-shade) 70%, transparent));
 }
 
 /* The divider under the title, edge to edge. Head cards skip it: the tab band under their title

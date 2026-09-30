@@ -18,11 +18,11 @@
 .minMaxTrack {
   left: 0;
   right: 0;
-  background: color-mix(in oklch, var(--pole-shade) 40%, transparent);
+  background: color-mix(in oklab, var(--pole-shade) 40%, transparent);
 }
 
 .minMaxFill {
-  background: color-mix(in oklch, var(--flyout-selected) 70%, transparent);
+  background: color-mix(in oklab, var(--flyout-selected) 70%, transparent);
 }
 
 .minMaxSlider input[type='range'] {
@@ -55,7 +55,7 @@
   height: 0.875rem;
   margin-top: 0.1875rem;
   border-radius: 9999px;
-  border: 2px solid color-mix(in oklch, var(--pole-shade) 55%, var(--flyout-selected));
+  border: 2px solid color-mix(in oklab, var(--pole-shade) 55%, var(--flyout-selected));
   background: var(--flyout-selected);
   cursor: grab;
 }
@@ -66,7 +66,7 @@
   height: 0.875rem;
   box-sizing: border-box;
   border-radius: 9999px;
-  border: 2px solid color-mix(in oklch, var(--pole-shade) 55%, var(--flyout-selected));
+  border: 2px solid color-mix(in oklab, var(--pole-shade) 55%, var(--flyout-selected));
   background: var(--flyout-selected);
   cursor: grab;
 }

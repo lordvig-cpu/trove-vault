@@ -7,7 +7,7 @@
   /* Legacy action labels share the mode-aware OKLCH danger text. */
   --tree-menu-danger-label: var(--tree-menu-danger-text);
   --primary-accent: var(--brand-primary);
-  --focus-blue: color-mix(in oklch, var(--brand-primary) 35%, var(--pole-focus));
+  --focus-blue: color-mix(in oklab, var(--brand-primary) 35%, var(--pole-focus));
   --primary-accent-hover: var(--brand-primary-hover);
   --primary-border-input: var(--tree-search-input-border);
   --primary-border-input-hover: var(--tree-input-border-hover);
@@ -143,7 +143,7 @@
   --flyout-tile-border: color-mix(in srgb, var(--oklch-yellow-217-119-6) 72%, var(--pole-surface));
   --flyout-divider: color-mix(in srgb, var(--oklch-yellow-217-119-6) 40%, transparent);
   /* Flyout shell = the template editor toolbars' chassis (.tmpl-edge-panel): the seed's glow at the top over the menus' header tint and shell surface, with the same border and outer glow. */
-  --flyout-shell-bg: radial-gradient(ellipse 130% 40% at 50% 0%, color-mix(in oklch, var(--secondary-accent) var(--flyout-glow-top), transparent) 0%, transparent 100%), var(--secondary-tree-menu-header-bg), var(--secondary-tree-menu-shell-bg);
+  --flyout-shell-bg: radial-gradient(ellipse 130% 40% at 50% 0%, color-mix(in oklab, var(--secondary-accent) var(--flyout-glow-top), transparent) 0%, transparent 100%), var(--secondary-tree-menu-header-bg), var(--secondary-tree-menu-shell-bg);
   /* Split-flyout title bar: the Secondary seed exactly at the top, shading down to a dark tint of it. */
   --flyout-head-top: var(--oklch-secondary);
   --flyout-head-bottom: color-mix(in srgb, var(--oklch-secondary) 30%, var(--pole-surface));
@@ -159,7 +159,7 @@
   --section-tile-bg: color-mix(in srgb, var(--oklch-primary) 40%, var(--pole-surface));
   --section-tile-border: color-mix(in srgb, var(--primary-accent) 75%, var(--pole-surface));
   --section-divider: color-mix(in srgb, var(--primary-accent) 40%, transparent);
-  --flyout-shell-glow: 0 0 18px color-mix(in oklch, var(--secondary-accent) var(--flyout-glow-outer), transparent), 0 16px 32px color-mix(in oklch, var(--pole-shade) 55%, transparent);
+  --flyout-shell-glow: 0 0 18px color-mix(in oklab, var(--secondary-accent) var(--flyout-glow-outer), transparent), 0 16px 32px color-mix(in oklab, var(--pole-shade) 55%, transparent);
   --flyout-title: oklch(from var(--secondary-accent) var(--flyout-ink-l) var(--flyout-ink-c) calc(h + 12));
   /* A touch more yellow still than --flyout-title -- the flyout header text/icon color, an active
      tab's color, and (elsewhere) a toolbar control's selected/set state all share this one value. */
@@ -174,7 +174,7 @@
 
   /* Menu ink: default text inside tree submenus, search menus and template toolbars is the secondary accent. */
   --menu-ink: var(--secondary-accent);
-  --menu-ink-soft: color-mix(in oklch, var(--secondary-accent) 72%, transparent);
+  --menu-ink-soft: color-mix(in oklab, var(--secondary-accent) 72%, transparent);
   --tree-menu-item-text: var(--menu-ink);
   --tree-menu-item-subtext: var(--menu-ink-soft);
   --tree-filter-option-label: var(--menu-ink);
