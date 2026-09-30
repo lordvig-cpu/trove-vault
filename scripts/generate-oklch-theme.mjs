@@ -32,6 +32,9 @@ const colorPattern = /rgba?\([^)]*\)|#[\da-f]{6}\b/gi;
 // tree submenus and search menus.
 const seedVars = { blue: '--oklch-blue', yellow: '--oklch-yellow', primary: '--oklch-primary', secondary: '--oklch-secondary' };
 const calibration = { blue: 'blue', yellow: 'yellow', primary: 'blue', secondary: 'yellow' };
+// The yellow-to-orange hue correction of the yellow/secondary samples fades out above the default amber
+// (hue 66.6) and is gone by ~127, so a blue or green pick keeps the hue that was picked instead of
+// drifting ~27 degrees toward teal. The default seed and reds are unchanged.
 const primaryTokens = /^--(nav-(header|footer)|col-dropdown|content-(card|pill))-|^--studio-grid-(glow-top|line|vignette)/;
 const menuTokens = /^--(tree-menu|tree-filter)-/;
 
@@ -41,7 +44,7 @@ function sample(family, rgb) {
   const name = `--oklch-${family}-${rgb.join('-')}`;
   if (!palette.has(name)) {
     const hueShift = chroma < 0.00001 ? 0 : round(hue - seedH);
-    palette.set(name, `oklch(from var(${seedVars[family]}) calc(l * ${round(lightness / seedL)}) calc(c * ${chroma < 0.00001 ? 0 : round(chroma / seedC)}) calc(h + ${hueShift}${calibration[family] === 'yellow' ? ' * clamp(0, (h - 35) / 50, 1)' : ''}))`);
+    palette.set(name, `oklch(from var(${seedVars[family]}) calc(l * ${round(lightness / seedL)}) calc(c * ${chroma < 0.00001 ? 0 : round(chroma / seedC)}) calc(h + ${hueShift}${calibration[family] === 'yellow' ? ' * clamp(0, (h - 35) / 50, 1) * clamp(0, 1 - (h - 66.6) / 60, 1)' : ''}))`);
   }
   return name;
 }

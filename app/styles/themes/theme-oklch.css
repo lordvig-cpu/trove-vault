@@ -6,7 +6,7 @@
   /* Calibrated dark palette: L/C ratios and hue offsets from two seeds. */
   --oklch-blue-0-119-255: oklch(from var(--oklch-blue) calc(l * 1) calc(c * 1) calc(h + 0));
   --oklch-blue-0-162-255: oklch(from var(--oklch-blue) calc(l * 1.15496) calc(c * 0.79114) calc(h + -12.61481));
-  --oklch-yellow-248-188-9: oklch(from var(--oklch-yellow) calc(l * 1) calc(c * 1) calc(h + 0 * clamp(0, (h - 35) / 50, 1)));
+  --oklch-yellow-248-188-9: oklch(from var(--oklch-yellow) calc(l * 1) calc(c * 1) calc(h + 0 * clamp(0, (h - 35) / 50, 1) * clamp(0, 1 - (h - 66.6) / 60, 1)));
   --oklch-blue-255-255-255: oklch(from var(--oklch-blue) calc(l * 1.676) calc(c * 0) calc(h + 0));
   --oklch-blue-203-213-225: oklch(from var(--oklch-blue) calc(l * 1.45641) calc(c * 0.08974) calc(h + -5.13601));
   --oklch-blue-148-163-184: oklch(from var(--oklch-blue) calc(l * 1.19108) calc(c * 0.15876) calc(h + -1.24249));
@@ -71,7 +71,7 @@
   --oklch-primary-0-120-225: oklch(from var(--oklch-primary) calc(l * 0.96639) calc(c * 0.82622) calc(h + -4.1654));
   --oklch-blue-0-70-160: oklch(from var(--oklch-blue) calc(l * 0.69831) calc(c * 0.71733) calc(h + 0.59457));
   --oklch-primary-0-70-160: oklch(from var(--oklch-primary) calc(l * 0.69831) calc(c * 0.71733) calc(h + 0.59457));
-  --oklch-yellow-217-119-6: oklch(from var(--oklch-yellow) calc(l * 0.80481) calc(c * 0.93492) calc(h + -26.76258 * clamp(0, (h - 35) / 50, 1)));
+  --oklch-yellow-217-119-6: oklch(from var(--oklch-yellow) calc(l * 0.80481) calc(c * 0.93492) calc(h + -26.76258 * clamp(0, (h - 35) / 50, 1) * clamp(0, 1 - (h - 66.6) / 60, 1)));
   --oklch-blue-0-2-10: oklch(from var(--oklch-blue) calc(l * 0.14704) calc(c * 0.14134) calc(h + -0.93526));
   --oklch-primary-0-2-10: oklch(from var(--oklch-primary) calc(l * 0.14704) calc(c * 0.14134) calc(h + -0.93526));
   --oklch-blue-100-170-240: oklch(from var(--oklch-blue) calc(l * 1.20877) calc(c * 0.56454) calc(h + -8.09692));
@@ -130,24 +130,24 @@
   --oklch-blue-49-46-129: oklch(from var(--oklch-blue) calc(l * 0.60127) calc(c * 0.61224) calc(h + 20.66698));
   --oklch-blue-165-180-252: oklch(from var(--oklch-blue) calc(l * 1.31616) calc(c * 0.47081) calc(h + 16.68312));
   --oklch-blue-110-231-183: oklch(from var(--oklch-blue) calc(l * 1.41653) calc(c * 0.58752) calc(h + -93.05214));
-  --oklch-yellow-146-64-14: oklch(from var(--oklch-yellow) calc(l * 0.57195) calc(c * 0.74058) calc(h + -38.88027 * clamp(0, (h - 35) / 50, 1)));
-  --oklch-secondary-146-64-14: oklch(from var(--oklch-secondary) calc(l * 0.57195) calc(c * 0.74058) calc(h + -38.88027 * clamp(0, (h - 35) / 50, 1)));
-  --oklch-yellow-180-83-9: oklch(from var(--oklch-yellow) calc(l * 0.67118) calc(c * 0.86415) calc(h + -36.08339 * clamp(0, (h - 35) / 50, 1)));
-  --oklch-yellow-56-26-4: oklch(from var(--oklch-yellow) calc(l * 0.30961) calc(c * 0.34383) calc(h + -31.34652 * clamp(0, (h - 35) / 50, 1)));
-  --oklch-secondary-56-26-4: oklch(from var(--oklch-secondary) calc(l * 0.30961) calc(c * 0.34383) calc(h + -31.34652 * clamp(0, (h - 35) / 50, 1)));
-  --oklch-yellow-36-16-2: oklch(from var(--oklch-yellow) calc(l * 0.24056) calc(c * 0.25495) calc(h + -27.94909 * clamp(0, (h - 35) / 50, 1)));
-  --oklch-secondary-36-16-2: oklch(from var(--oklch-secondary) calc(l * 0.24056) calc(c * 0.25495) calc(h + -27.94909 * clamp(0, (h - 35) / 50, 1)));
-  --oklch-yellow-24-11-3: oklch(from var(--oklch-yellow) calc(l * 0.20066) calc(c * 0.17518) calc(h + -27.48885 * clamp(0, (h - 35) / 50, 1)));
-  --oklch-secondary-24-11-3: oklch(from var(--oklch-secondary) calc(l * 0.20066) calc(c * 0.17518) calc(h + -27.48885 * clamp(0, (h - 35) / 50, 1)));
-  --oklch-yellow-16-6-1: oklch(from var(--oklch-yellow) calc(l * 0.16458) calc(c * 0.15721) calc(h + -24.12101 * clamp(0, (h - 35) / 50, 1)));
-  --oklch-secondary-16-6-1: oklch(from var(--oklch-secondary) calc(l * 0.16458) calc(c * 0.15721) calc(h + -24.12101 * clamp(0, (h - 35) / 50, 1)));
-  --oklch-yellow-10-4-1: oklch(from var(--oklch-yellow) calc(l * 0.14101) calc(c * 0.11951) calc(h + -23.14676 * clamp(0, (h - 35) / 50, 1)));
-  --oklch-secondary-10-4-1: oklch(from var(--oklch-secondary) calc(l * 0.14101) calc(c * 0.11951) calc(h + -23.14676 * clamp(0, (h - 35) / 50, 1)));
-  --oklch-yellow-245-158-11: oklch(from var(--oklch-yellow) calc(l * 0.92901) calc(c * 0.9779) calc(h + -15.00053 * clamp(0, (h - 35) / 50, 1)));
-  --oklch-yellow-255-235-175: oklch(from var(--oklch-yellow) calc(l * 1.13873) calc(c * 0.47142) calc(h + 6.73179 * clamp(0, (h - 35) / 50, 1)));
-  --oklch-yellow-69-26-3: oklch(from var(--oklch-yellow) calc(l * 0.33738) calc(c * 0.44065) calc(h + -39.44576 * clamp(0, (h - 35) / 50, 1)));
-  --oklch-secondary-69-26-3: oklch(from var(--oklch-secondary) calc(l * 0.33738) calc(c * 0.44065) calc(h + -39.44576 * clamp(0, (h - 35) / 50, 1)));
-  --oklch-yellow-251-191-36: oklch(from var(--oklch-yellow) calc(l * 1.01153) calc(c * 0.97649) calc(h + -0.6523 * clamp(0, (h - 35) / 50, 1)));
+  --oklch-yellow-146-64-14: oklch(from var(--oklch-yellow) calc(l * 0.57195) calc(c * 0.74058) calc(h + -38.88027 * clamp(0, (h - 35) / 50, 1) * clamp(0, 1 - (h - 66.6) / 60, 1)));
+  --oklch-secondary-146-64-14: oklch(from var(--oklch-secondary) calc(l * 0.57195) calc(c * 0.74058) calc(h + -38.88027 * clamp(0, (h - 35) / 50, 1) * clamp(0, 1 - (h - 66.6) / 60, 1)));
+  --oklch-yellow-180-83-9: oklch(from var(--oklch-yellow) calc(l * 0.67118) calc(c * 0.86415) calc(h + -36.08339 * clamp(0, (h - 35) / 50, 1) * clamp(0, 1 - (h - 66.6) / 60, 1)));
+  --oklch-yellow-56-26-4: oklch(from var(--oklch-yellow) calc(l * 0.30961) calc(c * 0.34383) calc(h + -31.34652 * clamp(0, (h - 35) / 50, 1) * clamp(0, 1 - (h - 66.6) / 60, 1)));
+  --oklch-secondary-56-26-4: oklch(from var(--oklch-secondary) calc(l * 0.30961) calc(c * 0.34383) calc(h + -31.34652 * clamp(0, (h - 35) / 50, 1) * clamp(0, 1 - (h - 66.6) / 60, 1)));
+  --oklch-yellow-36-16-2: oklch(from var(--oklch-yellow) calc(l * 0.24056) calc(c * 0.25495) calc(h + -27.94909 * clamp(0, (h - 35) / 50, 1) * clamp(0, 1 - (h - 66.6) / 60, 1)));
+  --oklch-secondary-36-16-2: oklch(from var(--oklch-secondary) calc(l * 0.24056) calc(c * 0.25495) calc(h + -27.94909 * clamp(0, (h - 35) / 50, 1) * clamp(0, 1 - (h - 66.6) / 60, 1)));
+  --oklch-yellow-24-11-3: oklch(from var(--oklch-yellow) calc(l * 0.20066) calc(c * 0.17518) calc(h + -27.48885 * clamp(0, (h - 35) / 50, 1) * clamp(0, 1 - (h - 66.6) / 60, 1)));
+  --oklch-secondary-24-11-3: oklch(from var(--oklch-secondary) calc(l * 0.20066) calc(c * 0.17518) calc(h + -27.48885 * clamp(0, (h - 35) / 50, 1) * clamp(0, 1 - (h - 66.6) / 60, 1)));
+  --oklch-yellow-16-6-1: oklch(from var(--oklch-yellow) calc(l * 0.16458) calc(c * 0.15721) calc(h + -24.12101 * clamp(0, (h - 35) / 50, 1) * clamp(0, 1 - (h - 66.6) / 60, 1)));
+  --oklch-secondary-16-6-1: oklch(from var(--oklch-secondary) calc(l * 0.16458) calc(c * 0.15721) calc(h + -24.12101 * clamp(0, (h - 35) / 50, 1) * clamp(0, 1 - (h - 66.6) / 60, 1)));
+  --oklch-yellow-10-4-1: oklch(from var(--oklch-yellow) calc(l * 0.14101) calc(c * 0.11951) calc(h + -23.14676 * clamp(0, (h - 35) / 50, 1) * clamp(0, 1 - (h - 66.6) / 60, 1)));
+  --oklch-secondary-10-4-1: oklch(from var(--oklch-secondary) calc(l * 0.14101) calc(c * 0.11951) calc(h + -23.14676 * clamp(0, (h - 35) / 50, 1) * clamp(0, 1 - (h - 66.6) / 60, 1)));
+  --oklch-yellow-245-158-11: oklch(from var(--oklch-yellow) calc(l * 0.92901) calc(c * 0.9779) calc(h + -15.00053 * clamp(0, (h - 35) / 50, 1) * clamp(0, 1 - (h - 66.6) / 60, 1)));
+  --oklch-yellow-255-235-175: oklch(from var(--oklch-yellow) calc(l * 1.13873) calc(c * 0.47142) calc(h + 6.73179 * clamp(0, (h - 35) / 50, 1) * clamp(0, 1 - (h - 66.6) / 60, 1)));
+  --oklch-yellow-69-26-3: oklch(from var(--oklch-yellow) calc(l * 0.33738) calc(c * 0.44065) calc(h + -39.44576 * clamp(0, (h - 35) / 50, 1) * clamp(0, 1 - (h - 66.6) / 60, 1)));
+  --oklch-secondary-69-26-3: oklch(from var(--oklch-secondary) calc(l * 0.33738) calc(c * 0.44065) calc(h + -39.44576 * clamp(0, (h - 35) / 50, 1) * clamp(0, 1 - (h - 66.6) / 60, 1)));
+  --oklch-yellow-251-191-36: oklch(from var(--oklch-yellow) calc(l * 1.01153) calc(c * 0.97649) calc(h + -0.6523 * clamp(0, (h - 35) / 50, 1) * clamp(0, 1 - (h - 66.6) / 60, 1)));
   --oklch-blue-14-8-3: oklch(from var(--oklch-blue) calc(l * 0.23573) calc(c * 0.0819) calc(h + -187.53658));
   --oklch-blue-6-4-1: oklch(from var(--oklch-blue) calc(l * 0.18211) calc(c * 0.07026) calc(h + -171.0932));
   --oklch-blue-241-245-249: oklch(from var(--oklch-blue) calc(l * 1.6228) calc(c * 0.03099) calc(h + -10.13474));
@@ -156,7 +156,7 @@
   --oklch-blue-3-38-90: oklch(from var(--oklch-blue) calc(l * 0.47174) calc(c * 0.45961) calc(h + 0.80837));
   --oklch-blue-2-22-56: oklch(from var(--oklch-blue) calc(l * 0.34907) calc(c * 0.32588) calc(h + 0.75975));
   --oklch-blue-30-58-95: oklch(from var(--oklch-blue) calc(l * 0.5802) calc(c * 0.33254) calc(h + -1.9906));
-  --oklch-secondary-217-119-6: oklch(from var(--oklch-secondary) calc(l * 0.80481) calc(c * 0.93492) calc(h + -26.76258 * clamp(0, (h - 35) / 50, 1)));
+  --oklch-secondary-217-119-6: oklch(from var(--oklch-secondary) calc(l * 0.80481) calc(c * 0.93492) calc(h + -26.76258 * clamp(0, (h - 35) / 50, 1) * clamp(0, 1 - (h - 66.6) / 60, 1)));
 
   /* Component recipes preserve the original gradients, textures and geometry. */
 
