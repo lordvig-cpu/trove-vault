@@ -144,6 +144,9 @@
   --flyout-divider: color-mix(in srgb, var(--oklch-yellow-217-119-6) 40%, transparent);
   /* Flyout shell = the template editor toolbars' chassis (.tmpl-edge-panel): the seed's glow at the top over the menus' header tint and shell surface, with the same border and outer glow. */
   --flyout-shell-bg: radial-gradient(ellipse 130% 40% at 50% 0%, color-mix(in oklch, var(--secondary-accent) var(--flyout-glow-top), transparent) 0%, transparent 100%), var(--secondary-tree-menu-header-bg), var(--secondary-tree-menu-shell-bg);
+  /* Split-flyout title bar: the Secondary seed exactly at the top, shading down to a dark tint of it. */
+  --flyout-head-top: var(--oklch-secondary);
+  --flyout-head-bottom: color-mix(in srgb, var(--oklch-secondary) 30%, var(--pole-surface));
   --flyout-body-top: color-mix(in srgb, var(--oklch-secondary-217-119-6) 26%, var(--pole-surface));
   --flyout-body-bottom: color-mix(in srgb, var(--oklch-secondary-217-119-6) 9%, var(--pole-surface));
   --flyout-shell-border: var(--secondary-tree-menu-shell-border);

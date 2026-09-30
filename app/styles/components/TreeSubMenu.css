@@ -133,8 +133,11 @@
   margin-bottom: -1.5px;
   border-bottom-left-radius: 0;
   border-bottom-right-radius: 0;
-  background: radial-gradient(ellipse 130% 34px at 50% 0%, color-mix(in oklch, var(--secondary-accent) var(--flyout-glow-top), transparent) 0%, transparent 100%),
-    var(--secondary-tree-menu-header-bg), var(--secondary-tree-menu-shell-bg);
+  /* The picked Secondary color at full strength along the top edge, shading down over the title bar (a
+     fixed height, so every head shades identically) to a dark tint of the same seed, which the tab band
+     and the rest of the card then sit on. */
+  background: linear-gradient(180deg, var(--flyout-head-top) 0%, var(--flyout-head-bottom) 2.25rem),
+    var(--secondary-tree-menu-shell-bg);
 }
 
 /* When the head card is given the wider body's width (the Properties tab), its title bar and tab band

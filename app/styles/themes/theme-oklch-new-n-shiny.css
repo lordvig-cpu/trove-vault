@@ -128,6 +128,7 @@
   --flyout-divider: var(--shiny-menu-line);
   --flyout-shell-bg: var(--shiny-menu);
   --flyout-shell-border: var(--shiny-amber-edge);
+  --flyout-head-bottom: var(--shiny-menu);
   --flyout-body-top: var(--shiny-menu);
   --flyout-body-bottom: var(--shiny-menu);
   --flyout-title: var(--shiny-menu-ink);
