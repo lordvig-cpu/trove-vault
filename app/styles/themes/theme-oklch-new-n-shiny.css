@@ -30,8 +30,8 @@
   --shiny-line-strong: color-mix(in oklch, var(--oklch-blue) 58%, var(--oklch-bg));
 
   /* Menus and toolbars (Secondary), with the Secondary Accent as their ink and edge */
-  --shiny-menu: color-mix(in oklch, var(--oklch-secondary) 28%, var(--oklch-bg));
-  --shiny-menu-deep: color-mix(in oklch, var(--oklch-secondary) 18%, var(--oklch-bg));
+  --shiny-menu: color-mix(in oklch, var(--oklch-secondary) 50%, var(--oklch-bg));
+  --shiny-menu-deep: color-mix(in oklch, var(--oklch-secondary) 36%, var(--oklch-bg));
   --shiny-menu-line: color-mix(in oklch, var(--brand-secondary-amber) 28%, var(--shiny-menu));
   --shiny-amber-edge: color-mix(in oklch, var(--brand-secondary-amber) 70%, var(--oklch-bg));
   --shiny-menu-ink: var(--brand-secondary-amber);
