@@ -209,7 +209,7 @@ export default function TemplateSpacingBox({ container, onUpdate, marginDisabled
       </div>
 
       <div className="flex items-center gap-1">
-        <span className="text-[10px] font-semibold tracking-[0.04em] text-[var(--text-strong)]">
+        <span className="menu-field-label text-[10px] font-semibold tracking-[0.04em] text-[var(--text-strong)]">
           {capitalize(selected.layer)} · {isLinked ? 'All sides' : capitalize(selected.side)}
         </span>
         <HoverHint hint={LAYER_HINTS[selected.layer]}>

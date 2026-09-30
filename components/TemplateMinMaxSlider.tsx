@@ -180,7 +180,7 @@ export default function TemplateMinMaxSlider({
     <div className="flex flex-col gap-1.5 min-w-0">
       <div className="flex items-end justify-between gap-1">
         <div className="flex flex-col gap-1 min-w-0">
-          <span className="flex items-center gap-1 text-[10px] font-semibold tracking-[0.04em] text-[var(--text-strong)]">
+          <span className="flex items-center gap-1 menu-field-label text-[10px] font-semibold tracking-[0.04em] text-[var(--text-strong)]">
             Min. {letter}
             <HoverHint hint={minHint}>
               <HelpCircleIcon className="w-3 h-3 text-[var(--secondary-tree-menu-header-title)]" />
@@ -199,7 +199,7 @@ export default function TemplateMinMaxSlider({
         <UnitSelect value={unit} onChange={changeUnit} label={`Min and max ${axis} unit`} attached={false} />
 
         <div className="flex flex-col gap-1 min-w-0">
-          <span className="flex items-center gap-1 text-[10px] font-semibold tracking-[0.04em] text-[var(--text-strong)]">
+          <span className="flex items-center gap-1 menu-field-label text-[10px] font-semibold tracking-[0.04em] text-[var(--text-strong)]">
             Max. {letter}
             <HoverHint hint={maxHint}>
               <HelpCircleIcon className="w-3 h-3 text-[var(--secondary-tree-menu-header-title)]" />

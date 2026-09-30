@@ -54,7 +54,7 @@ const HINTS = {
 /** A group's heading: white, left-aligned, with its (still amber) help bubble icon. */
 function GroupLabel({ label, hint }: { label: string; hint: HintContent }) {
   return (
-    <span className="flex items-center gap-1 text-[10px] font-semibold tracking-[0.04em] text-[var(--text-strong)]">
+    <span className="flex items-center gap-1 menu-field-label text-[10px] font-semibold tracking-[0.04em] text-[var(--text-strong)]">
       {label}
       <HoverHint hint={hint}>
         <HelpCircleIcon className="w-3 h-3 text-[var(--secondary-tree-menu-header-title)]" />
@@ -102,7 +102,7 @@ function PxField({
 
   return (
     <div className="flex flex-col gap-1 min-w-0">
-      <span className="text-[10px] font-semibold tracking-[0.04em] text-[var(--text-strong)]">
+      <span className="menu-field-label text-[10px] font-semibold tracking-[0.04em] text-[var(--text-strong)]">
         {label}
       </span>
       <div className="flex items-center min-w-0">
@@ -156,7 +156,7 @@ function ColorRow({
 
   return (
     <div className="flex items-center gap-1.5">
-      <span className="text-[10px] font-semibold tracking-[0.04em] text-[var(--text-strong)] w-9 shrink-0">
+      <span className="menu-field-label text-[10px] font-semibold tracking-[0.04em] text-[var(--text-strong)] w-9 shrink-0">
         {label}
       </span>
       <SeedColorPicker

@@ -150,7 +150,7 @@
    heading and the label above every Properties input. */
 [data-theme='theme-oklch-new-n-shiny'] .menuShellHead.menuShell .headerPill .headerTitle,
 [data-theme='theme-oklch-new-n-shiny'] .menuSectionTitle,
-[data-theme='theme-oklch-new-n-shiny'] .menuShellBody label {
+[data-theme='theme-oklch-new-n-shiny'] .menu-field-label {
   color: var(--flyout-white);
 }
 

@@ -161,7 +161,7 @@ function AlignmentButtons<T extends string>({
 }) {
   return (
     <div className="flex flex-col gap-1">
-      <span className="flex items-center gap-1 text-[10px] font-semibold tracking-[0.04em] text-[var(--text-strong)]">
+      <span className="flex items-center gap-1 menu-field-label text-[10px] font-semibold tracking-[0.04em] text-[var(--text-strong)]">
         {label}
         <HoverHint hint={hint}>
           <HelpCircleIcon className="w-3 h-3 text-[var(--secondary-tree-menu-header-title)]" />
@@ -588,7 +588,7 @@ export function TemplateContainerActionMenu({
       {activeTab === 'properties' && (
         <>
             <div className="flex flex-col gap-1 px-3 pb-2">
-              <span className="text-[10px] font-semibold tracking-[0.04em] text-[var(--text-strong)]">
+              <span className="menu-field-label text-[10px] font-semibold tracking-[0.04em] text-[var(--text-strong)]">
                 Container Name
               </span>
               <form

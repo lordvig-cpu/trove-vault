@@ -113,7 +113,7 @@ export default function TemplateBodyDimensions({ root, onUpdate }: TemplateBodyD
   return (
     <div className="flex flex-col gap-1.5 px-3 py-2">
       <div className="flex items-center gap-1">
-        <label className="text-[10px] font-semibold tracking-[0.04em] text-[var(--text-strong)]">
+        <label className="menu-field-label text-[10px] font-semibold tracking-[0.04em] text-[var(--text-strong)]">
           Maximum Content Width
         </label>
         <HoverHint hint={CONTENT_WIDTH_HINT}>

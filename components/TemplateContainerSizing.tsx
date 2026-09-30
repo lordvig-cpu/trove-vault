@@ -140,7 +140,7 @@ function SizeField({
   return (
     <div className="flex flex-col gap-1 min-w-0">
       {label && (
-        <label className="text-[10px] font-semibold tracking-[0.04em] text-[var(--text-strong)] flex items-center gap-1">
+        <label className="menu-field-label text-[10px] font-semibold tracking-[0.04em] text-[var(--text-strong)] flex items-center gap-1">
           {label}
           <HoverHint hint={hint}>
             <HelpCircleIcon className="w-3 h-3 text-[var(--secondary-tree-menu-header-title)]" />
@@ -242,7 +242,7 @@ export default function TemplateContainerSizing({ container, onUpdate, bare = fa
       {container.direction === 'row' && (
         <div className={bare ? 'flex flex-col gap-1' : 'pt-2 border-t border-[var(--primary-border-subtle)] flex items-center justify-between gap-2'}>
           <label
-            className="text-[10px] font-semibold tracking-[0.04em] text-[var(--text-strong)] flex items-center gap-1"
+            className="menu-field-label text-[10px] font-semibold tracking-[0.04em] text-[var(--text-strong)] flex items-center gap-1"
           >
             Stack when narrower than
             <HoverHint hint={FIELD_HINTS.stackBelow}>
