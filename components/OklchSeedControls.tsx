@@ -23,7 +23,6 @@ function defaultSeeds(theme: ThemePreset) {
         primary: rgbaToHex(DEFAULT_PRIMARY_COLOR),
         secondary: rgbaToHex(DEFAULT_SECONDARY_COLOR),
         background: rgbaToHex(DEFAULT_BACKGROUND_COLOR),
-        // Unset, these follow the accents (the picker shows the accent's value instead).
         primaryColor: rgbaToHex(DEFAULT_PRIMARY_COLOR),
         secondaryColor: rgbaToHex(DEFAULT_SECONDARY_COLOR),
       };
@@ -90,7 +89,7 @@ export default function OklchSeedControls() {
   const [accentA, setAccentA] = useLocalStorage<string | null>(`uc_oklch_primary${suffix}`, null);
   const [accentB, setAccentB] = useLocalStorage<string | null>(`uc_oklch_secondary${suffix}`, null);
   const [background, setBackground] = useLocalStorage<string | null>(`uc_oklch_background${suffix}`, null);
-  // The header/footer color and the menu/toolbar color. Left unset they follow the two accents.
+  // The header/footer/main-content color and the menu/toolbar color: independent of the two accents.
   const [primaryColor, setPrimaryColor] = useLocalStorage<string | null>(`uc_oklch_primary_color${suffix}`, null);
   const [secondaryColor, setSecondaryColor] = useLocalStorage<string | null>(`uc_oklch_secondary_color${suffix}`, null);
   const accentAHex = normalizeHex(accentA);
@@ -119,16 +118,12 @@ export default function OklchSeedControls() {
     return () => seeds.forEach(([property]) => style.removeProperty(property));
   }, [accentAHex, accentBHex, backgroundHex, primaryColorHex, secondaryColorHex]);
 
-  // Unset, Dark/Light's surface colors follow their accents; New 'n Shiny has its own defaults.
-  const primaryFallback = shiny ? defaults.primaryColor : accentAHex ?? defaults.primaryColor;
-  const secondaryFallback = shiny ? defaults.secondaryColor : accentBHex ?? defaults.secondaryColor;
-
   return (
     <div className="oklch-seed-controls" role="group" aria-label="OKLCH seed colors">
       <HexSeedInput label="Background" value={backgroundHex ?? defaults.background} onChange={setBackground} />
-      <HexSeedInput label="Primary" value={primaryColorHex ?? primaryFallback} onChange={setPrimaryColor} />
+      <HexSeedInput label="Primary" value={primaryColorHex ?? defaults.primaryColor} onChange={setPrimaryColor} />
       <HexSeedInput label="Primary Accent" value={accentAHex ?? defaults.primary} onChange={setAccentA} />
-      <HexSeedInput label="Secondary" value={secondaryColorHex ?? secondaryFallback} onChange={setSecondaryColor} />
+      <HexSeedInput label="Secondary" value={secondaryColorHex ?? defaults.secondaryColor} onChange={setSecondaryColor} />
       <HexSeedInput label="Secondary Accent" value={accentBHex ?? defaults.secondary} onChange={setAccentB} />
       <button
         type="button"

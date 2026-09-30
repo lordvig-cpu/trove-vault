@@ -111,7 +111,7 @@ color shows as a dark tint of itself.
 ### Five colors in Dark and Light
 
 Dark and Light use the same five pickers and the same mapping. `--oklch-primary` and
-`--oklch-secondary` default to `var(--oklch-blue)` and `var(--oklch-yellow)`, so an untouched
+`--oklch-secondary` default to the same colors as blue and yellow (as separate seeds, never linked to them), so an untouched
 palette is unchanged; setting them recolors only the header/footer and main content (`--nav-header-*`, `--content-card-*`, `--content-pill-*`, `--studio-grid-*` glow, `--content-border-*`,
 `--nav-footer-*`, `--col-dropdown-*`) and the surfaces of the tree submenus and search menus
 (`--tree-menu-*`, `--tree-filter-*`, the `--flyout-*` body/tab fills). The generator emits those as
