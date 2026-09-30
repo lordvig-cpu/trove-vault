@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { FlexContainerNode } from '@/types/layout';
-import { normalizeHex } from '@/lib/color';
+import { normalizeHexAlpha } from '@/lib/color';
 import { barControlHeight, idleBtn } from '@/components/editorBarStyles';
 import { HelpCircleIcon } from '@/components/icons/LayoutIcons';
 import { SearchClearIcon } from '@/components/icons/TreeIcons';
@@ -12,7 +12,7 @@ import UnitSelect from '@/components/UnitSelect';
 
 /**
  * A container's look: Background (a color), Border (width, radius, color) and Shadow (offset, blur,
- * color). Colors use the same picker as the footer's theme seeds and are stored as "#RRGGBB"; sizes
+ * color). Colors use the same picker as the footer's theme seeds and are stored as "#RRGGBB" ("#RRGGBBAA" when translucent); sizes
  * are plain px (there's no % here, so the pulldown beside each number is fixed and dimmed). An unset
  * value stores nothing: no background, no border (width 0), no shadow.
  */
@@ -137,7 +137,7 @@ function ColorRow({
 }) {
   const [draft, setDraft] = useState<string | null>(null);
   const shownRaw = draft ?? value ?? '';
-  // The stored/committed value is a normalizeHex() result, always "#RRGGBB" -- stripped here so the
+  // The stored/committed value is a normalizeHexAlpha() result, "#RRGGBB" or "#RRGGBBAA" -- stripped here so the
   // "#" shown below is the only one, a static, always-there visual cue rather than part of the
   // editable text (which would either double up into "##RRGGBB" or have to be re-inserted on every
   // keystroke, both of which risk snagging on normalizeHex's own with-or-without-# parsing).
@@ -149,7 +149,7 @@ function ColorRow({
     if (draft === null) return;
     if (text === '') onChange(undefined);
     else {
-      const hex = normalizeHex(text);
+      const hex = normalizeHexAlpha(text);
       if (hex) onChange(hex);
     }
   };
@@ -163,6 +163,7 @@ function ColorRow({
         label={label}
         value={value ?? PICKER_START}
         empty={value === undefined}
+        alpha
         onChange={(hex) => {
           setDraft(null);
           onChange(hex);
@@ -190,7 +191,7 @@ function ColorRow({
             if (e.key === 'Enter') (e.target as HTMLInputElement).blur();
           }}
           aria-label={`${label} (HEX)`}
-          title="Enter a 3- or 6-digit HEX color, with or without #"
+          title="Enter a 3-, 4-, 6- or 8-digit HEX color (the last two digits are opacity), with or without #"
           className={`w-full ${shown ? 'pl-3.5' : 'pl-1.5'} pr-1.5 ${barControlHeight} text-xs font-mono text-strong bg-surface-secondary border border-subtle rounded-lg focus:outline-none focus:border-[var(--secondary-accent)] placeholder:text-muted/60`}
         />
       </div>

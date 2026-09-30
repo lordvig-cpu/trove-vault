@@ -238,7 +238,7 @@ commit whenever you add, remove, split or rename a file — it goes stale otherw
   action (click the parent instead), and Maximum Content Width (Body-only). The Component Properties flyout is the one still on its original single mixed panel.
 - A standard container's look is set in the flyout's Appearance section (`TemplateAppearanceControls.tsx`,
   the last card): `background`, `borderWidth` / `borderColor` / `borderRadius`, and
-  `shadowY` / `shadowBlur` / `shadowColor` on the node. Colors are `#RRGGBB` picked with the footer's
+  `shadowY` / `shadowBlur` / `shadowColor` on the node. Colors are `#RRGGBB` (`#RRGGBBAA` once the picker's opacity slider is below 100%; the picker's `alpha` prop turns the slider on, the footer theme seeds leave it off) picked with the footer's
   `SeedColorPicker` (which has an `empty` state for "none") and belong to the template -- they are user
   data, so they don't follow the app's light/dark theme, and are the one place a literal color is
   stored rather than a theme variable. Sizes are plain px numbers (no %), 0 = unset. Nothing is stored

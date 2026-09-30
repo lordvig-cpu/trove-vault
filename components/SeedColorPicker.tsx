@@ -2,7 +2,7 @@
 
 import { useEffect, useId, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { hexToRgba } from '@/lib/color';
+import { hexAlphaPercent, hexToRgba, withAlphaPercent } from '@/lib/color';
 
 type Hsv = { h: number; s: number; v: number };
 const clamp = (value: number) => Math.max(0, Math.min(100, value));
@@ -22,13 +22,15 @@ function toHex({ h, s, v }: Hsv): string {
   return '#' + rgb.map(n => Math.round((n + m) * 255).toString(16).padStart(2, '0')).join('').toUpperCase();
 }
 
-export default function SeedColorPicker({ label, value, onChange, empty = false }: {
+export default function SeedColorPicker({ label, value, onChange, empty = false, alpha = false }: {
   label: string;
   value: string;
   onChange: (value: string) => void;
   /** No color is set yet: the swatch shows a slashed-out "none" instead of `value` (which the popover
    *  still starts from once opened). */
   empty?: boolean;
+  /** Adds an opacity slider. `value` and `onChange` then carry "#RRGGBB" or, below 100%, "#RRGGBBAA". */
+  alpha?: boolean;
 }) {
   const id = useId();
   const trigger = useRef<HTMLButtonElement>(null);
@@ -53,9 +55,9 @@ export default function SeedColorPicker({ label, value, onChange, empty = false 
     <>
       <button
         ref={trigger}
-        className={`oklch-seed-picker ${empty ? 'oklch-seed-picker-empty' : ''}`}
+        className={`oklch-seed-picker ${empty ? 'oklch-seed-picker-empty' : ''} ${alpha && !empty ? 'oklch-seed-picker-alpha' : ''}`}
         type="button"
-        style={empty ? undefined : { backgroundColor: hexToRgba(value) }}
+        style={empty ? undefined : { backgroundColor: hexToRgba(value), '--swatch': hexToRgba(value) } as React.CSSProperties}
         aria-label={`Choose ${label.toLowerCase()} color`}
         title={`Choose ${label.toLowerCase()} color`}
         aria-expanded={!!position}
@@ -96,16 +98,19 @@ export default function SeedColorPicker({ label, value, onChange, empty = false 
               && event.relatedTarget !== trigger.current) setPosition(null);
           }}
         >
-          <ColorPlane label={label} value={value} onChange={onChange} />
+          <ColorPlane label={label} value={value} onChange={onChange} alpha={alpha} />
         </div>, document.body
       )}
     </>
   );
 }
 
-function ColorPlane({ label, value, onChange }: { label: string; value: string; onChange: (hex: string) => void }) {
+function ColorPlane({ label, value: fullValue, onChange, alpha }: { label: string; value: string; onChange: (hex: string) => void; alpha: boolean }) {
   const plane = useRef<HTMLDivElement>(null);
   const hintId = useId();
+  // The plane and hue work on the six-digit color; opacity is carried alongside and re-joined on change.
+  const value = fullValue.slice(0, 7);
+  const opacity = hexAlphaPercent(fullValue);
   const [selection, setSelection] = useState(() => ({ ...fromHex(value), hex: value }));
   // Retain hue at black/white and full precision while dragging. External HEX
   // edits still synchronize the picker without an effect-driven update loop.
@@ -115,7 +120,7 @@ function ColorPlane({ label, value, onChange }: { label: string; value: string; 
   function update(next: Hsv) {
     const hex = toHex(next);
     setSelection({ ...next, hex });
-    onChange(hex);
+    onChange(withAlphaPercent(hex, opacity));
   }
 
   function pick(x: number, y: number) {
@@ -174,6 +179,23 @@ function ColorPlane({ label, value, onChange }: { label: string; value: string; 
         aria-valuetext={`${Math.round(hsv.h)} degrees`}
         onChange={event => update({ ...hsv, h: Number(event.target.value) })}
       />
+      {alpha && (
+        <div className="seed-color-alpha-row">
+          <input
+            type="range"
+            className="seed-color-alpha"
+            min={0}
+            max={100}
+            step={1}
+            value={opacity}
+            style={{ '--seed-alpha-color': hexToRgba(value) } as React.CSSProperties}
+            aria-label={`${label} opacity`}
+            aria-valuetext={`${opacity}% opacity`}
+            onChange={event => onChange(withAlphaPercent(value, Number(event.target.value)))}
+          />
+          <span className="seed-color-alpha-value" aria-hidden="true">{opacity}%</span>
+        </div>
+      )}
     </>
   );
 }

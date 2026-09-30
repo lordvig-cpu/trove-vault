@@ -196,6 +196,14 @@
   gap: 0.25rem;
 }
 
+/* Checkerboard shown under a translucent color (the swatch and the opacity slider). */
+:root, [data-theme] {
+  --seed-checker: repeating-conic-gradient(
+      color-mix(in srgb, var(--pole-sheen) 75%, var(--pole-shade)) 0 25%,
+      color-mix(in srgb, var(--pole-sheen) 40%, var(--pole-shade)) 0 50%
+    ) 0 0 / 8px 8px;
+}
+
 .oklch-seed-picker {
   appearance: none;
   width: 1.75rem;
@@ -206,6 +214,11 @@
   border: 1px solid var(--editor-swatch-border);
   border-radius: 0.25rem;
   cursor: pointer;
+}
+
+/* Translucent colors (SeedColorPicker's `alpha`): the color drawn over the checkerboard. */
+.oklch-seed-picker-alpha {
+  background-image: linear-gradient(var(--swatch), var(--swatch)), var(--seed-checker);
 }
 
 /* No color set: a slash through the swatch (SeedColorPicker's `empty`). */
@@ -317,8 +330,54 @@
   box-shadow: 0 0 0 1px var(--shadow-black-50);
 }
 
+.seed-color-alpha-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.seed-color-alpha {
+  display: block;
+  appearance: none;
+  flex: 1;
+  min-width: 0;
+  height: 12px;
+  border-radius: 6px;
+  background: linear-gradient(to right, transparent, var(--seed-alpha-color)), var(--seed-checker);
+  cursor: pointer;
+}
+
+.seed-color-alpha::-webkit-slider-thumb {
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--text-fixed-white);
+  border-radius: 50%;
+  background: transparent;
+  box-shadow: 0 0 0 1px var(--shadow-black-50);
+}
+
+.seed-color-alpha::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border: 2px solid var(--text-fixed-white);
+  border-radius: 50%;
+  background: transparent;
+  box-shadow: 0 0 0 1px var(--shadow-black-50);
+}
+
+.seed-color-alpha-value {
+  width: 2.6rem;
+  text-align: right;
+  font-family: monospace;
+  font-size: 0.7rem;
+  color: var(--editor-text);
+}
+
 .seed-color-plane:focus-visible,
-.seed-color-hue:focus-visible {
+.seed-color-hue:focus-visible,
+.seed-color-alpha:focus-visible {
   outline: 2px solid var(--editor-focus);
   outline-offset: 3px;
 }
