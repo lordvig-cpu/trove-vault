@@ -139,13 +139,13 @@
   --flyout-card-glow: color-mix(in srgb, var(--oklch-yellow-217-119-6) 32%, transparent);
   --flyout-card-glow-fade: color-mix(in srgb, var(--oklch-yellow-217-119-6) 9%, transparent);
   --flyout-card-base: color-mix(in srgb, var(--pole-surface) 62%, transparent);
-  --flyout-tile-bg: color-mix(in srgb, var(--oklch-secondary-217-119-6) 50%, var(--pole-surface));
+  --flyout-tile-bg: color-mix(in srgb, var(--oklch-secondary-217-119-6) 30%, var(--pole-surface));
   --flyout-tile-border: color-mix(in srgb, var(--oklch-yellow-217-119-6) 72%, var(--pole-surface));
   --flyout-divider: color-mix(in srgb, var(--oklch-yellow-217-119-6) 40%, transparent);
   /* Flyout shell = the template editor toolbars' chassis (.tmpl-edge-panel): the seed's glow at the top over the menus' header tint and shell surface, with the same border and outer glow. */
   --flyout-shell-bg: radial-gradient(ellipse 130% 40% at 50% 0%, color-mix(in oklch, var(--secondary-accent) var(--flyout-glow-top), transparent) 0%, transparent 100%), var(--secondary-tree-menu-header-bg), var(--secondary-tree-menu-shell-bg);
-  --flyout-body-top: color-mix(in srgb, var(--oklch-secondary-217-119-6) 50%, var(--pole-surface));
-  --flyout-body-bottom: color-mix(in srgb, var(--oklch-secondary-217-119-6) 30%, var(--pole-surface));
+  --flyout-body-top: color-mix(in srgb, var(--oklch-secondary-217-119-6) 26%, var(--pole-surface));
+  --flyout-body-bottom: color-mix(in srgb, var(--oklch-secondary-217-119-6) 9%, var(--pole-surface));
   --flyout-shell-border: var(--secondary-tree-menu-shell-border);
   --flyout-shell-glow: 0 0 18px color-mix(in oklch, var(--secondary-accent) var(--flyout-glow-outer), transparent), 0 16px 32px color-mix(in oklch, var(--pole-shade) 55%, transparent);
   --flyout-title: oklch(from var(--secondary-accent) var(--flyout-ink-l) var(--flyout-ink-c) calc(h + 12));
@@ -154,7 +154,7 @@
   --flyout-selected: oklch(from var(--flyout-title) l c calc(h + 12));
   /* Split-flyout head title (Container Properties): the selected yellow unless a theme says otherwise. */
   --flyout-heading: var(--flyout-selected);
-  --flyout-tab-band: linear-gradient(180deg, color-mix(in srgb, var(--oklch-secondary-217-119-6) 50%, var(--pole-surface)), color-mix(in srgb, var(--oklch-secondary-217-119-6) 30%, var(--pole-surface)));
+  --flyout-tab-band: linear-gradient(180deg, color-mix(in srgb, var(--oklch-secondary-217-119-6) 26%, var(--pole-surface)), color-mix(in srgb, var(--oklch-secondary-217-119-6) 12%, var(--pole-surface)));
   --flyout-tab-idle: color-mix(in srgb, var(--oklch-secondary-217-119-6) 6%, var(--pole-surface));
   --flyout-tab-active-top: color-mix(in srgb, var(--oklch-secondary-217-119-6) 58%, var(--pole-surface));
   --flyout-tab-active-bottom: color-mix(in srgb, var(--oklch-secondary-217-119-6) 42%, var(--pole-surface));
