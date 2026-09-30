@@ -140,8 +140,8 @@
   --flyout-heading: var(--shiny-menu-ink);
   --flyout-tab-band: var(--shiny-menu-deep);
   --flyout-tab-idle: var(--shiny-menu);
-  --flyout-tab-active-top: color-mix(in oklab, var(--secondary-accent) 42%, var(--shiny-menu));
-  --flyout-tab-active-bottom: color-mix(in oklab, var(--secondary-accent) 26%, var(--shiny-menu));
+  --flyout-tab-active-top: color-mix(in oklab, var(--secondary-accent) 29%, var(--shiny-menu));
+  --flyout-tab-active-bottom: color-mix(in oklab, var(--secondary-accent) 17.5%, var(--shiny-menu));
   --flyout-tab-active-border: var(--secondary-accent);
 }
 
