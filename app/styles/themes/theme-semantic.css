@@ -163,6 +163,8 @@
   --section-tile-bg: color-mix(in srgb, var(--oklch-primary) 40%, var(--pole-surface));
   --section-tile-border: color-mix(in srgb, var(--primary-accent) 75%, var(--pole-surface));
   --section-divider: color-mix(in srgb, var(--primary-accent) 40%, transparent);
+  /* Studio canvas focus light: barely-there blue pool that makes the canvas read as recessed. */
+  --studio-focus-glow: color-mix(in srgb, var(--primary-accent) 3.5%, transparent);
   --flyout-shell-glow: 0 0 18px color-mix(in oklab, var(--secondary-accent) var(--flyout-glow-outer), transparent), 0 16px 32px color-mix(in oklab, var(--pole-shade) 55%, transparent);
   --flyout-title: oklch(from var(--secondary-accent) var(--flyout-ink-l) var(--flyout-ink-c) calc(h + 12));
   /* A touch more yellow still than --flyout-title -- the flyout header text/icon color, an active

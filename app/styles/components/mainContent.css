@@ -10,13 +10,17 @@
    -------------------------------------------------------------------------- */
 .studio-grid-canvas {
   background-color: var(--primary-studio-grid-bg);
-  background-image: 
+  background-image:
+    radial-gradient(ellipse 40% 38% at 84% 82%, var(--studio-grid-glow-bottom-right-blue-core, transparent) 0%, var(--studio-grid-glow-bottom-right-blue-edge, transparent) 50%, transparent 80%),
+    radial-gradient(ellipse 45% 50% at var(--studio-focus-x, 50%) var(--studio-focus-y, 50%), var(--studio-focus-glow) 0%, transparent 100%),
     radial-gradient(ellipse 70% 60% at 10% 25%, var(--primary-studio-grid-glow-top-left-core) 0%, var(--primary-studio-grid-glow-top-left-edge) 50%, transparent 80%),
     radial-gradient(ellipse 65% 55% at 90% 75%, var(--secondary-studio-grid-glow-bottom-right-core) 0%, var(--secondary-studio-grid-glow-bottom-right-edge) 50%, transparent 80%),
     radial-gradient(ellipse 85% 70% at 50% 50%, transparent 40%, var(--primary-studio-grid-vignette) 100%),
     linear-gradient(to right, var(--primary-studio-grid-line) 1px, transparent 1px),
     linear-gradient(to bottom, var(--primary-studio-grid-line) 1px, transparent 1px);
-  background-size: 
+  background-size:
+    100% 100%,
+    100% 100%,
     100% 100%,
     100% 100%,
     100% 100%,
