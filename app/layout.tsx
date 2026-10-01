@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { UIPreferencesProvider } from '@/context/UIPreferencesContext';
 import { CanvasZoomProvider } from '@/context/CanvasZoomContext';
+import HelpWindowHost from '@/components/HelpWindowHost';
 
 /* ==========================================================================
    1. GLOBAL FONT OPTIMIZATIONS (Next.js Geist Typography)
@@ -43,6 +44,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <UIPreferencesProvider>
           <CanvasZoomProvider>
             {children}
+            {/* Pinned help windows (click a `?`): outlive the flyout or panel that opened them. */}
+            <HelpWindowHost />
           </CanvasZoomProvider>
         </UIPreferencesProvider>
       </body>

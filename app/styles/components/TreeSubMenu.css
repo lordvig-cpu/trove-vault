@@ -391,6 +391,49 @@
   width: 19.2rem;
 }
 
+/* A hover bubble's last line: tells the reader the bubble can be kept open (clicking the `?`). */
+.hoverHintPinCue {
+  margin: 0.75rem 0.25rem 0;
+  font-size: 0.625rem;
+  text-align: center;
+  color: var(--text-muted);
+}
+
+/* A pinned help window (HelpWindowHost): the same bubble, but it takes clicks and drags (pointer-events
+   is inherited by the whole shell) and sits on its own layer above hover bubbles. Windows share one
+   z-index, so the one last in the DOM is in front. The title bar is the drag handle. */
+.menuShellSplit.hoverHint.hoverHintPinned {
+  z-index: 92;
+  pointer-events: auto;
+}
+
+.hoverHintPinned .headerPill {
+  cursor: grab;
+  user-select: none;
+  touch-action: none;
+}
+
+.hoverHintPinned .headerPill:active {
+  cursor: grabbing;
+}
+
+/* The pinned window's close button, in the title bar's right-hand icon slot. */
+.hintCloseBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  transition: color 150ms ease;
+}
+
+.hintCloseBtn:hover {
+  color: var(--flyout-white);
+}
+
 /* White instead of the --flyout-selected yellow every other flyout's title uses -- scoped to
    .hoverHint specifically (matching the compound .hoverHint.menuShellSplit selector's specificity
    plus one, so it wins over .menuShellHead.menuShell .headerPill .headerTitle regardless of source

@@ -1,9 +1,11 @@
 'use client';
 
-import React, { useId, useState } from 'react';
+import React, { useId, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import '@/app/styles/components/TreeSubMenu.css';
 import { HelpCircleIcon } from '@/components/icons/LayoutIcons';
+import { SearchClearIcon } from '@/components/icons/TreeIcons';
+import { toggleHelpWindow, useIsHelpWindowOpen } from '@/lib/helpWindows';
 import { HintCautionIcon, HintTipIcon, HintUseIcon } from '@/components/icons/HintIcons';
 
 const NOTE_ICONS: Record<HintNoteKind, React.ReactNode> = {
@@ -66,11 +68,129 @@ export interface HintContent {
 }
 
 /**
+ * The help bubble itself: the exact same split head/body shell a headless TreeSubMenu (Item:
+ * Actions etc.) renders -- menuShellSplit / menuShell.menuShellHead / menuShell.menuShellBody, with
+ * the same empty (no real tabs) .menuTabs divider band -- so the title bar is never a second,
+ * hand-tuned definition of the same look; it's the same CSS, picked up automatically. See the
+ * .hoverHint rules in TreeSubMenu.css for what's added on top (pointer-events:none, a fixed width,
+ * no height cap) to make that shell work as a bubble instead of a menu.
+ *
+ * `HoverHint` renders it as a hover bubble. `HelpWindowHost` renders it with `pinned`: the same
+ * content as a draggable window whose title bar carries a close button instead of the `?`.
+ */
+export function HintBubble({
+  hint,
+  id,
+  role,
+  pinned = false,
+  style,
+  bubbleRef,
+  onClose,
+  onTitlePointerDown,
+  onPointerDown,
+}: {
+  hint: HintContent;
+  id?: string;
+  role?: string;
+  pinned?: boolean;
+  style?: React.CSSProperties;
+  bubbleRef?: React.Ref<HTMLDivElement>;
+  /** Pinned only: closes the window (the title bar's right-hand button). */
+  onClose?: () => void;
+  /** Pinned only: starts a drag from the title bar. */
+  onTitlePointerDown?: (e: React.PointerEvent<HTMLDivElement>) => void;
+  onPointerDown?: (e: React.PointerEvent<HTMLDivElement>) => void;
+}) {
+  return (
+    <div
+      id={id}
+      ref={bubbleRef}
+      role={role}
+      className={`menuShellSplit hoverHint${pinned ? ' hoverHintPinned' : ''}`}
+      style={style}
+      onPointerDown={onPointerDown}
+    >
+      <div className="menuShell menuShellHead">
+        <div className="innerContent">
+          <div className="headerPill" onPointerDown={onTitlePointerDown}>
+            <span className="headerTitle">{hint.title}</span>
+            <span className="headerIcon">
+              {pinned ? (
+                <button type="button" className="hintCloseBtn" onClick={onClose} aria-label={`Close ${hint.title} help`} title="Close">
+                  <SearchClearIcon className="w-4 h-4" />
+                </button>
+              ) : (
+                <HelpCircleIcon className="w-4 h-4" />
+              )}
+            </span>
+          </div>
+          <div className="menuSubheader">
+            <div className="menuTabs" aria-hidden="true" />
+          </div>
+        </div>
+      </div>
+      <div className="menuShell menuShellBody">
+        <div className="innerContent">
+          <div className="childrenContainer">
+            {hint.settings && hint.settings.length > 0 && (
+              <>
+                <div className="properties-section-heading">
+                  <hr aria-hidden="true" />
+                  <h3>Settings</h3>
+                </div>
+                <dl className="hoverHintList">
+                  {hint.settings.map((setting) => (
+                    <React.Fragment key={setting.name}>
+                      <dt>
+                        {setting.icon ? (
+                          <span className="hintRef">
+                            <span className="hintRefIcon">{setting.icon}</span>
+                            {setting.name}
+                          </span>
+                        ) : (
+                          setting.name
+                        )}
+                      </dt>
+                      <dd>{setting.text}</dd>
+                    </React.Fragment>
+                  ))}
+                </dl>
+              </>
+            )}
+            {hint.notes && (
+              <>
+                <div className="properties-section-heading">
+                  <hr aria-hidden="true" />
+                  <h3>Notes</h3>
+                </div>
+                <ul className="hoverHintNotes">
+                  {sortNotes(hint.notes).map((note, i) => (
+                    <li key={i} className={`hoverHintNote hoverHintNote-${note.kind}`}>
+                      <span className="hoverHintNoteIcon">{NOTE_ICONS[note.kind]}</span>
+                      <span>{note.text}</span>
+                    </li>
+                  ))}
+                </ul>
+              </>
+            )}
+            {!pinned && <p className="hoverHintPinCue">Click to keep this open in a window</p>}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/**
  * A small help popup for an inline icon (the `?` beside a label) or a button, for help too long for
- * a native tooltip. Styled like the tree action menus (`.hoverHint` in TreeSubMenu.css: title
- * pill, then the same shadowed-rule sub-headings as the Properties sections) and portaled to the
- * body so it isn't clipped by a scrolling flyout. Opens on hover or keyboard focus; below the
+ * a native tooltip. Styled like the tree action menus (`.hoverHint` in TreeSubMenu.css) and portaled
+ * to the body so it isn't clipped by a scrolling flyout. Opens on hover or keyboard focus; below the
  * trigger (above it when the trigger is low on the screen), right-aligned to it.
+ *
+ * Clicking a `?` (or pressing Enter / Space on it) pins the bubble where it is as a draggable
+ * window (see lib/helpWindows.ts and HelpWindowHost) that stays until it is closed, so help can sit
+ * beside the controls it describes instead of covering them. Clicking the same `?` again closes it.
+ * A trigger that is itself a button (`interactive`) keeps its own click and doesn't pin.
  */
 export default function HoverHint({
   hint,
@@ -84,12 +204,25 @@ export default function HoverHint({
 }) {
   const id = useId();
   const [rect, setRect] = useState<DOMRect | null>(null);
+  const bubbleRef = useRef<HTMLDivElement>(null);
+  const isPinned = useIsHelpWindowOpen(hint.title);
 
   const show = (el: HTMLElement) => setRect(el.getBoundingClientRect());
   const hide = () => setRect(null);
 
+  // Pin the bubble exactly where it is showing now, so it appears to stay put and become a window.
+  const pin = () => {
+    if (interactive || !rect) return;
+    const shown = bubbleRef.current?.getBoundingClientRect();
+    toggleHelpWindow(hint, {
+      left: shown?.left ?? rect.left,
+      top: shown?.top ?? rect.bottom + GAP_PX,
+    });
+    hide();
+  };
+
   let style: React.CSSProperties | null = null;
-  if (rect) {
+  if (rect && !isPinned) {
     const left = Math.min(
       Math.max(rect.right - HINT_WIDTH_PX, EDGE_PX),
       Math.max(window.innerWidth - HINT_WIDTH_PX - EDGE_PX, EDGE_PX)
@@ -109,82 +242,18 @@ export default function HoverHint({
         onMouseLeave={hide}
         onFocus={(e) => show(e.currentTarget)}
         onBlur={hide}
+        onClick={pin}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            pin();
+          }
+        }}
         className={interactive ? 'inline-flex' : 'inline-flex cursor-help'}
       >
         {children}
       </span>
-      {style &&
-        createPortal(
-          // Reuses the exact same split head/body shell a headless TreeSubMenu (Item: Actions etc.)
-          // renders -- menuShellSplit / menuShell.menuShellHead / menuShell.menuShellBody, with the
-          // same empty (no real tabs) .menuTabs divider band -- so the title bar is never a second,
-          // hand-tuned definition of the same look; it's the same CSS, picked up automatically. See
-          // the .hoverHint rules in TreeSubMenu.css for what's added on top (pointer-events:none, a
-          // fixed width, no height cap) to make that shell work as a bubble instead of a menu.
-          <div id={id} role="tooltip" className="menuShellSplit hoverHint" style={style}>
-            <div className="menuShell menuShellHead">
-              <div className="innerContent">
-                <div className="headerPill">
-                  <span className="headerTitle">{hint.title}</span>
-                  <span className="headerIcon">
-                    <HelpCircleIcon className="w-4 h-4" />
-                  </span>
-                </div>
-                <div className="menuSubheader">
-                  <div className="menuTabs" aria-hidden="true" />
-                </div>
-              </div>
-            </div>
-            <div className="menuShell menuShellBody">
-              <div className="innerContent">
-                <div className="childrenContainer">
-                  {hint.settings && hint.settings.length > 0 && (
-                    <>
-                      <div className="properties-section-heading">
-                        <hr aria-hidden="true" />
-                        <h3>Settings</h3>
-                      </div>
-                      <dl className="hoverHintList">
-                        {hint.settings.map((setting) => (
-                          <React.Fragment key={setting.name}>
-                            <dt>
-                              {setting.icon ? (
-                                <span className="hintRef">
-                                  <span className="hintRefIcon">{setting.icon}</span>
-                                  {setting.name}
-                                </span>
-                              ) : (
-                                setting.name
-                              )}
-                            </dt>
-                            <dd>{setting.text}</dd>
-                          </React.Fragment>
-                        ))}
-                      </dl>
-                    </>
-                  )}
-                  {hint.notes && (
-                    <>
-                      <div className="properties-section-heading">
-                        <hr aria-hidden="true" />
-                        <h3>Notes</h3>
-                      </div>
-                      <ul className="hoverHintNotes">
-                        {sortNotes(hint.notes).map((note, i) => (
-                          <li key={i} className={`hoverHintNote hoverHintNote-${note.kind}`}>
-                            <span className="hoverHintNoteIcon">{NOTE_ICONS[note.kind]}</span>
-                            <span>{note.text}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </>
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>,
-          document.body
-        )}
+      {style && createPortal(<HintBubble hint={hint} id={id} role="tooltip" style={style} bubbleRef={bubbleRef} />, document.body)}
     </>
   );
 }
