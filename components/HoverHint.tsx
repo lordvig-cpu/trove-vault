@@ -1,12 +1,11 @@
 'use client';
 
-import React, { useId, useRef, useState } from 'react';
+import React, { useEffect, useId, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import '@/app/styles/components/TreeSubMenu.css';
-import { HelpCircleIcon } from '@/components/icons/LayoutIcons';
 import { SearchClearIcon } from '@/components/icons/TreeIcons';
 import { toggleHelpWindow, useIsHelpWindowOpen } from '@/lib/helpWindows';
-import { HintCautionIcon, HintTipIcon, HintUseIcon } from '@/components/icons/HintIcons';
+import { HintAnchorIcon, HintCautionIcon, HintTipIcon, HintUseIcon } from '@/components/icons/HintIcons';
 
 const NOTE_ICONS: Record<HintNoteKind, React.ReactNode> = {
   use: <HintUseIcon />,
@@ -72,55 +71,82 @@ export interface HintContent {
  * Actions etc.) renders -- menuShellSplit / menuShell.menuShellHead / menuShell.menuShellBody, with
  * the same empty (no real tabs) .menuTabs divider band -- so the title bar is never a second,
  * hand-tuned definition of the same look; it's the same CSS, picked up automatically. See the
- * .hoverHint rules in TreeSubMenu.css for what's added on top (pointer-events:none, a fixed width,
- * no height cap) to make that shell work as a bubble instead of a menu.
+ * .hoverHint rules in TreeSubMenu.css for what's added on top (a fixed width, no height cap) to
+ * make that shell work as a bubble instead of a menu.
  *
- * `HoverHint` renders it as a hover bubble. `HelpWindowHost` renders it with `pinned`: the same
- * content as a draggable window whose title bar carries a close button instead of the `?`.
+ * It opens anchored to its `?` (the anchor icon in the title bar is filled in): it belongs to the
+ * `?` and goes away when the pointer leaves it. Clicking the anchor icon un-anchors it (outlined)
+ * into a window: it can be dragged by its title bar and stays until its close button is used.
+ * `HoverHint` renders the anchored bubble; `HelpWindowHost` renders the window.
  */
 export function HintBubble({
   hint,
   id,
   role,
-  pinned = false,
+  asWindow = false,
+  anchored,
   style,
   bubbleRef,
+  onToggleAnchor,
   onClose,
   onTitlePointerDown,
   onPointerDown,
+  onMouseEnter,
+  onMouseLeave,
 }: {
   hint: HintContent;
   id?: string;
   role?: string;
-  pinned?: boolean;
+  /** Rendered by HelpWindowHost (own layer, survives its `?`) rather than as a hover bubble. */
+  asWindow?: boolean;
+  /** Anchored: fixed in place and closes when the pointer leaves it. Otherwise draggable and closable. */
+  anchored: boolean;
   style?: React.CSSProperties;
   bubbleRef?: React.Ref<HTMLDivElement>;
-  /** Pinned only: closes the window (the title bar's right-hand button). */
+  onToggleAnchor: () => void;
+  /** Un-anchored only: closes the window. */
   onClose?: () => void;
-  /** Pinned only: starts a drag from the title bar. */
+  /** Un-anchored only: starts a drag from the title bar. */
   onTitlePointerDown?: (e: React.PointerEvent<HTMLDivElement>) => void;
   onPointerDown?: (e: React.PointerEvent<HTMLDivElement>) => void;
+  onMouseEnter?: () => void;
+  onMouseLeave?: () => void;
 }) {
   return (
     <div
       id={id}
       ref={bubbleRef}
       role={role}
-      className={`menuShellSplit hoverHint${pinned ? ' hoverHintPinned' : ''}`}
+      className={`menuShellSplit hoverHint${asWindow ? ' hoverHintWindow' : ''}${asWindow && !anchored ? ' hoverHintFloating' : ''}`}
       style={style}
       onPointerDown={onPointerDown}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
+      // Clicking inside must not pull focus off the `?` that opened this (its blur would close it).
+      onMouseDown={(e) => e.preventDefault()}
     >
       <div className="menuShell menuShellHead">
         <div className="innerContent">
-          <div className="headerPill" onPointerDown={onTitlePointerDown}>
+          <div className="headerPill" onPointerDown={anchored ? undefined : onTitlePointerDown}>
             <span className="headerTitle">{hint.title}</span>
-            <span className="headerIcon">
-              {pinned ? (
-                <button type="button" className="hintCloseBtn" onClick={onClose} aria-label={`Close ${hint.title} help`} title="Close">
+            <span className="headerIcon hintHeaderActions">
+              <button
+                type="button"
+                className="hintHeaderBtn"
+                aria-pressed={anchored}
+                onClick={onToggleAnchor}
+                title={
+                  anchored
+                    ? 'Anchored: closes when you move away. Click to un-anchor it so it can be moved and kept open.'
+                    : 'Not anchored: click to anchor it again (it will close when you move away).'
+                }
+              >
+                <HintAnchorIcon filled={anchored} />
+              </button>
+              {!anchored && (
+                <button type="button" className="hintHeaderBtn" onClick={onClose} aria-label={`Close ${hint.title} help`} title="Close">
                   <SearchClearIcon className="w-4 h-4" />
                 </button>
-              ) : (
-                <HelpCircleIcon className="w-4 h-4" />
               )}
             </span>
           </div>
@@ -173,7 +199,6 @@ export function HintBubble({
                 </ul>
               </>
             )}
-            {!pinned && <p className="hoverHintPinCue">Click to keep this open in a window</p>}
           </div>
         </div>
       </div>
@@ -181,16 +206,18 @@ export function HintBubble({
   );
 }
 
+const HIDE_DELAY_MS = 150; // long enough to cross the small gap between a `?` and its bubble
+
 /**
  * A small help popup for an inline icon (the `?` beside a label) or a button, for help too long for
  * a native tooltip. Styled like the tree action menus (`.hoverHint` in TreeSubMenu.css) and portaled
  * to the body so it isn't clipped by a scrolling flyout. Opens on hover or keyboard focus; below the
- * trigger (above it when the trigger is low on the screen), right-aligned to it.
+ * trigger (above it when the trigger is low on the screen), right-aligned to it. It stays open while
+ * the pointer is over the `?` or the bubble and closes once it leaves both.
  *
- * Clicking a `?` (or pressing Enter / Space on it) pins the bubble where it is as a draggable
- * window (see lib/helpWindows.ts and HelpWindowHost) that stays until it is closed, so help can sit
- * beside the controls it describes instead of covering them. Clicking the same `?` again closes it.
- * A trigger that is itself a button (`interactive`) keeps its own click and doesn't pin.
+ * Its title bar's anchor icon (filled while anchored) un-anchors it into a draggable, closable
+ * window that stays open (see lib/helpWindows.ts and HelpWindowHost), so help can sit beside the
+ * controls it describes. Enter / Space on a focused `?` does the same from the keyboard.
  */
 export default function HoverHint({
   hint,
@@ -205,14 +232,33 @@ export default function HoverHint({
   const id = useId();
   const [rect, setRect] = useState<DOMRect | null>(null);
   const bubbleRef = useRef<HTMLDivElement>(null);
-  const isPinned = useIsHelpWindowOpen(hint.title);
+  const hideTimer = useRef<number | undefined>(undefined);
+  const pointerInside = useRef(false); // over the `?` or its bubble
+  const isWindowOpen = useIsHelpWindowOpen(hint.title);
 
   const show = (el: HTMLElement) => setRect(el.getBoundingClientRect());
   const hide = () => setRect(null);
+  const cancelHide = () => window.clearTimeout(hideTimer.current);
+  const hideSoon = () => {
+    cancelHide();
+    hideTimer.current = window.setTimeout(() => {
+      if (!pointerInside.current) hide();
+    }, HIDE_DELAY_MS);
+  };
+  useEffect(() => cancelHide, []);
 
-  // Pin the bubble exactly where it is showing now, so it appears to stay put and become a window.
-  const pin = () => {
-    if (interactive || !rect) return;
+  const enter = () => {
+    pointerInside.current = true;
+    cancelHide();
+  };
+  const leave = () => {
+    pointerInside.current = false;
+    hideSoon();
+  };
+
+  // Un-anchor: the bubble becomes a window exactly where it is showing now, so it appears to stay put.
+  const unanchor = () => {
+    if (!rect) return;
     const shown = bubbleRef.current?.getBoundingClientRect();
     toggleHelpWindow(hint, {
       left: shown?.left ?? rect.left,
@@ -222,7 +268,7 @@ export default function HoverHint({
   };
 
   let style: React.CSSProperties | null = null;
-  if (rect && !isPinned) {
+  if (rect && !isWindowOpen) {
     const left = Math.min(
       Math.max(rect.right - HINT_WIDTH_PX, EDGE_PX),
       Math.max(window.innerWidth - HINT_WIDTH_PX - EDGE_PX, EDGE_PX)
@@ -238,22 +284,41 @@ export default function HoverHint({
       <span
         tabIndex={interactive ? undefined : 0}
         aria-describedby={rect ? id : undefined}
-        onMouseEnter={(e) => show(e.currentTarget)}
-        onMouseLeave={hide}
-        onFocus={(e) => show(e.currentTarget)}
-        onBlur={hide}
-        onClick={pin}
+        onMouseEnter={(e) => {
+          enter();
+          show(e.currentTarget);
+        }}
+        onMouseLeave={leave}
+        onFocus={(e) => {
+          cancelHide();
+          show(e.currentTarget);
+        }}
+        onBlur={hideSoon}
         onKeyDown={(e) => {
-          if (e.key === 'Enter' || e.key === ' ') {
+          if (!interactive && (e.key === 'Enter' || e.key === ' ')) {
             e.preventDefault();
-            pin();
+            unanchor();
           }
         }}
         className={interactive ? 'inline-flex' : 'inline-flex cursor-help'}
       >
         {children}
       </span>
-      {style && createPortal(<HintBubble hint={hint} id={id} role="tooltip" style={style} bubbleRef={bubbleRef} />, document.body)}
+      {style &&
+        createPortal(
+          <HintBubble
+            hint={hint}
+            id={id}
+            role="tooltip"
+            anchored
+            style={style}
+            bubbleRef={bubbleRef}
+            onToggleAnchor={unanchor}
+            onMouseEnter={enter}
+            onMouseLeave={leave}
+          />,
+          document.body
+        )}
     </>
   );
 }

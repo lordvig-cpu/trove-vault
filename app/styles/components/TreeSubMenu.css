@@ -374,15 +374,14 @@
    empty tab band. Only what makes it a help bubble instead of a menu is added here, via the extra
    .hoverHint class kept on the outer wrapper (compound selectors below beat menuShellSplit's own
    plain-class rules by specificity, not by source order): fixed positioning (the inline `style`
-   prop supplies top/left or bottom/left) and pointer-events:none throughout, since a bubble must
-   never itself capture the hover that opened it or block a click on whatever's under it; one fixed
+   prop supplies top/left or bottom/left); the bubble takes the pointer, so hovering it keeps it
+   open (it closes once the pointer leaves both it and its `?`); one fixed
    width for both cards, since a bubble has no separate wider Properties tab to size differently;
    and no height cap on the body, since a help bubble should never clip its own content the way a
    scrolling flyout can. */
 .menuShellSplit.hoverHint {
   position: fixed;
   z-index: 90;
-  pointer-events: none;
   max-height: none;
 }
 
@@ -391,34 +390,29 @@
   width: 19.2rem;
 }
 
-/* A hover bubble's last line: tells the reader the bubble can be kept open (clicking the `?`). */
-.hoverHintPinCue {
-  margin: 0.75rem 0.25rem 0;
-  font-size: 0.625rem;
-  text-align: center;
-  color: var(--text-muted);
-}
-
-/* A pinned help window (HelpWindowHost): the same bubble, but it takes clicks and drags (pointer-events
-   is inherited by the whole shell) and sits on its own layer above hover bubbles. Windows share one
-   z-index, so the one last in the DOM is in front. The title bar is the drag handle. */
-.menuShellSplit.hoverHint.hoverHintPinned {
+/* A help window (HelpWindowHost): the same bubble on its own layer above hover bubbles. Windows share
+   one z-index, so the one last in the DOM is in front. Un-anchored (.hoverHintFloating), the title
+   bar is the drag handle. */
+.menuShellSplit.hoverHint.hoverHintWindow {
   z-index: 92;
-  pointer-events: auto;
 }
 
-.hoverHintPinned .headerPill {
+.hoverHintFloating .headerPill {
   cursor: grab;
   user-select: none;
   touch-action: none;
 }
 
-.hoverHintPinned .headerPill:active {
+.hoverHintFloating .headerPill:active {
   cursor: grabbing;
 }
 
-/* The pinned window's close button, in the title bar's right-hand icon slot. */
-.hintCloseBtn {
+/* The title bar's right-hand actions: the anchor toggle and, once un-anchored, the close button. */
+.hintHeaderActions {
+  gap: 0.375rem;
+}
+
+.hintHeaderBtn {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -430,7 +424,7 @@
   transition: color 150ms ease;
 }
 
-.hintCloseBtn:hover {
+.hintHeaderBtn:hover {
   color: var(--flyout-white);
 }
 

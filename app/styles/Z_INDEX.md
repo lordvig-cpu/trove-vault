@@ -17,7 +17,7 @@ Reach the whole app (or the workspace), except where a narrower scope is noted.
 | 300        | Seed color picker                     | Portal to `document.body`                            | SeedColorPicker.tsx; navigationFooter.css    |
 | 150        | Dock drop-target overlay              | Fixed; rendered inside workspace                     | PanelDockDropZones.tsx / CSS                 |
 | 100        | Logo introduction trigger             | Application shell                                    | DynamicWatermark.tsx                         |
-| 92         | Pinned help windows (clicked `?`)     | Fixed, rendered once at the app root; above hover hints, below modals (400); windows share it, DOM order decides | HelpWindowHost.tsx; TreeSubMenu.css |
+| 92         | Help windows (un-anchored `?` bubble) | Fixed, rendered once at the app root; above hover hints, below modals (400); windows share it, DOM order decides | HelpWindowHost.tsx; TreeSubMenu.css |
 | 90         | Hover hint popup (`?` help text)      | Body portal; above every menu and flyout it can describe | HoverHint.tsx; TreeSubMenu.css            |
 | 89         | UnitSelect's open pulldown list       | Body portal; above the flyout its trigger sits inside | UnitSelect.tsx                               |
 | 80         | Header wrapper / navigation bar       | Contains local navigation and flyout layers          | page.tsx; NavigationHeader.tsx               |

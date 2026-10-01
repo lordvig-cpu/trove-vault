@@ -46,3 +46,21 @@ export const HintCautionIcon = ({ className = 'w-3.5 h-3.5', strokeWidth = 1.8 }
     <circle cx="12" cy="17" r="0.9" fill="currentColor" stroke="none" />
   </svg>
 );
+
+/**
+ * HintAnchorIcon: an anchor, on or off. A help bubble opens "anchored" (`filled`: it belongs to its
+ * `?` and closes when the pointer leaves); un-anchoring it (outlined) frees it to be dragged and closed.
+ */
+export const HintAnchorIcon = ({
+  className = 'w-4 h-4',
+  strokeWidth = 1.8,
+  filled = false,
+}: HintIconProps & { filled?: boolean }) => (
+  <svg {...base(className, filled ? 2.2 : strokeWidth)}>
+    <circle cx="12" cy="5" r="2" fill={filled ? 'currentColor' : 'none'} />
+    <path d="M12 7v12" />
+    <path d="M8 10H4l3 3" />
+    <path d="M16 10h4l-3 3" />
+    <path d="M4 13c.7 4 3.8 7 8 7s7.3-3 8-7" />
+  </svg>
+);
