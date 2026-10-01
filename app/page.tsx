@@ -706,7 +706,7 @@ export default function Home() {
               when it's open (pinned or not) so the two never overlap. */}
           <div
             id="template-toolbar-slot-bottom"
-            className={`absolute bottom-0 -translate-x-1/2 z-[36] pointer-events-none ${
+            className={`absolute bottom-0 -translate-x-1/2 z-[53] pointer-events-none ${
               animationsEnabled ? 'transition-[left,bottom] duration-500 ease-in-out' : ''
             }`}
             style={{

@@ -24,10 +24,10 @@ Reach the whole app (or the workspace), except where a narrower scope is noted.
 | 60         | Footer wrapper / navigation footer    | Contains local footer layers                         | page.tsx; NavigationFooter.tsx               |
 | 60         | Tree flyout backdrop                  | Body portal; begins below navigation                 | PrimarySidePanel.tsx                         |
 | 55 / 54    | Moving / displaced panel content      | Workspace; transient swap animation                  | page.tsx                                     |
+| 53         | Bottom template editor toolbar slot   | Workspace; above the bottom panel it sits in front of | page.tsx; TemplateEditorBar.tsx              |
+| 52         | Bottom panel aside                    | Workspace; full width, above both sidebars; same value pinned or unpinned | BottomPanel.css |
 | 50 / 40    | Primary / secondary sidebar asides    | 50: open + unpinned; 40: pinned or closed             | PrimarySidePanel.tsx; SecondarySidePanel.tsx |
 | 45 / 35    | Tree action / search menus            | Body portals; unpinned / pinned; under panel edge     | Both Tree*Menu.tsx components                |
-| 36         | Bottom template editor toolbar slot   | Workspace; above the bottom panel it sits in front of | page.tsx; TemplateEditorBar.tsx              |
-| 35         | Bottom panel aside                    | Workspace; same value pinned or unpinned              | BottomPanel.css                              |
 | 30         | Expand tabs / workspace header shadow | Workspace                                             | Panel CSS; navigationHeader.css              |
 | 10         | Center canvas wrapper                 | Workspace; owns MainContent local layers              | page.tsx                                     |
 | 0          | Watermark / intro video container     | Application shell; grid is root background            | DynamicWatermark.tsx; mainContent.css        |
