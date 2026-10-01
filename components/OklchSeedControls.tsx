@@ -11,11 +11,11 @@ import type { ThemePreset } from '@/types/theme';
 /** Seeds each theme starts from when nothing is saved. Must match the CSS defaults: Dark/Light in
     theme-oklch-dark.css (background: the calibrated canvas sample), New 'n Shiny in its own file. */
 const SHINY_SEEDS = {
-  primary: '#64748B', // primary accent: side and bottom panels
-  secondary: '#F59E0B', // secondary accent: text and edges in menus and toolbars
-  background: '#080D10',
-  primaryColor: '#334155', // header and footer
-  secondaryColor: '#44403C', // tree submenus, search menus, template toolbars
+  primary: '#6C85A6', // primary accent: side and bottom panels
+  secondary: '#FF9D00', // secondary accent: text and edges in menus and toolbars
+  background: '#0D121B',
+  primaryColor: '#1D2127', // header and footer
+  secondaryColor: '#2B2825', // tree submenus, search menus, template toolbars
 };
 function defaultSeeds(theme: ThemePreset) {
   return theme === 'theme-oklch-new-n-shiny'
