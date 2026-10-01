@@ -11,13 +11,13 @@
    Surfaces are the color mixed into the background, so a picked color reads as a dark tint of
    itself rather than a bright slab. */
 [data-theme='theme-oklch-new-n-shiny'] {
-  --oklch-bg: rgba(13, 18, 27, 1);
+  --oklch-bg: rgba(20, 23, 27, 1);
   /* What every surface mix below darkens toward: the default Background, held fixed so the Background
      picker recolors only the canvas and grid, not every panel, menu and ink built on top of it. */
   --shiny-base: rgba(8, 13, 16, 1);
   --oklch-primary: rgba(29, 33, 39, 1);
   --oklch-blue: rgba(108, 133, 166, 1);
-  --oklch-secondary: rgba(43, 40, 37, 1);
+  --oklch-secondary: rgba(58, 54, 50, 1);
   --oklch-yellow: rgba(255, 157, 0, 1);
 
   /* Header / footer (Primary) */
@@ -133,13 +133,15 @@
   --flyout-shell-bg: var(--shiny-menu);
   --flyout-shell-border: var(--shiny-amber-edge);
   --flyout-head-bottom: var(--shiny-menu);
-  --flyout-body-top: var(--shiny-menu);
-  --flyout-body-bottom: var(--shiny-menu);
+  /* Submenu body under the tabs: a flat Primary (#1D2127 by default, within one step of #1E2228). */
+  --flyout-body-top: var(--oklch-primary);
+  --flyout-body-bottom: var(--oklch-primary);
   --flyout-title: var(--shiny-menu-ink);
   --flyout-selected: var(--shiny-menu-ink);
   --flyout-heading: var(--shiny-menu-ink);
   --flyout-tab-band: var(--shiny-menu-deep);
   --flyout-tab-idle: var(--shiny-menu);
+  --section-card-base: var(--shiny-menu-deep);
   --flyout-tab-active-top: color-mix(in oklab, var(--secondary-accent) 29%, var(--shiny-menu));
   --flyout-tab-active-bottom: color-mix(in oklab, var(--secondary-accent) 17.5%, var(--shiny-menu));
   --flyout-tab-active-border: var(--secondary-accent);

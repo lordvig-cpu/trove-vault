@@ -150,12 +150,12 @@
   --flyout-body-top: color-mix(in srgb, var(--oklch-secondary-217-119-6) 26%, var(--pole-surface));
   --flyout-body-bottom: color-mix(in srgb, var(--oklch-secondary-217-119-6) 9%, var(--pole-surface));
   --flyout-shell-border: var(--secondary-tree-menu-shell-border);
-  /* Flyout section cards (Size / Spacing / Layout / Appearance): the Primary seed for the fill and the Primary Accent
-     for the edges, icons and dividers, so they contrast with the Secondary-colored flyout. */
-  --section-card-border: color-mix(in srgb, var(--primary-accent) 70%, var(--pole-surface));
-  --section-card-glow: color-mix(in srgb, var(--oklch-primary) 45%, transparent);
-  --section-card-glow-fade: color-mix(in srgb, var(--oklch-primary) 16%, transparent);
-  --section-card-base: color-mix(in srgb, var(--oklch-primary) 14%, var(--pole-surface));
+  /* Flyout section cards (Size / Spacing / Layout / Appearance): the Secondary tab-band shade for the fill (flat, no glow) and the
+     Primary Accent at half brightness for the border. The icon tile and divider use it too. */
+  --section-card-border: color-mix(in srgb, var(--primary-accent) 35%, var(--pole-surface));
+  --section-card-glow: transparent;
+  --section-card-glow-fade: transparent;
+  --section-card-base: color-mix(in srgb, var(--oklch-secondary-217-119-6) 12%, var(--pole-surface));
   --section-tile-bg: color-mix(in srgb, var(--oklch-primary) 40%, var(--pole-surface));
   --section-tile-border: color-mix(in srgb, var(--primary-accent) 75%, var(--pole-surface));
   --section-divider: color-mix(in srgb, var(--primary-accent) 40%, transparent);

@@ -325,7 +325,7 @@ export default function TemplateEditorContainerBar({
 
   return (
     <div
-      className="tmpl-edge-panel tmpl-edge-panel-top select-none pointer-events-auto flex items-center px-2.5 py-1 max-w-[calc(100vw-2rem)]"
+      className="tmpl-edge-panel tmpl-edge-panel-top select-none pointer-events-auto flex items-center px-2.5 py-2 max-w-[calc(100vw-2rem)]"
       onClick={(e) => e.stopPropagation()}
     >
       <div className="flex items-center gap-1.5 shrink-0">

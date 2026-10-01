@@ -62,7 +62,7 @@ export default function TemplateEditorBarTop({
   onSave,
 }: TemplateEditorBarTopProps) {
   return (
-    <div className="flex items-center px-2.5 py-1.5 min-w-[30rem]">
+    <div className="flex items-center px-2.5 py-2.5 min-w-[30rem]">
       <div className="flex items-center gap-2 min-w-0 shrink-0">
         <span
           className="w-[26px] h-[26px] rounded-md bg-shade/40 border border-[color-mix(in_oklch,var(--secondary-accent)_35%,transparent)] flex items-center justify-center text-sm shrink-0"

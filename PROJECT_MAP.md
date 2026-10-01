@@ -65,9 +65,8 @@ Conventions and architecture (data access, theming, template editor internals, b
   pulldown) in a container's Size section; styles in `styles/components/minMaxSlider.css`.
 - `TemplateSpacingBox.tsx` — the box-model Spacing control (Margin around Padding, per-side inputs,
   slider + unit + link-sides for the selected side); styles in `styles/components/spacingBox.css`.
-- `UnitSelect.tsx` — the px / % pulldown beside a length input (Padding, Content Width): a custom
-  dropdown (not a native `<select>`, whose open option list Chromium wouldn't reliably let CSS
-  style), portaled to `document.body` like the top toolbar's own pulldowns and `HoverHint`.
+- `UnitSelect.tsx` — the px / % pulldown beside a length input (Padding, Content Width): a plain
+  native `<select>`, white text on black (`unitSelect.css`).
 - `TemplateContainerSizing.tsx` — Width/Height/Min/Max/Stack-below controls for a layout container.
 - `TemplateEditorBar.tsx` — the chrome for the template-wide toolbar, portaled into the workspace
   footer slot (`#template-toolbar-slot-bottom`) above the bottom panel; its content is

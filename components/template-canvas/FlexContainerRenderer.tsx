@@ -127,7 +127,10 @@ export default function FlexContainerRenderer({
         kids.length < 2
           ? false
           : container.wrap
-          ? kids.some((kid) => kid.offsetTop !== kids[0].offsetTop)
+          ? // A kid that starts left of (or level with) the one before it has wrapped to a new line.
+            // Comparing offsetTop would misfire: Align Items center/end gives same-line kids of
+            // different heights different tops.
+            kids.some((kid, i) => i > 0 && kid.offsetLeft <= kids[i - 1].offsetLeft)
           : el.scrollWidth > el.clientWidth + 1; // +1: subpixel rounding
       setIsOverflowing(overflowed);
       onOverflowChange?.(container.id, overflowed);
@@ -344,15 +347,15 @@ export default function FlexContainerRenderer({
           : isOverflowing
           ? 'rounded-2xl outline-2 outline-dashed outline-[var(--editor-invalid)] -outline-offset-2 bg-[color-mix(in_oklch,var(--editor-invalid)_10%,transparent)] shadow-lg shadow-[color-mix(in_oklch,var(--editor-invalid)_20%,transparent)]'
           : isSelected
-          ? 'rounded-2xl outline-2 outline-glint -outline-offset-2 bg-[color-mix(in_oklch,var(--primary-accent)_8%,transparent)] shadow-xl shadow-glint/10'
+          ? 'rounded-2xl outline-2 outline-[var(--primary-accent)] -outline-offset-2 bg-[color-mix(in_oklab,var(--oklch-secondary)_70%,transparent)] shadow-xl shadow-[color-mix(in_oklch,var(--primary-accent)_10%,transparent)]'
           : isActive
           ? 'rounded-2xl outline outline-1 outline-[color-mix(in_oklch,var(--primary-accent)_50%,transparent)] -outline-offset-1 bg-[color-mix(in_oklch,var(--primary-accent)_6%,transparent)]'
           : isCard
-          ? 'rounded-2xl bg-[color-mix(in_oklch,var(--panel-surface-bg)_60%,transparent)] hover:border-[color-mix(in_oklch,var(--primary-accent)_40%,var(--primary-border-subtle))]'
+          ? 'rounded-2xl bg-[color-mix(in_oklab,var(--panel-surface-bg)_60%,transparent)] hover:border-[color-mix(in_oklch,var(--primary-accent)_40%,var(--primary-border-subtle))]'
           : // Dashed = nothing dropped in here yet; solid = it holds at least one field/container.
             container.children.length === 0
-          ? 'rounded-2xl outline outline-1 outline-dashed outline-[var(--primary-border-subtle)] -outline-offset-1 bg-[color-mix(in_oklch,var(--panel-surface-bg)_25%,transparent)] hover:outline-[color-mix(in_oklch,var(--primary-accent)_40%,var(--primary-border-subtle))]'
-          : 'rounded-2xl outline outline-1 outline-[var(--primary-border-subtle)] -outline-offset-1 bg-[color-mix(in_oklch,var(--panel-surface-bg)_25%,transparent)] hover:outline-[color-mix(in_oklch,var(--primary-accent)_40%,var(--primary-border-subtle))]'
+          ? 'rounded-2xl outline outline-1 outline-dashed outline-[var(--primary-border-subtle)] -outline-offset-1 bg-[color-mix(in_oklab,var(--panel-surface-bg)_25%,transparent)] hover:outline-[color-mix(in_oklch,var(--primary-accent)_40%,var(--primary-border-subtle))]'
+          : 'rounded-2xl outline outline-1 outline-[var(--primary-border-subtle)] -outline-offset-1 bg-[color-mix(in_oklab,var(--panel-surface-bg)_25%,transparent)] hover:outline-[color-mix(in_oklch,var(--primary-accent)_40%,var(--primary-border-subtle))]'
       } ${
         // Editing outlines are drawn inset with `outline`, so they take no layout space and the
         // canvas matches the live preview to the pixel. A card frame is a real border in both modes.

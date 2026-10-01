@@ -136,7 +136,15 @@
   /* The picked Secondary color at full strength along the top edge, shading down over the title bar (a
      fixed height, so every head shades identically) to a dark tint of the same seed, which the tab band
      and the rest of the card then sit on. */
-  background: linear-gradient(180deg, var(--flyout-head-top) 0%, var(--flyout-head-bottom) 2.25rem),
+  /* The Secondary Accent is mixed in along the title bar's outer edges only: a 8%-to-clear fade
+     inward from the left, right and top edges and from the title bar's lower edge (each a fixed-size
+     layer, so the tab band below is unaffected). The middle is left untouched. */
+  background:
+    linear-gradient(90deg, color-mix(in oklab, var(--secondary-accent) 8%, transparent), transparent) left top / 2.5rem 2.25rem no-repeat,
+    linear-gradient(270deg, color-mix(in oklab, var(--secondary-accent) 8%, transparent), transparent) right top / 2.5rem 2.25rem no-repeat,
+    linear-gradient(180deg, color-mix(in oklab, var(--secondary-accent) 8%, transparent), transparent) left top / 100% 1.125rem no-repeat,
+    linear-gradient(0deg, color-mix(in oklab, var(--secondary-accent) 8%, transparent), transparent) left 0 top 1.125rem / 100% 1.125rem no-repeat,
+    linear-gradient(180deg, var(--flyout-head-top) 0%, var(--flyout-head-bottom) 2.25rem),
     var(--secondary-tree-menu-shell-bg);
 }
 
@@ -184,9 +192,13 @@
   max-height: none; /* the wrapper sets the limit */
   border-top-left-radius: 0;
   border-top-right-radius: 0;
-  /* Continues the tab band's gradient downward (it starts at the band's bottom color) instead of
-     starting a new glow of its own. */
-  background: linear-gradient(180deg, var(--flyout-body-top), var(--flyout-body-bottom));
+  /* Two soft, wide Secondary Accent glows for interest -- one off the top-left corner and one off the
+     bottom-right -- over the base, which continues the tab band's gradient
+     downward (it starts at the band's bottom color) instead of starting a glow of its own. */
+  background:
+    radial-gradient(ellipse 90% 45% at 0% 0%, color-mix(in oklab, var(--secondary-accent) 7%, transparent), transparent),
+    radial-gradient(ellipse 90% 45% at 100% 100%, color-mix(in oklab, var(--secondary-accent) 7%, transparent), transparent),
+    linear-gradient(180deg, var(--flyout-body-top), var(--flyout-body-bottom));
 }
 
 /* Either way -- a real tab band or an empty one's own thin divider line -- .menuShellHead already
@@ -556,7 +568,7 @@
 .menuTab-active:hover {
   /* Same color as the split-head title bar's text/icon. */
   color: var(--flyout-selected);
-  border-color: var(--flyout-tab-active-border);
+  border-color: var(--secondary-accent);
   background: linear-gradient(180deg, var(--flyout-tab-active-top), var(--flyout-tab-active-bottom));
   box-shadow: inset 0 1px 0 color-mix(in oklab, var(--pole-sheen) 22%, transparent);
 }
@@ -569,9 +581,13 @@
      cards used before, so a subsection reads as a smaller version of the same chassis. */
   border: 1.5px solid var(--section-card-border);
   border-radius: 0.75rem;
-  /* Its own amber glow, strongest at the card's top edge and fading out by two-thirds of the way down,
-     over a dark base. */
+  /* A 1px black line just inside the colored border. */
+  box-shadow: inset 0 0 0 1px var(--pole-shade);
+  /* Two soft Secondary Accent glows, off the top-left and bottom-right corners like the flyout body's,
+     then the card's own top-edge glow (--section-card-glow, currently clear), over a dark base. */
   background:
+    radial-gradient(ellipse 90% 60% at 0% 0%, color-mix(in oklab, var(--secondary-accent) 5%, transparent), transparent),
+    radial-gradient(ellipse 90% 60% at 100% 100%, color-mix(in oklab, var(--secondary-accent) 5%, transparent), transparent),
     linear-gradient(
       180deg,
       var(--section-card-glow) 0%,
@@ -605,10 +621,13 @@
   width: 1.875rem;
   height: 1.875rem;
   flex-shrink: 0;
-  border: 1px solid var(--section-tile-border);
+  /* Always styled like an active selected button (.menuTab-active), whether the section is open or not
+     -- the chevron alone shows that. */
+  border: 1px solid var(--secondary-accent);
   border-radius: 0.5rem;
-  background: var(--section-tile-bg);
-  color: var(--primary-accent);
+  background: linear-gradient(180deg, var(--flyout-tab-active-top), var(--flyout-tab-active-bottom));
+  box-shadow: inset 0 1px 0 color-mix(in oklab, var(--pole-sheen) 22%, transparent);
+  color: var(--flyout-selected);
   transition: border-color 150ms ease, background-color 150ms ease;
 }
 
@@ -641,7 +660,7 @@
 
 .menuSectionSubtitle {
   font-size: 0.625rem;
-  color: var(--text-muted);
+  color: var(--secondary-tree-menu-header-title); /* same as the ? hint beside the title */
 }
 
 .menuSectionHint {
@@ -672,34 +691,32 @@
 /* Dark inputs and segmented buttons inside a split flyout's body: a dark navy fill (a little blue
    in black) with a thin light border (white on hover, light blue when focused), so they contrast
    with the all-amber cards around them instead of adding more amber. Inputs that opt out (the
-   Spacing box's borderless side inputs) keep their own look. UnitSelect (the px / % pulldown) uses
-   this same dark-navy scheme too, but defines it unconditionally in unitSelect.css instead of by
-   ancestry here -- its list is portaled to <body>, so it's never actually a descendant of
-   .menuShellBody for a rule like this to reach. */
+   Spacing box's borderless side inputs) keep their own look. UnitSelect (the px / % pulldown) is
+   white on black instead, defined in unitSelect.css. */
 .menuShellBody input[type='text']:not(.spacingInput) {
   background: color-mix(in oklab, var(--primary-accent) 16%, var(--pole-surface));
-  border: 1px solid color-mix(in oklab, var(--text-strong) 24%, transparent);
-  color: var(--text-strong);
+  border: 1px solid color-mix(in oklab, var(--primary-accent) 60%, var(--pole-surface));
+  /* White at 80%, not --text-strong: inside a flyout that variable is re-pointed to the amber menu ink. */
+  color: color-mix(in oklab, var(--flyout-white) 80%, transparent);
 }
 
 .menuShellBody input[type='text']:not(.spacingInput):hover {
-  border-color: color-mix(in oklab, var(--text-strong) 55%, transparent);
+  border-color: color-mix(in oklab, var(--flyout-white) 55%, transparent);
 }
 
 .menuShellBody input[type='text']:not(.spacingInput):focus {
   outline: none;
-  border-color: var(--focus-blue);
-  box-shadow: 0 0 0 1px color-mix(in oklab, var(--primary-accent) 35%, transparent);
+  border-color: var(--secondary-accent);
+  box-shadow: 0 0 0 1px color-mix(in oklab, var(--secondary-accent) 35%, transparent);
 }
 
-/* A toggle group (barToggleGroup) is the one .menuShellBody control that stays the same warm amber
-   track as the top toolbar's, rather than the navy theme every other control here uses for contrast
-   -- Auto/Fit/Custom, Row/Column and the like are a bar-style standard the app already has, not a
-   flyout-specific control, so they shouldn't look different just because this one happens to render
-   inside a flyout. Only the colors are overridden here, never barToggleGroup/barToggleBtn/ghostBtn
-   themselves -- those stay exactly what the top and bottom toolbars use. */
+/* A toggle group (barToggleGroup) is the one .menuShellBody control that looks exactly like the top
+   toolbar's, rather than the navy theme every other control here uses for contrast -- Auto/Fit/Custom,
+   Row/Column and the like are a bar-style standard the app already has, not a flyout-specific control,
+   so they shouldn't look different just because this one happens to render inside a flyout. The track
+   fill and border are barToggleGroup's own (a dark shade wash, not an amber-tinted one, which read as
+   red/brown); only the buttons inside are reset below, never barToggleGroup/barToggleBtn/ghostBtn. */
 .menuShellBody [role='group'] {
-  background: color-mix(in oklab, var(--pole-surface) 78%, var(--secondary-accent) 22%);
   border-color: color-mix(in oklab, var(--secondary-accent) 35%, transparent);
 }
 
@@ -932,4 +949,11 @@
   border-bottom: 1px solid var(--flyout-card-border);
   margin-inline: -0.5rem;
   padding-inline: 1.25rem;
+}
+
+/* The selected button of a toggle group inside a flyout body (Auto/Fit/Custom, Row/Column, the
+   alignment icons): its border is the full-brightness Secondary Accent, like the active tab and a
+   section's icon tile -- not activeBtn's yellow. Selected ones are the `cursor-default` buttons. */
+.menuShellBody [role='group'] > button.cursor-default {
+  border-color: var(--secondary-accent);
 }
