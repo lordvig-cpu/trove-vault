@@ -5,7 +5,7 @@ import { createPortal } from 'react-dom';
 import '@/app/styles/components/TreeSubMenu.css';
 import { SearchClearIcon } from '@/components/icons/TreeIcons';
 import { toggleHelpWindow, useIsHelpWindowOpen } from '@/lib/helpWindows';
-import { HintAnchorIcon, HintCautionIcon, HintTipIcon, HintUseIcon } from '@/components/icons/HintIcons';
+import { HintCautionIcon, HintGripIcon, HintPopOutIcon, HintTipIcon, HintUseIcon } from '@/components/icons/HintIcons';
 
 const NOTE_ICONS: Record<HintNoteKind, React.ReactNode> = {
   use: <HintUseIcon />,
@@ -74,20 +74,19 @@ export interface HintContent {
  * .hoverHint rules in TreeSubMenu.css for what's added on top (a fixed width, no height cap) to
  * make that shell work as a bubble instead of a menu.
  *
- * It opens anchored to its `?` (the anchor icon in the title bar is filled in): it belongs to the
- * `?` and goes away when the pointer leaves it. Clicking the anchor icon un-anchors it (outlined)
- * into a window: it can be dragged by its title bar and stays until its close button is used.
- * `HoverHint` renders the anchored bubble; `HelpWindowHost` renders the window.
+ * As a hover bubble it belongs to its `?` and goes away when the pointer leaves it; its title bar's
+ * pop-out button turns it into a window ("asWindow"): the pop-out button is replaced by a close
+ * button, grab dots appear on the left, and it can be dragged by its title bar and stays until
+ * closed. `HoverHint` renders the bubble; `HelpWindowHost` renders the window.
  */
 export function HintBubble({
   hint,
   id,
   role,
   asWindow = false,
-  anchored,
   style,
   bubbleRef,
-  onToggleAnchor,
+  onPopOut,
   onClose,
   onTitlePointerDown,
   onPointerDown,
@@ -99,14 +98,13 @@ export function HintBubble({
   role?: string;
   /** Rendered by HelpWindowHost (own layer, survives its `?`) rather than as a hover bubble. */
   asWindow?: boolean;
-  /** Anchored: fixed in place and closes when the pointer leaves it. Otherwise draggable and closable. */
-  anchored: boolean;
   style?: React.CSSProperties;
   bubbleRef?: React.Ref<HTMLDivElement>;
-  onToggleAnchor: () => void;
-  /** Un-anchored only: closes the window. */
+  /** Hover bubble only: turns the bubble into a window. */
+  onPopOut?: () => void;
+  /** Window only: closes it. */
   onClose?: () => void;
-  /** Un-anchored only: starts a drag from the title bar. */
+  /** Window only: starts a drag from the title bar. */
   onTitlePointerDown?: (e: React.PointerEvent<HTMLDivElement>) => void;
   onPointerDown?: (e: React.PointerEvent<HTMLDivElement>) => void;
   onMouseEnter?: () => void;
@@ -117,7 +115,7 @@ export function HintBubble({
       id={id}
       ref={bubbleRef}
       role={role}
-      className={`menuShellSplit hoverHint${asWindow ? ' hoverHintWindow' : ''}${asWindow && !anchored ? ' hoverHintFloating' : ''}`}
+      className={`menuShellSplit hoverHint${asWindow ? ' hoverHintWindow' : ''}`}
       style={style}
       onPointerDown={onPointerDown}
       onMouseEnter={onMouseEnter}
@@ -127,25 +125,19 @@ export function HintBubble({
     >
       <div className="menuShell menuShellHead">
         <div className="innerContent">
-          <div className="headerPill" onPointerDown={anchored ? undefined : onTitlePointerDown}>
-            <span className="headerTitle">{hint.title}</span>
-            <span className="headerIcon hintHeaderActions">
-              <button
-                type="button"
-                className="hintHeaderBtn"
-                aria-pressed={anchored}
-                onClick={onToggleAnchor}
-                title={
-                  anchored
-                    ? 'Anchored: closes when you move away. Click to un-anchor it so it can be moved and kept open.'
-                    : 'Not anchored: click to anchor it again (it will close when you move away).'
-                }
-              >
-                <HintAnchorIcon filled={anchored} />
-              </button>
-              {!anchored && (
+          <div className="headerPill" onPointerDown={asWindow ? onTitlePointerDown : undefined}>
+            <span className="hintTitleGroup">
+              {asWindow && <HintGripIcon className="w-3 h-4 hintGrip" />}
+              <span className="headerTitle">{hint.title}</span>
+            </span>
+            <span className="headerIcon">
+              {asWindow ? (
                 <button type="button" className="hintHeaderBtn" onClick={onClose} aria-label={`Close ${hint.title} help`} title="Close">
                   <SearchClearIcon className="w-4 h-4" />
+                </button>
+              ) : (
+                <button type="button" className="hintHeaderBtn" onClick={onPopOut} aria-label={`Pop ${hint.title} help out into a window`} title="Pop out into a window you can move and keep open">
+                  <HintPopOutIcon />
                 </button>
               )}
             </span>
@@ -215,7 +207,7 @@ const HIDE_DELAY_MS = 150; // long enough to cross the small gap between a `?` a
  * trigger (above it when the trigger is low on the screen), right-aligned to it. It stays open while
  * the pointer is over the `?` or the bubble and closes once it leaves both.
  *
- * Its title bar's anchor icon (filled while anchored) un-anchors it into a draggable, closable
+ * Its title bar's pop-out button turns it into a draggable, closable
  * window that stays open (see lib/helpWindows.ts and HelpWindowHost), so help can sit beside the
  * controls it describes. Enter / Space on a focused `?` does the same from the keyboard.
  */
@@ -256,8 +248,8 @@ export default function HoverHint({
     hideSoon();
   };
 
-  // Un-anchor: the bubble becomes a window exactly where it is showing now, so it appears to stay put.
-  const unanchor = () => {
+  // Pop out: the bubble becomes a window exactly where it is showing now, so it appears to stay put.
+  const popOut = () => {
     if (!rect) return;
     const shown = bubbleRef.current?.getBoundingClientRect();
     toggleHelpWindow(hint, {
@@ -297,7 +289,7 @@ export default function HoverHint({
         onKeyDown={(e) => {
           if (!interactive && (e.key === 'Enter' || e.key === ' ')) {
             e.preventDefault();
-            unanchor();
+            popOut();
           }
         }}
         className={interactive ? 'inline-flex' : 'inline-flex cursor-help'}
@@ -310,10 +302,9 @@ export default function HoverHint({
             hint={hint}
             id={id}
             role="tooltip"
-            anchored
             style={style}
             bubbleRef={bubbleRef}
-            onToggleAnchor={unanchor}
+            onPopOut={popOut}
             onMouseEnter={enter}
             onMouseLeave={leave}
           />,

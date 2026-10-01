@@ -2,12 +2,12 @@ import { useSyncExternalStore } from 'react';
 import type { HintContent } from '@/components/HoverHint';
 
 /**
- * The help windows: a `?` bubble opens anchored (it belongs to its `?` and closes when the pointer
- * leaves it); clicking the bubble's anchor icon un-anchors it into a small draggable window that
- * stays until its close button is used. They live in this module-level store (not in the `?` that
- * opened them) so they outlive the flyout or panel they came from; `HelpWindowHost` renders them
- * once, at the app root. A window is keyed by its hint's title, so there is never a duplicate of
- * the same help. Position is not remembered once closed: reopening starts from the `?` again.
+ * The help windows: a `?` bubble shows on hover and closes when the pointer leaves it; its pop-out
+ * button turns it into a window that stays until its close button is used and can be dragged by its
+ * title bar. They live in this module-level store (not in the `?` that opened them) so they outlive
+ * the flyout or panel they came from; `HelpWindowHost` renders them once, at the app root. A window
+ * is keyed by its hint's title, so there is never a duplicate of the same help. Position is not
+ * remembered once closed: reopening starts from the `?` again.
  */
 
 export interface HelpWindowState {
@@ -15,8 +15,6 @@ export interface HelpWindowState {
   hint: HintContent;
   left: number;
   top: number;
-  /** Anchored: fixed in place, closes when the pointer leaves it. Not anchored: draggable, stays until closed. */
-  anchored: boolean;
 }
 
 /** More than this and the oldest window closes, so they can't pile up over the interface. */
@@ -39,18 +37,14 @@ const subscribe = (listener: () => void) => {
 
 const EMPTY: HelpWindowState[] = [];
 
-/** Open the free-floating (un-anchored) window for `hint` at `left` / `top`, or close it if it is already open. */
+/** Open the window for `hint` at `left` / `top`, or close it if it is already open. */
 export function toggleHelpWindow(hint: HintContent, position: { left: number; top: number }) {
   const key = hint.title;
   if (windows.some((w) => w.key === key)) {
     closeHelpWindow(key);
     return;
   }
-  commit([...windows, { key, hint, ...position, anchored: false }].slice(-MAX_HELP_WINDOWS));
-}
-
-export function setHelpWindowAnchored(key: string, anchored: boolean) {
-  commit(windows.map((w) => (w.key === key ? { ...w, anchored } : w)));
+  commit([...windows, { key, hint, ...position }].slice(-MAX_HELP_WINDOWS));
 }
 
 export function closeHelpWindow(key: string) {

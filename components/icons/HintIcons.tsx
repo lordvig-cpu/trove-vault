@@ -47,20 +47,18 @@ export const HintCautionIcon = ({ className = 'w-3.5 h-3.5', strokeWidth = 1.8 }
   </svg>
 );
 
-/**
- * HintAnchorIcon: an anchor, on or off. A help bubble opens "anchored" (`filled`: it belongs to its
- * `?` and closes when the pointer leaves); un-anchoring it (outlined) frees it to be dragged and closed.
- */
-export const HintAnchorIcon = ({
-  className = 'w-4 h-4',
-  strokeWidth = 1.8,
-  filled = false,
-}: HintIconProps & { filled?: boolean }) => (
-  <svg {...base(className, filled ? 2.2 : strokeWidth)}>
-    <circle cx="12" cy="5" r="2" fill={filled ? 'currentColor' : 'none'} />
-    <path d="M12 7v12" />
-    <path d="M8 10H4l3 3" />
-    <path d="M16 10h4l-3 3" />
-    <path d="M4 13c.7 4 3.8 7 8 7s7.3-3 8-7" />
+/** HintPopOutIcon: a window with an arrow leaving its corner -- "pop this help out into its own window". */
+export const HintPopOutIcon = ({ className = 'w-4 h-4', strokeWidth = 1.8 }: HintIconProps) => (
+  <svg {...base(className, strokeWidth)}>
+    <path d="M13 4h7v7" />
+    <path d="M20 4 11 13" />
+    <path d="M18 14v4a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4" />
+  </svg>
+);
+
+/** HintGripIcon: two columns of three dots -- "drag me" -- on a popped-out help window's title bar. */
+export const HintGripIcon = ({ className = 'w-3 h-4' }: Omit<HintIconProps, 'strokeWidth'>) => (
+  <svg viewBox="0 0 12 24" fill="currentColor" className={`shrink-0 ${className}`} aria-hidden="true">
+    {[7, 12, 17].flatMap((y) => [3.5, 8.5].map((x) => <circle key={`${x}-${y}`} cx={x} cy={y} r="1.5" />))}
   </svg>
 );

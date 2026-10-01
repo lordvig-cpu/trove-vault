@@ -59,7 +59,7 @@ Conventions and architecture (data access, theming, template editor internals, b
 - `icons/HintIcons.tsx` — the how-to-use / tip / caution icons that lead each note in a help bubble.
 - `icons/AlignIcons.tsx` — Align Items / Justify Content icons, drawn for a Row (rotated for a Column).
 - `lib/measureContainer.ts` — measures a container's rendered width/height from the canvas DOM (what a split halves).
-- `HelpWindowHost.tsx` — renders the help windows (a `?` bubble un-anchored by its anchor icon: draggable, closable) once, from the root layout, so they outlive the flyout that opened them.
+- `HelpWindowHost.tsx` — renders the help windows (a `?` bubble popped out by its title bar's pop-out button: draggable, closable) once, from the root layout, so they outlive the flyout that opened them.
 - `SubsectionHeading.tsx` — the centered "--- Title ---" heading (Primary Accent, optional `?` help bubble at the right) for a group of controls inside a flyout section (Width, Height, Background, Border...).
 - `TemplateAppearanceControls.tsx` — a container's Background, Border and Shadow controls (colors via the
   footer's `SeedColorPicker`, px-only sizes) in the flyout's Appearance section.
@@ -189,7 +189,7 @@ resize handles), `FlexComponentRenderer.tsx` (a single field/table/media/stat/no
   and the forest search/filter logic.
 - `hierarchyFilterMetas.ts` — the Layout tree's three node categories (Layout/Content/Pre-defined
   Content) for its filter menu: display metadata and `hierarchyNodeCategory()`.
-- `helpWindows.ts` — module-level store of the help windows (open/toggle, anchor, move, raise, close; at most 4) plus the `useHelpWindows` / `useIsHelpWindowOpen` hooks; rendered by `HelpWindowHost.tsx`.
+- `helpWindows.ts` — module-level store of the help windows (open/toggle, move, raise, close; at most 4) plus the `useHelpWindows` / `useIsHelpWindowOpen` hooks; rendered by `HelpWindowHost.tsx`.
 - `layoutHistory.ts` — pure undo/redo snapshot logic for the layout (coalesces drag bursts, caps depth);
   covered by `tests/layout-history.spec.ts`.
 - `layoutTree.ts` — pure functions over the flex layout tree (build/insert/split/update/remove node,
