@@ -25,7 +25,7 @@ export const activeIconColor = 'text-[var(--secondary-accent)]';
 export const ghostBtn =
   'border border-transparent text-[var(--secondary-accent)] hover:border-glint hover:text-[var(--text-strong)] hover:bg-glint/10';
 
-export const disabledBtn = 'opacity-35 cursor-not-allowed';
+export const disabledBtn = 'opacity-55 cursor-not-allowed';
 
 /** Fixed height every bar control (pulldowns, toggle, icon buttons, Width/Zoom pills) shares, so
     text buttons and icon-only buttons — which naturally size differently — line up. The Fit

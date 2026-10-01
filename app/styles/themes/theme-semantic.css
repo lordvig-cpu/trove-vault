@@ -130,6 +130,10 @@
   --editor-focus: var(--secondary-accent);
   --editor-input-text: var(--text-strong);
   --editor-invalid: var(--tree-menu-danger-text);
+  /* A vivid destructive red: the theme's own red hue (the slate seed leaves --tree-menu-danger-* too
+     desaturated to read) at a fixed lightness and chroma. */
+  --danger-vivid: oklch(from var(--oklch-blue-244-63-94) 0.68 0.21 h);
+  --danger-vivid-soft: color-mix(in oklab, var(--danger-vivid) 20%, transparent);
   --editor-surface: var(--primary-tree-search-input-bg);
   --editor-swatch-border: var(--primary-accent);
   --editor-text: var(--text-strong);

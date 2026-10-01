@@ -396,7 +396,7 @@
    plus one, so it wins over .menuShellHead.menuShell .headerPill .headerTitle regardless of source
    order) rather than changing that shared rule, which every other flyout's title still uses. */
 .hoverHint.menuShellSplit .menuShellHead .headerPill .headerTitle {
-  color: var(--text-strong);
+  color: var(--flyout-white);
 }
 
 .hoverHint .menuShellBody {
@@ -409,6 +409,7 @@
 }
 
 .hoverHint .properties-section-heading {
+  color: var(--flyout-white); /* the Settings / Notes headings, white like the title */
   margin: 0.5rem 0.25rem 0.3rem;
 }
 
@@ -495,7 +496,7 @@
 }
 
 .hoverHintNote-caution .hoverHintNoteIcon {
-  color: var(--tree-menu-danger-icon);
+  color: var(--danger-vivid);
 }
 
 /* Any mention of a setting or property (the Settings names, and inside Notes) is bold
@@ -512,6 +513,13 @@
   color: var(--secondary-accent);
   font-style: italic;
   font-weight: 700;
+}
+
+/* Inside Notes, though, a named input, setting or object is white (the note's icon and a HintRef's mini
+   button chip keep their amber), the same white as the bubble's title and headings. */
+.hoverHintNotes strong,
+.hoverHintNotes em {
+  color: var(--flyout-white);
 }
 
 .hoverHint code {
@@ -659,7 +667,7 @@
 }
 
 .menuSectionSubtitle {
-  font-size: 0.625rem;
+  font-size: 0.6875rem;
   color: var(--secondary-tree-menu-header-title); /* same as the ? hint beside the title */
 }
 
@@ -767,8 +775,11 @@
   border: none;
 }
 
+/* A clear Secondary Accent hover: a light wash of it plus a full-brightness 1px edge (an inset shadow, so
+   the row's size never shifts), instead of the muddy brown a low-alpha mix of it over the dark menu gave. */
 .actionMenuItem:hover {
-  background-color: var(--secondary-tree-menu-item-hover-bg);
+  background-color: color-mix(in oklab, var(--secondary-accent) 16%, transparent);
+  box-shadow: inset 0 0 0 1px var(--secondary-accent);
 }
 
 /* The icon reads as muted until the ROW is hovered, then turns the same color as the label. */
@@ -793,7 +804,7 @@
 }
 
 .actionMenuItemSubtext {
-  font-size: 0.625rem;
+  font-size: 0.6875rem;
   color: var(--tree-menu-item-subtext);
   transition: color 150ms ease;
 }
@@ -820,8 +831,8 @@
 }
 
 .actionMenuDangerItem:hover {
-  background-color: var(--tree-menu-danger-hover-bg);
-  border-color: var(--tree-menu-danger-hover-border);
+  background-color: var(--danger-vivid-soft);
+  border-color: var(--danger-vivid);
 }
 
 .actionMenuDangerIcon {
@@ -831,28 +842,28 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  color: var(--tree-menu-danger-icon);
+  color: var(--danger-vivid);
 }
 
 .actionMenuDangerLabel {
   font-size: 0.75rem;
   font-weight: 500;
-  color: var(--tree-menu-danger-text);
+  color: var(--danger-vivid);
   transition: color 150ms ease;
 }
 
 .actionMenuDangerItem:hover .actionMenuDangerLabel {
-  color: var(--tree-menu-danger-hover-text);
+  color: var(--danger-vivid);
 }
 
 .actionMenuDangerSubtext {
-  font-size: 0.625rem;
-  color: var(--tree-menu-danger-subtext);
+  font-size: 0.6875rem;
+  color: color-mix(in oklab, var(--danger-vivid) 75%, transparent);
   transition: color 150ms ease;
 }
 
 .actionMenuDangerItem:hover .actionMenuDangerSubtext {
-  color: var(--tree-menu-danger-hover-subtext);
+  color: color-mix(in oklab, var(--danger-vivid) 90%, transparent);
 }
 
 /* --------------------------------------------------------------------------
