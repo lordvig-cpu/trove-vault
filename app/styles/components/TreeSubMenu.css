@@ -408,16 +408,34 @@
   line-height: 1.4;
 }
 
+/* The Settings / Notes headings match the panels' "Search and Filter" headings: Primary Accent text
+   and rules (the same look as .tree-section-heading in primarySidePanel.css). */
 .hoverHint .properties-section-heading {
-  color: var(--flyout-white); /* the Settings / Notes headings, white like the title */
-  margin: 0.5rem 0.25rem 0.3rem;
+  color: var(--primary-accent);
+  margin: 0.75rem 0.25rem 0.55rem;
+}
+
+.hoverHint .properties-section-heading hr,
+.hoverHint .properties-section-heading h3::after {
+  border-top-color: color-mix(in oklab, var(--primary-accent) 45%, transparent);
+}
+
+/* SubsectionHeading: the same centered heading, inside a flyout section's controls (Width, Height,
+   Background, Border...). The `?` help icon is its last child, so it lands at the far right. */
+.properties-section-heading.menuSubheading {
+  color: var(--primary-accent);
+}
+
+.properties-section-heading.menuSubheading hr,
+.properties-section-heading.menuSubheading h3::after {
+  border-top-color: color-mix(in oklab, var(--primary-accent) 45%, transparent);
 }
 
 /* Settings as a borderless two-column table: option names on the left, what they do on the right,
    so the descriptions line up. The name column is as wide as the longest name. */
 /* Extra air before the Notes section that follows the Settings table. */
 .hoverHintList + .properties-section-heading {
-  margin-top: 0.875rem;
+  margin-top: 1.25rem;
 }
 
 .hoverHintList {
@@ -425,7 +443,7 @@
   grid-template-columns: max-content 1fr;
   align-items: center; /* names stay vertically centered on their (possibly wrapped) description */
   column-gap: 0.75rem;
-  row-gap: 0.3rem;
+  row-gap: 0.6rem;
   margin: 0;
   padding: 0 0.25rem;
 }
@@ -447,7 +465,7 @@
 .hoverHintNotes {
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
+  gap: 0.6rem;
   margin: 0;
   padding: 0 0.25rem;
   list-style: none;
@@ -713,6 +731,7 @@
 }
 
 .menuShellBody input[type='text']:not(.spacingInput):focus {
+  color: var(--flyout-white); /* full bright white while typing */
   outline: none;
   border-color: var(--secondary-accent);
   box-shadow: 0 0 0 1px color-mix(in oklab, var(--secondary-accent) 35%, transparent);
@@ -893,6 +912,7 @@
 }
 
 .actionMenuRenameInput:focus {
+  color: var(--flyout-white);
   border-color: var(--secondary-accent);
   box-shadow: var(--secondary-focus-ring);
 }

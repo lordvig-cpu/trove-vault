@@ -7,6 +7,7 @@ import { HelpCircleIcon } from '@/components/icons/LayoutIcons';
 import UnitSelect from '@/components/UnitSelect';
 import TemplateMinMaxSlider from '@/components/TemplateMinMaxSlider';
 import HoverHint, { type HintContent } from '@/components/HoverHint';
+import SubsectionHeading from '@/components/SubsectionHeading';
 
 /**
  * Sizing rules for a container (not the Body): Width / Min. W / Max. W and Height / Min. H / Max. H,
@@ -83,6 +84,37 @@ const FIELD_HINTS = {
   },
 } satisfies Record<string, HintContent>;
 
+/** The flyout's one bubble per axis: the heading's `?` explains the main field and its Min / Max
+ *  ends together (the Properties tab, which shows them as separate fields, uses FIELD_HINTS). */
+const AXIS_HINTS = {
+  width: {
+    title: 'Width',
+    settings: [
+      { name: 'Width', text: 'A fixed width, in px or %. Blank fills the available space.' },
+      { name: 'Min. W', text: 'The container is never narrower than this. Blank means no minimum.' },
+      { name: 'Max. W', text: 'The container is never wider than this. Blank means no maximum.' },
+    ],
+    notes: [
+      { kind: 'use', text: <>Type a number and pick <code>px</code> or <code>%</code>; clear the box to go back to fill.</> },
+      { kind: 'use', text: <>Drag the two thumbs to set <strong>Min. W</strong> and <strong>Max. W</strong> together. A thumb resting at its end of the track means unset. The pulldown between the boxes switches both between <code>px</code> and <code>%</code>.</> },
+      { kind: 'tip', text: <>Setting a width makes the container <strong>Custom</strong> sized.</> },
+      { kind: 'tip', text: <>A fixed <strong>Width</strong> also acts as the maximum, unless you set <strong>Max. W</strong>.</> },
+    ],
+  },
+  height: {
+    title: 'Height',
+    settings: [
+      { name: 'Height', text: 'A fixed height, in px or %. Blank grows with its content (auto).' },
+      { name: 'Min. H', text: 'The container is never shorter than this. Blank means no minimum.' },
+      { name: 'Max. H', text: 'The container is never taller than this. Blank means no maximum.' },
+    ],
+    notes: [
+      { kind: 'use', text: <>Drag the two thumbs to set <strong>Min. H</strong> and <strong>Max. H</strong> together. A thumb resting at its end of the track means unset. The pulldown between the boxes switches both between <code>px</code> and <code>%</code>.</> },
+      { kind: 'tip', text: 'A container with a fixed height, or content taller than its maximum, scrolls.' },
+    ],
+  },
+} satisfies Record<string, HintContent>;
+
 /**
  * One length field: a number input with the px / % pulldown attached to it (the same control as
  * Padding and Maximum Content Width), so a value is stored as "320px" or "50%". Blank clears the
@@ -96,6 +128,7 @@ function SizeField({
   hint,
   onCommit,
   pxOnly = false,
+  heading = false,
 }: {
   label: string;
   value?: string;
@@ -103,6 +136,8 @@ function SizeField({
   hint: HintContent;
   onCommit: (v: string | undefined) => void;
   pxOnly?: boolean;
+  /** Show the label as a centered "--- Label ---" heading (with the `?` at the right) instead of a small left-aligned one. */
+  heading?: boolean;
 }) {
   const match = (value || '').match(/^(\d+(?:\.\d+)?)(px|%)$/i);
   const num = match ? match[1] : '';
@@ -139,7 +174,8 @@ function SizeField({
 
   return (
     <div className="flex flex-col gap-1 min-w-0">
-      {label && (
+      {label && heading && <SubsectionHeading label={label} hint={hint} />}
+      {label && !heading && (
         <label className="menu-field-label text-[10px] font-semibold tracking-[0.04em] text-[var(--text-strong)] flex items-center gap-1">
           {label}
           <HoverHint hint={hint}>
@@ -205,24 +241,20 @@ export default function TemplateContainerSizing({ container, onUpdate, bare = fa
       {!bare && <span className="text-[11px] font-bold text-[var(--text-strong)]">Sizing</span>}
       {bare ? (
         <>
-          <SizeField label="Width" value={width} placeholder="fill" hint={FIELD_HINTS.width} onCommit={setWidth} />
+          <SizeField heading label="Width" value={width} placeholder="fill" hint={AXIS_HINTS.width} onCommit={setWidth} />
           <TemplateMinMaxSlider
             axis="width"
             minValue={container.minWidth}
             maxValue={container.maxWidth}
             parentPx={parentWidthPx}
-            minHint={FIELD_HINTS.minWidth}
-            maxHint={FIELD_HINTS.maxWidth}
             onChange={({ min, max }) => onUpdate({ minWidth: min, maxWidth: max })}
           />
-          <SizeField label="Height" value={height} placeholder="auto" hint={FIELD_HINTS.height} onCommit={setHeight} />
+          <SizeField heading label="Height" value={height} placeholder="auto" hint={AXIS_HINTS.height} onCommit={setHeight} />
           <TemplateMinMaxSlider
             axis="height"
             minValue={minHeight}
             maxValue={container.maxHeight}
             parentPx={parentHeightPx}
-            minHint={FIELD_HINTS.minHeight}
-            maxHint={FIELD_HINTS.maxHeight}
             onChange={({ min, max }) =>
               onUpdate({ minHeight: min, sizing: { ...container.sizing, minHeight: min }, maxHeight: max })
             }
@@ -241,14 +273,18 @@ export default function TemplateContainerSizing({ container, onUpdate, bare = fa
       )}
       {container.direction === 'row' && (
         <div className={bare ? 'flex flex-col gap-1' : 'pt-2 border-t border-[var(--primary-border-subtle)] flex items-center justify-between gap-2'}>
-          <label
-            className="menu-field-label text-[10px] font-semibold tracking-[0.04em] text-[var(--text-strong)] flex items-center gap-1"
-          >
-            Stack when narrower than
-            <HoverHint hint={FIELD_HINTS.stackBelow}>
-              <HelpCircleIcon className="w-3 h-3 text-[var(--secondary-tree-menu-header-title)]" />
-            </HoverHint>
-          </label>
+          {bare ? (
+            <SubsectionHeading label="Stack when narrower than" hint={FIELD_HINTS.stackBelow} />
+          ) : (
+            <label
+              className="menu-field-label text-[10px] font-semibold tracking-[0.04em] text-[var(--text-strong)] flex items-center gap-1"
+            >
+              Stack when narrower than
+              <HoverHint hint={FIELD_HINTS.stackBelow}>
+                <HelpCircleIcon className="w-3 h-3 text-[var(--secondary-tree-menu-header-title)]" />
+              </HoverHint>
+            </label>
+          )}
           <SizeField
             label=""
             value={container.stackBelow ? `${container.stackBelow}px` : undefined}

@@ -59,6 +59,7 @@ Conventions and architecture (data access, theming, template editor internals, b
 - `icons/HintIcons.tsx` — the how-to-use / tip / caution icons that lead each note in a help bubble.
 - `icons/AlignIcons.tsx` — Align Items / Justify Content icons, drawn for a Row (rotated for a Column).
 - `lib/measureContainer.ts` — measures a container's rendered width/height from the canvas DOM (what a split halves).
+- `SubsectionHeading.tsx` — the centered "--- Title ---" heading (Primary Accent, optional `?` help bubble at the right) for a group of controls inside a flyout section (Width, Height, Background, Border...).
 - `TemplateAppearanceControls.tsx` — a container's Background, Border and Shadow controls (colors via the
   footer's `SeedColorPicker`, px-only sizes) in the flyout's Appearance section.
 - `TemplateMinMaxSlider.tsx` — the two-thumb Min / Max slider for width or height (with number boxes and a shared px/%

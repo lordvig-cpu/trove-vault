@@ -185,11 +185,27 @@ export default function SearchAndFilterSection({
     }
   };
 
+  const searchPlaceholder = isContent
+    ? hasFieldTypeFilters
+      ? 'Search: Filtered Types'
+      : 'Search: Template Fields'
+    : isLayout
+    ? hasHierarchyTypeFilters
+      ? 'Search: Filtered Items'
+      : 'Search: Layout and Content'
+    : hasCollectionFilters
+    ? 'Search: Filtered Collections'
+    : isCollections
+    ? 'Search: Collections'
+    : isTemplates
+    ? 'Search: Templates'
+    : 'Search: Items';
+
   return (
     <>
       <div className="tree-section-heading">
         <hr aria-hidden="true" />
-        <h3>Search and Filter ({isContent ? 'Template Fields' : isLayout ? 'Layout & Content' : isCollections ? 'Collections' : isTemplates ? 'Templates' : 'Items'})</h3>
+        <h3>Search and Filter</h3>
       </div>
       <div className="flex items-center gap-1.5 w-full">
         <div className={`tree-search-input tree-search-shell ${isRight ? 'tree-search-shell-right' : ''} relative flex-1 min-w-0 flex items-center ${searchQuery.length > 0 ? 'tree-search-input-active' : ''}`}>
@@ -248,19 +264,7 @@ export default function SearchAndFilterSection({
                   onFocus={() => setIsSearchFocused(true)}
                   onBlur={() => setIsSearchFocused(false)}
                   title={searchInputTitle}
-                  placeholder={
-                    isContent
-                      ? hasFieldTypeFilters
-                        ? 'Search filtered types...'
-                        : 'Search fields...'
-                      : isLayout
-                      ? hasHierarchyTypeFilters
-                        ? 'Search filtered items...'
-                        : 'Search layout & content...'
-                      : hasCollectionFilters
-                      ? 'Search filtered collection...'
-                      : 'Search...'
-                  }
+                  placeholder={searchPlaceholder}
                   className="tree-search-query-input"
                   style={searchQuery.length > 0 ? { width: `${searchQuery.length + 0.5}ch` } : undefined}
                 />
@@ -313,19 +317,7 @@ export default function SearchAndFilterSection({
                   onFocus={() => setIsSearchFocused(true)}
                   onBlur={() => setIsSearchFocused(false)}
                   title={searchInputTitle}
-                  placeholder={
-                    isContent
-                      ? hasFieldTypeFilters
-                        ? 'Search filtered types...'
-                        : 'Search fields...'
-                      : isLayout
-                      ? hasHierarchyTypeFilters
-                        ? 'Search filtered items...'
-                        : 'Search layout & content...'
-                      : hasCollectionFilters
-                      ? 'Search filtered collection...'
-                      : 'Search...'
-                  }
+                  placeholder={searchPlaceholder}
                   className="tree-search-query-input"
                   style={searchQuery.length > 0 ? { width: `${searchQuery.length + 0.5}ch` } : undefined}
                 />

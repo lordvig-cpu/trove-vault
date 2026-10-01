@@ -3,8 +3,6 @@
 import React, { useState } from 'react';
 import '@/app/styles/components/minMaxSlider.css';
 import { barControlHeight } from '@/components/editorBarStyles';
-import { HelpCircleIcon } from '@/components/icons/LayoutIcons';
-import HoverHint, { type HintContent } from '@/components/HoverHint';
 import UnitSelect from '@/components/UnitSelect';
 
 /**
@@ -95,8 +93,6 @@ export default function TemplateMinMaxSlider({
   minValue,
   maxValue,
   parentPx,
-  minHint,
-  maxHint,
   onChange,
 }: {
   axis: 'width' | 'height';
@@ -104,8 +100,6 @@ export default function TemplateMinMaxSlider({
   maxValue?: string;
   /** The parent container's current rendered width / height (0 if unknown): what the px track spans. */
   parentPx: number;
-  minHint: HintContent;
-  maxHint: HintContent;
   /** The new ends, as lengths; undefined = unset. */
   onChange: (patch: { min?: string; max?: string }) => void;
 }) {
@@ -182,9 +176,6 @@ export default function TemplateMinMaxSlider({
         <div className="flex flex-col gap-1 min-w-0">
           <span className="flex items-center gap-1 menu-field-label text-[10px] font-semibold tracking-[0.04em] text-[var(--text-strong)]">
             Min. {letter}
-            <HoverHint hint={minHint}>
-              <HelpCircleIcon className="w-3 h-3 text-[var(--secondary-tree-menu-header-title)]" />
-            </HoverHint>
           </span>
           <EndBox
             value={minNum !== null && minNum > 0 ? minNum : null}
@@ -201,9 +192,6 @@ export default function TemplateMinMaxSlider({
         <div className="flex flex-col gap-1 min-w-0">
           <span className="flex items-center gap-1 menu-field-label text-[10px] font-semibold tracking-[0.04em] text-[var(--text-strong)]">
             Max. {letter}
-            <HoverHint hint={maxHint}>
-              <HelpCircleIcon className="w-3 h-3 text-[var(--secondary-tree-menu-header-title)]" />
-            </HoverHint>
           </span>
           <EndBox
             value={maxNum !== null && maxNum < scaleMax ? maxNum : null}

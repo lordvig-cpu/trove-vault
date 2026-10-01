@@ -594,24 +594,29 @@
   align-items: center;
   gap: 0.5rem;
   margin-top: 0.5rem;
-  color: var(--primary-tree-title-text);
+  color: var(--primary-accent);
 }
 
+/* Centered title: the markup's <hr> is the left rule and h3::after the right one; the h3 itself is
+   display: contents so its text and its ::after both lay out as items of the flex row. */
 .tree-section-heading h3 {
+  display: contents;
   margin: 0;
-  flex-shrink: 0;
-  font-size: 0.625rem;
+  white-space: nowrap;
+  font-size: 0.6875rem;
   line-height: 1rem;
   font-weight: 600;
   letter-spacing: 0.04em;
   text-shadow: 0 1px 2px var(--shadow-black-35);
 }
 
-.tree-section-heading hr {
+.tree-section-heading hr,
+.tree-section-heading h3::after {
+  content: '';
   flex: 1;
   margin: 0;
   border: 0;
-  border-top: 1px solid color-mix(in oklab, var(--primary-tree-title-text) 30%, transparent);
+  border-top: 1px solid color-mix(in oklab, var(--primary-accent) 45%, transparent);
   box-shadow:
     0 -1px 0 var(--shadow-black-50),
     0 1px 0 var(--shadow-black-50),
@@ -629,16 +634,19 @@
 }
 
 .properties-section-heading h3 {
+  display: contents;
   margin: 0;
-  flex-shrink: 0;
-  font-size: 0.625rem;
+  white-space: nowrap;
+  font-size: 0.6875rem;
   line-height: 1rem;
   font-weight: 600;
   letter-spacing: 0.04em;
   text-shadow: 0 1px 2px var(--shadow-black-35);
 }
 
-.properties-section-heading hr {
+.properties-section-heading hr,
+.properties-section-heading h3::after {
+  content: '';
   flex: 1;
   margin: 0;
   border: 0;

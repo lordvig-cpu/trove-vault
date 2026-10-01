@@ -198,7 +198,7 @@ export default function PrimarySidePanelHeader({
   return (
     <div
       ref={headerContainerRef}
-      className={`primary-side-panel-header px-2.5 pt-2 pb-0 flex flex-col gap-2 shrink-0 ${
+      className={`primary-side-panel-header px-2.5 pt-2 pb-0 flex flex-col gap-3 shrink-0 ${
         hasDockedContent ? 'tree-header-occupied' : 'tree-header-empty'
       }`}
     >

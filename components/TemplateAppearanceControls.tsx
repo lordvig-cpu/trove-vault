@@ -4,9 +4,9 @@ import React, { useState } from 'react';
 import { FlexContainerNode } from '@/types/layout';
 import { normalizeHexAlpha } from '@/lib/color';
 import { barControlHeight, idleBtn } from '@/components/editorBarStyles';
-import { HelpCircleIcon } from '@/components/icons/LayoutIcons';
 import { SearchClearIcon } from '@/components/icons/TreeIcons';
-import HoverHint, { type HintContent } from '@/components/HoverHint';
+import { type HintContent } from '@/components/HoverHint';
+import SubsectionHeading from '@/components/SubsectionHeading';
 import SeedColorPicker from '@/components/SeedColorPicker';
 import UnitSelect from '@/components/UnitSelect';
 
@@ -50,18 +50,6 @@ const HINTS = {
     notes: [{ kind: 'tip', text: 'The shadow is drawn at 40% strength, so it stays soft whatever color you pick.' }],
   },
 } satisfies Record<string, HintContent>;
-
-/** A group's heading: white, left-aligned, with its (still amber) help bubble icon. */
-function GroupLabel({ label, hint }: { label: string; hint: HintContent }) {
-  return (
-    <span className="flex items-center gap-1 menu-field-label text-[10px] font-semibold tracking-[0.04em] text-[var(--text-strong)]">
-      {label}
-      <HoverHint hint={hint}>
-        <HelpCircleIcon className="w-3 h-3 text-[var(--secondary-tree-menu-header-title)]" />
-      </HoverHint>
-    </span>
-  );
-}
 
 /** A px-only number: the input with a fixed, dimmed "px" beside it (same control as the length fields). */
 function PxField({
@@ -219,12 +207,12 @@ export default function TemplateAppearanceControls({
   return (
     <div className="flex flex-col gap-3 px-3 pt-0 pb-2">
       <div className="flex flex-col gap-1.5">
-        <GroupLabel label="Background" hint={HINTS.background} />
+        <SubsectionHeading label="Background" hint={HINTS.background} />
         <ColorRow label="Color" value={container.background} onChange={(background) => onUpdate({ background })} />
       </div>
 
       <div className="flex flex-col gap-1.5">
-        <GroupLabel label="Border" hint={HINTS.border} />
+        <SubsectionHeading label="Border" hint={HINTS.border} />
         <div className="grid grid-cols-2 gap-2">
           <PxField label="Width" value={container.borderWidth} max={20} onCommit={(borderWidth) => onUpdate({ borderWidth })} />
           <PxField label="Radius" value={container.borderRadius} max={200} onCommit={(borderRadius) => onUpdate({ borderRadius })} />
@@ -233,7 +221,7 @@ export default function TemplateAppearanceControls({
       </div>
 
       <div className="flex flex-col gap-1.5">
-        <GroupLabel label="Shadow" hint={HINTS.shadow} />
+        <SubsectionHeading label="Shadow" hint={HINTS.shadow} />
         <div className="grid grid-cols-2 gap-2">
           <PxField label="Offset" value={container.shadowY} min={-50} max={50} onCommit={(shadowY) => onUpdate({ shadowY })} />
           <PxField label="Blur" value={container.shadowBlur} max={100} onCommit={(shadowBlur) => onUpdate({ shadowBlur })} />
