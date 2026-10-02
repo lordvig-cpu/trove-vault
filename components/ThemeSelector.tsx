@@ -21,6 +21,7 @@ export default function ThemeSelector({ colorsOpen, onToggleColors }: ThemeSelec
   const { theme, setTheme } = useUIPreferences();
   return (
     <div className="theme-select-group">
+      <span className="text-[11px] ui-muted">Theme:</span>
       <div className="relative">
         <select
           value={theme}
