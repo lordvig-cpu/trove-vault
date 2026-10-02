@@ -62,7 +62,9 @@ Conventions and architecture (data access, theming, template editor internals, b
 - `lib/measureContainer.ts` — measures a container's rendered width/height from the canvas DOM (what a split halves).
 - `HelpWindowHost.tsx` — renders the help windows (a `?` bubble popped out by its title bar's pop-out button: draggable, closable) once, from the root layout, so they outlive the flyout that opened them.
 - `SubsectionHeading.tsx` — the centered "--- Title ---" heading (Primary Accent, optional `?` help bubble at the right) for a group of controls inside a flyout section (Width, Height, Background, Border...).
-- `TemplateAppearanceControls.tsx` — a container's Background, Border and Shadow controls (colors via the
+- `TemplateContentControls.tsx` — the property controls for a content element (what it shows and its display style, label, text style),
+  shared by its gear flyout and the docked Properties tab; no layout/spacing/size (the container owns those).
+- `TemplateAppearanceControls.tsx` — a container's or content element's Background, Border and Shadow controls (colors via the
   footer's `SeedColorPicker`, px-only sizes) in the flyout's Appearance section.
 - `TemplateMinMaxSlider.tsx` — the two-thumb Min / Max slider for width or height (with number boxes and a shared px/%
   pulldown) in a container's Size section; styles in `styles/components/minMaxSlider.css`.

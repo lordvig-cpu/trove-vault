@@ -24,13 +24,25 @@ import { NEW_CONTAINER_OPTIONS } from '@/lib/layoutTree';
 import { AlignItemsIcon, JustifyContentIcon } from '@/components/icons/AlignIcons';
 import {
   SectionAppearanceIcon,
+  SectionContentIcon,
+  SectionLabelIcon,
   SectionLayoutIcon,
   SectionSizeIcon,
   SectionSpacingIcon,
+  SectionTextIcon,
 } from '@/components/icons/SectionIcons';
 import { measureContainerPx } from '@/lib/measureContainer';
 import TemplateSpacingBox from '@/components/TemplateSpacingBox';
 import TemplateAppearanceControls from '@/components/TemplateAppearanceControls';
+import {
+  CONTENT_LABEL_HINT,
+  CONTENT_SOURCE_HINT,
+  CONTENT_TEXT_HINT,
+  ContentLabelControls,
+  ContentSourceControls,
+  ContentTextControls,
+} from '@/components/TemplateContentControls';
+import { bindingOf } from '@/lib/layoutContent';
 import HoverHint, { HintRef, type HintContent } from '@/components/HoverHint';
 import {
   BodyIcon,
@@ -49,7 +61,6 @@ import {
   HelpCircleIcon,
   FitContentIcon,
 } from '@/components/icons/LayoutIcons';
-import { ArrowUpIcon } from '@/components/icons/GlyphIcons';
 import { TrashCanIcon } from '@/components/icons/PanelIcons';
 import { CardsIcon, ComponentTypeIcon, BulbIcon } from '@/components/icons/ContentIcons';
 
@@ -767,6 +778,10 @@ export function TemplateContainerActionMenu({
 
 /* ==========================================================================
    2. COMPONENT ACTION MENU (Flyout Properties)
+   A content element's gear flyout: the same split shell as a container's, with an Actions tab and a
+   Properties tab. Its Properties are Content (what it shows and how), Label, Text and Appearance --
+   deliberately no Size, Spacing or Layout: the container holding the element owns those, which is
+   what keeps dropping content into a configured container a plain drag-and-drop.
    ========================================================================== */
 
 interface TemplateComponentActionMenuProps {
@@ -782,29 +797,34 @@ interface TemplateComponentActionMenuProps {
 
 export function TemplateComponentActionMenu({
   component,
-  parentContainer,
-  fields,
+  fields = [],
   menu,
   position = 'left',
   onUpdateComponent,
   onRemoveComponent,
-  onSelectNode,
 }: TemplateComponentActionMenuProps) {
-  const [label, setLabel] = useState(component.label || '');
+  const update = (partial: Partial<FlexComponentNode>) => onUpdateComponent?.(component.id, partial);
+  // A bound element (or a field not bound yet) has the full set; the old table / media / stat
+  // placeholder blocks have no data, so they only get a name and Appearance until pre-defined content
+  // replaces them.
+  const isContent = bindingOf(component) !== null || component.componentType === 'field';
 
-  // Adjust state during render rather than in an effect, per
-  // https://react.dev/learn/you-might-not-need-an-effect#adjusting-some-state-when-a-prop-changes
-  const [prevComponentLabel, setPrevComponentLabel] = useState(component.label);
-  if (prevComponentLabel !== component.label) {
-    setPrevComponentLabel(component.label);
-    setLabel(component.label || '');
+  // Active tab and which Properties sections are expanded. Kept here (not inside the menu shell) so
+  // they survive the flyout closing and reopening.
+  const [activeTab, setActiveTab] = useState<'actions' | 'properties'>('actions');
+  const [openSections, setOpenSections] = useState({ content: true, label: false, text: true, appearance: false });
+  const toggleSection = (key: keyof typeof openSections) =>
+    setOpenSections((prev) => ({ ...prev, [key]: !prev[key] }));
+
+  const [name, setName] = useState(component.label || '');
+  const [prevLabel, setPrevLabel] = useState(component.label);
+  if (prevLabel !== component.label) {
+    setPrevLabel(component.label);
+    setName(component.label || '');
   }
-
-  const handleLabelBlur = () => {
-    const trimmed = label.trim();
-    if (trimmed && trimmed !== component.label) {
-      onUpdateComponent?.(component.id, { label: trimmed });
-    }
+  const commitName = () => {
+    const trimmed = name.trim();
+    if (trimmed && trimmed !== component.label) update({ label: trimmed });
   };
 
   const compIcon = <ComponentTypeIcon type={component.componentType} className="w-4 h-4" fallback={BulbIcon} />;
@@ -815,119 +835,82 @@ export function TemplateComponentActionMenu({
       onMouseEnter={menu.handleMenuMouseEnter}
       onMouseLeave={menu.handleMouseLeave}
       top={menu.menuCoords.top}
-      left={menu.menuCoords.left}
+      left={menu.menuCoords.left - (position === 'right' ? PROPERTIES_EXTRA_WIDTH_PX : 0)}
       position={position}
-      title="Component Properties"
+      splitBody
+      className="menuShellXWide"
+      title="Content Properties"
       titleIcon={compIcon}
-      className="menuShellWide"
+      subheader={
+        <ActionMenuTabs
+          tabs={[
+            { id: 'actions', label: 'Actions', icon: <ActionIcon className="w-4 h-4" /> },
+            { id: 'properties', label: 'Properties', icon: <PropertiesIcon className="w-4 h-4" /> },
+          ]}
+          active={activeTab}
+          onChange={setActiveTab}
+        />
+      }
     >
-      <div className="flex flex-col gap-2.5 p-2 text-xs">
-        {/* Component Label / Name */}
-        <div className="flex flex-col gap-1">
-          <label className="text-[10px] font-bold text-muted uppercase tracking-wider">
-            Component Label
-          </label>
-          <input
-            type="text"
-            value={label}
-            onChange={(e) => setLabel(e.target.value)}
-            onBlur={handleLabelBlur}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') handleLabelBlur();
-            }}
-            placeholder="e.g. Hero Banner, Specs Table"
-            className="w-full px-2.5 py-1.5 bg-surface-secondary border border-subtle rounded-lg text-xs text-strong focus:outline-none focus:border-[var(--primary-accent)] font-medium transition"
-          />
-        </div>
-
-        {/* Component Type Badge */}
-        <div className="flex items-center justify-between p-1.5 rounded-lg bg-surface-secondary border border-subtle">
-          <span className="text-[10px] font-bold text-muted uppercase tracking-wider">Type</span>
-          <span className="text-xs font-mono font-bold uppercase text-[var(--primary-accent)]">
-            {component.componentType}
-          </span>
-        </div>
-
-        {/* Bound Schema Field Selector (if field type) */}
-        {component.componentType === 'field' && fields && fields.length > 0 && (
-          <div className="flex flex-col gap-1">
-            <label className="text-[10px] font-bold text-muted uppercase tracking-wider">
-              Bound Schema Field
-            </label>
-            <select
-              value={component.field_id || ''}
-              onChange={(e) => {
-                const val = Number(e.target.value);
-                const f = fields.find((item) => item.id === val);
-                onUpdateComponent?.(component.id, {
-                  field_id: val || null,
-                  label: f ? f.label : component.label,
-                });
-              }}
-              className="px-2 py-1 text-xs bg-surface-secondary border border-subtle rounded-lg text-strong focus:outline-none focus:border-[var(--primary-accent)]"
-            >
-              <option value="">-- Select Field --</option>
-              {fields.map((f) => (
-                <option key={f.id} value={f.id}>
-                  {f.label} ({f.field_type})
-                </option>
-              ))}
-            </select>
-          </div>
-        )}
-
-        {/* Delete Component Action */}
-        {onRemoveComponent && (
-          <>
-            <ActionMenuDivider />
+      {activeTab === 'actions' && (
+        <>
+          {onRemoveComponent ? (
             <ActionMenuDangerItem
               icon={<TrashCanIcon />}
-              label="Delete Component"
-              subtext="Remove component from layout container"
+              label="Delete Content"
+              subtext="Remove this from its container"
               onClick={() => {
                 onRemoveComponent(component.id);
                 menu.closeMenu();
               }}
             />
-          </>
-        )}
+          ) : (
+            <div className="px-3 py-2 text-[11px] text-muted">Nothing to do here yet.</div>
+          )}
+        </>
+      )}
 
-        {/* Parent Container Reference */}
-        {parentContainer && (
-          <div className="pt-2 border-t border-subtle flex items-center justify-between">
-            <span className="text-[10px] font-bold text-muted uppercase tracking-wider">
-              Parent Container
-            </span>
-            {onSelectNode ? (
-              <button
-                type="button"
-                onClick={() => {
-                  onSelectNode(parentContainer.id);
-                  menu.closeMenu();
-                }}
-                className="text-xs font-semibold text-[var(--primary-accent)] hover:underline flex items-center gap-1 cursor-pointer"
-                title={`Select parent container: ${parentContainer.id === 'root-container' ? 'Body' : parentContainer.label || 'Container'}`}
-              >
-                <ArrowUpIcon />
-                <span>
-                  {parentContainer.id === 'root-container'
-                    ? 'Body'
-                    : parentContainer.label || 'Container'}
-                </span>
-              </button>
-            ) : (
-              <span className="text-xs font-semibold text-[var(--primary-accent)] flex items-center gap-1">
-                <ArrowUpIcon />
-                <span>
-                  {parentContainer.id === 'root-container'
-                    ? 'Body'
-                    : parentContainer.label || 'Container'}
-                </span>
+      {activeTab === 'properties' && (
+        <>
+          {isContent ? (
+            <>
+              <ActionMenuSection label="Content" icon={<SectionContentIcon />} subtitle="What it shows" hint={CONTENT_SOURCE_HINT} isOpen={openSections.content} onToggle={() => toggleSection('content')}>
+                <ContentSourceControls component={component} fields={fields} onUpdate={update} />
+              </ActionMenuSection>
+
+              <ActionMenuSection label="Label" icon={<SectionLabelIcon />} subtitle="Name beside the value" hint={CONTENT_LABEL_HINT} isOpen={openSections.label} onToggle={() => toggleSection('label')}>
+                <ContentLabelControls component={component} fields={fields} onUpdate={update} />
+              </ActionMenuSection>
+
+              <ActionMenuSection label="Text" icon={<SectionTextIcon />} subtitle="Size, weight and color" hint={CONTENT_TEXT_HINT} isOpen={openSections.text} onToggle={() => toggleSection('text')}>
+                <ContentTextControls component={component} fields={fields} onUpdate={update} />
+              </ActionMenuSection>
+            </>
+          ) : (
+            <div className="flex flex-col gap-1 px-3 pb-2">
+              <span className="menu-field-label text-[10px] font-semibold tracking-[0.04em] text-[var(--text-strong)]">
+                Name
               </span>
-            )}
-          </div>
-        )}
-      </div>
+              <input
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                onBlur={commitName}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') (e.target as HTMLInputElement).blur();
+                }}
+                placeholder="e.g. Hero Banner, Specs Table"
+                aria-label="Name"
+                className="w-full px-2.5 py-1.5 bg-surface-secondary border border-subtle rounded-lg text-xs text-strong focus:outline-none focus:border-[var(--secondary-accent)] font-medium transition"
+              />
+            </div>
+          )}
+
+          <ActionMenuSection label="Appearance" icon={<SectionAppearanceIcon />} subtitle="Background and styling" isOpen={openSections.appearance} onToggle={() => toggleSection('appearance')}>
+            <TemplateAppearanceControls container={component} onUpdate={update} />
+          </ActionMenuSection>
+        </>
+      )}
     </TreeSubMenu>
   );
 }

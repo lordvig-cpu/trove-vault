@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { FlexContainerNode } from '@/types/layout';
+import type { BoxLook } from '@/lib/layoutContent';
 import { normalizeHexAlpha } from '@/lib/color';
 import { barControlHeight, idleBtn } from '@/components/editorBarStyles';
 import { SearchClearIcon } from '@/components/icons/TreeIcons';
@@ -11,8 +11,8 @@ import SeedColorPicker from '@/components/SeedColorPicker';
 import UnitSelect from '@/components/UnitSelect';
 
 /**
- * A container's look: Background (a color), Border (width, radius, color) and Shadow (offset, blur,
- * color). Colors use the same picker as the footer's theme seeds and are stored as "#RRGGBB" ("#RRGGBBAA" when translucent); sizes
+ * A box look, for a container or a content element: Background (a color), Border (width, radius, color)
+ * and Shadow (offset, blur, color). Colors use the same picker as the footer's theme seeds and are stored as "#RRGGBB" ("#RRGGBBAA" when translucent); sizes
  * are plain px (there's no % here, so the pulldown beside each number is fixed and dimmed). An unset
  * value stores nothing: no background, no border (width 0), no shadow.
  */
@@ -23,7 +23,7 @@ const HINTS = {
   background: {
     title: 'Background',
     settings: [
-      { name: 'Color', text: "The fill behind the container's content." },
+      { name: 'Color', text: 'The fill behind the content.' },
       { name: 'Clear', icon: <SearchClearIcon className="w-2.5 h-2.5" />, text: 'Removes the fill.' },
     ],
     notes: [
@@ -52,7 +52,7 @@ const HINTS = {
 } satisfies Record<string, HintContent>;
 
 /** A px-only number: the input with a fixed, dimmed "px" beside it (same control as the length fields). */
-function PxField({
+export function PxField({
   label,
   value,
   min = 0,
@@ -114,7 +114,7 @@ function PxField({
 }
 
 /** A color: the picker's swatch, an editable HEX box, and a clear button once one is set. */
-function ColorRow({
+export function ColorRow({
   label,
   value,
   onChange,
@@ -201,8 +201,9 @@ export default function TemplateAppearanceControls({
   container,
   onUpdate,
 }: {
-  container: FlexContainerNode;
-  onUpdate: (partial: Partial<FlexContainerNode>) => void;
+  /** The container or content element being styled (only its box-look properties are read). */
+  container: BoxLook;
+  onUpdate: (partial: Partial<BoxLook>) => void;
 }) {
   return (
     <div className="flex flex-col gap-3 px-3 pt-0 pb-2">

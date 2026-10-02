@@ -14,14 +14,26 @@ import {
 } from '@/types/layout';
 import TemplateBodyDimensions from '@/components/TemplateBodyDimensions';
 import TemplateContainerSizing from '@/components/TemplateContainerSizing';
+import TemplateAppearanceControls from '@/components/TemplateAppearanceControls';
+import SubsectionHeading from '@/components/SubsectionHeading';
+import {
+  CONTENT_LABEL_HINT,
+  CONTENT_SOURCE_HINT,
+  CONTENT_TEXT_HINT,
+  ContentLabelControls,
+  ContentSourceControls,
+  ContentTextControls,
+} from '@/components/TemplateContentControls';
+import { bindingOf } from '@/lib/layoutContent';
 import { FlexRowIcon, FlexColumnIcon, LayoutContainerIcon } from '@/components/icons/LayoutIcons';
 import { ArrowUpIcon } from '@/components/icons/GlyphIcons';
 import { CloseIcon } from '@/components/icons/PanelIcons';
 import { PuzzleIcon } from '@/components/icons/ContentIcons';
 import { GearIcon } from '@/components/icons/TreeIcons';
 
-/** The docked "Properties" tab: edits the selected container or component node (direction, gap,
-    alignment, padding, sizing, wrap/card). Padding here is still the older all-sides preset UI; the
+/** The docked "Properties" tab: edits the selected container (direction, gap, alignment, padding,
+    sizing, wrap/card) or content element (what it shows, label, text, appearance -- no layout or size,
+    its container owns those). Container padding here is still the older all-sides preset UI; the
     per-side editor lives in TemplateSpacingBox (see CLAUDE.md). */
 interface TemplatePropertiesInspectorProps {
   template: ItemTemplate | null;
@@ -342,47 +354,46 @@ export default function TemplatePropertiesInspector({
           -------------------------------------------------------------------- */}
       {!isContainer && (
         <>
-          {/* Component Label */}
-          <div className="flex flex-col gap-1">
-            <label className="text-[10px] font-bold text-muted uppercase tracking-wider">
-              Display Label Override
-            </label>
-            <input
-              type="text"
-              value={selectedNode.label || ''}
-              onChange={(e) => onUpdateComponent(selectedNode.id, { label: e.target.value })}
-              placeholder="Custom label..."
-              className="px-2.5 py-1.5 text-xs bg-surface-secondary border border-subtle rounded-lg text-strong focus:outline-none focus:border-[var(--primary-accent)] font-medium"
-            />
-          </div>
-
-          {/* Bound Field Selector (for field components) */}
-          {selectedNode.componentType === 'field' && template?.fields && (
+          {bindingOf(selectedNode) !== null || selectedNode.componentType === 'field' ? (
+            <>
+              <SubsectionHeading label="Content" hint={CONTENT_SOURCE_HINT} />
+              <ContentSourceControls
+                component={selectedNode}
+                fields={template?.fields ?? []}
+                onUpdate={(partial) => onUpdateComponent(selectedNode.id, partial)}
+              />
+              <SubsectionHeading label="Label" hint={CONTENT_LABEL_HINT} />
+              <ContentLabelControls
+                component={selectedNode}
+                fields={template?.fields ?? []}
+                onUpdate={(partial) => onUpdateComponent(selectedNode.id, partial)}
+              />
+              <SubsectionHeading label="Text" hint={CONTENT_TEXT_HINT} />
+              <ContentTextControls
+                component={selectedNode}
+                fields={template?.fields ?? []}
+                onUpdate={(partial) => onUpdateComponent(selectedNode.id, partial)}
+              />
+            </>
+          ) : (
+            // The old table / media / stat placeholder blocks have no data: just a name.
             <div className="flex flex-col gap-1">
-              <label className="text-[10px] font-bold text-muted uppercase tracking-wider">
-                Bound Schema Field
-              </label>
-              <select
-                value={selectedNode.field_id || ''}
-                onChange={(e) => {
-                  const val = Number(e.target.value);
-                  const f = template.fields?.find((item) => item.id === val);
-                  onUpdateComponent(selectedNode.id, {
-                    field_id: val || null,
-                    label: f ? f.label : selectedNode.label,
-                  });
-                }}
-                className="px-2.5 py-1.5 text-xs bg-surface-secondary border border-subtle rounded-lg text-strong focus:outline-none focus:border-[var(--primary-accent)]"
-              >
-                <option value="">-- Select Field --</option>
-                {template.fields.map((f) => (
-                  <option key={f.id} value={f.id}>
-                    {f.label} ({f.field_type})
-                  </option>
-                ))}
-              </select>
+              <label className="text-[10px] font-bold text-muted uppercase tracking-wider">Name</label>
+              <input
+                type="text"
+                value={selectedNode.label || ''}
+                onChange={(e) => onUpdateComponent(selectedNode.id, { label: e.target.value })}
+                placeholder="Custom name..."
+                className="px-2.5 py-1.5 text-xs bg-surface-secondary border border-subtle rounded-lg text-strong focus:outline-none focus:border-[var(--primary-accent)] font-medium"
+              />
             </div>
           )}
+
+          <SubsectionHeading label="Appearance" />
+          <TemplateAppearanceControls
+            container={selectedNode}
+            onUpdate={(partial) => onUpdateComponent(selectedNode.id, partial)}
+          />
         </>
       )}
 

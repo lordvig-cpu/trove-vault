@@ -285,3 +285,43 @@ export function boxLookCss(look: BoxLook): CSSProperties {
       : null),
   };
 }
+
+/* --------------------------------------------------------------------------
+   Editing
+   -------------------------------------------------------------------------- */
+
+/** Everything on a component that changes when it is rebound: the binding itself, the element kind and
+ *  legacy `field_id` that go with it, and a reset label and display style (a new value starts with its
+ *  own defaults rather than the old value's overrides). Typography and box look are kept. */
+export function bindingPatch(binding: ContentBinding): Partial<FlexComponentNode> {
+  return {
+    binding,
+    componentType: binding.kind === 'static' ? 'note' : 'field',
+    field_id: binding.kind === 'field' ? binding.field_id : null,
+    label: undefined,
+    display: undefined,
+  };
+}
+
+/** `current` with the preset's size, weight, line height, case and letter spacing in place of its own.
+ *  Color, alignment, italic and underline are kept: a preset is a typographic starting point, not a
+ *  full restyle. */
+export function applyTextPreset(current: TextStyle | undefined, name: TextPresetName): TextStyle {
+  const preset = TEXT_PRESETS[name];
+  return {
+    ...current,
+    fontSize: preset.fontSize,
+    fontWeight: preset.fontWeight,
+    lineHeight: preset.lineHeight,
+    transform: preset.transform,
+    letterSpacing: preset.letterSpacing,
+  };
+}
+
+/** `current` with `partial` merged in, dropping any key set to undefined; undefined when nothing is
+ *  left, so a fully reset style stores nothing. */
+export function mergeTextStyle(current: TextStyle | undefined, partial: Partial<TextStyle>): TextStyle | undefined {
+  const merged: Record<string, unknown> = { ...current, ...partial };
+  for (const key of Object.keys(merged)) if (merged[key] === undefined) delete merged[key];
+  return Object.keys(merged).length ? (merged as TextStyle) : undefined;
+}

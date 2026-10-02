@@ -470,8 +470,10 @@ function ComponentNodeRow({
 }: ComponentNodeRowProps) {
   const isRightSide = position === 'right';
   const isSelected = selectedNodeId === component.id;
-  // 328px (20.5rem): matches the .menuShellWide class TemplateComponentActionMenu renders with.
-  const menu = useTreeActionMenu(`tree-comp-${component.id}`, 280, position, 328);
+  // Right-docked panels position the flyout by its real width: like a container's, a content flyout is the
+  // 224px (14rem) shell default, and its wider Properties tab shifts itself left (PROPERTIES_EXTRA_WIDTH_PX
+  // in TemplateLayoutActionMenu).
+  const menu = useTreeActionMenu(`tree-comp-${component.id}`, 280, position, 224);
 
   const boundField = component.field_id
     ? fields.find((f) => f.id === component.field_id)

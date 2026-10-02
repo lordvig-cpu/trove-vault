@@ -1,6 +1,9 @@
 import { test, expect } from '@playwright/test';
 import {
   TEXT_PRESETS,
+  applyTextPreset,
+  bindingPatch,
+  mergeTextStyle,
   bindingOf,
   boxLookCss,
   dataKindOf,
@@ -152,5 +155,29 @@ test.describe('Content elements (pure)', () => {
     expect(css.border).toBe('2px solid var(--primary-border-subtle)');
     expect(css.borderRadius).toBe('6px');
     expect(String(css.boxShadow)).toContain('0 4px 8px');
+  });
+
+  test('bindingPatch rebinds a component and resets its label and display, keeping its look', () => {
+    expect(bindingPatch({ kind: 'builtin', key: 'name' })).toEqual({
+      binding: { kind: 'builtin', key: 'name' }, componentType: 'field', field_id: null, label: undefined, display: undefined,
+    });
+    expect(bindingPatch({ kind: 'field', field_id: 3 })).toMatchObject({ componentType: 'field', field_id: 3 });
+    expect(bindingPatch({ kind: 'static', text: 'Hi' })).toMatchObject({ componentType: 'note', field_id: null });
+    expect('textStyle' in bindingPatch({ kind: 'field', field_id: 3 })).toBe(false);
+  });
+
+  test('applyTextPreset replaces size/weight/spacing but keeps color, alignment and emphasis', () => {
+    const current = { fontSize: 99, color: '#FF0000', align: 'center' as const, italic: true, transform: 'uppercase' as const, letterSpacing: 3 };
+    const next = applyTextPreset(current, 'body');
+    expect(next).toMatchObject({ fontSize: 14, fontWeight: 400, lineHeight: 1.5, color: '#FF0000', align: 'center', italic: true });
+    expect(next.transform).toBeUndefined();
+    expect(next.letterSpacing).toBeUndefined();
+    expect(applyTextPreset(undefined, 'label')).toMatchObject({ fontSize: 11, transform: 'uppercase' });
+  });
+
+  test('mergeTextStyle drops unset keys and returns undefined when nothing is left', () => {
+    expect(mergeTextStyle({ fontSize: 12, color: '#000000' }, { fontSize: 20 })).toEqual({ fontSize: 20, color: '#000000' });
+    expect(mergeTextStyle({ fontSize: 12 }, { fontSize: undefined })).toBeUndefined();
+    expect(mergeTextStyle(undefined, { italic: true })).toEqual({ italic: true });
   });
 });
