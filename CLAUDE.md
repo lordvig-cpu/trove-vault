@@ -38,8 +38,9 @@ commit whenever you add, remove, split or rename a file — it goes stale otherw
   the old "Layout Builder" name is gone. None of these three is the separate "Properties" tab
   (`template_properties` / `TemplatePropertiesInspector.tsx`) — that's a different concept, left
   alone by this rename.
-- **Icons:** SVG components in `components/icons/`, not emoji or unicode symbols. (Some emoji remain
-  and are being replaced over time.)
+- **Icons:** SVG components in `components/icons/`, not emoji or unicode symbols. The only emoji
+  left are user data: a template's own chosen icon (default 📦) and the item-type/virtual-category
+  icons `UnifiedTree.tsx` and `lib/treeUtils.ts` derive from it.
 - **Colors:** never write a hard-coded hex/rgb/hsl color in a component or a new CSS rule, not even
   temporarily. Every color is a theme CSS variable. `--primary-accent` is the blue, `--secondary-accent`
   is the amber; shared text/surface/border roles have their own prefixes (see

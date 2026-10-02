@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { FieldDefinition, FieldType } from '@/types/field';
 import { useTreeActionMenu } from '@/hooks/useTreeActionMenu';
 import { ActionIcon, PropertiesIcon } from '@/components/icons/LayoutIcons';
-import { CloseIcon, ChevronDownIcon } from '@/components/icons/PanelIcons';
+import { CloseIcon, ChevronDownIcon, TrashCanIcon } from '@/components/icons/PanelIcons';
 import TreeSubMenu, {
   ActionMenuDangerItem,
   ActionMenuDivider,
@@ -12,6 +12,7 @@ import TreeSubMenu, {
   ActionMenuTabs,
 } from '@/components/TreeSubMenu';
 import { ChevronUpIcon } from '@/components/icons/GlyphIcons';
+import { FieldTypeIcon } from '@/components/icons/ContentIcons';
 
 /** Gear flyout for a field in the template editor's Content tab: a Properties tab (label, key, type,
     required, options) and an Actions tab (move up/down, delete). Edits are saved through
@@ -28,12 +29,12 @@ interface TemplateFieldActionMenuProps {
 }
 
 /** The field types the Type picker offers, in display order. */
-const FIELD_TYPES: { type: FieldType; label: string; icon: string }[] = [
-  { type: 'text', label: 'Text', icon: '📝' },
-  { type: 'number', label: 'Number', icon: '🔢' },
-  { type: 'select', label: 'Select', icon: '📋' },
-  { type: 'boolean', label: 'Boolean', icon: '🔘' },
-  { type: 'date', label: 'Date', icon: '📅' },
+const FIELD_TYPES: { type: FieldType; label: string }[] = [
+  { type: 'text', label: 'Text' },
+  { type: 'number', label: 'Number' },
+  { type: 'select', label: 'Select' },
+  { type: 'boolean', label: 'Boolean' },
+  { type: 'date', label: 'Date' },
 ];
 
 export default function TemplateFieldActionMenu({
@@ -127,7 +128,7 @@ export default function TemplateFieldActionMenu({
       position={position}
       splitBody
       title="Field"
-      titleIcon={activeTypeMeta.icon}
+      titleIcon={<FieldTypeIcon type={activeTypeMeta.type} className="w-3.5 h-3.5" />}
       className="menuShellWide"
       subheader={
         <ActionMenuTabs
@@ -195,7 +196,7 @@ export default function TemplateFieldActionMenu({
                     : 'bg-surface-panel border-subtle text-muted hover:text-strong hover:bg-slate-800'
                 }`}
               >
-                <span>{ft.icon}</span>
+                <FieldTypeIcon type={ft.type} className="w-3.5 h-3.5" />
                 <span className="truncate">{ft.label}</span>
               </button>
             ))}
@@ -299,7 +300,7 @@ export default function TemplateFieldActionMenu({
 
       {/* Delete Field */}
       <ActionMenuDangerItem
-        icon={<span>🗑️</span>}
+        icon={<TrashCanIcon />}
         label="Delete Field"
         subtext="Remove from template schema"
         onClick={() => {

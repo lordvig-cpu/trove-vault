@@ -7,6 +7,7 @@ import { NavigationBarTextureFilter } from '@/components/icons/NavigationIcons';
 import { useUIPreferences } from '@/context/UIPreferencesContext';
 import { HintGripIcon } from '@/components/icons/HintIcons';
 import { PackageIcon } from '@/components/icons/GlyphIcons';
+import { UserIcon } from '@/components/icons/ContentIcons';
 
 /* ==========================================================================
    1. TYPE DEFINITIONS & INTERFACES
@@ -327,7 +328,7 @@ export default function NavigationHeader({
             className="nav-profile-badge"
             title="User Profile / Account"
           >
-            👤
+            <UserIcon className="w-4 h-4" />
           </div>
         </div>
       </header>

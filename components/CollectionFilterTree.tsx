@@ -3,6 +3,7 @@
 import React from 'react';
 import { CollectionRecord } from '@/types/collection';
 import { TreeBranchIcon } from '@/components/icons/TreeIcons';
+import { FolderIcon } from '@/components/icons/ContentIcons';
 
 type CollectionTreeNode = CollectionRecord & {
   children?: CollectionTreeNode[];
@@ -82,7 +83,7 @@ export default function CollectionFilterTree({
               <TreeBranchIcon className="w-3.5 h-3.5 -ml-1 mr-0.5" />
             )}
 
-            <span className="text-sm tree-filter-icon shrink-0 select-none">{node.icon || '📁'}</span>
+            <span className="text-sm tree-filter-icon shrink-0 select-none">{node.icon || <FolderIcon className="w-3.5 h-3.5" />}</span>
 
             <div className="flex flex-col min-w-0">
               <span className="text-xs font-semibold tree-panel-primary truncate">{node.name}</span>

@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { AddSubItemIcon } from '@/components/icons/TreeIcons';
-import { ActionIcon } from '@/components/icons/LayoutIcons';
+import { ActionIcon, PencilIcon } from '@/components/icons/LayoutIcons';
 import TreeSubMenu, {
   ActionMenuDangerItem,
   ActionMenuDivider,
@@ -14,6 +14,7 @@ import { useTreeActions } from '@/context/TreeActionsContext';
 import { ItemRecord } from '@/types/item';
 import { useTreeActionMenu } from '@/hooks/useTreeActionMenu';
 import { TagIcon } from '@/components/icons/GlyphIcons';
+import { TrashCanIcon } from '@/components/icons/PanelIcons';
 
 interface TreeItemActionMenuProps {
   item: ItemRecord;
@@ -74,7 +75,7 @@ export default function TreeItemActionMenu({
       )}
 
       <ActionMenuItem
-        icon={<span>✏️</span>}
+        icon={<PencilIcon className="w-3.5 h-3.5" />}
         label="Edit Item"
         subtext="Update attributes & template"
         onClick={() => {
@@ -86,7 +87,7 @@ export default function TreeItemActionMenu({
       <ActionMenuDivider />
 
       <ActionMenuDangerItem
-        icon={<span>🗑️</span>}
+        icon={<TrashCanIcon />}
         label="Delete Item"
         subtext="Permanently remove"
         onClick={() => {

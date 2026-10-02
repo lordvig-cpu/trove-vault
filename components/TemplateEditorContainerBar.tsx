@@ -16,7 +16,7 @@ import {
   HelpCircleIcon,
 } from '@/components/icons/LayoutIcons';
 import { GearIcon } from '@/components/icons/TreeIcons';
-import { TrashCanIcon } from '@/components/icons/PanelIcons';
+import { TrashCanIcon, ChevronDownIcon } from '@/components/icons/PanelIcons';
 import { useDismissOnOutsideOrEscape } from '@/hooks/useDismissOnOutsideOrEscape';
 import HoverHint, { HintRef, type HintContent } from '@/components/HoverHint';
 import {
@@ -155,7 +155,7 @@ function ToolGroup({
       >
         {icon}
         <span>{label}</span>
-        <span aria-hidden="true" className="text-[8px] opacity-70">▾</span>
+        <ChevronDownIcon className="w-2.5 h-2.5 opacity-70" />
       </button>
       {isOpen && (
         // pt-1 (not a margin) keeps the hover area continuous between the icon and its options

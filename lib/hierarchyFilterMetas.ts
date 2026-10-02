@@ -6,10 +6,10 @@ import { FlexContainerNode, FlexComponentNode } from '@/types/layout';
 export type HierarchyFilterCategory = 'container' | 'field' | 'predefined';
 
 /** Display metadata (label, icon) for each category, used by the Layout tree's filter menu. */
-export const HIERARCHY_FILTER_METAS: { type: HierarchyFilterCategory; label: string; icon: string }[] = [
-  { type: 'container', label: 'Layout Items', icon: '📐' },
-  { type: 'field', label: 'Content Items', icon: '📝' },
-  { type: 'predefined', label: 'Pre-defined Content', icon: '🧩' },
+export const HIERARCHY_FILTER_METAS: { type: HierarchyFilterCategory; label: string }[] = [
+  { type: 'container', label: 'Layout Items' },
+  { type: 'field', label: 'Content Items' },
+  { type: 'predefined', label: 'Pre-defined Content' },
 ];
 
 /** Which of the three categories a layout-tree node falls into. */

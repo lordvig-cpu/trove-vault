@@ -105,8 +105,9 @@ Conventions and architecture (data access, theming, template editor internals, b
 
 SVG icon components, grouped by area: `LayoutIcons.tsx` (template editor), `NavigationIcons.tsx`
 (header/footer), `PanelIcons.tsx` (dock/pin/panel chrome), `TreeIcons.tsx` (tree rows and search), `GlyphIcons.tsx` (small chevron/arrow/check/tag/star
-glyph replacements).
-`index.ts` re-exports these five as one barrel.
+glyph replacements), `ContentIcons.tsx` (field types, layout components, files/folders, and the
+`FieldTypeIcon` / `ComponentTypeIcon` / `VariantIcon` / `HierarchyCategoryIcon` lookups).
+`index.ts` re-exports these six as one barrel.
 
 ## components/item-form/
 

@@ -18,6 +18,8 @@ import TemplateContainerSizing from '@/components/TemplateContainerSizing';
 import { FlexRowIcon, FlexColumnIcon, LayoutContainerIcon } from '@/components/icons/LayoutIcons';
 import { ArrowUpIcon } from '@/components/icons/GlyphIcons';
 import { CloseIcon } from '@/components/icons/PanelIcons';
+import { VariantIcon, PuzzleIcon } from '@/components/icons/ContentIcons';
+import { GearIcon } from '@/components/icons/TreeIcons';
 
 /** The docked "Properties" tab: edits the selected container or component node (direction, gap,
     alignment, padding, sizing, wrap/card). Padding here is still the older all-sides preset UI; the
@@ -42,13 +44,13 @@ const GAP_OPTIONS: { value: FlexGap; label: string }[] = [
   { value: 32, label: '32px' },
 ];
 
-const VARIANT_OPTIONS: { variant: LayoutVariant; label: string; icon: string }[] = [
-  { variant: 'standard', label: 'Standard Card', icon: '🗂️' },
-  { variant: 'compact', label: 'Compact Pill', icon: '🏷️' },
-  { variant: 'stat', label: 'Stat / Metric', icon: '📈' },
-  { variant: 'table_row', label: 'Table Row', icon: '📊' },
-  { variant: 'hero', label: 'Hero Display', icon: '🖼️' },
-  { variant: 'callout', label: 'Callout Accent', icon: '💡' },
+const VARIANT_OPTIONS: { variant: LayoutVariant; label: string }[] = [
+  { variant: 'standard', label: 'Standard Card' },
+  { variant: 'compact', label: 'Compact Pill' },
+  { variant: 'stat', label: 'Stat / Metric' },
+  { variant: 'table_row', label: 'Table Row' },
+  { variant: 'hero', label: 'Hero Display' },
+  { variant: 'callout', label: 'Callout Accent' },
 ];
 
 export default function TemplatePropertiesInspector({
@@ -65,7 +67,7 @@ export default function TemplatePropertiesInspector({
     return (
       <div className="flex flex-col items-center justify-center p-6 text-center gap-3 h-full min-h-[300px] select-none">
         <div className="w-12 h-12 rounded-2xl bg-[color-mix(in_oklch,var(--primary-accent)_12%,transparent)] border border-[color-mix(in_oklch,var(--primary-accent)_25%,transparent)] text-[var(--primary-accent)] flex items-center justify-center text-2xl shadow-sm">
-          ⚙️
+          <GearIcon className="w-6 h-6" />
         </div>
         <div className="flex flex-col gap-1">
           <div className="text-xs font-bold uppercase tracking-wider text-strong">
@@ -96,7 +98,7 @@ export default function TemplatePropertiesInspector({
                 <LayoutContainerIcon className="w-3.5 h-3.5 text-[var(--primary-accent)]" />
               )
             ) : (
-              '🧩'
+              <PuzzleIcon className="w-3.5 h-3.5 text-[var(--primary-accent)]" />
             )}
           </span>
           <div className="min-w-0">
@@ -445,7 +447,7 @@ export default function TemplatePropertiesInspector({
                       : 'bg-surface-secondary border-subtle text-muted hover:text-[var(--text-strong)]'
                   }`}
                 >
-                  <span className="text-sm">{opt.icon}</span>
+                  <VariantIcon variant={opt.variant} className="w-3.5 h-3.5" />
                   <span className="truncate">{opt.label}</span>
                 </button>
               ))}

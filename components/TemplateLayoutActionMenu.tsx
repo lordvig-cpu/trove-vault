@@ -51,6 +51,8 @@ import {
   FitContentIcon,
 } from '@/components/icons/LayoutIcons';
 import { ArrowUpIcon } from '@/components/icons/GlyphIcons';
+import { TrashCanIcon } from '@/components/icons/PanelIcons';
+import { VariantIcon, CardsIcon, ComponentTypeIcon, BulbIcon } from '@/components/icons/ContentIcons';
 
 /* Help bubbles for the Body flyout's Properties sections (see HoverHint for the shape). */
 const BODY_SIZE_HINT: HintContent = {
@@ -243,13 +245,13 @@ const CONTAINER_SPACING_HINT: HintContent = {
   ],
 };
 
-const VARIANT_OPTIONS: { variant: LayoutVariant; label: string; icon: string }[] = [
-  { variant: 'standard', label: 'Standard Card', icon: '🗂️' },
-  { variant: 'compact', label: 'Compact Pill', icon: '🏷️' },
-  { variant: 'stat', label: 'Stat / Metric', icon: '📈' },
-  { variant: 'table_row', label: 'Table Row', icon: '📊' },
-  { variant: 'hero', label: 'Hero Display', icon: '🖼️' },
-  { variant: 'callout', label: 'Callout Accent', icon: '💡' },
+const VARIANT_OPTIONS: { variant: LayoutVariant; label: string }[] = [
+  { variant: 'standard', label: 'Standard Card' },
+  { variant: 'compact', label: 'Compact Pill' },
+  { variant: 'stat', label: 'Stat / Metric' },
+  { variant: 'table_row', label: 'Table Row' },
+  { variant: 'hero', label: 'Hero Display' },
+  { variant: 'callout', label: 'Callout Accent' },
 ];
 
 /* ==========================================================================
@@ -484,7 +486,7 @@ export function TemplateContainerActionMenu({
   const handleLabelCancel = () => setLabel(defaultLabel);
 
   const containerIcon = container.isCard ? (
-    '🗂️'
+    <CardsIcon className="w-4 h-4" />
   ) : resolveDirection(container, isRoot) === 'row' ? (
     <FlexRowIcon className="w-4 h-4" />
   ) : (
@@ -575,7 +577,7 @@ export function TemplateContainerActionMenu({
             <>
               <ActionMenuDivider />
               <ActionMenuDangerItem
-                icon={<span>🗑️</span>}
+                icon={<TrashCanIcon />}
                 label="Delete Container"
                 subtext="Permanently remove container and all contents"
                 onClick={act(() => onRemoveContainer(container.id))}
@@ -815,16 +817,7 @@ export function TemplateComponentActionMenu({
     }
   };
 
-  const compIcon =
-    component.componentType === 'field'
-      ? '📝'
-      : component.componentType === 'table'
-      ? '📊'
-      : component.componentType === 'media'
-      ? '🖼️'
-      : component.componentType === 'stat'
-      ? '📈'
-      : '💡';
+  const compIcon = <ComponentTypeIcon type={component.componentType} className="w-4 h-4" fallback={BulbIcon} />;
 
   return (
     <TreeSubMenu
@@ -924,7 +917,7 @@ export function TemplateComponentActionMenu({
                     : 'bg-surface-secondary border-subtle text-muted hover:text-[var(--text-strong)]'
                 }`}
               >
-                <span>{v.icon}</span>
+                <VariantIcon variant={v.variant} className="w-3.5 h-3.5" />
                 <span className="truncate">{v.label}</span>
               </button>
             ))}
@@ -964,7 +957,7 @@ export function TemplateComponentActionMenu({
           <>
             <ActionMenuDivider />
             <ActionMenuDangerItem
-              icon={<span>🗑️</span>}
+              icon={<TrashCanIcon />}
               label="Delete Component"
               subtext="Remove component from layout container"
               onClick={() => {

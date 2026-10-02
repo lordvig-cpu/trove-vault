@@ -2,6 +2,10 @@
 
 import { ItemRecord } from '@/types/item';
 import Image from 'next/image';
+import { PencilIcon } from '@/components/icons/LayoutIcons';
+import { TrashCanIcon } from '@/components/icons/PanelIcons';
+import { SearchGlassIcon } from '@/components/icons/TreeIcons';
+import { CameraIcon, FileIcon } from '@/components/icons/ContentIcons';
 
 /* ==========================================================================
    1. TYPE DEFINITIONS & INTERFACES
@@ -30,7 +34,7 @@ export default function ItemDetailView({
     return (
       <div className="space-y-6 w-full">
         <div className="flex flex-col items-center justify-center text-center p-8 content-card">
-          <span className="text-4xl mb-3">🔍</span>
+          <SearchGlassIcon className="w-9 h-9 mb-3 text-[var(--primary-accent)]" />
           <h3 className="text-base font-semibold detail-heading">No Item Selected</h3>
           <p className="text-xs detail-muted mt-1 max-w-sm">
             Select an item from the tree or create a new one to view its attributes, hierarchy, and metadata.
@@ -131,7 +135,7 @@ export default function ItemDetailView({
               'cursor-pointer transition',
             ].join(' ')}
           >
-            <span>✏️</span> Edit
+            <PencilIcon className="inline w-3.5 h-3.5 align-text-bottom" /> Edit
           </button>
 
           <button
@@ -147,7 +151,7 @@ export default function ItemDetailView({
             onClick={onDeleteItem}
             className="content-btn-danger"
           >
-            <span>🗑️</span> Delete
+            <TrashCanIcon className="inline w-3.5 h-3.5 align-text-bottom" /> Delete
           </button>
         </div>
       </div>
@@ -172,7 +176,7 @@ export default function ItemDetailView({
                 'detail-empty-image border border-dashed rounded-xl',
               ].join(' ')}
             >
-              <span className="text-3xl detail-empty-icon">📷</span>
+              <CameraIcon className="w-8 h-8 detail-empty-icon" />
               <span className="text-xs">No image uploaded</span>
             </div>
           )}
@@ -218,7 +222,7 @@ export default function ItemDetailView({
             {item.children.map((child) => (
               <div key={child.id} className="content-pill flex items-center justify-between">
                 <div className="flex items-center gap-2 min-w-0">
-                  <span className="text-xs">📄</span>
+                  <FileIcon className="w-3 h-3" />
                   <span className="text-xs font-medium detail-heading truncate">{child.name}</span>
                 </div>
                 <span className="text-[10px] font-mono detail-muted shrink-0">#{child.id}</span>

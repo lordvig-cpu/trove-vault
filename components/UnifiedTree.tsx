@@ -11,6 +11,7 @@ import TreeItemActionMenu from '@/components/TreeItemActionMenu';
 import { STANDALONE_COLLECTION_ID } from '@/lib/treeUtils';
 import { CollectionRecord } from '@/types/collection';
 import { ChevronDownIcon, ChevronRightIcon } from '@/components/icons/PanelIcons';
+import { FolderIcon } from '@/components/icons/ContentIcons';
 
 /* ==========================================================================
    1. TYPE DEFINITIONS & INTERFACES
@@ -63,7 +64,7 @@ function TreeLoadMoreNode({
       title={`Load ${nextCount} more items (${remainingCount} remaining)`}
     >
       <span className="text-[11px] font-bold transition-transform duration-200 group-hover:translate-y-0.5 select-none">
-        ⇣
+        <ChevronDownIcon className="w-3 h-3" />
       </span>
       <span className="truncate">Load {nextCount} more...</span>
       <span className="ml-auto text-[10px] opacity-75 font-mono shrink-0 select-none">
@@ -332,7 +333,7 @@ export default function UnifiedTree({
         </button>
 
         <span className="w-4 h-4 flex items-center justify-center text-sm tree-category-icon shrink-0 select-none">
-          {collection.icon || (localIsOpen ? '📂' : '📁')}
+          {collection.icon || <FolderIcon className="w-3.5 h-3.5" />}
         </span>
 
         <button

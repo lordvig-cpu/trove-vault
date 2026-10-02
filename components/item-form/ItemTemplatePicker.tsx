@@ -2,6 +2,7 @@
 
 import React from 'react';
 import type { CollectionTemplate } from '@/types/template';
+import { FileIcon, DotIcon } from '@/components/icons/ContentIcons';
 
 interface ItemTemplatePickerProps {
   templates: CollectionTemplate[];
@@ -33,7 +34,7 @@ export default function ItemTemplatePicker({
     <div className="item-modal-template-panel rounded-xl p-3.5 space-y-2">
       <div className="flex items-center justify-between">
         <label className="text-xs font-bold item-modal-template-heading flex items-center gap-1.5">
-          <span>📑</span>
+          <FileIcon />
           <span>Item Schema Template</span>
         </label>
         <span className="text-[10px] item-modal-template-count font-mono">
@@ -59,7 +60,7 @@ export default function ItemTemplatePicker({
           {filled.length > 0 && (
             <div className="flex items-center gap-1.5 item-modal-template-heading">
               <span className="font-mono text-[10px] px-1 py-0.2 rounded">
-                🔵 {filledLabel} ({filled.length})
+                <DotIcon className="inline w-2 h-2 mr-1 text-[var(--primary-accent)]" />{filledLabel} ({filled.length})
               </span>
               <span className="truncate">{filled.join(', ')}</span>
             </div>
@@ -67,7 +68,7 @@ export default function ItemTemplatePicker({
           {empty.length > 0 && (
             <div className="flex items-center gap-1.5 item-modal-template-heading">
               <span className="font-mono text-[10px] px-1 py-0.2 rounded">
-                🟢 {emptyLabel} ({empty.length})
+                <DotIcon className="inline w-2 h-2 mr-1 text-[var(--status-ok)]" />{emptyLabel} ({empty.length})
               </span>
               <span className="truncate">{empty.join(', ')}</span>
             </div>

@@ -5,6 +5,7 @@ import { FieldDefinition } from '@/types/field';
 import { FlexComponentNode } from '@/types/layout';
 import { CloseIcon } from '@/components/icons/PanelIcons';
 import { StarIcon } from '@/components/icons/GlyphIcons';
+import { TableIcon, ImageIcon, CameraIcon, NoteIcon } from '@/components/icons/ContentIcons';
 
 /* ==========================================================================
    FLEX COMPONENT RENDERER
@@ -100,7 +101,7 @@ export default function FlexComponentRenderer({
         <div className="flex flex-col gap-2">
           <div className="flex items-center justify-between border-b border-slate-800 pb-1.5">
             <span className="text-xs font-bold text-slate-200 flex items-center gap-1.5">
-              <span>📊</span>
+              <TableIcon />
               <span>{label}</span>
             </span>
             <span className="text-[10px] font-mono text-[var(--primary-accent)]">
@@ -130,7 +131,7 @@ export default function FlexComponentRenderer({
         <div className="flex flex-col gap-2 h-full min-h-[140px] justify-between">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold text-slate-200 flex items-center gap-1.5">
-              <span>🖼️</span>
+              <ImageIcon />
               <span>{label}</span>
             </span>
             <span className="text-[9.5px] font-mono text-amber-400">
@@ -138,7 +139,7 @@ export default function FlexComponentRenderer({
             </span>
           </div>
           <div className="flex-1 flex flex-col items-center justify-center py-4 bg-slate-950/40 rounded-lg border border-dashed border-slate-800 text-center">
-            <span className="text-2xl opacity-60">📷</span>
+            <CameraIcon className="w-6 h-6 opacity-60" />
             <span className="text-[11px] text-slate-400 mt-1">
               High-Resolution Photo
             </span>
@@ -163,7 +164,7 @@ export default function FlexComponentRenderer({
       ) : component.componentType === 'note' ? (
         <div className="p-3 rounded-lg bg-amber-500/10 border border-amber-500/20 text-xs text-amber-200 flex flex-col gap-1">
           <div className="font-bold flex items-center gap-1.5 text-amber-300">
-            <span>📝</span>
+            <NoteIcon />
             <span>{label}</span>
           </div>
           {typeof component.custom_props?.text === 'string' ? (

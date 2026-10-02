@@ -2,7 +2,8 @@
 
 import React from 'react';
 import { DockablePanelId, DockDropTargetZone, isDockZoneAllowed, DockContent } from '@/hooks/usePanelDockDrag';
-import { TrashCanIcon, ProhibitedIcon } from '@/components/icons/PanelIcons';
+import { TrashCanIcon, ProhibitedIcon, DockLeftPanelIcon, DockRightPanelIcon, DockBottomPanelIcon } from '@/components/icons/PanelIcons';
+import { LayoutGridIcon } from '@/components/icons/ContentIcons';
 
 interface PanelDockDropZonesProps {
   isDragging: boolean;
@@ -136,7 +137,7 @@ export default function PanelDockDropZones({
           ) : hoveredZone && !isHoveredZoneAllowed ? (
             <ProhibitedIcon className="w-3.5 h-3.5" />
           ) : (
-            <span>❖</span>
+            <LayoutGridIcon className="w-3.5 h-3.5" />
           )}
         </span>
         <span>
@@ -261,7 +262,7 @@ export default function PanelDockDropZones({
                   hoveredZone === 'left-replace' ? 'dock-zone-side-pill-active' : ''
                 }`}
               >
-                <span>◧</span>
+                <DockLeftPanelIcon className="w-3.5 h-3.5" isOpen />
                 <span>
                   Replace {leftTargetName} with <em>{draggedItemName}</em>
                 </span>
@@ -291,7 +292,7 @@ export default function PanelDockDropZones({
                   : ''
               }`}
             >
-              <span>◧</span>
+              <DockLeftPanelIcon className="w-3.5 h-3.5" isOpen />
               <span>
                 Dock <em>{draggedItemName}</em> to {leftTargetName}
               </span>
@@ -368,7 +369,7 @@ export default function PanelDockDropZones({
                   <ProhibitedIcon className="w-3.5 h-3.5" />
                 </span>
               ) : (
-                <span>⬓</span>
+                <DockBottomPanelIcon className="w-3.5 h-3.5" isOpen />
               )}
               <span>
                 {!isBottomAllowed ? (
@@ -475,7 +476,7 @@ export default function PanelDockDropZones({
                   hoveredZone === 'right-replace' ? 'dock-zone-side-pill-active' : ''
                 }`}
               >
-                <span>◨</span>
+                <DockRightPanelIcon className="w-3.5 h-3.5" isOpen />
                 <span>
                   Replace {rightTargetName} with <em>{draggedItemName}</em>
                 </span>
@@ -505,7 +506,7 @@ export default function PanelDockDropZones({
                   : ''
               }`}
             >
-              <span>◨</span>
+              <DockRightPanelIcon className="w-3.5 h-3.5" isOpen />
               <span>
                 Dock <em>{draggedItemName}</em> to {rightTargetName}
               </span>

@@ -4,3 +4,4 @@ export * from './NavigationIcons';
 export * from './LayoutIcons';
 
 export * from './GlyphIcons';
+export * from './ContentIcons';

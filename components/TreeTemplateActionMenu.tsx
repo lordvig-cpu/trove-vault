@@ -14,6 +14,9 @@ import TreeSubMenu, {
   ActionMenuTabs,
 } from '@/components/TreeSubMenu';
 import { TagIcon } from '@/components/icons/GlyphIcons';
+import { FileIcon } from '@/components/icons/ContentIcons';
+import { GearIcon } from '@/components/icons/TreeIcons';
+import { TrashCanIcon } from '@/components/icons/PanelIcons';
 
 // Only one tab exists today, so ActionMenuTabs renders this as a plain divider band rather than a
 // single oversized tab button -- but it's still the exact same splitBody shell and .menuTabs CSS
@@ -56,7 +59,7 @@ export default function TreeTemplateActionMenu({
       subheader={<ActionMenuTabs tabs={ACTIONS_ONLY_TABS} />}
     >
       <ActionMenuItem
-        icon={<span>📄</span>}
+        icon={<FileIcon />}
         label="New Item"
         subtext="Create item with this template"
         onClick={() => {
@@ -85,7 +88,7 @@ export default function TreeTemplateActionMenu({
 
       {onEditTemplate && (
         <ActionMenuItem
-          icon={<span>⚙️</span>}
+          icon={<GearIcon className="w-3.5 h-3.5" />}
           label="Edit Template"
           subtext="Configure blueprint & fields schema"
           onClick={() => {
@@ -99,7 +102,7 @@ export default function TreeTemplateActionMenu({
 
       {onDeleteTemplate && (
         <ActionMenuDangerItem
-          icon={<span>🗑️</span>}
+          icon={<TrashCanIcon />}
           label="Delete Template"
           subtext="Permanently remove"
           onClick={() => {

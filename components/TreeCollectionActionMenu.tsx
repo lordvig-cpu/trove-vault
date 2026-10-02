@@ -13,6 +13,9 @@ import TreeSubMenu, {
   ActionMenuTabs,
 } from '@/components/TreeSubMenu';
 import { InboxIcon, TagIcon } from '@/components/icons/GlyphIcons';
+import { FileIcon, FolderIcon } from '@/components/icons/ContentIcons';
+import { GearIcon } from '@/components/icons/TreeIcons';
+import { TrashCanIcon } from '@/components/icons/PanelIcons';
 
 // Only one tab exists today, so ActionMenuTabs renders this as a plain divider band rather than a
 // single oversized tab button -- but it's still the exact same splitBody shell and .menuTabs CSS
@@ -56,7 +59,7 @@ export default function TreeCollectionActionMenu({
         subheader={<ActionMenuTabs tabs={ACTIONS_ONLY_TABS} />}
       >
         <ActionMenuItem
-          icon={<span>📄</span>}
+          icon={<FileIcon />}
           label="New Item"
           subtext="Add record to this category"
           onClick={() => {
@@ -65,7 +68,7 @@ export default function TreeCollectionActionMenu({
           }}
         />
         <ActionMenuItem
-          icon={<span>⚙️</span>}
+          icon={<GearIcon className="w-3.5 h-3.5" />}
           label="Edit Item Template"
           subtext="Manage attributes & schema"
           onClick={() => {
@@ -94,7 +97,7 @@ export default function TreeCollectionActionMenu({
       subheader={<ActionMenuTabs tabs={ACTIONS_ONLY_TABS} />}
     >
       <ActionMenuItem
-        icon={<span>📄</span>}
+        icon={<FileIcon />}
         label="New Item"
         subtext="Create item in this collection"
         onClick={() => {
@@ -133,7 +136,7 @@ export default function TreeCollectionActionMenu({
 
       {onEditCollection && (
         <ActionMenuItem
-          icon={<span>⚙️</span>}
+          icon={<GearIcon className="w-3.5 h-3.5" />}
           label="Collection Settings"
           subtext="Manage collection metadata"
           onClick={() => {
@@ -145,7 +148,7 @@ export default function TreeCollectionActionMenu({
 
       {onAddSubCollection && (
         <ActionMenuItem
-          icon={<span>📁</span>}
+          icon={<FolderIcon />}
           label="New Sub-Collection"
           subtext="Create a nested collection"
           onClick={() => {
@@ -159,7 +162,7 @@ export default function TreeCollectionActionMenu({
 
       {onDeleteCollection && (
         <ActionMenuDangerItem
-          icon={<span>🗑️</span>}
+          icon={<TrashCanIcon />}
           label="Delete Collection"
           subtext="Permanently remove"
           onClick={() => {

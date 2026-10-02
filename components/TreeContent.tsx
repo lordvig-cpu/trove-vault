@@ -14,6 +14,7 @@ import { ItemRecord } from '@/types/item';
 import { CollectionRecord } from '@/types/collection';
 import { getSingleSearchHighlight, STANDALONE_COLLECTION_ID } from '@/lib/treeUtils';
 import { TreeTab } from '@/lib/filterTreeForest';
+import { SearchGlassIcon } from '@/components/icons/TreeIcons';
 
 /* ==========================================================================
    1. TYPE DEFINITIONS & INTERFACES
@@ -268,7 +269,7 @@ export default function TreeContent({
       {/* Zero Results Feedback State */}
       {filteredForest.length === 0 ? (
         <div className="flex flex-col items-center justify-center h-32 text-center px-4 select-none">
-          <span className="text-xl mb-1">🔍</span>
+          <SearchGlassIcon className="w-5 h-5 mb-1" />
           <p className="text-xs ui-muted">No categories, collections, templates, or items found</p>
         </div>
       ) : (

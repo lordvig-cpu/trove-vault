@@ -3,6 +3,7 @@
 import React from 'react';
 import Image from 'next/image';
 import { IMAGE_UPLOAD_ACCEPT, IMAGE_UPLOAD_MAX_BYTES } from '@/lib/storage';
+import { CameraIcon } from '@/components/icons/ContentIcons';
 
 interface ItemImagePickerProps {
   imageUrl: string | null;
@@ -45,7 +46,7 @@ export default function ItemImagePicker({
         </div>
       ) : (
         <label className="border-2 border-dashed rounded-xl p-4 flex flex-col items-center justify-center cursor-pointer item-modal-input transition group">
-          <span className="text-2xl mb-1 group-hover:scale-110 transition">📷</span>
+          <CameraIcon className="w-6 h-6 mb-1 group-hover:scale-110 transition" />
           <span className="text-xs item-modal-muted font-medium">Click to upload photo</span>
           <span className="text-[10px] item-modal-muted mt-0.5">PNG, JPG, WEBP, GIF or AVIF up to {IMAGE_UPLOAD_MAX_BYTES / (1024 * 1024)}MB</span>
           <input type="file" accept={IMAGE_UPLOAD_ACCEPT} onChange={onFileChange} className="sr-only" />

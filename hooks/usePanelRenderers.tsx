@@ -4,6 +4,7 @@ import { ItemRecord } from '@/types/item';
 import { DockContent } from '@/hooks/usePanelDockDrag';
 import { TreeTab } from '@/lib/filterTreeForest';
 import { itemMatchesQuery } from '@/lib/treeUtils';
+import { PackageIcon } from '@/components/icons/GlyphIcons';
 import { useCollections } from '@/hooks/useCollections';
 import { useModals } from '@/hooks/useModals';
 import { useTreePanels } from '@/hooks/useTreePanels';
@@ -299,7 +300,7 @@ export function usePanelRenderers({
       return (
         <div className="p-4 flex flex-col items-center justify-center text-center gap-3 h-full min-h-[220px] select-none">
           <div className="w-12 h-12 rounded-2xl bg-[color-mix(in_oklch,var(--brand-primary)_15%,transparent)] border border-[color-mix(in_oklch,var(--brand-primary)_35%,transparent)] flex items-center justify-center text-2xl shadow-sm">
-            📦
+            <PackageIcon className="w-6 h-6" />
           </div>
           <div className="flex flex-col gap-1">
             <div className="text-sm font-bold text-[var(--content-primary)] uppercase tracking-wider">

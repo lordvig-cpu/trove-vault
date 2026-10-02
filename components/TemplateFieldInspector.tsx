@@ -10,6 +10,7 @@ import TemplateRootActionMenu from '@/components/TemplateRootActionMenu';
 import { WarningIcon, ChevronDownIcon } from '@/components/icons/PanelIcons';
 import { CheckIcon, ChevronUpIcon } from '@/components/icons/GlyphIcons';
 import { HintGripIcon } from '@/components/icons/HintIcons';
+import { FieldTypeIcon } from '@/components/icons/ContentIcons';
 import '@/app/styles/components/templateFieldInspector.css';
 
 interface TemplateFieldInspectorProps {
@@ -40,13 +41,13 @@ interface TemplateFieldInspectorProps {
 
 const FIELD_TYPE_CONFIG: Record<
   FieldType,
-  { label: string; icon: string; badgeClass: string; desc: string }
+  { label: string; badgeClass: string; desc: string }
 > = {
-  text: { label: 'Text', icon: '📝', badgeClass: 'tmpl-type-badge-text', desc: 'Single-line or multi-line strings' },
-  number: { label: 'Number', icon: '🔢', badgeClass: 'tmpl-type-badge-number', desc: 'Numeric integers or decimals' },
-  select: { label: 'Dropdown / Select', icon: '📋', badgeClass: 'tmpl-type-badge-select', desc: 'Predefined list of choices' },
-  boolean: { label: 'Boolean (Yes/No)', icon: '🔘', badgeClass: 'tmpl-type-badge-boolean', desc: 'True/False binary toggle' },
-  date: { label: 'Date', icon: '📅', badgeClass: 'tmpl-type-badge-date', desc: 'Calendar date/time picker' },
+  text: { label: 'Text', badgeClass: 'tmpl-type-badge-text', desc: 'Single-line or multi-line strings' },
+  number: { label: 'Number', badgeClass: 'tmpl-type-badge-number', desc: 'Numeric integers or decimals' },
+  select: { label: 'Dropdown / Select', badgeClass: 'tmpl-type-badge-select', desc: 'Predefined list of choices' },
+  boolean: { label: 'Boolean (Yes/No)', badgeClass: 'tmpl-type-badge-boolean', desc: 'True/False binary toggle' },
+  date: { label: 'Date', badgeClass: 'tmpl-type-badge-date', desc: 'Calendar date/time picker' },
 };
 
 /* --------------------------------------------------------------------------
@@ -259,7 +260,7 @@ function TemplateFieldTreeRow({
             <HintGripIcon className="w-2 h-3" />
           </span>
           <span className={`tmpl-type-badge ${typeCfg.badgeClass} shrink-0`}>
-            <span>{typeCfg.icon}</span>
+            <FieldTypeIcon type={field.field_type} className="w-3 h-3" />
             <span>{typeCfg.label.split(' ')[0]}</span>
           </span>
           <div className="min-w-0 flex-1">
@@ -535,7 +536,7 @@ export default function TemplateFieldInspector({
                     }}
                     className="flex items-center gap-2 px-2 py-1.5 rounded-lg text-xs text-strong hover:bg-slate-800 transition cursor-pointer text-left"
                   >
-                    <span>{FIELD_TYPE_CONFIG[ft].icon}</span>
+                    <FieldTypeIcon type={ft} className="w-3.5 h-3.5" />
                     <span>{FIELD_TYPE_CONFIG[ft].label}</span>
                   </button>
                 ))}

@@ -1,12 +1,7 @@
 'use client';
 
 import React, { useState, useRef } from 'react';
-import {
-  FilterIcon,
-  SlidersHorizontalIcon,
-  SearchGlassIcon,
-  SearchClearIcon,
-} from '@/components/icons/TreeIcons';
+import { FilterIcon, SlidersHorizontalIcon, SearchGlassIcon, SearchClearIcon } from '@/components/icons/TreeIcons';
 import TreeSearchMenu from '@/components/TreeSearchMenu';
 import CollectionFilterTree from '@/components/CollectionFilterTree';
 import { CollectionRecord } from '@/types/collection';
@@ -16,6 +11,7 @@ import { FieldType } from '@/types/field';
 import { FIELD_TYPE_METAS } from '@/lib/fieldTypeMetas';
 import { HIERARCHY_FILTER_METAS, HierarchyFilterCategory } from '@/lib/hierarchyFilterMetas';
 import { CloseIcon } from '@/components/icons/PanelIcons';
+import { FieldTypeIcon, HierarchyCategoryIcon, FolderIcon } from '@/components/icons/ContentIcons';
 
 interface SearchAndFilterSectionProps {
   variant: 'flyout' | 'sidebar';
@@ -123,7 +119,7 @@ export default function SearchAndFilterSection({
   const advancedSearchSubheader = isContent ? (
     <>
       <span className="flex items-center gap-2 min-w-0">
-        <span className="w-4 shrink-0 flex items-center justify-center text-sm">🎛️</span>
+        <span className="w-4 shrink-0 flex items-center justify-center"><SlidersHorizontalIcon className="w-3.5 h-3.5" /></span>
         <span className="text-xs font-medium tree-panel-primary truncate">Field Type(s):</span>
       </span>
       <span
@@ -136,7 +132,7 @@ export default function SearchAndFilterSection({
   ) : isLayout ? (
     <>
       <span className="flex items-center gap-2 min-w-0">
-        <span className="w-4 shrink-0 flex items-center justify-center text-sm">🎛️</span>
+        <span className="w-4 shrink-0 flex items-center justify-center"><SlidersHorizontalIcon className="w-3.5 h-3.5" /></span>
         <span className="text-xs font-medium tree-panel-primary truncate">Show:</span>
       </span>
       <span
@@ -149,7 +145,7 @@ export default function SearchAndFilterSection({
   ) : (
     <>
       <span className="flex items-center gap-2 min-w-0">
-        <span className="w-4 shrink-0 flex items-center justify-center text-sm">📁</span>
+        <span className="w-4 shrink-0 flex items-center justify-center"><FolderIcon className="w-3.5 h-3.5" /></span>
         <span className="text-xs font-medium tree-panel-primary truncate">Collection(s):</span>
       </span>
       <span
@@ -442,7 +438,7 @@ export default function SearchAndFilterSection({
                     >
                       <CloseIcon />
                     </button>
-                    <span className="text-[11px] tree-filter-indicator">{meta.icon}</span>
+                    <span className="text-[11px] tree-filter-indicator"><FieldTypeIcon type={meta.type} className="w-3 h-3" /></span>
                     <span className="tree-filter-name max-w-[110px] truncate font-medium transition-colors">
                       {meta.label}
                     </span>
@@ -467,7 +463,7 @@ export default function SearchAndFilterSection({
                     >
                       <CloseIcon />
                     </button>
-                    <span className="text-[11px] tree-filter-indicator">{meta.icon}</span>
+                    <span className="text-[11px] tree-filter-indicator"><HierarchyCategoryIcon type={meta.type} className="w-3 h-3" /></span>
                     <span className="tree-filter-name max-w-[110px] truncate font-medium transition-colors">
                       {meta.label}
                     </span>
@@ -492,7 +488,7 @@ export default function SearchAndFilterSection({
                     >
                       <CloseIcon />
                     </button>
-                    <span className="text-[11px] tree-filter-indicator">{col.icon || '📁'}</span>
+                    <span className="text-[11px] tree-filter-indicator">{col.icon || <FolderIcon className="w-3 h-3" />}</span>
                     <span className="tree-filter-name max-w-[110px] truncate font-medium transition-colors">
                       {col.name}
                     </span>
@@ -563,7 +559,7 @@ export default function SearchAndFilterSection({
 
             {/* Field Types List */}
             <div className="searchMenuScrollList flex flex-col gap-0.5 max-h-56 overflow-y-auto px-1">
-              {FIELD_TYPE_METAS.map(({ type, label, icon }) => {
+              {FIELD_TYPE_METAS.map(({ type, label }) => {
                 const isChecked = !hasFieldTypeFilters || filterFieldTypes.includes(type);
                 const count = fieldTypeCounts[type] ?? 0;
 
@@ -582,7 +578,7 @@ export default function SearchAndFilterSection({
                         onChange={() => {}} // handled by parent div onClick
                         className="tree-filter-checkbox w-3.5 h-3.5 rounded cursor-pointer shrink-0"
                       />
-                      <span className="text-sm shrink-0">{icon}</span>
+                      <FieldTypeIcon type={type} className="w-3.5 h-3.5" />
                       <span className="font-medium text-xs truncate">{label}</span>
                     </div>
                     <span className="text-[10px] font-mono tree-panel-muted shrink-0 ml-2">
@@ -649,7 +645,7 @@ export default function SearchAndFilterSection({
 
             {/* Category List */}
             <div className="searchMenuScrollList flex flex-col gap-0.5 max-h-56 overflow-y-auto px-1">
-              {HIERARCHY_FILTER_METAS.map(({ type, label, icon }) => {
+              {HIERARCHY_FILTER_METAS.map(({ type, label }) => {
                 const isChecked = !hasHierarchyTypeFilters || filterHierarchyTypes.includes(type);
                 const count = hierarchyTypeCounts[type] ?? 0;
 
@@ -668,7 +664,7 @@ export default function SearchAndFilterSection({
                         onChange={() => {}} // handled by parent div onClick
                         className="tree-filter-checkbox w-3.5 h-3.5 rounded cursor-pointer shrink-0"
                       />
-                      <span className="text-sm shrink-0">{icon}</span>
+                      <HierarchyCategoryIcon type={type} className="w-3.5 h-3.5" />
                       <span className="font-medium text-xs truncate">{label}</span>
                     </div>
                     <span className="text-[10px] font-mono tree-panel-muted shrink-0 ml-2">

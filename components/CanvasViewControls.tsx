@@ -9,6 +9,7 @@ import { BODY_WIDTH_PRESETS } from '@/types/layout';
 import { useDismissOnOutsideOrEscape } from '@/hooks/useDismissOnOutsideOrEscape';
 import { useScreenWidth } from '@/hooks/useScreenWidth';
 import { activeBtn, barControlHeight, ghostBtn, idleBtn } from '@/components/editorBarStyles';
+import { ChevronUpIcon } from '@/components/icons/GlyphIcons';
 
 /**
  * Canvas preview controls used inside the template editor bar.
@@ -97,7 +98,7 @@ export function PreviewWidthPicker() {
           className={`min-w-[4.5rem] px-2 ${barControlHeight} rounded-md border text-[11px] font-mono font-semibold flex items-center justify-between gap-1 cursor-pointer disabled:opacity-60 disabled:cursor-default ${idleBtn}`}
         >
           <span>{shownWidth ? `${shownWidth}px` : '—'}</span>
-          <span aria-hidden="true" className="text-[9px]">▴</span>
+          <ChevronUpIcon className="w-2.5 h-2.5" />
         </button>
         {menuOpen && !isFit && (
           <div className="absolute bottom-full left-0 pb-1 z-10">

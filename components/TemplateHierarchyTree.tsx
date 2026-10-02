@@ -8,7 +8,7 @@ import {
   resolveDirection,
 } from '@/types/layout';
 import { FieldDefinition } from '@/types/field';
-import { GearIcon } from '@/components/icons/TreeIcons';
+import { GearIcon, SearchGlassIcon } from '@/components/icons/TreeIcons';
 import { useTreeActionMenu } from '@/hooks/useTreeActionMenu';
 import {
   TemplateContainerActionMenu,
@@ -18,6 +18,7 @@ import { BodyIcon, FlexRowIcon, FlexColumnIcon, ContainerOverflowIcon } from '@/
 import { activeIconColor } from '@/components/editorBarStyles';
 import { HierarchyFilterCategory, hierarchyNodeCategory } from '@/lib/hierarchyFilterMetas';
 import { ChevronDownIcon, ChevronRightIcon } from '@/components/icons/PanelIcons';
+import { CardsIcon, ComponentTypeIcon, LayoutGridIcon } from '@/components/icons/ContentIcons';
 
 /* ==========================================================================
    1. PROPS INTERFACE
@@ -207,7 +208,7 @@ function ContainerNodeRow({
   const containerIcon = isRoot ? (
     <BodyIcon className={`w-3.5 h-3.5 ${activeIconColor}`} />
   ) : container.isCard ? (
-    '🗂️'
+    <CardsIcon className={`w-3.5 h-3.5 ${activeIconColor}`} />
   ) : resolveDirection(container, isRoot) === 'row' ? (
     <FlexRowIcon className={`w-3.5 h-3.5 ${activeIconColor}`} />
   ) : (
@@ -479,16 +480,7 @@ function ComponentNodeRow({
   const label = component.label || boundField?.label || component.componentType;
 
   // Icon determining component representation
-  const componentIcon =
-    component.componentType === 'field'
-      ? '📝'
-      : component.componentType === 'table'
-      ? '📊'
-      : component.componentType === 'media'
-      ? '🖼️'
-      : component.componentType === 'stat'
-      ? '📈'
-      : '🗒️';
+  const componentIcon = <ComponentTypeIcon type={component.componentType} className={`w-3.5 h-3.5 ${activeIconColor}`} />;
 
   return (
     <div className="select-none text-[13px] font-sans w-full min-w-0 flex flex-col">
@@ -644,7 +636,7 @@ export default function TemplateHierarchyTree({
   if (!root) {
     return (
       <div className="p-4 flex flex-col items-center justify-center text-center gap-2 text-slate-500 h-full">
-        <span className="text-2xl">📐</span>
+        <LayoutGridIcon className="w-6 h-6" />
         <span className="text-xs font-semibold text-slate-400">No Layout Loaded</span>
         <p className="text-[11px] text-slate-500">
           Open a template to inspect and configure its visual content structure.
@@ -656,7 +648,7 @@ export default function TemplateHierarchyTree({
   if (visibleIds && !visibleIds.has(root.id)) {
     return (
       <div className="p-4 flex flex-col items-center justify-center text-center gap-2 text-slate-500 h-full">
-        <span className="text-2xl">🔍</span>
+        <SearchGlassIcon className="w-6 h-6" />
         <span className="text-xs font-semibold text-slate-400">No matches</span>
         <p className="text-[11px] text-slate-500">
           Nothing in this layout matches your search or filter.

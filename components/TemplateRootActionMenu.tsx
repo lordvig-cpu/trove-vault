@@ -12,6 +12,7 @@ import TreeSubMenu, {
 } from '@/components/TreeSubMenu';
 import { PlusIcon } from '@/components/icons/TreeIcons';
 import { CheckIcon } from '@/components/icons/GlyphIcons';
+import { TrashCanIcon } from '@/components/icons/PanelIcons';
 
 /** Gear flyout for the template itself (the root of the Content tab): edit name, icon and
     description, add a field, delete the template, or close the editor. Delete asks for a second
@@ -157,7 +158,7 @@ export default function TemplateRootActionMenu({
         <>
           <ActionMenuDivider />
           <ActionMenuDangerItem
-            icon={<span>🗑️</span>}
+            icon={<TrashCanIcon />}
             label="Delete Blueprint"
             subtext="Permanently remove template"
             onClick={() => {

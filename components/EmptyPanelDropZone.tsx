@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { DockBottomPanelIcon, DockRightPanelIcon, DockLeftPanelIcon } from '@/components/icons/PanelIcons';
 
 interface EmptyPanelDropZoneProps {
   panelTitle: string;
@@ -20,7 +21,7 @@ export default function EmptyPanelDropZone({
       <div className="empty-panel-dropzone group">
         <div className="empty-panel-dropzone-badge">
           <span className="text-xl leading-none" aria-hidden="true">
-            {position === 'bottom' ? '⬓' : position === 'right' ? '◨' : '◧'}
+            {position === 'bottom' ? <DockBottomPanelIcon className="w-5 h-5" isOpen /> : position === 'right' ? <DockRightPanelIcon className="w-5 h-5" isOpen /> : <DockLeftPanelIcon className="w-5 h-5" isOpen />}
           </span>
         </div>
         <div className="flex flex-col items-center gap-1 max-w-[220px]">

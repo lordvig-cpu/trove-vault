@@ -75,3 +75,10 @@ export const StarIcon = ({ className = 'w-3 h-3' }: GlyphIconProps) => (
     <path d="M12 2.5l2.9 6.1 6.6.8-4.9 4.6 1.3 6.6L12 17.3 6.1 20.6l1.3-6.6L2.5 9.4l6.6-.8L12 2.5z" />
   </svg>
 );
+
+/** CornerDownRightIcon: an elbow arrow (a nested child under its parent in a list). */
+export const CornerDownRightIcon = ({ className = 'w-3 h-3' }: GlyphIconProps) => (
+  <svg className={className} viewBox="0 0 24 24" {...strokeProps}>
+    <path d="M5 4v7a2 2 0 0 0 2 2h12M14 8l5 5-5 5" />
+  </svg>
+);

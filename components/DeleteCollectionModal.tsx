@@ -6,6 +6,7 @@ import { CollectionRecord } from '@/types/collection';
 import { ItemRecord } from '@/types/item';
 import { errorMessage } from '@/lib/errors';
 import { CloseIcon, WarningIcon } from '@/components/icons/PanelIcons';
+import { CornerDownRightIcon } from '@/components/icons/GlyphIcons';
 
 /* ==========================================================================
    1. TYPE DEFINITIONS & PROPS
@@ -171,7 +172,7 @@ export default function DeleteCollectionModal({
                     style={{ paddingLeft: `${(item.depth - 1) * 12}px` }}
                   >
                     <span className="truncate confirm-modal-item-name">
-                      {item.depth > 1 ? '↳ ' : '• '}
+                      {item.depth > 1 ? <CornerDownRightIcon className="inline w-3 h-3 align-text-bottom mr-1" /> : '• '}
                       {item.name}
                     </span>
                     <span className="text-[10px] confirm-modal-item-id shrink-0 ml-2">ID: #{item.id}</span>

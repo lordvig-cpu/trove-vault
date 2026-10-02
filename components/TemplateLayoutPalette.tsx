@@ -9,6 +9,7 @@ import {
 } from '@/types/layout';
 import { BodyIcon, FlexRowIcon, FlexColumnIcon } from '@/components/icons/LayoutIcons';
 import { ResetIcon } from '@/components/icons/GlyphIcons';
+import { TableIcon, NoteIcon, ImageIcon, ChartIcon, TextFieldIcon, PuzzleIcon, CardsIcon, RowsLayoutIcon, ColumnsLayoutIcon } from '@/components/icons/ContentIcons';
 
 /** The "Components" bottom-panel palette: click a layout primitive (row, column, columns, card) or a
     pre-set content block to add it to `selectedContainer`, or reset the layout to its default. */
@@ -42,19 +43,19 @@ const LAYOUT_PRIMITIVES: LayoutPrimitive[] = [
   {
     id: '2-col',
     label: '2-Column Split',
-    icon: <span className="text-base">▥</span>,
+    icon: <ColumnsLayoutIcon className="w-5 h-5 text-[var(--primary-accent)]" />,
     description: 'Two equal 50/50 flexible columns',
   },
   {
     id: '3-col',
     label: '3-Column Split',
-    icon: <span className="text-base">▤</span>,
+    icon: <RowsLayoutIcon className="w-5 h-5 text-[var(--primary-accent)]" />,
     description: 'Three equal 33% flexible columns',
   },
   {
     id: 'card',
     label: 'Card Wrapper',
-    icon: <span className="text-base">🗂️</span>,
+    icon: <CardsIcon className="w-5 h-5 text-[var(--primary-accent)]" />,
     description: 'Bordered card frame with surface background',
   },
 ];
@@ -64,7 +65,7 @@ interface ComponentCategory {
   items: {
     type: LayoutBlockType;
     label: string;
-    icon: string;
+    icon: React.ReactNode;
     variant: LayoutVariant;
     sizingType: 'fill' | 'fixed' | 'auto';
     sizingValue?: string;
@@ -79,7 +80,7 @@ const COMPONENT_CATEGORIES: ComponentCategory[] = [
       {
         type: 'table',
         label: 'Attribute Table',
-        icon: '📊',
+        icon: <TableIcon className="w-4 h-4" />,
         variant: 'table_row',
         sizingType: 'fill',
         description: 'Multi-row specifications table',
@@ -87,7 +88,7 @@ const COMPONENT_CATEGORIES: ComponentCategory[] = [
       {
         type: 'field',
         label: 'Field Card',
-        icon: '📝',
+        icon: <TextFieldIcon className="w-4 h-4" />,
         variant: 'standard',
         sizingType: 'fill',
         description: 'Standard card displaying field label & value',
@@ -100,7 +101,7 @@ const COMPONENT_CATEGORIES: ComponentCategory[] = [
       {
         type: 'media',
         label: 'Hero Media Box',
-        icon: '🖼️',
+        icon: <ImageIcon className="w-4 h-4" />,
         variant: 'hero',
         sizingType: 'fixed',
         sizingValue: '320px',
@@ -114,7 +115,7 @@ const COMPONENT_CATEGORIES: ComponentCategory[] = [
       {
         type: 'stat',
         label: 'Metric / Stat Card',
-        icon: '📈',
+        icon: <ChartIcon className="w-4 h-4" />,
         variant: 'stat',
         sizingType: 'fill',
         description: 'Large highlighted score or number',
@@ -127,7 +128,7 @@ const COMPONENT_CATEGORIES: ComponentCategory[] = [
       {
         type: 'note',
         label: 'Notes & Description',
-        icon: '📋',
+        icon: <NoteIcon className="w-4 h-4" />,
         variant: 'standard',
         sizingType: 'fill',
         description: 'Full-width rich text or overview',
@@ -175,7 +176,7 @@ export default function TemplateLayoutPalette({
                 : 'text-muted hover:text-strong hover:bg-slate-800/60'
             }`}
           >
-            <span>🧩</span>
+            <PuzzleIcon className="w-3.5 h-3.5" />
             <span>Pre-defined Components</span>
           </button>
         </div>

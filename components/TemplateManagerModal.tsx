@@ -6,6 +6,7 @@ import { ItemTemplate } from '@/types/template';
 import { fetchTemplateCatalog } from '@/lib/data/templates';
 import { errorMessage } from '@/lib/errors';
 import { CloseIcon } from '@/components/icons/PanelIcons';
+import { FileIcon, SparkleIcon } from '@/components/icons/ContentIcons';
 
 /* ==========================================================================
    1. TYPE DEFINITIONS & INTERFACES
@@ -127,7 +128,7 @@ export default function TemplateManagerModal({
         <div className="field-modal-header">
           <div>
             <div className="flex items-center gap-2">
-              <span className="text-xl">📑</span>
+              <FileIcon className="w-5 h-5" />
               <h2 className="text-base font-bold ui-primary">Item Schema Templates</h2>
             </div>
             <p className="text-xs ui-muted mt-0.5">
@@ -226,7 +227,7 @@ export default function TemplateManagerModal({
                 onClick={() => setShowSaveAsCustom(true)}
                 className="text-xs font-semibold ui-accent ui-hover-primary flex items-center gap-1.5 ui-surface-hover ui-border-subtle px-3 py-1.5 rounded-xl transition cursor-pointer"
               >
-                <span>✨</span>
+                <SparkleIcon />
                 <span>Add Custom Item Template</span>
               </button>
             </div>

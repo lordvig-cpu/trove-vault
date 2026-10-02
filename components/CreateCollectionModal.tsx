@@ -132,7 +132,7 @@ export default function CreateCollectionModal({
                 .filter((c) => c.id > 0)
                 .map((c) => (
                   <option key={c.id} value={c.id}>
-                    📁 {c.name}
+                    {c.name}
                   </option>
                 ))}
             </select>
