@@ -3,30 +3,39 @@
 import { useEffect, useId, useState } from 'react';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import SeedColorPicker from '@/components/SeedColorPicker';
-import { DEFAULT_BACKGROUND_COLOR, DEFAULT_PRIMARY_COLOR, DEFAULT_SECONDARY_COLOR, hexToRgba, normalizeHex, rgbaToHex } from '@/lib/color';
+import { hexToRgba, normalizeHex } from '@/lib/color';
 import { useUIPreferences } from '@/context/UIPreferencesContext';
 import { DiceIcon, LockIcon, UnlockIcon } from '@/components/icons/NavigationIcons';
 import type { ThemePreset } from '@/types/theme';
 
-/** Seeds each theme starts from when nothing is saved. Must match the CSS defaults: Dark/Light in
-    theme-oklch-dark.css (background: the calibrated canvas sample), EmberSteel in its own file. */
-const EMBERSTEEL_SEEDS = {
-  primary: '#6C85A6', // primary accent: side and bottom panels
-  secondary: '#FF9D00', // secondary accent: text and edges in menus and toolbars
-  background: '#0D121B',
-  primaryColor: '#1D2127', // header and footer
-  secondaryColor: '#2B2825', // tree submenus, search menus, template toolbars
+/** Seeds each theme starts from when nothing is saved. They must match the CSS defaults:
+    Classic in theme-oklch-dark.css, Dark and Light in theme-oklch-embersteel.css. */
+type Seeds = { primary: string; secondary: string; background: string; primaryColor: string; secondaryColor: string };
+const DEFAULT_SEEDS: Record<ThemePreset, Seeds> = {
+  'theme-oklch-dark': {
+    primary: '#6C85A6', // primary accent: side and bottom panels
+    secondary: '#FF9D00', // secondary accent: text and edges in menus and toolbars
+    background: '#14171B',
+    primaryColor: '#1D2127', // header and footer
+    secondaryColor: '#3A3632', // tree submenus, search menus, template toolbars
+  },
+  'theme-oklch-light': {
+    primary: '#4F6D94',
+    secondary: '#B36B00',
+    background: '#E9EDF2',
+    primaryColor: '#CBD3DD',
+    secondaryColor: '#E8DCC8',
+  },
+  'theme-oklch-classic': {
+    primary: '#0077FF',
+    secondary: '#FF9D00',
+    background: '#0A0F18', // the calibrated canvas sample
+    primaryColor: '#0077FF',
+    secondaryColor: '#B06C00',
+  },
 };
-function defaultSeeds(theme: ThemePreset) {
-  return theme === 'theme-oklch-embersteel'
-    ? EMBERSTEEL_SEEDS
-    : {
-        primary: rgbaToHex(DEFAULT_PRIMARY_COLOR),
-        secondary: rgbaToHex(DEFAULT_SECONDARY_COLOR),
-        background: rgbaToHex(DEFAULT_BACKGROUND_COLOR),
-        primaryColor: rgbaToHex(DEFAULT_PRIMARY_COLOR),
-        secondaryColor: rgbaToHex(DEFAULT_SECONDARY_COLOR),
-      };
+function defaultSeeds(theme: ThemePreset): Seeds {
+  return DEFAULT_SEEDS[theme];
 }
 
 /** A random hex color with mid-range saturation and lightness, so the derived OKLCH recipe stays readable. */
@@ -113,9 +122,8 @@ function HexSeedInput({ label, value, onChange, locked, onToggleLock }: {
 
 export default function OklchSeedControls() {
   const { theme } = useUIPreferences();
-  const emberSteel = theme === 'theme-oklch-embersteel';
-  // Dark and Light share one saved set (the original keys); EmberSteel keeps its own.
-  const suffix = emberSteel ? '_embersteel' : '';
+  // Each theme saves its own seeds: Classic keeps the original keys, Dark and Light add a suffix.
+  const suffix = theme === 'theme-oklch-classic' ? '' : theme === 'theme-oklch-light' ? '_embersteel_light' : '_embersteel';
   // The two original seeds: --oklch-blue is the primary accent, --oklch-yellow the secondary accent.
   const [accentA, setAccentA] = useLocalStorage<string | null>(`uc_oklch_primary${suffix}`, null);
   const [accentB, setAccentB] = useLocalStorage<string | null>(`uc_oklch_secondary${suffix}`, null);

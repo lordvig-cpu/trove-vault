@@ -79,23 +79,30 @@ editor uses at theme roles. Don't write `black`, `white`, `cyan`, hex or `rgba()
 Known exceptions: `lib/color.ts` default seeds and `PICKER_START` in `TemplateAppearanceControls.tsx`
 (JS needs a real hex), and template-owned colors stored as user data.
 
-## Third theme and the Background seed
+## Themes and the Background seed
 
-`theme-oklch-embersteel.css` is the third theme (footer selector: Dark / Light / EmberSteel).
-It shares the recipe and Dark's role coefficients, then re-states the chrome as flat slate panels
-lifted from a third seed, `--oklch-bg`, with charcoal flyouts and amber edges. Its seeds are slate
-`#64748B` (primary), amber `#F59E0B` (secondary) and `#080D10` (background); `EMBERSTEEL_SEEDS` in
-`OklchSeedControls.tsx` mirrors them for the picker display.
+The footer selector offers three presets. **Dark** and **Light** are the EmberSteel palette
+(`theme-oklch-embersteel.css`); **Classic** is the original blue/orange dark theme, which is just the
+shared recipe on the seeds in `theme-oklch-dark.css` and loads none of the EmberSteel rules (it is kept
+for now and may be removed once Dark and Light are settled).
 
-`--oklch-bg` is optional in Dark/Light: unset, the calibrated canvas samples
+EmberSteel shares the recipe, then re-states the chrome as flat slate panels lifted from the Background
+seed `--oklch-bg`, with charcoal (Dark) or pale (Light) flyouts and amber edges. Dark and Light share one
+set of rules; the two blocks at the top of the file hold only the per-mode parameters: the five seeds,
+`--ember-base` (what every surface mixes toward: near-black or near-white), the ink levels
+(`--ember-ink-*`), the grid step, and the shadow depth. Glow strength follows `--oklch-glow-opacity`
+(from `theme-oklch-light.css`). Dark seeds: slate `#6C85A6`, amber `#FF9D00`, background `#14171B`;
+Light seeds: `#4F6D94`, `#B36B00`, `#E9EDF2`. `DEFAULT_SEEDS` in `OklchSeedControls.tsx` mirrors all
+three themes' defaults for the picker display and must be kept in step with the CSS.
+
+`--oklch-bg` is optional in Classic: unset, the calibrated canvas samples
 (`--oklch-blue-10-15-24`, `--oklch-blue-8-12-20`) fall back to their blue-derived expressions
-(`scripts/generate-oklch-theme.mjs` emits that); set, the Background picker replaces them, and
-Light still flips it through the surface coefficients. Each theme family saves its own seeds
-(`uc_oklch_*` for Dark/Light, `uc_oklch_*_embersteel` for EmberSteel). Wash strength at the top and
-around flyouts/toolbars is `--flyout-glow-top` / `--flyout-glow-outer`; `--flyout-heading` is the
-split-flyout title color.
+(`scripts/generate-oklch-theme.mjs` emits that); set, the Background picker replaces them. Each theme
+saves its own seeds (`uc_oklch_*` for Classic, `uc_oklch_*_embersteel` for Dark,
+`uc_oklch_*_embersteel_light` for Light). Wash strength at the top and around flyouts/toolbars is
+`--flyout-glow-top` / `--flyout-glow-outer`; `--flyout-heading` is the split-flyout title color.
 
-### EmberSteel: five colors
+### EmberSteel (Dark and Light): five colors
 
 | Picker | Seed | Drives |
 | --- | --- | --- |
@@ -105,12 +112,11 @@ split-flyout title color.
 | Secondary | `--oklch-secondary` | tree submenus, search menus, template toolbars and their drop-downs |
 | Secondary Accent | `--oklch-yellow` | default text, edges and selected states inside those menus/toolbars |
 
-Surface colors are the seed mixed into a fixed dark base (`--ember-base`, the default background; `--ember-*` in the theme file), so the Background picker recolors only the canvas and grid, and a picked
-color shows as a dark tint of itself.
+Surface colors are the seed mixed into the fixed `--ember-base`, so the Background picker recolors only the canvas and grid, and a picked color shows as a tint of itself (dark in Dark, pale in Light).
 
-### Five colors in Dark and Light
+### Five colors in Classic
 
-Dark and Light use the same five pickers and the same mapping. `--oklch-primary` and
+Classic uses the same five pickers and the same mapping. `--oklch-primary` and
 `--oklch-secondary` default to the same colors as blue and yellow (as separate seeds, never linked to them), so an untouched
 palette is unchanged; setting them recolors only the header/footer and main content (`--nav-header-*`, `--content-card-*`, `--content-pill-*`, `--studio-grid-*` glow, `--content-border-*`,
 `--nav-footer-*`, `--col-dropdown-*`) and the surfaces of the tree submenus and search menus

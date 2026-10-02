@@ -1,20 +1,21 @@
 export type ThemePreset =
     'theme-oklch-dark' |
     'theme-oklch-light' |
-    'theme-oklch-embersteel';
+    'theme-oklch-classic';
 
-/** The footer's theme selector, in display order. */
+/** The footer's theme selector, in display order. Dark and Light are the EmberSteel palette
+    (theme-oklch-embersteel.css); Classic is the original blue/orange dark theme. */
 export const THEME_OPTIONS: ReadonlyArray<{ id: ThemePreset; label: string }> = [
     { id: 'theme-oklch-dark', label: 'Dark' },
     { id: 'theme-oklch-light', label: 'Light' },
-    { id: 'theme-oklch-embersteel', label: "EmberSteel" },
+    { id: 'theme-oklch-classic', label: 'Classic' },
 ];
 
-/** Preserve the light/dark preference saved by older theme selectors. */
+/** Map a saved theme value (including ids from older selectors) to a current preset. */
 export function normalizeTheme(value: unknown): ThemePreset {
-    // 'theme-oklch-new-n-shiny' is the id this theme was saved under before it was renamed.
-    if (value === 'theme-oklch-embersteel' || value === 'theme-oklch-new-n-shiny') return 'theme-oklch-embersteel';
+    if (value === 'theme-oklch-classic') return 'theme-oklch-classic';
     return value === 'theme-default-light' || value === 'theme-oklch-light'
         ? 'theme-oklch-light'
+        // 'theme-oklch-embersteel' and 'theme-oklch-new-n-shiny' were this theme's earlier ids.
         : 'theme-oklch-dark';
 }

@@ -1,7 +1,7 @@
 /* Edit these seeds (blue = primary accent, yellow = secondary accent; primary/secondary follow them unless set) to recolor BOTH modes. No regeneration is needed.
    Defaults correspond to Premium Contrast's rgba(0, 119, 255, 1) and rgba(248, 188, 9, 1).
    Light mode transforms the same dark recipe through role coefficients. */
-:is([data-theme='theme-oklch-dark'], [data-theme='theme-oklch-light'], [data-theme='theme-oklch-embersteel']) {
+:is([data-theme='theme-oklch-dark'], [data-theme='theme-oklch-light'], [data-theme='theme-oklch-classic']) {
   --oklch-blue: rgba(0, 119, 255, 1);
   --oklch-yellow: rgba(255, 157, 0, 1);
   /* Primary and Secondary start at the same colors as the accents but are their own seeds, never
@@ -83,6 +83,6 @@
   --badge-date-hue: 350;
 }
 
-:is([data-theme='theme-oklch-dark'], [data-theme='theme-oklch-embersteel']) {
+:is([data-theme='theme-oklch-dark'], [data-theme='theme-oklch-classic']) {
   color-scheme: dark;
 }

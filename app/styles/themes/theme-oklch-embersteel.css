@@ -1,6 +1,11 @@
-/* EmberSteel: a near-black workspace with slate panels and amber accents, after the design mockup.
-   It reuses the shared OKLCH recipe (theme-oklch.css) and Dark's role coefficients, then re-states
-   the chrome that recipe would otherwise tint with the blue seed.
+/* EmberSteel: the Dark and Light themes. A near-black (Dark) or near-white (Light) workspace with slate
+   panels and amber accents, after the design mockup. Classic (theme-oklch-dark.css's own seeds) is the
+   original blue/orange theme and does not load any of this.
+
+   It reuses the shared OKLCH recipe (theme-oklch.css), then re-states the chrome that recipe would
+   otherwise tint with the blue seed. Dark and Light share ONE set of rules (the last block); they differ
+   only in the per-mode parameters (seeds, --ember-base, ink levels, glow/shadow strength) set in the
+   two blocks below, so a rule is written once and both modes follow it.
 
    Five colors (the footer's pickers override them at runtime):
      --oklch-bg        Background        behind everything: canvas, grid
@@ -8,18 +13,51 @@
      --oklch-blue      Primary Accent    side and bottom panels, their rules; buttons, focus
      --oklch-secondary Secondary         tree submenus, search menus, template toolbars/drop-downs
      --oklch-yellow    Secondary Accent  text, edges and selected states inside those menus/toolbars
-   Surfaces are the color mixed into the background, so a picked color reads as a dark tint of
-   itself rather than a bright slab. */
-[data-theme='theme-oklch-embersteel'] {
+   Surfaces are the color mixed into --ember-base, so a picked color reads as a tint of itself (dark in
+   Dark, pale in Light) rather than a bright slab. Keep these seeds in step with DEFAULT_SEEDS in
+   components/OklchSeedControls.tsx. */
+
+/* Dark: per-mode parameters. */
+[data-theme='theme-oklch-dark'] {
+  color-scheme: dark;
   --oklch-bg: rgba(20, 23, 27, 1);
-  /* What every surface mix below darkens toward: the default Background, held fixed so the Background
-     picker recolors only the canvas and grid, not every panel, menu and ink built on top of it. */
+  /* What every surface mix below darkens toward: held fixed so the Background picker recolors only
+     the canvas and grid, not every panel, menu and ink built on top of it. */
   --ember-base: rgba(8, 13, 16, 1);
   --oklch-primary: rgba(29, 33, 39, 1);
   --oklch-blue: rgba(108, 133, 166, 1);
   --oklch-secondary: rgba(58, 54, 50, 1);
   --oklch-yellow: rgba(255, 157, 0, 1);
+  /* Ink outside the menus: lightness/chroma of primary, secondary and muted text. */
+  --ember-ink-1-l: 0.96; --ember-ink-1-c: 0.008;
+  --ember-ink-2-l: 0.84; --ember-ink-2-c: 0.02;
+  --ember-ink-3-l: 0.68; --ember-ink-3-c: 0.03;
+  /* How far the canvas grid line sits from the Background, and the depth shadow under bars and menus. */
+  --ember-grid-step: 0.05;
+  --ember-shadow: var(--shadow-black-50);
+  --ember-menu-shadow-depth: var(--shadow-black-50);
+}
 
+/* Light: pale base, deep ink, softer shadows and glows. */
+[data-theme='theme-oklch-light'] {
+  --oklch-bg: rgba(233, 237, 242, 1);
+  --ember-base: rgba(246, 248, 250, 1);
+  --oklch-primary: rgba(203, 211, 221, 1);
+  --oklch-blue: rgba(79, 109, 148, 1);
+  --oklch-secondary: rgba(232, 220, 200, 1);
+  --oklch-yellow: rgba(179, 107, 0, 1);
+  /* The amber is small label text on pale menus: never lighter than this, whatever is picked. */
+  --brand-secondary-amber: oklch(from var(--oklch-yellow) min(l, 0.52) c h);
+  --ember-ink-1-l: 0.22; --ember-ink-1-c: 0.02;
+  --ember-ink-2-l: 0.34; --ember-ink-2-c: 0.025;
+  --ember-ink-3-l: 0.48; --ember-ink-3-c: 0.03;
+  --ember-grid-step: -0.07;
+  --ember-shadow: color-mix(in oklab, var(--pole-shade) 14%, transparent);
+  --ember-menu-shadow-depth: color-mix(in oklab, var(--pole-shade) 22%, transparent);
+}
+
+/* Dark and Light: the shared EmberSteel rules. */
+:is([data-theme='theme-oklch-dark'], [data-theme='theme-oklch-light']) {
   /* Header / footer (Primary) */
   /* The Primary seed exactly, at the bar's outer edge (header top, footer bottom), shading toward the workspace. */
   --ember-bar: var(--oklch-primary);
@@ -48,31 +86,31 @@
   --flyout-glow-outer: 22%;
 
   /* Ink outside the menus */
-  --text-primary: oklch(from var(--ember-base) 0.96 0.008 h);
-  --text-secondary: oklch(from var(--ember-base) 0.84 0.02 h);
-  --text-muted: oklch(from var(--ember-base) 0.68 0.03 h);
+  --text-primary: oklch(from var(--ember-base) var(--ember-ink-1-l) var(--ember-ink-1-c) h);
+  --text-secondary: oklch(from var(--ember-base) var(--ember-ink-2-l) var(--ember-ink-2-c) h);
+  --text-muted: oklch(from var(--ember-base) var(--ember-ink-3-l) var(--ember-ink-3-c) h);
 
   /* Background */
   --canvas-bg-primary: var(--oklch-bg);
   --studio-grid-bg: var(--oklch-bg);
-  --studio-grid-line: oklch(from var(--oklch-bg) calc(l + 0.05) c h / 0.7);
-  --studio-grid-glow-top-left-core: color-mix(in oklab, var(--brand-primary) 22%, transparent);
-  --studio-grid-glow-top-left-edge: color-mix(in oklab, var(--brand-primary) 8%, transparent);
-  --studio-grid-glow-bottom-right-core: color-mix(in oklab, var(--brand-secondary-amber) 10%, transparent);
-  --studio-grid-glow-bottom-right-edge: color-mix(in oklab, var(--brand-secondary-amber) 3%, transparent);
-  --studio-grid-glow-bottom-right-blue-core: color-mix(in oklab, var(--brand-primary) 16%, transparent);
-  --studio-grid-glow-bottom-right-blue-edge: color-mix(in oklab, var(--brand-primary) 5%, transparent);
+  --studio-grid-line: oklch(from var(--oklch-bg) calc(l + var(--ember-grid-step)) c h / 0.7);
+  --studio-grid-glow-top-left-core: color-mix(in oklab, var(--brand-primary) calc(22% * var(--oklch-glow-opacity)), transparent);
+  --studio-grid-glow-top-left-edge: color-mix(in oklab, var(--brand-primary) calc(8% * var(--oklch-glow-opacity)), transparent);
+  --studio-grid-glow-bottom-right-core: color-mix(in oklab, var(--brand-secondary-amber) calc(10% * var(--oklch-glow-opacity)), transparent);
+  --studio-grid-glow-bottom-right-edge: color-mix(in oklab, var(--brand-secondary-amber) calc(3% * var(--oklch-glow-opacity)), transparent);
+  --studio-grid-glow-bottom-right-blue-core: color-mix(in oklab, var(--brand-primary) calc(16% * var(--oklch-glow-opacity)), transparent);
+  --studio-grid-glow-bottom-right-blue-edge: color-mix(in oklab, var(--brand-primary) calc(5% * var(--oklch-glow-opacity)), transparent);
   --studio-grid-vignette: transparent;
 
   /* Header and footer bars */
   --nav-header-background: linear-gradient(180deg, var(--ember-bar), var(--ember-bar-deep));
   --nav-header-border-bottom: 1px solid var(--ember-bar-line);
-  --nav-header-shadow: 0 1px 0 var(--shadow-black-50);
+  --nav-header-shadow: 0 1px 0 var(--ember-shadow);
   --nav-header-flare-bg: var(--ember-none);
   --nav-header-texture-bg: var(--ember-none);
   --nav-footer-background: linear-gradient(0deg, var(--ember-bar), var(--ember-bar-deep));
   --nav-footer-border-top: 1px solid var(--ember-bar-line);
-  --nav-footer-shadow: 0 -1px 0 var(--shadow-black-50);
+  --nav-footer-shadow: 0 -1px 0 var(--ember-shadow);
   --nav-footer-flare-bg: var(--ember-none);
   --nav-footer-texture-bg: var(--ember-none);
 
@@ -111,7 +149,7 @@
   /* Tree gear menus and Advanced Search (Secondary + Secondary Accent) */
   --tree-menu-shell-bg: var(--ember-menu);
   --tree-menu-shell-border: var(--ember-amber-edge);
-  --tree-menu-shell-shadow: 0 0 22px 0 oklch(from var(--brand-secondary-amber) l c h / 0.22), 0 16px 32px var(--shadow-black-50);
+  --tree-menu-shell-shadow: 0 0 22px 0 oklch(from var(--brand-secondary-amber) l c h / 0.22), 0 16px 32px var(--ember-menu-shadow-depth);
   --tree-menu-header-bg: var(--ember-none);
   --tree-menu-header-border: var(--ember-menu-line);
   --tree-menu-header-title: var(--ember-menu-ink);
@@ -152,14 +190,14 @@
 
 /* Menu text that reads white (deep ink in light mode): the flyout title, the active tab, each section
    heading and the label above every Properties input. */
-[data-theme='theme-oklch-embersteel'] .menuShellHead.menuShell .headerPill .headerTitle,
-[data-theme='theme-oklch-embersteel'] .menuSectionTitle,
-[data-theme='theme-oklch-embersteel'] .menu-field-label {
+:is([data-theme='theme-oklch-dark'], [data-theme='theme-oklch-light']) .menuShellHead.menuShell .headerPill .headerTitle,
+:is([data-theme='theme-oklch-dark'], [data-theme='theme-oklch-light']) .menuSectionTitle,
+:is([data-theme='theme-oklch-dark'], [data-theme='theme-oklch-light']) .menu-field-label {
   color: var(--flyout-white);
 }
 
-[data-theme='theme-oklch-embersteel'] .menuTab-active,
-[data-theme='theme-oklch-embersteel'] .menuTab-active:hover {
+:is([data-theme='theme-oklch-dark'], [data-theme='theme-oklch-light']) .menuTab-active,
+:is([data-theme='theme-oklch-dark'], [data-theme='theme-oklch-light']) .menuTab-active:hover {
   color: var(--flyout-white);
   text-shadow: 0 0 8px color-mix(in oklab, var(--secondary-accent) 55%, transparent);
   box-shadow:
@@ -168,6 +206,6 @@
 }
 
 /* An idle tab keeps a fainter amber edge so the row reads as amber buttons. */
-[data-theme='theme-oklch-embersteel'] .menuTab:not(.menuTab-active) {
+:is([data-theme='theme-oklch-dark'], [data-theme='theme-oklch-light']) .menuTab:not(.menuTab-active) {
   border-color: color-mix(in oklab, var(--secondary-accent) 45%, var(--ember-menu));
 }
