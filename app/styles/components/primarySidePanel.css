@@ -519,7 +519,8 @@
 .tree-header-toolbar::after {
   content: '';
   position: absolute;
-  inset: -0.125rem -0.625rem -0.5rem;
+  /* Bottom edge reaches the divider below: --tree-header-gap is the header's flex gap (default gap-2). */
+  inset: -0.125rem -0.625rem calc(-1 * var(--tree-header-gap, 0.5rem));
   z-index: -1;
   background:
     linear-gradient(to bottom,
@@ -529,6 +530,12 @@
       color-mix(in oklab, var(--primary-accent) 12%, var(--surface-panel)),
       var(--surface-panel));
   pointer-events: none;
+}
+
+/* An empty panel has no tab baseline for the header's amber bottom border to sit on, so only the
+   divider line shows, as on an occupied header. */
+.tree-header-empty {
+  border-bottom-color: transparent;
 }
 
 /* Use the scrollbar aqua, rather than the primary seed's deeper blue. */
