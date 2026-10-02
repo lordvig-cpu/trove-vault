@@ -46,11 +46,26 @@
   --oklch-blue: rgba(79, 109, 148, 1);
   --oklch-secondary: rgba(232, 220, 200, 1);
   --oklch-yellow: rgba(179, 107, 0, 1);
-  /* The amber is small label text on pale menus: never lighter than this, whatever is picked. */
-  --brand-secondary-amber: oklch(from var(--oklch-yellow) min(l, 0.52) c h);
-  --ember-ink-1-l: 0.22; --ember-ink-1-c: 0.02;
-  --ember-ink-2-l: 0.34; --ember-ink-2-c: 0.025;
-  --ember-ink-3-l: 0.48; --ember-ink-3-c: 0.03;
+  /* The amber is small label text and control ink on pale menus: never lighter than this (about 4.5:1
+     on the menu fill), whatever is picked. */
+  --brand-secondary-amber: oklch(from var(--oklch-yellow) min(l, 0.34) c h);
+  /* Destructive ink: the recipe's inverted reds are too light on pale menus. */
+  --danger-vivid: oklch(0.5 0.21 25);
+  /* Status reds are drawn as ink and tints on pale surfaces: deeper than Dark's. */
+  --status-danger: oklch(0.55 0.22 25);
+  --status-danger-soft: oklch(0.5 0.2 22);
+  --status-danger-strong: oklch(0.45 0.21 27);
+  --status-danger-tint: oklch(0.42 0.14 19);
+  --tree-menu-danger-text: oklch(0.46 0.2 25);
+  --tree-menu-danger-icon: oklch(0.5 0.21 25);
+  --tree-menu-danger-subtext: oklch(0.5 0.2 25);
+  --tree-menu-danger-hover-text: oklch(0.38 0.19 25);
+  --tree-menu-danger-hover-subtext: oklch(0.42 0.19 25);
+  /* Muted tree text (collection names, field names): halfway between the deep ink and the base. */
+  --tree-muted: color-mix(in oklab, var(--text-primary) 88%, var(--ember-base));
+  --ember-ink-1-l: 0.2; --ember-ink-1-c: 0.02;
+  --ember-ink-2-l: 0.26; --ember-ink-2-c: 0.025;
+  --ember-ink-3-l: 0.35; --ember-ink-3-c: 0.03;
   --ember-grid-step: -0.07;
   --ember-shadow: color-mix(in oklab, var(--pole-shade) 14%, transparent);
   --ember-menu-shadow-depth: color-mix(in oklab, var(--pole-shade) 22%, transparent);
