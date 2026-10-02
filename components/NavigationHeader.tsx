@@ -284,7 +284,7 @@ export default function NavigationHeader({
               <div
                 onPointerDown={onStartGrabbedContentDrag}
                 className={[
-                  'flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg select-none',
+                  'nav-grab-pill flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg select-none',
                   'border border-dashed border-[color-mix(in_oklch,var(--brand-primary)_45%,transparent)]',
                   'bg-[color-mix(in_oklch,var(--brand-primary)_10%,transparent)]',
                   'hover:bg-[color-mix(in_oklch,var(--brand-primary)_20%,transparent)]',

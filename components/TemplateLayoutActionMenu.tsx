@@ -561,13 +561,13 @@ export function TemplateContainerActionMenu({
           />
           <ActionMenuDivider />
           <ActionMenuItem
-            icon={<SplitColumnsIcon className="w-3.5 h-3.5" />}
+            icon={<SplitColumnsIcon className="w-3.5 h-3.5 menu-icon-accent" />}
             label="Split into 2 Columns"
             subtext="Side by side"
             onClick={act(() => onSplitContainer?.(container.id, 'columns', measureContainerPx(container.id, 'width')))}
           />
           <ActionMenuItem
-            icon={<SplitRowsIcon className="w-3.5 h-3.5" />}
+            icon={<SplitRowsIcon className="w-3.5 h-3.5 menu-icon-accent" />}
             label="Split into 2 Rows"
             subtext="Stacked"
             onClick={act(() => onSplitContainer?.(container.id, 'rows', measureContainerPx(container.id, 'height')))}

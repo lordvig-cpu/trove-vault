@@ -37,8 +37,8 @@
   --aqua-glass: color-mix(in oklab, var(--oklch-primary) 32%, var(--pole-surface));
   --aqua-glass-raised: color-mix(in oklab, var(--oklch-primary) 58%, var(--pole-surface));
   --aqua-glass-sunk: color-mix(in oklab, var(--oklch-primary) 18%, var(--pole-surface));
-  --aqua-bar: color-mix(in oklab, var(--oklch-primary) 55%, var(--pole-surface));
-  --aqua-bar-deep: color-mix(in oklab, var(--oklch-primary) 70%, var(--pole-surface));
+  --aqua-bar: color-mix(in oklab, var(--oklch-primary) 38%, var(--pole-surface));
+  --aqua-bar-deep: color-mix(in oklab, var(--oklch-primary) 52%, var(--pole-surface));
   --aqua-shadow: oklch(from var(--oklch-primary) 0.4 0.09 h / 0.2);
   --aqua-orange: var(--oklch-blue);
   --aqua-orange-fill: color-mix(in oklab, var(--oklch-blue) 8%, var(--pole-surface));
@@ -193,6 +193,25 @@
   --tree-tab-glow-active: drop-shadow(0 -2px 6px color-mix(in oklab, var(--oklch-blue) 30%, transparent));
   --tree-menu-rename-input-focus: var(--oklch-blue);
   --tree-menu-rename-save-text: var(--brand-secondary-amber);
+
+  /* Header nav tabs: the active one is a white pill with an orange underline. */
+  --nav-header-tab-bg-active: linear-gradient(180deg, var(--pole-surface), var(--aqua-glass));
+  --nav-header-tab-border: var(--aqua-line);
+  --nav-header-tab-shadow: 0 1px 4px var(--aqua-shadow);
+  --nav-header-tab-indicator: var(--oklch-blue);
+  --nav-header-tab-baseline: transparent;
+
+  /* Collection / category rows: white cards with a blue hairline; the selected one gets the orange outline. */
+  --tree-category-card-bg: linear-gradient(180deg, var(--pole-surface), var(--aqua-glass-sunk));
+  --tree-category-card-border: var(--aqua-line);
+  --tree-category-card-shadow: 0 1px 3px var(--aqua-shadow);
+  --tree-category-card-hover-bg: linear-gradient(180deg, var(--pole-surface), var(--aqua-glass-raised));
+  --tree-category-card-hover-border: var(--aqua-line-strong);
+  --tree-category-card-active-bg: linear-gradient(180deg, var(--pole-surface), var(--aqua-orange-fill));
+  --tree-category-card-active-border: var(--oklch-blue);
+  --tree-category-badge-bg: var(--pole-surface);
+  --tree-category-badge-border: var(--aqua-edge);
+  --tree-category-badge-text: var(--brand-secondary-amber);
 }
 
 /* Menu text that reads deep ink: the flyout title, each section heading and the label above every
@@ -227,9 +246,34 @@
   box-shadow: none;
 }
 
-/* The header's own bottom rule is a faint blue line; the orange baseline belongs to the active tab. */
+/* The header's bottom rule is a faint blue line, and the orange baseline the active tab sits on when
+   the panel holds something. */
 [data-theme='theme-oklch-light'] .primary-side-panel-header {
   border-bottom-color: var(--aqua-line);
+}
+[data-theme='theme-oklch-light'] .primary-side-panel-header.tree-header-occupied {
+  border-bottom-color: var(--oklch-blue);
+}
+
+/* A panel's title band is white glass fading to pale blue, with a hairline divider below it. */
+[data-theme='theme-oklch-light'] .primary-side-panel-header .tree-header-toolbar::after {
+  background: linear-gradient(180deg, var(--pole-surface), var(--aqua-glass));
+}
+[data-theme='theme-oklch-light'] .tree-header-divider {
+  border-top-color: var(--aqua-line);
+  box-shadow: none;
+}
+
+/* The Grab Item pill is a blue dashed chip (the Primary seed, deepened), not orange. */
+[data-theme='theme-oklch-light'] .nav-grab-pill {
+  color: var(--aqua-blue);
+  border-color: var(--aqua-line-strong);
+  background: color-mix(in oklab, var(--oklch-primary) 45%, var(--pole-surface));
+}
+
+/* An action-menu icon opted in with menu-icon-accent (the Split icons) is orange; the rest stay ink. */
+[data-theme='theme-oklch-light'] .menu-icon-accent {
+  color: var(--brand-secondary-amber);
 }
 
 /* Section headings ("Search and Filter"): blue text between pale blue rules, no shadow. */
