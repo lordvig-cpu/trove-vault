@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { useUIPreferences } from '@/context/UIPreferencesContext';
 import { useCollections } from '@/hooks/useCollections';
 import { useModals } from '@/hooks/useModals';
@@ -193,6 +193,17 @@ export default function Home() {
       }
     },
   });
+
+  // What the template editor's canvas and preview draw content with: the first real item of the template
+  // being edited (so a Name shows an actual name), with its collections' names. None -> sample values.
+  const editingTemplateId = templateEditor.isEditing ? templateEditor.activeTemplate?.id : undefined;
+  const previewData = useMemo(
+    () => ({
+      item: editingTemplateId == null ? null : allItems.find((item) => item.template_id === editingTemplateId) ?? null,
+      collectionNames: Object.fromEntries(allCollections.map((collection) => [collection.id, collection.name])),
+    }),
+    [editingTemplateId, allItems, allCollections]
+  );
 
   const hierarchy = useHierarchyState(templateEditor);
   const { hierarchyNodeCount, handleOpenProperties, handlePlaceField, handlePlaceLoremIpsum, handleAddContainer } = hierarchy;
@@ -616,6 +627,7 @@ export default function Home() {
               onEditItem={handleTriggerEditItem}
               onDeleteItem={handleTriggerDeleteItem}
               editingTemplate={templateEditor.isEditing ? templateEditor.activeTemplate : null}
+              previewData={previewData}
               onDoneEditingTemplate={templateEditor.stopEditing}
               flexLayoutConfig={templateEditor.flexLayoutConfig}
               selectedNodeId={templateEditor.selectedNodeId}

@@ -360,9 +360,8 @@ export function useTemplateLayoutTree({
       addFlexComponent(target, {
         componentType: 'field',
         field_id: fieldId,
+        binding: { kind: 'field', field_id: fieldId },
         label: fieldDef.label,
-        variant: 'standard',
-        sizing: { type: 'fixed', value: '48%' },
       });
     },
     [activeTemplate, activeContainerId, flexLayoutConfig, addFlexComponent]
@@ -377,8 +376,7 @@ export function useTemplateLayoutTree({
       addFlexComponent(target, {
         componentType: 'note',
         label: 'Lorem Ipsum',
-        variant: 'standard',
-        sizing: { type: 'fill' },
+        binding: { kind: 'static', text: LOREM_IPSUM_TEXT },
         custom_props: { text: LOREM_IPSUM_TEXT },
       });
     },

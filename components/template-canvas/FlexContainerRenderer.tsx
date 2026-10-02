@@ -12,6 +12,7 @@ import {
 } from '@/types/layout';
 import ContainerResizeHandles from '@/components/ContainerResizeHandles';
 import FlexComponentRenderer from '@/components/template-canvas/FlexComponentRenderer';
+import { boxLookCss } from '@/lib/layoutContent';
 import { InboxIcon } from '@/components/icons/GlyphIcons';
 
 /* ==========================================================================
@@ -242,18 +243,7 @@ export default function FlexContainerRenderer({
     ...(!isRoot && container.margin ? { margin: container.margin } : null),
     // Look (Appearance section). Inline, so it wins over the edit-mode tints and the card frame's
     // classes in both modes. The shadow is drawn at 40% strength so it stays soft in any color.
-    ...(container.background ? { backgroundColor: container.background } : null),
-    ...(container.borderWidth
-      ? { border: `${container.borderWidth}px solid ${container.borderColor || 'var(--primary-border-subtle)'}` }
-      : null),
-    ...(container.borderRadius ? { borderRadius: `${container.borderRadius}px` } : null),
-    ...(container.shadowY || container.shadowBlur
-      ? {
-          boxShadow: `0 ${container.shadowY ?? 0}px ${container.shadowBlur ?? 0}px color-mix(in srgb, ${
-            container.shadowColor || 'var(--pole-shade)'
-          } 40%, transparent)`,
-        }
-      : null),
+    ...boxLookCss(container),
     // Children of a stacked row take the full width, ignoring their row-mode widths.
     ...(parentStacked ? { width: '100%', maxWidth: container.maxWidth || undefined, flex: '0 0 auto' } : null),
   };

@@ -276,6 +276,22 @@ commit whenever you add, remove, split or rename a file — it goes stale otherw
   `HintSetting` the button's `icon`.
   Every bubble has that one shape (`HintContent`); wrap a `?` icon in it, or a button
   (`interactive`). `ActionMenuSection` takes an optional `hint` for a `?` beside its heading.
+- **Content** (a component in the tree) has no Layout, Spacing or Size of its own: its container positions and
+  sizes it, so dropping content into a configured container is a plain drag/drop. Wanting two pieces of
+  content to split a row unevenly means putting each in its own container (Split makes that quick), not
+  giving content a width. Content only has visual styling. A content element is a *binding* (what it
+  shows: a built-in item value `name`/`image`/`collections`/`created`/`subitems`, a template field, or static
+  text), a *display style* (how: chosen from the binding's data type, e.g. boolean = checkbox / toggle /
+  pill / Yes-No; the first offered is the default), and a *look* (`textStyle` for the value, `labelStyle`
+  for its label, the same box-look properties a container has). `lib/layoutContent.ts` holds the pure
+  rules (`bindingOf`, `displayStylesFor`, `resolveValue`, text presets Title/Heading/Body/Caption/Label --
+  presets are copied onto an element as a starting point, not linked). A layout saved before bindings
+  existed still works: `bindingOf` derives a binding from the old `field_id`/note text, and a legacy
+  `sizing` on a component is still honored (it is deprecated and never written for new content). Content
+  is drawn by `ContentValue` from the item in `ContentDataContext` (the editor shows the first item of
+  the template being edited, or sample values when it has none). Pre-defined content (a field list)
+  will expand into ordinary containers and content rather than being one opaque component. The table /
+  media / stat blocks in the Components palette are still the old mock placeholders until that lands.
 - Layout tree edits (add, insert sibling, split, update, remove) are pure functions in
   `lib/layoutTree.ts`, covered by `tests/layout-tree.spec.ts`; the flex layout tree's selection and
   CRUD around them lives in `hooks/useTemplateLayoutTree.ts`, which `useTemplateEditor` composes (it

@@ -19,7 +19,10 @@ const fields = [
   { id: 1, label: 'Alpha' },
   { id: 2, label: 'Beta' },
 ];
-const freshRoot = (): FlexContainerNode => createDefaultFlexLayout(fields).root;
+// The default layout's card stacks its fields in a column; these tests are about splitting inside a
+// ROW parent, so the fixture makes it one explicitly.
+const freshRoot = (): FlexContainerNode =>
+  updateContainer(createDefaultFlexLayout(fields).root, 'container-general', { direction: 'row', wrap: true });
 const general = (root: FlexContainerNode) => findFlexNode(root, 'container-general') as FlexContainerNode;
 const childIds = (container: FlexContainerNode) => container.children.map((c) => c.id);
 

@@ -43,8 +43,8 @@ test.describe('Template Layout Engine', () => {
     if (generalCard.nodeType === 'container') {
       expect(generalCard.label).toBe('General Information');
       expect(generalCard.isCard).toBe(true);
-      expect(generalCard.direction).toBe('row');
-      expect(generalCard.wrap).toBe(true);
+      // Content has no size of its own, so the card stacks its fields at full width.
+      expect(generalCard.direction).toBe('column');
       expect(generalCard.children).toHaveLength(3);
 
       const firstComp = generalCard.children[0];
@@ -52,8 +52,8 @@ test.describe('Template Layout Engine', () => {
       if (firstComp.nodeType === 'component') {
         expect(firstComp.field_id).toBe(101);
         expect(firstComp.label).toBe('Player Count');
-        expect(firstComp.sizing.type).toBe('fixed');
-        expect(firstComp.sizing.value).toBe('48%');
+        expect(firstComp.binding).toEqual({ kind: 'field', field_id: 101 });
+        expect(firstComp.sizing).toBeUndefined();
       }
     }
 

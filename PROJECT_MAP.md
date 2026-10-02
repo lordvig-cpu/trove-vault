@@ -127,11 +127,15 @@ search/filter menu), `PanelViewTabs.tsx` (paper folder view tabs, add/expand-all
 
 `TemplateEditorStage.tsx`'s canvas pieces: `ScaledCanvas.tsx` (fits the Body to the available width,
 applies zoom), `FlexContainerRenderer.tsx` (recursive container renderer: selection, drag-drop,
-resize handles), `FlexComponentRenderer.tsx` (a single field/table/media/stat/note component).
+resize handles), `FlexComponentRenderer.tsx` (a single content component: bound content draws through
+`ContentValue.tsx`, the old table/media/stat blocks stay placeholders), `ContentValue.tsx` (one bound value in
+its display style, with label and typography).
 
 ## context/
 
 - `CanvasZoomContext.tsx` — the template editor's preview-width/zoom state (editor-only, resets on close).
+- `ContentDataContext.tsx` — the item (and its collections' names) content elements draw their values from; the
+  template editor provides a sample item, the item view will provide the viewed one.
 - `TreeActionsContext.tsx` — the tree-gear menus' CRUD callbacks (rename/delete/edit), provided once
   near the tree root instead of threaded through every row.
 - `TreePanelContext.tsx` — whether the current tree is inside a flyout and whether it's pinned.
@@ -197,6 +201,8 @@ resize handles), `FlexComponentRenderer.tsx` (a single field/table/media/stat/no
   covered by `tests/layout-history.spec.ts`.
 - `layoutTree.ts` — pure functions over the flex layout tree (build/insert/split/update/remove node,
   label helpers); covered by `tests/layout-tree.spec.ts`.
+- `layoutContent.ts` — pure functions for content elements: bindings, display styles per data type, resolving
+  values from an item (or samples), labels, text presets, box-look CSS; covered by `tests/layout-content.spec.ts`.
 - `panelTitles.ts` — `getPanelTitle()`: the header title for a panel's docked tab(s).
 - `storage.ts` — item photo upload/remove/validate against Supabase Storage.
 - `supabase.ts` — the typed Supabase client instance.
@@ -215,7 +221,7 @@ direction/sizing helpers), `database.ts` (the Supabase-shaped `Database` type, h
 Playwright specs, run against a production build on port 3100: `workspace.spec.ts` (docking,
 preferences, keyboard shortcuts), `collections-panel.spec.ts`, `template-layout.spec.ts` (the
 template editor), `template-drag-highlight.spec.ts`, `layout-tree.spec.ts` (the pure functions in
-`lib/layoutTree.ts`), `layout-history.spec.ts` (undo/redo history), `stacking.spec.ts` (responsive row-to-column stacking), `data.spec.ts`.
+`lib/layoutTree.ts`), `layout-content.spec.ts` (content bindings, display styles, values, styles), `layout-history.spec.ts` (undo/redo history), `stacking.spec.ts` (responsive row-to-column stacking), `data.spec.ts`.
 
 ## Root & config
 

@@ -4,7 +4,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import {
   FlexContainerNode,
   FlexComponentNode,
-  LayoutVariant,
   resolveDirection,
   normalizeAlign,
   normalizeJustify,
@@ -52,7 +51,7 @@ import {
 } from '@/components/icons/LayoutIcons';
 import { ArrowUpIcon } from '@/components/icons/GlyphIcons';
 import { TrashCanIcon } from '@/components/icons/PanelIcons';
-import { VariantIcon, CardsIcon, ComponentTypeIcon, BulbIcon } from '@/components/icons/ContentIcons';
+import { CardsIcon, ComponentTypeIcon, BulbIcon } from '@/components/icons/ContentIcons';
 
 /* Help bubbles for the Body flyout's Properties sections (see HoverHint for the shape). */
 const BODY_SIZE_HINT: HintContent = {
@@ -244,15 +243,6 @@ const CONTAINER_SPACING_HINT: HintContent = {
     { kind: 'tip', text: <>Turn on <HintRef icon={<LinkIcon className="w-2.5 h-2.5" />}>Link sides</HintRef> to change all four together.</> },
   ],
 };
-
-const VARIANT_OPTIONS: { variant: LayoutVariant; label: string }[] = [
-  { variant: 'standard', label: 'Standard Card' },
-  { variant: 'compact', label: 'Compact Pill' },
-  { variant: 'stat', label: 'Stat / Metric' },
-  { variant: 'table_row', label: 'Table Row' },
-  { variant: 'hero', label: 'Hero Display' },
-  { variant: 'callout', label: 'Callout Accent' },
-];
 
 /* ==========================================================================
    1. CONTAINER ACTION MENU (Flyout Properties)
@@ -856,72 +846,6 @@ export function TemplateComponentActionMenu({
           <span className="text-xs font-mono font-bold uppercase text-[var(--primary-accent)]">
             {component.componentType}
           </span>
-        </div>
-
-        {/* Flex Sizing Behavior */}
-        <div className="flex flex-col gap-1">
-          <label className="text-[10px] font-bold text-muted uppercase tracking-wider">
-            Flex Sizing
-          </label>
-          <div className="grid grid-cols-3 gap-1">
-            <button
-              type="button"
-              onClick={() => onUpdateComponent?.(component.id, { sizing: { type: 'fill' } })}
-              className={`py-1 px-1.5 rounded-md text-[10.5px] font-semibold border transition cursor-pointer text-center ${
-                (component.sizing?.type || 'fill') === 'fill'
-                  ? 'bg-[color-mix(in_oklch,var(--primary-accent)_30%,transparent)] text-[var(--text-strong)] border-[var(--primary-accent)] shadow-sm'
-                  : 'bg-surface-secondary text-muted border-subtle hover:text-[var(--text-strong)]'
-              }`}
-            >
-              Fill
-            </button>
-            <button
-              type="button"
-              onClick={() => onUpdateComponent?.(component.id, { sizing: { type: 'auto' } })}
-              className={`py-1 px-1.5 rounded-md text-[10.5px] font-semibold border transition cursor-pointer text-center ${
-                component.sizing?.type === 'auto'
-                  ? 'bg-[color-mix(in_oklch,var(--primary-accent)_30%,transparent)] text-[var(--text-strong)] border-[var(--primary-accent)] shadow-sm'
-                  : 'bg-surface-secondary text-muted border-subtle hover:text-[var(--text-strong)]'
-              }`}
-            >
-              Auto
-            </button>
-            <button
-              type="button"
-              onClick={() => onUpdateComponent?.(component.id, { sizing: { type: 'fixed', value: '160px' } })}
-              className={`py-1 px-1.5 rounded-md text-[10.5px] font-semibold border transition cursor-pointer text-center ${
-                component.sizing?.type === 'fixed'
-                  ? 'bg-[color-mix(in_oklch,var(--primary-accent)_30%,transparent)] text-[var(--text-strong)] border-[var(--primary-accent)] shadow-sm'
-                  : 'bg-surface-secondary text-muted border-subtle hover:text-[var(--text-strong)]'
-              }`}
-            >
-              Fixed
-            </button>
-          </div>
-        </div>
-
-        {/* Layout Variant Selector */}
-        <div className="flex flex-col gap-1">
-          <label className="text-[10px] font-bold text-muted uppercase tracking-wider">
-            Display Variant
-          </label>
-          <div className="grid grid-cols-2 gap-1">
-            {VARIANT_OPTIONS.map((v) => (
-              <button
-                key={v.variant}
-                type="button"
-                onClick={() => onUpdateComponent?.(component.id, { variant: v.variant })}
-                className={`flex items-center gap-1.5 p-1.5 rounded-md border text-[11px] font-medium transition cursor-pointer text-left ${
-                  (component.variant || 'standard') === v.variant
-                    ? 'bg-[color-mix(in_oklch,var(--primary-accent)_30%,transparent)] border-[var(--primary-accent)] text-[var(--text-strong)] shadow-sm font-bold'
-                    : 'bg-surface-secondary border-subtle text-muted hover:text-[var(--text-strong)]'
-                }`}
-              >
-                <VariantIcon variant={v.variant} className="w-3.5 h-3.5" />
-                <span className="truncate">{v.label}</span>
-              </button>
-            ))}
-          </div>
         </div>
 
         {/* Bound Schema Field Selector (if field type) */}

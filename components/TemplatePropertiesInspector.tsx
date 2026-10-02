@@ -8,7 +8,6 @@ import {
   FlexGap,
   FlexAlign,
   FlexJustify,
-  LayoutVariant,
   resolveDirection,
   parsePxValue,
   resolvePaddingCss,
@@ -18,7 +17,7 @@ import TemplateContainerSizing from '@/components/TemplateContainerSizing';
 import { FlexRowIcon, FlexColumnIcon, LayoutContainerIcon } from '@/components/icons/LayoutIcons';
 import { ArrowUpIcon } from '@/components/icons/GlyphIcons';
 import { CloseIcon } from '@/components/icons/PanelIcons';
-import { VariantIcon, PuzzleIcon } from '@/components/icons/ContentIcons';
+import { PuzzleIcon } from '@/components/icons/ContentIcons';
 import { GearIcon } from '@/components/icons/TreeIcons';
 
 /** The docked "Properties" tab: edits the selected container or component node (direction, gap,
@@ -42,15 +41,6 @@ const GAP_OPTIONS: { value: FlexGap; label: string }[] = [
   { value: 16, label: '16px' },
   { value: 24, label: '24px' },
   { value: 32, label: '32px' },
-];
-
-const VARIANT_OPTIONS: { variant: LayoutVariant; label: string }[] = [
-  { variant: 'standard', label: 'Standard Card' },
-  { variant: 'compact', label: 'Compact Pill' },
-  { variant: 'stat', label: 'Stat / Metric' },
-  { variant: 'table_row', label: 'Table Row' },
-  { variant: 'hero', label: 'Hero Display' },
-  { variant: 'callout', label: 'Callout Accent' },
 ];
 
 export default function TemplatePropertiesInspector({
@@ -364,94 +354,6 @@ export default function TemplatePropertiesInspector({
               placeholder="Custom label..."
               className="px-2.5 py-1.5 text-xs bg-surface-secondary border border-subtle rounded-lg text-strong focus:outline-none focus:border-[var(--primary-accent)] font-medium"
             />
-          </div>
-
-          {/* Flex Sizing Behavior */}
-          <div className="flex flex-col gap-1.5">
-            <label className="text-[10px] font-bold text-muted uppercase tracking-wider">
-              Flex Sizing Behavior
-            </label>
-            <div className="grid grid-cols-3 gap-1">
-              <button
-                type="button"
-                onClick={() => onUpdateComponent(selectedNode.id, { sizing: { type: 'fill' } })}
-                className={`py-1.5 px-2 rounded-lg text-[11px] font-semibold border transition cursor-pointer text-center ${
-                  selectedNode.sizing.type === 'fill'
-                    ? 'bg-[color-mix(in_oklch,var(--primary-accent)_30%,transparent)] text-[var(--text-strong)] border-[var(--primary-accent)]'
-                    : 'bg-surface-secondary text-muted border-subtle hover:text-[var(--text-strong)]'
-                }`}
-                title="Expands to fill available row or column space"
-              >
-                Fill Space
-              </button>
-
-              <button
-                type="button"
-                onClick={() => onUpdateComponent(selectedNode.id, { sizing: { type: 'fixed', value: '300px' } })}
-                className={`py-1.5 px-2 rounded-lg text-[11px] font-semibold border transition cursor-pointer text-center ${
-                  selectedNode.sizing.type === 'fixed'
-                    ? 'bg-[color-mix(in_oklch,var(--primary-accent)_30%,transparent)] text-[var(--text-strong)] border-[var(--primary-accent)]'
-                    : 'bg-surface-secondary text-muted border-subtle hover:text-[var(--text-strong)]'
-                }`}
-                title="Fixed width (e.g. 300px for sidebar or media)"
-              >
-                Fixed Width
-              </button>
-
-              <button
-                type="button"
-                onClick={() => onUpdateComponent(selectedNode.id, { sizing: { type: 'auto' } })}
-                className={`py-1.5 px-2 rounded-lg text-[11px] font-semibold border transition cursor-pointer text-center ${
-                  selectedNode.sizing.type === 'auto'
-                    ? 'bg-[color-mix(in_oklch,var(--primary-accent)_30%,transparent)] text-[var(--text-strong)] border-[var(--primary-accent)]'
-                    : 'bg-surface-secondary text-muted border-subtle hover:text-[var(--text-strong)]'
-                }`}
-                title="Sizes naturally to content"
-              >
-                Auto / Fit
-              </button>
-            </div>
-
-            {selectedNode.sizing.type === 'fixed' && (
-              <div className="flex items-center gap-2 pt-1">
-                <input
-                  type="text"
-                  value={selectedNode.sizing.value || '300px'}
-                  onChange={(e) =>
-                    onUpdateComponent(selectedNode.id, {
-                      sizing: { type: 'fixed', value: e.target.value },
-                    })
-                  }
-                  placeholder="e.g. 320px or 50%"
-                  className="flex-1 px-2.5 py-1 text-xs bg-surface-secondary border border-subtle rounded-lg text-strong font-mono focus:outline-none focus:border-[var(--primary-accent)]"
-                />
-                <span className="text-[10px] text-muted">e.g. 300px, 50%</span>
-              </div>
-            )}
-          </div>
-
-          {/* Style Presentation Variant */}
-          <div className="flex flex-col gap-1.5">
-            <label className="text-[10px] font-bold text-muted uppercase tracking-wider">
-              Visual Presentation Variant
-            </label>
-            <div className="grid grid-cols-2 gap-1.5">
-              {VARIANT_OPTIONS.map((opt) => (
-                <button
-                  key={opt.variant}
-                  type="button"
-                  onClick={() => onUpdateComponent(selectedNode.id, { variant: opt.variant })}
-                  className={`flex items-center gap-2 p-2 rounded-lg border text-xs font-medium transition cursor-pointer text-left ${
-                    selectedNode.variant === opt.variant
-                      ? 'bg-[color-mix(in_oklch,var(--primary-accent)_25%,transparent)] border-[var(--primary-accent)] text-[var(--text-strong)]'
-                      : 'bg-surface-secondary border-subtle text-muted hover:text-[var(--text-strong)]'
-                  }`}
-                >
-                  <VariantIcon variant={opt.variant} className="w-3.5 h-3.5" />
-                  <span className="truncate">{opt.label}</span>
-                </button>
-              ))}
-            </div>
           </div>
 
           {/* Bound Field Selector (for field components) */}

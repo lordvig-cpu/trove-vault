@@ -125,6 +125,53 @@ export type LayoutVariant =
   | 'hero'        // Large hero card format (image / banner)
   | 'callout';    // Accent callout box
 
+/** The item values (not template fields) a content element can show. */
+export type BuiltinKey = 'name' | 'image' | 'collections' | 'created' | 'subitems';
+
+/** What a content element shows: a built-in item value, a template field, or fixed text. A component
+ *  saved before bindings existed has none; `bindingOf` (lib/layoutContent.ts) derives it from the
+ *  legacy `field_id` / note text. */
+export type ContentBinding =
+  | { kind: 'builtin'; key: BuiltinKey }
+  | { kind: 'field'; field_id: number }
+  | { kind: 'static'; text: string };
+
+/** How a value is drawn. Which are offered depends on the binding's data type
+ *  (`displayStylesFor` in lib/layoutContent.ts); the first one offered is the default. */
+export type ContentDisplayStyle =
+  | 'text' | 'badge' | 'chips' | 'list'
+  | 'number' | 'stat'
+  | 'checkbox' | 'toggle' | 'pill' | 'yesno'
+  | 'date-short' | 'date-long' | 'date-iso'
+  | 'image-cover' | 'image-contain';
+
+export interface ContentDisplay {
+  style: ContentDisplayStyle;
+  /** Image only: CSS aspect-ratio such as "16 / 9"; unset = the image's own shape. */
+  aspectRatio?: string;
+}
+
+/** Typography for a value or its label. Unset = inherit from the surrounding theme. Colors are
+ *  "#RRGGBB" / "#RRGGBBAA" user data like a container's Appearance colors, so they don't follow the
+ *  app theme. Sizes are plain px / numbers. Content never has layout, spacing or size of its own. */
+export interface TextStyle {
+  fontSize?: number;
+  fontWeight?: 400 | 500 | 600 | 700 | 800;
+  color?: string;
+  align?: 'left' | 'center' | 'right';
+  transform?: 'none' | 'uppercase' | 'capitalize';
+  italic?: boolean;
+  underline?: boolean;
+  lineHeight?: number;
+  letterSpacing?: number;
+}
+
+/** A field's label next to its value. */
+export interface ContentLabel {
+  show: boolean;
+  position: 'above' | 'left';
+}
+
 export interface FlexComponentNode {
   id: string;
   nodeType: 'component';
@@ -132,8 +179,27 @@ export interface FlexComponentNode {
   field_id?: number | null;
   field_ids?: number[];  // For tables or multi-field groups
   label?: string;
-  variant: LayoutVariant;
-  sizing: FlexSizing;
+  /** What the element shows; see ContentBinding. */
+  binding?: ContentBinding;
+  /** How it is drawn; unset = the default style for its data type. */
+  display?: ContentDisplay;
+  /** Whether and where the label shows; unset = shown above. */
+  contentLabel?: ContentLabel;
+  textStyle?: TextStyle;
+  labelStyle?: TextStyle;
+  /** Box look, the same properties and format as a container's Appearance section. */
+  background?: string;
+  borderWidth?: number;
+  borderColor?: string;
+  borderRadius?: number;
+  shadowY?: number;
+  shadowBlur?: number;
+  shadowColor?: string;
+  /** @deprecated Content has no size of its own (its container sizes and positions it). Only layouts
+   *  saved before that rule still carry it, and it is still honored so they look the same. */
+  variant?: LayoutVariant;
+  /** @deprecated see `variant`. */
+  sizing?: FlexSizing;
   custom_props?: Record<string, unknown>;
 }
 
@@ -211,14 +277,15 @@ export function isFlexLayoutConfig(config: unknown): config is TemplateFlexLayou
 export function createDefaultFlexLayout(
   fields: Pick<FieldDefinition, 'id' | 'label'>[] = []
 ): TemplateFlexLayoutConfig {
+  // Content has no size of its own: each field is a bound element in a column card, so it takes the
+  // card's full width, one under the other. (A layout saved before this rule keeps its own widths.)
   const componentChildren: FlexComponentNode[] = fields.map((f) => ({
     id: `comp-${f.id}`,
     nodeType: 'component' as const,
     componentType: 'field' as const,
     field_id: f.id,
+    binding: { kind: 'field' as const, field_id: f.id },
     label: f.label,
-    variant: 'standard' as const,
-    sizing: { type: 'fixed' as const, value: '48%' },
   }));
 
   return {
@@ -239,12 +306,12 @@ export function createDefaultFlexLayout(
           id: 'container-general',
           nodeType: 'container',
           label: 'General Information',
-          direction: 'row',
-          gap: 0,
-          wrap: true,
+          direction: 'column',
+          gap: 8,
+          wrap: false,
           align: 'stretch',
           justify: 'start',
-          padding: '0px',
+          padding: '12px',
           isCard: true,
           sizing: { type: 'fill' },
           children: componentChildren,

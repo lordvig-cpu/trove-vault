@@ -3,6 +3,8 @@
 import React from 'react';
 import ItemDetailView from './ItemDetailView';
 import TemplateEditorStage from './TemplateEditorStage';
+import { ContentDataProvider } from '@/context/ContentDataContext';
+import type { ContentData } from '@/lib/layoutContent';
 import { ItemRecord } from '@/types/item';
 import { ItemTemplate } from '@/types/template';
 import {
@@ -23,6 +25,8 @@ interface MainContentProps {
   onEditItem: (item: ItemRecord, collectionId: number | null) => void;
   onDeleteItem: (item: ItemRecord, collectionId: number | null) => void;
   editingTemplate?: ItemTemplate | null;
+  /** The item the template editor draws content with (see ContentDataContext); none = sample values. */
+  previewData?: ContentData;
   onDoneEditingTemplate?: () => void;
   // Template editor (flex layout tree) props
   flexLayoutConfig?: TemplateFlexLayoutConfig | null;
@@ -88,6 +92,7 @@ export default function MainContent({
   onEditItem,
   onDeleteItem,
   editingTemplate,
+  previewData,
   onDoneEditingTemplate,
   flexLayoutConfig = null,
   selectedNodeId = null,
@@ -137,6 +142,7 @@ export default function MainContent({
           >
             {editingTemplate ? (
               <div className="w-full px-0 flex-1 pt-8 pb-10 flex flex-col min-h-0">
+                <ContentDataProvider value={previewData ?? {}}>
                 <TemplateEditorStage
                   template={editingTemplate}
                   flexLayoutConfig={flexLayoutConfig}
@@ -167,6 +173,7 @@ export default function MainContent({
                   onOpenLayoutPanel={onOpenLayoutPanel}
                   layoutPanelSelector={layoutPanelSelector}
                 />
+                </ContentDataProvider>
               </div>
             ) : (
               <>

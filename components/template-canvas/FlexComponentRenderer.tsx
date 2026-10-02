@@ -3,6 +3,8 @@
 import React from 'react';
 import { FieldDefinition } from '@/types/field';
 import { FlexComponentNode } from '@/types/layout';
+import ContentValue from '@/components/template-canvas/ContentValue';
+import { bindingOf, boxLookCss, labelTextOf } from '@/lib/layoutContent';
 import { CloseIcon } from '@/components/icons/PanelIcons';
 import { StarIcon } from '@/components/icons/GlyphIcons';
 import { TableIcon, ImageIcon, CameraIcon, NoteIcon } from '@/components/icons/ContentIcons';
@@ -11,7 +13,9 @@ import { TableIcon, ImageIcon, CameraIcon, NoteIcon } from '@/components/icons/C
    FLEX COMPONENT RENDERER
    ========================================================================== */
 
-export default function FlexComponentRenderer({
+/** The pre-content-model look: table / media / stat / divider blocks and unbound fields draw mock
+    values (nothing real to show). They are replaced by pre-defined content in a later phase. */
+function PlaceholderComponent({
   component,
   selectedNodeId,
   canvasMode,
@@ -77,7 +81,7 @@ export default function FlexComponentRenderer({
           </div>
           <div className="flex items-center gap-1">
             <span className="text-[9px] font-mono text-slate-400">
-              {component.sizing.type === 'fill'
+              {!component.sizing || component.sizing.type === 'fill'
                 ? 'Fill'
                 : component.sizing.value || 'Fixed'}
             </span>
@@ -205,6 +209,82 @@ export default function FlexComponentRenderer({
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+/* --------------------------------------------------------------------------
+   Bound content
+   -------------------------------------------------------------------------- */
+
+/**
+ * One content element in the canvas. A bound element (a built-in item value, a template field or
+ * static text) draws its real value through ContentValue; its container sizes and positions it, so
+ * it has no width of its own (a layout saved before that rule still carries one, and keeps it). The
+ * old placeholder blocks fall through to PlaceholderComponent.
+ */
+export default function FlexComponentRenderer(props: {
+  component: FlexComponentNode;
+  parentStacked?: boolean;
+  selectedNodeId?: string | null;
+  canvasMode: 'edit' | 'preview';
+  fields: FieldDefinition[];
+  onSelectNode?: (id: string | null) => void;
+  onRemoveComponent?: (id: string) => void;
+}) {
+  const { component, parentStacked, selectedNodeId, canvasMode, fields, onSelectNode, onRemoveComponent } = props;
+  const binding = bindingOf(component);
+  if (!binding) return <PlaceholderComponent {...props} />;
+
+  const isSelected = selectedNodeId === component.id;
+  const hasBoxLook = Boolean(component.background || component.borderWidth);
+  const legacySized = component.sizing?.type === 'fixed' && component.sizing.value;
+
+  const style: React.CSSProperties = {
+    // Content has no size of its own: it takes the room its content needs and shrinks before it
+    // overflows. (Only a layout saved with an explicit width keeps it.)
+    flex: legacySized ? `0 0 ${component.sizing?.value}` : '0 1 auto',
+    ...(legacySized ? { width: component.sizing?.value } : null),
+    minWidth: 0,
+    ...(parentStacked ? { flex: '0 0 auto', width: '100%' } : null),
+    // A background or border needs a little room around the text to read as a badge or a box.
+    ...(hasBoxLook ? { padding: '0.25em 0.5em' } : null),
+    ...boxLookCss(component),
+  };
+
+  return (
+    <div
+      style={style}
+      onClick={(e) => {
+        e.stopPropagation();
+        if (canvasMode === 'edit') onSelectNode?.(component.id);
+      }}
+      className={`relative ${
+        canvasMode === 'preview'
+          ? ''
+          : isSelected
+          ? 'outline-2 outline-[var(--primary-accent)] outline-offset-2 rounded-md cursor-pointer'
+          : 'outline outline-1 outline-dashed outline-[var(--primary-border-subtle)] outline-offset-2 rounded-md cursor-pointer hover:outline-[color-mix(in_oklch,var(--primary-accent)_50%,var(--primary-border-subtle))]'
+      }`}
+    >
+      {canvasMode === 'edit' && isSelected && (
+        <div className="absolute -top-5 left-0 z-10 flex items-center gap-1 px-1.5 py-0.5 rounded bg-[var(--primary-accent)] text-[var(--pole-label)] text-[10px] font-semibold select-none">
+          <span className="truncate max-w-[16ch]">{labelTextOf(component, binding, fields) || 'Content'}</span>
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              onRemoveComponent?.(component.id);
+            }}
+            className="cursor-pointer leading-none"
+            title="Remove"
+            aria-label="Remove content"
+          >
+            <CloseIcon className="w-2.5 h-2.5" />
+          </button>
+        </div>
+      )}
+      <ContentValue component={component} binding={binding} fields={fields} />
     </div>
   );
 }
