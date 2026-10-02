@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { deleteItem } from '@/lib/data/items';
 import { ItemRecord } from '@/types/item';
 import { errorMessage } from '@/lib/errors';
+import { CloseIcon, WarningIcon } from '@/components/icons/PanelIcons';
 
 /* ==========================================================================
    1. TYPE DEFINITIONS & PROPS
@@ -81,14 +82,14 @@ export default function DeleteItemModal({
         {/* Header */}
         <div className="confirm-modal-header p-5 flex items-center justify-between">
           <div className="flex items-center gap-2 confirm-modal-danger-heading font-bold text-base">
-            <span>⚠️</span>
+            <WarningIcon />
             <span>Confirm Deletion</span>
           </div>
           <button
             onClick={onClose}
             className="item-modal-cancel-button p-1 rounded-lg transition cursor-pointer"
           >
-            ✕
+            <CloseIcon />
           </button>
         </div>
 

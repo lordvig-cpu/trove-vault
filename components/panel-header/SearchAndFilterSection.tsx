@@ -15,6 +15,7 @@ import { useUIPreferences } from '@/context/UIPreferencesContext';
 import { FieldType } from '@/types/field';
 import { FIELD_TYPE_METAS } from '@/lib/fieldTypeMetas';
 import { HIERARCHY_FILTER_METAS, HierarchyFilterCategory } from '@/lib/hierarchyFilterMetas';
+import { CloseIcon } from '@/components/icons/PanelIcons';
 
 interface SearchAndFilterSectionProps {
   variant: 'flyout' | 'sidebar';
@@ -439,7 +440,7 @@ export default function SearchAndFilterSection({
                       className="tree-filter-remove font-bold text-[10px] leading-none cursor-pointer pr-0.5 transition-colors"
                       title={`Remove filter: ${meta.label}`}
                     >
-                      ✕
+                      <CloseIcon />
                     </button>
                     <span className="text-[11px] tree-filter-indicator">{meta.icon}</span>
                     <span className="tree-filter-name max-w-[110px] truncate font-medium transition-colors">
@@ -464,7 +465,7 @@ export default function SearchAndFilterSection({
                       className="tree-filter-remove font-bold text-[10px] leading-none cursor-pointer pr-0.5 transition-colors"
                       title={`Remove filter: ${meta.label}`}
                     >
-                      ✕
+                      <CloseIcon />
                     </button>
                     <span className="text-[11px] tree-filter-indicator">{meta.icon}</span>
                     <span className="tree-filter-name max-w-[110px] truncate font-medium transition-colors">
@@ -489,7 +490,7 @@ export default function SearchAndFilterSection({
                       className="tree-filter-remove font-bold text-[10px] leading-none cursor-pointer pr-0.5 transition-colors"
                       title={`Remove filter: ${col.name}`}
                     >
-                      ✕
+                      <CloseIcon />
                     </button>
                     <span className="text-[11px] tree-filter-indicator">{col.icon || '📁'}</span>
                     <span className="tree-filter-name max-w-[110px] truncate font-medium transition-colors">

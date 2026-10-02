@@ -429,3 +429,38 @@ export const PanelFolderTabSvg = ({
   </svg>
 );
 
+
+/** CloseIcon: an X for dismiss/close/remove buttons (replaces the "✕" glyph). */
+export const CloseIcon = ({ className = 'w-3.5 h-3.5' }: { className?: string }) => (
+  <svg
+    className={className}
+    viewBox="0 0 12 12"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.5"
+    strokeLinecap="round"
+    aria-hidden="true"
+    focusable="false"
+  >
+    <path d="M3 3l6 6M9 3l-6 6" />
+  </svg>
+);
+
+/** WarningIcon: an outlined triangle with an exclamation mark, for caution headings (replaces the
+    "⚠️" emoji). */
+export const WarningIcon = ({ className = 'w-4 h-4' }: { className?: string }) => (
+  <svg
+    className={className}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden="true"
+    focusable="false"
+  >
+    <path d="M12 3L2 20h20L12 3z" />
+    <path d="M12 10v5M12 17.5v.5" />
+  </svg>
+);

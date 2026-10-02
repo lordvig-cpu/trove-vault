@@ -7,6 +7,7 @@ import { useTreeActionMenu } from '@/hooks/useTreeActionMenu';
 import { GearIcon } from '@/components/icons/TreeIcons';
 import TemplateFieldActionMenu from '@/components/TemplateFieldActionMenu';
 import TemplateRootActionMenu from '@/components/TemplateRootActionMenu';
+import { WarningIcon } from '@/components/icons/PanelIcons';
 import '@/app/styles/components/templateFieldInspector.css';
 
 interface TemplateFieldInspectorProps {
@@ -473,7 +474,7 @@ export default function TemplateFieldInspector({
         <div className="p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/25 flex flex-col gap-2 shrink-0">
           <div className="flex items-center justify-between">
             <span className="text-[10.5px] font-bold uppercase tracking-wider text-amber-300 flex items-center gap-1.5">
-              <span>⚠️</span>
+              <WarningIcon />
               <span>Unplaced Fields ({unplacedFields.length})</span>
             </span>
             <span className="text-[9.5px] text-muted">Click to place</span>

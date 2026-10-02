@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { createCollection } from '@/lib/data/collections';
 import { CollectionRecord } from '@/types/collection';
 import { errorMessage } from '@/lib/errors';
+import { CloseIcon } from '@/components/icons/PanelIcons';
 
 /* ==========================================================================
    1. TYPE DEFINITIONS & PROPS
@@ -80,7 +81,7 @@ export default function CreateCollectionModal({
             onClick={onClose}
             className="item-modal-cancel-button p-1 rounded-lg transition cursor-pointer"
           >
-            ✕
+            <CloseIcon />
           </button>
         </div>
 

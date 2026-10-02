@@ -8,6 +8,7 @@ import {
   PinOutlineIcon,
 } from '@/components/icons/PanelIcons';
 import { PrimarySidebarPosition } from '@/types/layout';
+import { CloseIcon } from '@/components/icons/PanelIcons';
 
 interface PanelToolbarRowProps {
   hasDockedContent: boolean;
@@ -164,7 +165,7 @@ export default function PanelToolbarRow({
             title={`Close ${panelName}`}
           >
             <span className="inline-block origin-center transition-all duration-200 ease-out group-hover:scale-115 text-xs text-[var(--tree-action-icon)] group-hover:text-[var(--text-strong)] px-1 select-none">
-              ✕
+              <CloseIcon />
             </span>
           </button>
         )}

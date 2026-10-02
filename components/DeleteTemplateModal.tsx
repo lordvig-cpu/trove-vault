@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { errorMessage } from '@/lib/errors';
+import { CloseIcon, WarningIcon } from '@/components/icons/PanelIcons';
 
 interface DeleteTemplateModalProps {
   templateName: string;
@@ -34,7 +35,7 @@ export default function DeleteTemplateModal({ templateName, onConfirm, onClose }
       <div className="confirm-modal-dialog rounded-2xl w-full max-w-md overflow-hidden">
         <div className="confirm-modal-header p-5 flex items-center justify-between">
           <div className="flex items-center gap-2 confirm-modal-danger-heading font-bold text-base">
-            <span>⚠️</span>
+            <WarningIcon />
             <span>Delete Template</span>
           </div>
           <button
@@ -42,7 +43,7 @@ export default function DeleteTemplateModal({ templateName, onConfirm, onClose }
             onClick={onClose}
             className="item-modal-cancel-button p-1 rounded-lg transition cursor-pointer"
           >
-            ✕
+            <CloseIcon />
           </button>
         </div>
 

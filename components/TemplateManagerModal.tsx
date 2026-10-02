@@ -5,6 +5,7 @@ import { createTemplate } from '@/lib/data/templates';
 import { ItemTemplate } from '@/types/template';
 import { fetchTemplateCatalog } from '@/lib/data/templates';
 import { errorMessage } from '@/lib/errors';
+import { CloseIcon } from '@/components/icons/PanelIcons';
 
 /* ==========================================================================
    1. TYPE DEFINITIONS & INTERFACES
@@ -138,7 +139,7 @@ export default function TemplateManagerModal({
             onClick={onClose}
             className="ui-muted ui-hover-primary p-1 rounded-lg ui-hover-surface transition cursor-pointer"
           >
-            ✕
+            <CloseIcon />
           </button>
         </div>
 

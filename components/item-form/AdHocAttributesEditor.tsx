@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { CloseIcon } from '@/components/icons/PanelIcons';
 
 export interface AdHocAttribute {
   key: string;
@@ -59,7 +60,7 @@ export default function AdHocAttributesEditor({
               onClick={() => onRemove(index)}
               className="item-modal-muted text-xs px-1 cursor-pointer"
             >
-              ✕
+              <CloseIcon />
             </button>
           </div>
         ))}

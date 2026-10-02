@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { FieldDefinition, FieldType } from '@/types/field';
 import { useTreeActionMenu } from '@/hooks/useTreeActionMenu';
 import { ActionIcon, PropertiesIcon } from '@/components/icons/LayoutIcons';
+import { CloseIcon } from '@/components/icons/PanelIcons';
 import TreeSubMenu, {
   ActionMenuDangerItem,
   ActionMenuDivider,
@@ -233,7 +234,7 @@ export default function TemplateFieldActionMenu({
                     className="text-[10px] text-muted hover:text-red-400 cursor-pointer leading-none"
                     title={`Remove "${opt}"`}
                   >
-                    ✕
+                    <CloseIcon />
                   </button>
                 </span>
               ))}

@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { CloseIcon } from '@/components/icons/PanelIcons';
 
 interface ItemModalShellProps {
   title: React.ReactNode;
@@ -47,7 +48,7 @@ export default function ItemModalShell({
             aria-label="Close"
             className="item-modal-cancel-button p-1 rounded-lg transition cursor-pointer"
           >
-            ✕
+            <CloseIcon />
           </button>
         </div>
 

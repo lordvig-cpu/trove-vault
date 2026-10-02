@@ -5,6 +5,7 @@ import { deleteCollection, fetchCollectionItems as loadCollectionItems } from '@
 import { CollectionRecord } from '@/types/collection';
 import { ItemRecord } from '@/types/item';
 import { errorMessage } from '@/lib/errors';
+import { CloseIcon, WarningIcon } from '@/components/icons/PanelIcons';
 
 /* ==========================================================================
    1. TYPE DEFINITIONS & PROPS
@@ -121,14 +122,14 @@ export default function DeleteCollectionModal({
         {/* Header */}
         <div className="confirm-modal-header p-5 flex items-center justify-between shrink-0">
           <div className="flex items-center gap-2 confirm-modal-danger-heading font-bold text-base">
-            <span>⚠️</span>
+            <WarningIcon />
             <span>Confirm Collection Deletion</span>
           </div>
           <button
             onClick={onClose}
             className="item-modal-cancel-button p-1 rounded-lg transition cursor-pointer"
           >
-            ✕
+            <CloseIcon />
           </button>
         </div>
 

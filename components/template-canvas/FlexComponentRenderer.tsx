@@ -3,6 +3,7 @@
 import React from 'react';
 import { FieldDefinition } from '@/types/field';
 import { FlexComponentNode } from '@/types/layout';
+import { CloseIcon } from '@/components/icons/PanelIcons';
 
 /* ==========================================================================
    FLEX COMPONENT RENDERER
@@ -87,7 +88,7 @@ export default function FlexComponentRenderer({
               className="text-[11px] text-red-400 hover:text-red-200 ml-1 p-0.5 cursor-pointer leading-none"
               title="Remove Component"
             >
-              ✕
+              <CloseIcon />
             </button>
           </div>
         </div>
