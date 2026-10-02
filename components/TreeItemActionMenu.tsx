@@ -13,6 +13,7 @@ import TreeSubMenu, {
 import { useTreeActions } from '@/context/TreeActionsContext';
 import { ItemRecord } from '@/types/item';
 import { useTreeActionMenu } from '@/hooks/useTreeActionMenu';
+import { TagIcon } from '@/components/icons/GlyphIcons';
 
 interface TreeItemActionMenuProps {
   item: ItemRecord;
@@ -55,7 +56,7 @@ export default function TreeItemActionMenu({
       />
 
       <ActionMenuItem
-        icon={<span>🏷️</span>}
+        icon={<TagIcon />}
         label="Rename Item"
         subtext="Inline edit title"
         onClick={() => menu.setIsRenaming((previous: boolean) => !previous)}

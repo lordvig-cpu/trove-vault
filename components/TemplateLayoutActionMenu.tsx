@@ -50,6 +50,7 @@ import {
   HelpCircleIcon,
   FitContentIcon,
 } from '@/components/icons/LayoutIcons';
+import { ArrowUpIcon } from '@/components/icons/GlyphIcons';
 
 /* Help bubbles for the Body flyout's Properties sections (see HoverHint for the shape). */
 const BODY_SIZE_HINT: HintContent = {
@@ -990,7 +991,7 @@ export function TemplateComponentActionMenu({
                 className="text-xs font-semibold text-[var(--primary-accent)] hover:underline flex items-center gap-1 cursor-pointer"
                 title={`Select parent container: ${parentContainer.id === 'root-container' ? 'Body' : parentContainer.label || 'Container'}`}
               >
-                <span>⬆️</span>
+                <ArrowUpIcon />
                 <span>
                   {parentContainer.id === 'root-container'
                     ? 'Body'
@@ -999,7 +1000,7 @@ export function TemplateComponentActionMenu({
               </button>
             ) : (
               <span className="text-xs font-semibold text-[var(--primary-accent)] flex items-center gap-1">
-                <span>⬆️</span>
+                <ArrowUpIcon />
                 <span>
                   {parentContainer.id === 'root-container'
                     ? 'Body'

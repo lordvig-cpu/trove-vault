@@ -13,6 +13,7 @@ import TreeSubMenu, {
   ActionMenuRenameForm,
   ActionMenuTabs,
 } from '@/components/TreeSubMenu';
+import { TagIcon } from '@/components/icons/GlyphIcons';
 
 // Only one tab exists today, so ActionMenuTabs renders this as a plain divider band rather than a
 // single oversized tab button -- but it's still the exact same splitBody shell and .menuTabs CSS
@@ -65,7 +66,7 @@ export default function TreeTemplateActionMenu({
       />
 
       <ActionMenuItem
-        icon={<span>🏷️</span>}
+        icon={<TagIcon />}
         label="Rename Template"
         subtext="Inline edit title"
         onClick={() => menu.setIsRenaming((previous: boolean) => !previous)}

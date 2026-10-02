@@ -4,10 +4,12 @@ import React, { useState, useMemo } from 'react';
 import { ItemTemplate } from '@/types/template';
 import { FieldDefinition, FieldType } from '@/types/field';
 import { useTreeActionMenu } from '@/hooks/useTreeActionMenu';
-import { GearIcon } from '@/components/icons/TreeIcons';
+import { GearIcon, PlusIcon } from '@/components/icons/TreeIcons';
 import TemplateFieldActionMenu from '@/components/TemplateFieldActionMenu';
 import TemplateRootActionMenu from '@/components/TemplateRootActionMenu';
-import { WarningIcon } from '@/components/icons/PanelIcons';
+import { WarningIcon, ChevronDownIcon } from '@/components/icons/PanelIcons';
+import { CheckIcon, ChevronUpIcon } from '@/components/icons/GlyphIcons';
+import { HintGripIcon } from '@/components/icons/HintIcons';
 import '@/app/styles/components/templateFieldInspector.css';
 
 interface TemplateFieldInspectorProps {
@@ -139,7 +141,7 @@ function TemplateRootTreeRow({
               title="Done editing template (restores workspace pins & tabs)"
               className="text-[10px] font-bold px-2 py-0.5 rounded bg-[var(--primary-accent)] text-label hover:opacity-90 transition cursor-pointer flex items-center gap-1 shadow-sm"
             >
-              <span>✓</span>
+              <CheckIcon />
               <span>Done</span>
             </button>
           )}
@@ -254,7 +256,7 @@ function TemplateFieldTreeRow({
             title="Drag to place in container"
             aria-label="Drag handle"
           >
-            ⋮⋮
+            <HintGripIcon className="w-2 h-3" />
           </span>
           <span className={`tmpl-type-badge ${typeCfg.badgeClass} shrink-0`}>
             <span>{typeCfg.icon}</span>
@@ -299,7 +301,7 @@ function TemplateFieldTreeRow({
               className="p-1 text-[10px] text-muted hover:text-[var(--text-strong)] disabled:opacity-20 cursor-pointer"
               title="Move Up"
             >
-              ▲
+              <ChevronUpIcon />
             </button>
             <button
               type="button"
@@ -311,7 +313,7 @@ function TemplateFieldTreeRow({
               className="p-1 text-[10px] text-muted hover:text-[var(--text-strong)] disabled:opacity-20 cursor-pointer"
               title="Move Down"
             >
-              ▼
+              <ChevronDownIcon className="w-3 h-3" />
             </button>
           </div>
 
@@ -451,7 +453,7 @@ export default function TemplateFieldInspector({
             title="Drag to place in a container"
             aria-label="Drag handle"
           >
-            ⋮⋮
+            <HintGripIcon className="w-2 h-3" />
           </span>
           <span className="text-[11px] font-medium text-strong flex-1 min-w-0 truncate">
             Lorem Ipsum <span className="text-muted font-normal">(filler text)</span>
@@ -510,7 +512,7 @@ export default function TemplateFieldInspector({
               onClick={() => setShowAddMenu((p) => !p)}
               className="text-[10px] font-semibold text-[var(--primary-accent)] hover:text-[var(--text-strong)] flex items-center gap-1 px-2 py-0.5 rounded-md bg-[color-mix(in_oklch,var(--primary-accent)_15%,transparent)] hover:bg-[var(--primary-accent)] border border-[color-mix(in_oklch,var(--primary-accent)_30%,transparent)] transition cursor-pointer"
             >
-              <span>➕</span>
+              <PlusIcon className="w-2.5 h-2.5" />
               <span>Add Field</span>
             </button>
 

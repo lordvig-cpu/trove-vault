@@ -16,6 +16,8 @@ import {
 import TemplateBodyDimensions from '@/components/TemplateBodyDimensions';
 import TemplateContainerSizing from '@/components/TemplateContainerSizing';
 import { FlexRowIcon, FlexColumnIcon, LayoutContainerIcon } from '@/components/icons/LayoutIcons';
+import { ArrowUpIcon } from '@/components/icons/GlyphIcons';
+import { CloseIcon } from '@/components/icons/PanelIcons';
 
 /** The docked "Properties" tab: edits the selected container or component node (direction, gap,
     alignment, padding, sizing, wrap/card). Padding here is still the older all-sides preset UI; the
@@ -114,7 +116,7 @@ export default function TemplatePropertiesInspector({
             className="p-1 px-2 text-[10.5px] font-semibold text-rose-400 hover:text-[var(--text-strong)] hover:bg-rose-500/20 rounded border border-rose-500/30 transition cursor-pointer"
             title="Remove from layout"
           >
-            ✕ Remove
+            <CloseIcon className="inline w-2.5 h-2.5 align-baseline" /> Remove
           </button>
         )}
       </div>
@@ -489,7 +491,7 @@ export default function TemplatePropertiesInspector({
             onClick={() => onSelectNode(parentNode.id)}
             className="text-xs font-semibold text-[var(--primary-accent)] hover:underline flex items-center gap-1 cursor-pointer"
           >
-            <span>⬆</span>
+            <ArrowUpIcon />
             <span>{parentNode.label || 'Parent Container'}</span>
           </button>
         </div>

@@ -12,6 +12,7 @@ import {
 } from '@/types/layout';
 import ContainerResizeHandles from '@/components/ContainerResizeHandles';
 import FlexComponentRenderer from '@/components/template-canvas/FlexComponentRenderer';
+import { InboxIcon } from '@/components/icons/GlyphIcons';
 
 /* ==========================================================================
    RECURSIVE FLEX CONTAINER RENDERER
@@ -393,7 +394,7 @@ export default function FlexContainerRenderer({
             >
               {isDragOver && (
                 <span className="text-xs font-bold text-[var(--primary-accent)] flex items-center gap-1.5 animate-pulse">
-                  <span>📥</span> Drop field to insert into {container.label || (isRoot ? 'Body' : 'Container')}
+                  <InboxIcon className="inline w-3.5 h-3.5 align-text-bottom" /> Drop field to insert into {container.label || (isRoot ? 'Body' : 'Container')}
                 </span>
               )}
             </div>

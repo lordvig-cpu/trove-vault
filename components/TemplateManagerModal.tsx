@@ -150,7 +150,7 @@ export default function TemplateManagerModal({
           {successMsg && (
             <div className="tmpl-alert-success">
               <span>{successMsg}</span>
-              <button onClick={() => setSuccessMsg(null)} className="ui-hover-primary cursor-pointer">✕</button>
+              <button onClick={() => setSuccessMsg(null)} className="ui-hover-primary cursor-pointer"><CloseIcon /></button>
             </div>
           )}
 

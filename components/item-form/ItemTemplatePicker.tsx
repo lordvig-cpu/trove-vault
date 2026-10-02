@@ -51,7 +51,7 @@ export default function ItemTemplatePicker({
             {template.icon} {template.name} ({template.fields?.length || 0} fields)
           </option>
         ))}
-        <option value="blank">➕ Blank / Custom (No Template)</option>
+        <option value="blank">Blank / Custom (No Template)</option>
       </select>
 
       {fieldCount > 0 && (

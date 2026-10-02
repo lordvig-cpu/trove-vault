@@ -17,6 +17,7 @@ import {
 import { BodyIcon, FlexRowIcon, FlexColumnIcon, ContainerOverflowIcon } from '@/components/icons/LayoutIcons';
 import { activeIconColor } from '@/components/editorBarStyles';
 import { HierarchyFilterCategory, hierarchyNodeCategory } from '@/lib/hierarchyFilterMetas';
+import { ChevronDownIcon, ChevronRightIcon } from '@/components/icons/PanelIcons';
 
 /* ==========================================================================
    1. PROPS INTERFACE
@@ -287,7 +288,7 @@ function ContainerNodeRow({
           ].filter(Boolean).join(' ')}
           title={isExpanded ? 'Collapse container' : 'Expand container'}
         >
-          {isExpanded ? '▼' : '▶︎'}
+          {isExpanded ? <ChevronDownIcon className="w-3 h-3" /> : <ChevronRightIcon className="w-3 h-3" />}
         </button>
 
         {/* Node Icon */}

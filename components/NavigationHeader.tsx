@@ -5,6 +5,8 @@ import Image from 'next/image';
 import logo from '@/assets/images/nav_bar_website_logo.webp';
 import { NavigationBarTextureFilter } from '@/components/icons/NavigationIcons';
 import { useUIPreferences } from '@/context/UIPreferencesContext';
+import { HintGripIcon } from '@/components/icons/HintIcons';
+import { PackageIcon } from '@/components/icons/GlyphIcons';
 
 /* ==========================================================================
    1. TYPE DEFINITIONS & INTERFACES
@@ -291,8 +293,8 @@ export default function NavigationHeader({
                 ].join(' ')}
                 title="Drag and drop to dock into Primary, Secondary or Bottom Panel"
               >
-                <span className="text-[10px] opacity-60 tracking-tighter" aria-hidden="true">⋮⋮</span>
-                <span>📦 Grab Item</span>
+                <HintGripIcon className="w-2 h-3 opacity-60" />
+                <span className="flex items-center gap-1"><PackageIcon className="w-3 h-3" />Grab Item</span>
               </div>
             </div>
           )}

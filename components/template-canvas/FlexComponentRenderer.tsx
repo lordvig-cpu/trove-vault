@@ -4,6 +4,7 @@ import React from 'react';
 import { FieldDefinition } from '@/types/field';
 import { FlexComponentNode } from '@/types/layout';
 import { CloseIcon } from '@/components/icons/PanelIcons';
+import { StarIcon } from '@/components/icons/GlyphIcons';
 
 /* ==========================================================================
    FLEX COMPONENT RENDERER
@@ -156,7 +157,7 @@ export default function FlexComponentRenderer({
             98.5%
           </span>
           <span className="text-[9.5px] text-emerald-400 font-medium">
-            ★ Verified Rank
+            <StarIcon className="inline w-2.5 h-2.5 align-baseline" /> Verified Rank
           </span>
         </div>
       ) : component.componentType === 'note' ? (

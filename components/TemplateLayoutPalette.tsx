@@ -8,6 +8,7 @@ import {
   LayoutVariant,
 } from '@/types/layout';
 import { BodyIcon, FlexRowIcon, FlexColumnIcon } from '@/components/icons/LayoutIcons';
+import { ResetIcon } from '@/components/icons/GlyphIcons';
 
 /** The "Components" bottom-panel palette: click a layout primitive (row, column, columns, card) or a
     pre-set content block to add it to `selectedContainer`, or reset the layout to its default. */
@@ -194,7 +195,7 @@ export default function TemplateLayoutPalette({
             className="text-[10px] font-semibold text-muted hover:text-rose-300 transition cursor-pointer"
             title="Reset layout to default flex structure"
           >
-            ↺ Reset Layout
+            <ResetIcon className="inline w-3 h-3 align-text-bottom" /> Reset Layout
           </button>
         </div>
       </div>

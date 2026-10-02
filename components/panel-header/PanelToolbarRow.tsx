@@ -9,6 +9,7 @@ import {
 } from '@/components/icons/PanelIcons';
 import { PrimarySidebarPosition } from '@/types/layout';
 import { CloseIcon } from '@/components/icons/PanelIcons';
+import { HintGripIcon } from '@/components/icons/HintIcons';
 
 interface PanelToolbarRowProps {
   hasDockedContent: boolean;
@@ -52,9 +53,7 @@ export default function PanelToolbarRow({
         }`}
         title={hasDockedContent ? 'Drag to dock panel' : undefined}
       >
-        <span className="text-[10px] text-muted opacity-60 tracking-tighter" aria-hidden="true">
-          ⋮⋮
-        </span>
+        <HintGripIcon className="w-2 h-3 text-muted opacity-60" />
         <span className="tree-header-title text-xs font-bold uppercase tracking-wider px-0.5 truncate">
           {title || (variant === 'sidebar' ? 'PRIMARY SIDE PANEL' : 'ITEMS')}
         </span>

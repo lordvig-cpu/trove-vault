@@ -10,6 +10,7 @@ import TreeTemplateActionMenu from '@/components/TreeTemplateActionMenu';
 import TreeItemActionMenu from '@/components/TreeItemActionMenu';
 import { STANDALONE_COLLECTION_ID } from '@/lib/treeUtils';
 import { CollectionRecord } from '@/types/collection';
+import { ChevronDownIcon, ChevronRightIcon } from '@/components/icons/PanelIcons';
 
 /* ==========================================================================
    1. TYPE DEFINITIONS & INTERFACES
@@ -156,7 +157,7 @@ function UnifiedTreeItem({
           ].filter(Boolean).join(' ')}
           title={effectiveIsOpen ? 'Collapse item' : 'Expand item'}
         >
-          {effectiveIsOpen ? '▼' : '▶︎'}
+          {effectiveIsOpen ? <ChevronDownIcon className="w-3 h-3" /> : <ChevronRightIcon className="w-3 h-3" />}
         </button>
 
         <span className="w-4 h-4 flex items-center justify-center text-xs opacity-80 shrink-0 select-none">
@@ -327,7 +328,7 @@ export default function UnifiedTree({
           ].filter(Boolean).join(' ')}
           title={localIsOpen ? 'Collapse category' : 'Expand category'}
         >
-          {localIsOpen ? '▼' : '▶︎'}
+          {localIsOpen ? <ChevronDownIcon className="w-3 h-3" /> : <ChevronRightIcon className="w-3 h-3" />}
         </button>
 
         <span className="w-4 h-4 flex items-center justify-center text-sm tree-category-icon shrink-0 select-none">

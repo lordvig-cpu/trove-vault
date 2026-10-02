@@ -603,7 +603,7 @@ export default function SearchAndFilterSection({
                   }}
                   className="tree-filter-clear text-[10px] w-full font-semibold transition text-right cursor-pointer"
                 >
-                  ✕ Clear Filters
+                  <CloseIcon className="inline w-2.5 h-2.5 align-baseline" /> Clear Filters
                 </button>
               </div>
             )}
@@ -689,7 +689,7 @@ export default function SearchAndFilterSection({
                   }}
                   className="tree-filter-clear text-[10px] w-full font-semibold transition text-right cursor-pointer"
                 >
-                  ✕ Clear Filters
+                  <CloseIcon className="inline w-2.5 h-2.5 align-baseline" /> Clear Filters
                 </button>
               </div>
             )}
@@ -748,7 +748,7 @@ export default function SearchAndFilterSection({
                   }}
                   className="tree-filter-clear text-[10px] w-full font-semibold transition text-right cursor-pointer"
                 >
-                  ✕ Clear Filters
+                  <CloseIcon className="inline w-2.5 h-2.5 align-baseline" /> Clear Filters
                 </button>
               </div>
             )}

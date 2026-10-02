@@ -4,13 +4,14 @@ import React, { useState } from 'react';
 import { FieldDefinition, FieldType } from '@/types/field';
 import { useTreeActionMenu } from '@/hooks/useTreeActionMenu';
 import { ActionIcon, PropertiesIcon } from '@/components/icons/LayoutIcons';
-import { CloseIcon } from '@/components/icons/PanelIcons';
+import { CloseIcon, ChevronDownIcon } from '@/components/icons/PanelIcons';
 import TreeSubMenu, {
   ActionMenuDangerItem,
   ActionMenuDivider,
   ActionMenuItem,
   ActionMenuTabs,
 } from '@/components/TreeSubMenu';
+import { ChevronUpIcon } from '@/components/icons/GlyphIcons';
 
 interface TemplateFieldActionMenuProps {
   field: FieldDefinition;
@@ -268,7 +269,7 @@ export default function TemplateFieldActionMenu({
       {onMoveField && (
         <div className="flex flex-col">
           <ActionMenuItem
-            icon={<span>▲</span>}
+            icon={<ChevronUpIcon />}
             label="Move Up"
             subtext="Shift field earlier in order"
             onClick={() => {
@@ -278,7 +279,7 @@ export default function TemplateFieldActionMenu({
             }}
           />
           <ActionMenuItem
-            icon={<span>▼</span>}
+            icon={<ChevronDownIcon className="w-3 h-3" />}
             label="Move Down"
             subtext="Shift field later in order"
             onClick={() => {

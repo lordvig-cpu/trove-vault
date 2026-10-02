@@ -10,6 +10,8 @@ import TreeSubMenu, {
   ActionMenuDivider,
   ActionMenuItem,
 } from '@/components/TreeSubMenu';
+import { PlusIcon } from '@/components/icons/TreeIcons';
+import { CheckIcon } from '@/components/icons/GlyphIcons';
 
 interface TemplateRootActionMenuProps {
   template: ItemTemplate;
@@ -123,7 +125,7 @@ export default function TemplateRootActionMenu({
 
       {/* Quick Add Field Action */}
       <ActionMenuItem
-        icon={<span>➕</span>}
+        icon={<PlusIcon className="w-3 h-3" />}
         label="Add New Field"
         subtext="Add attribute to this blueprint"
         onClick={() => {
@@ -136,7 +138,7 @@ export default function TemplateRootActionMenu({
         <>
           <ActionMenuDivider />
           <ActionMenuItem
-            icon={<span>✓</span>}
+            icon={<CheckIcon />}
             label="Done Editing"
             subtext="Exit blueprint editor & restore pins"
             onClick={() => {
