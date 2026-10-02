@@ -15,7 +15,7 @@ Conventions and architecture (data access, theming, template editor internals, b
   tree/template panel bodies to `hooks/usePanelRenderers.tsx`.
 - `test_connection/page.tsx` — a diagnostic route that pings Supabase; unavailable in production.
 - `globals.css` — Tailwind entry point; imports the theme and component CSS files below.
-- `styles/themes/*.css` — the three runtime themes (Dark and Light, both in `theme-oklch-embersteel.css`, plus Classic = the original blue/orange), their shared OKLCH recipe,
+- `styles/themes/*.css` — the three runtime themes (Dark = EmberSteel in `theme-oklch-embersteel.css`, Light = Aquaglass Horizon in `theme-oklch-aquaglass.css`, and Classic = the original blue/orange), their shared OKLCH recipe,
   the semantic variable aliases components consume, and the Premium Contrast generator input.
   `styles/themes/OKLCH.md` explains how they relate and how to recolor; `styles/themes/README.md`
   is the `--primary-*`/`--secondary-*`/`--surface-*`/`--text-*` naming guide for new component CSS.

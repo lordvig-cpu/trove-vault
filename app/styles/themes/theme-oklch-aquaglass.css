@@ -1,0 +1,253 @@
+/* Aquaglass Horizon: the Light theme. A pale blue-white workspace of glass panels, navy ink, and
+   orange highlights, after the design mockup. It reuses the shared OKLCH recipe (theme-oklch.css) and
+   the Light role coefficients (theme-oklch-light.css), then re-states the chrome with its own roles
+   (the footer pickers):
+     --oklch-bg        Background        canvas and grid
+     --oklch-primary   Primary           header/footer bars, panel and card tints, every blue line and
+                                         heading (they are all this seed, deepened)
+     --oklch-blue      Primary Accent    the orange highlight: active tab, selected rows, tree icons,
+                                         badges, buttons
+     --oklch-secondary Secondary         idle tabs and pressed/hover tints
+     --oklch-yellow    Secondary Accent  soft edge and glow around flyouts and toolbars; its deeper
+                                         form (--brand-secondary-amber) is the orange control ink
+   Unlike EmberSteel (Dark), the Primary Accent here is a highlight, not the panel color: surfaces are
+   white mixed with Primary. Keep the seeds in step with DEFAULT_SEEDS in
+   components/OklchSeedControls.tsx. */
+[data-theme='theme-oklch-light'] {
+  color-scheme: light;
+  --oklch-bg: rgba(244, 249, 255, 1);
+  --oklch-primary: rgba(227, 240, 255, 1);
+  --oklch-blue: rgba(255, 143, 8, 1);
+  --oklch-secondary: rgba(214, 234, 254, 1);
+  --oklch-yellow: rgba(255, 183, 77, 1);
+
+  /* Neutral poles: shade is a pale blue wash (a sunken control reads as a faint blue well), glint is
+     the deep ink a control turns on hover. */
+  --pole-surface: oklch(1 0 0);
+  --pole-shade: oklch(0.84 0.05 250);
+  --pole-glint: oklch(0.24 0.05 255);
+
+  /* Derived roles (all from the seeds, so a picker move recolors them). */
+  --aqua-ink: oklch(from var(--oklch-primary) 0.24 0.05 h);
+  --aqua-ink-soft: oklch(from var(--oklch-primary) 0.34 0.045 h);
+  --aqua-ink-faint: oklch(from var(--oklch-primary) 0.52 0.045 h);
+  --aqua-blue: oklch(from var(--oklch-primary) 0.62 0.17 h);
+  --aqua-line: oklch(from var(--oklch-primary) 0.86 0.06 h);
+  --aqua-line-strong: oklch(from var(--oklch-primary) 0.74 0.1 h);
+  --aqua-glass: color-mix(in oklab, var(--oklch-primary) 32%, var(--pole-surface));
+  --aqua-glass-raised: color-mix(in oklab, var(--oklch-primary) 58%, var(--pole-surface));
+  --aqua-glass-sunk: color-mix(in oklab, var(--oklch-primary) 18%, var(--pole-surface));
+  --aqua-bar: color-mix(in oklab, var(--oklch-primary) 55%, var(--pole-surface));
+  --aqua-bar-deep: color-mix(in oklab, var(--oklch-primary) 70%, var(--pole-surface));
+  --aqua-shadow: oklch(from var(--oklch-primary) 0.4 0.09 h / 0.2);
+  --aqua-orange: var(--oklch-blue);
+  --aqua-orange-fill: color-mix(in oklab, var(--oklch-blue) 8%, var(--pole-surface));
+  --aqua-edge: color-mix(in oklab, var(--oklch-yellow) 70%, var(--pole-surface));
+  --aqua-none: linear-gradient(transparent, transparent);
+  /* Control ink and flyout titles: a deeper form of the Secondary Accent so small orange text holds. */
+  --brand-secondary-amber: oklch(from var(--oklch-yellow) 0.7 0.19 h);
+
+  /* Ink */
+  --text-primary: var(--aqua-ink);
+  --text-secondary: var(--aqua-ink-soft);
+  --text-muted: var(--aqua-ink-faint);
+  --menu-ink-soft: var(--aqua-ink-soft);
+
+  /* Flyouts and the two editor toolbars: a whisper of glow in the soft edge color. */
+  --flyout-glow-top: 0%;
+  --flyout-glow-outer: 30%;
+
+  /* Canvas: Background with a fine blue grid and two soft corner glows. */
+  --canvas-bg-primary: var(--oklch-bg);
+  --studio-grid-bg: var(--oklch-bg);
+  --studio-grid-line: color-mix(in oklab, var(--aqua-line) 45%, transparent);
+  --studio-grid-glow-top-left-core: color-mix(in oklab, var(--oklch-primary) 70%, transparent);
+  --studio-grid-glow-top-left-edge: color-mix(in oklab, var(--oklch-primary) 25%, transparent);
+  --studio-grid-glow-bottom-right-core: color-mix(in oklab, var(--oklch-yellow) 10%, transparent);
+  --studio-grid-glow-bottom-right-edge: color-mix(in oklab, var(--oklch-yellow) 3%, transparent);
+  --studio-grid-glow-bottom-right-blue-core: color-mix(in oklab, var(--oklch-primary) 60%, transparent);
+  --studio-grid-glow-bottom-right-blue-edge: color-mix(in oklab, var(--oklch-primary) 20%, transparent);
+  --studio-grid-vignette: transparent;
+
+  /* Header and footer bars: pale glass fading toward the canvas. */
+  --nav-header-background: linear-gradient(180deg, var(--aqua-bar), var(--aqua-bar-deep));
+  --nav-header-border-bottom: 1px solid var(--aqua-line);
+  --nav-header-shadow: 0 1px 8px var(--aqua-shadow);
+  --nav-header-flare-bg: var(--aqua-none);
+  --nav-header-texture-bg: var(--aqua-none);
+  --nav-footer-background: linear-gradient(0deg, var(--aqua-bar), var(--aqua-bar-deep));
+  --nav-footer-border-top: 1px solid var(--aqua-line);
+  --nav-footer-shadow: 0 -1px 8px var(--aqua-shadow);
+  --nav-footer-flare-bg: var(--aqua-none);
+  --nav-footer-texture-bg: var(--aqua-none);
+
+  /* Side and bottom panels: white glass with a blue hairline. */
+  --panel-surface-bg: var(--aqua-glass);
+  --card-surface-hover: var(--aqua-glass-raised);
+  --popover-surface-bg: var(--aqua-glass-sunk);
+  --panel-border-subtle: var(--aqua-line);
+  --panel-border-strong: var(--aqua-line-strong);
+  --tree-panel-bg: var(--aqua-glass);
+  --tree-panel-border: var(--aqua-line);
+  --tree-panel-flare-bg: var(--aqua-none);
+  --tree-panel-texture-bg: var(--aqua-none);
+  --right-panel-bg: var(--aqua-glass);
+  --right-panel-border: var(--aqua-line);
+  --right-panel-flare-bg: var(--aqua-none);
+  --right-panel-texture-bg: var(--aqua-none);
+
+  /* Main content (item view): white glass cards on the canvas, with only a slight dim behind an open panel. */
+  --content-border-subtle: var(--aqua-line);
+  --content-border-strong: var(--aqua-line-strong);
+  --content-card-bg: var(--aqua-glass);
+  --content-card-border: var(--aqua-line);
+  --content-card-shadow: 0 8px 22px -6px var(--aqua-shadow);
+  --content-pill-bg: var(--pole-surface);
+  --content-pill-border: var(--aqua-line);
+  --content-pill-hover-bg: var(--aqua-glass-raised);
+  --content-overlay-brightness-dim: 0.97;
+
+  /* Selection: an orange outline over a faint orange fill; hover a pale blue wash. */
+  --tree-item-active-bg: var(--aqua-orange-fill);
+  --tree-item-active-border: color-mix(in oklab, var(--oklch-blue) 80%, var(--pole-surface));
+  --tree-item-hover-bg: color-mix(in oklab, var(--oklch-primary) 60%, transparent);
+  --tree-search-input-bg: var(--pole-surface);
+  --tree-search-input-border: var(--aqua-line);
+  --tmpl-item-selected-bg: var(--aqua-orange-fill);
+  --tmpl-item-selected-border: color-mix(in oklab, var(--oklch-blue) 80%, var(--pole-surface));
+
+  /* Solid action buttons (Place, Done): the orange itself, with a white label. */
+  --content-btn-primary-bg: var(--oklch-blue);
+  --content-btn-primary-hover: oklch(from var(--oklch-blue) calc(l + 0.05) c h);
+
+  /* Destructive ink: a vivid red that holds on white. */
+  --danger-vivid: oklch(0.6 0.23 25);
+  --status-danger: oklch(0.58 0.23 25);
+  --status-danger-soft: oklch(0.52 0.21 22);
+  --status-danger-strong: oklch(0.46 0.21 27);
+  --status-danger-tint: oklch(0.44 0.15 19);
+  --tree-menu-danger-text: oklch(0.55 0.23 25);
+  --tree-menu-danger-icon: oklch(0.58 0.23 25);
+  --tree-menu-danger-subtext: oklch(0.58 0.2 25);
+  --tree-menu-danger-hover-text: oklch(0.46 0.21 25);
+  --tree-menu-danger-hover-subtext: oklch(0.5 0.2 25);
+
+  /* Tree gear menus and Advanced Search: white glass, soft amber edge. */
+  --tree-menu-shell-bg: color-mix(in oklab, var(--oklch-primary) 14%, var(--pole-surface));
+  --tree-menu-shell-border: var(--aqua-edge);
+  --tree-menu-shell-shadow: 0 0 18px 0 oklch(from var(--oklch-yellow) l c h / 0.3), 0 12px 28px var(--aqua-shadow);
+  --tree-menu-header-bg: var(--aqua-none);
+  --tree-menu-header-border: var(--aqua-line);
+  --tree-menu-header-title: var(--aqua-ink);
+  --tree-menu-divider: var(--aqua-line);
+  --tree-menu-form-bg: var(--pole-surface);
+  --tree-menu-input-bg: var(--pole-surface);
+  --tree-menu-item-text: var(--aqua-ink);
+  --tree-menu-item-subtext: var(--aqua-ink-soft);
+  --tree-menu-item-hover-text: var(--aqua-ink);
+  --tree-menu-item-hover-subtext: var(--aqua-ink-soft);
+  --tree-filter-option-label: var(--aqua-ink);
+
+  /* The flyout family (TreeSubMenu, HoverHint, the toolbars' drop-downs). */
+  --flyout-card-border: var(--aqua-edge);
+  --flyout-card-glow: transparent;
+  --flyout-card-glow-fade: transparent;
+  --flyout-card-base: color-mix(in oklab, var(--oklch-primary) 14%, var(--pole-surface));
+  --flyout-tile-bg: var(--pole-surface);
+  --flyout-tile-border: var(--aqua-line);
+  --flyout-divider: var(--aqua-line);
+  --flyout-shell-bg: color-mix(in oklab, var(--oklch-primary) 14%, var(--pole-surface));
+  --flyout-shell-border: var(--aqua-edge);
+  --flyout-head-bottom: color-mix(in oklab, var(--oklch-primary) 14%, var(--pole-surface));
+  --flyout-body-top: color-mix(in oklab, var(--oklch-primary) 8%, var(--pole-surface));
+  --flyout-body-bottom: color-mix(in oklab, var(--oklch-primary) 8%, var(--pole-surface));
+  --flyout-title: var(--aqua-ink);
+  --flyout-selected: var(--brand-secondary-amber);
+  --flyout-heading: var(--aqua-ink);
+  --flyout-tab-band: color-mix(in oklab, var(--oklch-primary) 14%, var(--pole-surface));
+  --flyout-tab-idle: var(--oklch-secondary);
+  --section-card-base: var(--pole-surface);
+  --flyout-tab-active-top: var(--pole-surface);
+  --flyout-tab-active-bottom: var(--aqua-orange-fill);
+  --flyout-tab-active-border: var(--brand-secondary-amber);
+
+  /* The Primary Accent is used at full strength (the recipe would darken it for light mode). */
+  --brand-primary: var(--oklch-blue);
+  --brand-primary-hover: oklch(from var(--oklch-blue) calc(l - 0.05) c h);
+  --tree-muted: var(--aqua-ink-soft);
+
+  /* Panel folder tabs: pale glass when idle, white with an orange outline and glow when active. */
+  --tree-tab-text-idle: var(--aqua-ink-soft);
+  --tree-tab-text-hover: var(--aqua-ink);
+  --tree-tab-border-idle: var(--aqua-line);
+  --tree-tab-border-hover: var(--aqua-line-strong);
+  --tree-tab-bg-idle: var(--aqua-glass-sunk);
+  --tree-tab-bg-hover: var(--aqua-glass-raised);
+  --tree-tab-bg-active: var(--pole-surface);
+  --tree-tab-active-top: var(--pole-surface);
+  --tree-tab-active-mid: var(--pole-surface);
+  --tree-tab-active-bottom: var(--aqua-orange-fill);
+  --tree-tab-text-active: var(--brand-secondary-amber);
+  --tree-tab-border-active: var(--oklch-blue);
+  --tree-tab-baseline: var(--oklch-blue);
+  --tree-tab-glow-active: drop-shadow(0 -2px 6px color-mix(in oklab, var(--oklch-blue) 30%, transparent));
+  --tree-menu-rename-input-focus: var(--oklch-blue);
+  --tree-menu-rename-save-text: var(--brand-secondary-amber);
+}
+
+/* Menu text that reads deep ink: the flyout title, each section heading and the label above every
+   Properties input. */
+[data-theme='theme-oklch-light'] .menuShellHead.menuShell .headerPill .headerTitle,
+[data-theme='theme-oklch-light'] .menuSectionTitle,
+[data-theme='theme-oklch-light'] .menu-field-label {
+  color: var(--aqua-ink);
+}
+
+/* The active tab: orange text and outline on white, no glow text. */
+[data-theme='theme-oklch-light'] .menuTab-active,
+[data-theme='theme-oklch-light'] .menuTab-active:hover {
+  color: var(--brand-secondary-amber);
+  text-shadow: none;
+  box-shadow: 0 0 8px color-mix(in oklab, var(--oklch-yellow) 25%, transparent);
+}
+
+/* An idle tab is a pale blue button with slate text. */
+[data-theme='theme-oklch-light'] .menuTab:not(.menuTab-active) {
+  color: var(--aqua-ink-soft);
+  border-color: var(--aqua-line);
+}
+
+/* Panel chrome: the dark themes cap a side panel with a bright strip at the top and bottom; in Aquaglass
+   the glass just ends. */
+[data-theme='theme-oklch-light'] .primary-side-panel-header .tree-header-toolbar::before,
+[data-theme='theme-oklch-light'] .panel-bottom-topper::after,
+[data-theme='theme-oklch-light'] .panel-bottom-topper-empty::after,
+[data-theme='theme-oklch-light'] .panel-bottom-topper-occupied::after {
+  background: none;
+  box-shadow: none;
+}
+
+/* The header's own bottom rule is a faint blue line; the orange baseline belongs to the active tab. */
+[data-theme='theme-oklch-light'] .primary-side-panel-header {
+  border-bottom-color: var(--aqua-line);
+}
+
+/* Section headings ("Search and Filter"): blue text between pale blue rules, no shadow. */
+[data-theme='theme-oklch-light'] .tree-section-heading {
+  color: var(--aqua-blue);
+}
+[data-theme='theme-oklch-light'] .tree-section-heading h3 {
+  text-shadow: none;
+}
+[data-theme='theme-oklch-light'] .tree-section-heading hr,
+[data-theme='theme-oklch-light'] .tree-section-heading h3::after {
+  border-top-color: var(--aqua-line);
+  box-shadow: none;
+}
+
+/* The active theme button is a solid orange pill with a white label. */
+[data-theme='theme-oklch-light'] .theme-selector-btn-active {
+  background: var(--oklch-blue);
+  border-color: var(--oklch-blue);
+  color: var(--pole-label);
+}

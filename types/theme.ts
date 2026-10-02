@@ -3,8 +3,8 @@ export type ThemePreset =
     'theme-oklch-light' |
     'theme-oklch-classic';
 
-/** The footer's theme selector, in display order. Dark and Light are the EmberSteel palette
-    (theme-oklch-embersteel.css); Classic is the original blue/orange dark theme. */
+/** The footer's theme selector, in display order. Dark is EmberSteel (theme-oklch-embersteel.css), Light is
+    Aquaglass Horizon (theme-oklch-aquaglass.css), Classic is the original blue/orange dark theme. */
 export const THEME_OPTIONS: ReadonlyArray<{ id: ThemePreset; label: string }> = [
     { id: 'theme-oklch-dark', label: 'Dark' },
     { id: 'theme-oklch-light', label: 'Light' },

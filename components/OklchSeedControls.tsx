@@ -9,7 +9,8 @@ import { DiceIcon, LockIcon, UnlockIcon } from '@/components/icons/NavigationIco
 import type { ThemePreset } from '@/types/theme';
 
 /** Seeds each theme starts from when nothing is saved. They must match the CSS defaults:
-    Classic in theme-oklch-dark.css, Dark and Light in theme-oklch-embersteel.css. */
+    Classic in theme-oklch-dark.css, Dark in theme-oklch-embersteel.css, Light in
+    theme-oklch-aquaglass.css. */
 type Seeds = { primary: string; secondary: string; background: string; primaryColor: string; secondaryColor: string };
 const DEFAULT_SEEDS: Record<ThemePreset, Seeds> = {
   'theme-oklch-dark': {
@@ -20,11 +21,11 @@ const DEFAULT_SEEDS: Record<ThemePreset, Seeds> = {
     secondaryColor: '#3A3632', // tree submenus, search menus, template toolbars
   },
   'theme-oklch-light': {
-    primary: '#4F6D94',
-    secondary: '#B36B00',
-    background: '#E9EDF2',
-    primaryColor: '#CBD3DD',
-    secondaryColor: '#E8DCC8',
+    primary: '#FF8F08', // the orange highlight: active tab, selected rows, icons, badges
+    secondary: '#FFB74D', // soft edge and glow around flyouts and toolbars
+    background: '#F4F9FF',
+    primaryColor: '#E3F0FF', // bars, panel tints, blue lines
+    secondaryColor: '#D6EAFE', // idle tabs and pressed tints
   },
   'theme-oklch-classic': {
     primary: '#0077FF',

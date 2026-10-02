@@ -81,28 +81,46 @@ Known exceptions: `lib/color.ts` default seeds and `PICKER_START` in `TemplateAp
 
 ## Themes and the Background seed
 
-The footer selector offers three presets. **Dark** and **Light** are the EmberSteel palette
-(`theme-oklch-embersteel.css`); **Classic** is the original blue/orange dark theme, which is just the
-shared recipe on the seeds in `theme-oklch-dark.css` and loads none of the EmberSteel rules (it is kept
-for now and may be removed once Dark and Light are settled).
+The footer selector offers three presets:
 
-EmberSteel shares the recipe, then re-states the chrome as flat slate panels lifted from the Background
-seed `--oklch-bg`, with charcoal (Dark) or pale (Light) flyouts and amber edges. Dark and Light share one
-set of rules; the two blocks at the top of the file hold only the per-mode parameters: the five seeds,
-`--ember-base` (what every surface mixes toward: near-black or near-white), the ink levels
-(`--ember-ink-*`), the grid step, and the shadow depth. Glow strength follows `--oklch-glow-opacity`
-(from `theme-oklch-light.css`). Dark seeds: slate `#6C85A6`, amber `#FF9D00`, background `#14171B`;
-Light seeds: `#4F6D94`, `#B36B00`, `#E9EDF2`. `DEFAULT_SEEDS` in `OklchSeedControls.tsx` mirrors all
-three themes' defaults for the picker display and must be kept in step with the CSS.
+- **Dark** is EmberSteel (`theme-oklch-embersteel.css`): a near-black workspace with slate panels and amber
+  accents. Surfaces are the seed mixed into the fixed `--ember-base`.
+- **Light** is Aquaglass Horizon (`theme-oklch-aquaglass.css`): a pale blue-white workspace of white glass
+  panels with navy ink and orange highlights. It has its own rule set and its own role mapping, not
+  EmberSteel mixed toward white (see below).
+- **Classic** is the original blue/orange dark theme: just the shared recipe on the seeds in
+  `theme-oklch-dark.css`, with none of the files above loaded. Kept for now; it may be removed once Dark and
+  Light are settled.
 
-`--oklch-bg` is optional in Classic: unset, the calibrated canvas samples
-(`--oklch-blue-10-15-24`, `--oklch-blue-8-12-20`) fall back to their blue-derived expressions
-(`scripts/generate-oklch-theme.mjs` emits that); set, the Background picker replaces them. Each theme
-saves its own seeds (`uc_oklch_*` for Classic, `uc_oklch_*_embersteel` for Dark,
-`uc_oklch_*_embersteel_light` for Light). Wash strength at the top and around flyouts/toolbars is
-`--flyout-glow-top` / `--flyout-glow-outer`; `--flyout-heading` is the split-flyout title color.
+Both new themes reuse the shared recipe (`theme-oklch.css`) and re-state the chrome in their own file.
+`DEFAULT_SEEDS` in `OklchSeedControls.tsx` mirrors every theme's default seeds for the picker display and
+must be kept in step with the CSS. Each theme saves its own seeds (`uc_oklch_*` for Classic,
+`uc_oklch_*_embersteel` for Dark, `uc_oklch_*_embersteel_light` for Light).
 
-### EmberSteel (Dark and Light): five colors
+`--oklch-bg` is optional in Classic: unset, the calibrated canvas samples (`--oklch-blue-10-15-24`,
+`--oklch-blue-8-12-20`) fall back to their blue-derived expressions (`scripts/generate-oklch-theme.mjs`
+emits that); set, the Background picker replaces them. Wash strength at the top and around
+flyouts/toolbars is `--flyout-glow-top` / `--flyout-glow-outer`; `--flyout-heading` is the split-flyout
+title color.
+
+### Aquaglass Horizon (Light): five colors
+
+The same five pickers play different roles than in EmberSteel: the Primary Accent is the orange *highlight*,
+not the panel color.
+
+| Picker | Seed | Drives |
+| --- | --- | --- |
+| Background | `--oklch-bg` | canvas and grid |
+| Primary | `--oklch-primary` | header/footer bars, panel and card tints, every blue line and heading (deepened) |
+| Primary Accent | `--oklch-blue` | the orange highlight: active tab, selected rows, tree icons, badges, solid buttons |
+| Secondary | `--oklch-secondary` | idle tabs and pressed/hover tints |
+| Secondary Accent | `--oklch-yellow` | soft edge and glow around flyouts/toolbars; its deeper form is the orange control ink |
+
+Defaults: `#F4F9FF`, `#E3F0FF`, `#FF8F08`, `#D6EAFE`, `#FFB74D`. The `--aqua-*` variables at the top of the
+file are the derived roles (ink levels, lines, glass fills, shadow); everything else maps them onto the same
+variable contract EmberSteel uses.
+
+### EmberSteel (Dark): five colors
 
 | Picker | Seed | Drives |
 | --- | --- | --- |
@@ -112,7 +130,7 @@ saves its own seeds (`uc_oklch_*` for Classic, `uc_oklch_*_embersteel` for Dark,
 | Secondary | `--oklch-secondary` | tree submenus, search menus, template toolbars and their drop-downs |
 | Secondary Accent | `--oklch-yellow` | default text, edges and selected states inside those menus/toolbars |
 
-Surface colors are the seed mixed into the fixed `--ember-base`, so the Background picker recolors only the canvas and grid, and a picked color shows as a tint of itself (dark in Dark, pale in Light).
+Surface colors are the seed mixed into the fixed dark `--ember-base`, so the Background picker recolors only the canvas and grid, and a picked color shows as a dark tint of itself.
 
 ### Five colors in Classic
 
