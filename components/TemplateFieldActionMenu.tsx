@@ -13,6 +13,9 @@ import TreeSubMenu, {
 } from '@/components/TreeSubMenu';
 import { ChevronUpIcon } from '@/components/icons/GlyphIcons';
 
+/** Gear flyout for a field in the template editor's Content tab: a Properties tab (label, key, type,
+    required, options) and an Actions tab (move up/down, delete). Edits are saved through
+    `onUpdateField`; moving is offered only when `onMoveField` is given and the field can move. */
 interface TemplateFieldActionMenuProps {
   field: FieldDefinition;
   menu: ReturnType<typeof useTreeActionMenu>;
@@ -24,6 +27,7 @@ interface TemplateFieldActionMenuProps {
   canMoveDown?: boolean;
 }
 
+/** The field types the Type picker offers, in display order. */
 const FIELD_TYPES: { type: FieldType; label: string; icon: string }[] = [
   { type: 'text', label: 'Text', icon: '📝' },
   { type: 'number', label: 'Number', icon: '🔢' },

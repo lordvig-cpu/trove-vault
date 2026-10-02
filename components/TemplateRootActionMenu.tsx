@@ -13,6 +13,9 @@ import TreeSubMenu, {
 import { PlusIcon } from '@/components/icons/TreeIcons';
 import { CheckIcon } from '@/components/icons/GlyphIcons';
 
+/** Gear flyout for the template itself (the root of the Content tab): edit name, icon and
+    description, add a field, delete the template, or close the editor. Delete asks for a second
+    confirmation first. */
 interface TemplateRootActionMenuProps {
   template: ItemTemplate;
   menu: ReturnType<typeof useTreeActionMenu>;

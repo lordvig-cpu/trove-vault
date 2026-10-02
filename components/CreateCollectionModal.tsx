@@ -79,7 +79,7 @@ export default function CreateCollectionModal({
           <button
             type="button"
             onClick={onClose}
-            className="item-modal-cancel-button p-1 rounded-lg transition cursor-pointer"
+            className="item-modal-cancel-button p-1 rounded-lg transition cursor-pointer" aria-label="Close"
           >
             <CloseIcon />
           </button>

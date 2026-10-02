@@ -137,7 +137,7 @@ export default function TemplateManagerModal({
           </div>
           <button
             onClick={onClose}
-            className="ui-muted ui-hover-primary p-1 rounded-lg ui-hover-surface transition cursor-pointer"
+            className="ui-muted ui-hover-primary p-1 rounded-lg ui-hover-surface transition cursor-pointer" aria-label="Close"
           >
             <CloseIcon />
           </button>
@@ -150,7 +150,7 @@ export default function TemplateManagerModal({
           {successMsg && (
             <div className="tmpl-alert-success">
               <span>{successMsg}</span>
-              <button onClick={() => setSuccessMsg(null)} className="ui-hover-primary cursor-pointer"><CloseIcon /></button>
+              <button onClick={() => setSuccessMsg(null)} className="ui-hover-primary cursor-pointer" aria-label="Dismiss"><CloseIcon /></button>
             </div>
           )}
 

@@ -3,12 +3,14 @@ import { toItemRecord } from '@/lib/data/mappers';
 import type { CollectionRecord } from '@/types/collection';
 import type { ItemRecord } from '@/types/item';
 
+/** What a new collection needs; `parentId` null makes it a top-level collection. */
 export interface NewCollectionInput {
   name: string;
   description: string | null;
   parentId: number | null;
 }
 
+/** Inserts a collection and returns the saved row. Throws the Supabase error on failure. */
 export async function createCollection(input: NewCollectionInput): Promise<CollectionRecord> {
   const { data, error } = await supabase
     .from('collections')
@@ -45,6 +47,7 @@ export async function fetchCollectionItems(collectionId: number): Promise<ItemRe
   return (data || []).map(toItemRecord);
 }
 
+/** Changes only the collection's name. */
 export async function renameCollection(id: number, name: string): Promise<void> {
   const { error } = await supabase.from('collections').update({ name }).eq('id', id);
   if (error) throw error;

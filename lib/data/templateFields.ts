@@ -2,6 +2,7 @@ import { supabase } from '@/lib/supabase';
 import { toFieldDefinition } from '@/lib/data/mappers';
 import type { FieldDefinition, FieldType } from '@/types/field';
 
+/** What a new template field needs; it starts out not required. */
 export interface NewFieldInput {
   templateId: number;
   name: string;
@@ -11,6 +12,7 @@ export interface NewFieldInput {
   displayOrder: number;
 }
 
+/** Inserts a field into a template and returns it as an app-level FieldDefinition. */
 export async function createTemplateField(input: NewFieldInput): Promise<FieldDefinition> {
   const { data, error } = await supabase
     .from('item_template_fields')
@@ -51,6 +53,7 @@ export async function updateTemplateField(id: number, partial: Partial<FieldDefi
   return toFieldDefinition(data);
 }
 
+/** Removes one field from its template. */
 export async function deleteTemplateField(id: number): Promise<void> {
   const { error } = await supabase.from('item_template_fields').delete().eq('id', id);
   if (error) throw error;

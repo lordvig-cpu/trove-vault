@@ -58,7 +58,7 @@ export default function AdHocAttributesEditor({
             <button
               type="button"
               onClick={() => onRemove(index)}
-              className="item-modal-muted text-xs px-1 cursor-pointer"
+              className="item-modal-muted text-xs px-1 cursor-pointer" aria-label="Remove field"
             >
               <CloseIcon />
             </button>
