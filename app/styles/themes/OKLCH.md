@@ -81,23 +81,25 @@ Known exceptions: `lib/color.ts` default seeds and `PICKER_START` in `TemplateAp
 
 ## Themes and the Background seed
 
-The footer selector offers three presets:
+The footer pulldown offers three themes: Embersteel [Dark], Aquaglass [Light] and Sunset Tide [Dark]. A gear beside it shows and hides the five color pickers.
+
+
 
 - **Dark** is EmberSteel (`theme-oklch-embersteel.css`): a near-black workspace with slate panels and amber
   accents. Surfaces are the seed mixed into the fixed `--ember-base`.
 - **Light** is Aquaglass Horizon (`theme-oklch-aquaglass.css`): a pale blue-white workspace of white glass
   panels with navy ink and orange highlights. It has its own rule set and its own role mapping, not
   EmberSteel mixed toward white (see below).
-- **Classic** is the original blue/orange dark theme: just the shared recipe on the seeds in
+- **Sunset Tide** is the original blue/orange dark theme: just the shared recipe on the seeds in
   `theme-oklch-dark.css`, with none of the files above loaded. Kept for now; it may be removed once Dark and
   Light are settled.
 
 Both new themes reuse the shared recipe (`theme-oklch.css`) and re-state the chrome in their own file.
 `DEFAULT_SEEDS` in `OklchSeedControls.tsx` mirrors every theme's default seeds for the picker display and
-must be kept in step with the CSS. Each theme saves its own seeds (`uc_oklch_*` for Classic,
+must be kept in step with the CSS. Each theme saves its own seeds (`uc_oklch_*` for Sunset Tide,
 `uc_oklch_*_embersteel` for Dark, `uc_oklch_*_embersteel_light` for Light).
 
-`--oklch-bg` is optional in Classic: unset, the calibrated canvas samples (`--oklch-blue-10-15-24`,
+`--oklch-bg` is optional in Sunset Tide: unset, the calibrated canvas samples (`--oklch-blue-10-15-24`,
 `--oklch-blue-8-12-20`) fall back to their blue-derived expressions (`scripts/generate-oklch-theme.mjs`
 emits that); set, the Background picker replaces them. Wash strength at the top and around
 flyouts/toolbars is `--flyout-glow-top` / `--flyout-glow-outer`; `--flyout-heading` is the split-flyout
@@ -132,9 +134,9 @@ variable contract EmberSteel uses.
 
 Surface colors are the seed mixed into the fixed dark `--ember-base`, so the Background picker recolors only the canvas and grid, and a picked color shows as a dark tint of itself.
 
-### Five colors in Classic
+### Five colors in Sunset Tide
 
-Classic uses the same five pickers and the same mapping. `--oklch-primary` and
+Sunset Tide uses the same five pickers and the same mapping. `--oklch-primary` and
 `--oklch-secondary` default to the same colors as blue and yellow (as separate seeds, never linked to them), so an untouched
 palette is unchanged; setting them recolors only the header/footer and main content (`--nav-header-*`, `--content-card-*`, `--content-pill-*`, `--studio-grid-*` glow, `--content-border-*`,
 `--nav-footer-*`, `--col-dropdown-*`) and the surfaces of the tree submenus and search menus

@@ -289,9 +289,3 @@
   box-shadow: none;
 }
 
-/* The active theme button is a solid orange pill with a white label. */
-[data-theme='theme-oklch-light'] .theme-selector-btn-active {
-  background: var(--oklch-blue);
-  border-color: var(--oklch-blue);
-  color: var(--pole-label);
-}

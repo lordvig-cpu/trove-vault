@@ -418,41 +418,55 @@
   outline-offset: 3px;
 }
 
-/* Theme selector: Dark / Light / EmberSteel, beside the seed color controls. */
-.theme-selector {
+/* Theme pulldown (components/ThemeSelector.tsx): a native <select> in the footer's control chrome, with a
+   gear beside it that shows the color pickers. */
+.theme-select-group {
   display: flex;
   align-items: center;
-  gap: 0.125rem;
+  gap: 0.25rem;
   flex-shrink: 0;
-  padding: 0.2rem;
+}
+
+.theme-select {
+  appearance: none;
+  min-width: 10.5rem;
+  padding: 0.3rem 1.5rem 0.3rem 0.625rem;
   background: var(--editor-surface);
   border: 1px solid var(--editor-border);
   border-radius: 0.5rem;
-}
-
-.theme-selector-btn {
-  padding: 0.25rem 0.5rem;
-  border: 1px solid transparent;
-  border-radius: 0.3rem;
-  font-size: 0.65rem;
+  font-size: 0.7rem;
   font-weight: 600;
   line-height: 1.1;
-  white-space: nowrap;
   color: var(--editor-text);
   cursor: pointer;
 }
 
-.theme-selector-btn:hover {
+.theme-select:hover {
   border-color: var(--pole-glint);
 }
 
-.theme-selector-btn-active {
-  color: var(--flyout-selected);
-  border-color: var(--flyout-selected);
-  background: color-mix(in oklab, var(--secondary-accent) 18%, transparent);
-}
-
-.theme-selector-btn:focus-visible {
+.theme-select:focus-visible {
   outline: 2px solid var(--editor-focus);
   outline-offset: 1px;
+}
+
+/* The tree's gear trigger is hidden until its row is hovered (UnifiedTree.css); this one is always there. */
+.theme-select-group .theme-gear-btn {
+  opacity: 1;
+}
+
+/* The open list is drawn by the browser; give its rows the pulldown's own colors. */
+.theme-select option {
+  background: var(--editor-surface);
+  color: var(--editor-text);
+}
+
+.theme-select-chevron {
+  color: var(--editor-text);
+  opacity: 0.7;
+}
+
+/* The color pickers can be hidden (the gear), and display: flex would otherwise beat [hidden]. */
+.oklch-seed-controls[hidden] {
+  display: none;
 }

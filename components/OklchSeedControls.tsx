@@ -9,7 +9,7 @@ import { DiceIcon, LockIcon, UnlockIcon } from '@/components/icons/NavigationIco
 import type { ThemePreset } from '@/types/theme';
 
 /** Seeds each theme starts from when nothing is saved. They must match the CSS defaults:
-    Classic in theme-oklch-dark.css, Dark in theme-oklch-embersteel.css, Light in
+    Sunset Tide in theme-oklch-dark.css, Dark in theme-oklch-embersteel.css, Light in
     theme-oklch-aquaglass.css. */
 type Seeds = { primary: string; secondary: string; background: string; primaryColor: string; secondaryColor: string };
 const DEFAULT_SEEDS: Record<ThemePreset, Seeds> = {
@@ -27,7 +27,7 @@ const DEFAULT_SEEDS: Record<ThemePreset, Seeds> = {
     primaryColor: '#E3F0FF', // bars, panel tints, blue lines
     secondaryColor: '#D6EAFE', // idle tabs and pressed tints
   },
-  'theme-oklch-classic': {
+  'theme-oklch-sunset-tide': {
     primary: '#0077FF',
     secondary: '#FF9D00',
     background: '#0A0F18', // the calibrated canvas sample
@@ -121,10 +121,15 @@ function HexSeedInput({ label, value, onChange, locked, onToggleLock }: {
   );
 }
 
-export default function OklchSeedControls() {
+/**
+ * The footer's five theme color pickers, with the dice and Reset. It stays mounted while `visible` is
+ * false (the footer's gear hides it): its effect is what applies the saved seeds as CSS variables, so
+ * unmounting it would drop a customized palette.
+ */
+export default function OklchSeedControls({ visible = true }: { visible?: boolean }) {
   const { theme } = useUIPreferences();
-  // Each theme saves its own seeds: Classic keeps the original keys, Dark and Light add a suffix.
-  const suffix = theme === 'theme-oklch-classic' ? '' : theme === 'theme-oklch-light' ? '_embersteel_light' : '_embersteel';
+  // Each theme saves its own seeds: Sunset Tide keeps the original keys, Dark and Light add a suffix.
+  const suffix = theme === 'theme-oklch-sunset-tide' ? '' : theme === 'theme-oklch-light' ? '_embersteel_light' : '_embersteel';
   // The two original seeds: --oklch-blue is the primary accent, --oklch-yellow the secondary accent.
   const [accentA, setAccentA] = useLocalStorage<string | null>(`uc_oklch_primary${suffix}`, null);
   const [accentB, setAccentB] = useLocalStorage<string | null>(`uc_oklch_secondary${suffix}`, null);
@@ -163,7 +168,7 @@ export default function OklchSeedControls() {
   }, [accentAHex, accentBHex, backgroundHex, primaryColorHex, secondaryColorHex]);
 
   return (
-    <div className="oklch-seed-controls" role="group" aria-label="OKLCH seed colors">
+    <div className="oklch-seed-controls" role="group" aria-label="OKLCH seed colors" hidden={!visible}>
       <HexSeedInput label="Background" value={backgroundHex ?? defaults.background} onChange={setBackground} locked={locks.includes('background')} onToggleLock={() => toggleLock('background')} />
       <HexSeedInput label="Primary" value={primaryColorHex ?? defaults.primaryColor} onChange={setPrimaryColor} locked={locks.includes('primary')} onToggleLock={() => toggleLock('primary')} />
       <HexSeedInput label="Primary Accent" value={accentAHex ?? defaults.primary} onChange={setAccentA} locked={locks.includes('accentA')} onToggleLock={() => toggleLock('accentA')} />

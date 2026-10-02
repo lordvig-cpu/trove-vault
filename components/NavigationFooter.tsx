@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { 
   AnimationsOnIcon, 
   AnimationsOffIcon, 
@@ -91,6 +91,9 @@ export default function NavigationFooter({
 
   const isLightTheme = theme === 'theme-oklch-light';
 
+  // The theme's color pickers are tucked away until the gear beside the theme pulldown is clicked.
+  const [showThemeColors, setShowThemeColors] = useState(false);
+
   const effectivePrimaryOpen = isPrimaryOpen ?? isPrimaryPinned ?? isLeftPanelPinned ?? false;
   const effectiveTogglePrimary = onTogglePrimary ?? onToggleLeftPanel;
   const effectiveBottomOpen = isBottomOpen ?? isBottomPanelOpen ?? false;
@@ -129,11 +132,11 @@ export default function NavigationFooter({
       </div>
 
       {/* --------------------------------------------------------------------
-          2.3 CENTER: LIVE THEME COLORS
+          2.3 CENTER: THEME PULLDOWN (the gear shows its color pickers)
           -------------------------------------------------------------------- */}
-      <div className="relative z-10 flex items-center gap-2">
-        <OklchSeedControls />
-        <ThemeSelector />
+      <div className="absolute left-1/2 -translate-x-1/2 z-10 flex items-center gap-2">
+        <OklchSeedControls visible={showThemeColors} />
+        <ThemeSelector colorsOpen={showThemeColors} onToggleColors={() => setShowThemeColors((open) => !open)} />
       </div>
 
       {/* --------------------------------------------------------------------
