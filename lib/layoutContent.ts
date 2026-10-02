@@ -325,3 +325,15 @@ export function mergeTextStyle(current: TextStyle | undefined, partial: Partial<
   for (const key of Object.keys(merged)) if (merged[key] === undefined) delete merged[key];
   return Object.keys(merged).length ? (merged as TextStyle) : undefined;
 }
+
+/** A new content element bound to a built-in item value, ready to insert in a container. A Name or an
+ *  Image is drawn bare (a title, a picture); the list and date values start with their label shown so
+ *  the reader knows what they are. Everything else (display style, text style) starts at its default. */
+export function buildBuiltinComponent(key: BuiltinKey): Omit<FlexComponentNode, 'id' | 'nodeType'> {
+  const showsLabel = key !== 'name' && key !== 'image';
+  return {
+    componentType: 'field',
+    binding: { kind: 'builtin', key },
+    ...(showsLabel ? { contentLabel: { show: true, position: 'above' as const } } : null),
+  };
+}

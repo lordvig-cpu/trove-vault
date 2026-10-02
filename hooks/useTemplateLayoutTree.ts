@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useState } from 'react';
+import { buildBuiltinComponent } from '@/lib/layoutContent';
 import { ItemTemplate } from '@/types/template';
 import {
   TemplateFlexLayoutConfig,
@@ -11,6 +12,7 @@ import {
   defaultChildDirection,
   findParentFlexContainer,
   collectPlacedFieldIds,
+  type BuiltinKey,
 } from '@/types/layout';
 import {
   buildUniqueContainer,
@@ -367,6 +369,17 @@ export function useTemplateLayoutTree({
     [activeTemplate, activeContainerId, flexLayoutConfig, addFlexComponent]
   );
 
+  // Places a built-in item value (Name, Image, ...) as content. Like a field, it lands in the target
+  // container, or the active one, redirected to the first half when that is a split wrapper.
+  const placeBuiltin = useCallback(
+    (key: BuiltinKey, targetContainerId?: string) => {
+      if (!flexLayoutConfig) return;
+      const target = resolveContentTarget(flexLayoutConfig.root, targetContainerId || activeContainerId);
+      addFlexComponent(target, buildBuiltinComponent(key));
+    },
+    [activeContainerId, flexLayoutConfig, addFlexComponent]
+  );
+
   // Not bound to a real field: a quick way to drop filler text into a container to see how it
   // actually flows/wraps (e.g. while testing a Split), independent of the template's own schema.
   const placeLoremIpsum = useCallback(
@@ -425,6 +438,7 @@ export function useTemplateLayoutTree({
     removeFlexComponent,
     placeField,
     placeLoremIpsum,
+    placeBuiltin,
     resetFlexLayoutToDefault,
     overflowingContainerIds,
     reportContainerOverflow,

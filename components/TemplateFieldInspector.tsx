@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
+import type { PlaceBuiltinHandler, BuiltinKey } from '@/types/layout';
 import { ItemTemplate } from '@/types/template';
 import { FieldDefinition, FieldType } from '@/types/field';
 import { useTreeActionMenu } from '@/hooks/useTreeActionMenu';
@@ -10,7 +11,8 @@ import TemplateRootActionMenu from '@/components/TemplateRootActionMenu';
 import { WarningIcon, ChevronDownIcon } from '@/components/icons/PanelIcons';
 import { CheckIcon, ChevronUpIcon } from '@/components/icons/GlyphIcons';
 import { HintGripIcon } from '@/components/icons/HintIcons';
-import { FieldTypeIcon } from '@/components/icons/ContentIcons';
+import { CalendarIcon, FieldTypeIcon, FolderIcon, ImageIcon, ListIcon, TextFieldIcon } from '@/components/icons/ContentIcons';
+import { BUILTIN_LABELS } from '@/lib/layoutContent';
 import '@/app/styles/components/templateFieldInspector.css';
 
 interface TemplateFieldInspectorProps {
@@ -37,6 +39,7 @@ interface TemplateFieldInspectorProps {
   /** Not bound to a real field: drops 2 paragraphs of filler text, to preview how text actually
       flows/wraps inside a container (e.g. while testing a Split). */
   onPlaceLoremIpsum?: (targetContainerId?: string) => void;
+  onPlaceBuiltin?: PlaceBuiltinHandler;
 }
 
 const FIELD_TYPE_CONFIG: Record<
@@ -340,6 +343,15 @@ function TemplateFieldTreeRow({
 /* --------------------------------------------------------------------------
    Main Component: TemplateFieldInspector (Full-Height Hierarchy Tree)
    -------------------------------------------------------------------------- */
+/** The built-in item values offered in the Item block, in display order, each with its icon. */
+const BUILTIN_ROWS: { key: BuiltinKey; icon: React.ReactNode }[] = [
+  { key: 'name', icon: <TextFieldIcon className="w-3 h-3 shrink-0" /> },
+  { key: 'image', icon: <ImageIcon className="w-3 h-3 shrink-0" /> },
+  { key: 'collections', icon: <FolderIcon className="w-3 h-3 shrink-0" /> },
+  { key: 'created', icon: <CalendarIcon className="w-3 h-3 shrink-0" /> },
+  { key: 'subitems', icon: <ListIcon className="w-3 h-3 shrink-0" /> },
+];
+
 export default function TemplateFieldInspector({
   template,
   selectedFieldId,
@@ -361,9 +373,11 @@ export default function TemplateFieldInspector({
   placedFieldIds,
   onPlaceField,
   onPlaceLoremIpsum,
+  onPlaceBuiltin,
 }: TemplateFieldInspectorProps) {
   const [showAddMenu, setShowAddMenu] = useState<boolean>(false);
   const [isLoremDragging, setIsLoremDragging] = useState(false);
+  const [draggingBuiltin, setDraggingBuiltin] = useState<BuiltinKey | null>(null);
 
   const fields = useMemo(() => template?.fields || [], [template?.fields]);
 
@@ -467,6 +481,48 @@ export default function TemplateFieldInspector({
           >
             + Place
           </button>
+        </div>
+      )}
+
+      {/* --------------------------------------------------------------------
+          2b. ITEM CONTENT (the item's own values -- Name, Image, ... -- as opposed to the template's
+          fields below). Drag one into a container, or click Place to drop it in the active one.
+          -------------------------------------------------------------------- */}
+      {onPlaceBuiltin && (
+        <div className="p-2.5 rounded-xl bg-[color-mix(in_oklch,var(--primary-accent)_10%,transparent)] border border-[color-mix(in_oklch,var(--primary-accent)_25%,transparent)] flex flex-col gap-1.5 shrink-0">
+          <span className="text-[10px] font-bold text-muted uppercase tracking-wider px-0.5">Item</span>
+          {BUILTIN_ROWS.map(({ key, icon }) => (
+            <div key={key} className="flex items-center gap-2">
+              <span
+                draggable={true}
+                onDragStart={(e) => {
+                  e.dataTransfer.setData('application/x-trove-builtin', key);
+                  e.dataTransfer.effectAllowed = 'copy';
+                  setDraggingBuiltin(key);
+                }}
+                onDragEnd={() => setDraggingBuiltin(null)}
+                className={`text-[10px] text-muted/50 hover:text-muted cursor-grab active:cursor-grabbing tracking-tighter shrink-0 select-none p-0.5 rounded hover:bg-slate-800 ${
+                  draggingBuiltin === key ? 'opacity-40' : ''
+                }`}
+                title="Drag to place in a container"
+                aria-label={`Drag ${BUILTIN_LABELS[key]}`}
+              >
+                <HintGripIcon className="w-2 h-3" />
+              </span>
+              <span className="flex items-center gap-1.5 text-[11px] font-medium text-strong flex-1 min-w-0 truncate">
+                {icon}
+                {BUILTIN_LABELS[key]}
+              </span>
+              <button
+                type="button"
+                onClick={() => onPlaceBuiltin(key)}
+                className="px-2 py-1 text-[11px] font-medium rounded-lg bg-[color-mix(in_oklch,var(--primary-accent)_18%,transparent)] hover:bg-[color-mix(in_oklch,var(--primary-accent)_32%,transparent)] border border-[color-mix(in_oklch,var(--primary-accent)_35%,transparent)] text-[var(--primary-accent)] hover:text-[var(--text-strong)] transition cursor-pointer shrink-0"
+                title={`Place ${BUILTIN_LABELS[key]} into the active container`}
+              >
+                + Place
+              </button>
+            </div>
+          ))}
         </div>
       )}
 

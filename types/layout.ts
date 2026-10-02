@@ -128,6 +128,9 @@ export type LayoutVariant =
 /** The item values (not template fields) a content element can show. */
 export type BuiltinKey = 'name' | 'image' | 'collections' | 'created' | 'subitems';
 
+/** Places a built-in item value as content in a container (the active one when none is given). */
+export type PlaceBuiltinHandler = (key: BuiltinKey, targetContainerId?: string) => void;
+
 /** What a content element shows: a built-in item value, a template field, or fixed text. A component
  *  saved before bindings existed has none; `bindingOf` (lib/layoutContent.ts) derives it from the
  *  legacy `field_id` / note text. */

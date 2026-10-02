@@ -289,7 +289,9 @@ commit whenever you add, remove, split or rename a file — it goes stale otherw
   existed still works: `bindingOf` derives a binding from the old `field_id`/note text, and a legacy
   `sizing` on a component is still honored (it is deprecated and never written for new content). Content
   is drawn by `ContentValue` from the item in `ContentDataContext` (the editor shows the first item of
-  the template being edited, or sample values when it has none). Pre-defined content (a field list)
+  the template being edited, or sample values when it has none). The Content tab's "Item" block lists the built-in values (Name, Image, Collections, Created, Sub-items): drag one
+  into a container (`application/x-trove-builtin`) or click Place for the active one (`placeBuiltin`, built by
+  `buildBuiltinComponent`). Pre-defined content (a field list)
   will expand into ordinary containers and content rather than being one opaque component. The table /
   media / stat blocks in the Components palette are still the old mock placeholders until that lands.
 - Layout tree edits (add, insert sibling, split, update, remove) are pure functions in
@@ -311,14 +313,16 @@ commit whenever you add, remove, split or rename a file — it goes stale otherw
   is cleared when the editor opens or closes and on refresh, and never saved. Field edits (add, rename,
   delete, reorder) write straight to Supabase and are not part of it. A quick run of property tweaks
   (a resize drag) is one step; adding, removing or splitting nodes is always its own.
-- Layout persistence: localStorage on every change, plus a debounced Supabase write. The
-  `layout_config` column is not in `.supabase/schema.sql` yet, so remote saves currently fail (with
-  one console warning per session).
+- Layout persistence: localStorage on every change, plus a debounced Supabase write to
+  `item_templates.layout_config` (in `.supabase/schema.sql`). Until that column exists in the live
+  database (see the first item under "To do before real template saving"), remote saves fail with
+  one console warning per session and the layout lives only in this browser.
 
 ## To do before real template saving
 
-- Add a `layout_config` column to the `item_templates` table and to `.supabase/schema.sql` (for
-  example `ALTER TABLE item_templates ADD COLUMN layout_config jsonb;`). Until it exists, layout
+- Run `ALTER TABLE item_templates ADD COLUMN IF NOT EXISTS layout_config JSONB;` once in the live
+  Supabase project (SQL editor). `.supabase/schema.sql` already has the column (and that same ALTER for
+  older databases), but the live database is not changed by editing the file. Until it is run, layout
   edits are only kept in this browser's localStorage and each remote save fails (one console warning
   per session). The app already writes the whole layout to that column, debounced, in
   `hooks/useTemplateEditor.ts`.
@@ -327,7 +331,7 @@ commit whenever you add, remove, split or rename a file — it goes stale otherw
 - `.supabase/schema.sql` is the re-initialization script for a fresh Supabase project — it is not
   auto-generated from the live database. Any schema change (new table, column, index, constraint,
   RLS policy, or seed row) must be added to it in the same commit as the migration that makes the
-  change, or the script silently drifts from reality (see the `layout_config` gap noted above).
+  change, or the script silently drifts from reality (as was done for `layout_config`).
 
 ## Cleanup backlog (found in the code audit, not yet done)
 

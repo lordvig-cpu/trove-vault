@@ -6,6 +6,8 @@ import {
   FlexContainerNode,
   FlexComponentNode,
   resolveDirection,
+  type BuiltinKey,
+  type PlaceBuiltinHandler,
 } from '@/types/layout';
 import { FieldDefinition } from '@/types/field';
 import { GearIcon, SearchGlassIcon } from '@/components/icons/TreeIcons';
@@ -44,6 +46,7 @@ export interface TemplateHierarchyTreeProps {
   onRemoveComponent: (componentId: string) => void;
   onPlaceField?: (fieldId: number, targetContainerId?: string) => void;
   onPlaceLoremIpsum?: (targetContainerId?: string) => void;
+  onPlaceBuiltin?: PlaceBuiltinHandler;
   /** Dock side: on the right, row gears move to the left edge and menus open rightward. */
   position?: 'left' | 'right';
   expandedIds?: Set<string>;
@@ -161,6 +164,7 @@ interface ContainerNodeRowProps {
   onRemoveComponent: (id: string) => void;
   onPlaceField?: (fieldId: number, targetContainerId?: string) => void;
   onPlaceLoremIpsum?: (targetContainerId?: string) => void;
+  onPlaceBuiltin?: PlaceBuiltinHandler;
   position?: 'left' | 'right';
   overflowingContainerIds?: Set<string>;
   /** Ids surviving the current search/filter (null = no filter active, show everything). Filtered
@@ -187,6 +191,7 @@ function ContainerNodeRow({
   onRemoveComponent,
   onPlaceField,
   onPlaceLoremIpsum,
+  onPlaceBuiltin,
   position = 'left',
   overflowingContainerIds,
   visibleIds,
@@ -245,6 +250,12 @@ function ContainerNodeRow({
           setIsDragOver(false);
           if (e.dataTransfer.getData('application/x-trove-lorem-ipsum')) {
             onPlaceLoremIpsum?.(container.id);
+            onSelectNode(container.id);
+            return;
+          }
+          const builtinKey = e.dataTransfer.getData('application/x-trove-builtin');
+          if (builtinKey) {
+            onPlaceBuiltin?.(builtinKey as BuiltinKey, container.id);
             onSelectNode(container.id);
             return;
           }
@@ -412,6 +423,7 @@ function ContainerNodeRow({
                   onRemoveComponent={onRemoveComponent}
                   onPlaceField={onPlaceField}
                   onPlaceLoremIpsum={onPlaceLoremIpsum}
+                  onPlaceBuiltin={onPlaceBuiltin}
                   position={position}
                   overflowingContainerIds={overflowingContainerIds}
                   visibleIds={visibleIds}
@@ -602,6 +614,7 @@ export default function TemplateHierarchyTree({
   onRemoveComponent,
   onPlaceField,
   onPlaceLoremIpsum,
+  onPlaceBuiltin,
   position = 'left',
   expandedIds: externalExpandedIds,
   onToggleExpand: externalOnToggleExpand,
@@ -680,6 +693,7 @@ export default function TemplateHierarchyTree({
         onRemoveComponent={onRemoveComponent}
         onPlaceField={onPlaceField}
         onPlaceLoremIpsum={onPlaceLoremIpsum}
+        onPlaceBuiltin={onPlaceBuiltin}
         position={position}
         visibleIds={visibleIds}
         overflowingContainerIds={overflowingContainerIds}

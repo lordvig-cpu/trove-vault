@@ -2,6 +2,7 @@ import { test, expect } from '@playwright/test';
 import {
   TEXT_PRESETS,
   applyTextPreset,
+  buildBuiltinComponent,
   bindingPatch,
   mergeTextStyle,
   bindingOf,
@@ -179,5 +180,20 @@ test.describe('Content elements (pure)', () => {
     expect(mergeTextStyle({ fontSize: 12, color: '#000000' }, { fontSize: 20 })).toEqual({ fontSize: 20, color: '#000000' });
     expect(mergeTextStyle({ fontSize: 12 }, { fontSize: undefined })).toBeUndefined();
     expect(mergeTextStyle(undefined, { italic: true })).toEqual({ italic: true });
+  });
+
+  test('buildBuiltinComponent binds the built-in; Name and Image are bare, the others show a label', () => {
+    expect(buildBuiltinComponent('name')).toEqual({ componentType: 'field', binding: { kind: 'builtin', key: 'name' } });
+    expect(buildBuiltinComponent('image').contentLabel).toBeUndefined();
+    for (const key of ['collections', 'created', 'subitems'] as const) {
+      expect(buildBuiltinComponent(key)).toMatchObject({
+        binding: { kind: 'builtin', key },
+        contentLabel: { show: true, position: 'above' },
+      });
+    }
+    // Every built-in is real: it resolves to a value with a sample, never throws.
+    for (const key of ['name', 'image', 'collections', 'created', 'subitems'] as const) {
+      expect(resolveValue({ kind: 'builtin', key }, {}, fields)).toBeDefined();
+    }
   });
 });

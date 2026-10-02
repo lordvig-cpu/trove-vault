@@ -8,6 +8,7 @@ import {
   FlexContainerNode,
   FlexComponentNode,
   findFlexNode,
+  type PlaceBuiltinHandler,
 } from '@/types/layout';
 import { useCanvasZoom } from '@/context/CanvasZoomContext';
 import TemplateEditorBar from '@/components/TemplateEditorBar';
@@ -55,6 +56,7 @@ interface TemplateEditorStageProps {
   onRemoveFlexComponent?: (componentId: string) => void;
   onPlaceField?: (fieldId: number, targetContainerId?: string) => void;
   onPlaceLoremIpsum?: (targetContainerId?: string) => void;
+  onPlaceBuiltin?: PlaceBuiltinHandler;
   onResetFlexLayout?: () => void;
   onSplitContainer?: (containerId: string, splitType: 'columns' | 'rows', measuredPx: number) => void;
   onOverflowChange?: (containerId: string, isOverflowing: boolean) => void;
@@ -92,6 +94,7 @@ export default function TemplateEditorStage({
   onRemoveFlexComponent,
   onPlaceField,
   onPlaceLoremIpsum,
+  onPlaceBuiltin,
   onResetFlexLayout,
   onSplitContainer,
   onOverflowChange,
@@ -193,6 +196,7 @@ export default function TemplateEditorStage({
             onRemoveComponent={onRemoveFlexComponent}
             onPlaceField={onPlaceField}
             onPlaceLoremIpsum={onPlaceLoremIpsum}
+            onPlaceBuiltin={onPlaceBuiltin}
             onOverflowChange={onOverflowChange}
           />
         </ScaledCanvas>

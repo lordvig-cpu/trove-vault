@@ -3,7 +3,7 @@
 import { useState, useMemo, useCallback } from 'react';
 import { getAllContainerIds, countElements } from '@/components/TemplateHierarchyTree';
 import type { useTemplateEditor } from '@/hooks/useTemplateEditor';
-import { findAncestorContainerIds, type FlexContainerNode } from '@/types/layout';
+import { findAncestorContainerIds, type BuiltinKey, type FlexContainerNode } from '@/types/layout';
 
 /* ==========================================================================
    Layout tree state for the template editor: which containers are expanded, and the helpers
@@ -126,6 +126,17 @@ export function useHierarchyState(templateEditor: TemplateEditor) {
     }
   }, [templateEditor]);
 
+  const handlePlaceBuiltin = useCallback((key: BuiltinKey, targetContainerId?: string) => {
+    templateEditor.placeBuiltin(key, targetContainerId);
+    if (targetContainerId) {
+      setHierarchyExpandedIds((prev) => {
+        const next = new Set(prev);
+        next.add(targetContainerId);
+        return next;
+      });
+    }
+  }, [templateEditor]);
+
   const handleAddContainer = useCallback(
     (targetContainerId: string, options?: Partial<FlexContainerNode>) => {
       const newId = templateEditor.addFlexContainer(targetContainerId, options);
@@ -150,6 +161,7 @@ export function useHierarchyState(templateEditor: TemplateEditor) {
     handleOpenProperties,
     handlePlaceField,
     handlePlaceLoremIpsum,
+    handlePlaceBuiltin,
     handleAddContainer,
   };
 }

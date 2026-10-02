@@ -11,6 +11,7 @@ import {
   TemplateFlexLayoutConfig,
   FlexContainerNode,
   FlexComponentNode,
+  type PlaceBuiltinHandler,
 } from '@/types/layout';
 
 /* ==========================================================================
@@ -62,6 +63,7 @@ interface MainContentProps {
   onRemoveFlexComponent?: (componentId: string) => void;
   onPlaceField?: (fieldId: number, targetContainerId?: string) => void;
   onPlaceLoremIpsum?: (targetContainerId?: string) => void;
+  onPlaceBuiltin?: PlaceBuiltinHandler;
   onResetFlexLayout?: () => void;
   onOverflowChange?: (containerId: string, isOverflowing: boolean) => void;
   onSplitFlexContainer?: (containerId: string, splitType: 'columns' | 'rows', measuredPx: number) => void;
@@ -109,6 +111,7 @@ export default function MainContent({
   onRemoveFlexComponent,
   onPlaceField,
   onPlaceLoremIpsum,
+  onPlaceBuiltin,
   onResetFlexLayout,
   onOverflowChange,
   canvasMode = 'edit',
@@ -160,6 +163,7 @@ export default function MainContent({
                   onRemoveFlexComponent={onRemoveFlexComponent}
                   onPlaceField={onPlaceField}
                   onPlaceLoremIpsum={onPlaceLoremIpsum}
+                  onPlaceBuiltin={onPlaceBuiltin}
                   onResetFlexLayout={onResetFlexLayout}
                   onOverflowChange={onOverflowChange}
                   canvasMode={canvasMode}

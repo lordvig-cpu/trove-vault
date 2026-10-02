@@ -9,6 +9,8 @@ import {
   normalizeJustify,
   parsePxValue,
   resolvePaddingCss,
+  type BuiltinKey,
+  type PlaceBuiltinHandler,
 } from '@/types/layout';
 import ContainerResizeHandles from '@/components/ContainerResizeHandles';
 import FlexComponentRenderer from '@/components/template-canvas/FlexComponentRenderer';
@@ -38,6 +40,7 @@ export default function FlexContainerRenderer({
   onRemoveComponent,
   onPlaceField,
   onPlaceLoremIpsum,
+  onPlaceBuiltin,
   parentStacked,
   onOverflowChange,
 }: {
@@ -74,6 +77,7 @@ export default function FlexContainerRenderer({
   onRemoveComponent?: (id: string) => void;
   onPlaceField?: (fieldId: number, targetContainerId?: string) => void;
   onPlaceLoremIpsum?: (targetContainerId?: string) => void;
+  onPlaceBuiltin?: PlaceBuiltinHandler;
 }) {
   const [isDragOver, setIsDragOver] = useState(false);
   const isSelected = selectedNodeId === container.id;
@@ -306,6 +310,12 @@ export default function FlexContainerRenderer({
           onSelectNode?.(container.id);
           return;
         }
+        const builtinKey = e.dataTransfer.getData('application/x-trove-builtin');
+        if (builtinKey) {
+          onPlaceBuiltin?.(builtinKey as BuiltinKey, container.id);
+          onSelectNode?.(container.id);
+          return;
+        }
         const fieldIdStr =
           e.dataTransfer.getData('application/x-trove-field-id') || e.dataTransfer.getData('text/plain');
         if (fieldIdStr) {
@@ -413,6 +423,7 @@ export default function FlexContainerRenderer({
                   onRemoveComponent={onRemoveComponent}
                   onPlaceField={onPlaceField}
                   onPlaceLoremIpsum={onPlaceLoremIpsum}
+                  onPlaceBuiltin={onPlaceBuiltin}
                   onOverflowChange={onOverflowChange}
                 />
               );

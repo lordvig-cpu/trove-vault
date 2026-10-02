@@ -4,8 +4,9 @@
  * regenerate this file and keep `Json` and `Database` as the exported names; the app's own record
  * types (ItemRecord, ItemTemplate, ...) are produced from these rows in `lib/data/mappers.ts`.
  *
- * Keep in sync with schema.sql. `item_templates.layout_config` is NOT in schema.sql yet (see the
- * "To do before real template saving" section of CLAUDE.md).
+ * Keep in sync with schema.sql. `item_templates.layout_config` is in schema.sql, but a database
+ * created before it was added needs the one-line ALTER from that file run once (see the "To do before
+ * real template saving" section of CLAUDE.md).
  */
 
 export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];

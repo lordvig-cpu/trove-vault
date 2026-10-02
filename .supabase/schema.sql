@@ -47,10 +47,14 @@ CREATE TABLE IF NOT EXISTS item_templates (
   description TEXT,
   icon VARCHAR(50) DEFAULT '📦',
   is_system_preset BOOLEAN NOT NULL DEFAULT true,
+  layout_config JSONB, -- the template editor's layout tree (a TemplateFlexLayoutConfig); null = the generated default
   sys_created_at TIMESTAMPTZ DEFAULT NOW(),
   sys_updated_at TIMESTAMPTZ DEFAULT NOW(),
   UNIQUE(name, user_id)
 );
+
+-- For a database created before layout_config existed (a fresh run of this script already has it):
+ALTER TABLE item_templates ADD COLUMN IF NOT EXISTS layout_config JSONB;
 
 DROP TRIGGER IF EXISTS tr_item_templates_updated_at ON item_templates;
 CREATE TRIGGER tr_item_templates_updated_at
