@@ -6,7 +6,7 @@
 @import "./styles/themes/theme-oklch.css";
 @import "./styles/themes/theme-oklch-light.css";
 @import "./styles/themes/theme-semantic.css";
-@import "./styles/themes/theme-oklch-new-n-shiny.css";
+@import "./styles/themes/theme-oklch-embersteel.css";
 
 /* 2. Functional Component Stylesheets */
 @import "./styles/components/TreePrimitives.css";

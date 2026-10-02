@@ -9,8 +9,8 @@ import { DiceIcon, LockIcon, UnlockIcon } from '@/components/icons/NavigationIco
 import type { ThemePreset } from '@/types/theme';
 
 /** Seeds each theme starts from when nothing is saved. Must match the CSS defaults: Dark/Light in
-    theme-oklch-dark.css (background: the calibrated canvas sample), New 'n Shiny in its own file. */
-const SHINY_SEEDS = {
+    theme-oklch-dark.css (background: the calibrated canvas sample), EmberSteel in its own file. */
+const EMBERSTEEL_SEEDS = {
   primary: '#6C85A6', // primary accent: side and bottom panels
   secondary: '#FF9D00', // secondary accent: text and edges in menus and toolbars
   background: '#0D121B',
@@ -18,8 +18,8 @@ const SHINY_SEEDS = {
   secondaryColor: '#2B2825', // tree submenus, search menus, template toolbars
 };
 function defaultSeeds(theme: ThemePreset) {
-  return theme === 'theme-oklch-new-n-shiny'
-    ? SHINY_SEEDS
+  return theme === 'theme-oklch-embersteel'
+    ? EMBERSTEEL_SEEDS
     : {
         primary: rgbaToHex(DEFAULT_PRIMARY_COLOR),
         secondary: rgbaToHex(DEFAULT_SECONDARY_COLOR),
@@ -113,9 +113,9 @@ function HexSeedInput({ label, value, onChange, locked, onToggleLock }: {
 
 export default function OklchSeedControls() {
   const { theme } = useUIPreferences();
-  const shiny = theme === 'theme-oklch-new-n-shiny';
-  // Dark and Light share one saved set (the original keys); New 'n Shiny keeps its own.
-  const suffix = shiny ? '_shiny' : '';
+  const emberSteel = theme === 'theme-oklch-embersteel';
+  // Dark and Light share one saved set (the original keys); EmberSteel keeps its own.
+  const suffix = emberSteel ? '_embersteel' : '';
   // The two original seeds: --oklch-blue is the primary accent, --oklch-yellow the secondary accent.
   const [accentA, setAccentA] = useLocalStorage<string | null>(`uc_oklch_primary${suffix}`, null);
   const [accentB, setAccentB] = useLocalStorage<string | null>(`uc_oklch_secondary${suffix}`, null);

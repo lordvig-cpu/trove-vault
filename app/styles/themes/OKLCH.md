@@ -81,21 +81,21 @@ Known exceptions: `lib/color.ts` default seeds and `PICKER_START` in `TemplateAp
 
 ## Third theme and the Background seed
 
-`theme-oklch-new-n-shiny.css` is the third theme (footer selector: Dark / Light / New 'n Shiny).
+`theme-oklch-embersteel.css` is the third theme (footer selector: Dark / Light / EmberSteel).
 It shares the recipe and Dark's role coefficients, then re-states the chrome as flat slate panels
 lifted from a third seed, `--oklch-bg`, with charcoal flyouts and amber edges. Its seeds are slate
-`#64748B` (primary), amber `#F59E0B` (secondary) and `#080D10` (background); `SHINY_SEEDS` in
+`#64748B` (primary), amber `#F59E0B` (secondary) and `#080D10` (background); `EMBERSTEEL_SEEDS` in
 `OklchSeedControls.tsx` mirrors them for the picker display.
 
 `--oklch-bg` is optional in Dark/Light: unset, the calibrated canvas samples
 (`--oklch-blue-10-15-24`, `--oklch-blue-8-12-20`) fall back to their blue-derived expressions
 (`scripts/generate-oklch-theme.mjs` emits that); set, the Background picker replaces them, and
 Light still flips it through the surface coefficients. Each theme family saves its own seeds
-(`uc_oklch_*` for Dark/Light, `uc_oklch_*_shiny` for New 'n Shiny). Wash strength at the top and
+(`uc_oklch_*` for Dark/Light, `uc_oklch_*_embersteel` for EmberSteel). Wash strength at the top and
 around flyouts/toolbars is `--flyout-glow-top` / `--flyout-glow-outer`; `--flyout-heading` is the
 split-flyout title color.
 
-### New 'n Shiny: five colors
+### EmberSteel: five colors
 
 | Picker | Seed | Drives |
 | --- | --- | --- |
@@ -105,7 +105,7 @@ split-flyout title color.
 | Secondary | `--oklch-secondary` | tree submenus, search menus, template toolbars and their drop-downs |
 | Secondary Accent | `--oklch-yellow` | default text, edges and selected states inside those menus/toolbars |
 
-Surface colors are the seed mixed into a fixed dark base (`--shiny-base`, the default background; `--shiny-*` in the theme file), so the Background picker recolors only the canvas and grid, and a picked
+Surface colors are the seed mixed into a fixed dark base (`--ember-base`, the default background; `--ember-*` in the theme file), so the Background picker recolors only the canvas and grid, and a picked
 color shows as a dark tint of itself.
 
 ### Five colors in Dark and Light

@@ -1,0 +1,173 @@
+/* EmberSteel: a near-black workspace with slate panels and amber accents, after the design mockup.
+   It reuses the shared OKLCH recipe (theme-oklch.css) and Dark's role coefficients, then re-states
+   the chrome that recipe would otherwise tint with the blue seed.
+
+   Five colors (the footer's pickers override them at runtime):
+     --oklch-bg        Background        behind everything: canvas, grid
+     --oklch-primary   Primary           header and footer bars
+     --oklch-blue      Primary Accent    side and bottom panels, their rules; buttons, focus
+     --oklch-secondary Secondary         tree submenus, search menus, template toolbars/drop-downs
+     --oklch-yellow    Secondary Accent  text, edges and selected states inside those menus/toolbars
+   Surfaces are the color mixed into the background, so a picked color reads as a dark tint of
+   itself rather than a bright slab. */
+[data-theme='theme-oklch-embersteel'] {
+  --oklch-bg: rgba(20, 23, 27, 1);
+  /* What every surface mix below darkens toward: the default Background, held fixed so the Background
+     picker recolors only the canvas and grid, not every panel, menu and ink built on top of it. */
+  --ember-base: rgba(8, 13, 16, 1);
+  --oklch-primary: rgba(29, 33, 39, 1);
+  --oklch-blue: rgba(108, 133, 166, 1);
+  --oklch-secondary: rgba(58, 54, 50, 1);
+  --oklch-yellow: rgba(255, 157, 0, 1);
+
+  /* Header / footer (Primary) */
+  /* The Primary seed exactly, at the bar's outer edge (header top, footer bottom), shading toward the workspace. */
+  --ember-bar: var(--oklch-primary);
+  --ember-bar-deep: color-mix(in oklab, var(--oklch-primary) 20%, var(--ember-base));
+  --ember-bar-line: color-mix(in oklab, var(--oklch-primary) 55%, var(--ember-base));
+
+  /* Side and bottom panels (Primary Accent) */
+  --ember-panel: color-mix(in oklab, var(--oklch-blue) 15%, var(--ember-base));
+  --ember-panel-raised: color-mix(in oklab, var(--oklch-blue) 24%, var(--ember-base));
+  --ember-popover: color-mix(in oklab, var(--oklch-blue) 11%, var(--ember-base));
+  --ember-line: color-mix(in oklab, var(--oklch-blue) 35%, var(--ember-base));
+  --ember-line-strong: color-mix(in oklab, var(--oklch-blue) 58%, var(--ember-base));
+
+  /* Menus and toolbars (Secondary), with the Secondary Accent as their ink and edge */
+  --ember-menu: color-mix(in oklab, var(--oklch-secondary) 50%, var(--ember-base));
+  --ember-menu-deep: color-mix(in oklab, var(--oklch-secondary) 36%, var(--ember-base));
+  --ember-menu-line: color-mix(in oklab, var(--brand-secondary-amber) 28%, var(--ember-menu));
+  --ember-amber-edge: color-mix(in oklab, var(--brand-secondary-amber) 70%, var(--ember-base));
+  --ember-menu-ink: var(--brand-secondary-amber);
+  --ember-menu-ink-soft: color-mix(in oklab, var(--brand-secondary-amber) 72%, var(--ember-menu));
+  --menu-ink-soft: var(--ember-menu-ink-soft);
+  --ember-none: linear-gradient(transparent, transparent);
+
+  /* Flyouts and the two editor toolbars: no wash, a whisper of glow. */
+  --flyout-glow-top: 0%;
+  --flyout-glow-outer: 22%;
+
+  /* Ink outside the menus */
+  --text-primary: oklch(from var(--ember-base) 0.96 0.008 h);
+  --text-secondary: oklch(from var(--ember-base) 0.84 0.02 h);
+  --text-muted: oklch(from var(--ember-base) 0.68 0.03 h);
+
+  /* Background */
+  --canvas-bg-primary: var(--oklch-bg);
+  --studio-grid-bg: var(--oklch-bg);
+  --studio-grid-line: oklch(from var(--oklch-bg) calc(l + 0.05) c h / 0.7);
+  --studio-grid-glow-top-left-core: color-mix(in oklab, var(--brand-primary) 22%, transparent);
+  --studio-grid-glow-top-left-edge: color-mix(in oklab, var(--brand-primary) 8%, transparent);
+  --studio-grid-glow-bottom-right-core: color-mix(in oklab, var(--brand-secondary-amber) 10%, transparent);
+  --studio-grid-glow-bottom-right-edge: color-mix(in oklab, var(--brand-secondary-amber) 3%, transparent);
+  --studio-grid-glow-bottom-right-blue-core: color-mix(in oklab, var(--brand-primary) 16%, transparent);
+  --studio-grid-glow-bottom-right-blue-edge: color-mix(in oklab, var(--brand-primary) 5%, transparent);
+  --studio-grid-vignette: transparent;
+
+  /* Header and footer bars */
+  --nav-header-background: linear-gradient(180deg, var(--ember-bar), var(--ember-bar-deep));
+  --nav-header-border-bottom: 1px solid var(--ember-bar-line);
+  --nav-header-shadow: 0 1px 0 var(--shadow-black-50);
+  --nav-header-flare-bg: var(--ember-none);
+  --nav-header-texture-bg: var(--ember-none);
+  --nav-footer-background: linear-gradient(0deg, var(--ember-bar), var(--ember-bar-deep));
+  --nav-footer-border-top: 1px solid var(--ember-bar-line);
+  --nav-footer-shadow: 0 -1px 0 var(--shadow-black-50);
+  --nav-footer-flare-bg: var(--ember-none);
+  --nav-footer-texture-bg: var(--ember-none);
+
+  /* Side and bottom panels */
+  --panel-surface-bg: var(--ember-panel);
+  --card-surface-hover: var(--ember-panel-raised);
+  --popover-surface-bg: var(--ember-popover);
+  --panel-border-subtle: var(--ember-line);
+  --panel-border-strong: var(--ember-line-strong);
+  --tree-panel-bg: var(--ember-panel);
+  --tree-panel-border: var(--ember-line);
+  --tree-panel-flare-bg: var(--ember-none);
+  --tree-panel-texture-bg: var(--ember-none);
+  --right-panel-bg: var(--ember-panel);
+  --right-panel-border: var(--ember-line);
+  --right-panel-flare-bg: var(--ember-none);
+  --right-panel-texture-bg: var(--ember-none);
+
+  /* Main content (item view): rules and hover fill from the Primary seed, like the bars. */
+  --content-border-subtle: color-mix(in oklab, var(--oklch-primary) 55%, var(--ember-base));
+  --content-border-strong: color-mix(in oklab, var(--oklch-primary) 80%, var(--ember-base));
+
+  /* Selection: an amber outline over a faint amber fill. */
+  --tree-item-active-bg: color-mix(in oklab, var(--brand-secondary-amber) 6%, transparent);
+  --tree-item-active-border: var(--ember-amber-edge);
+  --tree-item-hover-bg: color-mix(in oklab, var(--text-primary) 6%, transparent);
+  --tree-search-input-bg: var(--ember-base);
+  --tree-search-input-border: var(--ember-line);
+  --tmpl-item-selected-bg: color-mix(in oklab, var(--brand-secondary-amber) 9%, var(--ember-panel));
+  --tmpl-item-selected-border: var(--ember-amber-edge);
+
+  /* Solid action buttons (Place, Done) stay a true blue whatever the slate primary accent is. */
+  --content-btn-primary-bg: oklch(0.58 0.19 259);
+  --content-btn-primary-hover: oklch(0.64 0.19 259);
+
+  /* Tree gear menus and Advanced Search (Secondary + Secondary Accent) */
+  --tree-menu-shell-bg: var(--ember-menu);
+  --tree-menu-shell-border: var(--ember-amber-edge);
+  --tree-menu-shell-shadow: 0 0 22px 0 oklch(from var(--brand-secondary-amber) l c h / 0.22), 0 16px 32px var(--shadow-black-50);
+  --tree-menu-header-bg: var(--ember-none);
+  --tree-menu-header-border: var(--ember-menu-line);
+  --tree-menu-header-title: var(--ember-menu-ink);
+  --tree-menu-divider: var(--ember-menu-line);
+  --tree-menu-form-bg: var(--ember-menu);
+  --tree-menu-input-bg: var(--ember-menu-deep);
+  --tree-menu-item-text: var(--ember-menu-ink);
+  --tree-menu-item-subtext: var(--text-secondary);
+  --tree-menu-item-hover-text: var(--text-primary);
+  --tree-menu-item-hover-subtext: var(--text-secondary);
+  --tree-filter-option-label: var(--ember-menu-ink);
+
+  /* The flyout family (TreeSubMenu, HoverHint, the toolbars' drop-downs). */
+  --flyout-card-border: var(--ember-menu-line);
+  --flyout-card-glow: transparent;
+  --flyout-card-glow-fade: transparent;
+  --flyout-card-base: var(--ember-menu);
+  --flyout-tile-bg: var(--ember-menu-deep);
+  --flyout-tile-border: var(--ember-amber-edge);
+  --flyout-divider: var(--ember-menu-line);
+  --flyout-shell-bg: var(--ember-menu);
+  --flyout-shell-border: var(--ember-amber-edge);
+  --flyout-head-bottom: var(--ember-menu);
+  /* Submenu body under the tabs: a flat Primary (#1D2127 by default, within one step of #1E2228). */
+  --flyout-body-top: var(--oklch-primary);
+  --flyout-body-bottom: var(--oklch-primary);
+  --flyout-title: var(--ember-menu-ink);
+  --flyout-selected: var(--ember-menu-ink);
+  --flyout-heading: var(--ember-menu-ink);
+  --flyout-tab-band: var(--ember-menu-deep);
+  --flyout-tab-idle: var(--ember-menu);
+  --section-card-base: var(--ember-menu-deep);
+  --flyout-tab-active-top: color-mix(in oklab, var(--secondary-accent) 29%, var(--ember-menu));
+  --flyout-tab-active-bottom: color-mix(in oklab, var(--secondary-accent) 17.5%, var(--ember-menu));
+  --flyout-tab-active-border: var(--secondary-accent);
+}
+
+
+/* Menu text that reads white (deep ink in light mode): the flyout title, the active tab, each section
+   heading and the label above every Properties input. */
+[data-theme='theme-oklch-embersteel'] .menuShellHead.menuShell .headerPill .headerTitle,
+[data-theme='theme-oklch-embersteel'] .menuSectionTitle,
+[data-theme='theme-oklch-embersteel'] .menu-field-label {
+  color: var(--flyout-white);
+}
+
+[data-theme='theme-oklch-embersteel'] .menuTab-active,
+[data-theme='theme-oklch-embersteel'] .menuTab-active:hover {
+  color: var(--flyout-white);
+  text-shadow: 0 0 8px color-mix(in oklab, var(--secondary-accent) 55%, transparent);
+  box-shadow:
+    inset 0 1px 0 color-mix(in oklab, var(--secondary-accent) 45%, transparent),
+    0 0 10px color-mix(in oklab, var(--secondary-accent) 35%, transparent);
+}
+
+/* An idle tab keeps a fainter amber edge so the row reads as amber buttons. */
+[data-theme='theme-oklch-embersteel'] .menuTab:not(.menuTab-active) {
+  border-color: color-mix(in oklab, var(--secondary-accent) 45%, var(--ember-menu));
+}

@@ -3,7 +3,7 @@
 import { useUIPreferences } from '@/context/UIPreferencesContext';
 import { THEME_OPTIONS } from '@/types/theme';
 
-/** Footer segmented control: Dark, Light or New 'n Shiny. */
+/** Footer segmented control: Dark, Light or EmberSteel. */
 export default function ThemeSelector() {
   const { theme, setTheme } = useUIPreferences();
   return (

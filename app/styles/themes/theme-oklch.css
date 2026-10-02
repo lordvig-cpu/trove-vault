@@ -2,7 +2,7 @@
    Edit seeds in theme-oklch-dark.css and mode rules in theme-oklch-light.css.
    RGB suffixes identify calibration samples, not runtime color literals.
    Green/red/violet semantic colors are hue rotations of the blue seed. */
-:is([data-theme='theme-oklch-dark'], [data-theme='theme-oklch-light'], [data-theme='theme-oklch-new-n-shiny']) {
+:is([data-theme='theme-oklch-dark'], [data-theme='theme-oklch-light'], [data-theme='theme-oklch-embersteel']) {
   /* Calibrated dark palette: L/C ratios and hue offsets from two seeds. */
   --oklch-blue-0-119-255: oklch(from var(--oklch-blue) calc(l * 1) calc(c * 1) calc(h + 0));
   --oklch-blue-0-162-255: oklch(from var(--oklch-blue) calc(l * 1.15496) calc(c * 0.79114) calc(h + -12.61481));
