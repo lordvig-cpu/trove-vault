@@ -25,7 +25,7 @@ Reach the whole app (or the workspace), except where a narrower scope is noted.
 | 60         | Footer wrapper / navigation footer    | Contains local footer layers                         | page.tsx; NavigationFooter.tsx               |
 | 60         | Tree flyout backdrop                  | Body portal; begins below navigation                 | PrimarySidePanel.tsx                         |
 | 55 / 54    | Moving / displaced panel content      | Workspace; transient swap animation                  | page.tsx                                     |
-| 53         | Bottom template editor toolbar slot   | Workspace; above the bottom panel it sits in front of | page.tsx; TemplateEditorBar.tsx              |
+| 53         | Bottom toolbar slots (template editor bar, theme colors bar) | Workspace; one stacked wrapper (theme bar nearest the footer), above the bottom panel it sits in front of | page.tsx; TemplateEditorBar.tsx; ThemeColorsBar.tsx |
 | 52         | Bottom panel aside                    | Workspace; full width, above both sidebars; same value pinned or unpinned | BottomPanel.css |
 | 50 / 40    | Primary / secondary sidebar asides    | 50: open + unpinned; 40: pinned or closed             | PrimarySidePanel.tsx; SecondarySidePanel.tsx |
 | 45 / 35    | Tree action / search menus            | Body portals; unpinned / pinned; under panel edge     | Both Tree*Menu.tsx components                |

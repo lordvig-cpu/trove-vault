@@ -122,11 +122,12 @@ function HexSeedInput({ label, value, onChange, locked, onToggleLock }: {
 }
 
 /**
- * The footer's five theme color pickers, with the dice and Reset. It stays mounted while `visible` is
- * false (the footer's gear hides it): its effect is what applies the saved seeds as CSS variables, so
- * unmounting it would drop a customized palette.
+ * The five theme color pickers, with the dice and Reset. Shown inside ThemeColorsBar, which keeps it
+ * mounted even while the bar is hidden: its effect is what applies the saved seeds as CSS variables,
+ * so unmounting it would drop a customized palette. `bare` drops its own border and background for
+ * when it sits inside a bar that already has them.
  */
-export default function OklchSeedControls({ visible = true }: { visible?: boolean }) {
+export default function OklchSeedControls({ bare = false }: { bare?: boolean }) {
   const { theme } = useUIPreferences();
   // Each theme saves its own seeds: Sunset Tide keeps the original keys, Dark and Light add a suffix.
   const suffix = theme === 'theme-oklch-sunset-tide' ? '' : theme === 'theme-oklch-light' ? '_embersteel_light' : '_embersteel';
@@ -168,7 +169,7 @@ export default function OklchSeedControls({ visible = true }: { visible?: boolea
   }, [accentAHex, accentBHex, backgroundHex, primaryColorHex, secondaryColorHex]);
 
   return (
-    <div className="oklch-seed-controls" role="group" aria-label="OKLCH seed colors" hidden={!visible}>
+    <div className={bare ? 'oklch-seed-controls oklch-seed-controls-bare' : 'oklch-seed-controls'} role="group" aria-label="OKLCH seed colors">
       <HexSeedInput label="Background" value={backgroundHex ?? defaults.background} onChange={setBackground} locked={locks.includes('background')} onToggleLock={() => toggleLock('background')} />
       <HexSeedInput label="Primary" value={primaryColorHex ?? defaults.primaryColor} onChange={setPrimaryColor} locked={locks.includes('primary')} onToggleLock={() => toggleLock('primary')} />
       <HexSeedInput label="Primary Accent" value={accentAHex ?? defaults.primary} onChange={setAccentA} locked={locks.includes('accentA')} onToggleLock={() => toggleLock('accentA')} />

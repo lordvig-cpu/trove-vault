@@ -46,6 +46,7 @@ Conventions and architecture (data access, theming, template editor internals, b
 - `OklchSeedControls.tsx` / `SeedColorPicker.tsx` — the footer's primary/secondary/background color pickers
   that override the three OKLCH seeds (saved per theme family).
 - `ThemeSelector.tsx` — the footer's theme pulldown (Embersteel / Aquaglass / Sunset Tide) and the gear that shows the color pickers.
+- `ThemeColorsBar.tsx` — the five theme color pickers as a bottom toolbar (portaled into `#theme-colors-slot`), shown by the theme gear.
 - `PanelContentTransition.tsx` — keeps outgoing panel content mounted briefly during a tab switch.
 - `PanelDockDropZones.tsx` — the drop-target overlays shown while dragging a panel/tab to dock it.
 - `PrimarySidePanel.tsx` / `SecondarySidePanel.tsx` — the left/right dockable side panel shells

@@ -15,7 +15,7 @@ import {
   DockRightPanelIcon,
 } from '@/components/icons/PanelIcons';
 import { useUIPreferences } from '@/context/UIPreferencesContext';
-import OklchSeedControls from '@/components/OklchSeedControls';
+import ThemeColorsBar from '@/components/ThemeColorsBar';
 import ThemeSelector from '@/components/ThemeSelector';
 
 /* ==========================================================================
@@ -91,7 +91,7 @@ export default function NavigationFooter({
 
   const isLightTheme = theme === 'theme-oklch-light';
 
-  // The theme's color pickers are tucked away until the gear beside the theme pulldown is clicked.
+  // The theme colors bar stays hidden until the gear beside the theme pulldown is clicked.
   const [showThemeColors, setShowThemeColors] = useState(false);
 
   const effectivePrimaryOpen = isPrimaryOpen ?? isPrimaryPinned ?? isLeftPanelPinned ?? false;
@@ -132,10 +132,10 @@ export default function NavigationFooter({
       </div>
 
       {/* --------------------------------------------------------------------
-          2.3 CENTER: THEME PULLDOWN (the gear shows its color pickers)
+          2.3 CENTER: THEME PULLDOWN (the gear shows the theme colors bar above the workspace)
           -------------------------------------------------------------------- */}
       <div className="absolute left-1/2 -translate-x-1/2 z-10 flex items-center gap-2">
-        <OklchSeedControls visible={showThemeColors} />
+        <ThemeColorsBar visible={showThemeColors} />
         <ThemeSelector colorsOpen={showThemeColors} onToggleColors={() => setShowThemeColors((open) => !open)} />
       </div>
 

@@ -701,19 +701,23 @@ export default function Home() {
             {bottomPanelContent !== 'empty' ? renderPanelBody(bottomPanelContent, 'bottom') : null}
           </BottomPanel>
 
-          {/* Slot for the template editor's template-wide toolbar (portaled in by the editor),
-              centered the same way as the header's top slot and lifted clear of the bottom panel
-              when it's open (pinned or not) so the two never overlap. */}
+          {/* Slots for the bars that hang on the workspace footer, centered the same way as the header's
+              top slot and lifted clear of the bottom panel when it's open (pinned or not) so they never
+              overlap. Stacked bottom-up: the theme colors bar (portaled in by the footer's gear) sits
+              closest to the footer, the template editor's template-wide toolbar (portaled in by the
+              editor) above it. */}
           <div
-            id="template-toolbar-slot-bottom"
-            className={`absolute bottom-0 -translate-x-1/2 z-[53] pointer-events-none ${
+            className={`absolute bottom-0 -translate-x-1/2 z-[53] pointer-events-none flex flex-col-reverse items-center ${
               animationsEnabled ? 'transition-[left,bottom] duration-500 ease-in-out' : ''
             }`}
             style={{
               left: `calc(50% + ${(leftOccupiedWidth - rightOccupiedWidth) / 2}px)`,
               bottom: isBottomActive ? `${bottomPanelHeight}px` : '0px',
             }}
-          />
+          >
+            <div id="theme-colors-slot" />
+            <div id="template-toolbar-slot-bottom" />
+          </div>
 
           {/* Secondary Side Panel (Details / Inspector Drawer / Grabbed Content) - Sits Above Main Content (z-40) */}
           <SecondarySidePanel
