@@ -1,6 +1,11 @@
 'use client';
 
+import { useMemo } from 'react';
 import { ItemRecord } from '@/types/item';
+import type { ItemTemplate } from '@/types/template';
+import { ContentDataProvider } from '@/context/ContentDataContext';
+import FlexContainerRenderer from '@/components/template-canvas/FlexContainerRenderer';
+import { readCachedLayout, resolveSavedLayout } from '@/lib/layoutStorage';
 import Image from 'next/image';
 import { PencilIcon } from '@/components/icons/LayoutIcons';
 import { TrashCanIcon } from '@/components/icons/PanelIcons';
@@ -13,9 +18,79 @@ import { CameraIcon, FileIcon } from '@/components/icons/ContentIcons';
 
 interface ItemDetailViewProps {
   item: ItemRecord | null;
+  /** The item's template. When it has a saved layout, the item is drawn through that layout; otherwise
+      (no template, or one never given a layout) the original detail view below is shown. */
+  template?: ItemTemplate | null;
+  /** Collection names by id, for a layout's Collections element. */
+  collectionNames?: Record<number, string>;
   onAddSubItem: (parent: ItemRecord) => void;
   onEditItem: () => void;
   onDeleteItem: () => void;
+}
+
+/** The identity badges: item number, root / parent, standalone. */
+function ItemBadges({ item }: { item: ItemRecord }) {
+  return (
+    <div className="flex items-center gap-2">
+      <span className="detail-item-badge px-2 py-0.5 rounded text-[11px] font-mono font-medium">
+        ITEM #{item.id}
+      </span>
+      {item.parent_id ? (
+        <span className="detail-parent-badge px-2 py-0.5 rounded text-[11px] font-mono">
+          Parent ID: {item.parent_id}
+        </span>
+      ) : (
+        <span className="badge-root-item">
+          Root Item
+        </span>
+      )}
+      {(!item.collection_ids || item.collection_ids.length === 0) && item.collection_id === null && (
+        <span className="detail-standalone-badge px-2 py-0.5 rounded text-[11px] font-mono">
+          Standalone
+        </span>
+      )}
+    </div>
+  );
+}
+
+/** Edit, Add Sub-Item and Delete for the item. */
+function ItemActions({
+  item,
+  onAddSubItem,
+  onEditItem,
+  onDeleteItem,
+}: Pick<ItemDetailViewProps, 'onAddSubItem' | 'onEditItem' | 'onDeleteItem'> & { item: ItemRecord }) {
+  return (
+    <div className="flex items-center gap-2 shrink-0">
+      <button
+        type="button"
+        onClick={onEditItem}
+        className={[
+          'flex items-center gap-1.5 px-3 py-1.5',
+          'text-xs font-semibold detail-action-secondary rounded-lg',
+          'cursor-pointer transition',
+        ].join(' ')}
+      >
+        <PencilIcon className="inline w-3.5 h-3.5 align-text-bottom" /> Edit
+      </button>
+
+      <button
+        type="button"
+        onClick={() => onAddSubItem(item)}
+        className="content-btn-primary"
+      >
+        <span>+</span> Add Sub-Item
+      </button>
+
+      <button
+        type="button"
+        onClick={onDeleteItem}
+        className="content-btn-danger"
+      >
+        <TrashCanIcon className="inline w-3.5 h-3.5 align-text-bottom" /> Delete
+      </button>
+    </div>
+  );
 }
 
 /* ==========================================================================
@@ -26,10 +101,20 @@ interface ItemDetailViewProps {
 
 export default function ItemDetailView({
   item,
+  template = null,
+  collectionNames,
   onAddSubItem,
   onEditItem,
   onDeleteItem,
 }: ItemDetailViewProps) {
+  // The template's saved layout: this browser's copy if it has one (the editor writes it on every
+  // change), else the stored copy. Read again whenever the template changes; the editor unmounts this
+  // view while it is open, so a layout edited and saved is picked up when the view comes back.
+  const layout = useMemo(
+    () => (template ? resolveSavedLayout(readCachedLayout(template.id), template.layout_config) : null),
+    [template]
+  );
+
   if (!item) {
     return (
       <div className="space-y-6 w-full">
@@ -87,6 +172,22 @@ export default function ItemDetailView({
     );
   }
 
+  // Drawn through the template's layout: a slim bar of identity badges and actions, then the layout itself,
+  // which is the template's own design and shows whatever it was set up to show.
+  if (layout && template) {
+    return (
+      <div className="space-y-4">
+        <div className="flex items-center justify-between gap-4">
+          <ItemBadges item={item} />
+          <ItemActions item={item} onAddSubItem={onAddSubItem} onEditItem={onEditItem} onDeleteItem={onDeleteItem} />
+        </div>
+        <ContentDataProvider value={{ item, collectionNames }}>
+          <FlexContainerRenderer container={layout.root} isRoot canvasMode="preview" fields={template.fields ?? []} />
+        </ContentDataProvider>
+      </div>
+    );
+  }
+
   const attributes = item.attributes || {};
   const attributeEntries = Object.entries(attributes);
   const imageUrl = [item.image_url, attributes.image_url, attributes.photo_url]
@@ -97,25 +198,7 @@ export default function ItemDetailView({
       {/* HEADER CARD */}
       <div className="content-card p-5 flex items-start justify-between gap-4">
         <div className="space-y-1.5">
-          <div className="flex items-center gap-2">
-            <span className="detail-item-badge px-2 py-0.5 rounded text-[11px] font-mono font-medium">
-              ITEM #{item.id}
-            </span>
-            {item.parent_id ? (
-              <span className="detail-parent-badge px-2 py-0.5 rounded text-[11px] font-mono">
-                Parent ID: {item.parent_id}
-              </span>
-            ) : (
-              <span className="badge-root-item">
-                Root Item
-              </span>
-            )}
-            {(!item.collection_ids || item.collection_ids.length === 0) && item.collection_id === null && (
-              <span className="detail-standalone-badge px-2 py-0.5 rounded text-[11px] font-mono">
-                Standalone
-              </span>
-            )}
-          </div>
+          <ItemBadges item={item} />
           <h1 className="text-2xl font-bold detail-heading tracking-tight">{item.name}</h1>
           {item.created_at && (
             <p className="text-xs detail-muted">
@@ -124,36 +207,7 @@ export default function ItemDetailView({
           )}
         </div>
 
-        {/* Action Controls */}
-        <div className="flex items-center gap-2 shrink-0">
-          <button
-            type="button"
-            onClick={onEditItem}
-            className={[
-              'flex items-center gap-1.5 px-3 py-1.5',
-              'text-xs font-semibold detail-action-secondary rounded-lg',
-              'cursor-pointer transition',
-            ].join(' ')}
-          >
-            <PencilIcon className="inline w-3.5 h-3.5 align-text-bottom" /> Edit
-          </button>
-
-          <button
-            type="button"
-            onClick={() => onAddSubItem(item)}
-            className="content-btn-primary"
-          >
-            <span>+</span> Add Sub-Item
-          </button>
-
-          <button
-            type="button"
-            onClick={onDeleteItem}
-            className="content-btn-danger"
-          >
-            <TrashCanIcon className="inline w-3.5 h-3.5 align-text-bottom" /> Delete
-          </button>
-        </div>
+        <ItemActions item={item} onAddSubItem={onAddSubItem} onEditItem={onEditItem} onDeleteItem={onDeleteItem} />
       </div>
 
       {/* GRID: IMAGE & ATTRIBUTES */}

@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import type { FlexContainerNode } from '@/types/layout';
 import type { FieldDefinition } from '@/types/field';
 import { PRESET_INFO, type PresetKind, type PresetRequest } from '@/lib/layoutPresets';
+import { RECIPES, type RecipeId } from '@/lib/layoutRecipes';
 import TemplatePresetPicker from '@/components/TemplatePresetPicker';
 import { BodyIcon, FlexRowIcon, FlexColumnIcon } from '@/components/icons/LayoutIcons';
 import { ResetIcon } from '@/components/icons/GlyphIcons';
@@ -19,6 +20,8 @@ interface TemplateLayoutPaletteProps {
   fields: FieldDefinition[];
   onAddContainer: (preset: 'row' | 'column' | '2-col' | '3-col' | 'card') => void;
   onPlacePreset: (request: PresetRequest) => void;
+  /** Replaces the whole layout with a simple-template recipe (Undo restores the old one). */
+  onApplyRecipe: (id: RecipeId) => void;
   onResetLayout: () => void;
 }
 
@@ -74,9 +77,10 @@ export default function TemplateLayoutPalette({
   fields,
   onAddContainer,
   onPlacePreset,
+  onApplyRecipe,
   onResetLayout,
 }: TemplateLayoutPaletteProps) {
-  const [activeTab, setActiveTab] = useState<'layout' | 'components'>('layout');
+  const [activeTab, setActiveTab] = useState<'layout' | 'components' | 'recipes'>('layout');
   // The pre-defined block being set up (its field picker is showing), if any.
   const [pendingPreset, setPendingPreset] = useState<PresetKind | null>(null);
 
@@ -113,6 +117,19 @@ export default function TemplateLayoutPalette({
           >
             <PuzzleIcon className="w-3.5 h-3.5" />
             <span>Pre-defined Components</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setActiveTab('recipes')}
+            className={`py-1 px-3 rounded-lg text-xs font-bold transition cursor-pointer flex items-center gap-1.5 ${
+              activeTab === 'recipes'
+                ? 'bg-[color-mix(in_oklch,var(--primary-accent)_30%,transparent)] text-[var(--text-strong)] border border-[var(--primary-accent)] shadow-sm'
+                : 'text-muted hover:text-strong hover:bg-slate-800/60'
+            }`}
+          >
+            <CardsIcon className="w-3.5 h-3.5" />
+            <span>Simple Templates</span>
           </button>
         </div>
 
@@ -210,6 +227,31 @@ export default function TemplateLayoutPalette({
               ))}
             </div>
           ))}
+
+        {/* SIMPLE TEMPLATES TAB: a whole layout in one click */}
+        {activeTab === 'recipes' && (
+          <div className="flex items-center gap-2.5 h-full w-full">
+            {RECIPES.map((recipe) => (
+              <button
+                key={recipe.id}
+                type="button"
+                onClick={() => onApplyRecipe(recipe.id)}
+                className="flex flex-col justify-between p-2.5 rounded-xl bg-surface-secondary hover:bg-surface-primary-hover border border-subtle hover:border-[var(--primary-accent)] transition cursor-pointer text-left h-[100px] min-w-[190px] max-w-[220px] shrink-0 group shadow-sm"
+              >
+                <span className="text-xs font-bold text-strong group-hover:text-[var(--text-strong)] truncate">
+                  {recipe.label}
+                </span>
+                <span className="text-[10px] text-muted line-clamp-2 leading-relaxed">{recipe.description}</span>
+                <span className="text-[9.5px] font-semibold text-[var(--primary-accent)] group-hover:underline">
+                  Use for this template
+                </span>
+              </button>
+            ))}
+            <span className="text-[10px] text-muted max-w-[200px] leading-relaxed shrink-0">
+              Replaces the whole layout with one built from this template&apos;s fields. Undo brings the old one back.
+            </span>
+          </div>
+        )}
       </div>
     </div>
   );

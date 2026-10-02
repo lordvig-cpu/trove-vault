@@ -11,6 +11,7 @@ import { FIELD_TYPE_METAS } from '@/lib/fieldTypeMetas';
 import { DockContent } from '@/hooks/usePanelDockDrag';
 import { errorMessage } from '@/lib/errors';
 import { useTemplateLayoutTree } from '@/hooks/useTemplateLayoutTree';
+import { layoutCacheKey } from '@/lib/layoutStorage';
 import { useLayoutHistory } from '@/hooks/useLayoutHistory';
 
 // Sentinels for the "select none" filter state -- see selectNoneFieldTypeFilter /
@@ -160,7 +161,7 @@ export function useTemplateEditor({
     (templateId: number, layout: TemplateFlexLayoutConfig) => {
       if (typeof window !== 'undefined') {
         try {
-          localStorage.setItem(`trovevault_template_layout_${templateId}`, JSON.stringify(layout));
+          localStorage.setItem(layoutCacheKey(templateId), JSON.stringify(layout));
         } catch (e) {
           console.warn('Could not cache layout in localStorage:', e);
         }
@@ -215,7 +216,7 @@ export function useTemplateEditor({
       let rawConfig: unknown = null;
       if (typeof window !== 'undefined') {
         try {
-          const cached = localStorage.getItem(`trovevault_template_layout_${rawId}`);
+          const cached = localStorage.getItem(layoutCacheKey(rawId));
           if (cached) rawConfig = JSON.parse(cached);
         } catch {
           // Ignore

@@ -301,6 +301,20 @@ commit whenever you add, remove, split or rename a file — it goes stale otherw
   fixed-width picture container beside a fill-width text container; a Stat Row is a row of card containers, each
   with a big number and its label. The old table / media / stat placeholder blocks are no longer offered in the
   palette, though a layout saved with one still renders it.
+- **The item view is drawn through the template's layout.** `ItemDetailView` resolves the item's template layout
+  (`resolveSavedLayout` in `lib/layoutStorage.ts`: this browser's localStorage copy if valid -- the editor writes it on
+  every change -- else the stored `layout_config`) and, when there is one, shows a slim bar of identity badges and
+  Edit / Add Sub-Item / Delete, then the layout itself through `FlexContainerRenderer` in preview mode inside a
+  `ContentDataProvider` holding the item and its collections' names. A template with no layout (or an item with no
+  template) keeps the original detail view, so nothing changes until a template is given a layout. The workspace
+  loader (`lib/data/workspace.ts`) loads every template together with its fields, because a field element needs its
+  field to know which attribute it reads and what it is called.
+- **Simple templates** (the palette's "Simple Templates" tab: Classic, Spec Sheet, Gallery) are recipes in
+  `lib/layoutRecipes.ts`: pure functions of the template's fields that assemble the same pre-defined blocks inside
+  cards (they adapt: no number fields means no stat row). `applyRecipe` replaces the whole layout through the normal
+  save, so Undo restores the old one.
+- **Testing the template editor in a browser writes to the live database** once `layout_config` exists: block
+  non-GET requests to `item_templates` in the Playwright script (see the memory note) and check afterwards.
 - Layout tree edits (add, insert sibling, split, update, remove) are pure functions in
   `lib/layoutTree.ts`, covered by `tests/layout-tree.spec.ts`; the flex layout tree's selection and
   CRUD around them lives in `hooks/useTemplateLayoutTree.ts`, which `useTemplateEditor` composes (it

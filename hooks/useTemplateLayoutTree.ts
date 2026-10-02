@@ -3,6 +3,7 @@
 import { useCallback, useState } from 'react';
 import { buildBuiltinComponent } from '@/lib/layoutContent';
 import { buildPreset, type PresetRequest } from '@/lib/layoutPresets';
+import { buildRecipe, type RecipeId } from '@/lib/layoutRecipes';
 import { ItemTemplate } from '@/types/template';
 import {
   TemplateFlexLayoutConfig,
@@ -395,6 +396,18 @@ export function useTemplateLayoutTree({
     [activeTemplate, activeContainerId, flexLayoutConfig, saveFlexLayoutConfig, setSelectedNodeId]
   );
 
+  // Replaces the whole layout with a simple-template recipe built from the template's fields. It goes
+  // through the same save as any edit, so Undo brings the previous layout back.
+  const applyRecipe = useCallback(
+    (id: RecipeId) => {
+      if (!activeTemplate) return;
+      const layout = buildRecipe(id, activeTemplate.fields ?? []);
+      saveFlexLayoutConfig(layout);
+      setSelectedNodeId(layout.root.children[0]?.id ?? layout.root.id);
+    },
+    [activeTemplate, saveFlexLayoutConfig, setSelectedNodeId]
+  );
+
   // Not bound to a real field: a quick way to drop filler text into a container to see how it
   // actually flows/wraps (e.g. while testing a Split), independent of the template's own schema.
   const placeLoremIpsum = useCallback(
@@ -455,6 +468,7 @@ export function useTemplateLayoutTree({
     placeLoremIpsum,
     placeBuiltin,
     placePreset,
+    applyRecipe,
     resetFlexLayoutToDefault,
     overflowingContainerIds,
     reportContainerOverflow,

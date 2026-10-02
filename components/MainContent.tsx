@@ -28,6 +28,10 @@ interface MainContentProps {
   editingTemplate?: ItemTemplate | null;
   /** The item the template editor draws content with (see ContentDataContext); none = sample values. */
   previewData?: ContentData;
+  /** Every template, so an item can be drawn through its own template's layout. */
+  templates?: ItemTemplate[];
+  /** Collection names by id, for a layout's Collections element. */
+  collectionNames?: Record<number, string>;
   onDoneEditingTemplate?: () => void;
   // Template editor (flex layout tree) props
   flexLayoutConfig?: TemplateFlexLayoutConfig | null;
@@ -95,6 +99,8 @@ export default function MainContent({
   onDeleteItem,
   editingTemplate,
   previewData,
+  templates = [],
+  collectionNames,
   onDoneEditingTemplate,
   flexLayoutConfig = null,
   selectedNodeId = null,
@@ -188,6 +194,8 @@ export default function MainContent({
                 <div className="w-full p-6 flex-1 pt-8 pb-10">
                   <ItemDetailView
                     item={selectedItem}
+                    template={selectedItem?.template_id != null ? templates.find((t) => t.id === selectedItem.template_id) ?? null : null}
+                    collectionNames={collectionNames}
                     onAddSubItem={(parent) => {
                       onAddSubItem(activeCollectionId, parent.id);
                     }}

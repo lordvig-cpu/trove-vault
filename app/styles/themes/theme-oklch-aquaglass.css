@@ -96,6 +96,10 @@
   --right-panel-flare-bg: var(--aqua-none);
   --right-panel-texture-bg: var(--aqua-none);
 
+  /* The soft fade at the top and bottom of a scrolling item view: the canvas color, not a gray shadow. */
+  --sticky-shadow-upper: linear-gradient(to bottom, color-mix(in oklab, var(--oklch-bg) 92%, transparent), transparent);
+  --sticky-shadow-lower: linear-gradient(to top, color-mix(in oklab, var(--oklch-bg) 92%, transparent), transparent);
+
   /* Main content (item view): white glass cards on the canvas, with only a slight dim behind an open panel. */
   --content-border-subtle: var(--aqua-line);
   --content-border-strong: var(--aqua-line-strong);

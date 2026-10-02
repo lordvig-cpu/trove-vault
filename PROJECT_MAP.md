@@ -39,7 +39,8 @@ Conventions and architecture (data access, theming, template editor internals, b
   and editor template menus).
 - `DynamicWatermark.tsx` — the idle-state hero watermark/video on an empty main canvas.
 - `EmptyPanelDropZone.tsx` — the "nothing docked here" placeholder shown in an empty panel/dock zone.
-- `ItemDetailView.tsx` — the main canvas's read view for a selected item.
+- `ItemDetailView.tsx` — the main canvas's read view for a selected item: drawn through its template's saved layout when
+  it has one, else the original detail view.
 - `MainContent.tsx` — chooses between ItemDetailView, the template editor stage, or the empty state.
 - `ModalContainers.tsx` — mounts whichever modal `useModals()` says is active.
 - `NavigationHeader.tsx` / `NavigationFooter.tsx` — the app's top bar and bottom status/dock bar.
@@ -210,6 +211,9 @@ its display style, with label and typography).
   values from an item (or samples), labels, text presets, box-look CSS; covered by `tests/layout-content.spec.ts`.
 - `layoutPresets.ts` — pure builders for pre-defined content (Field List, Header, Stat Row): a request in, an ordinary
   container subtree out; covered by `tests/layout-presets.spec.ts`.
+- `layoutRecipes.ts` — pure whole-layout recipes (Classic, Spec Sheet, Gallery) built from the pre-defined blocks;
+  covered by `tests/layout-recipes.spec.ts`.
+- `layoutStorage.ts` — where a template's layout lives (localStorage key) and which copy wins when resolving it.
 - `panelTitles.ts` — `getPanelTitle()`: the header title for a panel's docked tab(s).
 - `storage.ts` — item photo upload/remove/validate against Supabase Storage.
 - `supabase.ts` — the typed Supabase client instance.
@@ -228,7 +232,7 @@ direction/sizing helpers), `database.ts` (the Supabase-shaped `Database` type, h
 Playwright specs, run against a production build on port 3100: `workspace.spec.ts` (docking,
 preferences, keyboard shortcuts), `collections-panel.spec.ts`, `template-layout.spec.ts` (the
 template editor), `template-drag-highlight.spec.ts`, `layout-tree.spec.ts` (the pure functions in
-`lib/layoutTree.ts`), `layout-content.spec.ts` (content bindings, display styles, values, styles), `layout-presets.spec.ts` (pre-defined content builders), `layout-history.spec.ts` (undo/redo history), `stacking.spec.ts` (responsive row-to-column stacking), `data.spec.ts`.
+`lib/layoutTree.ts`), `layout-content.spec.ts` (content bindings, display styles, values, styles), `layout-presets.spec.ts` (pre-defined content builders), `layout-recipes.spec.ts` (simple-template recipes and saved-layout resolution), `layout-history.spec.ts` (undo/redo history), `stacking.spec.ts` (responsive row-to-column stacking), `data.spec.ts`.
 
 ## Root & config
 

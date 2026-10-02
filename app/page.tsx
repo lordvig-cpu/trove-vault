@@ -197,12 +197,16 @@ export default function Home() {
   // What the template editor's canvas and preview draw content with: the first real item of the template
   // being edited (so a Name shows an actual name), with its collections' names. None -> sample values.
   const editingTemplateId = templateEditor.isEditing ? templateEditor.activeTemplate?.id : undefined;
+  const collectionNames = useMemo(
+    () => Object.fromEntries(allCollections.map((collection) => [collection.id, collection.name])),
+    [allCollections]
+  );
   const previewData = useMemo(
     () => ({
       item: editingTemplateId == null ? null : allItems.find((item) => item.template_id === editingTemplateId) ?? null,
-      collectionNames: Object.fromEntries(allCollections.map((collection) => [collection.id, collection.name])),
+      collectionNames,
     }),
-    [editingTemplateId, allItems, allCollections]
+    [editingTemplateId, allItems, collectionNames]
   );
 
   const hierarchy = useHierarchyState(templateEditor);
@@ -628,6 +632,8 @@ export default function Home() {
               onDeleteItem={handleTriggerDeleteItem}
               editingTemplate={templateEditor.isEditing ? templateEditor.activeTemplate : null}
               previewData={previewData}
+              templates={templates}
+              collectionNames={collectionNames}
               onDoneEditingTemplate={templateEditor.stopEditing}
               flexLayoutConfig={templateEditor.flexLayoutConfig}
               selectedNodeId={templateEditor.selectedNodeId}
