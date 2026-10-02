@@ -445,9 +445,12 @@
   border-color: var(--pole-glint);
 }
 
+/* Focus is the border turning to the hover color, not a second ring around the border: the select
+   keeps focus while its list is open, which otherwise draws a doubled outline. */
+.theme-select:focus,
 .theme-select:focus-visible {
-  outline: 2px solid var(--editor-focus);
-  outline-offset: 1px;
+  outline: none;
+  border-color: var(--pole-glint);
 }
 
 /* The tree's gear trigger is hidden until its row is hovered (UnifiedTree.css); this one is always there. */
