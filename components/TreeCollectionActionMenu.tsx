@@ -107,7 +107,7 @@ export default function TreeCollectionActionMenu({
         label="Add Existing Item"
         subtext="Link catalog item here"
         onClick={() => {
-          console.log('Add Existing Item to collection:', collection.id);
+          // Not implemented yet: linking an existing catalog item to a collection.
           menu.closeMenu();
         }}
       />

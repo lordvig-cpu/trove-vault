@@ -21,6 +21,8 @@ interface TreeItemActionMenuProps {
   position?: 'left' | 'right';
 }
 
+/** Gear-icon flyout for an Item row in the tree: add sub-item, edit, rename, delete. Actions come
+    from TreeActionsContext; open/close/position state comes from the caller's useTreeActionMenu. */
 export default function TreeItemActionMenu({
   item,
   collectionId,

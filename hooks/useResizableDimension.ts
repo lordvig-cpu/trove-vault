@@ -3,6 +3,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { KeyboardEvent, PointerEvent } from 'react';
 
+/** `getPointerSize` maps a pointer event to the new size; `growKey` is the arrow key that enlarges
+    the panel (the opposite arrow shrinks it). */
 interface Options {
   initialSize: number;
   minSize: number;

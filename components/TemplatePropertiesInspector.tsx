@@ -17,6 +17,9 @@ import TemplateBodyDimensions from '@/components/TemplateBodyDimensions';
 import TemplateContainerSizing from '@/components/TemplateContainerSizing';
 import { FlexRowIcon, FlexColumnIcon, LayoutContainerIcon } from '@/components/icons/LayoutIcons';
 
+/** The docked "Properties" tab: edits the selected container or component node (direction, gap,
+    alignment, padding, sizing, wrap/card). Padding here is still the older all-sides preset UI; the
+    per-side editor lives in TemplateSpacingBox (see CLAUDE.md). */
 interface TemplatePropertiesInspectorProps {
   template: ItemTemplate | null;
   selectedNode: FlexContainerNode | FlexComponentNode | null;

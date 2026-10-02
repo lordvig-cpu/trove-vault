@@ -9,10 +9,13 @@ interface TemplateFieldInputsProps {
   onChange: (fieldName: string, value: unknown) => void;
 }
 
+/** Form values are stored as `unknown`; an input only ever shows a string or number. */
 function toInputValue(value: unknown): string | number {
   return typeof value === 'string' || typeof value === 'number' ? value : '';
 }
 
+/** One input per field of the item's template, chosen by `field_type`. Renders nothing for a
+    template with no fields. Values are keyed by field name. */
 export default function TemplateFieldInputs({
   fields,
   values,

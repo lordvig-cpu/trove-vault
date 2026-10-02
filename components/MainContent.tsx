@@ -24,7 +24,7 @@ interface MainContentProps {
   onDeleteItem: (item: ItemRecord, collectionId: number | null) => void;
   editingTemplate?: ItemTemplate | null;
   onDoneEditingTemplate?: () => void;
-  // Modern Flexbox Layout Builder Props
+  // Template editor (flex layout tree) props
   flexLayoutConfig?: TemplateFlexLayoutConfig | null;
   selectedNodeId?: string | null;
   activeContainerId?: string;

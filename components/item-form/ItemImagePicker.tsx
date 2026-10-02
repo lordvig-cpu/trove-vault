@@ -11,6 +11,9 @@ interface ItemImagePickerProps {
   replaceLabel?: string;
 }
 
+/** Photo field of the item modals: a file picker when empty, a preview with Remove (and an optional
+    Replace link, when `replaceLabel` is given) once an image is chosen. The accepted types and size
+    limit shown come from lib/storage. */
 export default function ItemImagePicker({
   imageUrl,
   onFileChange,

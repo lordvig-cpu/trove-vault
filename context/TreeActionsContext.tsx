@@ -4,6 +4,9 @@ import React, { createContext, useContext } from 'react';
 import { CollectionRecord } from '@/types/collection';
 import { ItemRecord } from '@/types/item';
 
+/** The Item / Collection / Template mutations the tree rows' gear menus can trigger. Provided once
+    above the trees so the menus read what they need instead of receiving it prop by prop. Handlers
+    marked optional are only supplied where that action applies (callers use `?.`). */
 export interface TreeActionsContextValue {
   onAddSubItem: (collectionId: number | null, parentItemId?: number | null) => void;
   onEditTemplate?: (categoryId: number) => void;

@@ -19,6 +19,9 @@ interface PanelDockDropZonesProps {
   secondaryActiveTab?: DockContent;
 }
 
+/** Overlay shown while a panel or tab is being dragged: the left / right / bottom dock targets
+    (green when compatible, amber when blocked), a trash target, and a cursor label. Hidden when not
+    dragging or when the drag is just a tab reorder. Colors come from the status theme variables. */
 export default function PanelDockDropZones({
   isDragging,
   draggingPanel,

@@ -189,10 +189,6 @@ export default function TreeContent({
 }: TreeContentProps) {
   const effectivePosition = position ?? 'left';
 
-  // Support both canonical and legacy category prop naming
-  const activeExpandedIds = expandedCategoryIds;
-  const activeToggleHandler = onToggleCategory;
-
   /* ------------------------------------------------------------------------
      3.1 SEARCH MEMOIZATION & AUTO-EXPAND CALCULATION
      Filters forest nodes whenever tree data or search text changes.
@@ -221,8 +217,8 @@ export default function TreeContent({
      search result paths so existing user state is restored when search clears.
      ------------------------------------------------------------------------ */
   const effectiveExpandedIds = searchExpandedIds
-    ? new Set([...(activeExpandedIds || []), ...searchExpandedIds])
-    : activeExpandedIds;
+    ? new Set([...(expandedCategoryIds || []), ...searchExpandedIds])
+    : expandedCategoryIds;
 
   const searchHighlight = useMemo(
     () => getSingleSearchHighlight(filteredForest, searchQuery),
@@ -245,7 +241,7 @@ export default function TreeContent({
     activeCollectionId,
     selectedItemId,
     expandedCategoryIds: effectiveExpandedIds,
-    onToggleCategory: activeToggleHandler,
+    onToggleCategory,
     onSelectCollection,
     onSelectItem,
     position: effectivePosition,

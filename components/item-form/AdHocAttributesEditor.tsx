@@ -15,6 +15,8 @@ interface AdHocAttributesEditorProps {
   placeholders?: { key: string; value: string };
 }
 
+/** Editable list of free-form key/value attributes an item carries beyond its template's fields.
+    Fully controlled: the parent (useItemForm) owns the list. */
 export default function AdHocAttributesEditor({
   attributes,
   onAdd,

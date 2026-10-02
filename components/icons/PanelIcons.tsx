@@ -297,7 +297,7 @@ export const TemplatesTabIcon = ({ className = 'w-3.5 h-3.5' }: { className?: st
 );
 
 /** LayoutTabIcon: three boxes (header + two footer columns) linked by connector lines, for the
-    template editor's Layout tab (the container tree, formerly "Structure"). */
+    template editor's Layout tab (the container tree). */
 export const LayoutTabIcon = ({ className = 'w-3.5 h-3.5' }: { className?: string }) => (
   <svg
     className={className}
@@ -320,7 +320,7 @@ export const LayoutTabIcon = ({ className = 'w-3.5 h-3.5' }: { className?: strin
 );
 
 /** ContentTabIcon: a bulleted list beside two content blocks, for the template editor's Content
-    tab (fields and other droppable content, formerly "Inspector"). */
+    tab (fields and other droppable content). */
 export const ContentTabIcon = ({ className = 'w-3.5 h-3.5' }: { className?: string }) => (
   <svg
     className={className}
@@ -344,7 +344,7 @@ export const ContentTabIcon = ({ className = 'w-3.5 h-3.5' }: { className?: stri
 
 /** ComponentsTabIcon: a panel holding a media block, a couple of text lines, and two more
     component blocks, for the template editor's Components tab (the pre-set drag-in content
-    palette, formerly "Layout Builder"). */
+    palette). */
 export const ComponentsTabIcon = ({ className = 'w-3.5 h-3.5' }: { className?: string }) => (
   <svg
     className={className}

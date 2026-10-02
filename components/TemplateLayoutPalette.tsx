@@ -9,6 +9,8 @@ import {
 } from '@/types/layout';
 import { BodyIcon, FlexRowIcon, FlexColumnIcon } from '@/components/icons/LayoutIcons';
 
+/** The "Components" bottom-panel palette: click a layout primitive (row, column, columns, card) or a
+    pre-set content block to add it to `selectedContainer`, or reset the layout to its default. */
 interface TemplateLayoutPaletteProps {
   selectedContainer: FlexContainerNode | null;
   onAddContainer: (preset: 'row' | 'column' | '2-col' | '3-col' | 'card') => void;

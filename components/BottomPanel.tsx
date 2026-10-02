@@ -15,6 +15,7 @@ import { useResizableHeight } from '@/hooks/useResizableHeight';
 import EmptyPanelDropZone from '@/components/EmptyPanelDropZone';
 import PanelContentTransition from '@/components/PanelContentTransition';
 
+/** Height (px) the bottom panel opens at and resets to. */
 export const DEFAULT_BOTTOM_PANEL_HEIGHT = 220;
 
 interface BottomPanelProps {
