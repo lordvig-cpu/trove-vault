@@ -466,6 +466,45 @@
   opacity: 0.7;
 }
 
+/* The theme colors bar's slide and fade (components/ThemeColorsBar.tsx). The wrapper's height collapses with
+   the bar so whatever stacks above it (the template editor's bar) moves in step; the bar itself slides
+   down behind the footer (which sits above it) and fades while hidden. A hidden bar is also
+   visibility: hidden once the slide finishes, so it can't be tabbed to or clicked. */
+.theme-colors-wrap {
+  max-height: 0;
+  transition: max-height 300ms ease;
+}
+
+.theme-colors-wrap-open {
+  max-height: 8rem;
+}
+
+.theme-colors-bar {
+  transform: translateY(100%);
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    transform 300ms ease,
+    opacity 300ms ease,
+    visibility 0s linear 300ms;
+}
+
+.theme-colors-bar-open {
+  transform: translateY(0);
+  opacity: 1;
+  visibility: visible;
+  transition:
+    transform 300ms ease,
+    opacity 300ms ease,
+    visibility 0s;
+}
+
+/* The app's animations toggle is off: show and hide instantly. */
+.theme-colors-static,
+.theme-colors-static .theme-colors-bar {
+  transition: none;
+}
+
 /* The pickers inside the theme colors bar (ThemeColorsBar): the bar supplies the border and background. */
 .oklch-seed-controls-bare {
   background: none;
