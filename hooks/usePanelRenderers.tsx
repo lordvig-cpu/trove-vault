@@ -261,9 +261,8 @@ export function usePanelRenderers({
                 preset === '2-col' ? 'split-2' : preset === '3-col' ? 'split-3' : preset;
               templateEditor.addFlexPrimitive(mapped);
             }}
-            onAddComponent={(comp) => {
-              templateEditor.addFlexComponent(templateEditor.activeContainerId, comp);
-            }}
+            fields={templateEditor.activeTemplate?.fields ?? []}
+            onPlacePreset={(request) => templateEditor.placePreset(request)}
             onResetLayout={templateEditor.resetFlexLayoutToDefault}
           />
         </TreePanelContext.Provider>

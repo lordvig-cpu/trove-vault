@@ -1,22 +1,24 @@
 'use client';
 
 import React, { useState } from 'react';
-import {
-  FlexContainerNode,
-  FlexComponentNode,
-  LayoutBlockType,
-  LayoutVariant,
-} from '@/types/layout';
+import type { FlexContainerNode } from '@/types/layout';
+import type { FieldDefinition } from '@/types/field';
+import { PRESET_INFO, type PresetKind, type PresetRequest } from '@/lib/layoutPresets';
+import TemplatePresetPicker from '@/components/TemplatePresetPicker';
 import { BodyIcon, FlexRowIcon, FlexColumnIcon } from '@/components/icons/LayoutIcons';
 import { ResetIcon } from '@/components/icons/GlyphIcons';
-import { TableIcon, NoteIcon, ImageIcon, ChartIcon, TextFieldIcon, PuzzleIcon, CardsIcon, RowsLayoutIcon, ColumnsLayoutIcon } from '@/components/icons/ContentIcons';
+import { ChartIcon, ImageIcon, ListIcon, PuzzleIcon, CardsIcon, RowsLayoutIcon, ColumnsLayoutIcon } from '@/components/icons/ContentIcons';
 
-/** The "Components" bottom-panel palette: click a layout primitive (row, column, columns, card) or a
-    pre-set content block to add it to `selectedContainer`, or reset the layout to its default. */
+/** The "Components" bottom-panel palette: click a layout primitive (row, column, columns, card) to add it
+    to `selectedContainer`, or pick a pre-defined content block (Field List, Header, Stat Row), choose what
+    it includes, and add it. A pre-defined block is built from ordinary containers and content, so once
+    added it is edited like anything else. The Reset button restores the template's default layout. */
 interface TemplateLayoutPaletteProps {
   selectedContainer: FlexContainerNode | null;
+  /** The template's fields, offered when choosing what a pre-defined block includes. */
+  fields: FieldDefinition[];
   onAddContainer: (preset: 'row' | 'column' | '2-col' | '3-col' | 'card') => void;
-  onAddComponent: (component: Omit<FlexComponentNode, 'id' | 'nodeType'>) => void;
+  onPlacePreset: (request: PresetRequest) => void;
   onResetLayout: () => void;
 }
 
@@ -60,90 +62,23 @@ const LAYOUT_PRIMITIVES: LayoutPrimitive[] = [
   },
 ];
 
-interface ComponentCategory {
-  category: string;
-  items: {
-    type: LayoutBlockType;
-    label: string;
-    icon: React.ReactNode;
-    variant: LayoutVariant;
-    sizingType: 'fill' | 'fixed' | 'auto';
-    sizingValue?: string;
-    description: string;
-  }[];
-}
-
-const COMPONENT_CATEGORIES: ComponentCategory[] = [
-  {
-    category: 'Data Display',
-    items: [
-      {
-        type: 'table',
-        label: 'Attribute Table',
-        icon: <TableIcon className="w-4 h-4" />,
-        variant: 'table_row',
-        sizingType: 'fill',
-        description: 'Multi-row specifications table',
-      },
-      {
-        type: 'field',
-        label: 'Field Card',
-        icon: <TextFieldIcon className="w-4 h-4" />,
-        variant: 'standard',
-        sizingType: 'fill',
-        description: 'Standard card displaying field label & value',
-      },
-    ],
-  },
-  {
-    category: 'Media & Visuals',
-    items: [
-      {
-        type: 'media',
-        label: 'Hero Media Box',
-        icon: <ImageIcon className="w-4 h-4" />,
-        variant: 'hero',
-        sizingType: 'fixed',
-        sizingValue: '320px',
-        description: 'Featured artwork or photo box',
-      },
-    ],
-  },
-  {
-    category: 'Highlights & Metrics',
-    items: [
-      {
-        type: 'stat',
-        label: 'Metric / Stat Card',
-        icon: <ChartIcon className="w-4 h-4" />,
-        variant: 'stat',
-        sizingType: 'fill',
-        description: 'Large highlighted score or number',
-      },
-    ],
-  },
-  {
-    category: 'Notes & Text',
-    items: [
-      {
-        type: 'note',
-        label: 'Notes & Description',
-        icon: <NoteIcon className="w-4 h-4" />,
-        variant: 'standard',
-        sizingType: 'fill',
-        description: 'Full-width rich text or overview',
-      },
-    ],
-  },
+/** The pre-defined content cards, in display order. */
+const PRESET_CARDS: { kind: PresetKind; icon: React.ReactNode }[] = [
+  { kind: 'fieldList', icon: <ListIcon className="w-5 h-5 text-[var(--primary-accent)]" /> },
+  { kind: 'header', icon: <ImageIcon className="w-5 h-5 text-[var(--primary-accent)]" /> },
+  { kind: 'statRow', icon: <ChartIcon className="w-5 h-5 text-[var(--primary-accent)]" /> },
 ];
 
 export default function TemplateLayoutPalette({
   selectedContainer,
+  fields,
   onAddContainer,
-  onAddComponent,
+  onPlacePreset,
   onResetLayout,
 }: TemplateLayoutPaletteProps) {
   const [activeTab, setActiveTab] = useState<'layout' | 'components'>('layout');
+  // The pre-defined block being set up (its field picker is showing), if any.
+  const [pendingPreset, setPendingPreset] = useState<PresetKind | null>(null);
 
   const targetName = selectedContainer?.label || 'Root Page';
 
@@ -235,53 +170,46 @@ export default function TemplateLayoutPalette({
         )}
 
         {/* PRE-DEFINED COMPONENTS TAB */}
-        {activeTab === 'components' && (
-          <div className="flex items-center gap-4 h-full">
-            {COMPONENT_CATEGORIES.map((cat, idx) => (
-              <div key={cat.category} className="flex items-center gap-2.5 shrink-0 h-full">
-                {idx > 0 && <div className="w-[1px] h-3/4 bg-slate-800 shrink-0" />}
-                <div className="flex flex-col gap-1 shrink-0">
-                  <span className="text-[9.5px] font-bold text-muted uppercase tracking-wider">
-                    {cat.category}
-                  </span>
+        {activeTab === 'components' &&
+          (pendingPreset ? (
+            <TemplatePresetPicker
+              key={pendingPreset}
+              kind={pendingPreset}
+              fields={fields}
+              targetName={targetName}
+              onAdd={(request) => {
+                onPlacePreset(request);
+                setPendingPreset(null);
+              }}
+              onCancel={() => setPendingPreset(null)}
+            />
+          ) : (
+            <div className="flex items-center gap-2.5 h-full w-full">
+              {PRESET_CARDS.map(({ kind, icon }) => (
+                <button
+                  key={kind}
+                  type="button"
+                  onClick={() => setPendingPreset(kind)}
+                  className="flex flex-col justify-between p-2.5 rounded-xl bg-surface-secondary hover:bg-surface-primary-hover border border-subtle hover:border-[var(--primary-accent)] transition cursor-pointer text-left h-[100px] min-w-[170px] max-w-[200px] shrink-0 group shadow-sm"
+                >
                   <div className="flex items-center gap-2">
-                    {cat.items.map((item) => (
-                      <button
-                        key={item.label}
-                        type="button"
-                        onClick={() =>
-                          onAddComponent({
-                            componentType: item.type,
-                            label: item.label,
-                            variant: item.variant,
-                            sizing: {
-                              type: item.sizingType,
-                              value: item.sizingValue,
-                            },
-                          })
-                        }
-                        className="flex flex-col justify-between p-2.5 rounded-xl bg-surface-secondary hover:bg-surface-primary-hover border border-subtle hover:border-[var(--primary-accent)] transition cursor-pointer text-left h-[90px] min-w-[150px] max-w-[170px] shrink-0 group shadow-sm"
-                      >
-                        <div className="flex items-center gap-2">
-                          <span className="text-base">{item.icon}</span>
-                          <span className="text-xs font-bold text-strong group-hover:text-[var(--text-strong)] truncate">
-                            {item.label}
-                          </span>
-                        </div>
-                        <span className="text-[9.5px] text-muted truncate">
-                          {item.description}
-                        </span>
-                        <span className="text-[9px] font-semibold text-[var(--primary-accent)] group-hover:underline">
-                          + Add Component
-                        </span>
-                      </button>
-                    ))}
+                    <span className="w-7 h-7 flex items-center justify-center rounded-lg bg-[color-mix(in_oklch,var(--primary-accent)_15%,transparent)] border border-[color-mix(in_oklch,var(--primary-accent)_30%,transparent)] group-hover:scale-105 transition-transform shrink-0">
+                      {icon}
+                    </span>
+                    <span className="text-xs font-bold text-strong group-hover:text-[var(--text-strong)] truncate">
+                      {PRESET_INFO[kind].label}
+                    </span>
                   </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
+                  <span className="text-[10px] text-muted line-clamp-2 leading-relaxed">
+                    {PRESET_INFO[kind].description}
+                  </span>
+                  <span className="text-[9.5px] font-semibold text-[var(--primary-accent)] group-hover:underline">
+                    Choose what it includes...
+                  </span>
+                </button>
+              ))}
+            </div>
+          ))}
       </div>
     </div>
   );

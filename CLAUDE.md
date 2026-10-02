@@ -291,9 +291,16 @@ commit whenever you add, remove, split or rename a file — it goes stale otherw
   is drawn by `ContentValue` from the item in `ContentDataContext` (the editor shows the first item of
   the template being edited, or sample values when it has none). The Content tab's "Item" block lists the built-in values (Name, Image, Collections, Created, Sub-items): drag one
   into a container (`application/x-trove-builtin`) or click Place for the active one (`placeBuiltin`, built by
-  `buildBuiltinComponent`). Pre-defined content (a field list)
-  will expand into ordinary containers and content rather than being one opaque component. The table /
-  media / stat blocks in the Components palette are still the old mock placeholders until that lands.
+  `buildBuiltinComponent`). Pre-defined content (the Components palette's
+  "Pre-defined Components" tab: Field List, Header, Stat Row) is not a special component: picking one opens a small
+  chooser (`TemplatePresetPicker`) for which built-ins and fields it includes, then `buildPreset` in
+  `lib/layoutPresets.ts` (pure, covered by `tests/layout-presets.spec.ts`) builds an ordinary subtree of containers
+  and content -- container names made unique in the layout -- that `placePreset` inserts into the active
+  container. After that it is edited like anything else, and it does not track the template's fields. A Field List
+  is a column of rows (a label on the left and the value on the right, or labels beside values); a Header is a
+  fixed-width picture container beside a fill-width text container; a Stat Row is a row of card containers, each
+  with a big number and its label. The old table / media / stat placeholder blocks are no longer offered in the
+  palette, though a layout saved with one still renders it.
 - Layout tree edits (add, insert sibling, split, update, remove) are pure functions in
   `lib/layoutTree.ts`, covered by `tests/layout-tree.spec.ts`; the flex layout tree's selection and
   CRUD around them lives in `hooks/useTemplateLayoutTree.ts`, which `useTemplateEditor` composes (it

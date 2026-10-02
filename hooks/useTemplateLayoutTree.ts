@@ -2,6 +2,7 @@
 
 import { useCallback, useState } from 'react';
 import { buildBuiltinComponent } from '@/lib/layoutContent';
+import { buildPreset, type PresetRequest } from '@/lib/layoutPresets';
 import { ItemTemplate } from '@/types/template';
 import {
   TemplateFlexLayoutConfig,
@@ -380,6 +381,20 @@ export function useTemplateLayoutTree({
     [activeContainerId, flexLayoutConfig, addFlexComponent]
   );
 
+  // Adds a pre-defined content block (Field List, Header, Stat Row): the builder makes an ordinary
+  // container subtree from the request, which lands in the target container (the active one by default,
+  // redirected to the first half of a split wrapper) and becomes the selection.
+  const placePreset = useCallback(
+    (request: PresetRequest, targetContainerId?: string) => {
+      if (!flexLayoutConfig || !activeTemplate) return;
+      const block = buildPreset(flexLayoutConfig.root, request, activeTemplate.fields ?? []);
+      const target = resolveContentTarget(flexLayoutConfig.root, targetContainerId || activeContainerId);
+      saveFlexLayoutConfig({ ...flexLayoutConfig, root: insertChild(flexLayoutConfig.root, target, block) });
+      setSelectedNodeId(block.id);
+    },
+    [activeTemplate, activeContainerId, flexLayoutConfig, saveFlexLayoutConfig, setSelectedNodeId]
+  );
+
   // Not bound to a real field: a quick way to drop filler text into a container to see how it
   // actually flows/wraps (e.g. while testing a Split), independent of the template's own schema.
   const placeLoremIpsum = useCallback(
@@ -439,6 +454,7 @@ export function useTemplateLayoutTree({
     placeField,
     placeLoremIpsum,
     placeBuiltin,
+    placePreset,
     resetFlexLayoutToDefault,
     overflowingContainerIds,
     reportContainerOverflow,
