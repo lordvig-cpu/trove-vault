@@ -62,6 +62,8 @@ interface TemplateEditorStageProps {
   onOverflowChange?: (containerId: string, isOverflowing: boolean) => void;
 
   canvasMode: 'edit' | 'preview';
+  /** Nodes hidden from the edit canvas by the Layout tree's eye. */
+  hiddenNodeIds?: Set<string>;
   onDoneEditing: () => void;
   onToggleCanvasMode: () => void;
   canUndo?: boolean;
@@ -100,6 +102,7 @@ export default function TemplateEditorStage({
   onOverflowChange,
 
   canvasMode,
+  hiddenNodeIds,
   onDoneEditing,
   onToggleCanvasMode,
   canUndo,
@@ -185,6 +188,7 @@ export default function TemplateEditorStage({
             selectedNodeId={selectedNodeId}
             activeContainerId={activeContainerId}
             canvasMode={canvasMode}
+            hiddenNodeIds={hiddenNodeIds}
             fields={fields}
             onSelectNode={onSelectNode}
             onAddPrimitive={onAddPrimitive}

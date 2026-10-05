@@ -654,6 +654,7 @@ export default function Home() {
               onResetFlexLayout={templateEditor.resetFlexLayoutToDefault}
               onOverflowChange={templateEditor.reportContainerOverflow}
               canvasMode={templateEditor.canvasMode}
+              hiddenNodeIds={templateEditor.hiddenNodeIds}
               onToggleCanvasMode={templateEditor.toggleCanvasMode}
               canUndo={templateEditor.canUndoLayout}
               canRedo={templateEditor.canRedoLayout}

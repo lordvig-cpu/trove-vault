@@ -17,7 +17,7 @@ import {
   TemplateContainerActionMenu,
   TemplateComponentActionMenu,
 } from '@/components/TemplateLayoutActionMenu';
-import { BodyIcon, FlexRowIcon, FlexColumnIcon, ContainerOverflowIcon } from '@/components/icons/LayoutIcons';
+import { BodyIcon, FlexRowIcon, FlexColumnIcon, ContainerOverflowIcon, EyeIcon, EyeOffIcon } from '@/components/icons/LayoutIcons';
 import { activeIconColor } from '@/components/editorBarStyles';
 import { HierarchyFilterCategory, hierarchyNodeCategory } from '@/lib/hierarchyFilterMetas';
 import { ChevronDownIcon, ChevronRightIcon } from '@/components/icons/PanelIcons';
@@ -50,6 +50,9 @@ export interface TemplateHierarchyTreeProps {
   onPlaceBuiltin?: PlaceBuiltinHandler;
   /** Moves a node by drag and drop within the tree (see moveNode in lib/layoutTree.ts). */
   onMoveNode?: (nodeId: string, targetId: string, position: MovePosition) => void;
+  /** Nodes hidden from the edit canvas, and the eye toggle that hides/shows one (editor-only state). */
+  hiddenNodeIds?: Set<string>;
+  onToggleHidden?: (nodeId: string) => void;
   /** Dock side: on the right, row gears move to the left edge and menus open rightward. */
   position?: 'left' | 'right';
   expandedIds?: Set<string>;
@@ -289,6 +292,47 @@ function DropLine({ edge }: { edge: 'before' | 'after' }) {
 }
 
 /* ==========================================================================
+   VISIBILITY
+   The eye on each row (not the Body) hides that node -- and so everything inside it -- from the edit
+   canvas, to cut clutter while working on one area. It is editor-only state (useTemplateEditor's
+   hiddenNodeIds): never saved, ignored by Preview and the item view. A hidden row and every row under
+   it are dimmed; a descendant keeps its own eye, so un-hiding the parent restores it as it was.
+   ========================================================================== */
+
+interface TreeVisibility {
+  hiddenIds: Set<string>;
+  toggle?: (nodeId: string) => void;
+}
+
+const TreeVisibilityContext = createContext<TreeVisibility>({ hiddenIds: new Set() });
+
+/** A row's eye toggle: an open eye while shown, a slashed one (in the "set" yellow) while hidden. */
+function VisibilityToggle({ nodeId, label }: { nodeId: string; label: string }) {
+  const { hiddenIds, toggle } = useContext(TreeVisibilityContext);
+  if (!toggle) return null;
+  const isHidden = hiddenIds.has(nodeId);
+  return (
+    <button
+      type="button"
+      onClick={(e) => {
+        e.stopPropagation();
+        toggle(nodeId);
+      }}
+      aria-pressed={isHidden}
+      aria-label={isHidden ? `Show ${label}` : `Hide ${label}`}
+      title={isHidden ? 'Hidden on the canvas: click to show' : 'Hide on the canvas (and everything inside it)'}
+      className="tree-gear-trigger flex items-center justify-center w-6 h-6 shrink-0 rounded border border-transparent cursor-pointer transition-colors"
+    >
+      {isHidden ? (
+        <EyeOffIcon className={`w-[15px] h-[15px] ${activeIconColor}`} />
+      ) : (
+        <EyeIcon className="w-[15px] h-[15px] tree-action-icon" />
+      )}
+    </button>
+  );
+}
+
+/* ==========================================================================
    3. TREE NODE ROW: Container Node Item (Tree Visual Model)
    ========================================================================== */
 
@@ -321,6 +365,8 @@ interface ContainerNodeRowProps {
   /** Ids surviving the current search/filter (null = no filter active, show everything). Filtered
       children stay force-expanded so a match is never hidden behind a collapsed ancestor. */
   visibleIds?: Set<string> | null;
+  /** An ancestor is hidden with its eye, so this row is hidden on the canvas too (shown dimmed). */
+  ancestorHidden?: boolean;
 }
 
 function ContainerNodeRow({
@@ -346,6 +392,7 @@ function ContainerNodeRow({
   position = 'left',
   overflowingContainerIds,
   visibleIds,
+  ancestorHidden = false,
 }: ContainerNodeRowProps) {
   const isRightSide = position === 'right';
   const [isDragOver, setIsDragOver] = useState(false);
@@ -357,6 +404,8 @@ function ContainerNodeRow({
   const isOverflowing = overflowingContainerIds?.has(container.id) ?? false;
   const move = useNodeDrag(container.id, isRoot ? 'root' : 'container', isExpanded ? visibleChildren[0]?.id : undefined);
   const showDropInside = isDragOver || move.hint === 'inside';
+  const { hiddenIds } = useContext(TreeVisibilityContext);
+  const isDimmed = ancestorHidden || hiddenIds.has(container.id);
   // Right-docked panels position the flyout by its real width: every container's flyout (Body or not)
   // is the 224px (14rem) shell default -- its wider Properties tab shifts itself left (see
   // PROPERTIES_EXTRA_WIDTH_PX in TemplateLayoutActionMenu).
@@ -464,12 +513,12 @@ function ContainerNodeRow({
         </button>
 
         {/* Node Icon */}
-        <span className="w-4 h-4 flex items-center justify-center text-xs opacity-80 shrink-0 select-none">
+        <span className={`w-4 h-4 flex items-center justify-center text-xs shrink-0 select-none ${isDimmed ? 'opacity-40' : 'opacity-80'}`}>
           {containerIcon}
         </span>
 
         {/* Node Label */}
-        <span className="text-[13px] tracking-tight truncate flex-1 min-w-0">
+        <span className={`text-[13px] tracking-tight truncate flex-1 min-w-0 ${isDimmed ? 'opacity-50' : ''}`}>
           {containerLabel}
         </span>
 
@@ -493,6 +542,7 @@ function ContainerNodeRow({
           </span>
         )}
 
+        {!isRoot && <VisibilityToggle nodeId={container.id} label={containerLabel} />}
 
         {/* Gear Icon: Triggers Tree Action Menu with Item Properties or Body Actions */}
         <div className={isRightSide ? 'absolute left-2 shrink-0' : 'relative ml-auto shrink-0'}>
@@ -587,6 +637,7 @@ function ContainerNodeRow({
                   position={position}
                   overflowingContainerIds={overflowingContainerIds}
                   visibleIds={visibleIds}
+                  ancestorHidden={isDimmed}
                 />
               );
             }
@@ -603,6 +654,7 @@ function ContainerNodeRow({
                 onUpdateComponent={onUpdateComponent}
                 onRemoveComponent={onRemoveComponent}
                 position={position}
+                ancestorHidden={isDimmed}
               />
             );
           })}
@@ -627,6 +679,8 @@ interface ComponentNodeRowProps {
   onUpdateComponent?: (id: string, partial: Partial<FlexComponentNode>) => void;
   onRemoveComponent: (id: string) => void;
   position?: 'left' | 'right';
+  /** An ancestor is hidden with its eye, so this row is hidden on the canvas too (shown dimmed). */
+  ancestorHidden?: boolean;
 }
 
 function ComponentNodeRow({
@@ -639,6 +693,7 @@ function ComponentNodeRow({
   onUpdateComponent,
   onRemoveComponent,
   position = 'left',
+  ancestorHidden = false,
 }: ComponentNodeRowProps) {
   const isRightSide = position === 'right';
   const isSelected = selectedNodeId === component.id;
@@ -647,6 +702,8 @@ function ComponentNodeRow({
   // in TemplateLayoutActionMenu).
   const menu = useTreeActionMenu(`tree-comp-${component.id}`, 280, position, 224);
   const move = useNodeDrag(component.id, 'component');
+  const { hiddenIds } = useContext(TreeVisibilityContext);
+  const isDimmed = ancestorHidden || hiddenIds.has(component.id);
 
   const boundField = component.field_id
     ? fields.find((f) => f.id === component.field_id)
@@ -680,12 +737,12 @@ function ComponentNodeRow({
         <span className="w-3.5 h-3.5 shrink-0 opacity-0" aria-hidden="true" />
 
         {/* Node Icon */}
-        <span className="w-4 h-4 flex items-center justify-center text-xs opacity-80 shrink-0 select-none">
+        <span className={`w-4 h-4 flex items-center justify-center text-xs shrink-0 select-none ${isDimmed ? 'opacity-40' : 'opacity-80'}`}>
           {componentIcon}
         </span>
 
         {/* Node Label */}
-        <span className="text-[13px] tracking-tight truncate flex-1 min-w-0 tree-muted">
+        <span className={`text-[13px] tracking-tight truncate flex-1 min-w-0 tree-muted ${isDimmed ? 'opacity-50' : ''}`}>
           {label}
         </span>
 
@@ -704,6 +761,8 @@ function ComponentNodeRow({
               : 'auto'}
           </span>
         )}
+
+        <VisibilityToggle nodeId={component.id} label={label} />
 
         {/* Gear Icon: Triggers Tree Action Menu with Item Properties */}
         <div className={isRightSide ? 'absolute left-2 shrink-0' : 'relative ml-auto shrink-0'}>
@@ -782,6 +841,8 @@ export default function TemplateHierarchyTree({
   onPlaceLoremIpsum,
   onPlaceBuiltin,
   onMoveNode,
+  hiddenNodeIds,
+  onToggleHidden,
   position = 'left',
   expandedIds: externalExpandedIds,
   onToggleExpand: externalOnToggleExpand,
@@ -801,6 +862,10 @@ export default function TemplateHierarchyTree({
   );
 
   const drag = useTreeDrag(root, onMoveNode);
+  const visibility = useMemo<TreeVisibility>(
+    () => ({ hiddenIds: hiddenNodeIds ?? new Set(), toggle: onToggleHidden }),
+    [hiddenNodeIds, onToggleHidden]
+  );
 
   const effectiveExpandedIds = externalExpandedIds ?? internalExpandedIds;
   const effectiveOnToggleExpand =
@@ -843,6 +908,7 @@ export default function TemplateHierarchyTree({
 
   return (
     <TreeDragContext.Provider value={drag}>
+    <TreeVisibilityContext.Provider value={visibility}>
       {/* Rows stop their own drag events; anything reaching here is empty space, which drops nothing. */}
       <div className="flex flex-col h-full w-full select-none py-1.5" onDragOver={drag.clear}>
       <ContainerNodeRow
@@ -870,6 +936,7 @@ export default function TemplateHierarchyTree({
         overflowingContainerIds={overflowingContainerIds}
       />
       </div>
+    </TreeVisibilityContext.Provider>
     </TreeDragContext.Provider>
   );
 }

@@ -43,6 +43,7 @@ export default function FlexContainerRenderer({
   onPlaceBuiltin,
   parentStacked,
   onOverflowChange,
+  hiddenNodeIds,
 }: {
   container: FlexContainerNode;
   isRoot?: boolean;
@@ -78,6 +79,8 @@ export default function FlexContainerRenderer({
   onPlaceField?: (fieldId: number, targetContainerId?: string) => void;
   onPlaceLoremIpsum?: (targetContainerId?: string) => void;
   onPlaceBuiltin?: PlaceBuiltinHandler;
+  /** Nodes hidden from the edit canvas by the Layout tree's eye (editor-only; Preview shows everything). */
+  hiddenNodeIds?: Set<string>;
 }) {
   const [isDragOver, setIsDragOver] = useState(false);
   const isSelected = selectedNodeId === container.id;
@@ -401,6 +404,8 @@ export default function FlexContainerRenderer({
           ) : null
         ) : (
           container.children.map((child) => {
+            // Hidden with the Layout tree's eye: left out entirely (its subtree with it), in Edit mode only.
+            if (canvasMode === 'edit' && hiddenNodeIds?.has(child.id)) return null;
             if (child.nodeType === 'container') {
               return (
                 <FlexContainerRenderer
@@ -425,6 +430,7 @@ export default function FlexContainerRenderer({
                   onPlaceLoremIpsum={onPlaceLoremIpsum}
                   onPlaceBuiltin={onPlaceBuiltin}
                   onOverflowChange={onOverflowChange}
+                  hiddenNodeIds={hiddenNodeIds}
                 />
               );
             }

@@ -288,6 +288,8 @@ export function usePanelRenderers({
             onRemoveContainer={templateEditor.removeFlexContainer}
             onRemoveComponent={templateEditor.removeFlexComponent}
             onMoveNode={templateEditor.moveFlexNode}
+            hiddenNodeIds={templateEditor.hiddenNodeIds}
+            onToggleHidden={templateEditor.toggleNodeHidden}
             onPlaceField={handlePlaceField}
             onPlaceLoremIpsum={handlePlaceLoremIpsum}
             onPlaceBuiltin={handlePlaceBuiltin}

@@ -72,6 +72,7 @@ interface MainContentProps {
   onOverflowChange?: (containerId: string, isOverflowing: boolean) => void;
   onSplitFlexContainer?: (containerId: string, splitType: 'columns' | 'rows', measuredPx: number) => void;
   canvasMode?: 'edit' | 'preview';
+  hiddenNodeIds?: Set<string>;
   onToggleCanvasMode?: () => void;
   canUndo?: boolean;
   canRedo?: boolean;
@@ -121,6 +122,7 @@ export default function MainContent({
   onResetFlexLayout,
   onOverflowChange,
   canvasMode = 'edit',
+  hiddenNodeIds,
   onToggleCanvasMode,
   canUndo,
   canRedo,
@@ -173,6 +175,7 @@ export default function MainContent({
                   onResetFlexLayout={onResetFlexLayout}
                   onOverflowChange={onOverflowChange}
                   canvasMode={canvasMode}
+                  hiddenNodeIds={hiddenNodeIds}
                   onDoneEditing={onDoneEditingTemplate || (() => {})}
                   onToggleCanvasMode={onToggleCanvasMode || (() => {})}
                   canUndo={canUndo}

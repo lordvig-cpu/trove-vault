@@ -124,6 +124,18 @@ export function useTemplateEditor({
     setCanvasMode((prev) => (prev === 'edit' ? 'preview' : 'edit'));
   }, []);
 
+  // Layout-tree nodes hidden from the edit canvas (the eye on each tree row), to cut clutter while
+  // working on one area. Editor-only like zoom: never saved into the layout, ignored by Preview and the
+  // item view, and cleared whenever the editor opens. Hiding a container hides everything inside it.
+  const [hiddenNodeIds, setHiddenNodeIds] = useState<Set<string>>(() => new Set());
+  const toggleNodeHidden = useCallback((nodeId: string) => {
+    setHiddenNodeIds((prev) => {
+      const next = new Set(prev);
+      if (!next.delete(nodeId)) next.add(nodeId);
+      return next;
+    });
+  }, []);
+
   // Tab snapshot saved when entering edit mode
   const tabSnapshotRef = useRef<WorkspaceTabSnapshot | null>(null);
 
@@ -283,6 +295,7 @@ export function useTemplateEditor({
       setFilterHierarchyTypes([]);
       setSuccessMsg(null);
       setCanvasMode('edit');
+      setHiddenNodeIds(new Set());
       clearLayoutHistory();
 
       // 2. Open left panel with Layout (the container hierarchy)
@@ -615,6 +628,8 @@ export function useTemplateEditor({
     redoLayout,
     canvasMode,
     setCanvasMode,
+    hiddenNodeIds,
+    toggleNodeHidden,
     toggleCanvasMode,
   };
 }

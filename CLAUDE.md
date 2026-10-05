@@ -162,6 +162,12 @@ commit whenever you add, remove, split or rename a file — it goes stale otherw
   own subtree, nothing into or out of a split wrapper (its two halves can only swap), and a drop that
   would change nothing is refused -- a refused spot simply shows no indicator. A move is one undo step.
   Field / built-in / Lorem Ipsum drags from the Content tab still only drop inside a container row.
+- Each Layout-tree row but the Body has an eye (left of the gear) that hides that node, and everything
+  inside it, from the **edit** canvas, to cut clutter while working on one area. It is editor-only state
+  like zoom (`hiddenNodeIds` / `toggleNodeHidden` in `useTemplateEditor.ts`, cleared when the editor
+  opens): never saved into the layout, so Preview and the item view always show everything. A hidden
+  node's row and all rows under it are dimmed; descendants keep their own eye state, so showing the
+  parent again restores them as they were. `FlexContainerRenderer` skips a hidden child in Edit mode.
 - Every panel's filter menu (this one, the Content tab's field types, and the Items/Collections/
   Templates trees' collection filter) shares one convention: an empty filter array means "nothing
   excluded" and is shown as every checkbox checked, not every checkbox unchecked, because that's

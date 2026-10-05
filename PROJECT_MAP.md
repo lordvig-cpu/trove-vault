@@ -87,7 +87,8 @@ Conventions and architecture (data access, theming, template editor internals, b
 - `TemplateFieldActionMenu.tsx` / `TemplateLayoutActionMenu.tsx` / `TemplateRootActionMenu.tsx` —
   the tree-gear popup menus for a field, a layout container/component, and the template root.
 - `TemplateFieldInspector.tsx` — the template editor's field schema tree (Content tab).
-- `TemplateHierarchyTree.tsx` — the template editor's container hierarchy tree (Layout tab), with drag-and-drop reordering.
+- `TemplateHierarchyTree.tsx` — the template editor's container hierarchy tree (Layout tab), with drag-and-drop reordering and
+  per-node show/hide eyes for the edit canvas.
 - `TemplateLayoutPalette.tsx` — the Components palette: layout primitives (row, column, splits, card) and the
   pre-defined content cards (Field List, Header, Stat Row).
 - `TemplatePresetPicker.tsx` — the step after choosing a pre-defined block: which built-ins and fields it includes

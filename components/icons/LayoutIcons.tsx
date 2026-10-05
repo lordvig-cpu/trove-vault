@@ -539,3 +539,24 @@ export const EyeIcon = ({ className = 'w-4 h-4', strokeWidth = 2 }: LayoutIconPr
     <circle cx="12" cy="12" r="3" />
   </svg>
 );
+
+/**
+ * EyeOffIcon:
+ * The same eye with a slash through it, for a Layout-tree node hidden on the canvas.
+ */
+export const EyeOffIcon = ({ className = 'w-4 h-4', strokeWidth = 2 }: LayoutIconProps) => (
+  <svg
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth={strokeWidth}
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className={`origin-center shrink-0 ${className}`}
+    aria-hidden="true"
+  >
+    <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z" />
+    <circle cx="12" cy="12" r="3" />
+    <path d="M3 3l18 18" />
+  </svg>
+);
