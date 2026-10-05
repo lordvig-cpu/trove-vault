@@ -179,6 +179,56 @@ export function removeNode(root: FlexContainerNode, nodeId: string): FlexContain
   }));
 }
 
+/** Where a dragged node lands relative to the node it was dropped on. */
+export type MovePosition = 'before' | 'after' | 'inside';
+
+/**
+ * Moves `nodeId` (a container or content) next to `targetId` ('before' / 'after', under the same
+ * parent as the target) or to the end of the container `targetId` ('inside'). Returns null when the
+ * move is not allowed or would change nothing: the Body never moves and nothing goes beside it; a
+ * container cannot go inside itself or its own descendants; 'inside' needs a container target
+ * (a split wrapper redirects to its first half, the same as placing content); and a split wrapper holds
+ * exactly its two halves, so nothing moves into or out of one -- only its two halves can swap places.
+ */
+export function moveNode(
+  root: FlexContainerNode,
+  nodeId: string,
+  targetId: string,
+  position: MovePosition
+): FlexContainerNode | null {
+  if (nodeId === root.id || nodeId === targetId) return null;
+  const node = findFlexNode(root, nodeId);
+  const target = findFlexNode(root, targetId);
+  const sourceParent = findParentFlexContainer(root, nodeId);
+  if (!node || !target || !sourceParent) return null;
+
+  let destParentId: string;
+  if (position === 'inside') {
+    if (target.nodeType !== 'container') return null;
+    destParentId = resolveContentTarget(root, targetId);
+  } else {
+    const parent = findParentFlexContainer(root, targetId);
+    if (!parent) return null; // the target is the Body
+    destParentId = parent.id;
+  }
+  if (node.nodeType === 'container' && findFlexNode(node, destParentId)) return null;
+  const destParent = findFlexNode(root, destParentId);
+  if (!destParent || destParent.nodeType !== 'container') return null;
+  if ((destParent.isSplitWrapper || sourceParent.isSplitWrapper) && destParent.id !== sourceParent.id) return null;
+
+  const removed = removeNode(root, nodeId);
+  const moved =
+    position === 'inside'
+      ? insertChild(removed, destParentId, node)
+      : insertSibling(removed, destParentId, targetId, position, node);
+
+  // Dropping a node back where it already was is not an edit (and shouldn't cost an Undo step).
+  const order = (r: FlexContainerNode) =>
+    (findFlexNode(r, destParentId) as FlexContainerNode).children.map((c) => c.id).join('|');
+  if (destParentId === sourceParent.id && order(moved) === order(root)) return null;
+  return moved;
+}
+
 export interface SplitResult {
   root: FlexContainerNode;
   /** The id of the newly created half (the one after the original). */

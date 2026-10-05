@@ -287,6 +287,7 @@ export function usePanelRenderers({
             onUpdateComponent={templateEditor.updateFlexComponent}
             onRemoveContainer={templateEditor.removeFlexContainer}
             onRemoveComponent={templateEditor.removeFlexComponent}
+            onMoveNode={templateEditor.moveFlexNode}
             onPlaceField={handlePlaceField}
             onPlaceLoremIpsum={handlePlaceLoremIpsum}
             onPlaceBuiltin={handlePlaceBuiltin}

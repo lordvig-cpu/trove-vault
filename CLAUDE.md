@@ -155,6 +155,13 @@ commit whenever you add, remove, split or rename a file — it goes stale otherw
   together). A search/filter prunes the tree to matches and their ancestors, force-expanding
   whatever remains (`computeVisibleHierarchyIds` in `TemplateHierarchyTree.tsx`) so a match is never
   hidden behind a collapsed container.
+- Layout-tree rows (everything but the Body) can be dragged to reorder: a row's top or bottom edge drops
+  the node before or after it, the middle of a container row drops it inside (at the end), and the bottom
+  edge of an expanded container drops it first inside. The rules are `moveNode` in `lib/layoutTree.ts`
+  (covered by `tests/layout-tree.spec.ts`): nothing beside or in place of the Body, no container into its
+  own subtree, nothing into or out of a split wrapper (its two halves can only swap), and a drop that
+  would change nothing is refused -- a refused spot simply shows no indicator. A move is one undo step.
+  Field / built-in / Lorem Ipsum drags from the Content tab still only drop inside a container row.
 - Every panel's filter menu (this one, the Content tab's field types, and the Items/Collections/
   Templates trees' collection filter) shares one convention: an empty filter array means "nothing
   excluded" and is shown as every checkbox checked, not every checkbox unchecked, because that's

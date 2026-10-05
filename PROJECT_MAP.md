@@ -87,7 +87,7 @@ Conventions and architecture (data access, theming, template editor internals, b
 - `TemplateFieldActionMenu.tsx` / `TemplateLayoutActionMenu.tsx` / `TemplateRootActionMenu.tsx` —
   the tree-gear popup menus for a field, a layout container/component, and the template root.
 - `TemplateFieldInspector.tsx` — the template editor's field schema tree (Content tab).
-- `TemplateHierarchyTree.tsx` — the template editor's container hierarchy tree (Layout tab).
+- `TemplateHierarchyTree.tsx` — the template editor's container hierarchy tree (Layout tab), with drag-and-drop reordering.
 - `TemplateLayoutPalette.tsx` — the Components palette: layout primitives (row, column, splits, card) and the
   pre-defined content cards (Field List, Header, Stat Row).
 - `TemplatePresetPicker.tsx` — the step after choosing a pre-defined block: which built-ins and fields it includes
@@ -205,7 +205,7 @@ its display style, with label and typography).
 - `helpWindows.ts` — module-level store of the help windows (open/toggle, move, raise, close; at most 4) plus the `useHelpWindows` / `useIsHelpWindowOpen` hooks; rendered by `HelpWindowHost.tsx`.
 - `layoutHistory.ts` — pure undo/redo snapshot logic for the layout (coalesces drag bursts, caps depth);
   covered by `tests/layout-history.spec.ts`.
-- `layoutTree.ts` — pure functions over the flex layout tree (build/insert/split/update/remove node,
+- `layoutTree.ts` — pure functions over the flex layout tree (build/insert/split/update/remove/move node,
   label helpers); covered by `tests/layout-tree.spec.ts`.
 - `layoutContent.ts` — pure functions for content elements: bindings, display styles per data type, resolving
   values from an item (or samples), labels, text presets, box-look CSS; covered by `tests/layout-content.spec.ts`.

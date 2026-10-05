@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { createContext, useCallback, useContext, useMemo, useRef, useState } from 'react';
 import {
   TemplateFlexLayoutConfig,
   FlexContainerNode,
@@ -10,6 +10,7 @@ import {
   type PlaceBuiltinHandler,
 } from '@/types/layout';
 import { FieldDefinition } from '@/types/field';
+import { moveNode, type MovePosition } from '@/lib/layoutTree';
 import { GearIcon, SearchGlassIcon } from '@/components/icons/TreeIcons';
 import { useTreeActionMenu } from '@/hooks/useTreeActionMenu';
 import {
@@ -47,6 +48,8 @@ export interface TemplateHierarchyTreeProps {
   onPlaceField?: (fieldId: number, targetContainerId?: string) => void;
   onPlaceLoremIpsum?: (targetContainerId?: string) => void;
   onPlaceBuiltin?: PlaceBuiltinHandler;
+  /** Moves a node by drag and drop within the tree (see moveNode in lib/layoutTree.ts). */
+  onMoveNode?: (nodeId: string, targetId: string, position: MovePosition) => void;
   /** Dock side: on the right, row gears move to the left edge and menus open rightward. */
   position?: 'left' | 'right';
   expandedIds?: Set<string>;
@@ -138,6 +141,154 @@ function computeVisibleHierarchyIds(
 }
 
 /* ==========================================================================
+   DRAG AND DROP REORDERING
+   A row (anything but the Body) can be dragged onto another row: the top or bottom edge of a row drops
+   the node before or after it, the middle of a container row drops it inside (at the end). The bottom
+   edge of an expanded container means "first inside it", since that is where the line is drawn. A
+   position moveNode refuses (into itself, out of a split, or back where it already is) shows no
+   indicator and does nothing. Field / built-in / Lorem Ipsum drags from the Content tab are separate
+   and unchanged: they only ever drop inside a container row.
+   ========================================================================== */
+
+const LAYOUT_NODE_MIME = 'application/x-trove-layout-node';
+
+interface DropHint {
+  targetId: string;
+  position: MovePosition;
+}
+
+interface TreeDrag {
+  /** The node being dragged (for its dimmed look); null when no tree move is in progress. */
+  draggingId: string | null;
+  hint: DropHint | null;
+  /** True while a tree move is in progress (read from a ref, so it is current during dragover). */
+  isMoving: () => boolean;
+  begin: (nodeId: string) => void;
+  end: () => void;
+  /** Shows the indicator for this drop if moveNode allows it; returns whether it does. */
+  hover: (targetId: string, position: MovePosition) => boolean;
+  clear: () => void;
+  drop: () => void;
+}
+
+const TreeDragContext = createContext<TreeDrag | null>(null);
+
+function useTreeDrag(root: FlexContainerNode | undefined, onMoveNode?: TemplateHierarchyTreeProps['onMoveNode']): TreeDrag {
+  const [draggingId, setDraggingId] = useState<string | null>(null);
+  const [hint, setHint] = useState<DropHint | null>(null);
+  const draggingRef = useRef<string | null>(null);
+  const hintRef = useRef<DropHint | null>(null);
+
+  const showHint = useCallback((next: DropHint | null) => {
+    const prev = hintRef.current;
+    if (prev?.targetId === next?.targetId && prev?.position === next?.position) return;
+    hintRef.current = next;
+    setHint(next);
+  }, []);
+
+  return useMemo(() => {
+    const finish = () => {
+      draggingRef.current = null;
+      setDraggingId(null);
+      showHint(null);
+    };
+    return {
+      draggingId,
+      hint,
+      isMoving: () => draggingRef.current !== null,
+      begin: (nodeId) => {
+        draggingRef.current = nodeId;
+        // Deferred: changing the dragged row in the same tick as dragstart can cancel the drag.
+        setTimeout(() => setDraggingId(nodeId), 0);
+      },
+      end: finish,
+      hover: (targetId, position) => {
+        const id = draggingRef.current;
+        const ok = !!id && !!root && !!onMoveNode && moveNode(root, id, targetId, position) !== null;
+        showHint(ok ? { targetId, position } : null);
+        return ok;
+      },
+      clear: () => showHint(null),
+      drop: () => {
+        const id = draggingRef.current;
+        const target = hintRef.current;
+        if (id && target) onMoveNode?.(id, target.targetId, target.position);
+        finish();
+      },
+    };
+  }, [draggingId, hint, root, onMoveNode, showHint]);
+}
+
+/**
+ * One row's part in a tree move: its drag source props, which indicator it shows, and dragover/drop
+ * handlers that return false when the drag is not a tree move (so a container row can fall back to its
+ * field drops). `firstChildId` is the first visible child of an expanded container.
+ */
+function useNodeDrag(nodeId: string, kind: 'root' | 'container' | 'component', firstChildId?: string) {
+  const drag = useContext(TreeDragContext);
+  const hint = drag?.hint?.targetId === nodeId ? drag.hint.position : null;
+
+  const dragProps =
+    kind === 'root' || !drag
+      ? {}
+      : {
+          draggable: true,
+          onDragStart: (e: React.DragEvent) => {
+            e.stopPropagation();
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData(LAYOUT_NODE_MIME, nodeId);
+            drag.begin(nodeId);
+          },
+          onDragEnd: drag.end,
+        };
+
+  const handleMoveOver = (e: React.DragEvent<HTMLElement>): boolean => {
+    if (!drag?.isMoving()) return false;
+    e.preventDefault();
+    e.stopPropagation();
+    const rect = e.currentTarget.getBoundingClientRect();
+    const y = (e.clientY - rect.top) / rect.height;
+    let target = nodeId;
+    let position: MovePosition;
+    if (kind === 'component') position = y < 0.5 ? 'before' : 'after';
+    else if (y > 0.75 && firstChildId) {
+      target = firstChildId;
+      position = 'before';
+    } else if (kind === 'root') position = 'inside';
+    else position = y < 0.25 ? 'before' : y > 0.75 ? 'after' : 'inside';
+    e.dataTransfer.dropEffect = drag.hover(target, position) ? 'move' : 'none';
+    return true;
+  };
+
+  const handleMoveDrop = (e: React.DragEvent): boolean => {
+    if (!drag?.isMoving()) return false;
+    e.preventDefault();
+    e.stopPropagation();
+    drag.drop();
+    return true;
+  };
+
+  return {
+    dragProps,
+    hint,
+    isDragging: drag?.draggingId === nodeId,
+    isMoving: () => !!drag?.isMoving(),
+    handleMoveOver,
+    handleMoveDrop,
+  };
+}
+
+/** The line drawn above or below a row where a dragged node will land. */
+function DropLine({ edge }: { edge: 'before' | 'after' }) {
+  return (
+    <span
+      aria-hidden="true"
+      className={`pointer-events-none absolute left-1 right-1 h-0.5 rounded-full bg-[var(--primary-accent)] ${edge === 'before' ? '-top-px' : '-bottom-px'}`}
+    />
+  );
+}
+
+/* ==========================================================================
    3. TREE NODE ROW: Container Node Item (Tree Visual Model)
    ========================================================================== */
 
@@ -204,6 +355,8 @@ function ContainerNodeRow({
   const isExpanded = visibleIds ? true : expandedIds.has(container.id);
   const hasChildren = visibleChildren.length > 0;
   const isOverflowing = overflowingContainerIds?.has(container.id) ?? false;
+  const move = useNodeDrag(container.id, isRoot ? 'root' : 'container', isExpanded ? visibleChildren[0]?.id : undefined);
+  const showDropInside = isDragOver || move.hint === 'inside';
   // Right-docked panels position the flyout by its real width: every container's flyout (Body or not)
   // is the 224px (14rem) shell default -- its wider Properties tab shifts itself left (see
   // PROPERTIES_EXTRA_WIDTH_PX in TemplateLayoutActionMenu).
@@ -227,7 +380,9 @@ function ContainerNodeRow({
       {/* Row Item formatted to exact site tree model */}
       <div
         onClick={() => onSelectNode(container.id)}
+        {...move.dragProps}
         onDragOver={(e) => {
+          if (move.handleMoveOver(e)) return;
           e.preventDefault();
           e.stopPropagation();
           e.dataTransfer.dropEffect = 'copy';
@@ -236,6 +391,8 @@ function ContainerNodeRow({
         onDragEnter={(e) => {
           e.preventDefault();
           e.stopPropagation();
+          // A tree move shows its own indicator (from the drop hint), not the field-drop highlight.
+          if (move.isMoving()) return;
           setIsDragOver(true);
         }}
         onDragLeave={(e) => {
@@ -245,6 +402,7 @@ function ContainerNodeRow({
           }
         }}
         onDrop={(e) => {
+          if (move.handleMoveDrop(e)) return;
           e.preventDefault();
           e.stopPropagation();
           setIsDragOver(false);
@@ -275,13 +433,15 @@ function ContainerNodeRow({
         style={isRightSide ? { paddingLeft: depth * 24.5 + 44 } : undefined}
         className={[
           'tree-item group relative flex items-center h-7 px-1.5 gap-1.5 rounded-md cursor-pointer transition w-full min-w-0',
-          isDragOver
+          move.isDragging && 'opacity-40',
+          showDropInside
             ? 'ring-1 ring-[var(--primary-accent)] bg-[color-mix(in_oklch,var(--primary-accent)_25%,transparent)] text-[var(--text-strong)] font-semibold'
             : isSelected
             ? 'tree-item-selected font-medium'
             : '',
-        ].join(' ')}
+        ].filter(Boolean).join(' ')}
       >
+        {(move.hint === 'before' || move.hint === 'after') && <DropLine edge={move.hint} />}
         {/* Expand / Collapse Chevron */}
         <button
           type="button"
@@ -486,6 +646,7 @@ function ComponentNodeRow({
   // 224px (14rem) shell default, and its wider Properties tab shifts itself left (PROPERTIES_EXTRA_WIDTH_PX
   // in TemplateLayoutActionMenu).
   const menu = useTreeActionMenu(`tree-comp-${component.id}`, 280, position, 224);
+  const move = useNodeDrag(component.id, 'component');
 
   const boundField = component.field_id
     ? fields.find((f) => f.id === component.field_id)
@@ -500,6 +661,9 @@ function ComponentNodeRow({
     <div className="select-none text-[13px] font-sans w-full min-w-0 flex flex-col">
       <div
         onClick={() => onSelectNode(component.id)}
+        {...move.dragProps}
+        onDragOver={move.handleMoveOver}
+        onDrop={move.handleMoveDrop}
         data-tree-component-id={component.id}
         title={label}
         style={isRightSide ? { paddingLeft: depth * 24.5 + 44 } : undefined}
@@ -508,8 +672,10 @@ function ComponentNodeRow({
           isSelected
             ? 'tree-item-selected font-medium'
             : '',
-        ].join(' ')}
+          move.isDragging && 'opacity-40',
+        ].filter(Boolean).join(' ')}
       >
+        {(move.hint === 'before' || move.hint === 'after') && <DropLine edge={move.hint} />}
         {/* Spacer aligned with container chevron */}
         <span className="w-3.5 h-3.5 shrink-0 opacity-0" aria-hidden="true" />
 
@@ -615,6 +781,7 @@ export default function TemplateHierarchyTree({
   onPlaceField,
   onPlaceLoremIpsum,
   onPlaceBuiltin,
+  onMoveNode,
   position = 'left',
   expandedIds: externalExpandedIds,
   onToggleExpand: externalOnToggleExpand,
@@ -632,6 +799,8 @@ export default function TemplateHierarchyTree({
     () => (root ? computeVisibleHierarchyIds(root, searchQuery, filterHierarchyTypes, fields) : null),
     [root, searchQuery, filterHierarchyTypes, fields]
   );
+
+  const drag = useTreeDrag(root, onMoveNode);
 
   const effectiveExpandedIds = externalExpandedIds ?? internalExpandedIds;
   const effectiveOnToggleExpand =
@@ -673,7 +842,9 @@ export default function TemplateHierarchyTree({
   }
 
   return (
-    <div className="flex flex-col h-full w-full select-none py-1.5">
+    <TreeDragContext.Provider value={drag}>
+      {/* Rows stop their own drag events; anything reaching here is empty space, which drops nothing. */}
+      <div className="flex flex-col h-full w-full select-none py-1.5" onDragOver={drag.clear}>
       <ContainerNodeRow
         container={root}
         depth={0}
@@ -698,6 +869,7 @@ export default function TemplateHierarchyTree({
         visibleIds={visibleIds}
         overflowingContainerIds={overflowingContainerIds}
       />
-    </div>
+      </div>
+    </TreeDragContext.Provider>
   );
 }

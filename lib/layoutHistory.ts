@@ -21,7 +21,8 @@ export interface LayoutHistory {
 
 export const emptyHistory: LayoutHistory = { past: [], future: [], lastEditAt: 0 };
 
-/** Every node id in the tree, so edits that add/remove/split nodes can be told from tweaks. */
+/** Every node id in the tree, with each container's end marked, so edits that add/remove/split or move
+    nodes (even to a spot that reads the same in plain document order) can be told from tweaks. */
 function nodeIdKey(node: FlexContainerNode): string {
   const ids: string[] = [];
   const walk = (n: FlexContainerNode) => {
@@ -30,6 +31,7 @@ function nodeIdKey(node: FlexContainerNode): string {
       if (child.nodeType === 'container') walk(child);
       else ids.push(child.id);
     }
+    ids.push(")");
   };
   walk(node);
   return ids.join('|');
@@ -38,7 +40,7 @@ function nodeIdKey(node: FlexContainerNode): string {
 /**
  * Records an edit from `previous` to `next`. A quick run of property tweaks on the same nodes
  * (dragging a resize handle fires one edit per mouse move) stays one undo step; adding, removing
- * or splitting nodes is always its own step. Any new edit clears the redo stack.
+ * splitting or moving nodes is always its own step. Any new edit clears the redo stack.
  */
 export function recordEdit(
   history: LayoutHistory,

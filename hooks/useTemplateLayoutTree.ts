@@ -20,7 +20,9 @@ import {
   buildUniqueContainer,
   insertChild,
   insertSibling,
+  moveNode,
   newNodeId,
+  type MovePosition,
   removeNode,
   resolveContentTarget,
   splitContainer,
@@ -311,6 +313,20 @@ export function useTemplateLayoutTree({
     [flexLayoutConfig, selectedNodeId, saveFlexLayoutConfig, setSelectedNodeId]
   );
 
+  // Drag-and-drop reordering in the Layout tree: moves a container or content before/after another node
+  // or into a container (moveNode in lib/layoutTree.ts says which moves are allowed). The moved node
+  // becomes the selection, so it stays highlighted where it landed.
+  const moveFlexNode = useCallback(
+    (nodeId: string, targetId: string, position: MovePosition) => {
+      if (!flexLayoutConfig) return;
+      const root = moveNode(flexLayoutConfig.root, nodeId, targetId, position);
+      if (!root) return;
+      saveFlexLayoutConfig({ ...flexLayoutConfig, root });
+      setSelectedNodeId(nodeId);
+    },
+    [flexLayoutConfig, saveFlexLayoutConfig, setSelectedNodeId]
+  );
+
   const addFlexComponent = useCallback(
     (
       targetContainerId: string,
@@ -461,6 +477,7 @@ export function useTemplateLayoutTree({
     splitFlexContainer,
     updateFlexContainer,
     removeFlexContainer,
+    moveFlexNode,
     addFlexComponent,
     updateFlexComponent,
     removeFlexComponent,

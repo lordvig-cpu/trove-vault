@@ -5,6 +5,7 @@ import {
   insertChild,
   nextNumberedLabel,
   insertSibling,
+  moveNode,
   removeNode,
   resolveContentTarget,
   splitContainer,
@@ -286,5 +287,57 @@ test.describe('Layout tree operations (pure)', () => {
     expect(splitContainer(root, 'root-container', 'columns', 400)).toBeNull();
     expect(splitContainer(root, 'no-such-id', 'columns', 400)).toBeNull();
     expect(splitContainer(root, 'comp-1', 'columns', 400)).toBeNull(); // a component is not a container
+  });
+
+  test('moveNode: reorders content within its container (before / after)', () => {
+    const root = freshRoot();
+    expect(childIds(general(moveNode(root, 'comp-2', 'comp-1', 'before')!))).toEqual(['comp-2', 'comp-1']);
+    expect(childIds(general(moveNode(root, 'comp-1', 'comp-2', 'after')!))).toEqual(['comp-2', 'comp-1']);
+  });
+
+  test('moveNode: moves content into another container, or out beside its own parent', () => {
+    const box = buildContainer({ label: 'Box' }, 'x', 'column');
+    const root = insertChild(freshRoot(), 'root-container', box);
+    const inside = moveNode(root, 'comp-1', box.id, 'inside')!;
+    expect(childIds(findFlexNode(inside, box.id) as FlexContainerNode)).toEqual(['comp-1']);
+    expect(childIds(general(inside))).toEqual(['comp-2']);
+    const out = moveNode(root, 'comp-2', 'container-general', 'before')!;
+    expect(childIds(out)).toEqual(['comp-2', 'container-general', box.id]);
+  });
+
+  test('moveNode: a container moves with its whole subtree', () => {
+    const box = buildContainer({ label: 'Box' }, 'x', 'column');
+    const root = insertChild(freshRoot(), 'root-container', box);
+    const moved = moveNode(root, 'container-general', box.id, 'inside')!;
+    expect(childIds(moved)).toEqual([box.id]);
+    expect(childIds(general(moved))).toEqual(['comp-1', 'comp-2']);
+  });
+
+  test('moveNode: refuses the Body, cycles, non-container targets and no-op drops', () => {
+    const box = buildContainer({ label: 'Box' }, 'x', 'column');
+    const root = insertChild(freshRoot(), 'container-general', box);
+    expect(moveNode(root, 'root-container', 'comp-1', 'before')).toBeNull();
+    expect(moveNode(root, 'comp-1', 'root-container', 'before')).toBeNull(); // nothing beside the Body
+    expect(moveNode(root, 'container-general', box.id, 'inside')).toBeNull(); // into its own descendant
+    expect(moveNode(root, 'container-general', 'container-general', 'inside')).toBeNull();
+    expect(moveNode(root, 'comp-1', 'comp-2', 'inside')).toBeNull(); // content holds nothing
+    expect(moveNode(root, 'comp-1', 'comp-2', 'before')).toBeNull(); // already there
+    expect(moveNode(root, box.id, 'container-general', 'inside')).toBeNull(); // already last inside
+    expect(moveNode(root, 'no-such-id', 'comp-1', 'before')).toBeNull();
+  });
+
+  test('moveNode: a split wrapper keeps exactly its two halves', () => {
+    const box = buildContainer({ label: 'Box' }, 'x', 'column');
+    const split = splitContainer(insertChild(freshRoot(), 'container-general', box), box.id, 'rows', 300)!;
+    const root = split.root;
+    const wrapper = general(root).children[2] as FlexContainerNode;
+    // The halves can swap places...
+    expect(childIds(findFlexNode(moveNode(root, split.newId, box.id, 'before')!, wrapper.id) as FlexContainerNode)).toEqual([split.newId, box.id]);
+    // ...but nothing moves out of the wrapper, or in beside them.
+    expect(moveNode(root, box.id, 'comp-1', 'before')).toBeNull();
+    expect(moveNode(root, 'comp-1', box.id, 'after')).toBeNull();
+    // Dropping into the wrapper lands in its first half, like placing content does.
+    const into = moveNode(root, 'comp-1', wrapper.id, 'inside')!;
+    expect(childIds(findFlexNode(into, box.id) as FlexContainerNode)).toEqual(['comp-1']);
   });
 });
