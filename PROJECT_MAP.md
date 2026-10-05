@@ -80,10 +80,10 @@ Conventions and architecture (data access, theming, template editor internals, b
 - `TemplateEditorBarTop.tsx` — the template-wide toolbar's content: template icon + name, View
   toggle, Zoom, Width/Fit, Undo / Redo, Reset Layout and Save.
 - `TemplateEditorContainerBar.tsx` — the selected container's own toolbar (used more often, so it
-  gets the header slot), portaled into `#template-toolbar-slot`: name, Size, Layout, Add, Split,
-  eye, properties gear and delete.
-- `TemplateEditorContentBar.tsx` — the selected content element's toolbar, in the same slot: name, Shows,
-  Display, Label, Text (style, bold/italic/underline, alignment), eye, properties gear and delete.
+  gets the header slot), portaled into `#template-toolbar-slot`: eye, name, Size, Layout, Add, Split,
+  properties gear and delete.
+- `TemplateEditorContentBar.tsx` — the selected content element's toolbar, in the same slot: eye, name, Shows,
+  Display, Label, Text (style, bold/italic/underline, alignment), properties gear and delete.
 - `editorBarControls.tsx` — controls shared by those two toolbars: grouped pulldowns, the in-place name,
   section labels, toggles, and the eye / gear / delete buttons.
 - `TemplateEditorStage.tsx` — the template editor's canvas: composes

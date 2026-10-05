@@ -117,6 +117,8 @@ export default function TemplateEditorContentBar({
       onClick={(e) => e.stopPropagation()}
     >
       <div className="flex items-center gap-1.5 shrink-0">
+        {/* The eye leads, beside the name it hides. */}
+        {onToggleHidden && <VisibilityButton hidden={isHidden} onToggle={() => onToggleHidden(component.id)} />}
         <EditableName
           key={component.id}
           name={name}
@@ -256,7 +258,6 @@ export default function TemplateEditorContentBar({
       )}
 
       <div className="flex items-center gap-1.5 ml-8 shrink-0">
-        {onToggleHidden && <VisibilityButton hidden={isHidden} onToggle={() => onToggleHidden(component.id)} />}
         <TreeGearButton
           nodeId={component.id}
           menuIdPrefix={`tree-comp-${component.id}`}

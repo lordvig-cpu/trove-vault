@@ -304,10 +304,12 @@ export default function NavigationHeader({
         {/* Slot for the template editor bar (portaled in by the editor), centered on the visible
             canvas — a pinned panel eats into one side, so plain 50% would drift off-center. The
             +1px keeps it below the header's 1px bottom border: `top: 100%` is measured from the
-            padding box, so without it the toolbar paints over that border. */}
+            padding box, so without it the toolbar paints over that border. w-max: an absolute box
+            left at the center would otherwise only get the space between there and the right edge
+            (about half the header), squeezing a wide toolbar like the content bar. */}
         <div
           id="template-toolbar-slot"
-          className={`absolute top-[calc(100%+1px)] -translate-x-1/2 z-[85] pointer-events-none ${
+          className={`absolute top-[calc(100%+1px)] w-max -translate-x-1/2 z-[85] pointer-events-none ${
             animationsEnabled ? 'transition-[left] duration-500 ease-in-out' : ''
           }`}
           style={{ left: `calc(50% + ${(leftOccupiedWidth - rightOccupiedWidth) / 2}px)` }}

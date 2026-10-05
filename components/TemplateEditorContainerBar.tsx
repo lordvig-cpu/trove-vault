@@ -128,6 +128,10 @@ export default function TemplateEditorContainerBar({
       onClick={(e) => e.stopPropagation()}
     >
       <div className="flex items-center gap-1.5 shrink-0">
+        {/* The eye leads, beside the name it hides (not for the Body). */}
+        {!isRoot && onToggleHidden && (
+          <VisibilityButton hidden={isHidden} onToggle={() => onToggleHidden(container.id)} />
+        )}
         {isRoot ? (
           <span className="text-[11px] font-bold text-[var(--text-strong)] tracking-wide">Body</span>
         ) : (
@@ -321,10 +325,7 @@ export default function TemplateEditorContainerBar({
       </div>
 
       <div className="flex items-center gap-1.5 ml-8 shrink-0">
-        {/* The eye (not for the Body), the gear (the Layout tree's properties menu for this container), delete. */}
-        {!isRoot && onToggleHidden && (
-          <VisibilityButton hidden={isHidden} onToggle={() => onToggleHidden(container.id)} />
-        )}
+        {/* The gear (the Layout tree's properties menu for this container), then delete. */}
         <TreeGearButton
           nodeId={container.id}
           menuIdPrefix={`tree-container-${container.id}`}
