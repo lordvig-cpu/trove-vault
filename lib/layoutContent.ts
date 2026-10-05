@@ -203,6 +203,16 @@ export function labelTextOf(
   return '';
 }
 
+/** What an element is called in the Layout tree and toolbar: its own name, else its label text (the
+ *  field's or built-in's name), else "Text" for static text, else its block type. */
+export function contentNameOf(component: FlexComponentNode, fields: FieldDefinition[]): string {
+  if (component.name) return component.name;
+  const binding = bindingOf(component);
+  const label = labelTextOf(component, binding, fields);
+  if (label) return label;
+  return binding?.kind === 'static' ? 'Text' : component.componentType;
+}
+
 /** Whether the label shows: as set, else shown for template fields (as it always was) and hidden for
  *  built-ins and static text (a Name is usually a title with no caption). */
 export function isLabelShown(component: FlexComponentNode, binding: ContentBinding | null): boolean {

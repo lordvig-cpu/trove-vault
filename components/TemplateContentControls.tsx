@@ -190,7 +190,7 @@ function NumberField({
    Content: what it shows and how it is drawn
    -------------------------------------------------------------------------- */
 
-const DISPLAY_LABELS: Record<ContentDisplayStyle, string> = {
+export const DISPLAY_LABELS: Record<ContentDisplayStyle, string> = {
   text: 'Text',
   badge: 'Badge',
   chips: 'Chips',
@@ -216,7 +216,7 @@ const ASPECT_RATIOS = [
   { value: '2 / 3', label: '2:3' },
 ];
 
-const BUILTIN_ORDER: BuiltinKey[] = ['name', 'image', 'collections', 'created', 'subitems'];
+export const BUILTIN_ORDER: BuiltinKey[] = ['name', 'image', 'collections', 'created', 'subitems'];
 
 /** The <select> value for a binding: "builtin:name", "field:12", "static", or "" when unbound. */
 function selectValueOf(binding: ContentBinding | null): string {
@@ -319,7 +319,7 @@ export function ContentSourceControls({ component, fields, onUpdate }: ControlsP
    Text: typography, for a value or its label
    -------------------------------------------------------------------------- */
 
-const PRESET_OPTIONS: { value: TextPresetName; label: string }[] = [
+export const PRESET_OPTIONS: { value: TextPresetName; label: string }[] = [
   { value: 'title', label: 'Title' },
   { value: 'heading', label: 'Heading' },
   { value: 'body', label: 'Body' },

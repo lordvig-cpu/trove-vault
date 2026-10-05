@@ -4,7 +4,7 @@ import React from 'react';
 import { FieldDefinition } from '@/types/field';
 import { FlexComponentNode } from '@/types/layout';
 import ContentValue from '@/components/template-canvas/ContentValue';
-import { bindingOf, boxLookCss, labelTextOf } from '@/lib/layoutContent';
+import { bindingOf, boxLookCss, contentNameOf } from '@/lib/layoutContent';
 import { CloseIcon } from '@/components/icons/PanelIcons';
 import { StarIcon } from '@/components/icons/GlyphIcons';
 import { TableIcon, ImageIcon, CameraIcon, NoteIcon } from '@/components/icons/ContentIcons';
@@ -269,7 +269,7 @@ export default function FlexComponentRenderer(props: {
     >
       {canvasMode === 'edit' && isSelected && (
         <div className="absolute -top-5 left-0 z-10 flex items-center gap-1 px-1.5 py-0.5 rounded bg-[var(--primary-accent)] text-[var(--pole-label)] text-[10px] font-semibold select-none">
-          <span className="truncate max-w-[16ch]">{labelTextOf(component, binding, fields) || 'Content'}</span>
+          <span className="truncate max-w-[16ch]">{contentNameOf(component, fields)}</span>
           <button
             type="button"
             onClick={(e) => {

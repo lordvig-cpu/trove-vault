@@ -196,6 +196,12 @@ commit whenever you add, remove, split or rename a file — it goes stale otherw
   (`#template-toolbar-slot-bottom`, rendered in `app/page.tsx`), which lifts clear of the bottom
   panel by `bottomPanelHeight` whenever that panel is open or pinned. Which toolbar gets which slot
   is just where each is portaled in `TemplateEditorStage.tsx` — swap it there if that changes again.
+  When a content element is selected, `TemplateEditorContentBar` takes the header slot instead: its name
+  (a content `name`, separate from its `label` caption -- `contentNameOf` falls back to the label text, so
+  renaming never changes what the item shows), then quick versions of the Content Properties sections
+  (Shows, Display, Label off/above/beside, Text style + bold/italic/underline + alignment), then the eye,
+  the gear (the full flyout) and delete. Both bars build from the shared `editorBarControls.tsx`, and
+  both carry the same eye as the Layout tree (not for the Body).
 - Every tree/template gear-icon flyout -- whether it's pure Actions (Item, Collection, Category,
   Template) or mixes Actions with Properties (Body, a standard container, a Content-tab field) --
   is built from exactly one shared shell and CSS file, `TreeSubMenu.tsx`

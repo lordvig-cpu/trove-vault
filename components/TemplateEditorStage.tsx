@@ -13,6 +13,7 @@ import {
 import { useCanvasZoom } from '@/context/CanvasZoomContext';
 import TemplateEditorBar from '@/components/TemplateEditorBar';
 import TemplateEditorContainerBar from '@/components/TemplateEditorContainerBar';
+import TemplateEditorContentBar from '@/components/TemplateEditorContentBar';
 import ScaledCanvas from '@/components/template-canvas/ScaledCanvas';
 import FlexContainerRenderer from '@/components/template-canvas/FlexContainerRenderer';
 
@@ -64,6 +65,7 @@ interface TemplateEditorStageProps {
   canvasMode: 'edit' | 'preview';
   /** Nodes hidden from the edit canvas by the Layout tree's eye. */
   hiddenNodeIds?: Set<string>;
+  onToggleHidden?: (nodeId: string) => void;
   onDoneEditing: () => void;
   onToggleCanvasMode: () => void;
   canUndo?: boolean;
@@ -103,6 +105,7 @@ export default function TemplateEditorStage({
 
   canvasMode,
   hiddenNodeIds,
+  onToggleHidden,
   onDoneEditing,
   onToggleCanvasMode,
   canUndo,
@@ -157,6 +160,28 @@ export default function TemplateEditorStage({
             isLayoutPanelOpen={isLayoutPanelOpen}
             onOpenLayoutPanel={onOpenLayoutPanel}
             layoutPanelSelector={layoutPanelSelector}
+            isHidden={!!toolbarContainer && !!hiddenNodeIds?.has(toolbarContainer.id)}
+            onToggleHidden={onToggleHidden}
+          />,
+          toolbarSlot
+        )}
+      {/* A selected content element gets its own toolbar in the same slot. */}
+      {toolbarSlot &&
+        isFlexActive &&
+        showContainerTools &&
+        selectedNode?.nodeType === 'component' &&
+        createPortal(
+          <TemplateEditorContentBar
+            component={selectedNode}
+            fields={fields}
+            onUpdateComponent={onUpdateFlexComponent}
+            onRemoveComponent={onRemoveFlexComponent}
+            onSelectNode={onSelectNode}
+            isLayoutPanelOpen={isLayoutPanelOpen}
+            onOpenLayoutPanel={onOpenLayoutPanel}
+            layoutPanelSelector={layoutPanelSelector}
+            isHidden={!!hiddenNodeIds?.has(selectedNode.id)}
+            onToggleHidden={onToggleHidden}
           />,
           toolbarSlot
         )}

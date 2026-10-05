@@ -15,6 +15,7 @@ import {
   formatDate,
   isLabelShown,
   labelTextOf,
+  contentNameOf,
   resolveValue,
   textStyleCss,
 } from '../lib/layoutContent';
@@ -130,6 +131,17 @@ test.describe('Content elements (pure)', () => {
     expect(labelTextOf(byField, bindingOf(byField), fields)).toBe('PLAYERS');
     expect(labelTextOf({ ...byField, label: 'Seats' }, bindingOf(byField), fields)).toBe('Seats');
     expect(labelTextOf(byName, bindingOf(byName), fields)).toBe('Name');
+  });
+
+  test('content name: its own name, else the label text, else "Text" for static text, never changing the label', () => {
+    const byField = comp({ field_id: 2 });
+    expect(contentNameOf(byField, fields)).toBe('PLAYERS');
+    expect(contentNameOf({ ...byField, label: 'Seats' }, fields)).toBe('Seats');
+    const named = { ...byField, name: 'Player count' };
+    expect(contentNameOf(named, fields)).toBe('Player count');
+    expect(labelTextOf(named, bindingOf(named), fields)).toBe('PLAYERS'); // the caption is unaffected
+    expect(contentNameOf(comp({ binding: { kind: 'builtin', key: 'name' } }), fields)).toBe('Name');
+    expect(contentNameOf(comp({ binding: { kind: 'static', text: 'Hello' } }), fields)).toBe('Text');
   });
 
   test('text style: Name defaults to the title preset, overrides win, unset color is left to the theme', () => {

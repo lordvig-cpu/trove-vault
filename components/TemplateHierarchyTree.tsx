@@ -11,6 +11,7 @@ import {
 } from '@/types/layout';
 import { FieldDefinition } from '@/types/field';
 import { moveNode, type MovePosition } from '@/lib/layoutTree';
+import { contentNameOf } from '@/lib/layoutContent';
 import { GearIcon, SearchGlassIcon } from '@/components/icons/TreeIcons';
 import { useTreeActionMenu } from '@/hooks/useTreeActionMenu';
 import {
@@ -104,8 +105,7 @@ function hierarchyNodeLabel(
   if (node.nodeType === 'container') {
     return isRoot ? 'Body' : node.label || 'Container';
   }
-  const boundField = node.field_id ? fields.find((f) => f.id === node.field_id) : undefined;
-  return node.label || boundField?.label || node.componentType;
+  return contentNameOf(node, fields);
 }
 
 /**
@@ -705,11 +705,7 @@ function ComponentNodeRow({
   const { hiddenIds } = useContext(TreeVisibilityContext);
   const isDimmed = ancestorHidden || hiddenIds.has(component.id);
 
-  const boundField = component.field_id
-    ? fields.find((f) => f.id === component.field_id)
-    : undefined;
-
-  const label = component.label || boundField?.label || component.componentType;
+  const label = contentNameOf(component, fields);
 
   // Icon determining component representation
   const componentIcon = <ComponentTypeIcon type={component.componentType} className={`w-3.5 h-3.5 ${activeIconColor}`} />;

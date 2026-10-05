@@ -181,6 +181,10 @@ export interface FlexComponentNode {
   componentType: LayoutBlockType;
   field_id?: number | null;
   field_ids?: number[];  // For tables or multi-field groups
+  /** The element's own name in the Layout tree and toolbar (editor-only, never drawn); unset = its
+   *  label text (contentNameOf in lib/layoutContent.ts). Separate from `label` so renaming an element
+   *  doesn't change the caption it shows. */
+  name?: string;
   label?: string;
   /** What the element shows; see ContentBinding. */
   binding?: ContentBinding;

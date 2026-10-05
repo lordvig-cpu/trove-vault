@@ -655,6 +655,7 @@ export default function Home() {
               onOverflowChange={templateEditor.reportContainerOverflow}
               canvasMode={templateEditor.canvasMode}
               hiddenNodeIds={templateEditor.hiddenNodeIds}
+              onToggleHidden={templateEditor.toggleNodeHidden}
               onToggleCanvasMode={templateEditor.toggleCanvasMode}
               canUndo={templateEditor.canUndoLayout}
               canRedo={templateEditor.canRedoLayout}

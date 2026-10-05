@@ -5,3 +5,4 @@ export * from './LayoutIcons';
 
 export * from './GlyphIcons';
 export * from './ContentIcons';
+export * from './TextIcons';
