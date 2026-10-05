@@ -1,6 +1,7 @@
 'use client';
 
 import { PencilIcon, EyeIcon, UndoIcon, RedoIcon, SaveIcon, HelpCircleIcon } from '@/components/icons/LayoutIcons';
+import { ResetIcon } from '@/components/icons/GlyphIcons';
 import { PreviewWidthPicker, ZoomControls } from '@/components/CanvasViewControls';
 import {
   activeBtn,
@@ -45,6 +46,8 @@ interface TemplateEditorBarTopProps {
   canRedo?: boolean;
   onUndo?: () => void;
   onRedo?: () => void;
+  /** Replaces the layout with the template's default (Undo restores it). */
+  onResetLayout?: () => void;
   /** Leaves the editor (edits are already saved as they are made). */
   onSave: () => void;
 }
@@ -59,6 +62,7 @@ export default function TemplateEditorBarTop({
   canRedo,
   onUndo,
   onRedo,
+  onResetLayout,
   onSave,
 }: TemplateEditorBarTopProps) {
   return (
@@ -147,6 +151,16 @@ export default function TemplateEditorBarTop({
           className={`${iconOnlyBtn} ${idleBtn} ${canRedo ? "cursor-pointer" : disabledBtn}`}
         >
           <RedoIcon className="w-3.5 h-3.5" />
+        </button>
+        <button
+          type="button"
+          disabled={!hasLayout}
+          onClick={onResetLayout}
+          title="Reset layout to the default structure (Undo restores it)"
+          aria-label="Reset Layout"
+          className={`${iconOnlyBtn} ${idleBtn} ${hasLayout ? 'cursor-pointer' : disabledBtn}`}
+        >
+          <ResetIcon className="w-3.5 h-3.5" />
         </button>
 
         <div

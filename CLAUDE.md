@@ -179,7 +179,7 @@ commit whenever you add, remove, split or rename a file — it goes stale otherw
   space in one bar. `TemplateEditorContainerBar` (selected container's name, Size, Layout, Add,
   Split, properties gear, delete — used more often, so it gets the header slot) portals into
   `#template-toolbar-slot`. `TemplateEditorBar`/`TemplateEditorBarTop` (template name, View toggle,
-  Zoom, Width/Fit, Undo / Redo, Save) portals into the workspace footer slot
+  Zoom, Width/Fit, Undo / Redo, Reset Layout, Save) portals into the workspace footer slot
   (`#template-toolbar-slot-bottom`, rendered in `app/page.tsx`), which lifts clear of the bottom
   panel by `bottomPanelHeight` whenever that panel is open or pinned. Which toolbar gets which slot
   is just where each is portaled in `TemplateEditorStage.tsx` — swap it there if that changes again.

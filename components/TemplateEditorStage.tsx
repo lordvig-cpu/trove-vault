@@ -168,6 +168,7 @@ export default function TemplateEditorStage({
             canRedo={canRedo}
             onUndo={onUndo}
             onRedo={onRedo}
+            onResetLayout={onResetFlexLayout}
             onSave={onDoneEditing}
             hasLayout={isFlexActive}
           />,

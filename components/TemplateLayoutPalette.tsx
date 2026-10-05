@@ -7,13 +7,12 @@ import { PRESET_INFO, type PresetKind, type PresetRequest } from '@/lib/layoutPr
 import { RECIPES, type RecipeId } from '@/lib/layoutRecipes';
 import TemplatePresetPicker from '@/components/TemplatePresetPicker';
 import { BodyIcon, FlexRowIcon, FlexColumnIcon } from '@/components/icons/LayoutIcons';
-import { ResetIcon } from '@/components/icons/GlyphIcons';
 import { ChartIcon, ImageIcon, ListIcon, PuzzleIcon, CardsIcon, RowsLayoutIcon, ColumnsLayoutIcon } from '@/components/icons/ContentIcons';
 
 /** The "Components" bottom-panel palette: click a layout primitive (row, column, columns, card) to add it
     to `selectedContainer`, or pick a pre-defined content block (Field List, Header, Stat Row), choose what
     it includes, and add it. A pre-defined block is built from ordinary containers and content, so once
-    added it is edited like anything else. The Reset button restores the template's default layout. */
+    added it is edited like anything else. */
 interface TemplateLayoutPaletteProps {
   selectedContainer: FlexContainerNode | null;
   /** The template's fields, offered when choosing what a pre-defined block includes. */
@@ -22,7 +21,6 @@ interface TemplateLayoutPaletteProps {
   onPlacePreset: (request: PresetRequest) => void;
   /** Replaces the whole layout with a simple-template recipe (Undo restores the old one). */
   onApplyRecipe: (id: RecipeId) => void;
-  onResetLayout: () => void;
 }
 
 interface LayoutPrimitive {
@@ -78,7 +76,6 @@ export default function TemplateLayoutPalette({
   onAddContainer,
   onPlacePreset,
   onApplyRecipe,
-  onResetLayout,
 }: TemplateLayoutPaletteProps) {
   const [activeTab, setActiveTab] = useState<'layout' | 'components' | 'recipes'>('layout');
   // The pre-defined block being set up (its field picker is showing), if any.
@@ -133,7 +130,7 @@ export default function TemplateLayoutPalette({
           </button>
         </div>
 
-        {/* Target Destination & Reset */}
+        {/* Target destination */}
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-1.5 text-[11px] text-muted">
             <span>Inserting into:</span>
@@ -141,15 +138,6 @@ export default function TemplateLayoutPalette({
               {targetName}
             </span>
           </div>
-
-          <button
-            type="button"
-            onClick={onResetLayout}
-            className="text-[10px] font-semibold text-muted hover:text-rose-300 transition cursor-pointer"
-            title="Reset layout to default flex structure"
-          >
-            <ResetIcon className="inline w-3 h-3 align-text-bottom" /> Reset Layout
-          </button>
         </div>
       </div>
 

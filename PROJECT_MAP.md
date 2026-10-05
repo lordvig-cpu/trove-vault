@@ -78,7 +78,7 @@ Conventions and architecture (data access, theming, template editor internals, b
   footer slot (`#template-toolbar-slot-bottom`) above the bottom panel; its content is
   `TemplateEditorBarTop`.
 - `TemplateEditorBarTop.tsx` — the template-wide toolbar's content: template icon + name, View
-  toggle, Zoom, Width/Fit, Undo / Redo and Save.
+  toggle, Zoom, Width/Fit, Undo / Redo, Reset Layout and Save.
 - `TemplateEditorContainerBar.tsx` — the selected container's own toolbar (used more often, so it
   gets the header slot), portaled into `#template-toolbar-slot`: name, Size, Layout, Add, Split,
   properties gear and delete.

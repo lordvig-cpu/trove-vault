@@ -4,7 +4,7 @@ import TemplateEditorBarTop from '@/components/TemplateEditorBarTop';
 
 /* ==========================================================================
    Template editor bar: the chrome for the template-wide panel, anchored to the workspace footer.
-   Template-wide tools only (icon + name, View toggle, Zoom, Width/Fit, Undo/Redo, Save) — the
+   Template-wide tools only (icon + name, View toggle, Zoom, Width/Fit, Undo/Redo, Reset Layout, Save) — the
    selected container's own tools live in their own panel anchored to the header instead
    (TemplateEditorContainerBar, used more often so it sits where it's easier to reach), so the two
    never fight for space in one bar.
@@ -19,6 +19,8 @@ interface TemplateEditorBarProps {
   canRedo?: boolean;
   onUndo?: () => void;
   onRedo?: () => void;
+  /** Replaces the layout with the template's default (Undo restores it). */
+  onResetLayout?: () => void;
   onSave: () => void;
   /** False until the template has a layout: width and zoom have no canvas to act on yet. */
   hasLayout: boolean;
@@ -33,6 +35,7 @@ export default function TemplateEditorBar({
   canRedo,
   onUndo,
   onRedo,
+  onResetLayout,
   onSave,
   hasLayout,
 }: TemplateEditorBarProps) {
@@ -51,6 +54,7 @@ export default function TemplateEditorBar({
         canRedo={canRedo}
         onUndo={onUndo}
         onRedo={onRedo}
+        onResetLayout={onResetLayout}
         onSave={onSave}
       />
     </div>

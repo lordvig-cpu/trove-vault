@@ -264,7 +264,6 @@ export function usePanelRenderers({
             fields={templateEditor.activeTemplate?.fields ?? []}
             onPlacePreset={(request) => templateEditor.placePreset(request)}
             onApplyRecipe={(id) => templateEditor.applyRecipe(id)}
-            onResetLayout={templateEditor.resetFlexLayoutToDefault}
           />
         </TreePanelContext.Provider>
       );
