@@ -6,7 +6,15 @@ import { GearIcon } from '@/components/icons/TreeIcons';
 import { TrashCanIcon, ChevronDownIcon } from '@/components/icons/PanelIcons';
 import { useDismissOnOutsideOrEscape } from '@/hooks/useDismissOnOutsideOrEscape';
 import HoverHint, { type HintContent } from '@/components/HoverHint';
-import { activeBtn, barControlHeight, disabledBtn, ghostBtn, idleBtn } from '@/components/editorBarStyles';
+import {
+  activeBtn,
+  barControlHeight,
+  disabledBtn,
+  disabledTextBtn,
+  ghostTextBtn,
+  idleBtn,
+  idleTextBtn,
+} from '@/components/editorBarStyles';
 import { requestMenuTab } from '@/lib/menuTabRequest';
 
 /* ==========================================================================
@@ -108,12 +116,12 @@ export function ToolGroup({
           disabled && set
             ? `${activeBtn} opacity-60 cursor-not-allowed`
             : disabled
-            ? `${idleBtn} ${disabledBtn}`
+            ? `bg-shade/40 border-[color-mix(in_oklch,var(--secondary-accent)_45%,transparent)] ${disabledTextBtn}`
             : set
-            ? `${activeBtn} cursor-pointer hover:border-glint hover:text-[var(--text-strong)]`
+            ? `${activeBtn} cursor-pointer hover:border-glint hover:text-[var(--flyout-white)]`
             : isOpen
-            ? `${idleBtn} cursor-pointer border-glint text-[var(--text-strong)] bg-glint/10`
-            : `${idleBtn} cursor-pointer`
+            ? `${idleTextBtn} cursor-pointer border-glint text-[var(--flyout-white)] bg-glint/10`
+            : `${idleTextBtn} cursor-pointer`
         }`}
       >
         {icon}
@@ -170,10 +178,10 @@ export function GroupOption({
       }}
       className={`px-2 py-1 rounded-md border flex items-center gap-2 text-[11px] font-semibold text-left transition ${
         disabled
-          ? `${idleBtn} ${disabledBtn}`
+          ? `border-transparent ${disabledTextBtn}`
           : active
           ? `${activeBtn} cursor-pointer`
-          : `${ghostBtn} cursor-pointer`
+          : `${ghostTextBtn} cursor-pointer`
       }`}
     >
       {icon}

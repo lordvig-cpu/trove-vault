@@ -36,7 +36,7 @@ import {
   VisibilityButton,
   barDivider,
 } from '@/components/editorBarControls';
-import { activeBtn, barToggleBtn, barToggleGroup, ghostBtn } from '@/components/editorBarStyles';
+import { activeBtn, barToggleBtn, barToggleGroup, ghostBtn, ghostTextBtn } from '@/components/editorBarStyles';
 import {
   BoldIcon,
   ItalicIcon,
@@ -206,7 +206,7 @@ export default function TemplateEditorContentBar({
                         : { show: true, position: opt.value },
                   })
                 }
-                className={`${barToggleBtn} cursor-pointer ${labelMode === opt.value ? `border ${activeBtn}` : ghostBtn}`}
+                className={`${barToggleBtn} cursor-pointer ${labelMode === opt.value ? `border ${activeBtn}` : ghostTextBtn}`}
               >
                 {opt.label}
               </button>

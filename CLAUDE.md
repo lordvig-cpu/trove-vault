@@ -74,7 +74,12 @@ commit whenever you add, remove, split or rename a file — it goes stale otherw
   text/icon and an active tab) when they represent a selected/set value; destructive hover uses the
   `--tree-menu-danger-*` variables. (A separate light-blue focus ring on plain inputs/selects inside
   a flyout's Properties body -- `.menuShellBody`'s own rules in `TreeSubMenu.css` -- is unrelated
-  and unchanged: it's a focus state, not a selected/set one.)
+  and unchanged: it's a focus state, not a selected/set one.) On the template editor toolbars, the
+  exception is *text* buttons (Fit, Custom, Add, Split, Shows, Off / Above / Beside, the width and zoom
+  readouts, and the options in their pulldowns): unselected text is a soft menu white
+  (`idleTextBtn` / `ghostTextBtn`, `--flyout-white-soft`), disabled text a faint one (`disabledTextBtn`,
+  `--flyout-white-faint`), selected still the yellow `activeBtn`. Icon-only buttons stay amber. The
+  names on the toolbars (container, content, template) are full `--flyout-white`.
 
 ## Template editor
 

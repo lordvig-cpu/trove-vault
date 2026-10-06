@@ -8,7 +8,7 @@ import { useCanvasZoom, ZOOM_MAX, ZOOM_MIN, ZOOM_STEP } from '@/context/CanvasZo
 import { BODY_WIDTH_PRESETS } from '@/types/layout';
 import { useDismissOnOutsideOrEscape } from '@/hooks/useDismissOnOutsideOrEscape';
 import { useScreenWidth } from '@/hooks/useScreenWidth';
-import { activeBtn, barControlHeight, ghostBtn, idleBtn } from '@/components/editorBarStyles';
+import { activeBtn, barControlHeight, ghostTextBtn, idleBtn, idleTextBtn } from '@/components/editorBarStyles';
 import { ChevronUpIcon } from '@/components/icons/GlyphIcons';
 
 /**
@@ -95,7 +95,7 @@ export function PreviewWidthPicker() {
           aria-label={isFit ? 'Preview width (uncheck Fit to choose one)' : 'Preview width'}
           aria-haspopup="listbox"
           aria-expanded={menuOpen}
-          className={`min-w-[4.5rem] px-2 ${barControlHeight} rounded-md border text-[11px] font-mono font-semibold flex items-center justify-between gap-1 cursor-pointer disabled:opacity-60 disabled:cursor-default ${idleBtn}`}
+          className={`min-w-[4.5rem] px-2 ${barControlHeight} rounded-md border text-[11px] font-mono font-semibold flex items-center justify-between gap-1 cursor-pointer disabled:cursor-default disabled:text-[var(--flyout-white-faint)] disabled:hover:text-[var(--flyout-white-faint)] disabled:hover:bg-transparent ${idleTextBtn}`}
         >
           <span>{shownWidth ? `${shownWidth}px` : '—'}</span>
           <ChevronUpIcon className="w-2.5 h-2.5" />
@@ -114,7 +114,7 @@ export function PreviewWidthPicker() {
                     setMenuOpen(false);
                   }}
                   className={`px-2 py-1 rounded text-[11px] font-mono text-left cursor-pointer ${
-                    previewWidth === px ? `border ${activeBtn}` : ghostBtn
+                    previewWidth === px ? `border ${activeBtn}` : ghostTextBtn
                   }`}
                 >
                   {px}px
@@ -204,7 +204,7 @@ export function ZoomControls() {
         onClick={resetZoom}
         title="Reset zoom to 100%"
         aria-label={`Zoom ${Math.round(zoom * 100)}%, click to reset`}
-        className={`min-w-[2.75rem] px-1 ${barControlHeight} rounded-md text-[11px] font-mono font-semibold cursor-pointer text-center ${ghostBtn}`}
+        className={`min-w-[2.75rem] px-1 ${barControlHeight} rounded-md text-[11px] font-mono font-semibold cursor-pointer text-center ${ghostTextBtn}`}
       >
         {Math.round(zoom * 100)}%
       </button>

@@ -27,6 +27,19 @@ export const ghostBtn =
 
 export const disabledBtn = 'opacity-55 cursor-not-allowed';
 
+/** Text buttons on the toolbars (Fit, Custom, Add, Split, Shows, Off / Above / Beside, a width
+    readout...): the same idle / ghost / disabled looks as above, but the text is a soft menu white
+    instead of amber (full white on hover). Icon-only buttons (gear, delete, Row / Column, undo...)
+    keep the amber idleBtn / ghostBtn. Selected text buttons still use activeBtn's yellow. */
+export const idleTextBtn =
+  'bg-shade/40 border-[var(--secondary-accent)] text-[var(--flyout-white-soft)] hover:border-glint hover:text-[var(--flyout-white)] hover:bg-glint/10';
+
+export const ghostTextBtn =
+  'border border-transparent text-[var(--flyout-white-soft)] hover:border-glint hover:text-[var(--flyout-white)] hover:bg-glint/10';
+
+/** A disabled text button: faint white, no hover change. */
+export const disabledTextBtn = 'text-[var(--flyout-white-faint)] cursor-not-allowed';
+
 /** Fixed height every bar control (pulldowns, toggle, icon buttons, Width/Zoom pills) shares, so
     text buttons and icon-only buttons — which naturally size differently — line up. The Fit
     checkbox is the one exception, kept at its own native size. */
