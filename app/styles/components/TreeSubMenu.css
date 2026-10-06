@@ -840,11 +840,11 @@
 
 /* A clear Secondary Accent hover: a light wash of it plus a full-brightness 1px edge (an inset shadow, so
    the row's size never shifts), instead of the muddy brown a low-alpha mix of it over the dark menu gave. */
-/* Hover: a primary-accent (blue) tint and outline, so the row under the pointer stands apart from the
-   amber menu around it. (Delete keeps its own danger hover, .actionMenuDangerItem below.) */
+/* Hover: a faint white tint and a white outline, the same white hover as the toolbars (menu white,
+   so it flips to ink in light mode). Delete keeps its own danger hover, .actionMenuDangerItem below. */
 .actionMenuItem:hover {
-  background-color: color-mix(in oklab, var(--primary-accent) 16%, transparent);
-  box-shadow: inset 0 0 0 1px var(--primary-accent);
+  background-color: color-mix(in oklab, var(--flyout-white) 10%, transparent);
+  box-shadow: inset 0 0 0 1px var(--flyout-white);
 }
 
 /* The icon reads as muted until the ROW is hovered, then turns the same color as the label. */
