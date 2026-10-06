@@ -43,6 +43,7 @@ import {
   ContentTextControls,
 } from '@/components/TemplateContentControls';
 import { bindingOf } from '@/lib/layoutContent';
+import { MENU_TAB_REQUEST_EVENT, type MenuTab, type MenuTabRequest } from '@/lib/menuTabRequest';
 import HoverHint, { HintRef, type HintContent } from '@/components/HoverHint';
 import {
   BodyIcon,
@@ -274,6 +275,18 @@ interface TemplateContainerActionMenuProps {
   onRemoveContainer?: (containerId: string) => void;
 }
 
+/** Switches a flyout's tab when the toolbar gear asks it to (lib/menuTabRequest.ts). */
+function useMenuTabRequest(nodeId: string, setActiveTab: (tab: MenuTab) => void) {
+  useEffect(() => {
+    const handle = (e: Event) => {
+      const { nodeId: target, tab } = (e as CustomEvent<MenuTabRequest>).detail;
+      if (target === nodeId) setActiveTab(tab);
+    };
+    window.addEventListener(MENU_TAB_REQUEST_EVENT, handle);
+    return () => window.removeEventListener(MENU_TAB_REQUEST_EVENT, handle);
+  }, [nodeId, setActiveTab]);
+}
+
 export function TemplateContainerActionMenu({
   container,
   menu,
@@ -293,7 +306,8 @@ export function TemplateContainerActionMenu({
 
   // Body flyout's Actions / Properties tabs and which Properties sections are expanded. Kept here
   // (not inside the menu shell) so they survive the flyout closing and reopening.
-  const [activeTab, setActiveTab] = useState<'actions' | 'properties'>('actions');
+  const [activeTab, setActiveTab] = useState<MenuTab>('actions');
+  useMenuTabRequest(container.id, setActiveTab);
   const [openSections, setOpenSections] = useState({ size: true, layout: true, spacing: true, appearance: true });
   const toggleSection = (key: keyof typeof openSections) =>
     setOpenSections((prev) => ({ ...prev, [key]: !prev[key] }));
@@ -811,7 +825,8 @@ export function TemplateComponentActionMenu({
 
   // Active tab and which Properties sections are expanded. Kept here (not inside the menu shell) so
   // they survive the flyout closing and reopening.
-  const [activeTab, setActiveTab] = useState<'actions' | 'properties'>('actions');
+  const [activeTab, setActiveTab] = useState<MenuTab>('actions');
+  useMenuTabRequest(component.id, setActiveTab);
   const [openSections, setOpenSections] = useState({ content: true, label: false, text: true, appearance: false });
   const toggleSection = (key: keyof typeof openSections) =>
     setOpenSections((prev) => ({ ...prev, [key]: !prev[key] }));

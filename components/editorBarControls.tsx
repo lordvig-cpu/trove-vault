@@ -7,6 +7,7 @@ import { TrashCanIcon, ChevronDownIcon } from '@/components/icons/PanelIcons';
 import { useDismissOnOutsideOrEscape } from '@/hooks/useDismissOnOutsideOrEscape';
 import HoverHint, { type HintContent } from '@/components/HoverHint';
 import { activeBtn, barControlHeight, disabledBtn, ghostBtn, idleBtn } from '@/components/editorBarStyles';
+import { requestMenuTab } from '@/lib/menuTabRequest';
 
 /* ==========================================================================
    Controls shared by the template editor's selection toolbars (TemplateEditorContainerBar for a
@@ -330,8 +331,11 @@ export function TreeGearButton({
       data-gear-trigger
       onClick={() => {
         onSelectNode?.(nodeId);
-        const clickTreeGear = () =>
+        // The flyout opens on its Properties tab when opened from here (see lib/menuTabRequest.ts).
+        const clickTreeGear = () => {
+          requestMenuTab(nodeId, 'properties');
           document.querySelector<HTMLElement>(`[data-tree-gear-id="${nodeId}"]`)?.click();
+        };
         if (isLayoutPanelOpen) {
           clickTreeGear();
           return;

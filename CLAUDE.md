@@ -200,7 +200,8 @@ commit whenever you add, remove, split or rename a file — it goes stale otherw
   (a content `name`, separate from its `label` caption -- `contentNameOf` falls back to the label text, so
   renaming never changes what the item shows), then quick versions of the Content Properties sections
   (Shows, Display, Label off/above/beside, Text style + bold/italic/underline + alignment), then
-  the gear (the full flyout) and delete. Both bars build from the shared `editorBarControls.tsx`, and
+  the gear (the full flyout) and delete. Either bar's gear opens the flyout on its Properties tab
+  (`lib/menuTabRequest.ts`); the tree row's own gear keeps whichever tab was last used. Both bars build from the shared `editorBarControls.tsx`, and
   both lead with the same eye as the Layout tree, left of the name (not for the Body). The header slot is
   `w-max` so a wide bar is never squeezed to the half-header an absolute, centered box would otherwise get.
 - Every tree/template gear-icon flyout -- whether it's pure Actions (Item, Collection, Category,
