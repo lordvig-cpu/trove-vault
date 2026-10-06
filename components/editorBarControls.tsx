@@ -1,7 +1,8 @@
 'use client';
 
 import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
-import { EyeIcon, EyeOffIcon, HelpCircleIcon } from '@/components/icons/LayoutIcons';
+import { HelpCircleIcon } from '@/components/icons/LayoutIcons';
+import VisibilityEyeIcon from '@/components/VisibilityEyeIcon';
 import { GearIcon } from '@/components/icons/TreeIcons';
 import { TrashCanIcon, ChevronDownIcon } from '@/components/icons/PanelIcons';
 import { useDismissOnOutsideOrEscape } from '@/hooks/useDismissOnOutsideOrEscape';
@@ -283,7 +284,7 @@ export function VisibilityButton({ hidden, onToggle }: { hidden: boolean; onTogg
       title={hidden ? 'Hidden on the canvas: click to show' : 'Hide on the canvas (and everything inside it)'}
       onClick={onToggle}
     >
-      {hidden ? <EyeOffIcon className="w-3.5 h-3.5" /> : <EyeIcon className="w-3.5 h-3.5" />}
+      <VisibilityEyeIcon hidden={hidden} className="w-3.5 h-3.5" />
     </BarToggle>
   );
 }

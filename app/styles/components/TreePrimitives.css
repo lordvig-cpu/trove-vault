@@ -60,6 +60,23 @@
   color: var(--text-strong);
 }
 
+/* The show / hide eye's blink when it changes state (VisibilityEyeIcon): squints shut, then opens on
+   the new state with a small overshoot. */
+.eye-blink {
+  animation: eye-blink 320ms ease-in-out;
+}
+
+@keyframes eye-blink {
+  0% { transform: scaleY(1); }
+  40% { transform: scaleY(0.1); }
+  75% { transform: scaleY(1.12); }
+  100% { transform: scaleY(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .eye-blink { animation: none; }
+}
+
 .tree-gear-closed {
   color: var(--primary-tree-muted);
 }

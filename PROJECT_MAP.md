@@ -86,6 +86,7 @@ Conventions and architecture (data access, theming, template editor internals, b
   Display, Label, Text (style, bold/italic/underline, alignment), properties gear and delete.
 - `editorBarControls.tsx` — controls shared by those two toolbars: grouped pulldowns, the in-place name,
   section labels, toggles, and the eye / gear / delete buttons.
+- `VisibilityEyeIcon.tsx` — the show / hide eye (Layout tree and toolbars), which blinks when it changes state.
 - `TemplateEditorStage.tsx` — the template editor's canvas: composes
   `components/template-canvas/*`; its header and mode toggle live in the toolbar.
 - `TemplateFieldActionMenu.tsx` / `TemplateLayoutActionMenu.tsx` / `TemplateRootActionMenu.tsx` —

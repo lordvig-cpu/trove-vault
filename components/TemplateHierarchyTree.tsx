@@ -18,7 +18,8 @@ import {
   TemplateContainerActionMenu,
   TemplateComponentActionMenu,
 } from '@/components/TemplateLayoutActionMenu';
-import { BodyIcon, FlexRowIcon, FlexColumnIcon, ContainerOverflowIcon, EyeIcon, EyeOffIcon } from '@/components/icons/LayoutIcons';
+import { BodyIcon, FlexRowIcon, FlexColumnIcon, ContainerOverflowIcon } from '@/components/icons/LayoutIcons';
+import VisibilityEyeIcon from '@/components/VisibilityEyeIcon';
 import { activeIconColor } from '@/components/editorBarStyles';
 import { HierarchyFilterCategory, hierarchyNodeCategory } from '@/lib/hierarchyFilterMetas';
 import { ChevronDownIcon, ChevronRightIcon } from '@/components/icons/PanelIcons';
@@ -321,13 +322,12 @@ function VisibilityToggle({ nodeId, label }: { nodeId: string; label: string }) 
       aria-pressed={isHidden}
       aria-label={isHidden ? `Show ${label}` : `Hide ${label}`}
       title={isHidden ? 'Hidden on the canvas: click to show' : 'Hide on the canvas (and everything inside it)'}
-      className="tree-gear-trigger flex items-center justify-center w-6 h-6 shrink-0 rounded border border-transparent cursor-pointer transition-colors"
+      // Hidden = the "set" amber, shown = the tree's idle icon color; either turns white on hover.
+      className={`tree-gear-trigger flex items-center justify-center w-6 h-6 shrink-0 rounded border border-transparent cursor-pointer transition-colors hover:text-[var(--tree-action-icon-hover)] ${
+        isHidden ? activeIconColor : 'text-[var(--primary-tree-action-icon)]'
+      }`}
     >
-      {isHidden ? (
-        <EyeOffIcon className={`w-[15px] h-[15px] ${activeIconColor}`} />
-      ) : (
-        <EyeIcon className="w-[15px] h-[15px] tree-action-icon" />
-      )}
+      <VisibilityEyeIcon hidden={isHidden} className="w-[15px] h-[15px]" />
     </button>
   );
 }
