@@ -230,7 +230,7 @@ export function EditableName({
           if (e.key === 'Escape') finish(false);
         }}
         aria-label={ariaLabel}
-        className="w-36 px-1.5 py-0.5 rounded-md bg-shade/40 border border-[var(--focus-blue)] text-[11px] font-bold text-[var(--flyout-white)] focus:outline-none"
+        className="w-36 px-1.5 py-0.5 rounded-md bg-shade/40 border border-[var(--secondary-accent)] text-[11px] font-bold text-[var(--flyout-white)] focus:outline-none"
       />
     );
   }
