@@ -254,7 +254,7 @@ commit whenever you add, remove, split or rename a file — it goes stale otherw
   Both tabs always take `menuShellXWide` (17.5rem), so switching tabs never changes the flyout's
   width; the tab buttons keep their smaller 14rem-band size, centered, within that wider head. The
   Properties body is one column of collapsible `ActionMenuSection` cards: an icon tile
-  (`icons/SectionIcons.tsx`), the title with a one-line subtitle while collapsed, a `?` bubble and
+  (`icons/SectionIcons.tsx`), the title with a one-line subtitle (shown open or closed, so the header never changes height), a `?` bubble and
   an up/down chevron, in an amber-bordered card over a dark fill. Inside a split flyout's body,
   inputs, selects and segmented buttons are themed dark (dark navy fill, thin light border, white
   on hover, light blue on focus) by the `.menuShellBody` rules in `TreeSubMenu.css` -- deliberately

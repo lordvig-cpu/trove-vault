@@ -280,8 +280,8 @@ export function ActionMenuTabs<T extends string>({
   );
 }
 
-// A collapsible group of controls, drawn as a card: an icon tile, the title (with a one-line subtitle
-// while collapsed), a `?` help bubble and an up/down chevron, over a body that shows only while
+// A collapsible group of controls, drawn as a card: an icon tile, the title (with a one-line subtitle,
+// open or closed), a `?` help bubble and an up/down chevron, over a body that shows only while
 // `isOpen`. Controlled (the caller owns open/closed) so the state survives the menu closing and
 // reopening. The `?` (`hint`) is a sibling of the toggle button, not inside it -- no interactive
 // content in a button, and clicking it shouldn't collapse the section -- laid over a spacer the
@@ -337,7 +337,8 @@ export function ActionMenuSection({
                 </span>
               )}
             </span>
-            {!isOpen && subtitle && <span className="menuSectionSubtitle">{subtitle}</span>}
+            {/* Always shown, open or closed, so the header keeps one height and the body never jumps. */}
+            {subtitle && <span className="menuSectionSubtitle">{subtitle}</span>}
           </span>
           <ChevronDownIcon className={`menuSectionChevron ${isOpen ? 'menuSectionChevron-open' : ''}`} />
         </div>
