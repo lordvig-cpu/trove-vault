@@ -269,6 +269,12 @@ commit whenever you add, remove, split or rename a file — it goes stale otherw
   value itself is unchanged, it just has no UI), Wrap Children and Card Frame Style (cards are
   expected to become draggable components rather than a per-container option), a Select Parent
   action (click the parent instead), and Maximum Content Width (Body-only). A content element's flyout ("Content Properties", `TemplateComponentActionMenu`) is the same split shell: an Actions tab (Delete Content) and a Properties tab of collapsible cards -- Content (the binding picker, static text, display style, image shape), Label (show/hide, above/beside, its own text and text style), Text (a "Start from" preset, size, spacing, weight, color, case, alignment, italic, underline, line height, reset) and Appearance (the same `TemplateAppearanceControls` a container uses) -- and deliberately no Size, Spacing or Layout card. The controls live in `TemplateContentControls.tsx`. The old table / media / stat placeholder blocks, which have no data, only get a name field and Appearance.
+- `isCard` on a container is an internal look, not something the user picks: it gives the container the
+  themed card frame (rounded, card background, border, shadow) in Preview and the item view. The default
+  layout, the Simple Templates, Stat Row tiles and the 2-/3-Column Split palette columns set it. It is
+  deliberately hidden in the UI -- no palette option, no tag beside the name, no special tree / flyout icon
+  (a card shows its Row / Column icon) -- until it is decided whether frames should become a themed
+  Appearance choice instead.
 - A standard container's look is set in the flyout's Appearance section (`TemplateAppearanceControls.tsx`,
   the last card): `background`, `borderWidth` / `borderColor` / `borderRadius`, and
   `shadowY` / `shadowBlur` / `shadowColor` on the node. Colors are `#RRGGBB` (`#RRGGBBAA` once the picker's opacity slider is below 100%; the picker's `alpha` prop turns the slider on, the footer theme seeds leave it off) picked with the footer's

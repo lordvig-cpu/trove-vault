@@ -59,7 +59,7 @@ export default function FlexContainerRenderer({
       (wrapped onto a second line, or overflowed with wrap off) -- see the dashed-red border below. */
   onOverflowChange?: (containerId: string, isOverflowing: boolean) => void;
   onAddPrimitive?: (
-    type: 'row' | 'column' | 'split-2' | 'split-3' | 'card',
+    type: 'row' | 'column' | 'split-2' | 'split-3',
     targetId?: string
   ) => void;
   onAddContainer?: (

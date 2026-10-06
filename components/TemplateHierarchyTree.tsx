@@ -23,7 +23,7 @@ import VisibilityEyeIcon from '@/components/VisibilityEyeIcon';
 import { activeIconColor } from '@/components/editorBarStyles';
 import { HierarchyFilterCategory, hierarchyNodeCategory } from '@/lib/hierarchyFilterMetas';
 import { ChevronDownIcon, ChevronRightIcon } from '@/components/icons/PanelIcons';
-import { CardsIcon, ComponentTypeIcon, LayoutGridIcon } from '@/components/icons/ContentIcons';
+import { ComponentTypeIcon, LayoutGridIcon } from '@/components/icons/ContentIcons';
 
 /* ==========================================================================
    1. PROPS INTERFACE
@@ -418,11 +418,9 @@ function ContainerNodeRow({
   // PROPERTIES_EXTRA_WIDTH_PX in TemplateLayoutActionMenu).
   const menu = useTreeActionMenu(`tree-container-${container.id}`, 280, position, 224);
 
-  // Semantic layout icon
+  // Semantic layout icon (a card frame is only a look, not a kind of container, so it shows its direction too)
   const containerIcon = isRoot ? (
     <BodyIcon className={`w-3.5 h-3.5 ${activeIconColor}`} />
-  ) : container.isCard ? (
-    <CardsIcon className={`w-3.5 h-3.5 ${activeIconColor}`} />
   ) : resolveDirection(container, isRoot) === 'row' ? (
     <FlexRowIcon className={`w-3.5 h-3.5 ${activeIconColor}`} />
   ) : (

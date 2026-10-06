@@ -63,7 +63,7 @@ import {
   FitContentIcon,
 } from '@/components/icons/LayoutIcons';
 import { TrashCanIcon } from '@/components/icons/PanelIcons';
-import { CardsIcon, ComponentTypeIcon, BulbIcon } from '@/components/icons/ContentIcons';
+import { ComponentTypeIcon, BulbIcon } from '@/components/icons/ContentIcons';
 
 /* Help bubbles for the Body flyout's Properties sections (see HoverHint for the shape). */
 const BODY_SIZE_HINT: HintContent = {
@@ -500,9 +500,7 @@ export function TemplateContainerActionMenu({
   };
   const handleLabelCancel = () => setLabel(defaultLabel);
 
-  const containerIcon = container.isCard ? (
-    <CardsIcon className="w-4 h-4" />
-  ) : resolveDirection(container, isRoot) === 'row' ? (
+  const containerIcon = resolveDirection(container, isRoot) === 'row' ? (
     <FlexRowIcon className="w-4 h-4" />
   ) : (
     <FlexColumnIcon className="w-4 h-4" />

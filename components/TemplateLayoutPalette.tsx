@@ -9,7 +9,7 @@ import TemplatePresetPicker from '@/components/TemplatePresetPicker';
 import { BodyIcon, FlexRowIcon, FlexColumnIcon } from '@/components/icons/LayoutIcons';
 import { ChartIcon, ImageIcon, ListIcon, PuzzleIcon, CardsIcon, RowsLayoutIcon, ColumnsLayoutIcon } from '@/components/icons/ContentIcons';
 
-/** The "Components" bottom-panel palette: click a layout primitive (row, column, columns, card) to add it
+/** The "Components" bottom-panel palette: click a layout primitive (row, column, 2 or 3 columns) to add it
     to `selectedContainer`, or pick a pre-defined content block (Field List, Header, Stat Row), choose what
     it includes, and add it. A pre-defined block is built from ordinary containers and content, so once
     added it is edited like anything else. */
@@ -17,14 +17,14 @@ interface TemplateLayoutPaletteProps {
   selectedContainer: FlexContainerNode | null;
   /** The template's fields, offered when choosing what a pre-defined block includes. */
   fields: FieldDefinition[];
-  onAddContainer: (preset: 'row' | 'column' | '2-col' | '3-col' | 'card') => void;
+  onAddContainer: (preset: 'row' | 'column' | '2-col' | '3-col') => void;
   onPlacePreset: (request: PresetRequest) => void;
   /** Replaces the whole layout with a simple-template recipe (Undo restores the old one). */
   onApplyRecipe: (id: RecipeId) => void;
 }
 
 interface LayoutPrimitive {
-  id: 'row' | 'column' | '2-col' | '3-col' | 'card';
+  id: 'row' | 'column' | '2-col' | '3-col';
   label: string;
   icon: React.ReactNode;
   description: string;
@@ -54,12 +54,6 @@ const LAYOUT_PRIMITIVES: LayoutPrimitive[] = [
     label: '3-Column Split',
     icon: <RowsLayoutIcon className="w-5 h-5 text-[var(--primary-accent)]" />,
     description: 'Three equal 33% flexible columns',
-  },
-  {
-    id: 'card',
-    label: 'Card Wrapper',
-    icon: <CardsIcon className="w-5 h-5 text-[var(--primary-accent)]" />,
-    description: 'Bordered card frame with surface background',
   },
 ];
 

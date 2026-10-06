@@ -29,7 +29,7 @@ interface TemplateEditorStageProps {
   activeContainerId?: string;
   onSelectNode?: (nodeId: string | null) => void;
   onAddPrimitive?: (
-    primitiveType: 'row' | 'column' | 'split-2' | 'split-3' | 'card',
+    primitiveType: 'row' | 'column' | 'split-2' | 'split-3',
     targetContainerId?: string
   ) => string;
   onAddFlexContainer?: (

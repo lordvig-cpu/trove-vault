@@ -160,7 +160,7 @@ export function useTemplateLayoutTree({
 
   const addFlexPrimitive = useCallback(
     (
-      primitiveType: 'row' | 'column' | 'split-2' | 'split-3' | 'card',
+      primitiveType: 'row' | 'column' | 'split-2' | 'split-3',
       targetContainerId?: string
     ) => {
       const target = targetContainerId || activeContainerId;
@@ -181,16 +181,6 @@ export function useTemplateLayoutTree({
           gap: 0,
           wrap: false,
           isCard: false,
-          padding: '0px',
-        });
-      }
-      if (primitiveType === 'card') {
-        return addFlexContainer(target, {
-          label: 'Card Frame',
-          direction: 'column',
-          gap: 0,
-          wrap: false,
-          isCard: true,
           padding: '0px',
         });
       }
