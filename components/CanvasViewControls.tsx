@@ -12,7 +12,9 @@ import {
   activeBtn,
   barControlHeight,
   barGhostBtn,
-  barIdleBtn,
+  barIconBtn,
+  barIconBtnOn,
+  barGroupBtn,
 } from '@/components/editorBarStyles';
 import { ChevronUpIcon } from '@/components/icons/GlyphIcons';
 
@@ -100,7 +102,7 @@ export function PreviewWidthPicker() {
           aria-label={isFit ? 'Preview width (uncheck Fit to choose one)' : 'Preview width'}
           aria-haspopup="listbox"
           aria-expanded={menuOpen}
-          className={`min-w-[4.5rem] px-2 ${barControlHeight} rounded-md border text-[11px] font-mono font-semibold flex items-center justify-between gap-1 cursor-pointer disabled:cursor-default disabled:text-[var(--flyout-white-faint)] disabled:hover:text-[var(--flyout-white-faint)] disabled:hover:bg-transparent ${barIdleBtn}`}
+          className={`min-w-[4.5rem] px-2 ${barControlHeight} rounded-md border text-[11px] font-mono font-semibold flex items-center justify-between gap-1 cursor-pointer disabled:cursor-default disabled:text-[var(--flyout-white-faint)] disabled:hover:text-[var(--flyout-white-faint)] disabled:hover:bg-transparent ${barGroupBtn}`}
         >
           <span>{shownWidth ? `${shownWidth}px` : '—'}</span>
           <ChevronUpIcon className="w-2.5 h-2.5" />
@@ -157,7 +159,7 @@ export function PreviewWidthPicker() {
           aria-pressed={isFit}
           aria-label="Fit"
           className={`w-[26px] ${barControlHeight} ml-1.5 rounded-md border transition flex items-center justify-center shrink-0 cursor-pointer ${
-            isFit ? activeBtn : barIdleBtn
+            isFit ? barIconBtnOn : barIconBtn
           }`}
         >
           <FitFrameIcon className="w-3.5 h-3.5" active={isFit} />

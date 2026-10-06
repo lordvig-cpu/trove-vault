@@ -7,10 +7,10 @@ import {
   activeBtn,
   barControlHeight,
   barGhostBtn,
-  barIdleBtn,
+  barIconBtn,
+  barIconBtnDisabled,
   barToggleBtn,
   barToggleGroup,
-  disabledBtn,
 } from '@/components/editorBarStyles';
 import HoverHint, { HintRef, type HintContent } from '@/components/HoverHint';
 
@@ -138,7 +138,7 @@ export default function TemplateEditorBarTop({
           onClick={onUndo}
           title="Undo"
           aria-label="Undo"
-          className={`${iconOnlyBtn} ${barIdleBtn} ${canUndo ? "cursor-pointer" : disabledBtn}`}
+          className={`${iconOnlyBtn} ${canUndo ? `${barIconBtn} cursor-pointer` : barIconBtnDisabled}`}
         >
           <UndoIcon className="w-3.5 h-3.5" />
         </button>
@@ -148,7 +148,7 @@ export default function TemplateEditorBarTop({
           onClick={onRedo}
           title="Redo"
           aria-label="Redo"
-          className={`${iconOnlyBtn} ${barIdleBtn} ${canRedo ? "cursor-pointer" : disabledBtn}`}
+          className={`${iconOnlyBtn} ${canRedo ? `${barIconBtn} cursor-pointer` : barIconBtnDisabled}`}
         >
           <RedoIcon className="w-3.5 h-3.5" />
         </button>
@@ -158,7 +158,7 @@ export default function TemplateEditorBarTop({
           onClick={onResetLayout}
           title="Reset layout to the default structure (Undo restores it)"
           aria-label="Reset Layout"
-          className={`${iconOnlyBtn} ${barIdleBtn} ${hasLayout ? 'cursor-pointer' : disabledBtn}`}
+          className={`${iconOnlyBtn} ${hasLayout ? `${barIconBtn} cursor-pointer` : barIconBtnDisabled}`}
         >
           <ResetIcon className="w-3.5 h-3.5" />
         </button>
@@ -173,7 +173,7 @@ export default function TemplateEditorBarTop({
           onClick={onSave}
           title="Save and exit the template editor"
           aria-label="Save"
-          className={`${iconOnlyBtn} ${barIdleBtn} cursor-pointer`}
+          className={`${iconOnlyBtn} ${barIconBtn} cursor-pointer`}
         >
           <SaveIcon className="w-3.5 h-3.5" />
         </button>

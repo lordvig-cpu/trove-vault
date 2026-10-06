@@ -37,6 +37,20 @@ export const barIdleBtn =
 export const barGhostBtn =
   'border border-transparent text-[var(--flyout-white-soft)] hover:border-glint hover:text-[var(--flyout-white)] hover:bg-glint/10';
 
+/** The toolbars' standalone icon buttons (eye, gear, delete, Bold / Italic / Underline, Undo / Redo /
+    Reset / Save, the width Fit button): no border while inactive, the amber border on hover, and an
+    amber icon (no pill) while selected / on. Disabled ones drop the hover. */
+export const barIconBtn =
+  'border-transparent text-[var(--flyout-white-soft)] hover:border-[var(--secondary-accent)] hover:text-[var(--flyout-white)]';
+export const barIconBtnOn =
+  'border-transparent text-[var(--secondary-accent)] hover:border-[var(--secondary-accent)]';
+export const barIconBtnDisabled = 'border-transparent text-[var(--flyout-white-soft)] opacity-55 cursor-not-allowed';
+
+/** A toolbar pulldown button (Add, Split, Shows, Style...): the same darker amber border as the
+    toggle-group tracks around Size and Layout (barToggleGroup), the full amber on hover. */
+export const barGroupBtn =
+  'bg-shade/40 border-[color-mix(in_oklch,var(--secondary-accent)_35%,transparent)] text-[var(--flyout-white-soft)] hover:border-[var(--secondary-accent)] hover:text-[var(--flyout-white)]';
+
 /** A disabled toolbar control inside a toggle group or pulldown: faint white. */
 export const barDisabledBtn = 'text-[var(--flyout-white-faint)] cursor-not-allowed';
 

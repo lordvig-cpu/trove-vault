@@ -11,8 +11,10 @@ import {
   barControlHeight,
   barDisabledBtn,
   barGhostBtn,
-  barIdleBtn,
-  disabledBtn,
+  barGroupBtn,
+  barIconBtn,
+  barIconBtnDisabled,
+  barIconBtnOn,
 } from '@/components/editorBarStyles';
 import { requestMenuTab } from '@/lib/menuTabRequest';
 
@@ -115,12 +117,12 @@ export function ToolGroup({
           disabled && set
             ? `${activeBtn} opacity-60 cursor-not-allowed`
             : disabled
-            ? `bg-shade/40 border-[color-mix(in_oklch,var(--secondary-accent)_45%,transparent)] ${barDisabledBtn}`
+            ? `bg-shade/40 border-[color-mix(in_oklch,var(--secondary-accent)_35%,transparent)] ${barDisabledBtn}`
             : set
             ? `${activeBtn} cursor-pointer hover:border-glint hover:text-[var(--flyout-white)]`
             : isOpen
-            ? `${barIdleBtn} cursor-pointer border-glint text-[var(--flyout-white)] bg-glint/10`
-            : `${barIdleBtn} cursor-pointer`
+            ? `bg-shade/40 border-[var(--secondary-accent)] text-[var(--flyout-white)] cursor-pointer`
+            : `${barGroupBtn} cursor-pointer`
         }`}
       >
         {icon}
@@ -247,7 +249,7 @@ export function EditableName({
   );
 }
 
-/** A two-state icon button on the bar (Bold, Italic, ...): yellow while on. */
+/** A two-state icon button on the bar (Bold, Italic, ...): an amber icon while on (barIconBtnOn). */
 export function BarToggle({
   on,
   title,
@@ -266,7 +268,7 @@ export function BarToggle({
       title={title}
       aria-label={title}
       onClick={onClick}
-      className={`${squareBtn} cursor-pointer ${on ? activeBtn : barIdleBtn}`}
+      className={`${squareBtn} cursor-pointer ${on ? barIconBtnOn : barIconBtn}`}
     >
       {children}
     </button>
@@ -384,7 +386,7 @@ export function TreeGearButton({
       title={title}
       aria-label={title}
       aria-expanded={isTreeMenuOpen}
-      className={`${squareBtn} cursor-pointer ${isTreeMenuOpen ? activeBtn : barIdleBtn}`}
+      className={`${squareBtn} cursor-pointer ${isTreeMenuOpen ? barIconBtnOn : barIconBtn}`}
     >
       <GearIcon
         isActive={isTreeMenuOpen}
@@ -403,7 +405,7 @@ export function DeleteButton({ title, onDelete, disabledTitle }: { title: string
         disabled
         title={disabledTitle ?? title}
         aria-label={disabledTitle ?? title}
-        className={`${squareBtn} ${barIdleBtn} ${disabledBtn}`}
+        className={`${squareBtn} ${barIconBtnDisabled}`}
       >
         <TrashCanIcon className="w-3.5 h-3.5" />
       </button>
@@ -413,7 +415,7 @@ export function DeleteButton({ title, onDelete, disabledTitle }: { title: string
     <button
       type="button"
       onClick={onDelete}
-      className={`${squareBtn} cursor-pointer bg-shade/40 border-[var(--secondary-accent)] text-[var(--flyout-white-soft)] hover:bg-[var(--tree-menu-danger-hover-bg)] hover:border-glint hover:text-[var(--tree-menu-danger-hover-text)]`}
+      className={`${squareBtn} cursor-pointer border-transparent text-[var(--flyout-white-soft)] hover:bg-[var(--tree-menu-danger-hover-bg)] hover:border-[var(--secondary-accent)] hover:text-[var(--tree-menu-danger-hover-text)]`}
       title={title}
       aria-label={title}
     >
