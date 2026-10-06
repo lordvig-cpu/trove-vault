@@ -9,11 +9,10 @@ import HoverHint, { type HintContent } from '@/components/HoverHint';
 import {
   activeBtn,
   barControlHeight,
+  barDisabledBtn,
+  barGhostBtn,
+  barIdleBtn,
   disabledBtn,
-  disabledTextBtn,
-  ghostTextBtn,
-  idleBtn,
-  idleTextBtn,
 } from '@/components/editorBarStyles';
 import { requestMenuTab } from '@/lib/menuTabRequest';
 
@@ -116,12 +115,12 @@ export function ToolGroup({
           disabled && set
             ? `${activeBtn} opacity-60 cursor-not-allowed`
             : disabled
-            ? `bg-shade/40 border-[color-mix(in_oklch,var(--secondary-accent)_45%,transparent)] ${disabledTextBtn}`
+            ? `bg-shade/40 border-[color-mix(in_oklch,var(--secondary-accent)_45%,transparent)] ${barDisabledBtn}`
             : set
             ? `${activeBtn} cursor-pointer hover:border-glint hover:text-[var(--flyout-white)]`
             : isOpen
-            ? `${idleTextBtn} cursor-pointer border-glint text-[var(--flyout-white)] bg-glint/10`
-            : `${idleTextBtn} cursor-pointer`
+            ? `${barIdleBtn} cursor-pointer border-glint text-[var(--flyout-white)] bg-glint/10`
+            : `${barIdleBtn} cursor-pointer`
         }`}
       >
         {icon}
@@ -178,10 +177,10 @@ export function GroupOption({
       }}
       className={`px-2 py-1 rounded-md border flex items-center gap-2 text-[11px] font-semibold text-left transition ${
         disabled
-          ? `border-transparent ${disabledTextBtn}`
+          ? `border-transparent ${barDisabledBtn}`
           : active
           ? `${activeBtn} cursor-pointer`
-          : `${ghostTextBtn} cursor-pointer`
+          : `${barGhostBtn} cursor-pointer`
       }`}
     >
       {icon}
@@ -267,7 +266,7 @@ export function BarToggle({
       title={title}
       aria-label={title}
       onClick={onClick}
-      className={`${squareBtn} cursor-pointer ${on ? activeBtn : idleBtn}`}
+      className={`${squareBtn} cursor-pointer ${on ? activeBtn : barIdleBtn}`}
     >
       {children}
     </button>
@@ -385,7 +384,7 @@ export function TreeGearButton({
       title={title}
       aria-label={title}
       aria-expanded={isTreeMenuOpen}
-      className={`${squareBtn} cursor-pointer ${isTreeMenuOpen ? activeBtn : idleBtn}`}
+      className={`${squareBtn} cursor-pointer ${isTreeMenuOpen ? activeBtn : barIdleBtn}`}
     >
       <GearIcon
         isActive={isTreeMenuOpen}
@@ -404,7 +403,7 @@ export function DeleteButton({ title, onDelete, disabledTitle }: { title: string
         disabled
         title={disabledTitle ?? title}
         aria-label={disabledTitle ?? title}
-        className={`${squareBtn} ${idleBtn} ${disabledBtn}`}
+        className={`${squareBtn} ${barIdleBtn} ${disabledBtn}`}
       >
         <TrashCanIcon className="w-3.5 h-3.5" />
       </button>
@@ -414,7 +413,7 @@ export function DeleteButton({ title, onDelete, disabledTitle }: { title: string
     <button
       type="button"
       onClick={onDelete}
-      className={`${squareBtn} cursor-pointer bg-shade/40 border-[var(--secondary-accent)] text-[var(--secondary-accent)] hover:bg-[var(--tree-menu-danger-hover-bg)] hover:border-glint hover:text-[var(--tree-menu-danger-hover-text)]`}
+      className={`${squareBtn} cursor-pointer bg-shade/40 border-[var(--secondary-accent)] text-[var(--flyout-white-soft)] hover:bg-[var(--tree-menu-danger-hover-bg)] hover:border-glint hover:text-[var(--tree-menu-danger-hover-text)]`}
       title={title}
       aria-label={title}
     >

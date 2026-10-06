@@ -17,12 +17,10 @@ import {
 import { HintRef, type HintContent } from '@/components/HoverHint';
 import {
   activeBtn,
+  barDisabledBtn,
+  barGhostBtn,
   barToggleBtn,
   barToggleGroup,
-  disabledBtn,
-  disabledTextBtn,
-  ghostBtn,
-  ghostTextBtn,
 } from '@/components/editorBarStyles';
 import {
   BarSectionLabel,
@@ -170,7 +168,7 @@ export default function TemplateEditorContainerBar({
             className={`${barToggleBtn} ${
               isRoot || (container.sizing?.type || 'fill') === 'fill'
                 ? `border ${activeBtn} ${isRoot ? 'cursor-default' : 'cursor-pointer'}`
-                : `${ghostTextBtn} cursor-pointer`
+                : `${barGhostBtn} cursor-pointer`
             }`}
           >
             <AutoSizingIcon className="w-3.5 h-3.5" />
@@ -191,10 +189,10 @@ export default function TemplateEditorContainerBar({
             }
             className={`${barToggleBtn} ${
               isRoot || !hasContent
-                ? `border border-transparent ${disabledTextBtn}`
+                ? `border border-transparent ${barDisabledBtn}`
                 : container.sizing?.type === 'auto'
                 ? `border ${activeBtn} cursor-pointer`
-                : `${ghostTextBtn} cursor-pointer`
+                : `${barGhostBtn} cursor-pointer`
             }`}
           >
             <FitContentIcon className="w-3.5 h-3.5" />
@@ -218,10 +216,10 @@ export default function TemplateEditorContainerBar({
             title={isRoot ? 'Custom sizing is not available for the Body' : 'Custom: set your own width/height (e.g. 50%, 300px)'}
             className={`${barToggleBtn} ${
               isRoot
-                ? `border border-transparent ${disabledTextBtn}`
+                ? `border border-transparent ${barDisabledBtn}`
                 : container.sizing?.type === 'fixed'
                 ? `border ${activeBtn} cursor-pointer`
-                : `${ghostTextBtn} cursor-pointer`
+                : `${barGhostBtn} cursor-pointer`
             }`}
           >
             <CustomSizingIcon className="w-3.5 h-3.5" />
@@ -246,10 +244,10 @@ export default function TemplateEditorContainerBar({
             aria-label="Row"
             className={`${barToggleBtn} ${
               isRoot
-                ? `${disabledBtn} text-[var(--secondary-accent)]`
+                ? `border border-transparent ${barDisabledBtn}`
                 : direction === 'row'
                 ? `border ${activeBtn} cursor-pointer`
-                : `${ghostBtn} cursor-pointer`
+                : `${barGhostBtn} cursor-pointer`
             }`}
           >
             <FlexRowIcon className="w-3.5 h-3.5" />
@@ -267,7 +265,7 @@ export default function TemplateEditorContainerBar({
             className={`${barToggleBtn} ${
               isRoot || direction === 'column'
                 ? `border ${activeBtn} ${isRoot ? 'cursor-default' : 'cursor-pointer'}`
-                : `${ghostBtn} cursor-pointer`
+                : `${barGhostBtn} cursor-pointer`
             }`}
           >
             <FlexColumnIcon className="w-3.5 h-3.5" />

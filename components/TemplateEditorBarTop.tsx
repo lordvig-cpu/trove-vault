@@ -6,11 +6,11 @@ import { PreviewWidthPicker, ZoomControls } from '@/components/CanvasViewControl
 import {
   activeBtn,
   barControlHeight,
+  barGhostBtn,
+  barIdleBtn,
   barToggleBtn,
   barToggleGroup,
   disabledBtn,
-  ghostBtn,
-  idleBtn,
 } from '@/components/editorBarStyles';
 import HoverHint, { HintRef, type HintContent } from '@/components/HoverHint';
 
@@ -98,7 +98,7 @@ export default function TemplateEditorBarTop({
             title="Edit the layout"
             aria-label="Edit"
             className={`${barToggleBtn} cursor-pointer ${
-              canvasMode === 'edit' ? `border ${activeBtn}` : ghostBtn
+              canvasMode === 'edit' ? `border ${activeBtn}` : barGhostBtn
             }`}
           >
             <PencilIcon className="w-3 h-3" />
@@ -112,7 +112,7 @@ export default function TemplateEditorBarTop({
             title="Preview the layout with a live item"
             aria-label="Preview"
             className={`${barToggleBtn} cursor-pointer ${
-              canvasMode === 'preview' ? `border ${activeBtn}` : ghostBtn
+              canvasMode === 'preview' ? `border ${activeBtn}` : barGhostBtn
             }`}
           >
             <EyeIcon className="w-3 h-3" />
@@ -138,7 +138,7 @@ export default function TemplateEditorBarTop({
           onClick={onUndo}
           title="Undo"
           aria-label="Undo"
-          className={`${iconOnlyBtn} ${idleBtn} ${canUndo ? "cursor-pointer" : disabledBtn}`}
+          className={`${iconOnlyBtn} ${barIdleBtn} ${canUndo ? "cursor-pointer" : disabledBtn}`}
         >
           <UndoIcon className="w-3.5 h-3.5" />
         </button>
@@ -148,7 +148,7 @@ export default function TemplateEditorBarTop({
           onClick={onRedo}
           title="Redo"
           aria-label="Redo"
-          className={`${iconOnlyBtn} ${idleBtn} ${canRedo ? "cursor-pointer" : disabledBtn}`}
+          className={`${iconOnlyBtn} ${barIdleBtn} ${canRedo ? "cursor-pointer" : disabledBtn}`}
         >
           <RedoIcon className="w-3.5 h-3.5" />
         </button>
@@ -158,7 +158,7 @@ export default function TemplateEditorBarTop({
           onClick={onResetLayout}
           title="Reset layout to the default structure (Undo restores it)"
           aria-label="Reset Layout"
-          className={`${iconOnlyBtn} ${idleBtn} ${hasLayout ? 'cursor-pointer' : disabledBtn}`}
+          className={`${iconOnlyBtn} ${barIdleBtn} ${hasLayout ? 'cursor-pointer' : disabledBtn}`}
         >
           <ResetIcon className="w-3.5 h-3.5" />
         </button>
@@ -173,7 +173,7 @@ export default function TemplateEditorBarTop({
           onClick={onSave}
           title="Save and exit the template editor"
           aria-label="Save"
-          className={`${iconOnlyBtn} ${idleBtn} cursor-pointer`}
+          className={`${iconOnlyBtn} ${barIdleBtn} cursor-pointer`}
         >
           <SaveIcon className="w-3.5 h-3.5" />
         </button>
