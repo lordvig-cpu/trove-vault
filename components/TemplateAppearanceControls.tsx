@@ -1,9 +1,9 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import type { BoxLook } from '@/lib/layoutContent';
 import { normalizeHexAlpha } from '@/lib/color';
-import { barControlHeight, idleBtn } from '@/components/editorBarStyles';
+import { barControlHeight } from '@/components/editorBarStyles';
 import { SearchClearIcon } from '@/components/icons/TreeIcons';
 import { type HintContent } from '@/components/HoverHint';
 import SubsectionHeading from '@/components/SubsectionHeading';
@@ -24,7 +24,7 @@ const HINTS = {
     title: 'Background',
     settings: [
       { name: 'Color', text: 'The fill behind the content.' },
-      { name: 'Clear', icon: <SearchClearIcon className="w-2.5 h-2.5" />, text: 'Removes the fill.' },
+      { name: 'Clear', icon: <SearchClearIcon className="w-2.5 h-2.5" />, text: 'The × on the color’s tag removes the fill.' },
     ],
     notes: [
       { kind: 'use', text: 'Click the swatch to pick a color, or type a HEX value.' },
@@ -124,6 +124,7 @@ export function ColorRow({
   onChange: (hex: string | undefined) => void;
 }) {
   const [draft, setDraft] = useState<string | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
   const shownRaw = draft ?? value ?? '';
   // The stored/committed value is a normalizeHexAlpha() result, "#RRGGBB" or "#RRGGBBAA" -- stripped here so the
   // "#" shown below is the only one, a static, always-there visual cue rather than part of the
@@ -157,42 +158,58 @@ export function ColorRow({
           onChange(hex);
         }}
       />
-      <div className="relative min-w-0 flex-1">
-        {shown && (
-          <span
-            aria-hidden="true"
-            className="pointer-events-none absolute left-1.5 top-1/2 -translate-y-1/2 text-xs font-mono text-muted"
-          >
-            #
-          </span>
-        )}
-        <input
-          type="text"
-          value={shown}
-          placeholder="none"
-          spellCheck={false}
-          autoComplete="off"
-          onFocus={() => setDraft(value ?? '')}
-          onChange={(e) => setDraft(e.target.value)}
-          onBlur={commit}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter') (e.target as HTMLInputElement).blur();
-          }}
-          aria-label={`${label} (HEX)`}
-          title="Enter a 3-, 4-, 6- or 8-digit HEX color (the last two digits are opacity), with or without #"
-          className={`w-full ${shown ? 'pl-3.5' : 'pl-1.5'} pr-1.5 ${barControlHeight} text-xs font-mono text-strong bg-surface-secondary border border-subtle rounded-lg focus:outline-none focus:border-[var(--secondary-accent)] placeholder:text-muted/60`}
-        />
-      </div>
-      <button
-        type="button"
-        onClick={() => onChange(undefined)}
-        disabled={value === undefined}
-        aria-label={`Clear ${label.toLowerCase()}`}
-        title={`Clear ${label.toLowerCase()}`}
-        className={`w-[26px] ${barControlHeight} rounded-md border transition flex items-center justify-center shrink-0 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed ${idleBtn}`}
+      {/* The HEX field, like the panels' search box: an input-styled box whose value, once there is one,
+          sits in a tag with an × that clears it. The input itself is always the same element (only the
+          wrapper's class changes), so typing never loses focus as the tag appears or disappears.
+          Styles: .colorHexField / .colorHexTag in TreeSubMenu.css. */}
+      <div
+        className={`colorHexField ${barControlHeight}`}
+        // A click on the box around the tag still lands in the field.
+        onMouseDown={(e) => {
+          if (e.target === e.currentTarget) {
+            e.preventDefault();
+            inputRef.current?.focus();
+          }
+        }}
       >
-        <SearchClearIcon className="w-3 h-3" />
-      </button>
+        <div className={shown ? 'colorHexTag' : 'colorHexTagEmpty'}>
+          {shown && <span aria-hidden="true" className="colorHexHash">#</span>}
+          <input
+            ref={inputRef}
+            type="text"
+            value={shown}
+            placeholder="none"
+            spellCheck={false}
+            autoComplete="off"
+            onFocus={() => setDraft(value ?? '')}
+            onChange={(e) => setDraft(e.target.value)}
+            onBlur={commit}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') (e.target as HTMLInputElement).blur();
+            }}
+            aria-label={`${label} (HEX)`}
+            title="Enter a 3-, 4-, 6- or 8-digit HEX color (the last two digits are opacity), with or without #"
+            className="colorHexInput"
+            style={shown ? { width: `${shown.length + 0.5}ch` } : undefined}
+          />
+          {shown && (
+            <button
+              type="button"
+              // Keeps the input from committing a half-typed draft on blur before the clear lands.
+              onMouseDown={(e) => e.preventDefault()}
+              onClick={() => {
+                setDraft(null);
+                onChange(undefined);
+              }}
+              aria-label={`Clear ${label.toLowerCase()}`}
+              title={`Clear ${label.toLowerCase()}`}
+              className="colorHexClear"
+            >
+              <SearchClearIcon className="w-3 h-3" />
+            </button>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

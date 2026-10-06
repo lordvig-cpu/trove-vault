@@ -763,15 +763,107 @@
    with the all-amber cards around them instead of adding more amber. Inputs that opt out (the
    Spacing box's borderless side inputs) keep their own look. UnitSelect (the px / % pulldown) is
    white on black instead, defined in unitSelect.css. */
-.menuShellBody input[type='text']:not(.spacingInput) {
+.menuShellBody input[type='text']:not(.spacingInput):not(.colorHexInput) {
   background: color-mix(in oklab, var(--primary-accent) 16%, var(--pole-surface));
   border: 1px solid color-mix(in oklab, var(--primary-accent) 60%, var(--pole-surface));
   /* White at 80%, not --text-strong: inside a flyout that variable is re-pointed to the amber menu ink. */
   color: color-mix(in oklab, var(--flyout-white) 80%, transparent);
 }
 
-.menuShellBody input[type='text']:not(.spacingInput):hover {
+.menuShellBody input[type='text']:not(.spacingInput):not(.colorHexInput):hover {
   border-color: color-mix(in oklab, var(--flyout-white) 55%, transparent);
+}
+
+/* A color row's HEX field (ColorRow in TemplateAppearanceControls): a box that looks exactly like the
+   text inputs above (same fill, border, hover and amber focus), holding the value as a tag with an x --
+   the panels' search tag (.tree-search-query-pill) -- once there is one, or the bare "none" placeholder
+   when there isn't. The input inside is borderless (.colorHexInput, excluded from the input rules). */
+.colorHexField {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  flex: 1;
+  padding: 0 0.25rem;
+  border-radius: 0.5rem;
+  background: color-mix(in oklab, var(--primary-accent) 16%, var(--pole-surface));
+  border: 1px solid color-mix(in oklab, var(--primary-accent) 60%, var(--pole-surface));
+  color: color-mix(in oklab, var(--flyout-white) 80%, transparent);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.75rem;
+  cursor: text;
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+}
+
+.colorHexField:hover {
+  border-color: color-mix(in oklab, var(--flyout-white) 55%, transparent);
+}
+
+.colorHexField:focus-within {
+  border-color: var(--secondary-accent);
+  box-shadow: 0 0 0 1px color-mix(in oklab, var(--secondary-accent) 35%, transparent);
+}
+
+/* No value: the input fills the box. */
+.colorHexTagEmpty {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+}
+
+/* A value: the tag, sized to its text, with the x after it. */
+.colorHexTag {
+  display: flex;
+  align-items: center;
+  gap: 0.125rem;
+  min-width: 0;
+  max-width: 100%;
+  padding: 0 0.125rem 0 0.375rem;
+  border: 1px solid var(--primary-border-strong);
+  border-radius: 0.375rem;
+  background: var(--surface-panel);
+  color: var(--flyout-white);
+  box-shadow: inset 0 1px 3px color-mix(in oklab, var(--primary-accent) 8%, transparent);
+}
+
+.colorHexHash {
+  opacity: 0.6;
+}
+
+.colorHexInput {
+  min-width: 0;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  outline: none;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+}
+
+.colorHexInput::placeholder {
+  color: color-mix(in oklab, var(--flyout-white) 40%, transparent);
+}
+
+/* The tag's x: the same primary-accent clear button as the search tag's. */
+.colorHexClear {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 1rem;
+  height: 1rem;
+  border-radius: 0.25rem;
+  color: var(--primary-accent);
+  cursor: pointer;
+}
+
+.colorHexClear:hover {
+  color: var(--primary-accent-hover);
+}
+
+.colorHexClear:focus-visible {
+  outline: 2px solid var(--primary-accent-hover);
+  outline-offset: 1px;
 }
 
 /* A color swatch (SeedColorPicker, in Appearance and the Text / Label color rows) mirrors the text
@@ -791,7 +883,7 @@
   border-color: color-mix(in oklab, var(--flyout-white) 55%, transparent);
 }
 
-.menuShellBody input[type='text']:not(.spacingInput):focus {
+.menuShellBody input[type='text']:not(.spacingInput):not(.colorHexInput):focus {
   color: var(--flyout-white); /* full bright white while typing */
   outline: none;
   border-color: var(--secondary-accent);
