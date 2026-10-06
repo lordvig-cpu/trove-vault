@@ -774,6 +774,23 @@
   border-color: color-mix(in oklab, var(--flyout-white) 55%, transparent);
 }
 
+/* A color swatch (SeedColorPicker, in Appearance and the Text / Label color rows) mirrors the text
+   input beside it: the same idle border and hover border, and the amber border once it holds a color
+   (the same "this is set" amber as a focused input). Only inside a flyout -- the footer's theme seed
+   pickers keep their own look (navigationFooter.css). */
+.menuShellBody .oklch-seed-picker {
+  border-color: color-mix(in oklab, var(--primary-accent) 60%, var(--pole-surface));
+  transition: border-color 150ms ease;
+}
+
+.menuShellBody .oklch-seed-picker:not(.oklch-seed-picker-empty) {
+  border-color: var(--secondary-accent);
+}
+
+.menuShellBody .oklch-seed-picker:not(:disabled):hover {
+  border-color: color-mix(in oklab, var(--flyout-white) 55%, transparent);
+}
+
 .menuShellBody input[type='text']:not(.spacingInput):focus {
   color: var(--flyout-white); /* full bright white while typing */
   outline: none;
