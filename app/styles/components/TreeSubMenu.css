@@ -730,7 +730,7 @@
 
 .menuSectionSubtitle {
   font-size: 0.6875rem;
-  color: var(--secondary-tree-menu-header-title); /* same as the ? hint beside the title */
+  color: var(--primary-accent); /* set apart from the amber title, hint and chevron around it */
 }
 
 .menuSectionHint {
