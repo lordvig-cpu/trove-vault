@@ -52,10 +52,12 @@
   color: var(--primary-tree-muted);
 }
 
-/* A gear whose menu is open (hovering a tree gear opens it): it rotates and fills in amber, the same
-   amber as a toolbar control's hover border. */
+.tree-primary {
+  color: var(--text-strong);
+}
+
 .tree-gear-open {
-  color: var(--secondary-accent);
+  color: var(--text-strong);
 }
 
 .tree-gear-closed {

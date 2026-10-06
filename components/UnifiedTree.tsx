@@ -293,7 +293,7 @@ export default function UnifiedTree({
           className={[
             'w-[15px] h-[15px] transition-all duration-300 ease-out',
             menu.isMenuOpen
-              ? 'tree-gear-open rotate-90'
+              ? 'tree-primary rotate-90'
               : 'tree-action-icon',
           ].join(' ')}
         />
