@@ -133,9 +133,6 @@ export default function TemplateEditorContentBar({
           // An empty name, or one equal to the default, goes back to following the label text.
           onCommit={(next) => update({ name: next && next !== defaultName ? next : undefined })}
         />
-        <span className="text-[9px] font-bold text-[var(--primary-accent)] px-1 rounded bg-[color-mix(in_oklch,var(--primary-accent)_12%,transparent)] border border-[color-mix(in_oklch,var(--primary-accent)_30%,transparent)] shrink-0">
-          Content
-        </span>
       </div>
 
       {isContent && (

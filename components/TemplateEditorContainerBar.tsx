@@ -142,11 +142,6 @@ export default function TemplateEditorContainerBar({
             ariaLabel="Container name"
           />
         )}
-        {!isRoot && container.isCard && (
-          <span className="text-[9px] font-bold text-emerald-400 px-1 rounded bg-emerald-500/10 border border-emerald-500/20 shrink-0">
-            Card
-          </span>
-        )}
       </div>
 
       {/* A fixed gap from the name (not one derived from matching column widths — see
