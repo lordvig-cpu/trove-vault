@@ -80,7 +80,7 @@ commit whenever you add, remove, split or rename a file — it goes stale otherw
   faint (`barDisabledBtn`, `--flyout-white-faint`, or `disabledBtn`'s opacity over the soft white), a
   selected one still the yellow `activeBtn`. Two exceptions within that: standalone icon buttons (eye,
   gear, delete, Bold / Italic / Underline, Undo / Redo / Reset / Save, the width Fit) have no border
-  while inactive, a white border on hover (every toolbar hover is white; amber means selected), and an amber icon (no pill) while selected / on
+  while inactive, a primary-accent (blue) border and icon on hover (every toolbar hover is the primary accent -- border, text / icon and a faint tint; amber means selected), and an amber icon (no pill) while selected / on
   (`barIconBtn` / `barIconBtnOn` / `barIconBtnDisabled`); and pulldown buttons (Add, Split, Shows,
   Style, the width readout) wear the same darker amber border as the Size / Layout toggle tracks
   (`barGroupBtn`). The amber `idleBtn` / `ghostBtn` stay for flyouts and menus. The names on the toolbars (container, content, template) are full `--flyout-white`.

@@ -120,9 +120,9 @@ export function ToolGroup({
             : disabled
             ? `bg-shade/40 border-[color-mix(in_oklch,var(--secondary-accent)_35%,transparent)] ${barDisabledBtn}`
             : set
-            ? `${activeBtn} cursor-pointer hover:border-glint hover:text-[var(--flyout-white)]`
+            ? `${activeBtn} cursor-pointer hover:border-[var(--primary-accent)] hover:text-[var(--primary-accent)]`
             : isOpen
-            ? `bg-shade/40 border-glint text-[var(--flyout-white)] cursor-pointer`
+            ? `bg-shade/40 border-[var(--primary-accent)] text-[var(--primary-accent)] cursor-pointer`
             : `${barGroupBtn} cursor-pointer`
         }`}
       >
@@ -243,7 +243,7 @@ export function EditableName({
         setEditing(true);
       }}
       title="Click to rename"
-      className="truncate max-w-[130px] px-1.5 py-0.5 rounded-md text-[11px] font-bold text-[var(--flyout-white)] tracking-wide cursor-text border border-transparent hover:border-glint hover:bg-glint/10"
+      className="truncate max-w-[130px] px-1.5 py-0.5 rounded-md text-[11px] font-bold text-[var(--flyout-white)] tracking-wide cursor-text border border-transparent hover:border-[var(--primary-accent)] hover:bg-[color-mix(in_oklch,var(--primary-accent)_10%,transparent)]"
     >
       {name || placeholder}
     </button>
@@ -416,7 +416,7 @@ export function DeleteButton({ title, onDelete, disabledTitle }: { title: string
     <button
       type="button"
       onClick={onDelete}
-      className={`${squareBtn} cursor-pointer border-transparent text-[var(--flyout-white-soft)] hover:bg-[var(--tree-menu-danger-hover-bg)] hover:border-glint hover:text-[var(--tree-menu-danger-hover-text)]`}
+      className={`${squareBtn} cursor-pointer border-transparent text-[var(--flyout-white-soft)] hover:bg-[var(--tree-menu-danger-hover-bg)] hover:border-[var(--primary-accent)] hover:text-[var(--tree-menu-danger-hover-text)]`}
       title={title}
       aria-label={title}
     >
