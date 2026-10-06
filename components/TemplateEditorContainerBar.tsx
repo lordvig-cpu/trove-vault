@@ -133,7 +133,7 @@ export default function TemplateEditorContainerBar({
           <VisibilityButton hidden={isHidden} onToggle={() => onToggleHidden(container.id)} />
         )}
         {isRoot ? (
-          <span className="text-[11px] font-bold text-[var(--text-strong)] tracking-wide">Body</span>
+          <span className="text-[11px] font-bold text-[var(--flyout-white)] tracking-wide">Body</span>
         ) : (
           <EditableName
             key={container.id}

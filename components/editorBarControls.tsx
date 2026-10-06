@@ -220,7 +220,7 @@ export function EditableName({
           if (e.key === 'Escape') finish(false);
         }}
         aria-label={ariaLabel}
-        className="w-36 px-1.5 py-0.5 rounded-md bg-shade/40 border border-[var(--focus-blue)] text-[11px] font-bold text-[var(--text-strong)] focus:outline-none"
+        className="w-36 px-1.5 py-0.5 rounded-md bg-shade/40 border border-[var(--focus-blue)] text-[11px] font-bold text-[var(--flyout-white)] focus:outline-none"
       />
     );
   }
@@ -233,7 +233,7 @@ export function EditableName({
         setEditing(true);
       }}
       title="Click to rename"
-      className="truncate max-w-[130px] px-1.5 py-0.5 rounded-md text-[11px] font-bold text-[var(--text-strong)] tracking-wide cursor-text border border-transparent hover:border-glint hover:bg-glint/10"
+      className="truncate max-w-[130px] px-1.5 py-0.5 rounded-md text-[11px] font-bold text-[var(--flyout-white)] tracking-wide cursor-text border border-transparent hover:border-glint hover:bg-glint/10"
     >
       {name || placeholder}
     </button>
