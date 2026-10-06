@@ -35,7 +35,7 @@ export const barIdleBtn =
   'bg-shade/40 border-[var(--secondary-accent)] text-[var(--flyout-white-soft)] hover:border-glint hover:text-[var(--flyout-white)] hover:bg-glint/10';
 
 export const barGhostBtn =
-  'border border-transparent text-[var(--flyout-white-soft)] hover:border-[var(--secondary-accent)] hover:text-[var(--flyout-white)] hover:bg-glint/10';
+  'border border-transparent text-[var(--flyout-white-soft)] hover:border-glint hover:text-[var(--flyout-white)] hover:bg-glint/10';
 
 /** The toolbars' standalone icon buttons (eye, gear, delete, Bold / Italic / Underline, Undo / Redo /
     Reset / Save, the width Fit button): no border while inactive, the amber border on hover, and an
