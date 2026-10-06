@@ -71,7 +71,7 @@
   font-size: 0.5625rem;
   font-weight: 600;
   letter-spacing: 0.02em;
-  color: var(--secondary-tree-menu-header-title);
+  color: var(--primary-accent); /* the Margin / Padding captions: primary accent, set apart from the amber controls */
   pointer-events: none;
 }
 

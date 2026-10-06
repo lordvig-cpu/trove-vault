@@ -786,18 +786,10 @@
    Row/Column and the like are a bar-style standard the app already has, not a flyout-specific control,
    so they shouldn't look different just because this one happens to render inside a flyout. The track
    fill and border are barToggleGroup's own (a dark shade wash, not an amber-tinted one, which read as
-   red/brown); only the buttons inside are reset below, never barToggleGroup/barToggleBtn/ghostBtn. */
+   red/brown). The buttons inside use the toolbar's own classes unchanged (barGhostBtn unselected, soft
+   white; activeBtn selected) -- no flyout-only overrides, so the two can never drift apart. */
 .menuShellBody [role='group'] {
   border-color: color-mix(in oklab, var(--secondary-accent) 35%, transparent);
-}
-
-.menuShellBody [role='group'] > button.cursor-pointer {
-  background: transparent;
-  border-color: transparent;
-}
-
-.menuShellBody [role='group'] > button.cursor-pointer:hover {
-  border-color: var(--pole-glint);
 }
 
 /* Action/content list slot -- the scrollable region. min-height:0 overrides the flex-item default
@@ -1028,9 +1020,3 @@
   padding-inline: 1.25rem;
 }
 
-/* The selected button of a toggle group inside a flyout body (Auto/Fit/Custom, Row/Column, the
-   alignment icons): its border is the full-brightness Secondary Accent, like the active tab and a
-   section's icon tile -- not activeBtn's yellow. Selected ones are the `cursor-default` buttons. */
-.menuShellBody [role='group'] > button.cursor-default {
-  border-color: var(--secondary-accent);
-}

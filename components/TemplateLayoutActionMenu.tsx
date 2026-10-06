@@ -19,7 +19,7 @@ import TreeSubMenu, {
 } from '@/components/TreeSubMenu';
 import TemplateBodyDimensions from '@/components/TemplateBodyDimensions';
 import TemplateContainerSizing from '@/components/TemplateContainerSizing';
-import { activeBtn, barToggleBtn, barToggleGroup, disabledBtn, ghostBtn } from '@/components/editorBarStyles';
+import { activeBtn, barDisabledBtn, barGhostBtn, barToggleBtn, barToggleGroup } from '@/components/editorBarStyles';
 import { NEW_CONTAINER_OPTIONS } from '@/lib/layoutTree';
 import { AlignItemsIcon, JustifyContentIcon } from '@/components/icons/AlignIcons';
 import {
@@ -191,7 +191,7 @@ function AlignmentButtons<T extends string>({
             aria-label={opt.title}
             title={opt.title}
             className={`${barToggleBtn} flex-1 justify-center ${
-              value === opt.value ? `border cursor-default ${activeBtn}` : `${ghostBtn} cursor-pointer`
+              value === opt.value ? `border cursor-default ${activeBtn}` : `${barGhostBtn} cursor-pointer`
             }`}
           >
             {renderIcon(opt.value)}
@@ -435,7 +435,7 @@ export function TemplateContainerActionMenu({
                         type="button"
                         disabled
                         title="Custom sizing is not available for the Body"
-                        className={`${barToggleBtn} flex-1 justify-center ${disabledBtn} text-[var(--secondary-accent)]`}
+                        className={`${barToggleBtn} flex-1 justify-center border border-transparent ${barDisabledBtn}`}
                       >
                         <CustomSizingIcon className="w-3.5 h-3.5" />
                         Custom
@@ -457,7 +457,7 @@ export function TemplateContainerActionMenu({
                         type="button"
                         disabled
                         title="The Body always flows top-to-bottom, like a page. To place items side-by-side, add a Row container and put them inside it."
-                        className={`${barToggleBtn} flex-1 justify-center ${disabledBtn} text-[var(--secondary-accent)]`}
+                        className={`${barToggleBtn} flex-1 justify-center border border-transparent ${barDisabledBtn}`}
                       >
                         <FlexRowIcon className="w-3.5 h-3.5" />
                         Row
@@ -649,7 +649,7 @@ export function TemplateContainerActionMenu({
                     onClick={() => onUpdateContainer?.(container.id, { width: undefined, sizing: { type: 'fill' } })}
                     title="Auto: fill the available parent space"
                     className={`${barToggleBtn} flex-1 justify-center ${
-                      !isFixedSize && !isFitSize ? `border cursor-default ${activeBtn}` : `${ghostBtn} cursor-pointer`
+                      !isFixedSize && !isFitSize ? `border cursor-default ${activeBtn}` : `${barGhostBtn} cursor-pointer`
                     }`}
                   >
                     <AutoSizingIcon className="w-3.5 h-3.5" />
@@ -667,10 +667,10 @@ export function TemplateContainerActionMenu({
                     title={hasContent ? 'Fit: shrink the container to fit its content' : 'Fit: add content to this container first'}
                     className={`${barToggleBtn} flex-1 justify-center ${
                       !hasContent
-                        ? `${disabledBtn} text-[var(--secondary-accent)]`
+                        ? `border border-transparent ${barDisabledBtn}`
                         : isFitSize
                         ? `border cursor-default ${activeBtn}`
-                        : `${ghostBtn} cursor-pointer`
+                        : `${barGhostBtn} cursor-pointer`
                     }`}
                   >
                     <FitContentIcon className="w-3.5 h-3.5" />
@@ -681,7 +681,7 @@ export function TemplateContainerActionMenu({
                     onClick={switchToCustomSize}
                     title="Custom: set your own width/height (e.g. 50%, 300px)"
                     className={`${barToggleBtn} flex-1 justify-center ${
-                      isFixedSize ? `border cursor-default ${activeBtn}` : `${ghostBtn} cursor-pointer`
+                      isFixedSize ? `border cursor-default ${activeBtn}` : `${barGhostBtn} cursor-pointer`
                     }`}
                   >
                     <CustomSizingIcon className="w-3.5 h-3.5" />
@@ -711,7 +711,7 @@ export function TemplateContainerActionMenu({
                     onClick={() => onUpdateContainer?.(container.id, { direction: 'row' })}
                     title="Row layout (horizontal flow)"
                     className={`${barToggleBtn} flex-1 justify-center ${
-                      direction === 'row' ? `border cursor-default ${activeBtn}` : `${ghostBtn} cursor-pointer`
+                      direction === 'row' ? `border cursor-default ${activeBtn}` : `${barGhostBtn} cursor-pointer`
                     }`}
                   >
                     <FlexRowIcon className="w-3.5 h-3.5" />
@@ -722,7 +722,7 @@ export function TemplateContainerActionMenu({
                     onClick={() => onUpdateContainer?.(container.id, { direction: 'column' })}
                     title="Column layout (vertical flow)"
                     className={`${barToggleBtn} flex-1 justify-center ${
-                      direction === 'column' ? `border cursor-default ${activeBtn}` : `${ghostBtn} cursor-pointer`
+                      direction === 'column' ? `border cursor-default ${activeBtn}` : `${barGhostBtn} cursor-pointer`
                     }`}
                   >
                     <FlexColumnIcon className="w-3.5 h-3.5" />

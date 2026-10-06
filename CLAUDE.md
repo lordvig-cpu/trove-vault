@@ -259,7 +259,11 @@ commit whenever you add, remove, split or rename a file — it goes stale otherw
   inputs, selects and segmented buttons are themed dark (dark navy fill, thin light border, white
   on hover, light blue on focus) by the `.menuShellBody` rules in `TreeSubMenu.css` -- deliberately
   not amber, for contrast with the cards around them; the Spacing box's borderless side inputs opt
-  out. Sections are controlled -- the flyout component owns the open/closed and active-tab state,
+  out. Toggle groups (Auto / Fit / Custom, Row / Column, the alignment icons, the content flyout's
+  segmented choices) are the exception: they use the top toolbar's classes unchanged -- `barGhostBtn`
+  (soft white) unselected, `activeBtn` (filled) selected, `barDisabledBtn` disabled -- with no
+  flyout-only overrides. The Spacing diagram's Margin / Padding captions are the primary accent.
+  Sections are controlled -- the flyout component owns the open/closed and active-tab state,
   so they survive the flyout closing and reopening. The Body and standard-container flyouts
   (`TemplateLayoutActionMenu.tsx`) both use it. A standard container's Actions tab is Add Before / Inside / After, Split into 2 Columns /
   Rows, and Delete Container (always last); its Properties tab is Container Name (a plain field), then the cards Size
