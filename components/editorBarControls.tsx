@@ -121,7 +121,7 @@ export function ToolGroup({
             : set
             ? `${activeBtn} cursor-pointer hover:border-glint hover:text-[var(--flyout-white)]`
             : isOpen
-            ? `bg-shade/40 border-[var(--secondary-accent)] text-[var(--flyout-white)] cursor-pointer`
+            ? `bg-shade/40 border-glint text-[var(--flyout-white)] cursor-pointer`
             : `${barGroupBtn} cursor-pointer`
         }`}
       >
@@ -415,7 +415,7 @@ export function DeleteButton({ title, onDelete, disabledTitle }: { title: string
     <button
       type="button"
       onClick={onDelete}
-      className={`${squareBtn} cursor-pointer border-transparent text-[var(--flyout-white-soft)] hover:bg-[var(--tree-menu-danger-hover-bg)] hover:border-[var(--secondary-accent)] hover:text-[var(--tree-menu-danger-hover-text)]`}
+      className={`${squareBtn} cursor-pointer border-transparent text-[var(--flyout-white-soft)] hover:bg-[var(--tree-menu-danger-hover-bg)] hover:border-glint hover:text-[var(--tree-menu-danger-hover-text)]`}
       title={title}
       aria-label={title}
     >
