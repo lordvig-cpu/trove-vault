@@ -17,6 +17,8 @@ import {
 } from '@/components/icons/PanelIcons';
 import { DockContent, TabReorderInfo } from '@/hooks/usePanelDockDrag';
 import { PrimarySidebarPosition } from '@/types/layout';
+import VisibilityEyeIcon from '@/components/VisibilityEyeIcon';
+import { activeIconColor } from '@/components/editorBarStyles';
 
 interface PanelViewTabsProps {
   headerId: string;
@@ -35,6 +37,9 @@ interface PanelViewTabsProps {
   isComponents: boolean;
   isLayout: boolean;
   hierarchyNodeCount?: number;
+  /** Layout only: the header eye that shows every row's visibility eye, and its toggle. */
+  showAllEyes?: boolean;
+  onToggleShowAllEyes?: () => void;
   onAddNewField?: () => void;
   onAddNewTemplate?: () => void;
   onAddNewCollection?: () => void;
@@ -62,6 +67,8 @@ export default function PanelViewTabs({
   isComponents,
   isLayout,
   hierarchyNodeCount,
+  showAllEyes,
+  onToggleShowAllEyes,
   onAddNewField,
   onAddNewTemplate,
   onAddNewCollection,
@@ -238,6 +245,27 @@ export default function PanelViewTabs({
                   <PlusIcon className="w-2.5 h-2.5 origin-center transition-transform duration-150 ease-out group-hover:scale-110 text-[var(--tree-action-icon)] group-hover:text-[var(--text-strong)]" />
                 </button>
               )
+            )}
+
+            {/* Layout only: show every row's visibility eye (open eye, amber) or only on hover (slashed).
+                A hidden node's own eye shows either way. Blinks when toggled, like a row's. */}
+            {onToggleShowAllEyes && (
+              <button
+                type="button"
+                onClick={onToggleShowAllEyes}
+                aria-pressed={!!showAllEyes}
+                className="tree-tab-action-btn group"
+                title={showAllEyes ? 'Showing every visibility eye: click to show them only on hover' : 'Show every row’s visibility eye'}
+              >
+                {/* Colored here, not on the button: .tree-tab-action-btn's own color would win there. */}
+                <span
+                  className={`flex ${
+                    showAllEyes ? activeIconColor : 'text-[var(--tree-action-icon)]'
+                  } group-hover:text-[var(--text-strong)]`}
+                >
+                  <VisibilityEyeIcon hidden={!showAllEyes} className="w-3.5 h-3.5" />
+                </span>
+              </button>
             )}
 
             {activeToggleAll && (

@@ -55,6 +55,8 @@ export interface TemplateHierarchyTreeProps {
   /** Nodes hidden from the edit canvas, and the eye toggle that hides/shows one (editor-only state). */
   hiddenNodeIds?: Set<string>;
   onToggleHidden?: (nodeId: string) => void;
+  /** Show every row's eye, not just on hover (the Layout panel header's eye). */
+  showAllEyes?: boolean;
   /** Dock side: on the right, row gears move to the left edge and menus open rightward. */
   position?: 'left' | 'right';
   expandedIds?: Set<string>;
@@ -303,15 +305,20 @@ function DropLine({ edge }: { edge: 'before' | 'after' }) {
 interface TreeVisibility {
   hiddenIds: Set<string>;
   toggle?: (nodeId: string) => void;
+  /** The Layout header eye is on: every row's eye shows, not just on hover. */
+  showAll?: boolean;
 }
 
 const TreeVisibilityContext = createContext<TreeVisibility>({ hiddenIds: new Set() });
 
 /** A row's eye toggle: an open eye while shown, a slashed one (in the "set" yellow) while hidden. */
 function VisibilityToggle({ nodeId, label }: { nodeId: string; label: string }) {
-  const { hiddenIds, toggle } = useContext(TreeVisibilityContext);
+  const { hiddenIds, toggle, showAll } = useContext(TreeVisibilityContext);
   if (!toggle) return null;
   const isHidden = hiddenIds.has(nodeId);
+  // Normally only on row hover, like the gear; a hidden node's eye always shows (a reminder that it is
+  // off), and so does every eye while the header eye is on.
+  const pinned = isHidden || !!showAll;
   return (
     <button
       type="button"
@@ -323,7 +330,7 @@ function VisibilityToggle({ nodeId, label }: { nodeId: string; label: string }) 
       aria-label={isHidden ? `Show ${label}` : `Hide ${label}`}
       title={isHidden ? 'Hidden on the canvas: click to show' : 'Hide on the canvas (and everything inside it)'}
       // Hidden = the "set" amber, shown = the tree's idle icon color; either turns white on hover.
-      className={`tree-gear-trigger flex items-center justify-center w-6 h-6 shrink-0 rounded border border-transparent cursor-pointer transition-colors hover:text-[var(--tree-action-icon-hover)] ${
+      className={`tree-gear-trigger ${pinned ? 'tree-eye-pinned' : ''} flex items-center justify-center w-6 h-6 shrink-0 rounded border border-transparent cursor-pointer transition-colors hover:text-[var(--tree-action-icon-hover)] ${
         isHidden ? activeIconColor : 'text-[var(--primary-tree-action-icon)]'
       }`}
     >
@@ -839,6 +846,7 @@ export default function TemplateHierarchyTree({
   onMoveNode,
   hiddenNodeIds,
   onToggleHidden,
+  showAllEyes = false,
   position = 'left',
   expandedIds: externalExpandedIds,
   onToggleExpand: externalOnToggleExpand,
@@ -859,8 +867,8 @@ export default function TemplateHierarchyTree({
 
   const drag = useTreeDrag(root, onMoveNode);
   const visibility = useMemo<TreeVisibility>(
-    () => ({ hiddenIds: hiddenNodeIds ?? new Set(), toggle: onToggleHidden }),
-    [hiddenNodeIds, onToggleHidden]
+    () => ({ hiddenIds: hiddenNodeIds ?? new Set(), toggle: onToggleHidden, showAll: showAllEyes }),
+    [hiddenNodeIds, onToggleHidden, showAllEyes]
   );
 
   const effectiveExpandedIds = externalExpandedIds ?? internalExpandedIds;

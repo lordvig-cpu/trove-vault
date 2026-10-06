@@ -18,6 +18,12 @@
   opacity: 1;
 }
 
+/* A Layout-tree visibility eye that shows without hovering its row: the node is hidden, or the
+   Layout header's eye is on (TemplateHierarchyTree's VisibilityToggle). */
+.tree-gear-trigger.tree-eye-pinned {
+  opacity: 1;
+}
+
 /* Hover surface styling when inactive */
 .tree-gear-trigger:hover {
   background-color: var(--primary-tree-gear-bg-hover);

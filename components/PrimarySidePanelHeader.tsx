@@ -73,6 +73,9 @@ export interface PrimarySidePanelHeaderProps {
   isAnyFolderExpanded?: boolean;
   onToggleAllFolders?: () => void;
   hierarchyNodeCount?: number;
+  /** Layout only: the header eye that shows every row's visibility eye, and its toggle. */
+  showAllEyes?: boolean;
+  onToggleShowAllEyes?: () => void;
 }
 
 /* ==========================================================================
@@ -104,6 +107,8 @@ export default function PrimarySidePanelHeader({
   isAnyFolderExpanded = false,
   onToggleAllFolders,
   hierarchyNodeCount,
+  showAllEyes,
+  onToggleShowAllEyes,
   onTogglePin,
   onClose,
   onAddNewItem,
@@ -273,6 +278,8 @@ export default function PrimarySidePanelHeader({
         isComponents={isComponents}
         isLayout={isLayout}
         hierarchyNodeCount={hierarchyNodeCount}
+        showAllEyes={showAllEyes}
+        onToggleShowAllEyes={onToggleShowAllEyes}
         onAddNewField={onAddNewField}
         onAddNewTemplate={onAddNewTemplate}
         onAddNewCollection={onAddNewCollection}

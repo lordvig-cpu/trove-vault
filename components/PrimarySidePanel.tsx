@@ -76,6 +76,9 @@ interface PrimarySidePanelProps {
   isDragging?: boolean;
   reorderInfo?: TabReorderInfo | null;
   hierarchyNodeCount?: number;
+  /** Layout only: the header eye that shows every row's visibility eye, and its toggle. */
+  showAllEyes?: boolean;
+  onToggleShowAllEyes?: () => void;
 }
 
 const DEFAULT_WIDTH = 304;
@@ -137,6 +140,8 @@ export default function PrimarySidePanel({
   isDragging: isDockDragging = false,
   reorderInfo = null,
   hierarchyNodeCount,
+  showAllEyes,
+  onToggleShowAllEyes,
 }: PrimarySidePanelProps) {
   const activeIsExpanded = isAnyCategoryExpanded;
   const activeToggleAll = onToggleAllCategories;
@@ -291,6 +296,8 @@ export default function PrimarySidePanel({
         isDragging={isDockDragging}
         reorderInfo={reorderInfo}
         hierarchyNodeCount={hierarchyNodeCount}
+        showAllEyes={showAllEyes}
+        onToggleShowAllEyes={onToggleShowAllEyes}
       />
 
       {/* Syncing Progress Banner */}

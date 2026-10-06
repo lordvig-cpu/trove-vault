@@ -77,6 +77,9 @@ interface SecondarySidePanelProps {
   isDragging?: boolean;
   reorderInfo?: TabReorderInfo | null;
   hierarchyNodeCount?: number;
+  /** Layout only: the header eye that shows every row's visibility eye, and its toggle. */
+  showAllEyes?: boolean;
+  onToggleShowAllEyes?: () => void;
 }
 
 const MIN_WIDTH = 260;
@@ -141,6 +144,8 @@ export default function SecondarySidePanel({
   isDragging: isDockDragging = false,
   reorderInfo = null,
   hierarchyNodeCount,
+  showAllEyes,
+  onToggleShowAllEyes,
 }: SecondarySidePanelProps) {
   /* ------------------------------------------------------------------------
      2.1 USER PREFERENCES & RESIZING HOOK
@@ -329,6 +334,8 @@ export default function SecondarySidePanel({
           isDragging={isDockDragging}
           reorderInfo={reorderInfo}
           hierarchyNodeCount={hierarchyNodeCount}
+          showAllEyes={showAllEyes}
+          onToggleShowAllEyes={onToggleShowAllEyes}
         />
 
         {/* Panel Scrollable Body */}

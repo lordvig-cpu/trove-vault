@@ -98,6 +98,8 @@ export function usePanelRenderers({
     isAllHierarchyExpanded,
     toggleAllHierarchy,
     toggleHierarchyExpand,
+    showAllEyes,
+    toggleShowAllEyes,
     handleOpenProperties,
     handlePlaceField,
     handlePlaceLoremIpsum,
@@ -268,6 +270,7 @@ export function usePanelRenderers({
             onMoveNode={templateEditor.moveFlexNode}
             hiddenNodeIds={templateEditor.hiddenNodeIds}
             onToggleHidden={templateEditor.toggleNodeHidden}
+            showAllEyes={showAllEyes}
             onPlaceField={handlePlaceField}
             onPlaceLoremIpsum={handlePlaceLoremIpsum}
             onPlaceBuiltin={handlePlaceBuiltin}
@@ -385,6 +388,9 @@ export function usePanelRenderers({
         ? templatesTree.handleToggleAllCategories
         : handleToggleAllCategories,
       hierarchyNodeCount: isLayout ? hierarchyNodeCount : undefined,
+      // Layout only: the header eye that shows every row's visibility eye.
+      showAllEyes: isLayout ? showAllEyes : undefined,
+      onToggleShowAllEyes: isLayout ? toggleShowAllEyes : undefined,
       filterCollectionIds: isCollections ? collectionsFilterIds : isTemplates ? templatesFilterIds : filterCollectionIds,
       onToggleFilterCollection: isCollections ? handleToggleCollectionsFilter : isTemplates ? handleToggleTemplatesFilter : handleToggleFilterCollection,
       onClearCollectionFilters: isCollections ? () => setCollectionsFilterIds([]) : isTemplates ? () => setTemplatesFilterIds([]) : handleClearCollectionFilters,

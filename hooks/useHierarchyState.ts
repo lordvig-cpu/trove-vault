@@ -86,6 +86,11 @@ export function useHierarchyState(templateEditor: TemplateEditor) {
     }
   }, [isAllHierarchyExpanded, allHierarchyContainerIds]);
 
+  // The Layout panel header's eye: while on, every row's visibility eye shows, not just on hover (a
+  // hidden node's eye always shows regardless, as a reminder). Session-only, like expansion.
+  const [showAllEyes, setShowAllEyes] = useState(false);
+  const toggleShowAllEyes = useCallback(() => setShowAllEyes((on) => !on), []);
+
   const toggleHierarchyExpand = useCallback((id: string) => {
     setHierarchyExpandedIds((prev) => {
       const next = new Set(prev);
@@ -158,6 +163,8 @@ export function useHierarchyState(templateEditor: TemplateEditor) {
     isAllHierarchyExpanded,
     toggleAllHierarchy,
     toggleHierarchyExpand,
+    showAllEyes,
+    toggleShowAllEyes,
     handleOpenProperties,
     handlePlaceField,
     handlePlaceLoremIpsum,

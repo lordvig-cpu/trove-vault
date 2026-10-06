@@ -175,6 +175,10 @@ commit whenever you add, remove, split or rename a file — it goes stale otherw
   opens): never saved into the layout, so Preview and the item view always show everything. A hidden
   node's row and all rows under it are dimmed; descendants keep their own eye state, so showing the
   parent again restores them as they were. `FlexContainerRenderer` skips a hidden child in Edit mode.
+  A row's eye shows on row hover like its gear, but a hidden node's eye always shows (a reminder it is
+  off), and the Layout panel header's own eye (left of expand/collapse all; `showAllEyes` in
+  `useHierarchyState.ts`, session-only) shows every row's eye while it is on. Every eye blinks when it
+  changes state (`VisibilityEyeIcon.tsx`).
 - Every panel's filter menu (this one, the Content tab's field types, and the Items/Collections/
   Templates trees' collection filter) shares one convention: an empty filter array means "nothing
   excluded" and is shown as every checkbox checked, not every checkbox unchecked, because that's
