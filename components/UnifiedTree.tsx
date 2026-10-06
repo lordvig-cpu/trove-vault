@@ -120,7 +120,7 @@ function UnifiedTreeItem({
             menu.isPinned
               ? 'tree-gear-pinned rotate-90'
               : menu.isMenuOpen
-              ? 'tree-gear-open rotate-90'
+              ? 'tree-gear-open'
               : 'tree-gear-closed',
           ].join(' ')}
         />
@@ -297,7 +297,7 @@ export default function UnifiedTree({
             menu.isPinned
               ? 'tree-gear-pinned rotate-90'
               : menu.isMenuOpen
-              ? 'tree-primary rotate-90'
+              ? 'tree-primary'
               : 'tree-action-icon',
           ].join(' ')}
         />

@@ -578,7 +578,7 @@ function ContainerNodeRow({
                 menu.isPinned
                   ? 'tree-gear-pinned rotate-90'
                   : menu.isMenuOpen
-                  ? 'tree-primary rotate-90'
+                  ? 'tree-primary'
                   : 'tree-action-icon',
               ].join(' ')}
             />
@@ -792,7 +792,7 @@ function ComponentNodeRow({
                 menu.isPinned
                   ? 'tree-gear-pinned rotate-90'
                   : menu.isMenuOpen
-                  ? 'tree-primary rotate-90'
+                  ? 'tree-primary'
                   : 'tree-action-icon',
               ].join(' ')}
             />

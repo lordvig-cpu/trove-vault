@@ -105,7 +105,7 @@ function TemplateRootTreeRow({
           menu.isPinned
             ? 'tree-gear-pinned rotate-90'
             : menu.isMenuOpen
-            ? 'tree-gear-open rotate-90'
+            ? 'tree-gear-open'
             : 'tree-gear-closed',
         ].join(' ')}
       />
@@ -224,7 +224,7 @@ function TemplateFieldTreeRow({
           menu.isPinned
             ? 'tree-gear-pinned rotate-90'
             : menu.isMenuOpen
-            ? 'tree-gear-open rotate-90'
+            ? 'tree-gear-open'
             : 'tree-gear-closed',
         ].join(' ')}
       />

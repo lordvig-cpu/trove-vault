@@ -218,7 +218,8 @@ commit whenever you add, remove, split or rename a file — it goes stale otherw
 - A tree gear opens its flyout on hover (closing a moment after the pointer leaves) or, when clicked, pins
   it open: a pinned flyout ignores the pointer leaving and clicks elsewhere, and stays until its gear is
   clicked again (or Escape, or another gear is clicked). While one is pinned, hovering other gears opens
-  nothing. A pinned gear is filled amber (`.tree-gear-pinned`); a hovered-open one stays white. All of
+  nothing. A pinned gear is filled amber and rotated (`.tree-gear-pinned`), like the toolbar gear when
+  clicked; a hovered-open one just fills white, with no rotation. All of
   this is `useTreeActionMenu` (`isPinned`, `handleGearClick`), shared by every tree.
 - Every tree/template gear-icon flyout -- whether it's pure Actions (Item, Collection, Category,
   Template) or mixes Actions with Properties (Body, a standard container, a Content-tab field) --
