@@ -387,7 +387,8 @@ export function TreeGearButton({
       title={title}
       aria-label={title}
       aria-expanded={isTreeMenuOpen}
-      className={`${squareBtn} cursor-pointer ${isTreeMenuOpen ? barIconBtnOn : barIconBtn}`}
+      // Open: the same filled selected pill as a chosen Size / Layout option (activeBtn), not just an amber icon.
+      className={`${squareBtn} cursor-pointer ${isTreeMenuOpen ? activeBtn : barIconBtn}`}
     >
       <GearIcon
         isActive={isTreeMenuOpen}
