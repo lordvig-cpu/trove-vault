@@ -53,7 +53,8 @@ export default function ThemeSelector({ colorsOpen, onToggleColors }: ThemeSelec
           isActive={colorsOpen}
           className={[
             'w-[15px] h-[15px] transition-all duration-300 ease-out',
-            colorsOpen ? 'tree-gear-open rotate-90' : 'tree-gear-closed',
+            // Open (clicked): filled amber and rotated, like a pinned tree gear.
+            colorsOpen ? 'tree-gear-pinned rotate-90' : 'tree-gear-closed',
           ].join(' ')}
         />
       </button>
