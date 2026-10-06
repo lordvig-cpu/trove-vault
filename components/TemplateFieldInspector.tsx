@@ -6,6 +6,7 @@ import { ItemTemplate } from '@/types/template';
 import { FieldDefinition, FieldType } from '@/types/field';
 import { useTreeActionMenu } from '@/hooks/useTreeActionMenu';
 import { GearIcon, PlusIcon } from '@/components/icons/TreeIcons';
+import { activeBtn } from '@/components/editorBarStyles';
 import TemplateFieldActionMenu from '@/components/TemplateFieldActionMenu';
 import TemplateRootActionMenu from '@/components/TemplateRootActionMenu';
 import { WarningIcon, ChevronDownIcon } from '@/components/icons/PanelIcons';
@@ -92,7 +93,9 @@ function TemplateRootTreeRow({
       onMouseLeave={menu.handleMouseLeave}
       className={[
         'flex items-center justify-center w-6 h-6 shrink-0 rounded border border-transparent cursor-pointer transition-colors',
-        menu.isMenuOpen
+        menu.isPinned
+          ? `tree-gear-trigger-pinned ${activeBtn}`
+          : menu.isMenuOpen
           ? 'tree-gear-trigger-active opacity-100'
           : 'tree-gear-trigger opacity-0 group-hover:opacity-100',
       ].join(' ')}
@@ -211,7 +214,9 @@ function TemplateFieldTreeRow({
       onMouseLeave={menu.handleMouseLeave}
       className={[
         'flex items-center justify-center w-6 h-6 shrink-0 rounded border border-transparent cursor-pointer transition-colors',
-        menu.isMenuOpen
+        menu.isPinned
+          ? `tree-gear-trigger-pinned ${activeBtn}`
+          : menu.isMenuOpen
           ? 'tree-gear-trigger-active opacity-100'
           : 'tree-gear-trigger opacity-0 group-hover:opacity-100',
       ].join(' ')}

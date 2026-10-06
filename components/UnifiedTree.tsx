@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { ItemRecord } from '@/types/item';
 import { GearIcon } from '@/components/icons/TreeIcons';
+import { activeBtn } from '@/components/editorBarStyles';
 import { useTreeActionMenu } from '@/hooks/useTreeActionMenu';
 import { useTreeSelection } from '@/context/TreeSelectionContext';
 import TreeCollectionActionMenu from '@/components/TreeCollectionActionMenu';
@@ -110,7 +111,11 @@ function UnifiedTreeItem({
         className={[
           'group/gear flex items-center justify-center w-6 h-6 shrink-0',
           'rounded border border-transparent cursor-pointer transition-colors',
-          menu.isMenuOpen ? 'tree-gear-trigger-active' : 'tree-gear-trigger',
+          menu.isPinned
+            ? `tree-gear-trigger-pinned ${activeBtn}`
+            : menu.isMenuOpen
+            ? 'tree-gear-trigger-active'
+            : 'tree-gear-trigger',
         ].join(' ')}
       >
         <GearIcon
@@ -287,7 +292,11 @@ export default function UnifiedTree({
         className={[
           'group/gear flex items-center justify-center w-6 h-6 shrink-0',
           'rounded border border-transparent cursor-pointer transition-colors',
-          menu.isMenuOpen ? 'tree-gear-trigger-active' : 'tree-gear-trigger',
+          menu.isPinned
+            ? `tree-gear-trigger-pinned ${activeBtn}`
+            : menu.isMenuOpen
+            ? 'tree-gear-trigger-active'
+            : 'tree-gear-trigger',
         ].join(' ')}
       >
         <GearIcon

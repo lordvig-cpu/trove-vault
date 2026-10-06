@@ -3,6 +3,7 @@
 import { useUIPreferences } from '@/context/UIPreferencesContext';
 import { ChevronDownIcon } from '@/components/icons/PanelIcons';
 import { GearIcon } from '@/components/icons/TreeIcons';
+import { activeBtn } from '@/components/editorBarStyles';
 import { THEME_OPTIONS, normalizeTheme } from '@/types/theme';
 
 interface ThemeSelectorProps {
@@ -46,7 +47,7 @@ export default function ThemeSelector({ colorsOpen, onToggleColors }: ThemeSelec
         className={[
           'theme-gear-btn group/gear flex items-center justify-center w-6 h-6 shrink-0',
           'rounded border border-transparent cursor-pointer transition-colors',
-          colorsOpen ? 'tree-gear-trigger-active' : 'tree-gear-trigger',
+          colorsOpen ? `tree-gear-trigger-pinned ${activeBtn}` : 'tree-gear-trigger',
         ].join(' ')}
       >
         <GearIcon

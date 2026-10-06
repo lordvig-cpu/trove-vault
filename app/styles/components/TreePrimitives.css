@@ -77,10 +77,18 @@
   .eye-blink { animation: none; }
 }
 
-/* A gear whose menu is pinned open by a click (useTreeActionMenu's isPinned): filled and amber, still
-   rotated. A gear merely hovered open stays white (.tree-gear-open / .tree-primary). */
+/* A gear clicked open (a tree gear pinned by useTreeActionMenu's isPinned, or the footer theme gear
+   while its colors show): the same filled pill as the top toolbar's gear when clicked -- activeBtn's
+   fill and sheen on the trigger, plus this yellow border (set here rather than by the utility so the
+   trigger's own transparent border can't win) and a rotated, filled icon in the selected yellow. Always
+   visible, unlike an idle row gear. A gear merely hovered open just fills white (.tree-gear-open). */
+.tree-gear-trigger-pinned {
+  opacity: 1;
+  border-color: var(--flyout-selected);
+}
+
 .tree-gear-pinned {
-  color: var(--secondary-accent);
+  color: var(--flyout-selected);
 }
 
 .tree-gear-closed {

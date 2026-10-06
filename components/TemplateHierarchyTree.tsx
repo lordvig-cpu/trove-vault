@@ -20,7 +20,7 @@ import {
 } from '@/components/TemplateLayoutActionMenu';
 import { BodyIcon, FlexRowIcon, FlexColumnIcon, ContainerOverflowIcon } from '@/components/icons/LayoutIcons';
 import VisibilityEyeIcon from '@/components/VisibilityEyeIcon';
-import { activeIconColor } from '@/components/editorBarStyles';
+import { activeBtn, activeIconColor } from '@/components/editorBarStyles';
 import { HierarchyFilterCategory, hierarchyNodeCategory } from '@/lib/hierarchyFilterMetas';
 import { ChevronDownIcon, ChevronRightIcon } from '@/components/icons/PanelIcons';
 import { ComponentTypeIcon, LayoutGridIcon } from '@/components/icons/ContentIcons';
@@ -568,7 +568,11 @@ function ContainerNodeRow({
             className={[
               'group/gear flex items-center justify-center w-6 h-6 shrink-0',
               'rounded border border-transparent cursor-pointer transition-colors',
-              menu.isMenuOpen ? 'tree-gear-trigger-active' : 'tree-gear-trigger',
+              menu.isPinned
+            ? `tree-gear-trigger-pinned ${activeBtn}`
+            : menu.isMenuOpen
+            ? 'tree-gear-trigger-active'
+            : 'tree-gear-trigger',
             ].join(' ')}
           >
             <GearIcon
@@ -782,7 +786,11 @@ function ComponentNodeRow({
             className={[
               'group/gear flex items-center justify-center w-6 h-6 shrink-0',
               'rounded border border-transparent cursor-pointer transition-colors',
-              menu.isMenuOpen ? 'tree-gear-trigger-active' : 'tree-gear-trigger',
+              menu.isPinned
+            ? `tree-gear-trigger-pinned ${activeBtn}`
+            : menu.isMenuOpen
+            ? 'tree-gear-trigger-active'
+            : 'tree-gear-trigger',
             ].join(' ')}
           >
             <GearIcon
