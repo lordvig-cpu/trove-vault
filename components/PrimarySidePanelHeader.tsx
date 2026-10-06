@@ -136,7 +136,6 @@ export default function PrimarySidePanelHeader({
   const isGrabbed = activeTab === 'grabbed_content' || title === 'GRABBED CONTENT';
   const isContent = activeTab === 'template_editor' || title === 'CONTENT';
   const isComponents = activeTab === 'template_builder' || title === 'COMPONENTS';
-  const isProperties = activeTab === 'template_properties' || title === 'PROPERTIES';
   const isLayout = activeTab === 'template_hierarchy' || title === 'LAYOUT';
   const panelName = isCollections
     ? 'Collections'
@@ -148,8 +147,6 @@ export default function PrimarySidePanelHeader({
     ? 'Content'
     : isComponents
     ? 'Components'
-    : isProperties
-    ? 'Properties'
     : isLayout
     ? 'Layout'
     : 'Items';
@@ -175,8 +172,6 @@ export default function PrimarySidePanelHeader({
       ? []
       : activeTab === 'template_hierarchy'
       ? ['template_hierarchy']
-      : activeTab === 'template_properties'
-      ? ['template_properties']
       : activeTab === 'template_editor'
       ? ['template_editor']
       : activeTab === 'template_builder'
@@ -224,7 +219,7 @@ export default function PrimarySidePanelHeader({
       {/* ------------------------------------------------------------------
           Search Bar, Category Filters & Menus (Tree Only)
           ------------------------------------------------------------------ */}
-      {showSearchFilter && !isGrabbed && !isProperties && (
+      {showSearchFilter && !isGrabbed && (
         <SearchAndFilterSection
           variant={variant}
           position={position}
@@ -276,7 +271,6 @@ export default function PrimarySidePanelHeader({
         isGrabbed={isGrabbed}
         isContent={isContent}
         isComponents={isComponents}
-        isProperties={isProperties}
         isLayout={isLayout}
         hierarchyNodeCount={hierarchyNodeCount}
         onAddNewField={onAddNewField}

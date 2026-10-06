@@ -31,13 +31,6 @@ export const CheckIcon = ({ className = 'w-3 h-3' }: GlyphIconProps) => (
   </svg>
 );
 
-/** ArrowUpIcon: an arrow pointing up ("select parent"). */
-export const ArrowUpIcon = ({ className = 'w-3 h-3' }: GlyphIconProps) => (
-  <svg className={className} viewBox="0 0 24 24" {...strokeProps}>
-    <path d="M12 20V5M6 11l6-6 6 6" />
-  </svg>
-);
-
 /** TagIcon: a price-tag outline (rename). */
 export const TagIcon = ({ className = 'w-3.5 h-3.5' }: GlyphIconProps) => (
   <svg className={className} viewBox="0 0 24 24" {...strokeProps}>

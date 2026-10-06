@@ -29,32 +29,6 @@ export const BodyIcon = ({ className = 'w-4 h-4', strokeWidth = 1.8 }: LayoutIco
 );
 
 /**
- * LayoutContainerIcon:
- * Dashed rectangle representing a layout container boundary.
- */
-export const LayoutContainerIcon = ({ className = 'w-4 h-4', strokeWidth = 1.8 }: LayoutIconProps) => (
-  <svg
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth={strokeWidth}
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    className={`origin-center shrink-0 ${className}`}
-    aria-hidden="true"
-  >
-    <rect
-      x="3"
-      y="4"
-      width="18"
-      height="16"
-      rx="2.5"
-      strokeDasharray="3 2"
-    />
-  </svg>
-);
-
-/**
  * FlexRowIcon:
  * A horizontal line with arrows pointing outward at both ends.
  */

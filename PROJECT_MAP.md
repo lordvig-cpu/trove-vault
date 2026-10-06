@@ -64,7 +64,7 @@ Conventions and architecture (data access, theming, template editor internals, b
 - `HelpWindowHost.tsx` — renders the help windows (a `?` bubble popped out by its title bar's pop-out button: draggable, closable) once, from the root layout, so they outlive the flyout that opened them.
 - `SubsectionHeading.tsx` — the centered "--- Title ---" heading (Primary Accent, optional `?` help bubble at the right) for a group of controls inside a flyout section (Width, Height, Background, Border...).
 - `TemplateContentControls.tsx` — the property controls for a content element (what it shows and its display style, label, text style),
-  shared by its gear flyout and the docked Properties tab; no layout/spacing/size (the container owns those).
+  used by its gear flyout; no layout/spacing/size (the container owns those).
 - `TemplateAppearanceControls.tsx` — a container's or content element's Background, Border and Shadow controls (colors via the
   footer's `SeedColorPicker`, px-only sizes) in the flyout's Appearance section.
 - `TemplateMinMaxSlider.tsx` — the two-thumb Min / Max slider for width or height (with number boxes and a shared px/%
@@ -98,7 +98,6 @@ Conventions and architecture (data access, theming, template editor internals, b
 - `TemplatePresetPicker.tsx` — the step after choosing a pre-defined block: which built-ins and fields it includes
   (and a field list's row style), then add.
 - `TemplateManagerModal.tsx` — browse/apply/create-custom template picker (from Collections menus).
-- `TemplatePropertiesInspector.tsx` — the selected layout node's property editor (Properties panel).
 - `TreeCollectionActionMenu.tsx` / `TreeItemActionMenu.tsx` / `TreeTemplateActionMenu.tsx` — the
   tree-gear popup menus for a collection, item, and template row.
 - `TreeContent.tsx` — the shared tree view (Items/Collections/Templates), rendered per dock/flyout.

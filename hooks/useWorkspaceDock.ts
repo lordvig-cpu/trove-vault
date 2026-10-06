@@ -297,7 +297,6 @@ export function useWorkspaceDock() {
           panelId === 'grabbed_content' ||
           panelId === 'template_editor' ||
           panelId === 'template_builder' ||
-          panelId === 'template_properties' ||
           panelId === 'template_hierarchy'
         )
           return panelId;
@@ -352,7 +351,6 @@ export function useWorkspaceDock() {
           panelId === 'grabbed_content' ||
           panelId === 'template_editor' ||
           panelId === 'template_builder' ||
-          panelId === 'template_properties' ||
           panelId === 'template_hierarchy'
         ) {
           removeTabFromPrimary(panelId);

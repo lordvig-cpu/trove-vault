@@ -61,16 +61,6 @@ test.describe('Template Layout Engine', () => {
     expect(placedIds).toEqual([101, 102, 103]);
   });
 
-  test('docking engine allows template_properties in side panels but forbids bottom panel', () => {
-    // Docking template_properties to sidebars
-    expect(isDockZoneAllowed('template_properties', 'right')).toBe(true);
-    expect(isDockZoneAllowed('template_properties', 'left')).toBe(true);
-    expect(isDockZoneAllowed('template_properties', 'right-tab', { secondaryTabs: ['template_editor'] })).toBe(true);
-
-    // template_properties belongs in sidebars, not bottom panel
-    expect(isDockZoneAllowed('template_properties', 'bottom')).toBe(false);
-  });
-
   test('docking engine allows template_hierarchy in side panels but forbids bottom panel', () => {
     // Docking template_hierarchy to sidebars (left and right)
     expect(isDockZoneAllowed('template_hierarchy', 'left')).toBe(true);

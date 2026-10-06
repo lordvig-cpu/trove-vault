@@ -30,8 +30,8 @@ import { ColorRow } from '@/components/TemplateAppearanceControls';
 import { type HintContent } from '@/components/HoverHint';
 
 /* ==========================================================================
-   Property controls for a content element (a component in the layout tree), shared by its gear flyout
-   (TemplateLayoutActionMenu) and the docked Properties tab (TemplatePropertiesInspector). There is
+   Property controls for a content element (a component in the layout tree), used by its gear flyout
+   (TemplateLayoutActionMenu); the content toolbar reuses their option lists. There is
    deliberately no Layout, Spacing or Size here: the element's container owns all of those, which is
    what makes dropping content into a configured container a plain drag-and-drop.
    ========================================================================== */

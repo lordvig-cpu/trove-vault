@@ -35,9 +35,9 @@ commit whenever you add, remove, split or rename a file — it goes stale otherw
   `template_editor` dock content (`TemplateFieldInspector.tsx`) is labeled "Content"; the old
   "Inspector"/"Template Inspector" name is gone too. The `template_builder` dock content
   (`TemplateLayoutPalette.tsx`, the bottom-panel drag-primitives palette) is labeled "Components";
-  the old "Layout Builder" name is gone. None of these three is the separate "Properties" tab
-  (`template_properties` / `TemplatePropertiesInspector.tsx`) — that's a different concept, left
-  alone by this rename.
+  the old "Layout Builder" name is gone. There is no docked "Properties" panel any more (the old
+  `template_properties` tab / `TemplatePropertiesInspector.tsx` was removed): a node's properties live
+  in its gear flyout's Properties tab and in the toolbars. Don't bring back a second place to edit them.
 - **Icons:** SVG components in `components/icons/`, not emoji or unicode symbols. The only emoji
   left are user data: a template's own chosen icon (default 📦) and the item-type/virtual-category
   icons `UnifiedTree.tsx` and `lib/treeUtils.ts` derive from it.
@@ -109,9 +109,7 @@ commit whenever you add, remove, split or rename a file — it goes stale otherw
   `FlexContainerRenderer` on every container except the Body, which has none. The per-side editor is
   `TemplateSpacingBox.tsx` (Margin box around Padding box, side inputs, a slider/unit for the
   selected side, and a link-sides toggle); the Body flyout shows it with margin disabled and every
-  other container's flyout with margin enabled. The docked Properties tab
-  (`TemplatePropertiesInspector.tsx`) still uses the older preset-buttons-only, all-sides padding UI
-  and hasn't been converted yet, though it reads/writes the string type correctly.
+  other container's flyout with margin enabled.
 - A row whose children *all* have their own explicit pixel width (Custom, not a %) but together don't
   fit gets a dashed-red border and a Layout-tree warning badge (`FlexContainerRenderer`'s
   `onOverflowChange`, surfaced via `useTemplateLayoutTree`'s `overflowingContainerIds`). It's scoped to
@@ -266,7 +264,7 @@ commit whenever you add, remove, split or rename a file — it goes stale otherw
   (a locked toggle) and Spacing. Deliberately absent: Child Item Gap (the `gap`
   value itself is unchanged, it just has no UI), Wrap Children and Card Frame Style (cards are
   expected to become draggable components rather than a per-container option), a Select Parent
-  action (click the parent instead), and Maximum Content Width (Body-only). A content element's flyout ("Content Properties", `TemplateComponentActionMenu`) is the same split shell: an Actions tab (Delete Content) and a Properties tab of collapsible cards -- Content (the binding picker, static text, display style, image shape), Label (show/hide, above/beside, its own text and text style), Text (a "Start from" preset, size, spacing, weight, color, case, alignment, italic, underline, line height, reset) and Appearance (the same `TemplateAppearanceControls` a container uses) -- and deliberately no Size, Spacing or Layout card. The controls live in `TemplateContentControls.tsx`, shared with the docked Properties tab. The old table / media / stat placeholder blocks, which have no data, only get a name field and Appearance.
+  action (click the parent instead), and Maximum Content Width (Body-only). A content element's flyout ("Content Properties", `TemplateComponentActionMenu`) is the same split shell: an Actions tab (Delete Content) and a Properties tab of collapsible cards -- Content (the binding picker, static text, display style, image shape), Label (show/hide, above/beside, its own text and text style), Text (a "Start from" preset, size, spacing, weight, color, case, alignment, italic, underline, line height, reset) and Appearance (the same `TemplateAppearanceControls` a container uses) -- and deliberately no Size, Spacing or Layout card. The controls live in `TemplateContentControls.tsx`. The old table / media / stat placeholder blocks, which have no data, only get a name field and Appearance.
 - A standard container's look is set in the flyout's Appearance section (`TemplateAppearanceControls.tsx`,
   the last card): `background`, `borderWidth` / `borderColor` / `borderRadius`, and
   `shadowY` / `shadowBlur` / `shadowColor` on the node. Colors are `#RRGGBB` (`#RRGGBBAA` once the picker's opacity slider is below 100%; the picker's `alpha` prop turns the slider on, the footer theme seeds leave it off) picked with the footer's

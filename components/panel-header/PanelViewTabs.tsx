@@ -33,7 +33,6 @@ interface PanelViewTabsProps {
   isGrabbed: boolean;
   isContent: boolean;
   isComponents: boolean;
-  isProperties: boolean;
   isLayout: boolean;
   hierarchyNodeCount?: number;
   onAddNewField?: () => void;
@@ -61,7 +60,6 @@ export default function PanelViewTabs({
   isGrabbed,
   isContent,
   isComponents,
-  isProperties,
   isLayout,
   hierarchyNodeCount,
   onAddNewField,
@@ -89,8 +87,6 @@ export default function PanelViewTabs({
             ? 'Fields & Content'
             : isComponents
             ? 'Component Palette'
-            : isProperties
-            ? 'Properties'
             : isLayout
             ? (hierarchyNodeCount !== undefined ? `Layout & Content (${hierarchyNodeCount})` : 'Layout & Content')
             : 'Browse Items'}
@@ -112,8 +108,6 @@ export default function PanelViewTabs({
                 ? 'Content'
                 : tab === 'template_builder'
                 ? 'Components'
-                : tab === 'template_properties'
-                ? 'Properties'
                 : tab === 'template_hierarchy'
                 ? 'Layout'
                 : 'Grabbed Content';
@@ -142,8 +136,6 @@ export default function PanelViewTabs({
                 ? 'Show Content: fields and other droppable content (drag to move tab)'
                 : tab === 'template_builder'
                 ? 'Show Components (drag to move tab)'
-                : tab === 'template_properties'
-                ? 'Show Element Properties (drag to move tab)'
                 : tab === 'template_hierarchy'
                 ? 'Show Layout (drag to move tab)'
                 : 'Show Grabbed Content (drag to move tab)';
@@ -233,7 +225,7 @@ export default function PanelViewTabs({
                   <PlusIcon className="w-2.5 h-2.5 origin-center transition-transform duration-150 ease-out group-hover:scale-110 text-[var(--tree-action-icon)] group-hover:text-[var(--text-strong)]" />
                 </button>
               )
-            ) : isLayout || isProperties ? (
+            ) : isLayout ? (
               null
             ) : (
               onAddNewItem && (

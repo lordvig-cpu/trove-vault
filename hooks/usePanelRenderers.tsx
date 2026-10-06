@@ -14,7 +14,6 @@ import TreeContent from '@/components/TreeContent';
 import { TreePanelContext } from '@/context/TreePanelContext';
 import TemplateFieldInspector from '@/components/TemplateFieldInspector';
 import TemplateLayoutPalette from '@/components/TemplateLayoutPalette';
-import TemplatePropertiesInspector from '@/components/TemplatePropertiesInspector';
 import TemplateHierarchyTree from '@/components/TemplateHierarchyTree';
 import { FlexContainerNode, FlexComponentNode } from '@/types/layout';
 import { hierarchyNodeCategory } from '@/lib/hierarchyFilterMetas';
@@ -230,27 +229,6 @@ export function usePanelRenderers({
         </TreePanelContext.Provider>
       );
     }
-    if (content === 'template_properties') {
-      return (
-        <TreePanelContext.Provider value={panelContext}>
-          <TemplatePropertiesInspector
-            template={templateEditor.activeTemplate}
-            selectedNode={templateEditor.selectedNode}
-            parentNode={templateEditor.selectedContainer}
-            onUpdateContainer={templateEditor.updateFlexContainer}
-            onUpdateComponent={templateEditor.updateFlexComponent}
-            onRemoveNode={(id) => {
-              if (templateEditor.selectedNode?.nodeType === 'container') {
-                templateEditor.removeFlexContainer(id);
-              } else {
-                templateEditor.removeFlexComponent(id);
-              }
-            }}
-            onSelectNode={templateEditor.selectNode}
-          />
-        </TreePanelContext.Provider>
-      );
-    }
     if (content === 'template_builder') {
       return (
         <TreePanelContext.Provider value={panelContext}>
@@ -331,7 +309,6 @@ export function usePanelRenderers({
     const isContent = content === 'template_editor';
     const isComponents = content === 'template_builder';
     const isLayout = content === 'template_hierarchy';
-    const isProperties = content === 'template_properties';
 
     // Calculate field type counts for template editor
     const fieldTypeCounts: Record<string, number> = {};
@@ -365,8 +342,6 @@ export function usePanelRenderers({
         ? 'template_editor'
         : isComponents
         ? 'template_builder'
-        : isProperties
-        ? 'template_properties'
         : isLayout
         ? 'template_hierarchy'
         : isCollections
