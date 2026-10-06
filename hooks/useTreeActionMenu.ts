@@ -12,6 +12,11 @@ import { useState, useRef, useId, useCallback, useEffect } from 'react';
  */
 const GLOBAL_MENU_OPEN_EVENT = 'tree-action-menu-open';
 
+/** The menu (hook instance id) currently pinned open by a click, if any. Shared by every instance: while
+    one menu is pinned, merely hovering another gear doesn't open that one (and so can't close the
+    pinned one); clicking another gear still does. */
+let pinnedMenuId: string | null = null;
+
 /* ==========================================================================
    2. CUSTOM HOOK: useTreeActionMenu
    ========================================================================== */
@@ -44,6 +49,20 @@ export function useTreeActionMenu(
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [menuCoords, setMenuCoords] = useState({ top: 0, left: 0 });
   const [isRenaming, setIsRenaming] = useState(false);
+  // Pinned = opened by a click on the gear (not just a hover): it stays open when the pointer leaves
+  // or the user clicks elsewhere, until the gear is clicked again (or Escape, or another menu opens).
+  // A ref too, so the close timers and document listeners see the current value.
+  const [isPinned, setIsPinnedState] = useState(false);
+  const pinnedRef = useRef(false);
+  const setPinned = useCallback(
+    (pinned: boolean) => {
+      pinnedRef.current = pinned;
+      setIsPinnedState(pinned);
+      if (pinned) pinnedMenuId = id;
+      else if (pinnedMenuId === id) pinnedMenuId = null;
+    },
+    [id]
+  );
 
   /* ------------------------------------------------------------------------
      2.3 MUTUAL EXCLUSION LISTENER
@@ -56,6 +75,7 @@ export function useTreeActionMenu(
         if (timeoutRef.current) clearTimeout(timeoutRef.current);
         setIsMenuOpen(false);
         setIsRenaming(false);
+        setPinned(false);
       }
     };
 
@@ -63,8 +83,10 @@ export function useTreeActionMenu(
     return () => {
       window.removeEventListener(GLOBAL_MENU_OPEN_EVENT, handleGlobalMenuOpen);
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
+      // A row that unmounts while pinned (deleted, panel closed) must not leave hovers blocked everywhere.
+      if (pinnedMenuId === id) pinnedMenuId = null;
     };
-  }, [id]);
+  }, [id, setPinned]);
 
   /* ------------------------------------------------------------------------
      2.4 VIEWPORT GEOMETRY & CLAMPING
@@ -145,7 +167,7 @@ export function useTreeActionMenu(
    * Invoked when the cursor enters the tree row gear button.
    * Measures bounding rect, calculates coordinates, and broadcasts the open event.
    */
-  const handleGearMouseEnter = useCallback(
+  const openMenu = useCallback(
     (e: React.SyntheticEvent<HTMLElement>, customHeight?: number) => {
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
       const rect = e.currentTarget.getBoundingClientRect();
@@ -163,6 +185,15 @@ export function useTreeActionMenu(
       setIsMenuOpen(true);
     },
     [id, defaultMenuHeight, computeCoordinates]
+  );
+
+  /** Hovering the gear opens the menu unpinned -- unless another menu is pinned open by a click. */
+  const handleGearMouseEnter = useCallback(
+    (e: React.SyntheticEvent<HTMLElement>, customHeight?: number) => {
+      if (pinnedMenuId !== null && pinnedMenuId !== id) return;
+      openMenu(e, customHeight);
+    },
+    [id, openMenu]
   );
 
   /**
@@ -194,8 +225,8 @@ export function useTreeActionMenu(
    * Starts a 350ms grace-period timer before unmounting.
    */
   const handleMouseLeave = useCallback(() => {
-    // Prevent unmounting if actively editing an inline rename
-    if (isRenaming) return;
+    // Prevent unmounting if actively editing an inline rename, or while pinned open by a click
+    if (isRenaming || pinnedRef.current) return;
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
     timeoutRef.current = setTimeout(() => {
       const focused = document.activeElement;
@@ -215,18 +246,36 @@ export function useTreeActionMenu(
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
     setIsMenuOpen(false);
     setIsRenaming(false);
+    setPinned(false);
     window.dispatchEvent(
       new CustomEvent('tree-action-menu-close', { detail: id })
     );
-  }, [id]);
+  }, [id, setPinned]);
+
+  /**
+   * A click on the gear: pins the menu open (opening it first if a hover hasn't already), or, when it
+   * is already pinned, unpins and closes it. Hovering alone still opens it unpinned, as before.
+   */
+  const handleGearClick = useCallback(
+    (e: React.SyntheticEvent<HTMLElement>) => {
+      if (pinnedRef.current) {
+        closeMenu();
+        return;
+      }
+      if (!isMenuOpen) openMenu(e);
+      else if (timeoutRef.current) clearTimeout(timeoutRef.current);
+      setPinned(true);
+    },
+    [closeMenu, openMenu, isMenuOpen, setPinned]
+  );
 
   const handleGearKeyDown = useCallback((event: React.KeyboardEvent<HTMLElement>) => {
     if (!['Enter', ' ', 'ArrowDown'].includes(event.key)) return;
     event.preventDefault();
     event.stopPropagation();
-    handleGearMouseEnter(event);
+    openMenu(event);
     requestAnimationFrame(() => document.querySelector<HTMLElement>('[data-tree-menu]:not([inert]) button')?.focus());
-  }, [handleGearMouseEnter]);
+  }, [openMenu]);
 
   useEffect(() => {
     if (!isMenuOpen) return;
@@ -238,7 +287,7 @@ export function useTreeActionMenu(
     };
     const handleDocumentMouseDown = (e: MouseEvent) => {
       const target = e.target as HTMLElement | null;
-      if (!target) return;
+      if (!target || pinnedRef.current) return; // a pinned menu ignores clicks elsewhere
       if (
         target.closest('[data-tree-menu]') ||
         target.closest('[data-gear-trigger]') ||
@@ -260,6 +309,8 @@ export function useTreeActionMenu(
   return {
     handleGearKeyDown,
     isMenuOpen,
+    isPinned,
+    handleGearClick,
     menuCoords,
     isRenaming,
     setIsRenaming,

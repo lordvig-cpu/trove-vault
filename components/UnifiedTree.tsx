@@ -104,7 +104,7 @@ function UnifiedTreeItem({
         aria-label="Open actions"
         aria-expanded={menu.isMenuOpen}
         onKeyDown={menu.handleGearKeyDown}
-        onClick={event => { event.stopPropagation(); menu.handleGearMouseEnter(event); }}
+        onClick={event => { event.stopPropagation(); menu.handleGearClick(event); }}
         onMouseEnter={menu.handleGearMouseEnter}
         onMouseLeave={menu.handleMouseLeave}
         className={[
@@ -117,7 +117,9 @@ function UnifiedTreeItem({
           isActive={menu.isMenuOpen}
           className={[
             'w-[15px] h-[15px] transition-all duration-300 ease-out',
-            menu.isMenuOpen
+            menu.isPinned
+              ? 'tree-gear-pinned rotate-90'
+              : menu.isMenuOpen
               ? 'tree-gear-open rotate-90'
               : 'tree-gear-closed',
           ].join(' ')}
@@ -279,7 +281,7 @@ export default function UnifiedTree({
         aria-label="Open actions"
         aria-expanded={menu.isMenuOpen}
         onKeyDown={menu.handleGearKeyDown}
-        onClick={event => { event.stopPropagation(); menu.handleGearMouseEnter(event); }}
+        onClick={event => { event.stopPropagation(); menu.handleGearClick(event); }}
         onMouseEnter={menu.handleGearMouseEnter}
         onMouseLeave={menu.handleMouseLeave}
         className={[
@@ -292,7 +294,9 @@ export default function UnifiedTree({
           isActive={menu.isMenuOpen}
           className={[
             'w-[15px] h-[15px] transition-all duration-300 ease-out',
-            menu.isMenuOpen
+            menu.isPinned
+              ? 'tree-gear-pinned rotate-90'
+              : menu.isMenuOpen
               ? 'tree-primary rotate-90'
               : 'tree-action-icon',
           ].join(' ')}

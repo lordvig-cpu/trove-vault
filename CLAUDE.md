@@ -215,6 +215,11 @@ commit whenever you add, remove, split or rename a file — it goes stale otherw
   (`lib/menuTabRequest.ts`); the tree row's own gear keeps whichever tab was last used. Both bars build from the shared `editorBarControls.tsx`, and
   both lead with the same eye as the Layout tree, left of the name (not for the Body). The header slot is
   `w-max` so a wide bar is never squeezed to the half-header an absolute, centered box would otherwise get.
+- A tree gear opens its flyout on hover (closing a moment after the pointer leaves) or, when clicked, pins
+  it open: a pinned flyout ignores the pointer leaving and clicks elsewhere, and stays until its gear is
+  clicked again (or Escape, or another gear is clicked). While one is pinned, hovering other gears opens
+  nothing. A pinned gear is filled amber (`.tree-gear-pinned`); a hovered-open one stays white. All of
+  this is `useTreeActionMenu` (`isPinned`, `handleGearClick`), shared by every tree.
 - Every tree/template gear-icon flyout -- whether it's pure Actions (Item, Collection, Category,
   Template) or mixes Actions with Properties (Body, a standard container, a Content-tab field) --
   is built from exactly one shared shell and CSS file, `TreeSubMenu.tsx`

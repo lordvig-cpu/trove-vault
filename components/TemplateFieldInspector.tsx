@@ -86,7 +86,7 @@ function TemplateRootTreeRow({
       onKeyDown={menu.handleGearKeyDown}
       onClick={(e) => {
         e.stopPropagation();
-        menu.handleGearMouseEnter(e);
+        menu.handleGearClick(e); // pins it open (hover alone opens it unpinned)
       }}
       onMouseEnter={menu.handleGearMouseEnter}
       onMouseLeave={menu.handleMouseLeave}
@@ -102,7 +102,9 @@ function TemplateRootTreeRow({
         isActive={menu.isMenuOpen}
         className={[
           'w-[15px] h-[15px] transition-all duration-300 ease-out',
-          menu.isMenuOpen
+          menu.isPinned
+            ? 'tree-gear-pinned rotate-90'
+            : menu.isMenuOpen
             ? 'tree-gear-open rotate-90'
             : 'tree-gear-closed',
         ].join(' ')}
@@ -203,7 +205,7 @@ function TemplateFieldTreeRow({
       onKeyDown={menu.handleGearKeyDown}
       onClick={(e) => {
         e.stopPropagation();
-        menu.handleGearMouseEnter(e);
+        menu.handleGearClick(e); // pins it open (hover alone opens it unpinned)
       }}
       onMouseEnter={menu.handleGearMouseEnter}
       onMouseLeave={menu.handleMouseLeave}
@@ -219,7 +221,9 @@ function TemplateFieldTreeRow({
         isActive={menu.isMenuOpen}
         className={[
           'w-[15px] h-[15px] transition-all duration-300 ease-out',
-          menu.isMenuOpen
+          menu.isPinned
+            ? 'tree-gear-pinned rotate-90'
+            : menu.isMenuOpen
             ? 'tree-gear-open rotate-90'
             : 'tree-gear-closed',
         ].join(' ')}

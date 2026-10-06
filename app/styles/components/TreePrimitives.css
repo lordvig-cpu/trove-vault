@@ -77,6 +77,12 @@
   .eye-blink { animation: none; }
 }
 
+/* A gear whose menu is pinned open by a click (useTreeActionMenu's isPinned): filled and amber, still
+   rotated. A gear merely hovered open stays white (.tree-gear-open / .tree-primary). */
+.tree-gear-pinned {
+  color: var(--secondary-accent);
+}
+
 .tree-gear-closed {
   color: var(--primary-tree-muted);
 }

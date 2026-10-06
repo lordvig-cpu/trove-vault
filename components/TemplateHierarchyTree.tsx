@@ -561,11 +561,7 @@ function ContainerNodeRow({
             onClick={(e) => {
               e.stopPropagation();
               onSelectNode(container.id);
-              if (menu.isMenuOpen) {
-                menu.closeMenu();
-              } else {
-                menu.handleGearMouseEnter(e);
-              }
+              menu.handleGearClick(e); // pins it open (hover alone opens it unpinned)
             }}
             onMouseEnter={menu.handleGearMouseEnter}
             onMouseLeave={menu.handleMouseLeave}
@@ -579,7 +575,9 @@ function ContainerNodeRow({
               isActive={menu.isMenuOpen}
               className={[
                 'w-[15px] h-[15px] transition-all duration-300 ease-out',
-                menu.isMenuOpen
+                menu.isPinned
+                  ? 'tree-gear-pinned rotate-90'
+                  : menu.isMenuOpen
                   ? 'tree-primary rotate-90'
                   : 'tree-action-icon',
               ].join(' ')}
@@ -777,11 +775,7 @@ function ComponentNodeRow({
             onClick={(e) => {
               e.stopPropagation();
               onSelectNode(component.id);
-              if (menu.isMenuOpen) {
-                menu.closeMenu();
-              } else {
-                menu.handleGearMouseEnter(e);
-              }
+              menu.handleGearClick(e); // pins it open (hover alone opens it unpinned)
             }}
             onMouseEnter={menu.handleGearMouseEnter}
             onMouseLeave={menu.handleMouseLeave}
@@ -795,7 +789,9 @@ function ComponentNodeRow({
               isActive={menu.isMenuOpen}
               className={[
                 'w-[15px] h-[15px] transition-all duration-300 ease-out',
-                menu.isMenuOpen
+                menu.isPinned
+                  ? 'tree-gear-pinned rotate-90'
+                  : menu.isMenuOpen
                   ? 'tree-primary rotate-90'
                   : 'tree-action-icon',
               ].join(' ')}
