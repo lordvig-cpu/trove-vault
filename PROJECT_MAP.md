@@ -240,7 +240,7 @@ direction/sizing helpers), `database.ts` (the Supabase-shaped `Database` type, h
 Playwright specs, run against a production build on port 3100: `workspace.spec.ts` (docking,
 preferences, keyboard shortcuts), `collections-panel.spec.ts`, `template-layout.spec.ts` (the
 template editor), `template-drag-highlight.spec.ts`, `layout-tree.spec.ts` (the pure functions in
-`lib/layoutTree.ts`), `layout-content.spec.ts` (content bindings, display styles, values, styles), `layout-presets.spec.ts` (pre-defined content builders), `layout-recipes.spec.ts` (simple-template recipes and saved-layout resolution), `layout-history.spec.ts` (undo/redo history), `stacking.spec.ts` (responsive row-to-column stacking), `data.spec.ts`, `item-images.spec.ts` (photo cleanup on item edit / delete, against a fake fetch).
+`lib/layoutTree.ts`), `layout-content.spec.ts` (content bindings, display styles, values, styles), `layout-presets.spec.ts` (pre-defined content builders), `layout-recipes.spec.ts` (simple-template recipes and saved-layout resolution), `layout-history.spec.ts` (undo/redo history), `stacking.spec.ts` (responsive row-to-column stacking), `data.spec.ts`, `item-images.spec.ts` (photo cleanup on item edit / delete, against a fake fetch), `pure-helpers.spec.ts` (colors, box / alignment / direction values, row mappers, tree categories and item search).
 
 ## Root & config
 
