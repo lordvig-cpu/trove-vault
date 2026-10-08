@@ -242,10 +242,11 @@ commit whenever you add, remove, split or rename a file — it goes stale otherw
   its band and divider unconditionally too -- what varies is only its *content*: with two or more
   tabs (Body/Container Properties; `TemplateFieldActionMenu.tsx`'s Content field editor, which
   already had real properties -- label, key, type, required, options -- and real actions -- move
-  up/down, delete -- so it kept both as genuine tabs) it renders real, clickable tab buttons
-  (bordered, in a full-width amber-tinted dark band, top and bottom edges only, plus a shadow above
-  it; the active one brightened with a shine and glow -- `.menuTabs` / `.menuTab-active` in
-  `TreeSubMenu.css`). With fewer than two tabs, `ActionMenuTabs` itself renders that same `.menuTabs`
+  up/down, delete -- so it kept both as genuine tabs) it renders real tabs: the side panels'
+  paper-folder tabs (`PanelFolderTabSvg` + `.tree-folder-tab`, icon and label inside), standing on the
+  bottom edge of a full-width amber-tinted dark band, with the active one opening into the menu body
+  below (`.menuTabs-folder` / `.menuFolderTab` in `TreeSubMenu.css`) -- the same tab look as a panel
+  header, not a second button style. With fewer than two tabs, `ActionMenuTabs` itself renders that same `.menuTabs`
   element with no buttons inside it at all -- a plain divider band, not a single oversized "tab" to
   click. `TreeItemActionMenu.tsx`, `TreeCollectionActionMenu.tsx` (Collection and Category) and
   `TreeTemplateActionMenu.tsx` all pass a single-entry tabs array for exactly this reason, titled
@@ -261,7 +262,7 @@ commit whenever you add, remove, split or rename a file — it goes stale otherw
   Inputs, pulldowns and buttons in the Properties tab share the top toolbar's control height
   (`barControlHeight`, 26px) so rows of mixed controls line up.
   Both tabs always take `menuShellXWide` (17.5rem), so switching tabs never changes the flyout's
-  width; the tab buttons keep their smaller 14rem-band size, centered, within that wider head. The
+  width; the tabs keep their own fixed size, centered, within that wider head, so they never move. The
   Properties body is one column of collapsible `ActionMenuSection` cards: an icon tile
   (`icons/SectionIcons.tsx`), the title with a one-line subtitle (shown open or closed, so the header never changes height), a `?` bubble and
   an up/down chevron, in an amber-bordered card over a dark fill. Inside a split flyout's body,

@@ -146,11 +146,9 @@
   --flyout-selected: var(--ember-menu-ink);
   --flyout-heading: var(--ember-menu-ink);
   --flyout-tab-band: var(--ember-menu-deep);
-  --flyout-tab-idle: var(--ember-menu);
   --section-card-base: var(--ember-menu-deep);
   --flyout-tab-active-top: color-mix(in oklab, var(--secondary-accent) 29%, var(--ember-menu));
   --flyout-tab-active-bottom: color-mix(in oklab, var(--secondary-accent) 17.5%, var(--ember-menu));
-  --flyout-tab-active-border: var(--secondary-accent);
 }
 
 
@@ -162,16 +160,3 @@
   color: var(--flyout-white);
 }
 
-[data-theme='theme-oklch-dark'] .menuTab-active,
-[data-theme='theme-oklch-dark'] .menuTab-active:hover {
-  color: var(--flyout-white);
-  text-shadow: 0 0 8px color-mix(in oklab, var(--secondary-accent) 55%, transparent);
-  box-shadow:
-    inset 0 1px 0 color-mix(in oklab, var(--secondary-accent) 45%, transparent),
-    0 0 10px color-mix(in oklab, var(--secondary-accent) 35%, transparent);
-}
-
-/* An idle tab keeps a fainter amber edge so the row reads as amber buttons. */
-[data-theme='theme-oklch-dark'] .menuTab:not(.menuTab-active) {
-  border-color: color-mix(in oklab, var(--secondary-accent) 45%, var(--ember-menu));
-}

@@ -179,10 +179,8 @@
   --flyout-white-soft: color-mix(in oklab, var(--flyout-white) 80%, transparent);
   --flyout-white-faint: color-mix(in oklab, var(--flyout-white) 38%, transparent);
   --flyout-tab-band: linear-gradient(180deg, color-mix(in srgb, var(--oklch-secondary-217-119-6) 26%, var(--pole-surface)), color-mix(in srgb, var(--oklch-secondary-217-119-6) 12%, var(--pole-surface)));
-  --flyout-tab-idle: color-mix(in srgb, var(--oklch-secondary-217-119-6) 6%, var(--pole-surface));
   --flyout-tab-active-top: color-mix(in srgb, var(--oklch-secondary-217-119-6) 58%, var(--pole-surface));
   --flyout-tab-active-bottom: color-mix(in srgb, var(--oklch-secondary-217-119-6) 42%, var(--pole-surface));
-  --flyout-tab-active-border: color-mix(in srgb, var(--oklch-yellow-217-119-6) 55%, var(--secondary-accent));
 
   /* Menu ink: default text inside tree submenus, search menus and template toolbars is the secondary accent. */
   --menu-ink: var(--secondary-accent);

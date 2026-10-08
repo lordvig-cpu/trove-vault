@@ -5,13 +5,10 @@
 export const idleBtn =
   'bg-shade/40 border-[var(--secondary-accent)] text-[var(--secondary-accent)] hover:border-glint hover:text-[var(--text-strong)] hover:bg-glint/10';
 
-/** Selected / open control: the same fill and inset highlight as a flyout's active tab
-    (.menuTab-active in TreeSubMenu.css) -- a solid warm-gold gradient, not a translucent mix of
+/** Selected / open control: the flyout's active-tab gradient (--flyout-tab-active-top / -bottom, also a
+    flyout section's chevron button) -- a solid warm-gold gradient, not a translucent mix of
     --flyout-selected over the dark bar, which read as yellow-green rather than gold. The border is
-    the pure --flyout-selected yellow rather than the tab's own --flyout-tab-active-border (that one
-    leans orange, mixed 55/45 with --secondary-accent) -- the bar's selected border reads as yellow,
-    not amber, to stay distinct from the idle amber border around it. Text stays --flyout-selected
-    too, matching the tab's own text color. */
+    the pure --flyout-selected yellow, not amber, to stay distinct from the idle amber border around it. Text stays --flyout-selected too. */
 export const activeBtn =
   'bg-[linear-gradient(180deg,var(--flyout-tab-active-top),var(--flyout-tab-active-bottom))] border-[var(--flyout-selected)] text-[var(--flyout-selected)] shadow-[inset_0_1px_0_color-mix(in_oklch,var(--pole-sheen)_22%,transparent)]';
 

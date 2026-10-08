@@ -169,11 +169,9 @@
   --flyout-selected: var(--brand-secondary-amber);
   --flyout-heading: var(--aqua-ink);
   --flyout-tab-band: color-mix(in oklab, var(--oklch-primary) 14%, var(--pole-surface));
-  --flyout-tab-idle: var(--oklch-secondary);
   --section-card-base: var(--pole-surface);
   --flyout-tab-active-top: var(--pole-surface);
   --flyout-tab-active-bottom: var(--aqua-orange-fill);
-  --flyout-tab-active-border: var(--brand-secondary-amber);
 
   /* The Primary Accent is used at full strength (the recipe would darken it for light mode). */
   --brand-primary: var(--oklch-blue);
@@ -224,20 +222,6 @@
 [data-theme='theme-oklch-light'] .menuSectionTitle,
 [data-theme='theme-oklch-light'] .menu-field-label {
   color: var(--aqua-ink);
-}
-
-/* The active tab: orange text and outline on white, no glow text. */
-[data-theme='theme-oklch-light'] .menuTab-active,
-[data-theme='theme-oklch-light'] .menuTab-active:hover {
-  color: var(--brand-secondary-amber);
-  text-shadow: none;
-  box-shadow: 0 0 8px color-mix(in oklab, var(--oklch-yellow) 25%, transparent);
-}
-
-/* An idle tab is a pale blue button with slate text. */
-[data-theme='theme-oklch-light'] .menuTab:not(.menuTab-active) {
-  color: var(--aqua-ink-soft);
-  border-color: var(--aqua-line);
 }
 
 /* Panel chrome: the dark themes cap a side panel with a bright strip at the top and bottom; in Aquaglass

@@ -4,7 +4,7 @@ import React, { useState, useRef, useEffect, useId } from 'react';
 import { usePresence } from '@/hooks/usePresence';
 import { createPortal } from 'react-dom';
 import '@/app/styles/components/TreeSubMenu.css';
-import { ChevronDownIcon } from '@/components/icons/PanelIcons';
+import { ChevronDownIcon, PanelFolderTabSvg } from '@/components/icons/PanelIcons';
 import { HelpCircleIcon } from '@/components/icons/LayoutIcons';
 import HoverHint, { type HintContent } from '@/components/HoverHint';
 import { useUIPreferences } from '@/context/UIPreferencesContext';
@@ -249,6 +249,9 @@ export function ActionMenuDivider() {
 // `.menuTabs` element and CSS as the real tab band, not a different rule for a different shape, so
 // every splitBody flyout's head card ends up the same height/proportions regardless of how many
 // tabs it actually has. `active`/`onChange` only matter once there's a real choice to make.
+// Real tabs are the side panels' paper-folder tabs (the same PanelFolderTabSvg and .tree-folder-tab
+// looks), with the icon and label inside, standing on the band's bottom edge; the active one opens into
+// the menu body below it (.menuFolderTab in TreeSubMenu.css).
 export function ActionMenuTabs<T extends string>({
   tabs,
   active,
@@ -258,24 +261,31 @@ export function ActionMenuTabs<T extends string>({
   active?: T;
   onChange?: (id: T) => void;
 }) {
+  const gradientId = useId();
   if (tabs.length < 2) {
     return <div className="menuTabs" aria-hidden="true" />;
   }
   return (
-    <div className="menuTabs" role="tablist">
-      {tabs.map((tab) => (
-        <button
-          key={tab.id}
-          type="button"
-          role="tab"
-          aria-selected={active === tab.id}
-          onClick={() => onChange?.(tab.id)}
-          className={`menuTab ${active === tab.id ? 'menuTab-active' : ''}`}
-        >
-          {tab.icon}
-          <span>{tab.label}</span>
-        </button>
-      ))}
+    <div className="menuTabs menuTabs-folder" role="tablist">
+      {tabs.map((tab) => {
+        const isActive = active === tab.id;
+        return (
+          <button
+            key={tab.id}
+            type="button"
+            role="tab"
+            aria-selected={isActive}
+            onClick={() => onChange?.(tab.id)}
+            className={`menuFolderTab tree-folder-tab ${isActive ? 'tree-folder-tab-active z-20' : 'tree-folder-tab-idle z-10'}`}
+          >
+            <PanelFolderTabSvg gradientId={`${gradientId}-${tab.id}`} isActive={isActive} variant="curved" />
+            <span className="relative z-10 flex items-center gap-1.5 select-none">
+              {tab.icon}
+              <span>{tab.label}</span>
+            </span>
+          </button>
+        );
+      })}
     </div>
   );
 }
