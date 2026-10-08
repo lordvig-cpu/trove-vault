@@ -1,6 +1,6 @@
 import { supabase } from '@/lib/supabase';
 import { toFieldDefinition, toItemTemplate, toJson } from '@/lib/data/mappers';
-import type { ItemTemplate } from '@/types/template';
+import { DEFAULT_TEMPLATE_ICON, type ItemTemplate } from '@/types/template';
 import type { TemplateFlexLayoutConfig } from '@/types/layout';
 
 export interface NewTemplateInput {
@@ -80,7 +80,7 @@ export async function updateTemplateMetadata(id: number, metadata: TemplateMetad
     .update({
       name: metadata.name.trim(),
       description: metadata.description?.trim() || null,
-      icon: metadata.icon.trim() || '📦',
+      icon: metadata.icon.trim() || DEFAULT_TEMPLATE_ICON,
     })
     .eq('id', id)
     .select()

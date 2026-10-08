@@ -1,11 +1,11 @@
 'use client';
 
 import React from 'react';
-import type { CollectionTemplate } from '@/types/template';
+import type { ItemTemplate } from '@/types/template';
 import { FileIcon, DotIcon } from '@/components/icons/ContentIcons';
 
 interface ItemTemplatePickerProps {
-  templates: CollectionTemplate[];
+  templates: ItemTemplate[];
   selectedTemplateId: number | null;
   onSelect: (value: string) => void;
   fieldCount: number;

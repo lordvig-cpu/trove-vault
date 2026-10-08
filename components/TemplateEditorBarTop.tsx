@@ -13,6 +13,7 @@ import {
   barToggleGroup,
 } from '@/components/editorBarStyles';
 import HoverHint, { HintRef, type HintContent } from '@/components/HoverHint';
+import { DEFAULT_TEMPLATE_ICON } from '@/types/template';
 
 /* ==========================================================================
    Top row of the template editor bar.
@@ -72,7 +73,7 @@ export default function TemplateEditorBarTop({
           className="w-[26px] h-[26px] rounded-md bg-shade/40 border border-[color-mix(in_oklch,var(--secondary-accent)_35%,transparent)] flex items-center justify-center text-sm shrink-0"
           aria-hidden="true"
         >
-          {icon || '📦'}
+          {icon || DEFAULT_TEMPLATE_ICON}
         </span>
         <h1 className="text-[13px] font-bold text-[var(--flyout-white)] tracking-wide truncate max-w-[30ch]" title={name}>
           {name}

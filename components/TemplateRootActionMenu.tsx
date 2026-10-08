@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { ItemTemplate } from '@/types/template';
+import { DEFAULT_TEMPLATE_ICON, ItemTemplate } from '@/types/template';
 import { FieldType } from '@/types/field';
 import { useTreeActionMenu } from '@/hooks/useTreeActionMenu';
 import DeleteTemplateModal from '@/components/DeleteTemplateModal';
@@ -37,7 +37,7 @@ export default function TemplateRootActionMenu({
   onCloseEditor,
 }: TemplateRootActionMenuProps) {
   const [name, setName] = useState(template.name);
-  const [icon, setIcon] = useState(template.icon || '📦');
+  const [icon, setIcon] = useState(template.icon || DEFAULT_TEMPLATE_ICON);
   const [description, setDescription] = useState(template.description || '');
   const [confirmingDelete, setConfirmingDelete] = useState(false);
 
@@ -47,20 +47,20 @@ export default function TemplateRootActionMenu({
   if (prevTemplate !== template) {
     setPrevTemplate(template);
     setName(template.name);
-    setIcon(template.icon || '📦');
+    setIcon(template.icon || DEFAULT_TEMPLATE_ICON);
     setDescription(template.description || '');
   }
 
   const handleSaveMeta = () => {
     if (
       name.trim() !== template.name ||
-      icon.trim() !== (template.icon || '📦') ||
+      icon.trim() !== (template.icon || DEFAULT_TEMPLATE_ICON) ||
       description.trim() !== (template.description || '')
     ) {
       onUpdateMeta(
         name.trim() || template.name,
         description.trim() || null,
-        icon.trim() || '📦'
+        icon.trim() || DEFAULT_TEMPLATE_ICON
       );
     }
   };
@@ -75,7 +75,7 @@ export default function TemplateRootActionMenu({
       left={menu.menuCoords.left}
       position={position}
       title="Blueprint Settings"
-      titleIcon={icon || '📦'}
+      titleIcon={icon || DEFAULT_TEMPLATE_ICON}
       className="menuShellWide"
     >
       <div className="flex flex-col gap-2.5 p-2 text-xs">

@@ -1,6 +1,6 @@
 import type { Json, TableRow } from '@/types/database';
 import type { ItemRecord } from '@/types/item';
-import type { ItemTemplate } from '@/types/template';
+import { DEFAULT_TEMPLATE_ICON, type ItemTemplate } from '@/types/template';
 import type { FieldDefinition, FieldType } from '@/types/field';
 
 /* ==========================================================================
@@ -39,7 +39,7 @@ export function toItemTemplate(row: TableRow<'item_templates'>, fields?: FieldDe
   const { layout_config, ...rest } = row;
   return {
     ...rest,
-    icon: row.icon ?? '📦',
+    icon: row.icon ?? DEFAULT_TEMPLATE_ICON,
     // Only a current layout is meaningful; the editor validates it again when loading
     layout_config: layout_config ? (layout_config as unknown as ItemTemplate['layout_config']) : null,
     ...(fields ? { fields } : {}),

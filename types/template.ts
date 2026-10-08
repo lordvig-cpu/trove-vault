@@ -6,6 +6,9 @@ import { TemplateFlexLayoutConfig } from './layout';
    Blueprint contract for reusable schema definitions, categories, and presets.
    ========================================================================== */
 
+/** The icon a template shows until its user picks one. */
+export const DEFAULT_TEMPLATE_ICON = '📦';
+
 export interface ItemTemplate {
   id: number;
   name: string;
@@ -15,8 +18,3 @@ export interface ItemTemplate {
   fields?: FieldDefinition[];
   layout_config?: TemplateFlexLayoutConfig | null;
 }
-
-/**
- * Backward compatibility alias during migration from collection_templates.
- */
-export type CollectionTemplate = ItemTemplate;

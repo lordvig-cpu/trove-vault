@@ -6,7 +6,7 @@ import { errorMessage } from '@/lib/errors';
 import { fetchTemplateCatalog } from '@/lib/data/templates';
 import type { AdHocAttribute } from '@/components/item-form/AdHocAttributesEditor';
 import type { FieldDefinition } from '@/types/field';
-import type { CollectionTemplate } from '@/types/template';
+import type { ItemTemplate } from '@/types/template';
 
 /* ==========================================================================
    Shared state and behavior of the Create and Edit item modals: the name, the chosen template and
@@ -29,7 +29,7 @@ export function useItemForm(mode: ItemFormMode) {
   const keepValuesOnTemplateChange = mode === 'edit';
 
   const [name, setName] = useState('');
-  const [availableTemplates, setAvailableTemplates] = useState<CollectionTemplate[]>([]);
+  const [availableTemplates, setAvailableTemplates] = useState<ItemTemplate[]>([]);
   const [selectedTemplateId, setSelectedTemplateId] = useState<number | null>(null);
   const [activeTemplateFields, setActiveTemplateFields] = useState<FieldDefinition[]>([]);
   const [dynamicValues, setDynamicValues] = useState<Record<string, unknown>>({});
@@ -44,14 +44,14 @@ export function useItemForm(mode: ItemFormMode) {
 
   /* ---- templates -------------------------------------------------------- */
 
-  const loadTemplates = useCallback(async (): Promise<CollectionTemplate[]> => {
+  const loadTemplates = useCallback(async (): Promise<ItemTemplate[]> => {
     const templates = await fetchTemplateCatalog();
     setAvailableTemplates(templates);
     return templates;
   }, []);
 
   /** Make a template the active one and give its fields values. */
-  const applyTemplate = useCallback((template: CollectionTemplate, keepValues: boolean) => {
+  const applyTemplate = useCallback((template: ItemTemplate, keepValues: boolean) => {
     const fields = template.fields || [];
     setSelectedTemplateId(template.id);
     setActiveTemplateFields(fields);

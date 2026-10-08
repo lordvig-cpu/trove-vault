@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo } from 'react';
 import type { PlaceBuiltinHandler, BuiltinKey } from '@/types/layout';
-import { ItemTemplate } from '@/types/template';
+import { DEFAULT_TEMPLATE_ICON, ItemTemplate } from '@/types/template';
 import { FieldDefinition, FieldType } from '@/types/field';
 import { useTreeActionMenu } from '@/hooks/useTreeActionMenu';
 import { GearIcon, PlusIcon } from '@/components/icons/TreeIcons';
@@ -125,7 +125,7 @@ function TemplateRootTreeRow({
         {isRightSide && gearTrigger}
 
         <div className="flex items-center gap-2 min-w-0 flex-1">
-          <span className="text-lg shrink-0 select-none">{template.icon || '📦'}</span>
+          <span className="text-lg shrink-0 select-none">{template.icon || DEFAULT_TEMPLATE_ICON}</span>
           <div className="min-w-0 flex-1">
             <span className="text-xs font-bold text-strong truncate block">
               {template.name}

@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 import { createItem } from '@/lib/data/items';
 import { useItemForm } from '@/hooks/useItemForm';
 import { ItemRecord } from '@/types/item';
-import { CollectionTemplate } from '@/types/template';
+import { ItemTemplate } from '@/types/template';
 import AdHocAttributesEditor from '@/components/item-form/AdHocAttributesEditor';
 import ItemImagePicker from '@/components/item-form/ItemImagePicker';
 import ItemModalShell from '@/components/item-form/ItemModalShell';
@@ -65,7 +65,7 @@ export default function CreateItemModal({
       if (fullTemplates.length === 0) return;
 
       // 1. Check if launched from a dynamic virtual category (negative ID, e.g. -2 for Comics)
-      let targetTemplate: CollectionTemplate | undefined;
+      let targetTemplate: ItemTemplate | undefined;
       if (collectionId !== null && collectionId < 0) {
         const targetId = Math.abs(collectionId);
         targetTemplate = fullTemplates.find((t) => t.id === targetId);

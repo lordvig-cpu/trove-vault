@@ -1,7 +1,7 @@
 import type { UnifiedCollectionNode } from '@/components/UnifiedTree';
 import type { ItemRecord } from '@/types/item';
 import type { CollectionRecord } from '@/types/collection';
-import type { CollectionTemplate } from '@/types/template';
+import { DEFAULT_TEMPLATE_ICON, type ItemTemplate } from '@/types/template';
 import {
   detectItemCategory,
   getStandaloneRootItem,
@@ -18,7 +18,7 @@ export type TreeTab = 'items' | 'collections' | 'templates';
  */
 function buildTemplateNodesFromItems(
   items: ItemRecord[],
-  templates: CollectionTemplate[]
+  templates: ItemTemplate[]
 ): UnifiedCollectionNode[] {
   const templateMap = new Map<number, ItemRecord[]>();
   for (const item of items) {
@@ -39,7 +39,7 @@ function buildTemplateNodesFromItems(
         id: -tmpl.id,
         name: tmpl.name,
         description: tmpl.description || `All ${tmpl.name}`,
-        icon: tmpl.icon || '📦',
+        icon: tmpl.icon || DEFAULT_TEMPLATE_ICON,
         items: itemTree,
         subCollections: [],
       });
@@ -59,7 +59,7 @@ function buildTemplateNodesFromItems(
 function buildCategoryNodesFromItems(
   items: ItemRecord[],
   allItems: ItemRecord[],
-  templates: CollectionTemplate[]
+  templates: ItemTemplate[]
 ): UnifiedCollectionNode[] {
   const itemLookup = new Map(allItems.map(item => [item.id, item]));
   const categoryMap = new Map<
@@ -114,7 +114,7 @@ export function filterTreeForest(
   activeTab: TreeTab = 'items',
   allItems: ItemRecord[] = [],
   collections: CollectionRecord[] = [],
-  templates: CollectionTemplate[] = []
+  templates: ItemTemplate[] = []
 ): UnifiedCollectionNode[] {
   if (activeTab === 'templates') {
     const itemLookup = new Map(allItems.map(item => [item.id, item]));

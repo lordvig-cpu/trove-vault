@@ -1,6 +1,6 @@
 import { CollectionRecord } from '@/types/collection';
 import { ItemRecord } from '@/types/item';
-import { CollectionTemplate } from '@/types/template';
+import { DEFAULT_TEMPLATE_ICON, ItemTemplate } from '@/types/template';
 import { UnifiedCollectionNode } from '@/components/UnifiedTree';
 import { SearchScope } from '@/components/NavigationHeader';
 
@@ -81,7 +81,7 @@ export function getStandaloneRootItem(item: ItemRecord, allItems: ItemRecord[], 
  */
 export function detectItemCategory(
   item: ItemRecord,
-  templates: CollectionTemplate[] = []
+  templates: ItemTemplate[] = []
 ): { id: number; name: string; icon: string } {
   // 1. Dynamic Database-Driven Grouping
   if (item.template_id) {
@@ -90,7 +90,7 @@ export function detectItemCategory(
       return {
         id: -matchedTemplate.id, // Negative ID marks virtual category nodes
         name: matchedTemplate.name,
-        icon: matchedTemplate.icon || '📦',
+        icon: matchedTemplate.icon || DEFAULT_TEMPLATE_ICON,
       };
     }
 
@@ -103,12 +103,12 @@ export function detectItemCategory(
           : item.template_id === 3
           ? 'Comic Books & Graphic Novels'
           : `Category #${item.template_id}`,
-      icon: item.template_id === 2 ? '🃏' : item.template_id === 3 ? '📚' : '📦',
+      icon: item.template_id === 2 ? '🃏' : item.template_id === 3 ? '📚' : DEFAULT_TEMPLATE_ICON,
     };
   }
 
   // 2. Generic Fallback for unassigned items
-  return { id: -999, name: 'Uncategorized Items', icon: '📦' };
+  return { id: -999, name: 'Uncategorized Items', icon: DEFAULT_TEMPLATE_ICON };
 }
 
 /**
@@ -204,7 +204,7 @@ export function buildFilteredUnifiedForest(
   activeCollectionId: number | null = null,
   searchQuery: string = '',
   searchScope: SearchScope = 'current',
-  templates: CollectionTemplate[] = []
+  templates: ItemTemplate[] = []
 ): UnifiedCollectionNode[] {
   const isSearchingCurrent = searchScope === 'current' && searchQuery.trim() !== '';
   const itemLookup = new Map(allItems.map(item => [item.id, item]));

@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 import { updateItem } from '@/lib/data/items';
 import { useItemForm } from '@/hooks/useItemForm';
 import { ItemRecord } from '@/types/item';
-import { CollectionTemplate } from '@/types/template';
+import { ItemTemplate } from '@/types/template';
 import AdHocAttributesEditor from '@/components/item-form/AdHocAttributesEditor';
 import ItemImagePicker from '@/components/item-form/ItemImagePicker';
 import ItemModalShell from '@/components/item-form/ItemModalShell';
@@ -72,7 +72,7 @@ export default function EditItemModal({
       setDynamicValues(loadedDynamicValues);
 
       // Match template by template_id first, then fallback to attribute key match
-      let matchedTemplate: CollectionTemplate | undefined;
+      let matchedTemplate: ItemTemplate | undefined;
       if (item.template_id) {
         matchedTemplate = fullTemplates.find((t) => t.id === item.template_id);
       }

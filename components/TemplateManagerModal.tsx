@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { createTemplate } from '@/lib/data/templates';
-import { ItemTemplate } from '@/types/template';
+import { DEFAULT_TEMPLATE_ICON, ItemTemplate } from '@/types/template';
 import { fetchTemplateCatalog } from '@/lib/data/templates';
 import { errorMessage } from '@/lib/errors';
 import { CloseIcon } from '@/components/icons/PanelIcons';
@@ -40,7 +40,7 @@ export default function TemplateManagerModal({
   const [savingCustom, setSavingCustom] = useState(false);
   const [newTemplateName, setNewTemplateName] = useState('');
   const [newTemplateDesc, setNewTemplateDesc] = useState('');
-  const [newTemplateIcon, setNewTemplateIcon] = useState('📦');
+  const [newTemplateIcon, setNewTemplateIcon] = useState(DEFAULT_TEMPLATE_ICON);
   const [showSaveAsCustom, setShowSaveAsCustom] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
@@ -100,7 +100,7 @@ export default function TemplateManagerModal({
       const createdTemplate = await createTemplate({
         name: newTemplateName.trim(),
         description: newTemplateDesc.trim() || 'Custom item blueprint',
-        icon: newTemplateIcon || '📦',
+        icon: newTemplateIcon || DEFAULT_TEMPLATE_ICON,
       });
 
       setSuccessMsg(`Template "${createdTemplate.name}" created successfully!`);
