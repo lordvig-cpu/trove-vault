@@ -12,10 +12,9 @@ import { useResizablePanel } from '@/hooks/useResizablePanel';
 import { SecondarySidebarPosition } from '@/types/layout';
 import EmptyPanelDropZone from '@/components/EmptyPanelDropZone';
 import PanelContentTransition from '@/components/PanelContentTransition';
-import PrimarySidePanelHeader from '@/components/PrimarySidePanelHeader';
+import PrimarySidePanelHeader, { type PanelHeaderPassThroughProps } from '@/components/PrimarySidePanelHeader';
 import { TreeTab } from '@/lib/filterTreeForest';
-import { CollectionRecord } from '@/types/collection';
-import { DockContent, TabReorderInfo } from '@/hooks/usePanelDockDrag';
+import { DockContent } from '@/hooks/usePanelDockDrag';
 
 /* ==========================================================================
    1. TYPE DEFINITIONS & CONSTANTS
@@ -24,13 +23,12 @@ import { DockContent, TabReorderInfo } from '@/hooks/usePanelDockDrag';
 /**
  * Props for SecondarySidePanel utility & inspector drawer.
  */
-interface SecondarySidePanelProps {
+interface SecondarySidePanelProps extends PanelHeaderPassThroughProps {
   isContentSliding?: boolean;
   hasDockedContent?: boolean;
   reservedWidth?: number;
   onWidthChange?: (width: number) => void;
   children?: ReactNode;
-  onHandlePointerDown?: (e: React.PointerEvent) => void;
   isOpen: boolean;
   isPinned?: boolean;
   position?: SecondarySidebarPosition;
@@ -48,38 +46,11 @@ interface SecondarySidePanelProps {
   activeTab?: TreeTab | DockContent;
   onTabChange?: (tab: DockContent) => void;
   tabs?: DockContent[];
-  searchQuery?: string;
-  onSearchChange?: (query: string) => void;
   isAnyCategoryExpanded?: boolean;
   onToggleAllCategories?: () => void;
   isAnyFolderExpanded?: boolean;
   onToggleAllFolders?: () => void;
-  onAddNewItem?: () => void;
-  onAddNewCollection?: () => void;
-  onAddNewTemplate?: () => void;
-  collections?: CollectionRecord[];
-  filterCollectionIds?: number[];
-  onToggleFilterCollection?: (collectionId: number) => void;
-  onClearCollectionFilters?: () => void;
-  onSelectNoneCollectionFilter?: () => void;
-  filterFieldTypes?: import('@/types/field').FieldType[];
-  onToggleFilterFieldType?: (type: import('@/types/field').FieldType) => void;
-  onClearFieldTypeFilters?: () => void;
-  onSelectNoneFieldTypeFilter?: () => void;
-  fieldTypeCounts?: Record<string, number>;
-  onAddNewField?: () => void;
-  filterHierarchyTypes?: import('@/lib/hierarchyFilterMetas').HierarchyFilterCategory[];
-  onToggleFilterHierarchyType?: (type: import('@/lib/hierarchyFilterMetas').HierarchyFilterCategory) => void;
-  onClearHierarchyTypeFilters?: () => void;
-  onSelectNoneHierarchyTypeFilter?: () => void;
-  hierarchyTypeCounts?: Record<string, number>;
-  onStartTabDrag?: (tab: Exclude<DockContent, 'empty'>, e: React.PointerEvent) => void;
   isDragging?: boolean;
-  reorderInfo?: TabReorderInfo | null;
-  hierarchyNodeCount?: number;
-  /** Layout only: the header eye that shows every row's visibility eye, and its toggle. */
-  showAllEyes?: boolean;
-  onToggleShowAllEyes?: () => void;
 }
 
 const MIN_WIDTH = 260;
@@ -110,42 +81,16 @@ export default function SecondarySidePanel({
   reservedWidth = 0,
   onWidthChange,
   children,
-  onHandlePointerDown,
   treeView,
   activeTab,
   onTabChange,
   tabs,
-  searchQuery,
-  onSearchChange,
   isAnyCategoryExpanded,
   onToggleAllCategories,
   isAnyFolderExpanded,
   onToggleAllFolders,
-  onAddNewItem,
-  onAddNewCollection,
-  onAddNewTemplate,
-  collections = [],
-  filterCollectionIds = [],
-  onToggleFilterCollection,
-  onClearCollectionFilters,
-  onSelectNoneCollectionFilter,
-  filterFieldTypes,
-  onToggleFilterFieldType,
-  onClearFieldTypeFilters,
-  onSelectNoneFieldTypeFilter,
-  fieldTypeCounts,
-  onAddNewField,
-  filterHierarchyTypes,
-  onToggleFilterHierarchyType,
-  onClearHierarchyTypeFilters,
-  onSelectNoneHierarchyTypeFilter,
-  hierarchyTypeCounts,
-  onStartTabDrag,
   isDragging: isDockDragging = false,
-  reorderInfo = null,
-  hierarchyNodeCount,
-  showAllEyes,
-  onToggleShowAllEyes,
+  ...headerProps
 }: SecondarySidePanelProps) {
   /* ------------------------------------------------------------------------
      2.1 USER PREFERENCES & RESIZING HOOK
@@ -289,6 +234,7 @@ export default function SecondarySidePanel({
 
         {/* Top Header with Draggable Grip, Search and Controls */}
         <PrimarySidePanelHeader
+          {...headerProps}
           hasDockedContent={hasDockedContent}
           title={title}
           showSearchFilter={showSearchFilter}
@@ -302,40 +248,13 @@ export default function SecondarySidePanel({
           activeTab={activeTab}
           onTabChange={onTabChange}
           tabs={tabs}
-          searchQuery={searchQuery}
-          onSearchChange={onSearchChange}
           isAnyCategoryExpanded={isAnyCategoryExpanded}
           onToggleAllCategories={onToggleAllCategories}
           isAnyFolderExpanded={isAnyFolderExpanded}
           onToggleAllFolders={onToggleAllFolders}
           onTogglePin={onTogglePin ?? onClose}
           onClose={onClose}
-          onAddNewItem={onAddNewItem}
-          onAddNewCollection={onAddNewCollection}
-          onAddNewTemplate={onAddNewTemplate}
-          collections={collections}
-          filterCollectionIds={filterCollectionIds}
-          onToggleFilterCollection={onToggleFilterCollection}
-          onClearCollectionFilters={onClearCollectionFilters}
-          onSelectNoneCollectionFilter={onSelectNoneCollectionFilter}
-          filterFieldTypes={filterFieldTypes}
-          onToggleFilterFieldType={onToggleFilterFieldType}
-          onClearFieldTypeFilters={onClearFieldTypeFilters}
-          onSelectNoneFieldTypeFilter={onSelectNoneFieldTypeFilter}
-          fieldTypeCounts={fieldTypeCounts}
-          onAddNewField={onAddNewField}
-          filterHierarchyTypes={filterHierarchyTypes}
-          onToggleFilterHierarchyType={onToggleFilterHierarchyType}
-          onClearHierarchyTypeFilters={onClearHierarchyTypeFilters}
-          onSelectNoneHierarchyTypeFilter={onSelectNoneHierarchyTypeFilter}
-          hierarchyTypeCounts={hierarchyTypeCounts}
-          onHandlePointerDown={onHandlePointerDown}
-          onStartTabDrag={onStartTabDrag}
           isDragging={isDockDragging}
-          reorderInfo={reorderInfo}
-          hierarchyNodeCount={hierarchyNodeCount}
-          showAllEyes={showAllEyes}
-          onToggleShowAllEyes={onToggleShowAllEyes}
         />
 
         {/* Panel Scrollable Body */}

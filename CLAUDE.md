@@ -408,7 +408,9 @@ commit whenever you add, remove, split or rename a file — it goes stale otherw
 
 - `PrimarySidePanel` takes ~87 props (title, tabs, search/filter, dock/pin/move, drag state, the
   create/loading/error props every panel repeats). The four large files that fed it that many flat
-  props are already split (see below); the props themselves are still flat. Moving workspace,
+  props are already split (see below), and the 27 it only forwards to its header are declared once
+  (`PanelHeaderPassThroughProps` in `PrimarySidePanelHeader.tsx`, rest-spread by both side panels;
+  add a new pass-through prop there, not to each panel); the props themselves are still flat. Moving workspace,
   template-editor and tree/search state into contexts would let panels read what they need instead
   of receiving it, but that changes re-render behavior and needs its own sign-off before doing it.
 - CI is set up in `.github/workflows/ci.yml` (typecheck, lint, build, tests) but has not run on GitHub yet, so

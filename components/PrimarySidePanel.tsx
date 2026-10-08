@@ -5,8 +5,7 @@ import { createPortal } from 'react-dom';
 import { useUIPreferences } from '@/context/UIPreferencesContext';
 import { useResizablePanel } from '@/hooks/useResizablePanel';
 import { useFlyoutLifecycle } from '@/hooks/useFlyoutLifecycle';
-import PrimarySidePanelHeader from '@/components/PrimarySidePanelHeader';
-import { CollectionRecord } from '@/types/collection';
+import PrimarySidePanelHeader, { type PanelHeaderPassThroughProps } from '@/components/PrimarySidePanelHeader';
 import { 
   ResetWidthIcon, 
   ResetWidthRightIcon,
@@ -17,14 +16,14 @@ import { TreeTab } from '@/lib/filterTreeForest';
 import { PrimarySidebarPosition } from '@/types/layout';
 import EmptyPanelDropZone from '@/components/EmptyPanelDropZone';
 import PanelContentTransition from '@/components/PanelContentTransition';
-import { DockContent, TabReorderInfo } from '@/hooks/usePanelDockDrag';
+import { DockContent } from '@/hooks/usePanelDockDrag';
 import { HourglassIcon } from '@/components/icons/GlyphIcons';
 
 /* ==========================================================================
    1. TYPE DEFINITIONS & CONSTANTS
    ========================================================================== */
 
-interface PrimarySidePanelProps {
+interface PrimarySidePanelProps extends PanelHeaderPassThroughProps {
   isContentSliding?: boolean;
   hasDockedContent?: boolean;
   title?: string;
@@ -46,40 +45,12 @@ interface PrimarySidePanelProps {
   tabs?: DockContent[];
   isAnyCategoryExpanded?: boolean;
   onToggleAllCategories?: () => void;
-  searchQuery?: string;
-  onSearchChange?: (query: string) => void;
   reservedWidth?: number;
   onWidthChange?: (width: number) => void;
   loading?: boolean;
   error?: string | null;
   children?: React.ReactNode;
-  onAddNewItem?: () => void;
-  onAddNewCollection?: () => void;
-  onAddNewTemplate?: () => void;
-  collections?: CollectionRecord[];
-  filterCollectionIds?: number[];
-  onToggleFilterCollection?: (collectionId: number) => void;
-  onClearCollectionFilters?: () => void;
-  onSelectNoneCollectionFilter?: () => void;
-  filterFieldTypes?: import('@/types/field').FieldType[];
-  onToggleFilterFieldType?: (type: import('@/types/field').FieldType) => void;
-  onClearFieldTypeFilters?: () => void;
-  onSelectNoneFieldTypeFilter?: () => void;
-  fieldTypeCounts?: Record<string, number>;
-  onAddNewField?: () => void;
-  filterHierarchyTypes?: import('@/lib/hierarchyFilterMetas').HierarchyFilterCategory[];
-  onToggleFilterHierarchyType?: (type: import('@/lib/hierarchyFilterMetas').HierarchyFilterCategory) => void;
-  onClearHierarchyTypeFilters?: () => void;
-  onSelectNoneHierarchyTypeFilter?: () => void;
-  hierarchyTypeCounts?: Record<string, number>;
-  onHandlePointerDown?: (e: React.PointerEvent) => void;
-  onStartTabDrag?: (tab: Exclude<DockContent, 'empty'>, e: React.PointerEvent) => void;
   isDragging?: boolean;
-  reorderInfo?: TabReorderInfo | null;
-  hierarchyNodeCount?: number;
-  /** Layout only: the header eye that shows every row's visibility eye, and its toggle. */
-  showAllEyes?: boolean;
-  onToggleShowAllEyes?: () => void;
 }
 
 const DEFAULT_WIDTH = 304;
@@ -110,39 +81,13 @@ export default function PrimarySidePanel({
   tabs,
   isAnyCategoryExpanded,
   onToggleAllCategories,
-  searchQuery,
-  onSearchChange,
   reservedWidth = 0,
   onWidthChange,
   loading,
   error,
   children,
-  onAddNewItem,
-  onAddNewCollection,
-  onAddNewTemplate,
-  collections = [],
-  filterCollectionIds = [],
-  onToggleFilterCollection,
-  onClearCollectionFilters,
-  onSelectNoneCollectionFilter,
-  filterFieldTypes,
-  onToggleFilterFieldType,
-  onClearFieldTypeFilters,
-  onSelectNoneFieldTypeFilter,
-  fieldTypeCounts,
-  onAddNewField,
-  filterHierarchyTypes,
-  onToggleFilterHierarchyType,
-  onClearHierarchyTypeFilters,
-  onSelectNoneHierarchyTypeFilter,
-  hierarchyTypeCounts,
-  onHandlePointerDown,
-  onStartTabDrag,
   isDragging: isDockDragging = false,
-  reorderInfo = null,
-  hierarchyNodeCount,
-  showAllEyes,
-  onToggleShowAllEyes,
+  ...headerProps
 }: PrimarySidePanelProps) {
   const activeIsExpanded = isAnyCategoryExpanded;
   const activeToggleAll = onToggleAllCategories;
@@ -253,6 +198,7 @@ export default function PrimarySidePanel({
 
       {/* Header with Search, Filter Button & Filter Tray */}
       <PrimarySidePanelHeader
+        {...headerProps}
         hasDockedContent={hasDockedContent}
         title={title}
         showSearchFilter={showSearchFilter ?? (Boolean(children) || variant === 'flyout')}
@@ -267,38 +213,11 @@ export default function PrimarySidePanel({
         activeTab={activeTab}
         onTabChange={onTabChange}
         tabs={tabs}
-        searchQuery={searchQuery}
-        onSearchChange={onSearchChange}
         isAnyCategoryExpanded={activeIsExpanded}
         onToggleAllCategories={activeToggleAll}
         onTogglePin={handlePinAction}
         onClose={onClose}
-        onAddNewItem={onAddNewItem}
-        onAddNewCollection={onAddNewCollection}
-        onAddNewTemplate={onAddNewTemplate}
-        collections={collections}
-        filterCollectionIds={filterCollectionIds}
-        onToggleFilterCollection={onToggleFilterCollection}
-        onClearCollectionFilters={onClearCollectionFilters}
-        onSelectNoneCollectionFilter={onSelectNoneCollectionFilter}
-        filterFieldTypes={filterFieldTypes}
-        onToggleFilterFieldType={onToggleFilterFieldType}
-        onClearFieldTypeFilters={onClearFieldTypeFilters}
-        onSelectNoneFieldTypeFilter={onSelectNoneFieldTypeFilter}
-        fieldTypeCounts={fieldTypeCounts}
-        onAddNewField={onAddNewField}
-        filterHierarchyTypes={filterHierarchyTypes}
-        onToggleFilterHierarchyType={onToggleFilterHierarchyType}
-        onClearHierarchyTypeFilters={onClearHierarchyTypeFilters}
-        onSelectNoneHierarchyTypeFilter={onSelectNoneHierarchyTypeFilter}
-        hierarchyTypeCounts={hierarchyTypeCounts}
-        onHandlePointerDown={onHandlePointerDown}
-        onStartTabDrag={onStartTabDrag}
         isDragging={isDockDragging}
-        reorderInfo={reorderInfo}
-        hierarchyNodeCount={hierarchyNodeCount}
-        showAllEyes={showAllEyes}
-        onToggleShowAllEyes={onToggleShowAllEyes}
       />
 
       {/* Syncing Progress Banner */}

@@ -76,6 +76,39 @@ export interface PrimarySidePanelHeaderProps {
   onToggleShowAllEyes?: () => void;
 }
 
+/** The header props a side panel only forwards (search, filters, add actions, tab drag, Layout eyes): both
+ *  PrimarySidePanel and SecondarySidePanel take these and pass them straight through. */
+export type PanelHeaderPassThroughProps = Pick<
+  PrimarySidePanelHeaderProps,
+  | 'searchQuery'
+  | 'onSearchChange'
+  | 'onAddNewItem'
+  | 'onAddNewCollection'
+  | 'onAddNewTemplate'
+  | 'collections'
+  | 'filterCollectionIds'
+  | 'onToggleFilterCollection'
+  | 'onClearCollectionFilters'
+  | 'onSelectNoneCollectionFilter'
+  | 'filterFieldTypes'
+  | 'onToggleFilterFieldType'
+  | 'onClearFieldTypeFilters'
+  | 'onSelectNoneFieldTypeFilter'
+  | 'fieldTypeCounts'
+  | 'onAddNewField'
+  | 'filterHierarchyTypes'
+  | 'onToggleFilterHierarchyType'
+  | 'onClearHierarchyTypeFilters'
+  | 'onSelectNoneHierarchyTypeFilter'
+  | 'hierarchyTypeCounts'
+  | 'onHandlePointerDown'
+  | 'onStartTabDrag'
+  | 'reorderInfo'
+  | 'hierarchyNodeCount'
+  | 'showAllEyes'
+  | 'onToggleShowAllEyes'
+>;
+
 /* ==========================================================================
    2. MAIN COMPONENT: PrimarySidePanelHeader
    Composes the toolbar row, the search-and-filter section and the view tabs row (each in
