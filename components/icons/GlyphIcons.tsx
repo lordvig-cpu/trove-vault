@@ -75,3 +75,19 @@ export const CornerDownRightIcon = ({ className = 'w-3 h-3' }: GlyphIconProps) =
     <path d="M5 4v7a2 2 0 0 0 2 2h12M14 8l5 5-5 5" />
   </svg>
 );
+
+/** TabStackIcon: two overlapping windows (add as a tab beside what is already docked). */
+export const TabStackIcon = ({ className = 'w-3.5 h-3.5' }: GlyphIconProps) => (
+  <svg className={className} viewBox="0 0 24 24" {...strokeProps}>
+    <rect x="8" y="8" width="13" height="13" rx="2" />
+    <path d="M16 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h3" />
+  </svg>
+);
+
+/** HourglassIcon: an hourglass (loading / syncing). */
+export const HourglassIcon = ({ className = 'w-3.5 h-3.5' }: GlyphIconProps) => (
+  <svg className={className} viewBox="0 0 24 24" {...strokeProps}>
+    <path d="M6 3h12M6 21h12" />
+    <path d="M7 3v3a5 5 0 0 0 5 5 5 5 0 0 0 5-5V3M7 21v-3a5 5 0 0 1 5-5 5 5 0 0 1 5 5v3" />
+  </svg>
+);

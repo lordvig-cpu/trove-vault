@@ -18,6 +18,7 @@ import { PrimarySidebarPosition } from '@/types/layout';
 import EmptyPanelDropZone from '@/components/EmptyPanelDropZone';
 import PanelContentTransition from '@/components/PanelContentTransition';
 import { DockContent, TabReorderInfo } from '@/hooks/usePanelDockDrag';
+import { HourglassIcon } from '@/components/icons/GlyphIcons';
 
 /* ==========================================================================
    1. TYPE DEFINITIONS & CONSTANTS
@@ -302,8 +303,8 @@ export default function PrimarySidePanel({
 
       {/* Syncing Progress Banner */}
       {loading && (
-        <div className="primary-side-panel-notice-loading panel-notice-text animate-pulse shrink-0 px-3 py-1 text-xs mt-2 mx-2">
-          ⏳ Syncing hierarchy...
+        <div className="primary-side-panel-notice-loading panel-notice-text animate-pulse shrink-0 px-3 py-1 text-xs mt-2 mx-2 flex items-center gap-1.5">
+          <HourglassIcon className="w-3.5 h-3.5 shrink-0" /> Syncing hierarchy...
         </div>
       )}
 

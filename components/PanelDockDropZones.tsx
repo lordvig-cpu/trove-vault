@@ -4,6 +4,7 @@ import React from 'react';
 import { DockablePanelId, DockDropTargetZone, isDockZoneAllowed, DockContent } from '@/hooks/usePanelDockDrag';
 import { TrashCanIcon, ProhibitedIcon, DockLeftPanelIcon, DockRightPanelIcon, DockBottomPanelIcon } from '@/components/icons/PanelIcons';
 import { LayoutGridIcon } from '@/components/icons/ContentIcons';
+import { TabStackIcon } from '@/components/icons/GlyphIcons';
 
 interface PanelDockDropZonesProps {
   isDragging: boolean;
@@ -210,7 +211,7 @@ export default function PanelDockDropZones({
                     : ''
                 }`}
               >
-                <span>⧉</span>
+                <TabStackIcon className="w-3.5 h-3.5 shrink-0" />
                 <span>
                   {!isLeftTabAllowed ? (
                     pTabs.length >= 3 ? (
@@ -424,7 +425,7 @@ export default function PanelDockDropZones({
                     : ''
                 }`}
               >
-                <span>⧉</span>
+                <TabStackIcon className="w-3.5 h-3.5 shrink-0" />
                 <span>
                   {!isRightTabAllowed ? (
                     sTabs.length >= 3 ? (

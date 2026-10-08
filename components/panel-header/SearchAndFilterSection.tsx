@@ -412,7 +412,7 @@ export default function SearchAndFilterSection({
                   title="Remove search filter"
                   aria-label="Remove search filter"
                 >
-                  &#10005;
+                  <SearchClearIcon className="w-2.5 h-2.5" />
                 </button>
                 <FilterIcon className="w-3.5 h-3.5 tree-filter-indicator shrink-0" />
                 <span className="tree-filter-name truncate font-medium transition-colors">

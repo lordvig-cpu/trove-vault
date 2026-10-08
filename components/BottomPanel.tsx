@@ -14,6 +14,7 @@ import { useUIPreferences } from '@/context/UIPreferencesContext';
 import { useResizableHeight } from '@/hooks/useResizableHeight';
 import EmptyPanelDropZone from '@/components/EmptyPanelDropZone';
 import PanelContentTransition from '@/components/PanelContentTransition';
+import { HintGripIcon } from '@/components/icons/HintIcons';
 
 /** Height (px) the bottom panel opens at and resets to. */
 const DEFAULT_BOTTOM_PANEL_HEIGHT = 220;
@@ -180,7 +181,7 @@ export default function BottomPanel({
             }`}
             title={occupied ? 'Drag to dock content' : undefined}
           >
-            <span className="text-[10px] text-muted opacity-60 tracking-tighter" aria-hidden="true">&#8942;&#8942;</span>
+            <HintGripIcon className="w-2 h-3 text-muted opacity-60" />
             <span className="tree-header-title text-xs font-bold uppercase tracking-wider px-0.5 truncate">
               {panelHeading}
             </span>

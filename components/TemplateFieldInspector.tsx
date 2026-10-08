@@ -10,7 +10,7 @@ import { activeBtn } from '@/components/editorBarStyles';
 import TemplateFieldActionMenu from '@/components/TemplateFieldActionMenu';
 import TemplateRootActionMenu from '@/components/TemplateRootActionMenu';
 import { WarningIcon, ChevronDownIcon } from '@/components/icons/PanelIcons';
-import { CheckIcon, ChevronUpIcon } from '@/components/icons/GlyphIcons';
+import { CheckIcon, ChevronUpIcon, HourglassIcon } from '@/components/icons/GlyphIcons';
 import { HintGripIcon } from '@/components/icons/HintIcons';
 import { CalendarIcon, FieldTypeIcon, FolderIcon, ImageIcon, ListIcon, TextFieldIcon } from '@/components/icons/ContentIcons';
 import { BUILTIN_LABELS } from '@/lib/layoutContent';
@@ -427,7 +427,7 @@ export default function TemplateFieldInspector({
   if (!template && isLoading) {
     return (
       <div className="p-6 flex flex-col items-center justify-center text-center gap-2 text-xs text-muted">
-        <div className="animate-spin text-lg">⏳</div>
+        <HourglassIcon className="w-5 h-5 animate-spin" />
         <span>Loading template schema...</span>
       </div>
     );
