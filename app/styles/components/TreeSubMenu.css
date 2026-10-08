@@ -609,7 +609,7 @@
   align-items: flex-end;
   justify-content: center;
   gap: 0;
-  padding: 0.375rem 0.875rem 0;
+  padding: 0.75rem 0.875rem 0;
   border-bottom-color: var(--secondary-tree-menu-rename-input-focus);
 }
 
@@ -634,6 +634,21 @@
 
 .menuTabs .menuFolderTab .tab-grad-bottom {
   stop-color: var(--flyout-body-top);
+}
+
+/* With real tabs, the band's bottom edge is the only line at the seam, so nothing shows under the active
+   tab: the head draws above the body (whose top border would otherwise paint across the tab, since the
+   head overlaps it by 1.5px), drops its own bottom border, and the body's top border goes transparent
+   (same width, so nothing moves). Safe because a split flyout's head and body always share a width class,
+   so there is no wider body edge that line would need to outline. */
+.menuShellHead:has(.menuTabs-folder) {
+  position: relative;
+  z-index: 1;
+  border-bottom-width: 0;
+}
+
+.menuShellHead:has(.menuTabs-folder) + .menuShellBody {
+  border-top-color: transparent;
 }
 
 /* ActionMenuSection: a collapsible card -- amber border over a dark, faintly amber fill, with a large
