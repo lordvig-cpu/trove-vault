@@ -12,7 +12,7 @@ import type { FieldDefinition, FieldType } from '@/types/field';
 const FIELD_TYPES: readonly FieldType[] = ['text', 'number', 'boolean', 'select', 'date'];
 
 /** A JSON column as a plain object (anything else, including null, becomes an empty object). */
-function toRecord(json: Json | null | undefined): Record<string, unknown> {
+export function toRecord(json: Json | null | undefined): Record<string, unknown> {
   return json && typeof json === 'object' && !Array.isArray(json) ? (json as Record<string, unknown>) : {};
 }
 

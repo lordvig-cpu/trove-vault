@@ -60,8 +60,20 @@ export async function uploadItemImage(file: File): Promise<UploadedImage> {
   return { url: data.publicUrl, path };
 }
 
-/** Best-effort removal of an uploaded image (used to clean up after a failed save). */
-export async function removeItemImage(path: string): Promise<void> {
-  const { error } = await supabase.storage.from(IMAGE_BUCKET).remove([path]);
-  if (error) console.error('Could not remove the uploaded image after a failed save:', error);
+/** Best-effort removal of uploaded images (after a failed save, or once an item no longer uses them). */
+export async function removeItemImage(...paths: string[]): Promise<void> {
+  if (paths.length === 0) return;
+  const { error } = await supabase.storage.from(IMAGE_BUCKET).remove(paths);
+  if (error) console.error('Could not remove uploaded images:', paths, error);
+}
+
+/** The storage path of an image this app uploaded, from its public URL; null for any other URL (an
+ *  image hosted elsewhere is not ours to delete). */
+export function imagePathFromUrl(url: unknown): string | null {
+  if (typeof url !== 'string') return null;
+  const marker = `/storage/v1/object/public/${IMAGE_BUCKET}/`;
+  const at = url.indexOf(marker);
+  if (at < 0) return null;
+  const path = decodeURIComponent(url.slice(at + marker.length).split(/[?#]/)[0]);
+  return path.startsWith('uploads/') ? path : null;
 }

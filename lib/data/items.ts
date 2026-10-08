@@ -1,6 +1,6 @@
 import { supabase } from '@/lib/supabase';
-import { removeItemImage, uploadItemImage, type UploadedImage } from '@/lib/storage';
-import { toItemRecord, toJson } from '@/lib/data/mappers';
+import { imagePathFromUrl, removeItemImage, uploadItemImage, type UploadedImage } from '@/lib/storage';
+import { toItemRecord, toJson, toRecord } from '@/lib/data/mappers';
 import type { ItemRecord } from '@/types/item';
 
 /* ==========================================================================
@@ -67,6 +67,8 @@ export interface ItemUpdateInput {
   imageFile: File | null;
   /** The photo already on the item; null when it was removed. Ignored when imageFile is given. */
   existingImageUrl: string | null;
+  /** The photo the item had before this edit, deleted from storage once the item no longer uses it. */
+  previousImageUrl?: string | null;
 }
 
 export async function updateItem(input: ItemUpdateInput): Promise<void> {
@@ -88,11 +90,42 @@ export async function updateItem(input: ItemUpdateInput): Promise<void> {
     if (uploaded) await removeItemImage(uploaded.path);
     throw err;
   }
+
+  // Only after the item is saved: a replaced or removed photo would otherwise stay in storage forever
+  const previousPath = imagePathFromUrl(input.previousImageUrl);
+  if (previousPath && input.previousImageUrl !== imageUrl) await removeItemImage(previousPath);
 }
 
+/** Deletes an item and (by the database cascade) its sub-items, then their uploaded photos. */
 export async function deleteItem(id: number): Promise<void> {
+  const imagePaths = await subtreeImagePaths(id);
   const { error } = await supabase.from('items').delete().eq('id', id);
   if (error) throw error;
+  await removeItemImage(...imagePaths);
+}
+
+/** Storage paths of the photos on an item and every item nested under it. */
+async function subtreeImagePaths(rootId: number): Promise<string[]> {
+  const paths: string[] = [];
+  const seen = new Set<number>();
+  let frontier = [rootId];
+  const { data: root, error: rootError } = await supabase.from('items').select('attributes').eq('id', rootId).maybeSingle();
+  if (rootError) throw rootError;
+  const rootPath = root ? imagePathFromUrl(toRecord(root.attributes).image_url) : null;
+  if (rootPath) paths.push(rootPath);
+  while (frontier.length > 0) {
+    frontier.forEach((itemId) => seen.add(itemId));
+    const { data, error } = await supabase.from('items').select('id, attributes').in('parent_id', frontier);
+    if (error) throw error;
+    frontier = [];
+    for (const child of data) {
+      if (seen.has(child.id)) continue;
+      frontier.push(child.id);
+      const path = imagePathFromUrl(toRecord(child.attributes).image_url);
+      if (path) paths.push(path);
+    }
+  }
+  return paths;
 }
 
 export async function renameItem(id: number, name: string): Promise<void> {

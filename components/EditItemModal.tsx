@@ -118,6 +118,7 @@ export default function EditItemModal({
         attributes: form.buildAttributes(),
         imageFile: form.selectedFile,
         existingImageUrl: form.existingImageUrl,
+        previousImageUrl: typeof item.attributes?.image_url === 'string' ? item.attributes.image_url : null,
       });
       onItemUpdated();
       onClose();
