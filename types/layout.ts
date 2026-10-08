@@ -66,7 +66,6 @@ export function resolvePaddingCss(padding: string | number | undefined | null): 
 }
 
 export type BoxSide = 'top' | 'right' | 'bottom' | 'left';
-export const BOX_SIDES: BoxSide[] = ['top', 'right', 'bottom', 'left'];
 /** A box value split into its four sides, each a "16px" / "10%" length. */
 export type BoxValues = Record<BoxSide, string>;
 

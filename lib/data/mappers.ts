@@ -12,12 +12,12 @@ import type { FieldDefinition, FieldType } from '@/types/field';
 const FIELD_TYPES: readonly FieldType[] = ['text', 'number', 'boolean', 'select', 'date'];
 
 /** A JSON column as a plain object (anything else, including null, becomes an empty object). */
-export function toRecord(json: Json | null | undefined): Record<string, unknown> {
+function toRecord(json: Json | null | undefined): Record<string, unknown> {
   return json && typeof json === 'object' && !Array.isArray(json) ? (json as Record<string, unknown>) : {};
 }
 
 /** A JSON column as a list of strings, or null when it is not an array. */
-export function toStringList(json: Json | null | undefined): string[] | null {
+function toStringList(json: Json | null | undefined): string[] | null {
   return Array.isArray(json) ? json.filter((v): v is string => typeof v === 'string') : null;
 }
 

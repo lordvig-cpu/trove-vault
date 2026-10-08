@@ -76,9 +76,8 @@ commit whenever you add, remove, split or rename a file — it goes stale otherw
   a flyout's Properties body -- `.menuShellBody`'s own rules in `TreeSubMenu.css` -- is unrelated
   and unchanged: it's a focus state, not a selected/set one.) The template editor toolbars are the
   exception: every unselected control there -- text and icon buttons alike, and the options in their
-  pulldowns -- is a soft menu white (`barIdleBtn` / `barGhostBtn`, `--flyout-white-soft`), a disabled one
-  faint (`barDisabledBtn`, `--flyout-white-faint`, or `disabledBtn`'s opacity over the soft white), a
-  selected one still the yellow `activeBtn`. Two exceptions within that: standalone icon buttons (eye,
+  pulldowns -- is a soft menu white (`barGhostBtn`, `--flyout-white-soft`), a disabled one
+  faint (`barDisabledBtn`, `--flyout-white-faint`), a selected one still the yellow `activeBtn`. Two exceptions within that: standalone icon buttons (eye,
   gear, delete, Bold / Italic / Underline, Undo / Redo / Reset / Save, the width Fit) have no border
   while inactive, a white border on hover (every toolbar hover is white; amber means selected), and an amber icon (no pill) while selected / on -- except the gear, which takes the full selected pill (`activeBtn`, like a chosen Size / Layout option) while its menu is open
   (`barIconBtn` / `barIconBtnOn` / `barIconBtnDisabled`); and pulldown buttons (Add, Split, Shows,

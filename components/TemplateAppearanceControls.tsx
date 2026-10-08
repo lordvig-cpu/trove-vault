@@ -52,7 +52,7 @@ const HINTS = {
 } satisfies Record<string, HintContent>;
 
 /** A px-only number: the input with a fixed, dimmed "px" beside it (same control as the length fields). */
-export function PxField({
+function PxField({
   label,
   value,
   min = 0,

@@ -9,10 +9,8 @@ import { FieldType } from '@/types/field';
 import PanelToolbarRow from '@/components/panel-header/PanelToolbarRow';
 import SearchAndFilterSection from '@/components/panel-header/SearchAndFilterSection';
 import PanelViewTabs from '@/components/panel-header/PanelViewTabs';
-import { FIELD_TYPE_METAS } from '@/lib/fieldTypeMetas';
 import { HierarchyFilterCategory } from '@/lib/hierarchyFilterMetas';
 
-export { FIELD_TYPE_METAS };
 
 /* ==========================================================================
    1. TYPE DEFINITIONS & INTERFACES

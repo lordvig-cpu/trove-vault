@@ -133,7 +133,7 @@ export function itemMatchesQuery(item: ItemRecord, query: string): boolean {
 /**
  * Recursively filters an item hierarchy, keeping branches that match the query.
  */
-export function filterItemHierarchy(items: ItemRecord[], query: string): ItemRecord[] {
+function filterItemHierarchy(items: ItemRecord[], query: string): ItemRecord[] {
   if (!query.trim()) return items;
 
   const result: ItemRecord[] = [];

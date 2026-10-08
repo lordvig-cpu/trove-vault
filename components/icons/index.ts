@@ -1,8 +1,0 @@
-export * from './TreeIcons';
-export * from './PanelIcons';
-export * from './NavigationIcons';
-export * from './LayoutIcons';
-
-export * from './GlyphIcons';
-export * from './ContentIcons';
-export * from './TextIcons';

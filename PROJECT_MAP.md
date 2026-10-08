@@ -118,9 +118,8 @@ Conventions and architecture (data access, theming, template editor internals, b
 SVG icon components, grouped by area: `LayoutIcons.tsx` (template editor), `NavigationIcons.tsx`
 (header/footer), `PanelIcons.tsx` (dock/pin/panel chrome), `TreeIcons.tsx` (tree rows and search), `GlyphIcons.tsx` (small chevron/arrow/check/tag/star
 glyph replacements), `ContentIcons.tsx` (field types, layout components, files/folders, and the
-`FieldTypeIcon` / `ComponentTypeIcon` / `VariantIcon` / `HierarchyCategoryIcon` lookups),
-`TextIcons.tsx` (bold / italic / underline and text alignment, for the content toolbar).
-`index.ts` re-exports these seven as one barrel.
+`FieldTypeIcon` / `ComponentTypeIcon` / `HierarchyCategoryIcon` lookups),
+`TextIcons.tsx` (bold / italic / underline and text alignment, for the content toolbar). Import each from its own file (there is no barrel).
 
 ## components/item-form/
 

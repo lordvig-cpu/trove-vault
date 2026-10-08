@@ -18,7 +18,7 @@ export interface HelpWindowState {
 }
 
 /** More than this and the oldest window closes, so they can't pile up over the interface. */
-export const MAX_HELP_WINDOWS = 4;
+const MAX_HELP_WINDOWS = 4;
 
 let windows: HelpWindowState[] = [];
 const listeners = new Set<() => void>();

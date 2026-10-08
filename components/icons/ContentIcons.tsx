@@ -1,5 +1,4 @@
 import React from 'react';
-import { TagIcon } from './GlyphIcons';
 
 /* Icons for content kinds (field types, layout components, files and folders) that stood in for emoji
    in menus, trees and palettes. Stroke icons drawn in currentColor, 24x24 viewBox, so they follow the
@@ -167,17 +166,5 @@ export function FieldTypeIcon({ type, className }: { type: string; className?: s
 /** The icon for one of the Layout tree filter's categories: container, field or predefined. */
 export function HierarchyCategoryIcon({ type, className }: { type: string; className?: string }) {
   const Icon = type === 'container' ? LayoutGridIcon : type === 'field' ? TextFieldIcon : PuzzleIcon;
-  return <Icon className={className} />;
-}
-
-/** The icon for a component's card variant (standard, compact, stat, table_row, hero, callout). */
-export function VariantIcon({ variant, className }: { variant: string; className?: string }) {
-  const Icon =
-    variant === 'compact' ? TagIcon
-    : variant === 'stat' ? ChartIcon
-    : variant === 'table_row' ? TableIcon
-    : variant === 'hero' ? ImageIcon
-    : variant === 'callout' ? BulbIcon
-    : CardsIcon;
   return <Icon className={className} />;
 }

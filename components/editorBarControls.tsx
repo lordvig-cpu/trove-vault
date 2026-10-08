@@ -25,7 +25,7 @@ import { requestMenuTab } from '@/lib/menuTabRequest';
    section labels, and the eye / gear / delete buttons at the right end.
    ========================================================================== */
 
-export const iconBtn =
+const iconBtn =
   `px-1.5 ${barControlHeight} rounded-md border transition flex items-center gap-1 text-[11px] font-semibold`;
 export const barDivider = 'h-4 w-px bg-[color-mix(in_oklch,var(--secondary-accent)_40%,transparent)] shrink-0 mx-0.5';
 const squareBtn = `w-[26px] ${barControlHeight} rounded-md border transition flex items-center justify-center shrink-0`;

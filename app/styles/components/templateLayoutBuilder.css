@@ -44,18 +44,6 @@
 }
 
 /* The tree checkbox style, in the editor bar's light blue instead of yellow */
-.tree-filter-checkbox.tmpl-blue-check {
-  border-color: var(--focus-blue);
-  color: var(--focus-blue);
-  accent-color: var(--focus-blue);
-}
-
-.tree-filter-checkbox.tmpl-blue-check:hover,
-.tree-filter-checkbox.tmpl-blue-check:focus {
-  border-color: var(--pole-glint);
-  box-shadow: none;
-}
-
 .tmpl-edge-panel-top {
   border-radius: 0 0 0.75rem 0.75rem;
   border-top-width: 0;

@@ -82,10 +82,6 @@ interface MainContentProps {
   isLayoutPanelOpen?: boolean;
   onOpenLayoutPanel?: () => void;
   layoutPanelSelector?: string;
-  occupiedRightWidth?: number;
-  occupiedLeftWidth?: number;
-  rightPanelWidth?: number;
-  bottomPanelHeight?: number;
 }
 
 /* ==========================================================================

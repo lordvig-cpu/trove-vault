@@ -25,15 +25,10 @@ export const activeIconColor = 'text-[var(--secondary-accent)]';
 export const ghostBtn =
   'border border-transparent text-[var(--secondary-accent)] hover:border-glint hover:text-[var(--text-strong)] hover:bg-glint/10';
 
-export const disabledBtn = 'opacity-55 cursor-not-allowed';
-
 /** Every unselected control on the template editor toolbars (text and icon buttons alike): the same
     idle / ghost / disabled looks as idleBtn / ghostBtn above, but in a soft menu white instead of
     amber (full white on hover). Selected controls still use activeBtn's yellow. idleBtn / ghostBtn
     stay amber for the flyouts and other menus. */
-export const barIdleBtn =
-  'bg-shade/40 border-[var(--secondary-accent)] text-[var(--flyout-white-soft)] hover:border-glint hover:text-[var(--flyout-white)] hover:bg-glint/10';
-
 export const barGhostBtn =
   'border border-transparent text-[var(--flyout-white-soft)] hover:border-glint hover:text-[var(--flyout-white)] hover:bg-glint/10';
 
