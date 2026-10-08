@@ -7,7 +7,8 @@
      --oklch-primary   Primary           header and footer bars
      --oklch-blue      Primary Accent    side and bottom panels, their rules; buttons, focus
      --oklch-secondary Secondary         tree submenus, search menus, template toolbars/drop-downs
-     --oklch-yellow    Secondary Accent  text, edges and selected states inside those menus/toolbars
+     --oklch-yellow    Secondary Accent  text, edges and selected states inside those menus/toolbars, and
+                                         (as a dark tint) the submenus' body
    Surfaces are the color mixed into the background, so a picked color reads as a dark tint of
    itself rather than a bright slab. */
 [data-theme='theme-oklch-dark'] {
@@ -36,6 +37,9 @@
   /* Menus and toolbars (Secondary), with the Secondary Accent as their ink and edge */
   --ember-menu: color-mix(in oklab, var(--oklch-secondary) 50%, var(--ember-base));
   --ember-menu-deep: color-mix(in oklab, var(--oklch-secondary) 36%, var(--ember-base));
+  /* A submenu's body: a dark tint of the Secondary Accent (#282119 by default), so the menus warm with the
+     accent while the header and footer keep the Primary seed. */
+  --ember-menu-body: color-mix(in oklab, var(--oklch-yellow) 16%, var(--ember-base));
   --ember-menu-line: color-mix(in oklab, var(--brand-secondary-amber) 28%, var(--ember-menu));
   --ember-amber-edge: color-mix(in oklab, var(--brand-secondary-amber) 70%, var(--ember-base));
   --ember-menu-ink: var(--brand-secondary-amber);
@@ -135,9 +139,9 @@
   --flyout-shell-bg: var(--ember-menu);
   --flyout-shell-border: var(--ember-amber-edge);
   --flyout-head-bottom: var(--ember-menu);
-  /* Submenu body under the tabs: a flat Primary (#1D2127 by default, within one step of #1E2228). */
-  --flyout-body-top: var(--oklch-primary);
-  --flyout-body-bottom: var(--oklch-primary);
+  /* Submenu body under the tabs: flat --ember-menu-body (the Secondary Accent's dark tint). */
+  --flyout-body-top: var(--ember-menu-body);
+  --flyout-body-bottom: var(--ember-menu-body);
   --flyout-title: var(--ember-menu-ink);
   --flyout-selected: var(--ember-menu-ink);
   --flyout-heading: var(--ember-menu-ink);
