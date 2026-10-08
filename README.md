@@ -15,8 +15,9 @@ returns 404. A successful diagnostic means the collections query succeeded.
 - `npm run build` validates types and builds the production app. Google Fonts
   must be reachable during a cold build.
 - After building, `npm test` runs data and browser regressions against a temporary
-  production server on port 3100. Database requests are mocked; tests do not change
-  live Supabase data. Windows uses installed Edge. On other systems, first run
+  production server on port 3100. Tests never change live Supabase data: most mock the
+  database entirely, and `template-layout.spec.ts`, which reads the live project to open
+  a real template, aborts every write. Windows uses installed Edge. On other systems, first run
   `npx playwright install chromium`.
 
 ## Media and interaction

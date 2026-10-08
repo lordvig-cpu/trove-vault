@@ -10,6 +10,14 @@ const mockFields: FieldDefinition[] = [
 ];
 
 test.describe('Template Layout Engine', () => {
+  // These tests read the live Supabase project (they need a real template to open), so every write is
+  // blocked: opening the editor must never save a layout or anything else into real data.
+  test.beforeEach(async ({ page }) => {
+    await page.route(/supabase\.co\/(rest|storage)\/v1\//, (route) =>
+      ['GET', 'HEAD'].includes(route.request().method()) ? route.continue() : route.abort()
+    );
+  });
+
   test('only current flex layouts are recognized; old grid layouts fall back to a default', () => {
     expect(isFlexLayoutConfig({ version: 1, sections: [] })).toBe(false);
     expect(isFlexLayoutConfig(null)).toBe(false);
