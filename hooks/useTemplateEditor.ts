@@ -5,13 +5,13 @@ import { fetchTemplate, saveTemplateLayout, updateTemplateMetadata as saveTempla
 import { createTemplateField, deleteTemplateField, reorderTemplateFields, updateTemplateField } from '@/lib/data/templateFields';
 import { ItemTemplate } from '@/types/template';
 import { FieldDefinition, FieldType } from '@/types/field';
-import { TemplateFlexLayoutConfig, isFlexLayoutConfig, createDefaultFlexLayout, findFlexNode } from '@/types/layout';
+import { TemplateFlexLayoutConfig, createDefaultFlexLayout, findFlexNode } from '@/types/layout';
 import { HierarchyFilterCategory, HIERARCHY_FILTER_METAS } from '@/lib/hierarchyFilterMetas';
 import { FIELD_TYPE_METAS } from '@/lib/fieldTypeMetas';
 import { DockContent } from '@/hooks/usePanelDockDrag';
 import { errorMessage } from '@/lib/errors';
 import { useTemplateLayoutTree } from '@/hooks/useTemplateLayoutTree';
-import { layoutCacheKey } from '@/lib/layoutStorage';
+import { layoutCacheKey, readCachedLayout, resolveSavedLayout } from '@/lib/layoutStorage';
 import { useLayoutHistory } from '@/hooks/useLayoutHistory';
 
 // Sentinels for the "select none" filter state -- see selectNoneFieldTypeFilter /
@@ -224,25 +224,10 @@ export function useTemplateEditor({
 
       const loadedTemplate: ItemTemplate = await fetchTemplate(rawId);
 
-      // Resolve Layout: Check localStorage -> the template's stored layout -> generate default flex layout
-      let rawConfig: unknown = null;
-      if (typeof window !== 'undefined') {
-        try {
-          const cached = localStorage.getItem(layoutCacheKey(rawId));
-          if (cached) rawConfig = JSON.parse(cached);
-        } catch {
-          // Ignore
-        }
-      }
-
-      if (!rawConfig && loadedTemplate.layout_config) {
-        rawConfig = loadedTemplate.layout_config;
-      }
-
-      // Only current (flex, version 2) layouts are loaded; anything else starts from the default
-      const resolvedFlex: TemplateFlexLayoutConfig = isFlexLayoutConfig(rawConfig)
-        ? rawConfig
-        : createDefaultFlexLayout(loadedTemplate.fields || []);
+      // The same copy the item view draws (a valid browser copy, else the stored layout), else the default
+      const resolvedFlex: TemplateFlexLayoutConfig =
+        resolveSavedLayout(readCachedLayout(rawId), loadedTemplate.layout_config) ??
+        createDefaultFlexLayout(loadedTemplate.fields || []);
 
       setActiveTemplate(loadedTemplate);
       setFlexLayout(resolvedFlex);
