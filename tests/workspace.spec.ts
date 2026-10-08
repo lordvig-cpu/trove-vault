@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, type Page } from '@playwright/test';
 
 test.beforeEach(async ({ page }) => {
   await page.route('**/rest/v1/**', route => route.fulfill({ json: [] }));
@@ -49,15 +49,21 @@ test('panel bounds, keyboard resizing, cancellation and hidden focus', async ({ 
   expect(errors).toEqual([]);
 });
 
+// The seed color pickers live in a bar the footer's theme gear shows
+const showThemeColors = (page: Page) => page.getByRole('button', { name: 'Show theme colors' }).click();
+
 test('seed preferences persist and synchronize across tabs', async ({ page, context }) => {
   await page.goto('/');
   const other = await context.newPage();
   await other.route('**/rest/v1/**', route => route.fulfill({ json: [] }));
   await other.goto('/');
+  await showThemeColors(page);
+  await showThemeColors(other);
   await page.getByRole('textbox', { name: 'Primary', exact: true }).fill('a1b2c3');
   await page.getByRole('textbox', { name: 'Primary', exact: true }).blur();
   await expect(other.getByRole('textbox', { name: 'Primary', exact: true })).toHaveValue('#A1B2C3');
   await page.reload();
+  await showThemeColors(page);
   await expect(page.getByRole('textbox', { name: 'Primary', exact: true })).toHaveValue('#A1B2C3');
 });
 
@@ -109,12 +115,14 @@ test('preferences remain usable when storage writes fail', async ({ page }) => {
   await page.evaluate(() => {
     Storage.prototype.setItem = () => { throw new DOMException('Full', 'QuotaExceededError'); };
   });
+  await showThemeColors(page);
   const input = page.getByRole('textbox', { name: 'Primary', exact: true });
+  const initial = await input.inputValue(); // the current theme's default
   await input.fill('123abc');
   await input.blur();
   await expect(input).toHaveValue('#123ABC');
   await page.getByRole('button', { name: 'Reset', exact: true }).click();
-  await expect(input).toHaveValue('#0077FF');
+  await expect(input).toHaveValue(initial);
 });
 
 test('intro video is fetched on interaction, not on initial render', async ({ page }) => {

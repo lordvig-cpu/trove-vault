@@ -99,8 +99,8 @@ test.describe('Template Layout Engine', () => {
     await expect(leftTab).toHaveCount(1);
     await expect(leftTab.first()).toHaveAttribute('aria-label', 'Layout');
 
-    const leftHeading = page.locator('.primary-side-panel .tree-section-heading h3');
-    await expect(leftHeading).toContainText('Layout & Content');
+    const leftHeading = page.locator('.primary-side-panel .tree-section-heading h3', { hasText: 'Layout & Content' });
+    await expect(leftHeading).toBeVisible();
 
     // 2. Only Content tab in right panel (Properties tab has been safely removed)
     const rightTabs = page.locator('.secondary-side-panel button[role="tab"]');
@@ -143,11 +143,6 @@ test.describe('Template Layout Engine', () => {
     await expect(bottomPanel).toBeVisible();
     await expect(bottomPanel).toContainText(/BOTTOM PANEL is empty/i);
 
-    // Take screenshot of both empty panels for visual verification
-    await page.screenshot({
-      path: 'C:/Users/mc_cl/.gemini/antigravity/brain/31bae76a-fe56-4a8b-b91e-7d916ddebf78/empty_panels_matching_headers.png',
-      fullPage: true,
-    });
   });
 
   test('renders paper folder tab SVG on docked side panels for Items and Collections', async ({ page }) => {
@@ -176,18 +171,13 @@ test.describe('Template Layout Engine', () => {
     const leftTab = page.locator('.primary-side-panel .tree-folder-tab');
     await expect(leftTab).toBeVisible();
     await expect(leftTab.locator('svg path.tree-tab-svg-fill')).toHaveCount(1);
-    await expect(leftTab).toContainText('Items');
+    await expect(leftTab).toHaveAttribute('aria-label', 'Items'); // icon-only tab
 
     const rightTab = page.locator('.secondary-side-panel .tree-folder-tab');
     await expect(rightTab).toBeVisible();
     await expect(rightTab.locator('svg path.tree-tab-svg-fill')).toHaveCount(1);
-    await expect(rightTab).toContainText('Collections');
+    await expect(rightTab).toHaveAttribute('aria-label', 'Collections');
 
-    // Screenshot matching user media_1789920140123.png
-    await page.screenshot({
-      path: 'C:/Users/mc_cl/.gemini/antigravity/brain/31bae76a-fe56-4a8b-b91e-7d916ddebf78/side_panels_paper_folder_tabs_restored.png',
-      fullPage: true,
-    });
   });
 
   test('keyboard shortcuts: Ctrl+K targets left side search and Ctrl+L targets right side search', async ({ page }) => {
@@ -298,11 +288,6 @@ test.describe('Template Layout Engine', () => {
     await expect(editorToolbar).toBeVisible();
     await expect(editorToolbar).toContainText('Board Games & Tabletop');
 
-    // Take screenshot showing successfully loaded template editor from category gear
-    await page.screenshot({
-      path: 'C:/Users/mc_cl/.gemini/antigravity/brain/31bae76a-fe56-4a8b-b91e-7d916ddebf78/edit_template_from_category_gear_success.png',
-      fullPage: true,
-    });
   });
 });
 
