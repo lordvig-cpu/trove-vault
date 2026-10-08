@@ -5,8 +5,7 @@ import type { PlaceBuiltinHandler, BuiltinKey } from '@/types/layout';
 import { DEFAULT_TEMPLATE_ICON, ItemTemplate } from '@/types/template';
 import { FieldDefinition, FieldType } from '@/types/field';
 import { useTreeActionMenu } from '@/hooks/useTreeActionMenu';
-import { GearIcon, PlusIcon } from '@/components/icons/TreeIcons';
-import { activeBtn } from '@/components/editorBarStyles';
+import { PlusIcon } from '@/components/icons/TreeIcons';
 import TemplateFieldActionMenu from '@/components/TemplateFieldActionMenu';
 import TemplateRootActionMenu from '@/components/TemplateRootActionMenu';
 import { WarningIcon, ChevronDownIcon } from '@/components/icons/PanelIcons';
@@ -15,6 +14,7 @@ import { HintGripIcon } from '@/components/icons/HintIcons';
 import { CalendarIcon, FieldTypeIcon, FolderIcon, ImageIcon, ListIcon, TextFieldIcon } from '@/components/icons/ContentIcons';
 import { BUILTIN_LABELS } from '@/lib/layoutContent';
 import '@/app/styles/components/templateFieldInspector.css';
+import TreeGearButton from '@/components/TreeGearButton';
 
 interface TemplateFieldInspectorProps {
   template: ItemTemplate | null;
@@ -79,40 +79,7 @@ function TemplateRootTreeRow({
   const fields = template.fields || [];
 
   const gearTrigger = (
-    <div
-      role="button"
-      tabIndex={0}
-      aria-label="Open template blueprint settings"
-      aria-expanded={menu.isMenuOpen}
-      onKeyDown={menu.handleGearKeyDown}
-      onClick={(e) => {
-        e.stopPropagation();
-        menu.handleGearClick(e); // pins it open (hover alone opens it unpinned)
-      }}
-      onMouseEnter={menu.handleGearMouseEnter}
-      onMouseLeave={menu.handleMouseLeave}
-      className={[
-        'flex items-center justify-center w-6 h-6 shrink-0 rounded border border-transparent cursor-pointer transition-colors',
-        menu.isPinned
-          ? `tree-gear-trigger-pinned ${activeBtn}`
-          : menu.isMenuOpen
-          ? 'tree-gear-trigger-active opacity-100'
-          : 'tree-gear-trigger opacity-0 group-hover:opacity-100',
-      ].join(' ')}
-      title="Configure Blueprint Settings"
-    >
-      <GearIcon
-        isActive={menu.isMenuOpen}
-        className={[
-          'w-[15px] h-[15px] transition-all duration-300 ease-out',
-          menu.isPinned
-            ? 'tree-gear-pinned rotate-90'
-            : menu.isMenuOpen
-            ? 'tree-gear-open'
-            : 'tree-gear-closed',
-        ].join(' ')}
-      />
-    </div>
+    <TreeGearButton menu={menu} label="Open template blueprint settings" title="Configure Blueprint Settings" revealOnRowHover />
   );
 
   return (
@@ -200,40 +167,7 @@ function TemplateFieldTreeRow({
   const typeCfg = FIELD_TYPE_CONFIG[field.field_type] || FIELD_TYPE_CONFIG.text;
 
   const gearTrigger = (
-    <div
-      role="button"
-      tabIndex={0}
-      aria-label={`Open properties for ${field.label}`}
-      aria-expanded={menu.isMenuOpen}
-      onKeyDown={menu.handleGearKeyDown}
-      onClick={(e) => {
-        e.stopPropagation();
-        menu.handleGearClick(e); // pins it open (hover alone opens it unpinned)
-      }}
-      onMouseEnter={menu.handleGearMouseEnter}
-      onMouseLeave={menu.handleMouseLeave}
-      className={[
-        'flex items-center justify-center w-6 h-6 shrink-0 rounded border border-transparent cursor-pointer transition-colors',
-        menu.isPinned
-          ? `tree-gear-trigger-pinned ${activeBtn}`
-          : menu.isMenuOpen
-          ? 'tree-gear-trigger-active opacity-100'
-          : 'tree-gear-trigger opacity-0 group-hover:opacity-100',
-      ].join(' ')}
-      title="Configure Field Properties"
-    >
-      <GearIcon
-        isActive={menu.isMenuOpen}
-        className={[
-          'w-[15px] h-[15px] transition-all duration-300 ease-out',
-          menu.isPinned
-            ? 'tree-gear-pinned rotate-90'
-            : menu.isMenuOpen
-            ? 'tree-gear-open'
-            : 'tree-gear-closed',
-        ].join(' ')}
-      />
-    </div>
+    <TreeGearButton menu={menu} label={`Open properties for ${field.label}`} title="Configure Field Properties" revealOnRowHover />
   );
 
   const [isRowDragging, setIsRowDragging] = useState(false);

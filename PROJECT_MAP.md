@@ -102,6 +102,8 @@ Conventions and architecture (data access, theming, template editor internals, b
 - `TreeCollectionActionMenu.tsx` / `TreeItemActionMenu.tsx` / `TreeTemplateActionMenu.tsx` — the
   tree-gear popup menus for a collection, item, and template row.
 - `TreeContent.tsx` — the shared tree view (Items/Collections/Templates), rendered per dock/flyout.
+- `TreeGearButton.tsx` — a tree row's gear (idle / hovered open / pinned looks) for every tree: Items, Collections,
+  Templates, Layout and Content.
 - `TreeSearchMenu.tsx` — the advanced-search popup (positioning, portal, click-outside/Escape
   close) that `SearchAndFilterSection` renders its filter UI into; reuses TreeSubMenu.css's own
   split head/body shell markup (menuShellSplit/menuShellHead/menuShellBody/headerPill/menuTabs),

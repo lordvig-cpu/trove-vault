@@ -52,10 +52,6 @@
   color: var(--primary-tree-muted);
 }
 
-.tree-primary {
-  color: var(--text-strong);
-}
-
 .tree-gear-open {
   color: var(--text-strong);
 }
@@ -289,10 +285,6 @@
   color: var(--secondary-tree-menu-rename-save-text);
   box-shadow: var(--shadow-badge);
   font-weight: 700;
-}
-
-.tree-action-icon {
-  color: var(--primary-tree-action-icon);
 }
 
 .tree-branch {

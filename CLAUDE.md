@@ -221,7 +221,8 @@ commit whenever you add, remove, split or rename a file — it goes stale otherw
   the top toolbar gear when clicked (`activeBtn` + `.tree-gear-trigger-pinned`, icon rotated in the
   selected yellow, `.tree-gear-pinned`), like the toolbar gear when
   clicked; a hovered-open one just fills white, with no rotation. All of
-  this is `useTreeActionMenu` (`isPinned`, `handleGearClick`), shared by every tree.
+  this is `useTreeActionMenu` (`isPinned`, `handleGearClick`), shared by every tree, and every tree row's
+  gear is the one `TreeGearButton` component (don't copy its markup into a tree again; the copies drifted).
 - Every tree/template gear-icon flyout -- whether it's pure Actions (Item, Collection, Category,
   Template) or mixes Actions with Properties (Body, a standard container, a Content-tab field) --
   is built from exactly one shared shell and CSS file, `TreeSubMenu.tsx`

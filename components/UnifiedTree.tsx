@@ -2,8 +2,6 @@
 
 import React, { useState } from 'react';
 import { ItemRecord } from '@/types/item';
-import { GearIcon } from '@/components/icons/TreeIcons';
-import { activeBtn } from '@/components/editorBarStyles';
 import { useTreeActionMenu } from '@/hooks/useTreeActionMenu';
 import { useTreeSelection } from '@/context/TreeSelectionContext';
 import TreeCollectionActionMenu from '@/components/TreeCollectionActionMenu';
@@ -13,6 +11,7 @@ import { STANDALONE_COLLECTION_ID } from '@/lib/treeUtils';
 import { CollectionRecord } from '@/types/collection';
 import { ChevronDownIcon, ChevronRightIcon } from '@/components/icons/PanelIcons';
 import { FolderIcon } from '@/components/icons/ContentIcons';
+import TreeGearButton from '@/components/TreeGearButton';
 
 /* ==========================================================================
    1. TYPE DEFINITIONS & INTERFACES
@@ -99,37 +98,7 @@ function UnifiedTreeItem({
 
   const gearElement = (
     <div className={`transition shrink-0 ${isRightSide ? 'absolute left-2' : 'relative ml-auto'}`}>
-      <div
-        role="button"
-        tabIndex={0}
-        aria-label="Open actions"
-        aria-expanded={menu.isMenuOpen}
-        onKeyDown={menu.handleGearKeyDown}
-        onClick={event => { event.stopPropagation(); menu.handleGearClick(event); }}
-        onMouseEnter={menu.handleGearMouseEnter}
-        onMouseLeave={menu.handleMouseLeave}
-        className={[
-          'group/gear flex items-center justify-center w-6 h-6 shrink-0',
-          'rounded border border-transparent cursor-pointer transition-colors',
-          menu.isPinned
-            ? `tree-gear-trigger-pinned ${activeBtn}`
-            : menu.isMenuOpen
-            ? 'tree-gear-trigger-active'
-            : 'tree-gear-trigger',
-        ].join(' ')}
-      >
-        <GearIcon
-          isActive={menu.isMenuOpen}
-          className={[
-            'w-[15px] h-[15px] transition-all duration-300 ease-out',
-            menu.isPinned
-              ? 'tree-gear-pinned rotate-90'
-              : menu.isMenuOpen
-              ? 'tree-gear-open'
-              : 'tree-gear-closed',
-          ].join(' ')}
-        />
-      </div>
+      <TreeGearButton menu={menu} label="Open actions" />
     </div>
   );
 
@@ -280,37 +249,7 @@ export default function UnifiedTree({
 
   const gearElement = (
     <div className={`transition shrink-0 ${isRightSide ? 'absolute left-2' : 'relative ml-auto'}`}>
-      <div
-        role="button"
-        tabIndex={0}
-        aria-label="Open actions"
-        aria-expanded={menu.isMenuOpen}
-        onKeyDown={menu.handleGearKeyDown}
-        onClick={event => { event.stopPropagation(); menu.handleGearClick(event); }}
-        onMouseEnter={menu.handleGearMouseEnter}
-        onMouseLeave={menu.handleMouseLeave}
-        className={[
-          'group/gear flex items-center justify-center w-6 h-6 shrink-0',
-          'rounded border border-transparent cursor-pointer transition-colors',
-          menu.isPinned
-            ? `tree-gear-trigger-pinned ${activeBtn}`
-            : menu.isMenuOpen
-            ? 'tree-gear-trigger-active'
-            : 'tree-gear-trigger',
-        ].join(' ')}
-      >
-        <GearIcon
-          isActive={menu.isMenuOpen}
-          className={[
-            'w-[15px] h-[15px] transition-all duration-300 ease-out',
-            menu.isPinned
-              ? 'tree-gear-pinned rotate-90'
-              : menu.isMenuOpen
-              ? 'tree-primary'
-              : 'tree-action-icon',
-          ].join(' ')}
-        />
-      </div>
+      <TreeGearButton menu={menu} label="Open actions" />
     </div>
   );
 

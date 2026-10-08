@@ -12,7 +12,7 @@ import {
 import { FieldDefinition } from '@/types/field';
 import { moveNode, type MovePosition } from '@/lib/layoutTree';
 import { contentNameOf } from '@/lib/layoutContent';
-import { GearIcon, SearchGlassIcon } from '@/components/icons/TreeIcons';
+import { SearchGlassIcon } from '@/components/icons/TreeIcons';
 import { useTreeActionMenu } from '@/hooks/useTreeActionMenu';
 import {
   TemplateContainerActionMenu,
@@ -20,10 +20,11 @@ import {
 } from '@/components/TemplateLayoutActionMenu';
 import { BodyIcon, FlexRowIcon, FlexColumnIcon, ContainerOverflowIcon } from '@/components/icons/LayoutIcons';
 import VisibilityEyeIcon from '@/components/VisibilityEyeIcon';
-import { activeBtn, activeIconColor } from '@/components/editorBarStyles';
+import { activeIconColor } from '@/components/editorBarStyles';
 import { HierarchyFilterCategory, hierarchyNodeCategory } from '@/lib/hierarchyFilterMetas';
 import { ChevronDownIcon, ChevronRightIcon } from '@/components/icons/PanelIcons';
 import { ComponentTypeIcon, LayoutGridIcon } from '@/components/icons/ContentIcons';
+import TreeGearButton from '@/components/TreeGearButton';
 
 /* ==========================================================================
    1. PROPS INTERFACE
@@ -331,7 +332,7 @@ function VisibilityToggle({ nodeId, label }: { nodeId: string; label: string }) 
       title={isHidden ? 'Hidden on the canvas: click to show' : 'Hide on the canvas (and everything inside it)'}
       // Hidden = the "set" amber, shown = the tree's idle icon color; either turns white on hover.
       className={`tree-gear-trigger ${pinned ? 'tree-eye-pinned' : ''} flex items-center justify-center w-6 h-6 shrink-0 rounded border border-transparent cursor-pointer transition-colors hover:text-[var(--tree-action-icon-hover)] ${
-        isHidden ? activeIconColor : 'text-[var(--primary-tree-action-icon)]'
+        isHidden ? activeIconColor : 'text-[var(--primary-tree-muted)]'
       }`}
     >
       <VisibilityEyeIcon hidden={isHidden} className="w-[15px] h-[15px]" />
@@ -551,42 +552,7 @@ function ContainerNodeRow({
 
         {/* Gear Icon: Triggers Tree Action Menu with Item Properties or Body Actions */}
         <div className={isRightSide ? 'absolute left-2 shrink-0' : 'relative ml-auto shrink-0'}>
-          <div
-            role="button"
-            tabIndex={0}
-            data-tree-gear-id={container.id}
-            aria-label={`Open ${containerLabel} actions`}
-            aria-expanded={menu.isMenuOpen}
-            onKeyDown={menu.handleGearKeyDown}
-            onClick={(e) => {
-              e.stopPropagation();
-              onSelectNode(container.id);
-              menu.handleGearClick(e); // pins it open (hover alone opens it unpinned)
-            }}
-            onMouseEnter={menu.handleGearMouseEnter}
-            onMouseLeave={menu.handleMouseLeave}
-            className={[
-              'group/gear flex items-center justify-center w-6 h-6 shrink-0',
-              'rounded border border-transparent cursor-pointer transition-colors',
-              menu.isPinned
-            ? `tree-gear-trigger-pinned ${activeBtn}`
-            : menu.isMenuOpen
-            ? 'tree-gear-trigger-active'
-            : 'tree-gear-trigger',
-            ].join(' ')}
-          >
-            <GearIcon
-              isActive={menu.isMenuOpen}
-              className={[
-                'w-[15px] h-[15px] transition-all duration-300 ease-out',
-                menu.isPinned
-                  ? 'tree-gear-pinned rotate-90'
-                  : menu.isMenuOpen
-                  ? 'tree-primary'
-                  : 'tree-action-icon',
-              ].join(' ')}
-            />
-          </div>
+          <TreeGearButton menu={menu} label={`Open ${containerLabel} actions`} gearId={container.id} onBeforeClick={() => onSelectNode(container.id)} />
         </div>
 
       </div>
@@ -769,42 +735,7 @@ function ComponentNodeRow({
 
         {/* Gear Icon: Triggers Tree Action Menu with Item Properties */}
         <div className={isRightSide ? 'absolute left-2 shrink-0' : 'relative ml-auto shrink-0'}>
-          <div
-            role="button"
-            tabIndex={0}
-            data-tree-gear-id={component.id}
-            aria-label={`Open ${label} actions`}
-            aria-expanded={menu.isMenuOpen}
-            onKeyDown={menu.handleGearKeyDown}
-            onClick={(e) => {
-              e.stopPropagation();
-              onSelectNode(component.id);
-              menu.handleGearClick(e); // pins it open (hover alone opens it unpinned)
-            }}
-            onMouseEnter={menu.handleGearMouseEnter}
-            onMouseLeave={menu.handleMouseLeave}
-            className={[
-              'group/gear flex items-center justify-center w-6 h-6 shrink-0',
-              'rounded border border-transparent cursor-pointer transition-colors',
-              menu.isPinned
-            ? `tree-gear-trigger-pinned ${activeBtn}`
-            : menu.isMenuOpen
-            ? 'tree-gear-trigger-active'
-            : 'tree-gear-trigger',
-            ].join(' ')}
-          >
-            <GearIcon
-              isActive={menu.isMenuOpen}
-              className={[
-                'w-[15px] h-[15px] transition-all duration-300 ease-out',
-                menu.isPinned
-                  ? 'tree-gear-pinned rotate-90'
-                  : menu.isMenuOpen
-                  ? 'tree-primary'
-                  : 'tree-action-icon',
-              ].join(' ')}
-            />
-          </div>
+          <TreeGearButton menu={menu} label={`Open ${label} actions`} gearId={component.id} onBeforeClick={() => onSelectNode(component.id)} />
         </div>
 
       </div>
