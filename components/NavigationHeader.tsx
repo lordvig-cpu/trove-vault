@@ -17,21 +17,14 @@ export type SearchScope = 'current' | 'all';
 
 /**
  * Props for NavigationHeader.
- * @property activeCollectionName - Name of the collection currently open in the workspace
- * @property onOpenFieldManager - Optional callback to launch custom field settings
- * @property onOpenTemplateManager - Callback launching the schema template manager modal
  * @property isPrimarySidePanelOpen - Whether the floating flyout panel is actively revealed
  * @property onTogglePrimarySidePanel - Callback toggling the flyout panel visibility
  * @property unpinnedPrimaryPanel - Pre-rendered PrimarySidePanel (flyout variant) anchored under the tab
  */
 interface NavigationHeaderProps {
-  activeCollectionName: string;
-  onOpenFieldManager?: () => void;
-  onOpenTemplateManager?: () => void;
   isPrimarySidePanelOpen?: boolean;
   onTogglePrimarySidePanel?: () => void;
   unpinnedPrimaryPanel?: React.ReactNode;
-  onAddNewItem?: () => void;
   onStartItemsDrag?: (e: React.PointerEvent) => void;
   itemsDockedSide?: 'left' | 'right' | null;
   collectionsDockedSide?: 'left' | 'right' | null;
@@ -50,11 +43,6 @@ interface NavigationHeaderProps {
       header. */
   leftOccupiedWidth?: number;
   rightOccupiedWidth?: number;
-
-  // Backward-compatibility aliases
-  isLeftSidePanelOpen?: boolean;
-  onToggleLeftSidePanel?: () => void;
-  unpinnedItemsPanel?: React.ReactNode;
 }
 
 /* ==========================================================================
@@ -82,21 +70,15 @@ export default function NavigationHeader({
   onStartGrabbedContentDrag,
   leftOccupiedWidth = 0,
   rightOccupiedWidth = 0,
-  isLeftSidePanelOpen,
-  onToggleLeftSidePanel,
-  unpinnedItemsPanel,
 }: NavigationHeaderProps) {
   /* ------------------------------------------------------------------------
      2.1 CONTEXT & ACTIVE TAB EVALUATION
      ------------------------------------------------------------------------ */
   const { animationsEnabled } = useUIPreferences();
 
-  const effectiveIsOpen = isPrimarySidePanelOpen ?? isLeftSidePanelOpen ?? false;
-  const effectiveToggle = onTogglePrimarySidePanel ?? onToggleLeftSidePanel ?? (() => {});
-  const effectiveUnpinnedPanel = unpinnedPrimaryPanel ?? unpinnedItemsPanel;
 
   const treePanels = [
-    { name: 'Items', dockedSide: itemsDockedSide, isOpen: effectiveIsOpen, toggle: effectiveToggle, drag: onStartItemsDrag, flyout: effectiveUnpinnedPanel },
+    { name: 'Items', dockedSide: itemsDockedSide, isOpen: isPrimarySidePanelOpen ?? false, toggle: onTogglePrimarySidePanel, drag: onStartItemsDrag, flyout: unpinnedPrimaryPanel },
     { name: 'Collections', dockedSide: collectionsDockedSide, isOpen: isCollectionsOpen, toggle: onToggleCollections, drag: onStartCollectionsDrag, flyout: collectionsFlyoutPanel },
     { name: 'Templates', dockedSide: templatesDockedSide, isOpen: isTemplatesOpen, toggle: onToggleTemplates, drag: onStartTemplatesDrag, flyout: templatesFlyoutPanel },
   ];
@@ -125,157 +107,14 @@ export default function NavigationHeader({
             </div>
 
             {/* Items Tab (Positioned cleanly at the right of the 304px boundary) */}
-            {(() => {
-              const panel = treePanels[0];
-              const isDocked = panel.dockedSide !== null;
-              const isTabActive = isDocked || panel.isOpen;
-              const tabTitle = isDocked
-                ? panel.name + ' is already docked in the ' + (panel.dockedSide === 'left' ? 'primary (left)' : 'secondary (right)') + ' panel'
-                : 'Open ' + panel.name + ' or drag to dock in a sidebar';
-              return (
-                <div key={panel.name} className="relative z-30 h-full flex items-center shrink-0">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (!isDocked) panel.toggle?.();
-                    }}
-                    onPointerDown={isDocked ? undefined : panel.drag}
-                    title={tabTitle}
-                    aria-label={tabTitle}
-                    aria-disabled={isDocked}
-                    aria-expanded={!isDocked && panel.isOpen}
-                    className={[
-                      'relative px-3 py-1.5 flex items-center justify-center gap-2 group',
-                      'font-sans text-xs font-bold uppercase tracking-wider',
-                      'outline-none focus:outline-none focus-visible:outline-none',
-                      'transition-[background,border-color,box-shadow] ease-out',
-                      animationsEnabled ? 'duration-300' : 'duration-0',
-                      isDocked ? 'cursor-not-allowed' : 'cursor-grab active:cursor-grabbing',
-                      isTabActive ? 'nav-tab-active' : 'nav-tab-inactive',
-                    ].join(' ')}
-                  >
-                    <span className="grid grid-cols-2 gap-[2px] opacity-60 shrink-0" aria-hidden="true">
-                      {Array.from({ length: 6 }, (_, index) => (
-                        <span key={index} className="w-[2px] h-[2px] rounded-full bg-current" />
-                      ))}
-                    </span>
-                    <span className="tree-header-title relative">
-                      <span className="tracking-wider">{panel.name}</span>
-                      <span
-                        className={[
-                          'nav-tab-indicator absolute inset-x-0 -bottom-[2px] transition-opacity ease-out',
-                          animationsEnabled ? 'duration-300' : 'duration-0',
-                          isTabActive ? 'nav-tab-indicator-active' : 'nav-tab-indicator-inactive',
-                        ].join(' ')}
-                        aria-hidden="true"
-                      />
-                    </span>
-
-                    {/* Underline Track */}
-                    <div className="absolute inset-x-0 bottom-[4px] flex items-center justify-center pointer-events-none">
-                      <div
-                        className={[
-                          'nav-tab-baseline transition-opacity ease-out',
-                          animationsEnabled ? 'duration-300' : 'duration-0',
-                          isTabActive ? 'opacity-100' : 'opacity-0',
-                        ].join(' ')}
-                        aria-hidden="true"
-                      />
-                    </div>
-
-                    {/* Seamless Tab Extension */}
-                    <div
-                      className={[
-                        'nav-tab-extension transition-opacity ease-out',
-                        animationsEnabled ? 'duration-300' : 'duration-0',
-                        isTabActive ? 'nav-tab-extension-active' : 'nav-tab-extension-inactive',
-                      ].join(' ')}
-                      aria-hidden="true"
-                    />
-                  </button>
-
-                  {/* Unpinned Floating Flyout Mount Slot */}
-                  {!isDocked && panel.flyout}
-                </div>
-              );
-            })()}
+            <NavTab panel={treePanels[0]} animationsEnabled={animationsEnabled} />
           </div>
 
           {/* Subsequent Navigation Tabs (Collections, Templates) */}
           <div className="flex items-center gap-2 h-full pl-2 shrink-0 relative">
-            {treePanels.slice(1).map(panel => {
-              const isDocked = panel.dockedSide !== null;
-              const isTabActive = isDocked || panel.isOpen;
-              const tabTitle = isDocked
-                ? panel.name + ' is already docked in the ' + (panel.dockedSide === 'left' ? 'primary (left)' : 'secondary (right)') + ' panel'
-                : 'Open ' + panel.name + ' or drag to dock in a sidebar';
-              return (
-                <div key={panel.name} className="relative z-30 h-full flex items-center shrink-0">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (!isDocked) panel.toggle?.();
-                    }}
-                    onPointerDown={isDocked ? undefined : panel.drag}
-                    title={tabTitle}
-                    aria-label={tabTitle}
-                    aria-disabled={isDocked}
-                    aria-expanded={!isDocked && panel.isOpen}
-                    className={[
-                      'relative px-3 py-1.5 flex items-center justify-center gap-2 group',
-                      'font-sans text-xs font-bold uppercase tracking-wider',
-                      'outline-none focus:outline-none focus-visible:outline-none',
-                      'transition-[background,border-color,box-shadow] ease-out',
-                      animationsEnabled ? 'duration-300' : 'duration-0',
-                      isDocked ? 'cursor-not-allowed' : 'cursor-grab active:cursor-grabbing',
-                      isTabActive ? 'nav-tab-active' : 'nav-tab-inactive',
-                    ].join(' ')}
-                  >
-                    <span className="grid grid-cols-2 gap-[2px] opacity-60 shrink-0" aria-hidden="true">
-                      {Array.from({ length: 6 }, (_, index) => (
-                        <span key={index} className="w-[2px] h-[2px] rounded-full bg-current" />
-                      ))}
-                    </span>
-                    <span className="tree-header-title relative">
-                      <span className="tracking-wider">{panel.name}</span>
-                      <span
-                        className={[
-                          'nav-tab-indicator absolute inset-x-0 -bottom-[2px] transition-opacity ease-out',
-                          animationsEnabled ? 'duration-300' : 'duration-0',
-                          isTabActive ? 'nav-tab-indicator-active' : 'nav-tab-indicator-inactive',
-                        ].join(' ')}
-                        aria-hidden="true"
-                      />
-                    </span>
-
-                    {/* Underline Track */}
-                    <div className="absolute inset-x-0 bottom-[4px] flex items-center justify-center pointer-events-none">
-                      <div
-                        className={[
-                          'nav-tab-baseline transition-opacity ease-out',
-                          animationsEnabled ? 'duration-300' : 'duration-0',
-                          isTabActive ? 'opacity-100' : 'opacity-0',
-                        ].join(' ')}
-                        aria-hidden="true"
-                      />
-                    </div>
-
-                    {/* Seamless Tab Extension */}
-                    <div
-                      className={[
-                        'nav-tab-extension transition-opacity ease-out',
-                        animationsEnabled ? 'duration-300' : 'duration-0',
-                        isTabActive ? 'nav-tab-extension-active' : 'nav-tab-extension-inactive',
-                      ].join(' ')}
-                      aria-hidden="true"
-                    />
-                  </button>
-
-                  {/* Unpinned Floating Flyout Mount Slot */}
-                  {!isDocked && panel.flyout}
-                </div>
-              );
-            })}
+            {treePanels.slice(1).map(panel => (
+              <NavTab key={panel.name} panel={panel} animationsEnabled={animationsEnabled} />
+            ))}
           </div>
 
           {/* Quick Grabbable Content Item for Testing Bottom Docking */}
@@ -335,5 +174,93 @@ export default function NavigationHeader({
         </div>
       </header>
     </>
+  );
+}
+
+/* ==========================================================================
+   3. NAV TAB
+   One tree panel's header tab (Items, Collections, Templates): opens its flyout or drags it to a dock.
+   ========================================================================== */
+
+interface NavTabPanel {
+  name: string;
+  dockedSide: 'left' | 'right' | null;
+  isOpen: boolean;
+  toggle?: () => void;
+  drag?: (e: React.PointerEvent) => void;
+  flyout?: React.ReactNode;
+}
+
+function NavTab({ panel, animationsEnabled }: { panel: NavTabPanel; animationsEnabled: boolean }) {
+  const isDocked = panel.dockedSide !== null;
+  const isTabActive = isDocked || panel.isOpen;
+  const tabTitle = isDocked
+    ? panel.name + ' is already docked in the ' + (panel.dockedSide === 'left' ? 'primary (left)' : 'secondary (right)') + ' panel'
+    : 'Open ' + panel.name + ' or drag to dock in a sidebar';
+  return (
+    <div className="relative z-30 h-full flex items-center shrink-0">
+      <button
+        type="button"
+        onClick={() => {
+          if (!isDocked) panel.toggle?.();
+        }}
+        onPointerDown={isDocked ? undefined : panel.drag}
+        title={tabTitle}
+        aria-label={tabTitle}
+        aria-disabled={isDocked}
+        aria-expanded={!isDocked && panel.isOpen}
+        className={[
+          'relative px-3 py-1.5 flex items-center justify-center gap-2 group',
+          'font-sans text-xs font-bold uppercase tracking-wider',
+          'outline-none focus:outline-none focus-visible:outline-none',
+          'transition-[background,border-color,box-shadow] ease-out',
+          animationsEnabled ? 'duration-300' : 'duration-0',
+          isDocked ? 'cursor-not-allowed' : 'cursor-grab active:cursor-grabbing',
+          isTabActive ? 'nav-tab-active' : 'nav-tab-inactive',
+        ].join(' ')}
+      >
+        <span className="grid grid-cols-2 gap-[2px] opacity-60 shrink-0" aria-hidden="true">
+          {Array.from({ length: 6 }, (_, index) => (
+            <span key={index} className="w-[2px] h-[2px] rounded-full bg-current" />
+          ))}
+        </span>
+        <span className="tree-header-title relative">
+          <span className="tracking-wider">{panel.name}</span>
+          <span
+            className={[
+              'nav-tab-indicator absolute inset-x-0 -bottom-[2px] transition-opacity ease-out',
+              animationsEnabled ? 'duration-300' : 'duration-0',
+              isTabActive ? 'nav-tab-indicator-active' : 'nav-tab-indicator-inactive',
+            ].join(' ')}
+            aria-hidden="true"
+          />
+        </span>
+
+        {/* Underline Track */}
+        <div className="absolute inset-x-0 bottom-[4px] flex items-center justify-center pointer-events-none">
+          <div
+            className={[
+              'nav-tab-baseline transition-opacity ease-out',
+              animationsEnabled ? 'duration-300' : 'duration-0',
+              isTabActive ? 'opacity-100' : 'opacity-0',
+            ].join(' ')}
+            aria-hidden="true"
+          />
+        </div>
+
+        {/* Seamless Tab Extension */}
+        <div
+          className={[
+            'nav-tab-extension transition-opacity ease-out',
+            animationsEnabled ? 'duration-300' : 'duration-0',
+            isTabActive ? 'nav-tab-extension-active' : 'nav-tab-extension-inactive',
+          ].join(' ')}
+          aria-hidden="true"
+        />
+      </button>
+
+      {/* Unpinned Floating Flyout Mount Slot */}
+      {!isDocked && panel.flyout}
+    </div>
   );
 }

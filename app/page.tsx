@@ -551,14 +551,6 @@ export default function Home() {
         {/* Tier 1: Top Navigation Header */}
         <div className="shrink-0 relative z-[80]">
           <NavigationHeader
-            activeCollectionName={activeCollection ? activeCollection.name : 'Select Collection'}
-            onOpenTemplateManager={() => {
-              if (activeCollection) {
-                openTemplateManager(activeCollection.id, activeCollection.name);
-              } else {
-                openTemplateManager(null, undefined);
-              }
-            }}
             isPrimarySidePanelOpen={isPrimaryFlyoutOpen}
             onTogglePrimarySidePanel={() => { setIsCollectionsFlyoutOpen(false); setIsTemplatesFlyoutOpen(false); setIsPrimaryFlyoutOpen(!isPrimaryFlyoutOpen); }}
             unpinnedPrimaryPanel={itemsFlyoutPanel}
@@ -577,9 +569,6 @@ export default function Home() {
             onStartGrabbedContentDrag={(e) => startDockDrag('grabbed_content', e)}
             leftOccupiedWidth={leftOccupiedWidth}
             rightOccupiedWidth={rightOccupiedWidth}
-            onAddNewItem={() => {
-              openCreateItem(activeCollectionId, null);
-            }}
           />
         </div>
 
