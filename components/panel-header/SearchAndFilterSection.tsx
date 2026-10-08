@@ -51,6 +51,98 @@ interface SearchAndFilterSectionProps {
  * Search action-menu portal (field-type filters for the Content tab, node-category filters for
  * the Layout tab, collection filters otherwise). Owns the menu's own open/closed and focus state.
  */
+/** The select-all / select-none row at the top of a filter menu. Nothing excluded (an empty filter) shows as
+ *  checked, because it matches everything; unchecking it selects none, and checking it again (or clicking it
+ *  while indeterminate) resets to all. */
+function FilterMasterRow({
+  hasFilters,
+  selectedCount,
+  total,
+  onSelectAll,
+  onSelectNone,
+}: {
+  hasFilters: boolean;
+  selectedCount: number;
+  total: number;
+  onSelectAll: () => void;
+  onSelectNone: () => void;
+}) {
+  const isNoneSelected = hasFilters && selectedCount === 0;
+  return (
+    <div className="mx-2 px-1 py-1 flex items-center justify-between">
+      <label className="flex items-center gap-2 cursor-pointer select-none">
+        <input
+          type="checkbox"
+          checked={!hasFilters}
+          ref={(input) => {
+            if (input) input.indeterminate = hasFilters && !isNoneSelected;
+          }}
+          onChange={() => {
+            if (hasFilters) onSelectAll();
+            else onSelectNone();
+          }}
+          className="tree-filter-checkbox w-3.5 h-3.5 rounded cursor-pointer shrink-0"
+        />
+        <span className="text-[11px] font-semibold tree-filter-option-label transition-colors">
+          {!hasFilters ? 'Showing All' : isNoneSelected ? 'Showing None' : 'Show All'}
+        </span>
+      </label>
+
+      {hasFilters && (
+        <span className="text-[10px] font-mono tree-panel-accent">
+          {selectedCount}/{total}
+        </span>
+      )}
+    </div>
+  );
+}
+
+/** A filter menu's list of checkbox rows (field types, Layout categories), each with its icon and count. */
+function FilterOptionList<T extends string>({
+  options,
+  isChecked,
+  counts,
+  onToggle,
+  icon,
+}: {
+  options: { type: T; label: string }[];
+  isChecked: (type: T) => boolean;
+  counts: Record<string, number>;
+  onToggle: (type: T) => void;
+  icon: (type: T) => React.ReactNode;
+}) {
+  return (
+    <div className="searchMenuScrollList flex flex-col gap-0.5 max-h-56 overflow-y-auto px-1">
+      {options.map(({ type, label }) => {
+        const checked = isChecked(type);
+        return (
+          <div
+            key={type}
+            onClick={() => onToggle(type)}
+            className={`tree-filter-row flex items-center justify-between px-2 py-1.5 rounded-lg text-xs cursor-pointer select-none transition ${
+              checked ? 'tree-filter-row-selected' : ''
+            }`}
+          >
+            <div className="flex items-center gap-2 min-w-0">
+              <input
+                type="checkbox"
+                checked={checked}
+                onChange={() => {}} // handled by the row's onClick
+                className="tree-filter-checkbox w-3.5 h-3.5 rounded cursor-pointer shrink-0"
+              />
+              {icon(type)}
+              <span className="font-medium text-xs truncate">{label}</span>
+            </div>
+            <span className="text-[10px] font-mono tree-panel-muted shrink-0 ml-2">
+              ({counts[type] ?? 0})
+            </span>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 export default function SearchAndFilterSection({
   variant,
   position,
@@ -198,6 +290,70 @@ export default function SearchAndFilterSection({
     ? 'Search: Templates'
     : 'Search: Items';
 
+  // The search box and the applied-filters toggle, the same in both header layouts (left / right docked)
+  const searchInput = (
+    <div className={searchQuery.length > 0 ? 'tree-search-query tree-search-query-pill' : 'tree-search-query'}>
+      <input
+        ref={searchInputRef}
+        id={`${headerId}-search`}
+        type="text"
+        data-tree-search={dataTreeSearchValue}
+        data-search-position={isRight ? 'right' : 'left'}
+        aria-keyshortcuts={shortcutAria}
+        aria-label={isContent ? 'Search template fields' : isLayout ? 'Search layout and content' : isTemplates ? 'Search templates and items' : isCollections ? 'Search collections and items' : 'Search items'}
+        value={searchQuery}
+        onChange={(e) => onSearchChange(e.target.value)}
+        onFocus={() => setIsSearchFocused(true)}
+        onBlur={() => setIsSearchFocused(false)}
+        title={searchInputTitle}
+        placeholder={searchPlaceholder}
+        className="tree-search-query-input"
+        style={searchQuery.length > 0 ? { width: `${searchQuery.length + 0.5}ch` } : undefined}
+      />
+      {searchQuery.length > 0 && (
+        <button
+          type="button"
+          onClick={() => { onSearchChange(''); searchInputRef.current?.focus(); }}
+          className="tree-search-query-clear"
+          aria-label="Clear search term"
+          title="Clear search term"
+        >
+          <SearchClearIcon />
+        </button>
+      )}
+    </div>
+  );
+
+  const appliedFiltersToggle = (
+    <button
+      type="button"
+      onClick={() => setShowAppliedFilters((prev) => !prev)}
+      className={`p-0.5 rounded transition-all cursor-pointer flex items-center justify-center ${
+        showAppliedFilters ? 'tree-panel-accent' : 'tree-panel-primary'
+      }`}
+      title={showAppliedFilters ? 'Hide applied filters' : 'Show applied filters'}
+      aria-label={showAppliedFilters ? 'Hide applied filters' : 'Show applied filters'}
+      aria-expanded={showAppliedFilters}
+    >
+      <FilterIcon className="w-3.5 h-3.5" isActive={showAppliedFilters} />
+    </button>
+  );
+
+  const clearFiltersFooter = isFilterActive && (
+    <div className="border-t border-[var(--tree-menu-divider)] mt-0.5 pt-1.5 px-2 pb-0.5">
+      <button
+        type="button"
+        onClick={() => {
+          clearAllFilters();
+          setShowAdvancedSearch(false);
+        }}
+        className="tree-filter-clear text-[10px] w-full font-semibold transition text-right cursor-pointer"
+      >
+        <CloseIcon className="inline w-2.5 h-2.5 align-baseline" /> Clear Filters
+      </button>
+    </div>
+  );
+
   return (
     <>
       <div className="tree-section-heading">
@@ -229,54 +385,10 @@ export default function SearchAndFilterSection({
               </button>
 
               {/* Applied-filter toggle beside advanced controls */}
-              {isFilterActive && (
-                <div className="shrink-0 flex items-center">
-                  <button
-                    type="button"
-                    onClick={() => setShowAppliedFilters((prev) => !prev)}
-                    className={`p-0.5 rounded transition-all cursor-pointer flex items-center justify-center ${
-                      showAppliedFilters ? 'tree-panel-accent' : 'tree-panel-primary'
-                    }`}
-                    title={showAppliedFilters ? 'Hide applied filters' : 'Show applied filters'}
-                    aria-label={showAppliedFilters ? 'Hide applied filters' : 'Show applied filters'}
-                    aria-expanded={showAppliedFilters}
-                  >
-                    <FilterIcon className="w-3.5 h-3.5" isActive={showAppliedFilters} />
-                  </button>
-                </div>
-              )}
+              {isFilterActive && <div className="shrink-0 flex items-center">{appliedFiltersToggle}</div>}
 
               {/* Search Query Input */}
-              <div className={searchQuery.length > 0 ? 'tree-search-query tree-search-query-pill' : 'tree-search-query'}>
-                <input
-                  ref={searchInputRef}
-                  id={`${headerId}-search`}
-                  type="text"
-                  data-tree-search={dataTreeSearchValue}
-                  data-search-position={isRight ? 'right' : 'left'}
-                  aria-keyshortcuts={shortcutAria}
-                  aria-label={isContent ? 'Search template fields' : isLayout ? 'Search layout and content' : isTemplates ? 'Search templates and items' : isCollections ? 'Search collections and items' : 'Search items'}
-                  value={searchQuery}
-                  onChange={(e) => onSearchChange(e.target.value)}
-                  onFocus={() => setIsSearchFocused(true)}
-                  onBlur={() => setIsSearchFocused(false)}
-                  title={searchInputTitle}
-                  placeholder={searchPlaceholder}
-                  className="tree-search-query-input"
-                  style={searchQuery.length > 0 ? { width: `${searchQuery.length + 0.5}ch` } : undefined}
-                />
-                {searchQuery.length > 0 && (
-                  <button
-                    type="button"
-                    onClick={() => { onSearchChange(''); searchInputRef.current?.focus(); }}
-                    className="tree-search-query-clear"
-                    aria-label="Clear search term"
-                    title="Clear search term"
-                  >
-                    <SearchClearIcon />
-                  </button>
-                )}
-              </div>
+              {searchInput}
 
               {/* Right Magnifying Glass */}
               <span className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none flex items-center justify-center select-none">
@@ -300,54 +412,12 @@ export default function SearchAndFilterSection({
                 />
               </span>
 
-              <div className={searchQuery.length > 0 ? 'tree-search-query tree-search-query-pill' : 'tree-search-query'}>
-                <input
-                  ref={searchInputRef}
-                  id={`${headerId}-search`}
-                  type="text"
-                  data-tree-search={dataTreeSearchValue}
-                  data-search-position={isRight ? 'right' : 'left'}
-                  aria-keyshortcuts={shortcutAria}
-                  aria-label={isContent ? 'Search template fields' : isLayout ? 'Search layout and content' : isTemplates ? 'Search templates and items' : isCollections ? 'Search collections and items' : 'Search items'}
-                  value={searchQuery}
-                  onChange={(e) => onSearchChange(e.target.value)}
-                  onFocus={() => setIsSearchFocused(true)}
-                  onBlur={() => setIsSearchFocused(false)}
-                  title={searchInputTitle}
-                  placeholder={searchPlaceholder}
-                  className="tree-search-query-input"
-                  style={searchQuery.length > 0 ? { width: `${searchQuery.length + 0.5}ch` } : undefined}
-                />
-                {searchQuery.length > 0 && (
-                  <button
-                    type="button"
-                    onClick={() => { onSearchChange(''); searchInputRef.current?.focus(); }}
-                    className="tree-search-query-clear"
-                    aria-label="Clear search term"
-                    title="Clear search term"
-                  >
-                    <SearchClearIcon />
-                  </button>
-                )}
-              </div>
+              {searchInput}
 
               {/* Applied-filter toggle stays beside the divided advanced controls. */}
               <div className="ml-auto shrink-0 flex items-center">
                 {/* Filter Funnel Toggle Icon */}
-                {isFilterActive && (
-                  <button
-                    type="button"
-                    onClick={() => setShowAppliedFilters((prev) => !prev)}
-                    className={`p-0.5 rounded transition-all cursor-pointer flex items-center justify-center ${
-                      showAppliedFilters ? 'tree-panel-accent' : 'tree-panel-primary'
-                    }`}
-                    title={showAppliedFilters ? 'Hide applied filters' : 'Show applied filters'}
-                    aria-label={showAppliedFilters ? 'Hide applied filters' : 'Show applied filters'}
-                    aria-expanded={showAppliedFilters}
-                  >
-                    <FilterIcon className="w-3.5 h-3.5" isActive={showAppliedFilters} />
-                  </button>
-                )}
+                {isFilterActive && appliedFiltersToggle}
               </div>
 
               {/* Advanced search sits inside the bar, after a subtle divider. */}
@@ -525,84 +595,24 @@ export default function SearchAndFilterSection({
                 flips to "select none" (a sentinel array that matches no real type, see
                 selectNoneFieldTypeFilter); checked or indeterminate flips back to "select all"
                 (the reset action). */}
-            {(() => {
-              const selectedCount = FIELD_TYPE_METAS.filter((m) => filterFieldTypes.includes(m.type)).length;
-              const isNoneSelected = hasFieldTypeFilters && selectedCount === 0;
-              return (
-                <div className="mx-2 px-1 py-1 flex items-center justify-between">
-                  <label className="flex items-center gap-2 cursor-pointer select-none">
-                    <input
-                      type="checkbox"
-                      checked={!hasFieldTypeFilters}
-                      ref={(input) => {
-                        if (input) input.indeterminate = hasFieldTypeFilters && !isNoneSelected;
-                      }}
-                      onChange={() => {
-                        if (hasFieldTypeFilters) onClearFieldTypeFilters();
-                        else onSelectNoneFieldTypeFilter();
-                      }}
-                      className="tree-filter-checkbox w-3.5 h-3.5 rounded cursor-pointer shrink-0"
-                    />
-                    <span className="text-[11px] font-semibold tree-filter-option-label transition-colors">
-                      {!hasFieldTypeFilters ? 'Showing All' : isNoneSelected ? 'Showing None' : 'Show All'}
-                    </span>
-                  </label>
-
-                  {hasFieldTypeFilters && (
-                    <span className="text-[10px] font-mono tree-panel-accent">
-                      {selectedCount}/{FIELD_TYPE_METAS.length}
-                    </span>
-                  )}
-                </div>
-              );
-            })()}
+            <FilterMasterRow
+              hasFilters={hasFieldTypeFilters}
+              selectedCount={FIELD_TYPE_METAS.filter((m) => filterFieldTypes.includes(m.type)).length}
+              total={FIELD_TYPE_METAS.length}
+              onSelectAll={onClearFieldTypeFilters}
+              onSelectNone={onSelectNoneFieldTypeFilter}
+            />
 
             {/* Field Types List */}
-            <div className="searchMenuScrollList flex flex-col gap-0.5 max-h-56 overflow-y-auto px-1">
-              {FIELD_TYPE_METAS.map(({ type, label }) => {
-                const isChecked = !hasFieldTypeFilters || filterFieldTypes.includes(type);
-                const count = fieldTypeCounts[type] ?? 0;
+            <FilterOptionList
+              options={FIELD_TYPE_METAS}
+              isChecked={(type) => !hasFieldTypeFilters || filterFieldTypes.includes(type)}
+              counts={fieldTypeCounts}
+              onToggle={onToggleFilterFieldType}
+              icon={(type) => <FieldTypeIcon type={type} className="w-3.5 h-3.5" />}
+            />
 
-                return (
-                  <div
-                    key={type}
-                    onClick={() => onToggleFilterFieldType(type)}
-                    className={`tree-filter-row flex items-center justify-between px-2 py-1.5 rounded-lg text-xs cursor-pointer select-none transition ${
-                      isChecked ? 'tree-filter-row-selected' : ''
-                    }`}
-                  >
-                    <div className="flex items-center gap-2 min-w-0">
-                      <input
-                        type="checkbox"
-                        checked={isChecked}
-                        onChange={() => {}} // handled by parent div onClick
-                        className="tree-filter-checkbox w-3.5 h-3.5 rounded cursor-pointer shrink-0"
-                      />
-                      <FieldTypeIcon type={type} className="w-3.5 h-3.5" />
-                      <span className="font-medium text-xs truncate">{label}</span>
-                    </div>
-                    <span className="text-[10px] font-mono tree-panel-muted shrink-0 ml-2">
-                      ({count})
-                    </span>
-                  </div>
-                );
-              })}
-            </div>
-
-            {isFilterActive && (
-              <div className="border-t border-[var(--tree-menu-divider)] mt-0.5 pt-1.5 px-2 pb-0.5">
-                <button
-                  type="button"
-                  onClick={() => {
-                    clearAllFilters();
-                    setShowAdvancedSearch(false);
-                  }}
-                  className="tree-filter-clear text-[10px] w-full font-semibold transition text-right cursor-pointer"
-                >
-                  <CloseIcon className="inline w-2.5 h-2.5 align-baseline" /> Clear Filters
-                </button>
-              </div>
-            )}
+            {clearFiltersFooter}
           </div>
         ) : isLayout ? (
           <div className="flex flex-col gap-1.5 px-1 py-1">
@@ -611,84 +621,24 @@ export default function SearchAndFilterSection({
                 flips to "select none" (a sentinel array that matches no real category, see
                 selectNoneHierarchyTypeFilter); checked or indeterminate flips back to "select
                 all" (the reset action). */}
-            {(() => {
-              const selectedCount = HIERARCHY_FILTER_METAS.filter((m) => filterHierarchyTypes.includes(m.type)).length;
-              const isNoneSelected = hasHierarchyTypeFilters && selectedCount === 0;
-              return (
-                <div className="mx-2 px-1 py-1 flex items-center justify-between">
-                  <label className="flex items-center gap-2 cursor-pointer select-none">
-                    <input
-                      type="checkbox"
-                      checked={!hasHierarchyTypeFilters}
-                      ref={(input) => {
-                        if (input) input.indeterminate = hasHierarchyTypeFilters && !isNoneSelected;
-                      }}
-                      onChange={() => {
-                        if (hasHierarchyTypeFilters) onClearHierarchyTypeFilters();
-                        else onSelectNoneHierarchyTypeFilter();
-                      }}
-                      className="tree-filter-checkbox w-3.5 h-3.5 rounded cursor-pointer shrink-0"
-                    />
-                    <span className="text-[11px] font-semibold tree-filter-option-label transition-colors">
-                      {!hasHierarchyTypeFilters ? 'Showing All' : isNoneSelected ? 'Showing None' : 'Show All'}
-                    </span>
-                  </label>
-
-                  {hasHierarchyTypeFilters && (
-                    <span className="text-[10px] font-mono tree-panel-accent">
-                      {selectedCount}/{HIERARCHY_FILTER_METAS.length}
-                    </span>
-                  )}
-                </div>
-              );
-            })()}
+            <FilterMasterRow
+              hasFilters={hasHierarchyTypeFilters}
+              selectedCount={HIERARCHY_FILTER_METAS.filter((m) => filterHierarchyTypes.includes(m.type)).length}
+              total={HIERARCHY_FILTER_METAS.length}
+              onSelectAll={onClearHierarchyTypeFilters}
+              onSelectNone={onSelectNoneHierarchyTypeFilter}
+            />
 
             {/* Category List */}
-            <div className="searchMenuScrollList flex flex-col gap-0.5 max-h-56 overflow-y-auto px-1">
-              {HIERARCHY_FILTER_METAS.map(({ type, label }) => {
-                const isChecked = !hasHierarchyTypeFilters || filterHierarchyTypes.includes(type);
-                const count = hierarchyTypeCounts[type] ?? 0;
+            <FilterOptionList
+              options={HIERARCHY_FILTER_METAS}
+              isChecked={(type) => !hasHierarchyTypeFilters || filterHierarchyTypes.includes(type)}
+              counts={hierarchyTypeCounts}
+              onToggle={onToggleFilterHierarchyType}
+              icon={(type) => <HierarchyCategoryIcon type={type} className="w-3.5 h-3.5" />}
+            />
 
-                return (
-                  <div
-                    key={type}
-                    onClick={() => onToggleFilterHierarchyType(type)}
-                    className={`tree-filter-row flex items-center justify-between px-2 py-1.5 rounded-lg text-xs cursor-pointer select-none transition ${
-                      isChecked ? 'tree-filter-row-selected' : ''
-                    }`}
-                  >
-                    <div className="flex items-center gap-2 min-w-0">
-                      <input
-                        type="checkbox"
-                        checked={isChecked}
-                        onChange={() => {}} // handled by parent div onClick
-                        className="tree-filter-checkbox w-3.5 h-3.5 rounded cursor-pointer shrink-0"
-                      />
-                      <HierarchyCategoryIcon type={type} className="w-3.5 h-3.5" />
-                      <span className="font-medium text-xs truncate">{label}</span>
-                    </div>
-                    <span className="text-[10px] font-mono tree-panel-muted shrink-0 ml-2">
-                      ({count})
-                    </span>
-                  </div>
-                );
-              })}
-            </div>
-
-            {isFilterActive && (
-              <div className="border-t border-[var(--tree-menu-divider)] mt-0.5 pt-1.5 px-2 pb-0.5">
-                <button
-                  type="button"
-                  onClick={() => {
-                    clearAllFilters();
-                    setShowAdvancedSearch(false);
-                  }}
-                  className="tree-filter-clear text-[10px] w-full font-semibold transition text-right cursor-pointer"
-                >
-                  <CloseIcon className="inline w-2.5 h-2.5 align-baseline" /> Clear Filters
-                </button>
-              </div>
-            )}
+            {clearFiltersFooter}
           </div>
         ) : (
           <div className="flex flex-col gap-1.5 px-1 py-1">
@@ -696,37 +646,15 @@ export default function SearchAndFilterSection({
                 row is itself a real select-all/select-none toggle: unchecked (nothing excluded)
                 flips to "select none" (a sentinel id that matches no real collection); checked or
                 indeterminate flips back to "select all" (the reset action). */}
-            {collections.length > 0 && (() => {
-              const selectedCount = collections.filter((c) => filterCollectionIds.includes(c.id)).length;
-              const isNoneSelected = hasCollectionFilters && selectedCount === 0;
-              return (
-                <div className="mx-2 px-1 py-1 flex items-center justify-between">
-                  <label className="flex items-center gap-2 cursor-pointer select-none">
-                    <input
-                      type="checkbox"
-                      checked={!hasCollectionFilters}
-                      ref={(input) => {
-                        if (input) input.indeterminate = hasCollectionFilters && !isNoneSelected;
-                      }}
-                      onChange={() => {
-                        if (hasCollectionFilters) onClearCollectionFilters();
-                        else onSelectNoneCollectionFilter();
-                      }}
-                      className="tree-filter-checkbox w-3.5 h-3.5 rounded cursor-pointer shrink-0"
-                    />
-                    <span className="text-[11px] font-semibold tree-filter-option-label transition-colors">
-                      {!hasCollectionFilters ? 'Showing All' : isNoneSelected ? 'Showing None' : 'Show All'}
-                    </span>
-                  </label>
-
-                  {hasCollectionFilters && (
-                    <span className="text-[10px] font-mono tree-panel-accent">
-                      {selectedCount}/{collections.length}
-                    </span>
-                  )}
-                </div>
-              );
-            })()}
+            {collections.length > 0 && (
+              <FilterMasterRow
+                hasFilters={hasCollectionFilters}
+                selectedCount={collections.filter((c) => filterCollectionIds.includes(c.id)).length}
+                total={collections.length}
+                onSelectAll={onClearCollectionFilters}
+                onSelectNone={onSelectNoneCollectionFilter}
+              />
+            )}
 
             <CollectionFilterTree
               collections={collections}
@@ -734,20 +662,7 @@ export default function SearchAndFilterSection({
               onToggleFilterCollection={onToggleFilterCollection}
             />
 
-            {isFilterActive && (
-              <div className="border-t border-[var(--tree-menu-divider)] mt-0.5 pt-1.5 px-2 pb-0.5">
-                <button
-                  type="button"
-                  onClick={() => {
-                    clearAllFilters();
-                    setShowAdvancedSearch(false);
-                  }}
-                  className="tree-filter-clear text-[10px] w-full font-semibold transition text-right cursor-pointer"
-                >
-                  <CloseIcon className="inline w-2.5 h-2.5 align-baseline" /> Clear Filters
-                </button>
-              </div>
-            )}
+            {clearFiltersFooter}
           </div>
         )}
       </TreeSearchMenu>
