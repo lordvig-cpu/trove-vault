@@ -13,6 +13,8 @@ import TemplateEditorBarTop from '@/components/TemplateEditorBarTop';
 interface TemplateEditorBarProps {
   templateIcon?: string;
   templateName: string;
+  onRenameTemplate?: (name: string) => void;
+  onChangeTemplateIcon?: (icon: string) => void;
   canvasMode: 'edit' | 'preview';
   onToggleCanvasMode: () => void;
   canUndo?: boolean;
@@ -29,6 +31,8 @@ interface TemplateEditorBarProps {
 export default function TemplateEditorBar({
   templateIcon,
   templateName,
+  onRenameTemplate,
+  onChangeTemplateIcon,
   canvasMode,
   onToggleCanvasMode,
   canUndo,
@@ -47,6 +51,8 @@ export default function TemplateEditorBar({
       <TemplateEditorBarTop
         icon={templateIcon}
         name={templateName}
+        onRename={onRenameTemplate}
+        onChangeIcon={onChangeTemplateIcon}
         canvasMode={canvasMode}
         onToggleCanvasMode={onToggleCanvasMode}
         hasLayout={hasLayout}

@@ -201,7 +201,8 @@ commit whenever you add, remove, split or rename a file — it goes stale otherw
 - The template editor has two toolbars, so template-wide and container-specific tools never fight for
   space in one bar. `TemplateEditorContainerBar` (selected container's name, Size, Layout, Add,
   Split, properties gear, delete — used more often, so it gets the header slot) portals into
-  `#template-toolbar-slot`. `TemplateEditorBar`/`TemplateEditorBarTop` (template name, View toggle,
+  `#template-toolbar-slot`. `TemplateEditorBar`/`TemplateEditorBarTop` (template icon and name -- click the name to rename
+  the template in place, the icon for `TemplateIconPicker`; both save through `updateTemplateMetadata` -- View toggle,
   Zoom, Width/Fit, Undo / Redo, Reset Layout, Save) portals into the workspace footer slot
   (`#template-toolbar-slot-bottom`, rendered in `app/page.tsx`), which lifts clear of the bottom
   panel by `bottomPanelHeight` whenever that panel is open or pinned. Which toolbar gets which slot

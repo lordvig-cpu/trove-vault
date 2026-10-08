@@ -77,8 +77,10 @@ Conventions and architecture (data access, theming, template editor internals, b
 - `TemplateEditorBar.tsx` — the chrome for the template-wide toolbar, portaled into the workspace
   footer slot (`#template-toolbar-slot-bottom`) above the bottom panel; its content is
   `TemplateEditorBarTop`.
-- `TemplateEditorBarTop.tsx` — the template-wide toolbar's content: template icon + name, View
-  toggle, Zoom, Width/Fit, Undo / Redo, Reset Layout and Save.
+- `TemplateEditorBarTop.tsx` — the template-wide toolbar's content: template icon + name (click either to
+  change it), View toggle, Zoom, Width/Fit, Undo / Redo, Reset Layout and Save.
+- `TemplateIconPicker.tsx` — the toolbar's template icon button and its pop-up: a grid of common icons plus
+  an "any emoji" box (choices and the first-character rule in `lib/templateIcons.ts`).
 - `TemplateEditorContainerBar.tsx` — the selected container's own toolbar (used more often, so it
   gets the header slot), portaled into `#template-toolbar-slot`: eye, name, Size, Layout, Add, Split,
   properties gear and delete.
@@ -224,6 +226,7 @@ its display style, with label and typography).
 - `menuTabRequest.ts` — the event the toolbar gear sends so a Layout-tree flyout opens on its Properties tab.
 - `panelTitles.ts` — `getPanelTitle()`: the header title for a panel's docked tab(s).
 - `storage.ts` — item photo upload/remove/validate against Supabase Storage.
+- `templateIcons.ts` — the template icon picker's quick choices and `firstGrapheme` (a typed icon keeps one character).
 - `supabase.ts` — the typed Supabase client instance.
 - `treeUtils.ts` — shared tree helpers (the standalone-collection sentinel id, search highlighting,
   item-matches-query).

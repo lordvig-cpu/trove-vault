@@ -33,6 +33,7 @@ interface MainContentProps {
   /** Collection names by id, for a layout's Collections element. */
   collectionNames?: Record<number, string>;
   onDoneEditingTemplate?: () => void;
+  onUpdateTemplateMeta?: (name: string, description: string | null, icon: string) => void;
   // Template editor (flex layout tree) props
   flexLayoutConfig?: TemplateFlexLayoutConfig | null;
   selectedNodeId?: string | null;
@@ -100,6 +101,7 @@ export default function MainContent({
   templates = [],
   collectionNames,
   onDoneEditingTemplate,
+  onUpdateTemplateMeta,
   flexLayoutConfig = null,
   selectedNodeId = null,
   activeContainerId,
@@ -176,6 +178,7 @@ export default function MainContent({
                   hiddenNodeIds={hiddenNodeIds}
                   onToggleHidden={onToggleHidden}
                   onDoneEditing={onDoneEditingTemplate || (() => {})}
+                  onUpdateTemplateMeta={onUpdateTemplateMeta}
                   onToggleCanvasMode={onToggleCanvasMode || (() => {})}
                   canUndo={canUndo}
                   canRedo={canRedo}

@@ -624,6 +624,7 @@ export default function Home() {
               templates={templates}
               collectionNames={collectionNames}
               onDoneEditingTemplate={templateEditor.stopEditing}
+              onUpdateTemplateMeta={templateEditor.updateTemplateMetadata}
               flexLayoutConfig={templateEditor.flexLayoutConfig}
               selectedNodeId={templateEditor.selectedNodeId}
               activeContainerId={templateEditor.activeContainerId}

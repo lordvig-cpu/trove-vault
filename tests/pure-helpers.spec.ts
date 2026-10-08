@@ -179,3 +179,12 @@ test.describe('tree categories and search (lib/treeUtils.ts)', () => {
     expect(itemMatchesQuery(it, 'dc comics')).toBe(false);
   });
 });
+
+test('a typed template icon keeps only its first visible character (lib/templateIcons.ts)', async () => {
+  const { firstGrapheme } = await import('../lib/templateIcons');
+  expect(firstGrapheme('🦖 dinosaurs')).toBe('🦖');
+  expect(firstGrapheme('  🖼️')).toBe('🖼️'); // emoji + variation selector stays whole
+  expect(firstGrapheme('👨‍👩‍👧 family')).toBe('👨‍👩‍👧'); // a joined emoji is one character
+  expect(firstGrapheme('Abc')).toBe('A');
+  expect(firstGrapheme('   ')).toBeNull();
+});

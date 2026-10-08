@@ -67,6 +67,8 @@ interface TemplateEditorStageProps {
   hiddenNodeIds?: Set<string>;
   onToggleHidden?: (nodeId: string) => void;
   onDoneEditing: () => void;
+  /** Saves the template's name / description / icon (the toolbar's rename and icon picker). */
+  onUpdateTemplateMeta?: (name: string, description: string | null, icon: string) => void;
   onToggleCanvasMode: () => void;
   canUndo?: boolean;
   canRedo?: boolean;
@@ -107,6 +109,7 @@ export default function TemplateEditorStage({
   hiddenNodeIds,
   onToggleHidden,
   onDoneEditing,
+  onUpdateTemplateMeta,
   onToggleCanvasMode,
   canUndo,
   canRedo,
@@ -190,6 +193,8 @@ export default function TemplateEditorStage({
           <TemplateEditorBar
             templateIcon={template.icon}
             templateName={template.name}
+            onRenameTemplate={onUpdateTemplateMeta ? (name) => onUpdateTemplateMeta(name, template.description, template.icon) : undefined}
+            onChangeTemplateIcon={onUpdateTemplateMeta ? (icon) => onUpdateTemplateMeta(template.name, template.description, icon) : undefined}
             canvasMode={canvasMode}
             onToggleCanvasMode={onToggleCanvasMode}
             canUndo={canUndo}

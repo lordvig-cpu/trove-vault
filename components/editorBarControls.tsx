@@ -193,20 +193,24 @@ export function GroupOption({
 }
 
 /** The selection's name; click to rename in place (Enter or blur saves, Esc cancels). An empty name is
-    only saved when `allowEmpty` (a content element's name falls back to its label text). */
+    only saved when `allowEmpty` (a content element's name falls back to its label text). `size="title"` is
+    the template-wide toolbar's larger template name. */
 export function EditableName({
   name,
   onCommit,
   ariaLabel,
   placeholder,
   allowEmpty = false,
+  size = 'default',
 }: {
   name: string;
   onCommit: (label: string) => void;
   ariaLabel: string;
   placeholder?: string;
   allowEmpty?: boolean;
+  size?: 'default' | 'title';
 }) {
+  const isTitle = size === 'title';
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(name);
 
@@ -230,7 +234,9 @@ export function EditableName({
           if (e.key === 'Escape') finish(false);
         }}
         aria-label={ariaLabel}
-        className="w-36 px-1.5 py-0.5 rounded-md bg-shade/40 border border-[var(--secondary-accent)] text-[11px] font-bold text-[var(--flyout-white)] focus:outline-none"
+        className={`px-1.5 py-0.5 rounded-md bg-shade/40 border border-[var(--secondary-accent)] font-bold text-[var(--flyout-white)] focus:outline-none ${
+          isTitle ? 'w-48 text-[13px] tracking-wide' : 'w-36 text-[11px]'
+        }`}
       />
     );
   }
@@ -243,7 +249,9 @@ export function EditableName({
         setEditing(true);
       }}
       title="Click to rename"
-      className="truncate max-w-[130px] px-1.5 py-0.5 rounded-md text-[11px] font-bold text-[var(--flyout-white)] tracking-wide cursor-text border border-transparent hover:border-glint hover:bg-glint/10"
+      className={`truncate px-1.5 py-0.5 rounded-md font-bold text-[var(--flyout-white)] tracking-wide cursor-text border border-transparent hover:border-glint hover:bg-glint/10 ${
+        isTitle ? 'max-w-[30ch] text-[13px]' : 'max-w-[130px] text-[11px]'
+      }`}
     >
       {name || placeholder}
     </button>

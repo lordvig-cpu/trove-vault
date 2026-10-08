@@ -13,7 +13,8 @@ import {
   barToggleGroup,
 } from '@/components/editorBarStyles';
 import HoverHint, { HintRef, type HintContent } from '@/components/HoverHint';
-import { DEFAULT_TEMPLATE_ICON } from '@/types/template';
+import TemplateIconPicker from '@/components/TemplateIconPicker';
+import { EditableName } from '@/components/editorBarControls';
 
 /* ==========================================================================
    Top row of the template editor bar.
@@ -39,6 +40,10 @@ const divider = 'h-4 w-px bg-[color-mix(in_oklch,var(--secondary-accent)_40%,tra
 interface TemplateEditorBarTopProps {
   icon?: string;
   name: string;
+  /** Renames the template (click the name). */
+  onRename?: (name: string) => void;
+  /** Changes the template's icon (click the icon). */
+  onChangeIcon?: (icon: string) => void;
   canvasMode: 'edit' | 'preview';
   onToggleCanvasMode: () => void;
   /** False until the template has a layout: Width/Fit have no canvas to act on yet. */
@@ -56,6 +61,8 @@ interface TemplateEditorBarTopProps {
 export default function TemplateEditorBarTop({
   icon,
   name,
+  onRename,
+  onChangeIcon,
   canvasMode,
   onToggleCanvasMode,
   hasLayout,
@@ -69,15 +76,14 @@ export default function TemplateEditorBarTop({
   return (
     <div className="flex items-center px-2.5 py-2.5 min-w-[30rem]">
       <div className="flex items-center gap-2 min-w-0 shrink-0">
-        <span
-          className="w-[26px] h-[26px] rounded-md bg-shade/40 border border-[color-mix(in_oklch,var(--secondary-accent)_35%,transparent)] flex items-center justify-center text-sm shrink-0"
-          aria-hidden="true"
-        >
-          {icon || DEFAULT_TEMPLATE_ICON}
-        </span>
-        <h1 className="text-[13px] font-bold text-[var(--flyout-white)] tracking-wide truncate max-w-[30ch]" title={name}>
-          {name}
-        </h1>
+        <TemplateIconPicker icon={icon} onChange={onChangeIcon} />
+        {onRename ? (
+          <EditableName name={name} onCommit={onRename} ariaLabel="Template name" size="title" />
+        ) : (
+          <h1 className="text-[13px] font-bold text-[var(--flyout-white)] tracking-wide truncate max-w-[30ch]" title={name}>
+            {name}
+          </h1>
+        )}
       </div>
 
       {/* A fixed gap from the name (not one derived from matching column widths, which forced this
