@@ -1,6 +1,8 @@
 'use client';
 
+import { useMemo } from 'react';
 import { ItemRecord } from '@/types/item';
+import { DEFAULT_TEMPLATE_ICON } from '@/types/template';
 import { DockContent } from '@/hooks/usePanelDockDrag';
 import { TreeTab } from '@/lib/filterTreeForest';
 import { itemMatchesQuery } from '@/lib/treeUtils';
@@ -107,6 +109,11 @@ export function usePanelRenderers({
     handleAddContainer,
   } = hierarchy;
 
+  const templateIcons = useMemo(
+    () => new Map(collections.templates.map((t) => [t.id, t.icon || DEFAULT_TEMPLATE_ICON])),
+    [collections.templates]
+  );
+
   const handleTreeSelectItem = (item: ItemRecord, collectionId: number | null) => {
     // Clear the search in the same update so its sole match cannot override this click.
     const pattern = searchQuery.trim();
@@ -141,6 +148,7 @@ export function usePanelRenderers({
     return (
       <TreePanelContext.Provider value={{ isFlyout, isPinned: !isFlyout && (pos === 'left' ? isPinned : isSecondaryPinned) }}>
         <TreeContent
+          templateIcons={templateIcons}
           treeView={content === 'collections' ? 'collections' : content === 'templates' ? 'templates' : 'items'}
           unifiedForest={forest}
           searchQuery={tree.searchQuery}
@@ -170,9 +178,7 @@ export function usePanelRenderers({
             setIsCollectionsFlyoutOpen(false);
             setIsPrimaryFlyoutOpen(false);
             const validId = Math.abs(templateId);
-            if (validId && validId !== 999) {
-              templateEditor.startEditing(validId);
-            }
+            if (validId) templateEditor.startEditing(validId);
           }}
           onEditCollection={(col) => openTemplateManager(col.id, col.name)}
           onDeleteCollection={openDeleteCollection}

@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { UNCATEGORIZED_CATEGORY_ID } from '@/lib/treeUtils';
 import { CollectionRecord } from '@/types/collection';
 import { useTreeActions } from '@/context/TreeActionsContext';
 import { useTreeActionMenu } from '@/hooks/useTreeActionMenu';
@@ -72,10 +73,7 @@ export default function TreeCollectionActionMenu({
           label="Edit Item Template"
           subtext="Manage attributes & schema"
           onClick={() => {
-            const rawTemplateId = Math.abs(collection.id);
-            if (rawTemplateId !== 999) {
-              onEditTemplate?.(rawTemplateId);
-            }
+            if (collection.id !== UNCATEGORIZED_CATEGORY_ID) onEditTemplate?.(Math.abs(collection.id));
             menu.closeMenu();
           }}
         />

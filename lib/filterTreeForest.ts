@@ -49,10 +49,6 @@ function buildTemplateNodesFromItems(
 }
 
 /**
- * Builds nested parent-child hierarchies of items, safely handling any
- * items whose parent_id might not be present in the subset.
- */
-/**
  * Synthesizes dynamic category nodes for a given list of items,
  * partitioned by each root item's template category.
  */

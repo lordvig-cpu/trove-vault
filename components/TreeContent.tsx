@@ -64,6 +64,7 @@ export interface TreeContentProps {
   onAddSubCollection?: (parentCollectionId: number) => void;
   position?: 'left' | 'right';
   treeView?: TreeTab;
+  templateIcons?: ReadonlyMap<number, string>;
 }
 
 /* ==========================================================================
@@ -187,6 +188,7 @@ export default function TreeContent({
   onRenameItem,
   position,
   treeView,
+  templateIcons,
 }: TreeContentProps) {
   const effectivePosition = position ?? 'left';
 
@@ -246,6 +248,7 @@ export default function TreeContent({
     onSelectCollection,
     onSelectItem,
     position: effectivePosition,
+    templateIcons,
   };
 
   const actionsValue: TreeActionsContextValue = {

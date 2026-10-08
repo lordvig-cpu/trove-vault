@@ -217,7 +217,7 @@ export function useTemplateEditor({
       setError(null);
 
       const rawId = Math.abs(templateId);
-      if (!rawId || rawId === 999) {
+      if (!rawId) {
         setError('Invalid template ID');
         return null;
       }
@@ -265,7 +265,7 @@ export function useTemplateEditor({
   const startEditing = useCallback(
     async (templateId: number) => {
       const rawId = Math.abs(templateId);
-      if (!rawId || rawId === 999) return;
+      if (!rawId) return;
 
       // 1. Snapshot current tab setup if not already in editing mode
       if (getTabSnapshot && !tabSnapshotRef.current) {

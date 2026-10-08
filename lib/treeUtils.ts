@@ -5,6 +5,8 @@ import { UnifiedCollectionNode } from '@/components/UnifiedTree';
 import { SearchScope } from '@/components/NavigationHeader';
 
 export const STANDALONE_COLLECTION_ID = 0;
+/** The Items tree's virtual category for items with no template (category ids are -templateId). */
+export const UNCATEGORIZED_CATEGORY_ID = -999;
 
 export interface TreeSearchHighlight {
   itemId: number;
@@ -95,20 +97,11 @@ export function detectItemCategory(
     }
 
     // Fallback if templates array is empty or still fetching
-    return {
-      id: -item.template_id,
-      name:
-        item.template_id === 2
-          ? 'Trading Card Games (TCG)'
-          : item.template_id === 3
-          ? 'Comic Books & Graphic Novels'
-          : `Category #${item.template_id}`,
-      icon: item.template_id === 2 ? '🃏' : item.template_id === 3 ? '📚' : DEFAULT_TEMPLATE_ICON,
-    };
+    return { id: -item.template_id, name: `Category #${item.template_id}`, icon: DEFAULT_TEMPLATE_ICON };
   }
 
   // 2. Generic Fallback for unassigned items
-  return { id: -999, name: 'Uncategorized Items', icon: DEFAULT_TEMPLATE_ICON };
+  return { id: UNCATEGORIZED_CATEGORY_ID, name: 'Uncategorized Items', icon: DEFAULT_TEMPLATE_ICON };
 }
 
 /**

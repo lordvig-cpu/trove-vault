@@ -10,7 +10,7 @@ import TreeItemActionMenu from '@/components/TreeItemActionMenu';
 import { STANDALONE_COLLECTION_ID } from '@/lib/treeUtils';
 import { CollectionRecord } from '@/types/collection';
 import { ChevronDownIcon, ChevronRightIcon } from '@/components/icons/PanelIcons';
-import { FolderIcon } from '@/components/icons/ContentIcons';
+import { FileIcon, FolderIcon } from '@/components/icons/ContentIcons';
 import TreeGearButton from '@/components/TreeGearButton';
 
 /* ==========================================================================
@@ -33,16 +33,6 @@ export interface UnifiedTreeProps {
    ========================================================================== */
 
 const CHUNK_SIZE = 50;
-
-function getItemTypeIcon(item: ItemRecord): string {
-  const attrs = item.attributes || {};
-  if (attrs.cgc_grade || attrs.publisher || attrs.issue_number) return '📚';
-  if (attrs.grading_company || attrs.card_number || attrs.rarity) return '🃏';
-  if (attrs.platform || attrs.completeness) return '🎮';
-  if (attrs.designer || attrs.player_count || attrs.play_time) return '🎲';
-  if (attrs.format || attrs.aspect_ratio) return '🎬';
-  return '📄';
-}
 
 function TreeLoadMoreNode({
   remainingCount,
@@ -83,7 +73,7 @@ function UnifiedTreeItem({
   collectionId: number | null;
   depth: number;
 }) {
-  const { selectedItemId, searchHighlight, onSelectItem, position = 'left' } = useTreeSelection();
+  const { selectedItemId, searchHighlight, onSelectItem, position = 'left', templateIcons } = useTreeSelection();
   const isRightSide = position === 'right';
   const [isOpen, setIsOpen] = useState(true);
   const [displayLimit, setDisplayLimit] = useState(CHUNK_SIZE);
@@ -94,7 +84,8 @@ function UnifiedTreeItem({
   const hasSubItems = childrenList.length > 0;
   const visibleChildren = searchHighlight ? childrenList : childrenList.slice(0, displayLimit);
   const remainingChildren = childrenList.length - visibleChildren.length;
-  const typeIcon = getItemTypeIcon(item);
+  // The item's template icon (user data), or a plain file icon for an item with no template
+  const typeIcon = (item.template_id != null && templateIcons?.get(item.template_id)) || <FileIcon className="w-3.5 h-3.5" />;
 
   const gearElement = (
     <div className={`transition shrink-0 ${isRightSide ? 'absolute left-2' : 'relative ml-auto'}`}>

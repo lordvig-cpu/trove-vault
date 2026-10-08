@@ -13,6 +13,8 @@ export interface TreeSelectionContextValue {
   onSelectCollection: (id: number) => void;
   onSelectItem: (item: ItemRecord, collectionId: number | null) => void;
   position?: 'left' | 'right';
+  /** Each template's icon by template id, so an item row can show its template's icon. */
+  templateIcons?: ReadonlyMap<number, string>;
 }
 
 const TreeSelectionContext = createContext<TreeSelectionContextValue | null>(null);
