@@ -11,8 +11,7 @@ returns 404. A successful diagnostic means the collections query succeeded.
 
 ## Checks
 
-- `npm run lint:workspace` checks everything except TSX files with Modal in their
-  names, which are deferred from the current cleanup. `npm run lint` checks all files.
+- `npm run lint` checks all files; `npx tsc --noEmit` type-checks them.
 - `npm run build` validates types and builds the production app. Google Fonts
   must be reachable during a cold build.
 - After building, `npm test` runs data and browser regressions against a temporary

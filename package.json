@@ -7,8 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "playwright test",
-    "lint:workspace": "eslint . --ignore-pattern \"**/*Modal*.tsx\""
+    "test": "playwright test"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.112.3",
