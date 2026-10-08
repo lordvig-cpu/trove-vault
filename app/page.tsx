@@ -30,6 +30,11 @@ import { getPanelTitle } from '@/lib/panelTitles';
  */
 const AUTO_OPEN_TEMPLATE_PANELS = false;
 
+/** Whether a docked tab's panel header shows the search box. One list for the docked panels and their
+ *  sliding copies alike, so a panel never loses its search box mid-move. */
+const SEARCHABLE_TABS: ReadonlySet<string> = new Set(['items', 'collections', 'templates', 'template_editor', 'template_hierarchy']);
+const hasSearchFilter = (tab: string | null | undefined) => !!tab && SEARCHABLE_TABS.has(tab);
+
 export default function Home() {
   /* ------------------------------------------------------------------------
      1. DATA LAYER (Supabase Records, Trees & CRUD Mutations)
@@ -487,7 +492,7 @@ export default function Home() {
       onTabChange={handlePrimaryTabChange}
       hasDockedContent={primaryTabs.length > 0}
       isContentSliding={slidingState !== null && !(slidingState.incomingContent && slidingState.from === 'left' && slidingState.isMoving)}
-      showSearchFilter={primaryActiveTab === 'items' || primaryActiveTab === 'collections' || primaryActiveTab === 'templates' || primaryActiveTab === 'template_editor' || primaryActiveTab === 'template_hierarchy'}
+      showSearchFilter={hasSearchFilter(primaryActiveTab)}
       hierarchyNodeCount={hierarchyNodeCount}
       variant="sidebar"
       position="left"
@@ -739,7 +744,7 @@ export default function Home() {
             onTabChange={handleSecondaryTabChange}
             hasDockedContent={secondaryTabs.length > 0}
             isContentSliding={slidingState !== null && !(slidingState.incomingContent && slidingState.from === 'right' && slidingState.isMoving)}
-            showSearchFilter={secondaryActiveTab === 'items' || secondaryActiveTab === 'collections' || secondaryActiveTab === 'templates' || secondaryActiveTab === 'template_editor' || secondaryActiveTab === 'template_hierarchy'}
+            showSearchFilter={hasSearchFilter(secondaryActiveTab)}
             hierarchyNodeCount={hierarchyNodeCount}
             isOpen={isSecondaryActive}
             isPinned={isSecondaryPinned}
@@ -803,7 +808,7 @@ export default function Home() {
                 tabs={slidingState.tabs}
                 activeTab={slidingState.activeTab}
                 hasDockedContent={slidingState.tabs.length > 0}
-                showSearchFilter={slidingState.activeTab === 'items' || slidingState.activeTab === 'collections' || slidingState.activeTab === 'templates'}
+                showSearchFilter={hasSearchFilter(slidingState.activeTab)}
                 variant="sidebar"
                 isPinned={slidingState.to === 'left' ? isPinned : isSecondaryPinned}
                 position={slidingState.to}
@@ -846,7 +851,7 @@ export default function Home() {
               <PrimarySidePanelHeader
                 title={getPanelTitle(slidingState.secondaryTabs, slidingState.secondaryActiveTab ?? 'empty', 'SIDE PANEL')}
                 hasDockedContent={slidingState.secondaryTabs.length > 0}
-                showSearchFilter={slidingState.secondaryActiveTab === 'items' || slidingState.secondaryActiveTab === 'collections'}
+                showSearchFilter={hasSearchFilter(slidingState.secondaryActiveTab)}
                 variant="sidebar"
                 isPinned={slidingState.to === 'right' ? isPinned : isSecondaryPinned}
                 position={slidingState.to === 'right' ? 'left' : 'right'}

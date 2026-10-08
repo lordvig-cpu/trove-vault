@@ -407,10 +407,22 @@
 }
 
 /* Shared primary/secondary panel header: topper, gradient, title and divider. */
+/* The title row sits centered in the visible band between the accent strip (::before, which takes the top
+   of the header's padding) and the divider below: --tree-header-nudge moves it down past the strip, and the
+   same negative bottom margin keeps the divider -- and everything under it -- where it was. */
 .tree-header-toolbar {
+  --tree-header-nudge: 0.25rem;
   position: relative;
   isolation: isolate;
   height: 2rem;
+  margin-top: var(--tree-header-nudge);
+  margin-bottom: calc(-1 * var(--tree-header-nudge));
+}
+
+/* The bottom panel's header has a smaller gap (gap-2) and no divider, so its row needs a smaller nudge to
+   sit centered between the strip and the header's bottom edge. */
+.bottom-side-panel .tree-header-toolbar {
+  --tree-header-nudge: 0.15rem;
 }
 
 /* /* Match the flyout's framed topper and mirror to the bottom without clipping the sidebar resize handles. */
@@ -504,7 +516,8 @@
 .tree-header-toolbar::before {
   content: '';
   position: absolute;
-  top: -0.5rem;
+  /* The header's top edge: its pt-2 padding plus the row's nudge. */
+  top: calc(-0.5rem - var(--tree-header-nudge));
   left: -0.625rem;
   right: -0.625rem;
   height: 0.3rem;
@@ -519,8 +532,9 @@
 .tree-header-toolbar::after {
   content: '';
   position: absolute;
-  /* Bottom edge reaches the divider below: --tree-header-gap is the header's flex gap (default gap-2). */
-  inset: -0.125rem -0.625rem calc(-1 * var(--tree-header-gap, 0.5rem));
+  /* Starts just under the accent strip and reaches the divider below: --tree-header-gap is the header's
+     flex gap (default gap-2), less the row's nudge (see .tree-header-toolbar). */
+  inset: calc(-0.125rem - var(--tree-header-nudge)) -0.625rem calc(var(--tree-header-nudge) - var(--tree-header-gap, 0.5rem));
   z-index: -1;
   background:
     linear-gradient(to bottom,
