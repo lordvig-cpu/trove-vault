@@ -93,7 +93,9 @@ export default function NavigationHeader({
         {/* ------------------------------------------------------------------
             2.2 LEFT SECTION: BRANDING & PRIMARY NAVIGATION
             ------------------------------------------------------------------ */}
-        <div className="flex items-center h-full relative z-10">
+        {/* z 86: the tabs' flyouts render inside this, so it sits above the template toolbar slot (85) --
+            an open flyout covers the toolbar, never the reverse. */}
+        <div className="flex items-center h-full relative z-[86]">
           {/* Brand Logo & Items Tab Anchor Zone (Pinned to Left Sidebar Width 304px / w-76) */}
           <div className="flex items-center justify-between h-full w-76 shrink-0 relative">
             {/* Brand Logo Anchor */}

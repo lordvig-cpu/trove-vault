@@ -41,8 +41,9 @@ Local values cannot escape their parent stacking context.
 | z-index    | Element / state                       | Placement / scope                                  | Source                                       |
 |------------|----------------------------------------|------------------------------------------------------|-----------------------------------------------|
 | 160        | Cursor-following drag badge           | LOCAL to the z=150 dock overlay                       | PanelDockDropZones.tsx / CSS                 |
+| 86         | Header nav section (logo, Items / Collections / Templates tabs and their flyouts) | LOCAL to header wrapper; above the toolbar slot (85) so an open tree flyout covers the template toolbar | NavigationHeader.tsx |
 | 85         | Top template editor toolbar slot      | LOCAL to header wrapper (thus above its 80)            | NavigationHeader.tsx; TemplateEditorContainerBar.tsx |
-| 80         | Tree flyout aside                     | LOCAL to header / flyout containers                   | PrimarySidePanel.tsx                         |
+| 80         | Tree flyout aside                     | LOCAL to the header nav section (86)                  | PrimarySidePanel.tsx                         |
 | 60 / 50    | Active / inactive navigation tab      | LOCAL to the header; stable on hover                  | navigationHeader.css                         |
 | 50         | Panel resize handles                  | LOCAL to their isolated panel                         | ContentPrimitives.css                        |
 | 40         | Panel reset buttons                   | LOCAL to their isolated panel                         | Side-panel and BottomPanel components        |
