@@ -224,6 +224,15 @@ commit whenever you add, remove, split or rename a file — it goes stale otherw
   clicked; a hovered-open one just fills white, with no rotation. All of
   this is `useTreeActionMenu` (`isPinned`, `handleGearClick`), shared by every tree, and every tree row's
   gear is the one `TreeGearButton` component (don't copy its markup into a tree again; the copies drifted).
+- Right-clicking (or the keyboard's menu key on) anything that has a gear opens that gear's flyout, pinned,
+  exactly as clicking the gear would -- the same menu, positioned from the row's gear rather than the cursor,
+  so it looks the same however it was opened: every tree row (`useTreeActionMenu`'s `handleRowContextMenu`
+  on the row element; Layout and Content rows also select their node), and in Edit mode any container or
+  content element on the canvas (`TemplateEditorStage`'s one `onContextMenu`, which selects the node and opens
+  its Layout-tree row's flyout through `lib/layoutTreeMenu.ts`, opening the Layout panel first if needed --
+  the same helper the toolbars' gear uses). A second right-click keeps the menu open rather than closing it.
+  Shift+right-click is always left to the browser's own menu, and so is anything with no gear (inputs, the item
+  view, Preview mode).
 - Every tree/template gear-icon flyout -- whether it's pure Actions (Item, Collection, Category,
   Template) or mixes Actions with Properties (Body, a standard container, a Content-tab field) --
   is built from exactly one shared shell and CSS file, `TreeSubMenu.tsx`

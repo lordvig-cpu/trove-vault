@@ -223,6 +223,8 @@ its display style, with label and typography).
 - `layoutRecipes.ts` — pure whole-layout recipes (Classic, Spec Sheet, Gallery) built from the pre-defined blocks;
   covered by `tests/layout-recipes.spec.ts`.
 - `layoutStorage.ts` — where a template's layout lives (localStorage key) and which copy wins when resolving it.
+- `layoutTreeMenu.ts` — opens a node's Layout-tree gear flyout from outside the tree (the toolbars' gear, a right-click on
+  the canvas), opening the Layout panel first when it isn't showing.
 - `menuTabRequest.ts` — the event the toolbar gear sends so a Layout-tree flyout opens on its Properties tab.
 - `panelTitles.ts` — `getPanelTitle()`: the header title for a panel's docked tab(s).
 - `storage.ts` — item photo upload/remove/validate against Supabase Storage.

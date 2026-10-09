@@ -1,7 +1,7 @@
 /* ==========================================================================
    Asking a Layout-tree flyout to open on a particular tab. The toolbars' gear (TreeGearButton in
-   components/editorBarControls.tsx) opens a node's flyout by clicking the tree row's own gear, and
-   sends this first so that flyout shows Properties -- the toolbar is about editing the selection, so
+   components/editorBarControls.tsx) opens a node's flyout through lib/layoutTreeMenu.ts, which works the
+   tree row's own gear, and sends this first so that flyout shows Properties -- the toolbar is about editing the selection, so
    that is the tab worth landing on. The tree's own gear sends nothing, so it keeps whichever tab was
    last used. Listened to by the container and content flyouts (TemplateLayoutActionMenu.tsx).
    ========================================================================== */

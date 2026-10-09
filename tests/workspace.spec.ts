@@ -140,3 +140,37 @@ test('intro video is fetched on interaction, not on initial render', async ({ pa
   await expect(trigger).toHaveCount(0);
   await expect(page.locator('video')).toHaveJSProperty('paused', true);
 });
+
+test('right-clicking a tree row opens its gear menu pinned; Shift+right-click keeps the browser menu', async ({ page }) => {
+  await page.route('**/rest/v1/**', route => {
+    const url = new URL(route.request().url());
+    const rows = url.pathname.endsWith('/items') ? [{ id: 1, name: 'Context item', parent_id: null, template_id: null, attributes: {} }] : [];
+    return route.fulfill({ json: Number(url.searchParams.get('offset') ?? 0) ? [] : rows });
+  });
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Open Items or drag to dock in a sidebar', exact: true }).click();
+  const row = page.locator('.tree-item', { hasText: 'Context item' });
+  const menu = page.locator('[data-tree-menu]:not([inert])');
+
+  // Shift+right-click: the page leaves the event (and the browser's own menu) alone
+  const prevented = await row.evaluate((el) => {
+    const event = new MouseEvent('contextmenu', { bubbles: true, cancelable: true, shiftKey: true });
+    el.dispatchEvent(event);
+    return event.defaultPrevented;
+  });
+  expect(prevented).toBe(false);
+  await expect(menu).toHaveCount(0);
+
+  await row.click({ button: 'right' });
+  await expect(menu).toBeVisible();
+  await expect(menu).toContainText('Item: Actions');
+  await expect(row.locator('.tree-gear-trigger-pinned')).toHaveCount(1);
+  // Pinned: the pointer leaving and a second right-click both keep it open
+  await page.mouse.move(1200, 800);
+  await page.waitForTimeout(600);
+  await expect(menu).toBeVisible();
+  await row.click({ button: 'right' });
+  await expect(menu).toBeVisible();
+  await page.keyboard.press('Escape');
+  await expect(menu).toHaveCount(0);
+});

@@ -86,6 +86,10 @@ function TemplateRootTreeRow({
     <>
       <div
         onClick={onSelectRoot}
+        onContextMenu={(e) => {
+          if (!e.shiftKey) onSelectRoot();
+          menu.handleRowContextMenu(e);
+        }}
         className={`tmpl-tree-root group relative ${isRootSelected ? 'tmpl-tree-root-selected' : ''}`}
         title="Click to select blueprint container"
       >
@@ -176,6 +180,10 @@ function TemplateFieldTreeRow({
     <>
       <div
         onClick={() => onSelectField(field.id)}
+        onContextMenu={(e) => {
+          if (!e.shiftKey) onSelectField(field.id);
+          menu.handleRowContextMenu(e);
+        }}
         draggable={true}
         onDragStart={(e) => {
           e.stopPropagation();

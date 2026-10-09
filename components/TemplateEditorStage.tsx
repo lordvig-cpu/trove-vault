@@ -16,6 +16,7 @@ import TemplateEditorContainerBar from '@/components/TemplateEditorContainerBar'
 import TemplateEditorContentBar from '@/components/TemplateEditorContentBar';
 import ScaledCanvas from '@/components/template-canvas/ScaledCanvas';
 import FlexContainerRenderer from '@/components/template-canvas/FlexContainerRenderer';
+import { openLayoutTreeMenu } from '@/lib/layoutTreeMenu';
 
 /* ==========================================================================
    1. PROPS INTERFACE
@@ -133,6 +134,18 @@ export default function TemplateEditorStage({
 
   const isFlexActive = Boolean(flexLayoutConfig?.root);
 
+  /** Right-click on the canvas (edit mode): the innermost container or content element under the pointer
+   *  is selected and its Layout-tree gear flyout opens pinned, the Layout panel opening first if needed. */
+  const handleCanvasContextMenu = (e: React.MouseEvent<HTMLElement>) => {
+    if (canvasMode !== 'edit' || e.shiftKey) return;
+    const target = (e.target as HTMLElement).closest<HTMLElement>('[data-component-id], [data-container-id]');
+    const nodeId = target?.dataset.componentId ?? target?.dataset.containerId;
+    if (!nodeId) return;
+    e.preventDefault();
+    onSelectNode?.(nodeId);
+    openLayoutTreeMenu(nodeId, { how: 'open', isLayoutPanelOpen, onOpenLayoutPanel, layoutPanelSelector });
+  };
+
   // The selected container's own toolbar (used more often) lives in the slot under the top header;
   // the template-wide toolbar lives in a matching slot at the workspace footer, above the bottom
   // panel. Each hangs over its edge of this stage, hence the extra top *and* bottom padding.
@@ -211,6 +224,9 @@ export default function TemplateEditorStage({
           VISUAL CANVAS STAGE (Flexbox Engine or Legacy Grid Fallback)
           -------------------------------------------------------------------- */}
       {isFlexActive && flexLayoutConfig?.root ? (
+        // Right-click a container or content element (edit mode) to open its Layout-tree gear flyout,
+        // exactly as its tree row's right-click does; Shift+right-click keeps the browser's own menu.
+        <div className="contents" onContextMenu={handleCanvasContextMenu}>
         <ScaledCanvas>
           <FlexContainerRenderer
             container={flexLayoutConfig.root}
@@ -235,6 +251,7 @@ export default function TemplateEditorStage({
             onOverflowChange={onOverflowChange}
           />
         </ScaledCanvas>
+        </div>
       ) : (
         <div className="w-full max-w-6xl mx-auto py-16 flex flex-col items-center justify-center text-center gap-3 border-2 border-dashed border-slate-800 rounded-2xl bg-slate-900/20">
           <span className="text-sm font-bold text-slate-300">No layout yet</span>

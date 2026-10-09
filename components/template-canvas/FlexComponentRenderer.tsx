@@ -55,6 +55,7 @@ function PlaceholderComponent({
 
   return (
     <div
+      data-component-id={component.id}
       style={componentStyle}
       onClick={(e) => {
         e.stopPropagation();
@@ -254,6 +255,7 @@ export default function FlexComponentRenderer(props: {
 
   return (
     <div
+      data-component-id={component.id}
       style={style}
       onClick={(e) => {
         e.stopPropagation();

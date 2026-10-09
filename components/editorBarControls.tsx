@@ -17,7 +17,7 @@ import {
   barIconBtnDisabled,
   barIconBtnOn,
 } from '@/components/editorBarStyles';
-import { requestMenuTab } from '@/lib/menuTabRequest';
+import { openLayoutTreeMenu } from '@/lib/layoutTreeMenu';
 
 /* ==========================================================================
    Controls shared by the template editor's selection toolbars (TemplateEditorContainerBar for a
@@ -350,47 +350,7 @@ export function TreeGearButton({
       onClick={() => {
         onSelectNode?.(nodeId);
         // The flyout opens on its Properties tab when opened from here (see lib/menuTabRequest.ts).
-        const clickTreeGear = () => {
-          requestMenuTab(nodeId, 'properties');
-          document.querySelector<HTMLElement>(`[data-tree-gear-id="${nodeId}"]`)?.click();
-        };
-        if (isLayoutPanelOpen) {
-          clickTreeGear();
-          return;
-        }
-        // The tree row (and its gear) isn't on screen yet: open the panel unpinned, then
-        // wait for the *panel's own* slide-in transition to genuinely finish before syncing
-        // to it. The menu's position is computed from the panel's live bounding rect at
-        // click time, so clicking mid-transition (or even a couple of animation frames in —
-        // a frame-to-frame "has it stopped moving" check can be fooled by the transition not
-        // having visibly started yet) anchors it to the panel's still-collapsed position.
-        onOpenLayoutPanel?.();
-        const waitForPanelThen = (cb: () => void) => {
-          const panelEl = document.querySelector<HTMLElement>(layoutPanelSelector);
-          if (!panelEl) {
-            requestAnimationFrame(() => waitForPanelThen(cb));
-            return;
-          }
-          const transitionSeconds = parseFloat(getComputedStyle(panelEl).transitionDuration) || 0;
-          if (transitionSeconds === 0) {
-            cb();
-            return;
-          }
-          let done = false;
-          const finish = () => {
-            if (done) return;
-            done = true;
-            panelEl.removeEventListener('transitionend', onEnd);
-            cb();
-          };
-          const onEnd = (e: TransitionEvent) => {
-            if (e.target === panelEl) finish();
-          };
-          panelEl.addEventListener('transitionend', onEnd);
-          // Safety net if the transition never fires an end event (e.g. it gets interrupted).
-          setTimeout(finish, transitionSeconds * 1000 + 100);
-        };
-        waitForPanelThen(clickTreeGear);
+        openLayoutTreeMenu(nodeId, { how: 'toggle', tab: 'properties', isLayoutPanelOpen, onOpenLayoutPanel, layoutPanelSelector });
       }}
       title={title}
       aria-label={title}

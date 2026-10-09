@@ -97,6 +97,7 @@ function UnifiedTreeItem({
     <div className="select-none text-[13px] font-sans w-full min-w-0 flex flex-col">
       <div
         onClick={() => onSelectItem(item, collectionId)}
+        onContextMenu={menu.handleRowContextMenu}
         title={item.name}
         style={isRightSide ? { paddingLeft: depth * 24.5 + 44 } : undefined}
         className={[
@@ -248,6 +249,7 @@ export default function UnifiedTree({
     <div className="select-none text-[13px] font-sans w-full min-w-0 flex flex-col">
       <div
         onClick={() => onSelectCollection(collection.id)}
+        onContextMenu={menu.handleRowContextMenu}
         title={`${treeType === 'templates' ? 'Template' : isVirtualCategory ? 'Category' : 'Collection'}: ${collection.name}`}
         style={{ top: `${stickyTop}px`, zIndex: stickyZIndex, ...(isRightSide ? { paddingLeft: depth * 24.5 + 44 } : {}) }}
         className={[

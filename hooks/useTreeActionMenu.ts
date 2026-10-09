@@ -167,15 +167,15 @@ export function useTreeActionMenu(
    * Invoked when the cursor enters the tree row gear button.
    * Measures bounding rect, calculates coordinates, and broadcasts the open event.
    */
-  const openMenu = useCallback(
-    (e: React.SyntheticEvent<HTMLElement>, customHeight?: number) => {
+  const openMenuFrom = useCallback(
+    (trigger: HTMLElement, customHeight?: number) => {
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
-      const rect = e.currentTarget.getBoundingClientRect();
+      const rect = trigger.getBoundingClientRect();
       activeGearRectRef.current = rect;
-      activeTargetElRef.current = e.currentTarget;
+      activeTargetElRef.current = trigger;
 
       const height = customHeight ?? defaultMenuHeight;
-      setMenuCoords(computeCoordinates(rect, height, e.currentTarget));
+      setMenuCoords(computeCoordinates(rect, height, trigger));
 
       // Broadcast event so other tree rows close their open popovers
       window.dispatchEvent(
@@ -185,6 +185,10 @@ export function useTreeActionMenu(
       setIsMenuOpen(true);
     },
     [id, defaultMenuHeight, computeCoordinates]
+  );
+  const openMenu = useCallback(
+    (e: React.SyntheticEvent<HTMLElement>, customHeight?: number) => openMenuFrom(e.currentTarget, customHeight),
+    [openMenuFrom]
   );
 
   /** Hovering the gear opens the menu unpinned -- unless another menu is pinned open by a click. */
@@ -269,6 +273,26 @@ export function useTreeActionMenu(
     [closeMenu, openMenu, isMenuOpen, setPinned]
   );
 
+  /**
+   * A right-click (or the keyboard's menu key) on the row: opens this row's menu pinned, exactly as a click
+   * on its gear does -- positioned from the gear, so it looks the same however it was opened -- but never
+   * closes it (a second right-click keeps it open). Shift+right-click is left to the browser's own menu.
+   * The row must contain its gear (`data-tree-gear`, set by TreeGearButton).
+   */
+  const handleRowContextMenu = useCallback(
+    (e: React.MouseEvent<HTMLElement>) => {
+      if (e.shiftKey) return;
+      e.preventDefault();
+      e.stopPropagation();
+      if (pinnedRef.current) return;
+      const gear = e.currentTarget.querySelector<HTMLElement>('[data-tree-gear]') ?? e.currentTarget;
+      if (!isMenuOpen) openMenuFrom(gear);
+      else if (timeoutRef.current) clearTimeout(timeoutRef.current);
+      setPinned(true);
+    },
+    [isMenuOpen, openMenuFrom, setPinned]
+  );
+
   const handleGearKeyDown = useCallback((event: React.KeyboardEvent<HTMLElement>) => {
     if (!['Enter', ' ', 'ArrowDown'].includes(event.key)) return;
     event.preventDefault();
@@ -311,6 +335,7 @@ export function useTreeActionMenu(
     isMenuOpen,
     isPinned,
     handleGearClick,
+    handleRowContextMenu,
     menuCoords,
     isRenaming,
     setIsRenaming,

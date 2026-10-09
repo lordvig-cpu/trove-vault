@@ -435,6 +435,10 @@ function ContainerNodeRow({
       {/* Row Item formatted to exact site tree model */}
       <div
         onClick={() => onSelectNode(container.id)}
+        onContextMenu={(e) => {
+          if (!e.shiftKey) onSelectNode(container.id);
+          menu.handleRowContextMenu(e);
+        }}
         {...move.dragProps}
         onDragOver={(e) => {
           if (move.handleMoveOver(e)) return;
@@ -687,6 +691,10 @@ function ComponentNodeRow({
     <div className="select-none text-[13px] font-sans w-full min-w-0 flex flex-col">
       <div
         onClick={() => onSelectNode(component.id)}
+        onContextMenu={(e) => {
+          if (!e.shiftKey) onSelectNode(component.id);
+          menu.handleRowContextMenu(e);
+        }}
         {...move.dragProps}
         onDragOver={move.handleMoveOver}
         onDrop={move.handleMoveDrop}

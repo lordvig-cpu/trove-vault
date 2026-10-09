@@ -29,6 +29,7 @@ export default function TreeGearButton({ menu, label, title, onBeforeClick, reve
     <div
       role="button"
       tabIndex={0}
+      data-tree-gear
       data-tree-gear-id={gearId}
       aria-label={label}
       aria-expanded={menu.isMenuOpen}
