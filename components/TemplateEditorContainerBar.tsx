@@ -89,12 +89,10 @@ interface TemplateEditorContainerBarProps {
   /** Whether the Layout tree's side panel is currently visible (pinned or unpinned). */
   isLayoutPanelOpen?: boolean;
   /** Opens the Layout panel unpinned. The gear needs it on-screen before it can sync to it. */
-  onOpenLayoutPanel?: () => void;
   /**
    * The panel shell to wait on for its slide-in transition before syncing: whichever side
    * (primary/left or secondary/right) the Layout tab is actually docked on.
    */
-  layoutPanelSelector?: string;
   /** Whether this container is hidden on the edit canvas (the Layout tree's eye), and its toggle. */
   isHidden?: boolean;
   onToggleHidden?: (id: string) => void;
@@ -110,8 +108,6 @@ export default function TemplateEditorContainerBar({
   onRemoveContainer,
   onSelectNode,
   isLayoutPanelOpen,
-  onOpenLayoutPanel,
-  layoutPanelSelector = '.primary-side-panel',
   isHidden = false,
   onToggleHidden,
 }: TemplateEditorContainerBarProps) {
@@ -327,8 +323,6 @@ export default function TemplateEditorContainerBar({
           title={isRoot ? 'Body Properties' : 'Container Properties'}
           onSelectNode={onSelectNode}
           isLayoutPanelOpen={isLayoutPanelOpen}
-          onOpenLayoutPanel={onOpenLayoutPanel}
-          layoutPanelSelector={layoutPanelSelector}
         />
         <DeleteButton
           title="Delete Container"

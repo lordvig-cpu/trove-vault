@@ -6,6 +6,8 @@ import { createPortal } from 'react-dom';
 import '@/app/styles/components/TreeSubMenu.css';
 import { ChevronDownIcon, PanelFolderTabSvg } from '@/components/icons/PanelIcons';
 import { HelpCircleIcon } from '@/components/icons/LayoutIcons';
+import { HintGripIcon } from '@/components/icons/HintIcons';
+import { SearchClearIcon } from '@/components/icons/TreeIcons';
 import HoverHint, { type HintContent } from '@/components/HoverHint';
 import { useUIPreferences } from '@/context/UIPreferencesContext';
 import { useTreePanel } from '@/context/TreePanelContext';
@@ -34,6 +36,15 @@ interface TreeSubMenuProps {
    * together they read as one L-shaped panel: a wide body under a header that keeps its size.
    */
   splitBody?: boolean;
+  /**
+   * A floating menu (lib/floatingNodeMenu.ts) rather than one sliding out of a panel: it appears in place,
+   * wears a help window's chrome -- grab dots before the title, which is the drag handle, and a close button
+   * -- and sits on its own layer above the editor's toolbars (Z_INDEX.md).
+   */
+  floating?: {
+    onClose: () => void;
+    onTitlePointerDown: (e: React.PointerEvent<HTMLDivElement>) => void;
+  };
   children: React.ReactNode;
 }
 
@@ -49,6 +60,7 @@ export default function TreeSubMenu({
   position,
   className,
   splitBody = false,
+  floating,
   children,
 }: TreeSubMenuProps) {
   const { animationsEnabled, isPinned: primaryPinned } = useUIPreferences();
@@ -82,7 +94,7 @@ export default function TreeSubMenu({
 
   const adjustedLeft = left;
 
-  const animationClass = !animationsEnabled
+  const animationClass = !animationsEnabled || floating
     ? 'menuNoAnimation'
     : effectivePosition === 'right'
     ? isClosing
@@ -103,13 +115,27 @@ export default function TreeSubMenu({
 
   // Render outside the tree's overflow container so the menu can cross panel
   // boundaries and remain positioned against the viewport.
-  const header = (
+  const header = floating ? (
+    <div className="headerPill" onPointerDown={floating.onTitlePointerDown}>
+      <span className="hintTitleGroup">
+        <HintGripIcon className="w-3 h-4 hintGrip" />
+        <span className="headerTitle">{title}</span>
+      </span>
+      <span className="headerIcon floatingHeaderIcons">
+        {titleIcon}
+        <button type="button" className="hintHeaderBtn" onClick={floating.onClose} aria-label={`Close ${title}`} title="Close">
+          <SearchClearIcon className="w-4 h-4" />
+        </button>
+      </span>
+    </div>
+  ) : (
     <div className="headerPill">
       <span className="headerTitle">{title}</span>
       <span className="headerIcon">{titleIcon}</span>
     </div>
   );
-  const bridge = !isClosing && <div className={`bridge ${bridgeClass}`} aria-hidden="true" />;
+  // A floating menu doesn't come out of a panel, so it has no hover bridge back to one
+  const bridge = !isClosing && !floating && <div className={`bridge ${bridgeClass}`} aria-hidden="true" />;
 
   return createPortal(
     <div
@@ -125,11 +151,13 @@ export default function TreeSubMenu({
         top: `${adjustedTop}px`,
         left: `${adjustedLeft}px`,
         margin: 0,
-        zIndex: panel?.isFlyout ? 70 : isPinned ? 35 : 45,
+        zIndex: floating ? 88 : panel?.isFlyout ? 70 : isPinned ? 35 : 45,
       }}
+      role={floating ? 'dialog' : undefined}
+      aria-label={floating ? title : undefined}
       className={
         splitBody
-          ? `menuShellSplit ${effectivePosition === 'right' ? 'menuShellSplit-right' : ''} ${animationClass}` : `menuShell ${animationClass} ${className || ''}`
+          ? `menuShellSplit ${effectivePosition === 'right' && !floating ? 'menuShellSplit-right' : ''} ${floating ? 'menuShellFloating' : ''} ${animationClass}` : `menuShell ${animationClass} ${className || ''}`
       }
     >
       {/* Catchment Hover Bridge (disabled during exit to prevent sticking) */}

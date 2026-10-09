@@ -81,8 +81,6 @@ interface MainContentProps {
   onUndo?: () => void;
   onRedo?: () => void;
   isLayoutPanelOpen?: boolean;
-  onOpenLayoutPanel?: () => void;
-  layoutPanelSelector?: string;
 }
 
 /* ==========================================================================
@@ -129,8 +127,6 @@ export default function MainContent({
   onUndo,
   onRedo,
   isLayoutPanelOpen,
-  onOpenLayoutPanel,
-  layoutPanelSelector,
 }: MainContentProps) {
 
   return (
@@ -185,8 +181,6 @@ export default function MainContent({
                   onUndo={onUndo}
                   onRedo={onRedo}
                   isLayoutPanelOpen={isLayoutPanelOpen}
-                  onOpenLayoutPanel={onOpenLayoutPanel}
-                  layoutPanelSelector={layoutPanelSelector}
                 />
                 </ContentDataProvider>
               </div>

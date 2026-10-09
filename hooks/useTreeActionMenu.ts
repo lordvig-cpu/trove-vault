@@ -10,12 +10,26 @@ import { useState, useRef, useId, useCallback, useEffect } from 'react';
  * Window-level CustomEvent broadcast whenever any tree gear icon is triggered.
  * Enforces mutual exclusion so only one action menu remains open across the DOM.
  */
-const GLOBAL_MENU_OPEN_EVENT = 'tree-action-menu-open';
+export const GLOBAL_MENU_OPEN_EVENT = 'tree-action-menu-open';
+/** Broadcast when a menu closes (detail: its id), so a control mirroring it (the toolbar gear) can follow. */
+export const GLOBAL_MENU_CLOSE_EVENT = 'tree-action-menu-close';
 
 /** The menu (hook instance id) currently pinned open by a click, if any. Shared by every instance: while
     one menu is pinned, merely hovering another gear doesn't open that one (and so can't close the
     pinned one); clicking another gear still does. */
 let pinnedMenuId: string | null = null;
+
+/** A menu that isn't a useTreeActionMenu instance (the floating node menu, lib/floatingNodeMenu.ts) holding
+    the pin while it is open, so hovering a gear doesn't open another menu over it. */
+export function holdMenuPin(menuId: string) {
+  pinnedMenuId = menuId;
+}
+export function releaseMenuPin(menuId: string) {
+  if (pinnedMenuId === menuId) pinnedMenuId = null;
+}
+
+/** What every gear flyout takes as its `menu` prop. */
+export type TreeActionMenuApi = ReturnType<typeof useTreeActionMenu>;
 
 /* ==========================================================================
    2. CUSTOM HOOK: useTreeActionMenu
@@ -238,7 +252,7 @@ export function useTreeActionMenu(
       setIsMenuOpen(false);
       setIsRenaming(false);
       window.dispatchEvent(
-        new CustomEvent('tree-action-menu-close', { detail: id })
+        new CustomEvent(GLOBAL_MENU_CLOSE_EVENT, { detail: id })
       );
     }, 350);
   }, [isRenaming, id]);
@@ -252,7 +266,7 @@ export function useTreeActionMenu(
     setIsRenaming(false);
     setPinned(false);
     window.dispatchEvent(
-      new CustomEvent('tree-action-menu-close', { detail: id })
+      new CustomEvent(GLOBAL_MENU_CLOSE_EVENT, { detail: id })
     );
   }, [id, setPinned]);
 

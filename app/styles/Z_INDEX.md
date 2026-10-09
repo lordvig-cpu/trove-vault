@@ -20,6 +20,7 @@ Reach the whole app (or the workspace), except where a narrower scope is noted.
 | 92         | Help windows (popped-out `?` bubble) | Fixed, rendered once at the app root; above hover hints, below modals (400); windows share it, DOM order decides | HelpWindowHost.tsx; TreeSubMenu.css |
 | 90         | Hover hint popup (`?` help text)      | Body portal; above every menu and flyout it can describe | HoverHint.tsx; TreeSubMenu.css            |
 | 89         | UnitSelect's open pulldown list       | Body portal; above the flyout its trigger sits inside | UnitSelect.tsx                               |
+| 88         | Floating gear flyout (a node's menu opened from the canvas or toolbar gear while the Layout tree is hidden) | Body portal; above the header (80, so its toolbar slot) and the bottom toolbars (53), below the UnitSelect pulldown (89), hover hints (90) and help windows (92) it can open | TreeSubMenu.tsx (`floating`); FloatingNodeMenuHost.tsx |
 | 80         | Header wrapper / navigation bar       | Contains local navigation and flyout layers          | page.tsx; NavigationHeader.tsx               |
 | 70         | Tree menus while flyout is open       | Above backdrop (60), beneath flyout panel (80)       | globals.css; Tree*Menu.tsx                   |
 | 60         | Footer wrapper / navigation footer    | Contains local footer layers                         | page.tsx; NavigationFooter.tsx               |

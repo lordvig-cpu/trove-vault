@@ -42,7 +42,7 @@ import {
   ContentSourceControls,
   ContentTextControls,
 } from '@/components/TemplateContentControls';
-import { bindingOf } from '@/lib/layoutContent';
+import { bindingOf, contentNameOf } from '@/lib/layoutContent';
 import { MENU_TAB_REQUEST_EVENT, type MenuTab, type MenuTabRequest } from '@/lib/menuTabRequest';
 import HoverHint, { HintRef, type HintContent } from '@/components/HoverHint';
 import {
@@ -273,7 +273,14 @@ interface TemplateContainerActionMenuProps {
   onSplitContainer?: (containerId: string, splitType: 'columns' | 'rows', measuredPx: number) => void;
   onUpdateContainer?: (containerId: string, partial: Partial<FlexContainerNode>) => void;
   onRemoveContainer?: (containerId: string) => void;
+  /** Shown as a floating window instead of sliding out of the Layout tree (lib/floatingNodeMenu.ts). */
+  floating?: FloatingMenuChrome;
+  /** The tab it opens on (default Actions); a floating menu remounts on each open, so it takes effect then. */
+  initialTab?: MenuTab;
 }
+
+/** TreeSubMenu's floating chrome (its close and drag handlers). */
+type FloatingMenuChrome = NonNullable<React.ComponentProps<typeof TreeSubMenu>['floating']>;
 
 /** Switches a flyout's tab when the toolbar gear asks it to (lib/menuTabRequest.ts). */
 function useMenuTabRequest(nodeId: string, setActiveTab: (tab: MenuTab) => void) {
@@ -296,6 +303,8 @@ export function TemplateContainerActionMenu({
   onSplitContainer,
   onUpdateContainer,
   onRemoveContainer,
+  floating,
+  initialTab = 'actions',
 }: TemplateContainerActionMenuProps) {
   const isRoot = container.id === 'root-container';
   const defaultLabel = isRoot ? 'Body' : container.label || 'Container';
@@ -306,7 +315,7 @@ export function TemplateContainerActionMenu({
 
   // Body flyout's Actions / Properties tabs and which Properties sections are expanded. Kept here
   // (not inside the menu shell) so they survive the flyout closing and reopening.
-  const [activeTab, setActiveTab] = useState<MenuTab>('actions');
+  const [activeTab, setActiveTab] = useState<MenuTab>(initialTab);
   useMenuTabRequest(container.id, setActiveTab);
   const [openSections, setOpenSections] = useState({ size: true, layout: true, spacing: true, appearance: true });
   const toggleSection = (key: keyof typeof openSections) =>
@@ -347,7 +356,8 @@ export function TemplateContainerActionMenu({
         position={position}
         splitBody
         className="menuShellXWide"
-        title="Body Properties"
+        title={floating ? 'Body' : 'Body Properties'}
+        floating={floating}
         titleIcon={<BodyIcon className="w-4 h-4" />}
         subheader={
           <ActionMenuTabs
@@ -539,7 +549,8 @@ export function TemplateContainerActionMenu({
       position={position}
       splitBody
       className="menuShellXWide"
-      title="Container Properties"
+      title={floating ? `Container: ${defaultLabel}` : 'Container Properties'}
+      floating={floating}
       titleIcon={containerIcon}
       subheader={
         <ActionMenuTabs
@@ -805,6 +816,8 @@ interface TemplateComponentActionMenuProps {
   onUpdateComponent?: (componentId: string, partial: Partial<FlexComponentNode>) => void;
   onRemoveComponent?: (componentId: string) => void;
   onSelectNode?: (nodeId: string | null) => void;
+  floating?: FloatingMenuChrome;
+  initialTab?: MenuTab;
 }
 
 export function TemplateComponentActionMenu({
@@ -814,6 +827,8 @@ export function TemplateComponentActionMenu({
   position = 'left',
   onUpdateComponent,
   onRemoveComponent,
+  floating,
+  initialTab = 'actions',
 }: TemplateComponentActionMenuProps) {
   const update = (partial: Partial<FlexComponentNode>) => onUpdateComponent?.(component.id, partial);
   // A bound element (or a field not bound yet) has the full set; the old table / media / stat
@@ -823,7 +838,7 @@ export function TemplateComponentActionMenu({
 
   // Active tab and which Properties sections are expanded. Kept here (not inside the menu shell) so
   // they survive the flyout closing and reopening.
-  const [activeTab, setActiveTab] = useState<MenuTab>('actions');
+  const [activeTab, setActiveTab] = useState<MenuTab>(initialTab);
   useMenuTabRequest(component.id, setActiveTab);
   const [openSections, setOpenSections] = useState({ content: true, label: false, text: true, appearance: false });
   const toggleSection = (key: keyof typeof openSections) =>
@@ -852,7 +867,8 @@ export function TemplateComponentActionMenu({
       position={position}
       splitBody
       className="menuShellXWide"
-      title="Content Properties"
+      title={floating ? `Content: ${contentNameOf(component, fields) || 'Content'}` : 'Content Properties'}
+      floating={floating}
       titleIcon={compIcon}
       subheader={
         <ActionMenuTabs

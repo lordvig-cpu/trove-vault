@@ -232,11 +232,21 @@ commit whenever you add, remove, split or rename a file — it goes stale otherw
   exactly as clicking the gear would -- the same menu, positioned from the row's gear rather than the cursor,
   so it looks the same however it was opened: every tree row (`useTreeActionMenu`'s `handleRowContextMenu`
   on the row element; Layout and Content rows also select their node), and in Edit mode any container or
-  content element on the canvas (`TemplateEditorStage`'s one `onContextMenu`, which selects the node and opens
-  its Layout-tree row's flyout through `lib/layoutTreeMenu.ts`, opening the Layout panel first if needed --
-  the same helper the toolbars' gear uses). A second right-click keeps the menu open rather than closing it.
-  Shift+right-click is always left to the browser's own menu, and so is anything with no gear (inputs, the item
-  view, Preview mode).
+  content element on the canvas (`TemplateEditorStage`'s one `onContextMenu`, which selects the node). A second
+  right-click keeps the menu open rather than closing it. Shift+right-click is always left to the browser's own
+  menu, and so is anything with no gear (inputs, the item view, Preview mode).
+- The canvas right-click and the toolbars' gear never open a side panel to show a node's menu (the goal is
+  that the editor needs the panels less): `openNodeMenu` in `lib/layoutTreeMenu.ts` slides the flyout out of
+  the node's Layout-tree row when the Layout tree is showing (its panel open *and* on the Layout tab --
+  `isLayoutPanelOpen` in `app/page.tsx`), and otherwise opens the same flyout as a **floating menu**
+  (`lib/floatingNodeMenu.ts` store, drawn by `FloatingNodeMenuHost` in the editor stage): at the pointer for a
+  right-click, just under the gear for the gear (on its Properties tab; clicking the gear again closes it). It
+  wears a help window's chrome (TreeSubMenu's `floating` prop: grab dots, the title bar is the drag handle,
+  a close button), its title names the element ("Container: General Information", "Content: ...", "Body"),
+  it appears in place rather than sliding, and it stays until its close button, Escape, or another menu opens
+  (one at a time; opening a tree flyout closes it). While open it holds the gear pin (`holdMenuPin`), so
+  hovering a gear can't open another menu over it, and it uses the tree menus' open / close events, so the
+  toolbar gear shows it as open. Its layer is 88 (`Z_INDEX.md`).
 - Every tree/template gear-icon flyout -- whether it's pure Actions (Item, Collection, Category,
   Template) or mixes Actions with Properties (Body, a standard container, a Content-tab field) --
   is built from exactly one shared shell and CSS file, `TreeSubMenu.tsx`

@@ -385,14 +385,30 @@
   z-index: 92;
 }
 
-.hoverHintWindow .headerPill {
+.hoverHintWindow .headerPill,
+.menuShellFloating .menuShellHead .headerPill {
   cursor: grab;
   user-select: none;
   touch-action: none;
 }
 
-.hoverHintWindow .headerPill:active {
+.hoverHintWindow .headerPill:active,
+.menuShellFloating .menuShellHead .headerPill:active {
   cursor: grabbing;
+}
+
+/* A floating gear flyout (TreeSubMenu `floating`): its own type icon, then the close button. */
+.floatingHeaderIcons {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Its title names the element ("Container: General Information"), so a long name truncates. */
+.menuShellFloating .hintTitleGroup .headerTitle {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 /* The title (and, on a window, the grab dots before it) kept together on the left of the title bar. */

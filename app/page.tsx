@@ -217,25 +217,12 @@ export default function Home() {
   const hierarchy = useHierarchyState(templateEditor);
   const { hierarchyNodeCount, handleOpenProperties, handlePlaceField, handlePlaceLoremIpsum, handlePlaceBuiltin, handleAddContainer } = hierarchy;
 
-  // The Layout tab can be docked to either side; the toolbar gear needs to open and sync to
-  // whichever one actually holds it, not always the left.
-  const isLayoutOnSecondary = secondaryTabs.includes('template_hierarchy');
-  const isLayoutPanelOpen = isLayoutOnSecondary ? isSecondaryActive : isPrimaryActive;
-  const layoutPanelSelector = isLayoutOnSecondary ? '.secondary-side-panel' : '.primary-side-panel';
-
-  // Opens the side panel that holds the Layout tab, unpinned — used when the template editor's
-  // toolbar gear is clicked while that panel is closed.
-  const openLayoutPanel = () => {
-    if (isLayoutOnSecondary) {
-      setSecondaryActiveTab('template_hierarchy');
-      setIsSecondaryOpen(true);
-      return;
-    }
-    if (primaryTabs.includes('template_hierarchy')) {
-      setPrimaryActiveTab('template_hierarchy');
-    }
-    setIsPrimarySidePanelOpen(true);
-  };
+  // Whether the Layout tree is on screen -- the side panel holding the Layout tab is open and showing it --
+  // so a node's gear flyout can slide out of its tree row; otherwise the toolbar gear and a canvas
+  // right-click open it as a floating menu instead (lib/layoutTreeMenu.ts).
+  const isLayoutPanelOpen = secondaryTabs.includes('template_hierarchy')
+    ? isSecondaryActive && secondaryActiveTab === 'template_hierarchy'
+    : primaryTabs.includes('template_hierarchy') && isPrimaryActive && primaryActiveTab === 'template_hierarchy';
 
   /* ------------------------------------------------------------------------
      8. GLOBAL KEYBOARD SHORTCUTS
@@ -657,8 +644,6 @@ export default function Home() {
               onUndo={templateEditor.undoLayout}
               onRedo={templateEditor.redoLayout}
               isLayoutPanelOpen={isLayoutPanelOpen}
-              onOpenLayoutPanel={openLayoutPanel}
-              layoutPanelSelector={layoutPanelSelector}
             />
           </div>
 

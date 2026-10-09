@@ -67,8 +67,6 @@ interface TemplateEditorContentBarProps {
   onRemoveComponent?: (id: string) => void;
   onSelectNode?: (id: string | null) => void;
   isLayoutPanelOpen?: boolean;
-  onOpenLayoutPanel?: () => void;
-  layoutPanelSelector?: string;
   isHidden?: boolean;
   onToggleHidden?: (id: string) => void;
 }
@@ -86,8 +84,6 @@ export default function TemplateEditorContentBar({
   onRemoveComponent,
   onSelectNode,
   isLayoutPanelOpen,
-  onOpenLayoutPanel,
-  layoutPanelSelector,
   isHidden = false,
   onToggleHidden,
 }: TemplateEditorContentBarProps) {
@@ -266,8 +262,6 @@ export default function TemplateEditorContentBar({
           title="Content Properties"
           onSelectNode={onSelectNode}
           isLayoutPanelOpen={isLayoutPanelOpen}
-          onOpenLayoutPanel={onOpenLayoutPanel}
-          layoutPanelSelector={layoutPanelSelector}
         />
         <DeleteButton title="Delete Content" onDelete={onRemoveComponent ? () => onRemoveComponent(component.id) : undefined} />
       </div>

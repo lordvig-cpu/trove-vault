@@ -17,7 +17,7 @@ import {
   barIconBtnDisabled,
   barIconBtnOn,
 } from '@/components/editorBarStyles';
-import { openLayoutTreeMenu } from '@/lib/layoutTreeMenu';
+import { openNodeMenu } from '@/lib/layoutTreeMenu';
 
 /* ==========================================================================
    Controls shared by the template editor's selection toolbars (TemplateEditorContainerBar for a
@@ -321,8 +321,8 @@ function useTreeMenuOpen(menuIdPrefix: string | null) {
 }
 
 /**
- * The gear: opens the Layout tree's own properties menu for this node (the bar has no menu of its
- * own, it mirrors the tree's), opening the Layout panel first when it isn't showing.
+ * The gear: opens this node's own gear flyout (the bar has no menu of its own, it mirrors the tree's) --
+ * out of its Layout-tree row when the Layout tree is showing, otherwise floating just under this gear.
  */
 export function TreeGearButton({
   nodeId,
@@ -330,8 +330,6 @@ export function TreeGearButton({
   title,
   onSelectNode,
   isLayoutPanelOpen,
-  onOpenLayoutPanel,
-  layoutPanelSelector = '.primary-side-panel',
 }: {
   nodeId: string;
   /** The tree menu id this node's gear opens (`tree-container-<id>` or `tree-comp-<id>`). */
@@ -339,18 +337,18 @@ export function TreeGearButton({
   title: string;
   onSelectNode?: (id: string | null) => void;
   isLayoutPanelOpen?: boolean;
-  onOpenLayoutPanel?: () => void;
-  layoutPanelSelector?: string;
 }) {
   const isTreeMenuOpen = useTreeMenuOpen(menuIdPrefix);
   return (
     <button
       type="button"
       data-gear-trigger
-      onClick={() => {
+      onClick={(e) => {
         onSelectNode?.(nodeId);
-        // The flyout opens on its Properties tab when opened from here (see lib/menuTabRequest.ts).
-        openLayoutTreeMenu(nodeId, { how: 'toggle', tab: 'properties', isLayoutPanelOpen, onOpenLayoutPanel, layoutPanelSelector });
+        // Opens on the Properties tab from here (see lib/menuTabRequest.ts); floats just under this gear
+        // when the Layout tree isn't showing.
+        const gear = e.currentTarget.getBoundingClientRect();
+        openNodeMenu(nodeId, { how: 'toggle', tab: 'properties', isLayoutPanelOpen, at: { x: gear.left, y: gear.bottom + 6 } });
       }}
       title={title}
       aria-label={title}

@@ -61,6 +61,8 @@ Conventions and architecture (data access, theming, template editor internals, b
 - `icons/HintIcons.tsx` — the how-to-use / tip / caution icons that lead each note in a help bubble.
 - `icons/AlignIcons.tsx` — Align Items / Justify Content icons, drawn for a Row (rotated for a Column).
 - `lib/measureContainer.ts` — measures a container's rendered width/height from the canvas DOM (what a split halves).
+- `FloatingNodeMenuHost.tsx` — draws the floating node menu (`lib/floatingNodeMenu.ts`) in the template editor: a node's container /
+  content flyout as a draggable, closable window when the Layout tree isn't showing.
 - `HelpWindowHost.tsx` — renders the help windows (a `?` bubble popped out by its title bar's pop-out button: draggable, closable) once, from the root layout, so they outlive the flyout that opened them.
 - `SubsectionHeading.tsx` — the centered "--- Title ---" heading (Primary Accent, optional `?` help bubble at the right) for a group of controls inside a flyout section (Width, Height, Background, Border...).
 - `TemplateContentControls.tsx` — the property controls for a content element (what it shows and its display style, label, text style),
@@ -223,8 +225,9 @@ its display style, with label and typography).
 - `layoutRecipes.ts` — pure whole-layout recipes (Classic, Spec Sheet, Gallery) built from the pre-defined blocks;
   covered by `tests/layout-recipes.spec.ts`.
 - `layoutStorage.ts` — where a template's layout lives (localStorage key) and which copy wins when resolving it.
-- `layoutTreeMenu.ts` — opens a node's Layout-tree gear flyout from outside the tree (the toolbars' gear, a right-click on
-  the canvas), opening the Layout panel first when it isn't showing.
+- `layoutTreeMenu.ts` — `openNodeMenu`: opens a node's gear flyout from outside the Layout tree (the toolbars' gear, a
+  canvas right-click) -- out of its tree row when the Layout tree is showing, otherwise as the floating menu.
+- `floatingNodeMenu.ts` — the store for that floating menu (which node, where, which tab; open / move / close).
 - `menuTabRequest.ts` — the event the toolbar gear sends so a Layout-tree flyout opens on its Properties tab.
 - `panelTitles.ts` — `getPanelTitle()`: the header title for a panel's docked tab(s).
 - `storage.ts` — item photo upload/remove/validate against Supabase Storage.
@@ -245,7 +248,7 @@ direction/sizing helpers), `database.ts` (the Supabase-shaped `Database` type, h
 Playwright specs, run against a production build on port 3100: `workspace.spec.ts` (docking,
 preferences, keyboard shortcuts), `collections-panel.spec.ts`, `template-layout.spec.ts` (the
 template editor), `template-drag-highlight.spec.ts`, `layout-tree.spec.ts` (the pure functions in
-`lib/layoutTree.ts`), `layout-content.spec.ts` (content bindings, display styles, values, styles), `layout-presets.spec.ts` (pre-defined content builders), `layout-recipes.spec.ts` (simple-template recipes and saved-layout resolution), `layout-history.spec.ts` (undo/redo history), `stacking.spec.ts` (responsive row-to-column stacking), `data.spec.ts`, `item-images.spec.ts` (photo cleanup on item edit / delete, against a fake fetch), `pure-helpers.spec.ts` (colors, box / alignment / direction values, row mappers, tree categories and item search).
+`lib/layoutTree.ts`), `layout-content.spec.ts` (content bindings, display styles, values, styles), `layout-presets.spec.ts` (pre-defined content builders), `layout-recipes.spec.ts` (simple-template recipes and saved-layout resolution), `layout-history.spec.ts` (undo/redo history), `stacking.spec.ts` (responsive row-to-column stacking), `floating-menu.spec.ts` (gear menus floating when the Layout tree is hidden), `data.spec.ts`, `item-images.spec.ts` (photo cleanup on item edit / delete, against a fake fetch), `pure-helpers.spec.ts` (colors, box / alignment / direction values, row mappers, tree categories and item search).
 
 ## Root & config
 

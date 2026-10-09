@@ -16,7 +16,8 @@ import TemplateEditorContainerBar from '@/components/TemplateEditorContainerBar'
 import TemplateEditorContentBar from '@/components/TemplateEditorContentBar';
 import ScaledCanvas from '@/components/template-canvas/ScaledCanvas';
 import FlexContainerRenderer from '@/components/template-canvas/FlexContainerRenderer';
-import { openLayoutTreeMenu } from '@/lib/layoutTreeMenu';
+import { openNodeMenu } from '@/lib/layoutTreeMenu';
+import FloatingNodeMenuHost from '@/components/FloatingNodeMenuHost';
 
 /* ==========================================================================
    1. PROPS INTERFACE
@@ -75,11 +76,9 @@ interface TemplateEditorStageProps {
   canRedo?: boolean;
   onUndo?: () => void;
   onRedo?: () => void;
-  /** Whether the Layout tree's side panel is currently visible, and how to open it unpinned
-      when it isn't — passed through to the toolbar gear. */
+  /** Whether the Layout tree is on screen: a node's gear flyout slides out of its tree row then, and
+      floats (at the cursor / under the toolbar gear) otherwise -- see lib/layoutTreeMenu.ts. */
   isLayoutPanelOpen?: boolean;
-  onOpenLayoutPanel?: () => void;
-  layoutPanelSelector?: string;
 }
 
 /* ==========================================================================
@@ -117,8 +116,6 @@ export default function TemplateEditorStage({
   onUndo,
   onRedo,
   isLayoutPanelOpen,
-  onOpenLayoutPanel,
-  layoutPanelSelector,
 }: TemplateEditorStageProps) {
   const fields = template.fields || [];
 
@@ -135,7 +132,8 @@ export default function TemplateEditorStage({
   const isFlexActive = Boolean(flexLayoutConfig?.root);
 
   /** Right-click on the canvas (edit mode): the innermost container or content element under the pointer
-   *  is selected and its Layout-tree gear flyout opens pinned, the Layout panel opening first if needed. */
+   *  is selected and its gear flyout opens -- out of its Layout-tree row when the Layout tree is showing,
+   *  otherwise as a floating menu right at the pointer. */
   const handleCanvasContextMenu = (e: React.MouseEvent<HTMLElement>) => {
     if (canvasMode !== 'edit' || e.shiftKey) return;
     const target = (e.target as HTMLElement).closest<HTMLElement>('[data-component-id], [data-container-id]');
@@ -143,7 +141,7 @@ export default function TemplateEditorStage({
     if (!nodeId) return;
     e.preventDefault();
     onSelectNode?.(nodeId);
-    openLayoutTreeMenu(nodeId, { how: 'open', isLayoutPanelOpen, onOpenLayoutPanel, layoutPanelSelector });
+    openNodeMenu(nodeId, { how: 'open', isLayoutPanelOpen, at: { x: e.clientX + 2, y: e.clientY + 2 } });
   };
 
   // The selected container's own toolbar (used more often) lives in the slot under the top header;
@@ -174,8 +172,6 @@ export default function TemplateEditorStage({
             onRemoveContainer={onRemoveFlexContainer}
             onSelectNode={onSelectNode}
             isLayoutPanelOpen={isLayoutPanelOpen}
-            onOpenLayoutPanel={onOpenLayoutPanel}
-            layoutPanelSelector={layoutPanelSelector}
             isHidden={!!toolbarContainer && !!hiddenNodeIds?.has(toolbarContainer.id)}
             onToggleHidden={onToggleHidden}
           />,
@@ -194,8 +190,6 @@ export default function TemplateEditorStage({
             onRemoveComponent={onRemoveFlexComponent}
             onSelectNode={onSelectNode}
             isLayoutPanelOpen={isLayoutPanelOpen}
-            onOpenLayoutPanel={onOpenLayoutPanel}
-            layoutPanelSelector={layoutPanelSelector}
             isHidden={!!hiddenNodeIds?.has(selectedNode.id)}
             onToggleHidden={onToggleHidden}
           />,
@@ -266,6 +260,23 @@ export default function TemplateEditorStage({
             Auto-Generate Layout
           </button>
         </div>
+      )}
+
+      {/* A node's gear flyout as a floating window, when the Layout tree isn't showing (portaled; kept out of
+          the canvas wrapper so events inside it never bubble into the canvas' handlers). */}
+      {flexLayoutConfig?.root && (
+        <FloatingNodeMenuHost
+          root={flexLayoutConfig.root}
+          fields={fields}
+          onSelectNode={onSelectNode}
+          onAddContainer={onAddFlexContainer}
+          onInsertContainerSibling={onInsertContainerSibling}
+          onSplitContainer={onSplitContainer}
+          onUpdateContainer={onUpdateFlexContainer}
+          onRemoveContainer={onRemoveFlexContainer}
+          onUpdateComponent={onUpdateFlexComponent}
+          onRemoveComponent={onRemoveFlexComponent}
+        />
       )}
     </div>
   );
