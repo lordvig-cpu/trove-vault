@@ -32,7 +32,9 @@ test('right-clicking the canvas with the Layout tree hidden opens a floating, dr
 
   await page.mouse.click(at.x, at.y, { button: 'right' });
   await expect(floating).toBeVisible();
-  await expect(floating.locator('.menuShellHead .headerTitle')).toHaveText(/^Container: /);
+  // titled with just the container's own name
+  const childName = createDefaultFlexLayout([]).root.children.find((c) => c.nodeType === 'container')!.label!;
+  await expect(floating.locator('.menuShellHead .headerTitle')).toHaveText(childName);
   const opened = (await floating.boundingBox())!;
   expect(Math.abs(opened.x - at.x)).toBeLessThan(8);
   expect(Math.abs(opened.y - at.y)).toBeLessThan(8);
