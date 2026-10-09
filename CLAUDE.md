@@ -241,12 +241,20 @@ commit whenever you add, remove, split or rename a file — it goes stale otherw
   `isLayoutPanelOpen` in `app/page.tsx`), and otherwise opens the same flyout as a **floating menu**
   (`lib/floatingNodeMenu.ts` store, drawn by `FloatingNodeMenuHost` in the editor stage): at the pointer for a
   right-click, just under the gear for the gear (on its Properties tab; clicking the gear again closes it). It
-  wears a help window's chrome (TreeSubMenu's `floating` prop: grab dots, the title bar is the drag handle,
-  a close button), its title names the element ("Container: General Information", "Content: ...", "Body"),
+  wears a help window's chrome (TreeSubMenu's `floating` prop: grab dots then the element's type icon before
+  the title, the title bar is the drag handle, a close button at the right), its title names the element ("Container: General Information", "Content: ...", "Body"),
   it appears in place rather than sliding, and it stays until its close button, Escape, or another menu opens
   (one at a time; opening a tree flyout closes it). While open it holds the gear pin (`holdMenuPin`), so
   hovering a gear can't open another menu over it, and it uses the tree menus' open / close events, so the
   toolbar gear shows it as open. Its layer is 88 (`Z_INDEX.md`).
+- Every container / content flyout's Actions tab (Body included) leads with **Select Previous: <name>** and
+  **Select Next: <name>** (then a divider): the element just above / below in the Layout tree's order
+  (`lib/layoutNavigation.ts`: each container, then everything inside it; the Body first), each left out at
+  either end. They exist so any element -- above all the Body, which a child usually covers completely on the
+  canvas -- is reachable without the tree. Choosing one selects that element and opens *its* menu, on Actions,
+  so you can keep stepping: from the tree, its row's flyout; from a floating menu, the window turns into that
+  element's menu where it is. Each owner says how through `LayoutNavigationProvider`
+  (`context/LayoutNavigationContext.tsx`; provided by `TemplateHierarchyTree` and `FloatingNodeMenuHost`).
 - Every tree/template gear-icon flyout -- whether it's pure Actions (Item, Collection, Category,
   Template) or mixes Actions with Properties (Body, a standard container, a Content-tab field) --
   is built from exactly one shared shell and CSS file, `TreeSubMenu.tsx`

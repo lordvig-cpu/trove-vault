@@ -11,6 +11,9 @@ import {
 } from '@/types/layout';
 import { FieldDefinition } from '@/types/field';
 import { moveNode, type MovePosition } from '@/lib/layoutTree';
+import { layoutNodeName } from '@/lib/layoutNavigation';
+import { openNodeMenu } from '@/lib/layoutTreeMenu';
+import { LayoutNavigationProvider } from '@/context/LayoutNavigationContext';
 import { contentNameOf } from '@/lib/layoutContent';
 import { SearchGlassIcon } from '@/components/icons/TreeIcons';
 import { useTreeActionMenu } from '@/hooks/useTreeActionMenu';
@@ -100,18 +103,6 @@ export function getAllContainerIds(node: FlexContainerNode): string[] {
   return ids;
 }
 
-/** The name shown for a node in the tree -- matches what each row actually renders. */
-function hierarchyNodeLabel(
-  node: FlexContainerNode | FlexComponentNode,
-  fields: FieldDefinition[],
-  isRoot: boolean
-): string {
-  if (node.nodeType === 'container') {
-    return isRoot ? 'Body' : node.label || 'Container';
-  }
-  return contentNameOf(node, fields);
-}
-
 /**
  * Which node ids survive the Layout panel's search + category filter: a node keeps its place when
  * it matches itself, or when any of its descendants do (so the path down to a match stays visible
@@ -131,7 +122,7 @@ function computeVisibleHierarchyIds(
   const visit = (node: FlexContainerNode | FlexComponentNode, isRoot: boolean): boolean => {
     let selfMatches = filterTypes.length === 0 || filterTypes.includes(hierarchyNodeCategory(node));
     if (selfMatches && query) {
-      selfMatches = hierarchyNodeLabel(node, fields, isRoot).toLowerCase().includes(query);
+      selfMatches = layoutNodeName(node, fields, isRoot).toLowerCase().includes(query);
     }
     let descendantMatches = false;
     if (node.nodeType === 'container') {
@@ -807,6 +798,23 @@ export default function TemplateHierarchyTree({
   );
 
   const drag = useTreeDrag(root, onMoveNode);
+  // A flyout's Select Previous / Next: select that node and open its own row's flyout, on Actions so the
+  // next step is right there (the tree expands to show a collapsed node first; openNodeMenu waits for it)
+  const navigation = useMemo(
+    () =>
+      root
+        ? {
+            root,
+            fields,
+            goTo: (nodeId: string) => {
+              onSelectNode(nodeId);
+              openNodeMenu(nodeId, { how: 'open', tab: 'actions', isLayoutPanelOpen: true, at: { x: 0, y: 0 } });
+            },
+          }
+        : null,
+    [root, fields, onSelectNode]
+  );
+
   const visibility = useMemo<TreeVisibility>(
     () => ({ hiddenIds: hiddenNodeIds ?? new Set(), toggle: onToggleHidden, showAll: showAllEyes }),
     [hiddenNodeIds, onToggleHidden, showAllEyes]
@@ -852,6 +860,7 @@ export default function TemplateHierarchyTree({
   }
 
   return (
+    <LayoutNavigationProvider value={navigation}>
     <TreeDragContext.Provider value={drag}>
     <TreeVisibilityContext.Provider value={visibility}>
       {/* Rows stop their own drag events; anything reaching here is empty space, which drops nothing. */}
@@ -883,5 +892,6 @@ export default function TemplateHierarchyTree({
       </div>
     </TreeVisibilityContext.Provider>
     </TreeDragContext.Provider>
+    </LayoutNavigationProvider>
   );
 }

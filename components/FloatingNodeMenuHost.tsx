@@ -13,8 +13,10 @@ import {
   closeFloatingNodeMenu,
   floatingMenuIdFor,
   moveFloatingNodeMenu,
+  openFloatingNodeMenu,
   useFloatingNodeMenu,
 } from '@/lib/floatingNodeMenu';
+import { LayoutNavigationProvider } from '@/context/LayoutNavigationContext';
 import { findFlexNode, findParentFlexContainer, type FlexComponentNode, type FlexContainerNode } from '@/types/layout';
 import type { FieldDefinition } from '@/types/field';
 
@@ -122,7 +124,19 @@ export default function FloatingNodeMenuHost({ root, fields, onSelectNode, ...ca
   // Remounts on every open, so it starts on the tab it was asked to open on
   const key = `${floating.nodeId}-${floating.openCount}`;
 
-  return node.nodeType === 'container' ? (
+  // Select Previous / Next: select that node and become its menu, right where this one is
+  const navigation = {
+    root,
+    fields,
+    goTo: (nodeId: string) => {
+      onSelectNode?.(nodeId);
+      openFloatingNodeMenu(nodeId, floating.left, floating.top, 'actions');
+    },
+  };
+
+  return (
+    <LayoutNavigationProvider value={navigation}>
+    {node.nodeType === 'container' ? (
     <TemplateContainerActionMenu
       key={key}
       container={node}
@@ -150,5 +164,7 @@ export default function FloatingNodeMenuHost({ root, fields, onSelectNode, ...ca
       onRemoveComponent={callbacks.onRemoveComponent}
       onSelectNode={onSelectNode}
     />
+    )}
+    </LayoutNavigationProvider>
   );
 }

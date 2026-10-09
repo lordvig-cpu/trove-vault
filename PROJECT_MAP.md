@@ -156,6 +156,8 @@ its display style, with label and typography).
 - `TreeActionsContext.tsx` — the tree-gear menus' CRUD callbacks (rename/delete/edit), provided once
   near the tree root instead of threaded through every row.
 - `TreePanelContext.tsx` — whether the current tree is inside a flyout and whether it's pinned.
+- `LayoutNavigationContext.tsx` — what a node flyout's Select Previous / Next need: the layout and how to go to a node (provided
+  by the Layout tree and the floating node menu, each its own way).
 - `TreeSelectionContext.tsx` — the current tree's selected item/collection id.
 - `UIPreferencesContext.tsx` — persisted user prefs: pin state, theme, animations, audio (via
   `hooks/useLocalStorage.ts`).
@@ -225,6 +227,8 @@ its display style, with label and typography).
 - `layoutRecipes.ts` — pure whole-layout recipes (Classic, Spec Sheet, Gallery) built from the pre-defined blocks;
   covered by `tests/layout-recipes.spec.ts`.
 - `layoutStorage.ts` — where a template's layout lives (localStorage key) and which copy wins when resolving it.
+- `layoutNavigation.ts` — the layout in the Layout tree's order (`flattenLayout`), a node's previous / next (`layoutNeighbors`), and
+  the name a node shows in the tree (`layoutNodeName`).
 - `layoutTreeMenu.ts` — `openNodeMenu`: opens a node's gear flyout from outside the Layout tree (the toolbars' gear, a
   canvas right-click) -- out of its tree row when the Layout tree is showing, otherwise as the floating menu.
 - `floatingNodeMenu.ts` — the store for that floating menu (which node, where, which tab; open / move / close).

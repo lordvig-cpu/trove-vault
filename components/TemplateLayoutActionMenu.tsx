@@ -62,7 +62,9 @@ import {
   HelpCircleIcon,
   FitContentIcon,
 } from '@/components/icons/LayoutIcons';
-import { TrashCanIcon } from '@/components/icons/PanelIcons';
+import { ChevronDownIcon, TrashCanIcon } from '@/components/icons/PanelIcons';
+import { ChevronUpIcon } from '@/components/icons/GlyphIcons';
+import { useLayoutNeighbors } from '@/context/LayoutNavigationContext';
 import { ComponentTypeIcon, BulbIcon } from '@/components/icons/ContentIcons';
 
 /* Help bubbles for the Body flyout's Properties sections (see HoverHint for the shape). */
@@ -256,6 +258,36 @@ const CONTAINER_SPACING_HINT: HintContent = {
   ],
 };
 
+/** Select Previous / Next: step to the element just above or below this one in the Layout tree's order
+ *  (the Body comes first), without needing the tree on screen. Leads every Actions tab; either is left out
+ *  at the start or end of the layout, and both outside a LayoutNavigationProvider. */
+function LayoutNavigationActions({ nodeId }: { nodeId: string }) {
+  const nav = useLayoutNeighbors(nodeId);
+  if (!nav || (!nav.prev && !nav.next)) return null;
+  const { prev, next, goTo } = nav;
+  return (
+    <>
+      {prev && (
+        <ActionMenuItem
+          icon={<ChevronUpIcon className="w-3.5 h-3.5" />}
+          label={`Select Previous: ${prev.name}`}
+          subtext="The element above this one in the layout"
+          onClick={() => goTo(prev.id)}
+        />
+      )}
+      {next && (
+        <ActionMenuItem
+          icon={<ChevronDownIcon className="w-3.5 h-3.5" />}
+          label={`Select Next: ${next.name}`}
+          subtext="The element below this one in the layout"
+          onClick={() => goTo(next.id)}
+        />
+      )}
+      <ActionMenuDivider />
+    </>
+  );
+}
+
 /* ==========================================================================
    1. CONTAINER ACTION MENU (Flyout Properties)
    ========================================================================== */
@@ -372,6 +404,7 @@ export function TemplateContainerActionMenu({
       >
         {activeTab === 'actions' && (
           <>
+            <LayoutNavigationActions nodeId={container.id} />
             <ActionMenuItem
               icon={<AddChildContainerIcon className="w-3.5 h-3.5" />}
               label="Add Child Container"
@@ -565,6 +598,7 @@ export function TemplateContainerActionMenu({
     >
       {activeTab === 'actions' && (
         <>
+          <LayoutNavigationActions nodeId={container.id} />
           <ActionMenuItem
             icon={<AddContainerBeforeIcon className="w-3.5 h-3.5" />}
             label="Add Before"
@@ -883,6 +917,7 @@ export function TemplateComponentActionMenu({
     >
       {activeTab === 'actions' && (
         <>
+          <LayoutNavigationActions nodeId={component.id} />
           {onRemoveComponent ? (
             <ActionMenuDangerItem
               icon={<TrashCanIcon />}

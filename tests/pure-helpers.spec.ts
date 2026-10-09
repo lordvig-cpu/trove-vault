@@ -188,3 +188,21 @@ test('a typed template icon keeps only its first visible character (lib/template
   expect(firstGrapheme('Abc')).toBe('A');
   expect(firstGrapheme('   ')).toBeNull();
 });
+
+test('layout navigation walks the Layout tree order: each container, then what is inside it', async () => {
+  const { flattenLayout, layoutNeighbors, layoutNodeName } = await import('../lib/layoutNavigation');
+  const { createDefaultFlexLayout } = await import('../types/layout');
+  const root = createDefaultFlexLayout([]).root;
+  const order = flattenLayout(root);
+  expect(order[0].id).toBe(root.id);
+  // every container is followed by its own children before its next sibling
+  order.forEach((node, i) => {
+    if (node.nodeType === 'container' && node.children.length) expect(order[i + 1].id).toBe(node.children[0].id);
+  });
+  expect(layoutNeighbors(root, root.id).prev).toBeNull();
+  expect(layoutNeighbors(root, order[1].id).prev?.id).toBe(root.id);
+  expect(layoutNeighbors(root, order[order.length - 1].id).next).toBeNull();
+  expect(layoutNeighbors(root, 'missing')).toEqual({ prev: null, next: null });
+  expect(layoutNodeName(root, [], true)).toBe('Body');
+  expect(layoutNodeName({ ...root, label: 'Header' }, [], false)).toBe('Header');
+});

@@ -38,8 +38,9 @@ interface TreeSubMenuProps {
   splitBody?: boolean;
   /**
    * A floating menu (lib/floatingNodeMenu.ts) rather than one sliding out of a panel: it appears in place,
-   * wears a help window's chrome -- grab dots before the title, which is the drag handle, and a close button
-   * -- and sits on its own layer above the editor's toolbars (Z_INDEX.md).
+   * wears a help window's chrome -- grab dots and the type icon before the title (the title bar is the drag
+   * handle) and a close button at the right -- and sits on its own layer above the editor's toolbars
+   * (Z_INDEX.md).
    */
   floating?: {
     onClose: () => void;
@@ -119,10 +120,10 @@ export default function TreeSubMenu({
     <div className="headerPill" onPointerDown={floating.onTitlePointerDown}>
       <span className="hintTitleGroup">
         <HintGripIcon className="w-3 h-4 hintGrip" />
+        <span className="headerIcon floatingTitleIcon">{titleIcon}</span>
         <span className="headerTitle">{title}</span>
       </span>
-      <span className="headerIcon floatingHeaderIcons">
-        {titleIcon}
+      <span className="headerIcon">
         <button type="button" className="hintHeaderBtn" onClick={floating.onClose} aria-label={`Close ${title}`} title="Close">
           <SearchClearIcon className="w-4 h-4" />
         </button>

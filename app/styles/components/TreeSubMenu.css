@@ -397,11 +397,9 @@
   cursor: grabbing;
 }
 
-/* A floating gear flyout (TreeSubMenu `floating`): its own type icon, then the close button. */
-.floatingHeaderIcons {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
+/* A floating gear flyout (TreeSubMenu `floating`): its type icon leads the title, after the grab dots. */
+.floatingTitleIcon {
+  flex-shrink: 0;
 }
 
 /* Its title names the element ("Container: General Information"), so a long name truncates. */
