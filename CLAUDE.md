@@ -433,6 +433,14 @@ commit whenever you add, remove, split or rename a file — it goes stale otherw
   is cleared when the editor opens or closes and on refresh, and never saved. Field edits (add, rename,
   delete, reorder) write straight to Supabase and are not part of it. A quick run of property tweaks
   (a resize drag) is one step; adding, removing or splitting nodes is always its own.
+- Leaving the editor: every layout edit is written as it happens, but the layout the editor opened with is kept
+  (`useTemplateEditor`'s `hasUnsavedLayoutChanges` / `saveLayoutChanges` / `discardLayoutChanges`), so opening an
+  item or another template from a tree while the layout differs from it asks first (`useLeaveTemplateEditorGuard`,
+  `LeaveTemplateEditorModal`, centered over a darkened app like the item modals): **Save Changes** keeps the layout,
+  **Discard Changes** puts the opened one back, then either continues to what was clicked; **Keep Editing** (or
+  Escape) stays. With nothing changed it just closes the editor and continues. A new navigation path out of the
+  editor goes through `leaveEditorThen` too. The toolbar Save and the Content tab's Done save and close. Field and
+  template name / icon edits write straight to the database and are not part of this, the same as undo.
 - Layout persistence: localStorage on every change, plus a debounced Supabase write to
   `item_templates.layout_config` (in `.supabase/schema.sql`). Until that column exists in the live
   database (see the first item under "To do before real template saving"), remote saves fail with

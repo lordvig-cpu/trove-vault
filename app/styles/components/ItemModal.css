@@ -131,6 +131,11 @@
   border: 1px solid var(--confirm-danger-panel-border);
 }
 
+/* A caution, not a danger: leaving the template editor with unsaved changes. */
+.confirm-modal-caution-heading {
+  color: var(--secondary-accent);
+}
+
 .confirm-modal-danger-heading,
 .confirm-modal-danger-copy {
   color: var(--modal-badge-req-text);

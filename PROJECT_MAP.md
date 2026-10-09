@@ -37,6 +37,8 @@ Conventions and architecture (data access, theming, template editor internals, b
   dialogs; Create and Edit share `hooks/useItemForm.ts` and `components/item-form/*`.
 - `DeleteTemplateModal.tsx` — styled confirm dialog for deleting a template (used by both the tree
   and editor template menus).
+- `LeaveTemplateEditorModal.tsx` — the Save / Discard / Keep Editing dialog shown when leaving the template editor
+  with unsaved layout changes (`hooks/useLeaveTemplateEditorGuard.ts`).
 - `DynamicWatermark.tsx` — the idle-state hero watermark/video on an empty main canvas.
 - `EmptyPanelDropZone.tsx` — the "nothing docked here" placeholder shown in an empty panel/dock zone.
 - `ItemDetailView.tsx` — the main canvas's read view for a selected item: drawn through its template's saved layout when
@@ -180,6 +182,8 @@ its display style, with label and typography).
 - `useItemEditor.ts` — editing an existing item: `useItemForm` loaded with it, unsaved-change tracking, Save and Revert
   (the Edit Item modal and an item flyout's Properties tab).
 - `useKeyboardShortcuts.ts` — registers a list of global key bindings.
+- `useLeaveTemplateEditorGuard.ts` — `leaveEditorThen`: leaving the template editor for an item or another template
+  closes it straight away, or with unsaved layout changes first asks (`LeaveTemplateEditorModal`) to Save or Discard them.
 - `useLocalStorage.ts` — SSR-safe persisted state with cross-tab sync.
 - `useModals.ts` — which modal (if any) is open and its payload.
 - `usePanelDockDrag.ts` — the pointer-drag machinery for docking/reordering panel tabs; also
@@ -195,7 +199,8 @@ its display style, with label and typography).
   width resize behavior, built on `useResizableDimension`.
 - `useLayoutHistory.ts` — the layout editor's in-memory, session-only undo/redo history (wraps `lib/layoutHistory.ts`).
 - `useTemplateEditor.ts` — template editing: load/start/stop editing, metadata, field CRUD, and the
-  localStorage + debounced remote layout save. Composes `useTemplateLayoutTree` for the layout tree
+  localStorage + debounced remote layout save, and the layout the editor opened with (unsaved-change check, Save, Discard).
+  Composes `useTemplateLayoutTree` for the layout tree
   and `useLayoutHistory` for undo/redo.
 - `useTemplateLayoutTree.ts` — the flex layout tree's selection and CRUD (add/insert/split/update/
   remove container or component, place a field, reset to default).

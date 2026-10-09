@@ -73,6 +73,11 @@ export function useTemplateEditor({
     flexLayoutRef.current = next;
     setFlexLayoutConfigState(next);
   }, []);
+  // The layout as it was when the editor opened (or was last saved). Edits are written as they happen
+  // (so nothing is lost on a crash), but leaving the editor with a layout that differs from this asks
+  // whether to keep it (Save) or put this one back (Discard).
+  const savedLayoutRef = useRef<TemplateFlexLayoutConfig | null>(null);
+  const captureSavedLayoutRef = useRef(false);
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
   const [canvasMode, setCanvasMode] = useState<'edit' | 'preview'>('edit');
 
@@ -231,6 +236,10 @@ export function useTemplateEditor({
 
       setActiveTemplate(loadedTemplate);
       setFlexLayout(resolvedFlex);
+      if (captureSavedLayoutRef.current) {
+        captureSavedLayoutRef.current = false;
+        savedLayoutRef.current = resolvedFlex;
+      }
 
       // Select first child container if present, else root
       const initialNodeId = resolvedFlex.root.children[0]?.id || resolvedFlex.root.id;
@@ -298,7 +307,8 @@ export function useTemplateEditor({
         onOpenBottomPanel('template_builder');
       }
 
-      // 5. Load the template
+      // 5. Load the template (its layout is the one Discard puts back)
+      captureSavedLayoutRef.current = true;
       await loadTemplate(rawId);
     },
     [getTabSnapshot, loadTemplate, clearLayoutHistory, onOpenPrimaryPanel, onOpenSecondaryPanel, onOpenBottomPanel]
@@ -325,7 +335,37 @@ export function useTemplateEditor({
     setError(null);
     setSuccessMsg(null);
     clearLayoutHistory();
+    savedLayoutRef.current = null;
   }, [onRestoreTabs, clearLayoutHistory]);
+
+  /** Whether the layout differs from the one the editor opened with (or last saved). */
+  const hasUnsavedLayoutChanges = useCallback(() => {
+    const saved = savedLayoutRef.current;
+    const current = flexLayoutRef.current;
+    if (!saved || !current) return false;
+    return JSON.stringify(saved) !== JSON.stringify(current);
+  }, []);
+
+  /** Keep the layout as it is: finish the pending database write now and make it the saved layout. */
+  const saveLayoutChanges = useCallback(async () => {
+    await flushRemoteSave();
+    savedLayoutRef.current = flexLayoutRef.current;
+  }, [flushRemoteSave]);
+
+  /** Put back the layout the editor opened with (or last saved), in this browser and the database. */
+  const discardLayoutChanges = useCallback(async () => {
+    const saved = savedLayoutRef.current;
+    if (!saved || !editingTemplateId) return;
+    setFlexLayout(saved);
+    persistLayout(editingTemplateId, saved);
+    await flushRemoteSave();
+  }, [editingTemplateId, persistLayout, flushRemoteSave, setFlexLayout]);
+
+  /** The toolbar Save / Content tab Done: save, then close the editor. */
+  const saveAndClose = useCallback(async () => {
+    await saveLayoutChanges();
+    stopEditing();
+  }, [saveLayoutChanges, stopEditing]);
 
   /**
    * Update template top-level metadata (name, description, icon)
@@ -597,6 +637,10 @@ export function useTemplateEditor({
     },
     startEditing,
     stopEditing,
+    saveAndClose,
+    hasUnsavedLayoutChanges,
+    saveLayoutChanges,
+    discardLayoutChanges,
     loadTemplate,
     updateTemplateMetadata,
     addField,

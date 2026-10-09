@@ -21,6 +21,8 @@ import { useWorkspaceDock } from '@/hooks/useWorkspaceDock';
 import { useHierarchyState } from '@/hooks/useHierarchyState';
 import { useTreePanels } from '@/hooks/useTreePanels';
 import { usePanelRenderers } from '@/hooks/usePanelRenderers';
+import { useLeaveTemplateEditorGuard } from '@/hooks/useLeaveTemplateEditorGuard';
+import LeaveTemplateEditorModal from '@/components/LeaveTemplateEditorModal';
 import { getPanelTitle } from '@/lib/panelTitles';
 
 /**
@@ -361,6 +363,9 @@ export default function Home() {
   /* ------------------------------------------------------------------------
      9. PANEL RENDERERS (tree panels, template panels, panel header props)
      ------------------------------------------------------------------------ */
+  // Leaving the template editor (opening an item, another template) asks about unsaved layout changes first.
+  const { leaveEditorThen, prompt: leaveEditorPrompt } = useLeaveTemplateEditorGuard(templateEditor);
+
   const {
     handleTriggerEditItem,
     handleTriggerDeleteItem,
@@ -378,6 +383,7 @@ export default function Home() {
     setIsPrimaryFlyoutOpen,
     setIsCollectionsFlyoutOpen,
     setIsTemplatesFlyoutOpen,
+    leaveEditorThen,
   });
 
 
@@ -623,7 +629,7 @@ export default function Home() {
               previewData={previewData}
               templates={templates}
               collectionNames={collectionNames}
-              onDoneEditingTemplate={templateEditor.stopEditing}
+              onDoneEditingTemplate={() => void templateEditor.saveAndClose()}
               onUpdateTemplateMeta={templateEditor.updateTemplateMetadata}
               flexLayoutConfig={templateEditor.flexLayoutConfig}
               selectedNodeId={templateEditor.selectedNodeId}
@@ -913,6 +919,7 @@ export default function Home() {
         setSelectedItem={setSelectedItem}
         fetchAllData={fetchAllData}
       />
+      {leaveEditorPrompt && <LeaveTemplateEditorModal {...leaveEditorPrompt} />}
     </div>
   );
 }

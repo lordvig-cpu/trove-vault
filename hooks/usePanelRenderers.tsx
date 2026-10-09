@@ -37,6 +37,9 @@ interface UsePanelRenderersOptions {
   setIsPrimaryFlyoutOpen: (open: boolean) => void;
   setIsCollectionsFlyoutOpen: (open: boolean) => void;
   setIsTemplatesFlyoutOpen: (open: boolean) => void;
+  /** Runs `next` after leaving the template editor, asking about unsaved layout changes first
+      (useLeaveTemplateEditorGuard); just runs it when the editor isn't open. */
+  leaveEditorThen: (next: () => void, options?: { closeEditor?: boolean }) => void;
 }
 
 /**
@@ -55,6 +58,7 @@ export function usePanelRenderers({
   setIsPrimaryFlyoutOpen,
   setIsCollectionsFlyoutOpen,
   setIsTemplatesFlyoutOpen,
+  leaveEditorThen,
 }: UsePanelRenderersOptions) {
   const {
     activeCollectionId,
@@ -165,12 +169,18 @@ export function usePanelRenderers({
           }}
           onSelectItem={(item, collectionId) => {
             setActiveSearchPanel(content);
-            if (content === 'collections' || content === 'templates') {
-              selectItemWithChildren(item, collectionId);
-              closeTreeFlyout(content);
-            } else handleTreeSelectItem(item, collectionId);
+            leaveEditorThen(() => {
+              if (content === 'collections' || content === 'templates') {
+                selectItemWithChildren(item, collectionId);
+                closeTreeFlyout(content);
+              } else handleTreeSelectItem(item, collectionId);
+            });
           }}
-          onSelectSearchResult={activeSearchPanel === content ? selectItemWithChildren : undefined}
+          onSelectSearchResult={
+            activeSearchPanel === content
+              ? (item, collectionId) => leaveEditorThen(() => selectItemWithChildren(item, collectionId))
+              : undefined
+          }
           onAddSubItem={openCreateItem}
           onAddSubCollection={openCreateCollection}
           onEditTemplate={(templateId: number) => {
@@ -178,7 +188,9 @@ export function usePanelRenderers({
             setIsCollectionsFlyoutOpen(false);
             setIsPrimaryFlyoutOpen(false);
             const validId = Math.abs(templateId);
-            if (validId) templateEditor.startEditing(validId);
+            if (!validId || validId === templateEditor.editingTemplateId) return;
+            // Another template takes over the open editor, so the editor stays open for it
+            leaveEditorThen(() => void templateEditor.startEditing(validId), { closeEditor: false });
           }}
           onEditCollection={(col) => openTemplateManager(col.id, col.name)}
           onDeleteCollection={openDeleteCollection}
@@ -226,7 +238,7 @@ export function usePanelRenderers({
             onDeleteField={templateEditor.deleteField}
             onReorderFields={templateEditor.reorderFields}
             onUpdateTemplateMeta={templateEditor.updateTemplateMetadata}
-            onCloseEditor={templateEditor.stopEditing}
+            onCloseEditor={() => void templateEditor.saveAndClose()}
             isLoading={templateEditor.isLoading}
             isSaving={templateEditor.isSaving}
             error={templateEditor.error}
