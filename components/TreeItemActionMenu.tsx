@@ -1,19 +1,21 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { AddSubItemIcon } from '@/components/icons/TreeIcons';
-import { ActionIcon, PencilIcon } from '@/components/icons/LayoutIcons';
+import { ActionIcon, PropertiesIcon } from '@/components/icons/LayoutIcons';
+import { FileIcon } from '@/components/icons/ContentIcons';
 import TreeSubMenu, {
   ActionMenuDangerItem,
   ActionMenuDivider,
   ActionMenuItem,
-  ActionMenuRenameForm,
   ActionMenuTabs,
 } from '@/components/TreeSubMenu';
+import TreeItemProperties, { type ItemPropertySection } from '@/components/TreeItemProperties';
 import { useTreeActions } from '@/context/TreeActionsContext';
+import { useItemEditor } from '@/hooks/useItemEditor';
 import { ItemRecord } from '@/types/item';
+import type { MenuTab } from '@/lib/menuTabRequest';
 import { useTreeActionMenu } from '@/hooks/useTreeActionMenu';
-import { TagIcon } from '@/components/icons/GlyphIcons';
 import { TrashCanIcon } from '@/components/icons/PanelIcons';
 
 interface TreeItemActionMenuProps {
@@ -23,15 +25,33 @@ interface TreeItemActionMenuProps {
   position?: 'left' | 'right';
 }
 
-/** Gear-icon flyout for an Item row in the tree: add sub-item, edit, rename, delete. Actions come
-    from TreeActionsContext; open/close/position state comes from the caller's useTreeActionMenu. */
+const TABS = [
+  { id: 'actions' as const, label: 'Actions', icon: <ActionIcon className="w-4 h-4" /> },
+  { id: 'properties' as const, label: 'Properties', icon: <PropertiesIcon className="w-4 h-4" /> },
+];
+
+/** Gear-icon flyout for an Item row in the tree. Actions: add a sub-item, delete. Properties: everything
+    about the item (TreeItemProperties), saved with Save. Actions come from TreeActionsContext; open / close
+    / position state comes from the caller's useTreeActionMenu. */
 export default function TreeItemActionMenu({
   item,
   collectionId,
   menu,
   position,
 }: TreeItemActionMenuProps) {
-  const { onAddSubItem, onEditItem, onRenameItem, onDeleteItem } = useTreeActions();
+  const { onAddSubItem, onDeleteItem, onItemSaved } = useTreeActions();
+
+  // Kept here (this component stays mounted with its row, unlike the menu's own contents) so the active
+  // tab, the open cards and any unsaved edits survive the flyout closing and reopening.
+  const [activeTab, setActiveTab] = useState<MenuTab>('actions');
+  const [openSections, setOpenSections] = useState<Record<ItemPropertySection, boolean>>({
+    template: false,
+    photo: true,
+    fields: true,
+    custom: false,
+  });
+  // Loads the item only once Properties is actually showing (each load fetches the template catalog)
+  const editor = useItemEditor(item, menu.isMenuOpen && activeTab === 'properties');
 
   return (
     <TreeSubMenu
@@ -42,59 +62,43 @@ export default function TreeItemActionMenu({
       left={menu.menuCoords.left}
       position={position}
       splitBody
-      title="Item: Actions"
-      titleIcon={<ActionIcon className="w-4 h-4" />}
-      subheader={<ActionMenuTabs tabs={[{ id: 'actions', label: 'Actions', icon: <ActionIcon className="w-4 h-4" /> }]} />}
+      className="menuShellXWide"
+      title="Item Properties"
+      titleIcon={<FileIcon className="w-4 h-4" />}
+      subheader={<ActionMenuTabs tabs={TABS} active={activeTab} onChange={setActiveTab} />}
     >
-      <ActionMenuItem
-        icon={<AddSubItemIcon className="w-3.5 h-3.5" />}
-        label="Add Sub-Item"
-        subtext="Create a nested record"
-        onClick={() => {
-          onAddSubItem(collectionId, item.id);
-          menu.closeMenu();
-        }}
-      />
+      {activeTab === 'actions' ? (
+        <>
+          <ActionMenuItem
+            icon={<AddSubItemIcon className="w-3.5 h-3.5" />}
+            label="Add Sub-Item"
+            subtext="Create a nested record"
+            onClick={() => {
+              onAddSubItem(collectionId, item.id);
+              menu.closeMenu();
+            }}
+          />
 
-      <ActionMenuItem
-        icon={<TagIcon />}
-        label="Rename Item"
-        subtext="Inline edit title"
-        onClick={() => menu.setIsRenaming((previous: boolean) => !previous)}
-      />
+          <ActionMenuDivider />
 
-      {menu.isRenaming && (
-        <ActionMenuRenameForm
-          initialValue={item.name}
-          onSave={async (nextName) => {
-            await onRenameItem?.(item.id, nextName);
-            menu.closeMenu();
-          }}
-          onCancel={() => menu.setIsRenaming(false)}
+          <ActionMenuDangerItem
+            icon={<TrashCanIcon />}
+            label="Delete Item"
+            subtext="Permanently remove"
+            onClick={() => {
+              onDeleteItem(item, collectionId);
+              menu.closeMenu();
+            }}
+          />
+        </>
+      ) : (
+        <TreeItemProperties
+          editor={editor}
+          openSections={openSections}
+          onToggleSection={(section) => setOpenSections((prev) => ({ ...prev, [section]: !prev[section] }))}
+          onSaved={() => onItemSaved?.(collectionId)}
         />
       )}
-
-      <ActionMenuItem
-        icon={<PencilIcon className="w-3.5 h-3.5" />}
-        label="Edit Item"
-        subtext="Update attributes & template"
-        onClick={() => {
-          onEditItem(item, collectionId);
-          menu.closeMenu();
-        }}
-      />
-
-      <ActionMenuDivider />
-
-      <ActionMenuDangerItem
-        icon={<TrashCanIcon />}
-        label="Delete Item"
-        subtext="Permanently remove"
-        onClick={() => {
-          onDeleteItem(item, collectionId);
-          menu.closeMenu();
-        }}
-      />
     </TreeSubMenu>
   );
 }

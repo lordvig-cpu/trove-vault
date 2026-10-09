@@ -104,7 +104,12 @@ Conventions and architecture (data access, theming, template editor internals, b
   (and a field list's row style), then add.
 - `TemplateManagerModal.tsx` — browse/apply/create-custom template picker (from Collections menus).
 - `TreeCollectionActionMenu.tsx` / `TreeItemActionMenu.tsx` / `TreeTemplateActionMenu.tsx` — the
-  tree-gear popup menus for a collection, item, and template row.
+  tree-gear popup menus for a collection (or category), item, and template row: Actions | Properties tabs
+  (a category has Actions only).
+- `TreeItemProperties.tsx` — an item flyout's Properties tab: name, Template, Photo, Fields and Custom Fields cards,
+  saved with Save (`useItemEditor`).
+- `TreeMenuProperties.tsx` — shared pieces of those Properties tabs: `PropertyField`, the Revert / Save `PropertiesSaveBar`,
+  and `NameProperties` (a collection's or template's name).
 - `TreeContent.tsx` — the shared tree view (Items/Collections/Templates), rendered per dock/flyout.
 - `TreeGearButton.tsx` — a tree row's gear (idle / hovered open / pinned looks) for every tree: Items, Collections,
   Templates, Layout and Content.
@@ -130,6 +135,7 @@ glyph replacements), `ContentIcons.tsx` (field types, layout components, files/f
 ## components/item-form/
 
 Shared pieces of the Create/Edit item modals, driven by `hooks/useItemForm.ts`:
+`FieldValueInput.tsx` (one template field's input by type -- also used by an item flyout's Properties tab),
 `AdHocAttributesEditor.tsx` (free-form key/value rows), `ItemImagePicker.tsx` (photo upload/preview),
 `ItemModalShell.tsx` (keeps the error banner and buttons in view), `ItemTemplatePicker.tsx`
 (template dropdown), `TemplateFieldInputs.tsx` (renders inputs for the chosen template's fields).
@@ -171,6 +177,8 @@ its display style, with label and typography).
 - `useHierarchyState.ts` — the Layout tree's expansion state and open-properties/place-field/
   add-container handlers; takes `useTemplateEditor`'s return value as its argument.
 - `useItemForm.ts` — shared state/logic for the Create and Edit item modals.
+- `useItemEditor.ts` — editing an existing item: `useItemForm` loaded with it, unsaved-change tracking, Save and Revert
+  (the Edit Item modal and an item flyout's Properties tab).
 - `useKeyboardShortcuts.ts` — registers a list of global key bindings.
 - `useLocalStorage.ts` — SSR-safe persisted state with cross-tab sync.
 - `useModals.ts` — which modal (if any) is open and its payload.

@@ -80,10 +80,12 @@ test('Collections flyout stays interactive beside the pinned Items panel and sup
   await collection.locator('..').getByRole('button', { name: 'Open actions' }).hover();
   const menu = page.locator('[data-tree-menu]:not([inert])');
   await expect(menu).toHaveCSS('z-index', '70');
-  await menu.getByRole('button', { name: /Rename Collection/ }).click();
+  // its name is edited on the Properties tab (there is no Rename action any more)
+  await menu.getByRole('tab', { name: 'Properties' }).click();
   await expect(menu.locator('input')).toHaveValue('Games');
+  // one Escape closes the menu (a second would close the flyout itself)
   await page.keyboard.press('Escape');
-  await page.keyboard.press('Escape');
+  await expect(menu).toHaveCount(0);
   const grip = flyout.getByTitle('Drag to dock panel');
   const rect = (await grip.boundingBox())!;
   await page.mouse.move(rect.x + rect.width / 2, rect.y + rect.height / 2);

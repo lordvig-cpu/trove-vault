@@ -87,8 +87,6 @@ export default function FloatingNodeMenuHost({ root, fields, onSelectNode, ...ca
     isMenuOpen: true,
     isPinned: true,
     menuCoords: { top: floating.top, left: floating.left },
-    isRenaming: false,
-    setIsRenaming: noop,
     handleGearKeyDown: noop,
     handleGearClick: noop,
     handleRowContextMenu: noop,

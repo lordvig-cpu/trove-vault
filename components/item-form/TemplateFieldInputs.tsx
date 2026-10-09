@@ -2,16 +2,12 @@
 
 import React from 'react';
 import { FieldDefinition } from '@/types/field';
+import FieldValueInput from '@/components/item-form/FieldValueInput';
 
 interface TemplateFieldInputsProps {
   fields: FieldDefinition[];
   values: Record<string, unknown>;
   onChange: (fieldName: string, value: unknown) => void;
-}
-
-/** Form values are stored as `unknown`; an input only ever shows a string or number. */
-function toInputValue(value: unknown): string | number {
-  return typeof value === 'string' || typeof value === 'number' ? value : '';
 }
 
 /** One input per field of the item's template, chosen by `field_type`. Renders nothing for a
@@ -36,66 +32,13 @@ export default function TemplateFieldInputs({
               {field.label} {field.is_required && <span className="item-modal-danger-text">*</span>}
             </label>
 
-            {field.field_type === 'text' && (
-              <input
-                type="text"
-                required={field.is_required}
-                value={toInputValue(values[field.name])}
-                onChange={(event) => onChange(field.name, event.target.value)}
-                className="w-full item-modal-input rounded-lg px-2.5 py-1.5 text-xs"
-              />
-            )}
-
-            {field.field_type === 'number' && (
-              <input
-                type="number"
-                required={field.is_required}
-                value={toInputValue(values[field.name])}
-                onChange={(event) =>
-                  onChange(
-                    field.name,
-                    event.target.value === '' ? '' : Number(event.target.value)
-                  )
-                }
-                className="w-full item-modal-input rounded-lg px-2.5 py-1.5 text-xs"
-              />
-            )}
-
-            {field.field_type === 'select' && (
-              <select
-                value={toInputValue(values[field.name])}
-                onChange={(event) => onChange(field.name, event.target.value)}
-                className="w-full item-modal-input rounded-lg px-2.5 py-1.5 text-xs"
-              >
-                {(field.options || []).map((option) => (
-                  <option key={option} value={option}>
-                    {option}
-                  </option>
-                ))}
-              </select>
-            )}
-
-            {field.field_type === 'boolean' && (
-              <label className="flex items-center gap-2 pt-1 text-xs item-modal-label cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={Boolean(values[field.name])}
-                  onChange={(event) => onChange(field.name, event.target.checked)}
-                  className="rounded w-4 h-4"
-                />
-                <span>Yes / True</span>
-              </label>
-            )}
-
-            {field.field_type === 'date' && (
-              <input
-                type="date"
-                required={field.is_required}
-                value={toInputValue(values[field.name])}
-                onChange={(event) => onChange(field.name, event.target.value)}
-                className="w-full item-modal-input rounded-lg px-2.5 py-1.5 text-xs"
-              />
-            )}
+            <FieldValueInput
+              field={field}
+              value={values[field.name]}
+              onChange={onChange}
+              inputClassName="w-full item-modal-input rounded-lg px-2.5 py-1.5 text-xs"
+              checkboxLabelClassName="item-modal-label"
+            />
           </div>
         ))}
       </div>

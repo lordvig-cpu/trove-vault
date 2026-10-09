@@ -62,9 +62,9 @@ export function usePanelRenderers({
     selectedItem,
     selectItemWithChildren,
     renameCollection,
-    renameItem,
     renameTemplate,
     deleteTemplate,
+    fetchAllData,
   } = collections;
   const { openCreateItem, openCreateCollection, openTemplateManager, openDeleteCollection, openEditItem, openDeleteItem } = modals;
   const {
@@ -183,11 +183,10 @@ export function usePanelRenderers({
           onEditCollection={(col) => openTemplateManager(col.id, col.name)}
           onDeleteCollection={openDeleteCollection}
           onDeleteTemplate={deleteTemplate}
-          onEditItem={handleTriggerEditItem}
+          onItemSaved={(collectionId) => void fetchAllData(collectionId)}
           onDeleteItem={handleTriggerDeleteItem}
           onRenameCollection={renameCollection}
           onRenameTemplate={renameTemplate}
-          onRenameItem={renameItem}
           position={pos}
         />
       </TreePanelContext.Provider>

@@ -35,9 +35,8 @@ import { SearchGlassIcon } from '@/components/icons/TreeIcons';
  * @property onEditTemplate - Optional callback to open category schema editor
  * @property onEditCollection - Optional callback to open collection editing dialog
  * @property onDeleteCollection - Callback prompting collection deletion modal confirmation
- * @property onRenameCollection - Inline collection rename handler executed from action popover
- * @property onEditItem - Callback opening edit-item modal dialog
- * @property onRenameItem - Inline item rename handler executed from action popover
+ * @property onRenameCollection - Saves a collection's new name (its flyout's Properties tab)
+ * @property onItemSaved - Refreshes the data after an item flyout's Properties tab saved the item
  * @property onDeleteItem - Callback prompting item deletion modal confirmation
  * @property treeView - Current view mode ('items' | 'collections')
  */
@@ -53,14 +52,13 @@ export interface TreeContentProps {
   onSelectSearchResult?: (item: ItemRecord, collectionId: number | null) => void;
   onAddSubItem: (collectionId: number | null, parentItemId?: number | null) => void;
   onEditTemplate?: (categoryId: number) => void;
-  onEditItem: (item: ItemRecord, collectionId: number | null) => void;
+  onItemSaved?: (collectionId: number | null) => void;
   onDeleteItem: (item: ItemRecord, collectionId: number | null) => void;
   onRenameCollection?: (id: number, nextName: string) => Promise<void> | void;
   onRenameTemplate?: (id: number, nextName: string) => Promise<void> | void;
   onDeleteCollection?: (collection: CollectionRecord) => void;
   onDeleteTemplate?: (id: number) => Promise<void> | void;
   onEditCollection?: (collection: CollectionRecord) => void;
-  onRenameItem?: (id: number, nextName: string) => Promise<void> | void;
   onAddSubCollection?: (parentCollectionId: number) => void;
   position?: 'left' | 'right';
   treeView?: TreeTab;
@@ -178,14 +176,13 @@ export default function TreeContent({
   onSelectSearchResult,
   onAddSubItem,
   onEditTemplate,
-  onEditItem,
+  onItemSaved,
   onDeleteItem,
   onDeleteCollection,
   onRenameCollection,
   onRenameTemplate,
   onDeleteTemplate,
   onEditCollection,
-  onRenameItem,
   position,
   treeView,
   templateIcons,
@@ -254,14 +251,13 @@ export default function TreeContent({
   const actionsValue: TreeActionsContextValue = {
     onAddSubItem,
     onEditTemplate,
-    onEditItem,
+    onItemSaved,
     onDeleteItem,
     onRenameCollection,
     onRenameTemplate,
     onDeleteCollection,
     onDeleteTemplate,
     onEditCollection,
-    onRenameItem,
   };
 
   /* ------------------------------------------------------------------------

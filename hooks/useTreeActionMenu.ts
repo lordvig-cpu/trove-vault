@@ -37,7 +37,7 @@ export type TreeActionMenuApi = ReturnType<typeof useTreeActionMenu>;
 
 /**
  * Manages positioning physics, mutual exclusivity, hover grace periods,
- * and inline rename expansion states for TreeActionMenu portals.
+ * and pin state for the tree rows' gear flyouts.
  *
  * @param id - Unique identifier representing the category, collection, or item instance
  * @param defaultMenuHeight - Base menu height (px) used to calculate upward clamping
@@ -62,7 +62,6 @@ export function useTreeActionMenu(
      ------------------------------------------------------------------------ */
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [menuCoords, setMenuCoords] = useState({ top: 0, left: 0 });
-  const [isRenaming, setIsRenaming] = useState(false);
   // Pinned = opened by a click on the gear (not just a hover): it stays open when the pointer leaves
   // or the user clicks elsewhere, until the gear is clicked again (or Escape, or another menu opens).
   // A ref too, so the close timers and document listeners see the current value.
@@ -88,7 +87,6 @@ export function useTreeActionMenu(
       if (customEvent.detail !== id) {
         if (timeoutRef.current) clearTimeout(timeoutRef.current);
         setIsMenuOpen(false);
-        setIsRenaming(false);
         setPinned(false);
       }
     };
@@ -215,22 +213,6 @@ export function useTreeActionMenu(
   );
 
   /**
-   * Recomputes vertical coordinates dynamically if the inline rename form opens,
-   * accounting for the additional 42px required by the text input.
-   */
-  useEffect(() => {
-    if (!isMenuOpen || !activeGearRectRef.current) return;
-    const expandedHeight = defaultMenuHeight + (isRenaming ? 42 : 0);
-    setMenuCoords(
-      computeCoordinates(
-        activeGearRectRef.current,
-        expandedHeight,
-        activeTargetElRef.current
-      )
-    );
-  }, [isRenaming, isMenuOpen, defaultMenuHeight, computeCoordinates]);
-
-  /**
    * Invoked when the cursor transits onto the portal popover body.
    * Cancels any pending unmount timers.
    */
@@ -243,19 +225,18 @@ export function useTreeActionMenu(
    * Starts a 350ms grace-period timer before unmounting.
    */
   const handleMouseLeave = useCallback(() => {
-    // Prevent unmounting if actively editing an inline rename, or while pinned open by a click
-    if (isRenaming || pinnedRef.current) return;
+    // A menu pinned open by a click doesn't close when the pointer leaves
+    if (pinnedRef.current) return;
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
     timeoutRef.current = setTimeout(() => {
       const focused = document.activeElement;
       if (focused === activeTargetElRef.current || (focused instanceof HTMLElement && focused.closest('[data-tree-menu]'))) return;
       setIsMenuOpen(false);
-      setIsRenaming(false);
       window.dispatchEvent(
         new CustomEvent(GLOBAL_MENU_CLOSE_EVENT, { detail: id })
       );
     }, 350);
-  }, [isRenaming, id]);
+  }, [id]);
 
   /**
    * Explicit immediate dismissal handler (called by Escape hotkeys or node selection).
@@ -263,7 +244,6 @@ export function useTreeActionMenu(
   const closeMenu = useCallback(() => {
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
     setIsMenuOpen(false);
-    setIsRenaming(false);
     setPinned(false);
     window.dispatchEvent(
       new CustomEvent(GLOBAL_MENU_CLOSE_EVENT, { detail: id })
@@ -351,8 +331,6 @@ export function useTreeActionMenu(
     handleGearClick,
     handleRowContextMenu,
     menuCoords,
-    isRenaming,
-    setIsRenaming,
     handleGearMouseEnter,
     handleMenuMouseEnter,
     handleMouseLeave,

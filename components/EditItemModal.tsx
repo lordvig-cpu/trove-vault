@@ -1,10 +1,7 @@
 'use client';
 
-import { useEffect } from 'react';
-import { updateItem } from '@/lib/data/items';
-import { useItemForm } from '@/hooks/useItemForm';
+import { useItemEditor } from '@/hooks/useItemEditor';
 import { ItemRecord } from '@/types/item';
-import { ItemTemplate } from '@/types/template';
 import AdHocAttributesEditor from '@/components/item-form/AdHocAttributesEditor';
 import ItemImagePicker from '@/components/item-form/ItemImagePicker';
 import ItemModalShell from '@/components/item-form/ItemModalShell';
@@ -34,72 +31,8 @@ export default function EditItemModal({
   onItemUpdated,
   item,
 }: EditItemModalProps) {
-  const form = useItemForm('edit');
-  const {
-    loadTemplates,
-    setName,
-    setDynamicValues,
-    setExistingImageUrl,
-    setSelectedFile,
-    setPreviewUrl,
-    setError,
-    setSelectedTemplateId,
-    setActiveTemplateFields,
-  } = form;
-
-  /* ------------------------------------------------------------------------
-     2.1 MODAL INITIALIZATION & ATTRIBUTE PARSING
-     ------------------------------------------------------------------------ */
-  useEffect(() => {
-    async function initModal() {
-      if (!item || !isOpen) return;
-
-      setName(item.name || '');
-      const rawAttrs = item.attributes || {};
-      setExistingImageUrl(rawAttrs['image_url'] ? String(rawAttrs['image_url']) : null);
-      setSelectedFile(null);
-      setPreviewUrl(null);
-      setError(null);
-
-      const fullTemplates = await loadTemplates();
-
-      // Existing attributes, excluding the photo URL (it has its own control)
-      const loadedDynamicValues: Record<string, unknown> = {};
-      for (const [key, val] of Object.entries(rawAttrs)) {
-        if (key === 'image_url') continue;
-        loadedDynamicValues[key] = val;
-      }
-      setDynamicValues(loadedDynamicValues);
-
-      // Match template by template_id first, then fallback to attribute key match
-      let matchedTemplate: ItemTemplate | undefined;
-      if (item.template_id) {
-        matchedTemplate = fullTemplates.find((t) => t.id === item.template_id);
-      }
-      if (!matchedTemplate) {
-        matchedTemplate = fullTemplates.find((tmpl) =>
-          tmpl.fields?.some((f) => Object.prototype.hasOwnProperty.call(loadedDynamicValues, f.name))
-        );
-      }
-
-      setSelectedTemplateId(matchedTemplate ? matchedTemplate.id : null);
-      setActiveTemplateFields(matchedTemplate?.fields || []);
-    }
-
-    initModal();
-  }, [
-    item,
-    isOpen,
-    loadTemplates,
-    setName,
-    setDynamicValues,
-    setExistingImageUrl,
-    setSelectedFile,
-    setPreviewUrl,
-    setError,
-    setSelectedTemplateId,
-    setActiveTemplateFields,
-  ]);
+  // Loading the item into the form and saving it are shared with an item flyout's Properties tab
+  const { form, save } = useItemEditor(item, isOpen);
 
   if (!isOpen || !item) return null;
 
@@ -108,21 +41,10 @@ export default function EditItemModal({
      ------------------------------------------------------------------------ */
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-    if (!form.name.trim()) return;
-
-    await form.submit(async () => {
-      await updateItem({
-        id: item.id,
-        name: form.name.trim(),
-        templateId: form.selectedTemplateId,
-        attributes: form.buildAttributes(),
-        imageFile: form.selectedFile,
-        existingImageUrl: form.existingImageUrl,
-        previousImageUrl: typeof item.attributes?.image_url === 'string' ? item.attributes.image_url : null,
-      });
+    await save(() => {
       onItemUpdated();
       onClose();
-    }, 'Failed to update item');
+    });
   };
 
   /* ------------------------------------------------------------------------

@@ -5,23 +5,24 @@ import DeleteTemplateModal from '@/components/DeleteTemplateModal';
 import { CollectionRecord } from '@/types/collection';
 import { useTreeActions } from '@/context/TreeActionsContext';
 import { useTreeActionMenu } from '@/hooks/useTreeActionMenu';
-import { ActionIcon } from '@/components/icons/LayoutIcons';
+import { ActionIcon, PropertiesIcon } from '@/components/icons/LayoutIcons';
 import TreeSubMenu, {
   ActionMenuDangerItem,
   ActionMenuDivider,
   ActionMenuItem,
-  ActionMenuRenameForm,
   ActionMenuTabs,
 } from '@/components/TreeSubMenu';
-import { TagIcon } from '@/components/icons/GlyphIcons';
+import { NameProperties } from '@/components/TreeMenuProperties';
+import type { MenuTab } from '@/lib/menuTabRequest';
+import { PackageIcon } from '@/components/icons/GlyphIcons';
 import { FileIcon } from '@/components/icons/ContentIcons';
 import { GearIcon } from '@/components/icons/TreeIcons';
 import { TrashCanIcon } from '@/components/icons/PanelIcons';
 
-// Only one tab exists today, so ActionMenuTabs renders this as a plain divider band rather than a
-// single oversized tab button -- but it's still the exact same splitBody shell and .menuTabs CSS
-// every tabbed flyout uses, so a future Properties tab is a drop-in rather than a rewrite.
-const ACTIONS_ONLY_TABS = [{ id: 'actions' as const, label: 'Actions', icon: <ActionIcon className="w-4 h-4" /> }];
+const TABS = [
+  { id: 'actions' as const, label: 'Actions', icon: <ActionIcon className="w-4 h-4" /> },
+  { id: 'properties' as const, label: 'Properties', icon: <PropertiesIcon className="w-4 h-4" /> },
+];
 
 interface TreeTemplateActionMenuProps {
   template: CollectionRecord;
@@ -43,6 +44,7 @@ export default function TreeTemplateActionMenu({
 
   const rawTemplateId = Math.abs(template.id);
   const [confirmingDelete, setConfirmingDelete] = useState(false);
+  const [activeTab, setActiveTab] = useState<MenuTab>('actions');
 
   return (
     <>
@@ -54,10 +56,15 @@ export default function TreeTemplateActionMenu({
       left={menu.menuCoords.left}
       position={position}
       splitBody
-      title="Template: Actions"
-      titleIcon={<ActionIcon className="w-4 h-4" />}
-      subheader={<ActionMenuTabs tabs={ACTIONS_ONLY_TABS} />}
+      className="menuShellXWide"
+      title="Template Properties"
+      titleIcon={<PackageIcon className="w-4 h-4" />}
+      subheader={<ActionMenuTabs tabs={TABS} active={activeTab} onChange={setActiveTab} />}
     >
+      {activeTab === 'properties' ? (
+        <NameProperties name={template.name} onSave={(nextName) => onRenameTemplate?.(rawTemplateId, nextName)} />
+      ) : (
+      <>
       <ActionMenuItem
         icon={<FileIcon />}
         label="New Item"
@@ -67,24 +74,6 @@ export default function TreeTemplateActionMenu({
           menu.closeMenu();
         }}
       />
-
-      <ActionMenuItem
-        icon={<TagIcon />}
-        label="Rename Template"
-        subtext="Inline edit title"
-        onClick={() => menu.setIsRenaming((previous: boolean) => !previous)}
-      />
-
-      {menu.isRenaming && (
-        <ActionMenuRenameForm
-          initialValue={template.name}
-          onSave={async (nextName) => {
-            await onRenameTemplate?.(rawTemplateId, nextName);
-            menu.closeMenu();
-          }}
-          onCancel={() => menu.setIsRenaming(false)}
-        />
-      )}
 
       {onEditTemplate && (
         <ActionMenuItem
@@ -110,6 +99,8 @@ export default function TreeTemplateActionMenu({
             setConfirmingDelete(true);
           }}
         />
+      )}
+      </>
       )}
     </TreeSubMenu>
     {confirmingDelete && onDeleteTemplate && (

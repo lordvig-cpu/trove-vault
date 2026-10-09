@@ -3,7 +3,6 @@
 import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { fetchWorkspaceData } from '@/lib/data/workspace';
 import { renameCollection as saveCollectionName } from '@/lib/data/collections';
-import { renameItem as saveItemName } from '@/lib/data/items';
 import { renameTemplate as saveTemplateName, deleteTemplate as removeTemplate } from '@/lib/data/templates';
 import { CollectionRecord } from '@/types/collection';
 import { ItemRecord } from '@/types/item';
@@ -178,35 +177,6 @@ export function useCollections() {
     []
   );
 
-  /**
-   * Inline Item Rename
-   */
-  const renameItem = useCallback(
-    async (id: number, nextName: string) => {
-      const trimmed = nextName.trim();
-      if (!trimmed) return;
-
-      try {
-        await saveItemName(id, trimmed);
-      } catch (err) {
-        console.error('Failed to rename item:', err);
-        throw err;
-      }
-
-      setAllItems((prev) =>
-        prev.map((i) => (i.id === id ? { ...i, name: trimmed } : i))
-      );
-
-      setSelectedItem((prev) =>
-        prev && prev.id === id ? { ...prev, name: trimmed } : prev
-      );
-    },
-    []
-  );
-
-  /**
-   * Inline Template Rename
-   */
   const renameTemplate = useCallback(
     async (id: number, nextName: string) => {
       const trimmed = nextName.trim();
@@ -254,7 +224,6 @@ export function useCollections() {
     setSelectedItem,
     selectItemWithChildren,
     renameCollection,
-    renameItem,
     renameTemplate,
     deleteTemplate,
     unifiedForest,

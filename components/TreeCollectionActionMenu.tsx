@@ -1,27 +1,31 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { UNCATEGORIZED_CATEGORY_ID } from '@/lib/treeUtils';
 import { CollectionRecord } from '@/types/collection';
 import { useTreeActions } from '@/context/TreeActionsContext';
 import { useTreeActionMenu } from '@/hooks/useTreeActionMenu';
-import { ActionIcon } from '@/components/icons/LayoutIcons';
+import { ActionIcon, PropertiesIcon } from '@/components/icons/LayoutIcons';
 import TreeSubMenu, {
   ActionMenuDangerItem,
   ActionMenuDivider,
   ActionMenuItem,
-  ActionMenuRenameForm,
   ActionMenuTabs,
 } from '@/components/TreeSubMenu';
-import { InboxIcon, TagIcon } from '@/components/icons/GlyphIcons';
+import { NameProperties } from '@/components/TreeMenuProperties';
+import type { MenuTab } from '@/lib/menuTabRequest';
+import { InboxIcon } from '@/components/icons/GlyphIcons';
 import { FileIcon, FolderIcon } from '@/components/icons/ContentIcons';
 import { GearIcon } from '@/components/icons/TreeIcons';
 import { TrashCanIcon } from '@/components/icons/PanelIcons';
 
-// Only one tab exists today, so ActionMenuTabs renders this as a plain divider band rather than a
-// single oversized tab button -- but it's still the exact same splitBody shell and .menuTabs CSS
-// every tabbed flyout uses, so a future Properties tab is a drop-in rather than a rewrite.
+// A category (virtual, made from a template) has only Actions, so ActionMenuTabs renders its band as a
+// plain divider; a real collection has Actions and Properties.
 const ACTIONS_ONLY_TABS = [{ id: 'actions' as const, label: 'Actions', icon: <ActionIcon className="w-4 h-4" /> }];
+const TABS = [
+  ...ACTIONS_ONLY_TABS,
+  { id: 'properties' as const, label: 'Properties', icon: <PropertiesIcon className="w-4 h-4" /> },
+];
 
 interface TreeCollectionActionMenuProps {
   collection: CollectionRecord;
@@ -44,6 +48,7 @@ export default function TreeCollectionActionMenu({
     onEditCollection,
     onAddSubCollection,
   } = useTreeActions();
+  const [activeTab, setActiveTab] = useState<MenuTab>('actions');
 
   if (isVirtualCategory) {
     return (
@@ -90,10 +95,15 @@ export default function TreeCollectionActionMenu({
       left={menu.menuCoords.left}
       position={position}
       splitBody
-      title="Collection: Actions"
-      titleIcon={<ActionIcon className="w-4 h-4" />}
-      subheader={<ActionMenuTabs tabs={ACTIONS_ONLY_TABS} />}
+      className="menuShellXWide"
+      title="Collection Properties"
+      titleIcon={<FolderIcon className="w-4 h-4" />}
+      subheader={<ActionMenuTabs tabs={TABS} active={activeTab} onChange={setActiveTab} />}
     >
+      {activeTab === 'properties' ? (
+        <NameProperties name={collection.name} onSave={(nextName) => onRenameCollection?.(collection.id, nextName)} />
+      ) : (
+      <>
       <ActionMenuItem
         icon={<FileIcon />}
         label="New Item"
@@ -113,24 +123,6 @@ export default function TreeCollectionActionMenu({
           menu.closeMenu();
         }}
       />
-
-      <ActionMenuItem
-        icon={<TagIcon />}
-        label="Rename Collection"
-        subtext="Inline edit title"
-        onClick={() => menu.setIsRenaming((previous: boolean) => !previous)}
-      />
-
-      {menu.isRenaming && (
-        <ActionMenuRenameForm
-          initialValue={collection.name}
-          onSave={async (nextName) => {
-            await onRenameCollection?.(collection.id, nextName);
-            menu.closeMenu();
-          }}
-          onCancel={() => menu.setIsRenaming(false)}
-        />
-      )}
 
       {onEditCollection && (
         <ActionMenuItem
@@ -168,6 +160,8 @@ export default function TreeCollectionActionMenu({
             menu.closeMenu();
           }}
         />
+      )}
+      </>
       )}
     </TreeSubMenu>
   );

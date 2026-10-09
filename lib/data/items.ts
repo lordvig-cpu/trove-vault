@@ -127,8 +127,3 @@ async function subtreeImagePaths(rootId: number): Promise<string[]> {
   }
   return paths;
 }
-
-export async function renameItem(id: number, name: string): Promise<void> {
-  const { error } = await supabase.from('items').update({ name }).eq('id', id);
-  if (error) throw error;
-}

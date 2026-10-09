@@ -1142,6 +1142,43 @@
 .actionMenuRenameSaveBtn:hover {
   background-color: var(--secondary-tree-menu-rename-save-hover-bg);
 }
+
+/* Revert / Save in a tree flyout's Properties tab (TreeMenuProperties.tsx) do nothing until there are
+   unsaved changes. */
+.actionMenuRenameCancelBtn:disabled,
+.actionMenuRenameSaveBtn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.actionMenuRenameCancelBtn:disabled:hover {
+  color: var(--text-muted);
+}
+
+.actionMenuRenameSaveBtn:disabled:hover {
+  background-color: var(--secondary-tree-menu-rename-save-bg);
+}
+
+/* The bottom of such a tab: the save error and the buttons, kept in view while the tab scrolls (sticky
+   inside .childrenContainer, the flyout body's scroller), over the body's own color. */
+.propertiesSaveBar {
+  position: sticky;
+  bottom: 0;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  margin-top: 0.25rem;
+  padding: 0.5rem 0.75rem 0.375rem;
+  border-top: 1px solid var(--flyout-divider);
+  background: var(--flyout-body-bottom);
+}
+
+.propertiesSaveHint {
+  margin-right: auto;
+  color: var(--flyout-selected);
+  font-weight: 600;
+}
 /* Flyout title bar: just the title and icon on the shell, with no pill, fill or outline, and a white icon at the right
    instead of amber. The HoverHint popup's own title pill is unchanged. */
 .menuShell .headerPill {

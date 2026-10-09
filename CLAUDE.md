@@ -247,6 +247,21 @@ commit whenever you add, remove, split or rename a file — it goes stale otherw
   (one at a time; opening a tree flyout closes it). While open it holds the gear pin (`holdMenuPin`), so
   hovering a gear can't open another menu over it, and it uses the tree menus' open / close events, so the
   toolbar gear shows it as open. Its layer is 88 (`Z_INDEX.md`).
+- The Items / Collections / Templates trees' menus are Actions | Properties flyouts titled "Item Properties",
+  "Collection Properties", "Template Properties" (wide shell, like the template flyouts). Properties edits what
+  is already saved -- creating stays in the Actions tab's modals (New Item, Add Sub-Item, New Sub-Collection).
+  An item's Properties (`TreeItemProperties.tsx`) is everything the Edit Item modal edits -- name, then the
+  Template, Photo, Fields and Custom Fields cards -- through the modal's own load and save (`useItemEditor`,
+  shared by both, over `useItemForm`), so there is no Edit Item action; a collection's or template's is just
+  its Name (`NameProperties`), so there are no Rename actions either. Unlike a template flyout (which applies
+  every change at once, with undo), these write to the database with no undo, so they are saved together:
+  Revert / Save (`PropertiesSaveBar` in `TreeMenuProperties.tsx`, the Container Name field's buttons) stay in
+  view at the bottom and only act while there are unsaved changes; a save is one all-or-nothing write. An
+  item's form loads only when its Properties tab is showing (each load fetches the template catalog), reloads
+  when the saved item changes unless there are unsaved edits, and keeps those across the flyout closing (the
+  state lives in the always-mounted menu component). Its required template fields are checked on Save (naming
+  the missing ones and opening the Fields card), not by the browser, which can't check a field in a closed card.
+  The item view's Edit button still opens the modal.
 - Every container / content flyout's Actions tab (Body included) leads with **Select Previous: <name>** and
   **Select Next: <name>** (then a divider): the element just above / below in the Layout tree's order
   (`lib/layoutNavigation.ts`: each container, then everything inside it; the Body first), each left out at
@@ -279,11 +294,10 @@ commit whenever you add, remove, split or rename a file — it goes stale otherw
   below (`.menuTabs-folder` / `.menuFolderTab` in `TreeSubMenu.css`) -- the same tab look as a panel
   header, not a second button style. With fewer than two tabs, `ActionMenuTabs` itself renders that same `.menuTabs`
   element with no buttons inside it at all -- a plain divider band, not a single oversized "tab" to
-  click. `TreeItemActionMenu.tsx`, `TreeCollectionActionMenu.tsx` (Collection and Category) and
-  `TreeTemplateActionMenu.tsx` all pass a single-entry tabs array for exactly this reason, titled
-  "Item: Actions", "Collection: Actions", "Category: Actions", "Template: Actions" ("Actions" folds
-  into the title since there's no tab label to say it), each with the plain `ActionIcon` as its
-  title icon (no per-type icon exists for them yet). The one-CSS-definition rule this preserves:
+  click. A Category row's menu (`TreeCollectionActionMenu.tsx`'s virtual-category branch) is the one that still
+  passes a single-entry tabs array, titled "Category: Actions" ("Actions" folds into the title since there's no
+  tab label to say it); Item, Collection and Template menus have real Actions / Properties tabs (see below).
+  The one-CSS-definition rule this preserves:
   never add a second shell, a bespoke header class, or a per-menu override for a card that happens
   to be shorter -- if a head card ever looks wrong again, the fix is either in `.menuShellHead`'s
   own unconditional rule, or in giving `ActionMenuTabs` more to render, never a new special case.

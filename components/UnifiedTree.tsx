@@ -77,7 +77,8 @@ function UnifiedTreeItem({
   const isRightSide = position === 'right';
   const [isOpen, setIsOpen] = useState(true);
   const [displayLimit, setDisplayLimit] = useState(CHUNK_SIZE);
-  const menu = useTreeActionMenu(`item-${item.id}`, 215, position);
+  // 280px: the item flyout is the wide two-tab shell (menuShellXWide), which a right-docked panel opens leftward by
+  const menu = useTreeActionMenu(`item-${item.id}`, 215, position, 280);
   const isSelected = (searchHighlight?.itemId ?? selectedItemId) === item.id;
   const effectiveIsOpen = isOpen || !!searchHighlight?.ancestorItemIds.has(item.id);
   const childrenList = item.children || [];
@@ -210,10 +211,11 @@ export default function UnifiedTree({
     position = 'left',
   } = useTreeSelection();
   const isRightSide = position === 'right';
-  const menu = useTreeActionMenu(`node-${collection.id}`, 240, position);
   const [displayLimit, setDisplayLimit] = useState(CHUNK_SIZE);
 
   const isVirtualCategory = collection.id < 0;
+  // Collection and template flyouts are the wide two-tab shell; a category's (Actions only) is the narrow one
+  const menu = useTreeActionMenu(`node-${collection.id}`, 240, position, treeType === 'templates' || !isVirtualCategory ? 280 : 224);
   const effectiveCollectionId =
     collection.id === STANDALONE_COLLECTION_ID ? null : collection.id;
   const [uncontrolledOpen, setUncontrolledOpen] = useState(true);

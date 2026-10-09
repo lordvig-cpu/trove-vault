@@ -140,6 +140,8 @@ export function useItemForm(mode: ItemFormMode) {
     setAdHocAttributes((previous) => previous.filter((_, i) => i !== index));
   }, []);
 
+  const clearAdHocRows = useCallback(() => setAdHocAttributes([]), []);
+
   /* ---- saving ----------------------------------------------------------- */
 
   /** The attributes to store: template values, then ad-hoc values (the photo URL is added on save). */
@@ -216,6 +218,7 @@ export function useItemForm(mode: ItemFormMode) {
     addAdHocRow,
     changeAdHocRow,
     removeAdHocRow,
+    clearAdHocRows,
     buildAttributes,
     submit,
     resetForm,
