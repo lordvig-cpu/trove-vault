@@ -441,6 +441,11 @@ commit whenever you add, remove, split or rename a file — it goes stale otherw
   Escape) stays. With nothing changed it just closes the editor and continues. A new navigation path out of the
   editor goes through `leaveEditorThen` too. The toolbar Save and the Content tab's Done save and close. Field and
   template name / icon edits write straight to the database and are not part of this, the same as undo.
+- Deleting a container that holds anything (any containers or content, at any depth) asks first: every delete path
+  (Layout tree flyout, canvas / floating menu, toolbar) goes through `requestRemoveContainer`
+  (`useConfirmRemoveContainer`), which opens `DeleteContainerModal` listing everything inside it, indented as in the
+  Layout tree. An empty container is deleted at once. Either way it is one undo step. Both this and the leave prompt
+  are `CautionModal`, the shared dialog shell; a new "are you sure" check should use it too.
 - Layout persistence: localStorage on every change, plus a debounced Supabase write to
   `item_templates.layout_config` (in `.supabase/schema.sql`). Until that column exists in the live
   database (see the first item under "To do before real template saving"), remote saves fail with

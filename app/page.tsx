@@ -23,6 +23,8 @@ import { useTreePanels } from '@/hooks/useTreePanels';
 import { usePanelRenderers } from '@/hooks/usePanelRenderers';
 import { useLeaveTemplateEditorGuard } from '@/hooks/useLeaveTemplateEditorGuard';
 import LeaveTemplateEditorModal from '@/components/LeaveTemplateEditorModal';
+import { useConfirmRemoveContainer } from '@/hooks/useConfirmRemoveContainer';
+import DeleteContainerModal from '@/components/DeleteContainerModal';
 import { getPanelTitle } from '@/lib/panelTitles';
 
 /**
@@ -365,6 +367,8 @@ export default function Home() {
      ------------------------------------------------------------------------ */
   // Leaving the template editor (opening an item, another template) asks about unsaved layout changes first.
   const { leaveEditorThen, prompt: leaveEditorPrompt } = useLeaveTemplateEditorGuard(templateEditor);
+  // Deleting a container that holds anything asks first, listing what goes with it.
+  const { requestRemoveContainer, prompt: removeContainerPrompt } = useConfirmRemoveContainer(templateEditor);
 
   const {
     handleTriggerEditItem,
@@ -384,6 +388,7 @@ export default function Home() {
     setIsCollectionsFlyoutOpen,
     setIsTemplatesFlyoutOpen,
     leaveEditorThen,
+    requestRemoveContainer,
   });
 
 
@@ -639,7 +644,7 @@ export default function Home() {
               onAddFlexContainer={handleAddContainer}
               onInsertFlexContainerSibling={templateEditor.insertFlexContainerSibling}
               onUpdateFlexContainer={templateEditor.updateFlexContainer}
-              onRemoveFlexContainer={templateEditor.removeFlexContainer}
+              onRemoveFlexContainer={requestRemoveContainer}
               onSplitFlexContainer={templateEditor.splitFlexContainer}
               onAddFlexComponent={templateEditor.addFlexComponent}
               onUpdateFlexComponent={templateEditor.updateFlexComponent}
@@ -920,6 +925,7 @@ export default function Home() {
         fetchAllData={fetchAllData}
       />
       {leaveEditorPrompt && <LeaveTemplateEditorModal {...leaveEditorPrompt} />}
+      {removeContainerPrompt && <DeleteContainerModal {...removeContainerPrompt} />}
     </div>
   );
 }

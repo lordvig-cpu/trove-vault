@@ -35,9 +35,13 @@ Conventions and architecture (data access, theming, template editor internals, b
 - `CreateCollectionModal.tsx` / `DeleteCollectionModal.tsx` — collection create/delete dialogs.
 - `CreateItemModal.tsx` / `EditItemModal.tsx` / `DeleteItemModal.tsx` — item create/edit/delete
   dialogs; Create and Edit share `hooks/useItemForm.ts` and `components/item-form/*`.
+- `CautionModal.tsx` — the shared "check before you go on" dialog (amber caution heading, Cancel + actions, Escape /
+  backdrop cancel) under `LeaveTemplateEditorModal` and `DeleteContainerModal`.
+- `DeleteContainerModal.tsx` — confirm deleting a layout container that holds anything, listing the containers and
+  content inside it (`hooks/useConfirmRemoveContainer.ts`).
 - `DeleteTemplateModal.tsx` — styled confirm dialog for deleting a template (used by both the tree
   and editor template menus).
-- `LeaveTemplateEditorModal.tsx` — the Save / Discard / Keep Editing dialog shown when leaving the template editor
+- `LeaveTemplateEditorModal.tsx` — the Save / Discard / Keep Editing `CautionModal` shown when leaving the template editor
   with unsaved layout changes (`hooks/useLeaveTemplateEditorGuard.ts`).
 - `DynamicWatermark.tsx` — the idle-state hero watermark/video on an empty main canvas.
 - `EmptyPanelDropZone.tsx` — the "nothing docked here" placeholder shown in an empty panel/dock zone.
@@ -178,6 +182,8 @@ its display style, with label and typography).
 - `useFlyoutLifecycle.ts` — a flyout/sidebar's mount-and-animate-out lifecycle.
 - `useHierarchyState.ts` — the Layout tree's expansion state and open-properties/place-field/
   add-container handlers; takes `useTemplateEditor`'s return value as its argument.
+- `useConfirmRemoveContainer.ts` — `requestRemoveContainer`, every container delete's entry point: an empty one goes at
+  once, one that holds anything waits for `DeleteContainerModal`.
 - `useItemForm.ts` — shared state/logic for the Create and Edit item modals.
 - `useItemEditor.ts` — editing an existing item: `useItemForm` loaded with it, unsaved-change tracking, Save and Revert
   (the Edit Item modal and an item flyout's Properties tab).

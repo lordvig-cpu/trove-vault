@@ -40,6 +40,8 @@ interface UsePanelRenderersOptions {
   /** Runs `next` after leaving the template editor, asking about unsaved layout changes first
       (useLeaveTemplateEditorGuard); just runs it when the editor isn't open. */
   leaveEditorThen: (next: () => void, options?: { closeEditor?: boolean }) => void;
+  /** Deletes a container, first confirming when it holds anything (useConfirmRemoveContainer). */
+  requestRemoveContainer: (containerId: string) => void;
 }
 
 /**
@@ -59,6 +61,7 @@ export function usePanelRenderers({
   setIsCollectionsFlyoutOpen,
   setIsTemplatesFlyoutOpen,
   leaveEditorThen,
+  requestRemoveContainer,
 }: UsePanelRenderersOptions) {
   const {
     activeCollectionId,
@@ -282,7 +285,7 @@ export function usePanelRenderers({
             onSplitContainer={templateEditor.splitFlexContainer}
             onUpdateContainer={templateEditor.updateFlexContainer}
             onUpdateComponent={templateEditor.updateFlexComponent}
-            onRemoveContainer={templateEditor.removeFlexContainer}
+            onRemoveContainer={requestRemoveContainer}
             onRemoveComponent={templateEditor.removeFlexComponent}
             onMoveNode={templateEditor.moveFlexNode}
             hiddenNodeIds={templateEditor.hiddenNodeIds}
