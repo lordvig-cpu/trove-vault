@@ -193,7 +193,7 @@ export default function TemplateFieldActionMenu({
                 className={`flex items-center gap-1.5 px-2 py-1 rounded-md text-[11px] border transition cursor-pointer text-left ${
                   fieldType === ft.type
                     ? 'bg-[color-mix(in_oklch,var(--primary-accent)_20%,transparent)] border-[var(--primary-accent)] text-[var(--text-strong)] font-bold'
-                    : 'bg-surface-panel border-subtle text-muted hover:text-strong hover:bg-slate-800'
+                    : 'bg-surface-panel border-subtle text-muted hover:text-strong hover:bg-surface-hover'
                 }`}
               >
                 <FieldTypeIcon type={ft.type} className="w-3.5 h-3.5" />
@@ -221,7 +221,7 @@ export default function TemplateFieldActionMenu({
           <div className="flex flex-col gap-1.5 pt-1 border-t border-subtle">
             <label className="text-[10px] font-bold text-muted uppercase tracking-wider flex items-center justify-between">
               <span>Dropdown Options</span>
-              <span className="font-mono text-[9px] text-amber-400">
+              <span className="font-mono text-[9px] text-accent-secondary">
                 {field.options?.length || 0} choices
               </span>
             </label>
@@ -237,7 +237,7 @@ export default function TemplateFieldActionMenu({
                   <button
                     type="button"
                     onClick={() => handleRemoveOption(opt)}
-                    className="text-[10px] text-muted hover:text-red-400 cursor-pointer leading-none"
+                    className="text-[10px] text-muted hover:text-danger-text cursor-pointer leading-none"
                     title={`Remove "${opt}"`}
                   >
                     <CloseIcon />

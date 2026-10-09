@@ -138,7 +138,7 @@ export function PreviewWidthPicker() {
                     if (e.key === 'Enter') commitDraft();
                   }}
                   aria-label="Custom preview width in pixels"
-                  className="w-full min-w-0 px-1 py-0.5 rounded bg-slate-950 border border-subtle text-[11px] font-mono text-strong text-right focus:outline-none focus:border-[var(--primary-accent)]"
+                  className="w-full min-w-0 px-1 py-0.5 rounded bg-surface-popover border border-subtle text-[11px] font-mono text-strong text-right focus:outline-none focus:border-[var(--primary-accent)]"
                 />
                 <button
                   type="button"

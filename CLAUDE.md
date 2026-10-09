@@ -42,7 +42,11 @@ commit whenever you add, remove, split or rename a file — it goes stale otherw
   left are user data: a template's own chosen icon (default 📦) and the item-type/virtual-category
   icons `UnifiedTree.tsx` and `lib/treeUtils.ts` derive from it.
 - **Colors:** never write a hard-coded hex/rgb/hsl color in a component or a new CSS rule, not even
-  temporarily. Every color is a theme CSS variable. `--primary-accent` is the blue, `--secondary-accent`
+  temporarily. That includes Tailwind's stock palette classes (`text-slate-400`, `bg-amber-500/10`, ...),
+  which are fixed colors: use the theme-backed Tailwind names registered in `app/globals.css`'s `@theme`
+  blocks (`text-content-muted`, `bg-surface-hover`, `border-border-subtle`, `text-accent-secondary`,
+  `bg-shade/40`, `text-danger-text`, `text-ok-text`, ...), adding a name there when a role is missing. The only
+  fixed colors allowed are true constants (#000 / #fff where a theme needs pure black or white). Every color is a theme CSS variable. `--primary-accent` is the blue, `--secondary-accent`
   is the amber; shared text/surface/border roles have their own prefixes (see
   `app/styles/themes/OKLCH.md`). Component styles consume the readable aliases in
   `app/styles/themes/theme-semantic.css`, which map to `theme-oklch-dark.css` / `theme-oklch-light.css`.

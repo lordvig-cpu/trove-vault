@@ -253,9 +253,9 @@ export default function TemplateEditorStage({
         </ScaledCanvas>
         </div>
       ) : (
-        <div className="w-full max-w-6xl mx-auto py-16 flex flex-col items-center justify-center text-center gap-3 border-2 border-dashed border-slate-800 rounded-2xl bg-slate-900/20">
-          <span className="text-sm font-bold text-slate-300">No layout yet</span>
-          <p className="text-xs text-slate-500 max-w-sm">
+        <div className="w-full max-w-6xl mx-auto py-16 flex flex-col items-center justify-center text-center gap-3 border-2 border-dashed border-surface-hover rounded-2xl bg-surface/20">
+          <span className="text-sm font-bold text-content-secondary">No layout yet</span>
+          <p className="text-xs text-content-muted max-w-sm">
             Generate a starter layout from this template&apos;s fields to begin designing.
           </p>
           <button

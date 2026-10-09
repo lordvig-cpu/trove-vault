@@ -82,7 +82,7 @@ export default function TemplateLayoutPalette({
       {/* --------------------------------------------------------------------
           1. PALETTE TABS HEADER
           -------------------------------------------------------------------- */}
-      <div className="flex items-center justify-between px-3 py-1.5 bg-slate-900/40 border-b border-subtle shrink-0">
+      <div className="flex items-center justify-between px-3 py-1.5 bg-surface/40 border-b border-subtle shrink-0">
         <div className="flex items-center gap-1.5">
           <button
             type="button"
@@ -90,7 +90,7 @@ export default function TemplateLayoutPalette({
             className={`py-1 px-3 rounded-lg text-xs font-bold transition cursor-pointer flex items-center gap-1.5 ${
               activeTab === 'layout'
                 ? 'bg-[color-mix(in_oklch,var(--primary-accent)_30%,transparent)] text-[var(--text-strong)] border border-[var(--primary-accent)] shadow-sm'
-                : 'text-muted hover:text-strong hover:bg-slate-800/60'
+                : 'text-muted hover:text-strong hover:bg-surface-hover/60'
             }`}
           >
             <BodyIcon className="w-3.5 h-3.5" />
@@ -103,7 +103,7 @@ export default function TemplateLayoutPalette({
             className={`py-1 px-3 rounded-lg text-xs font-bold transition cursor-pointer flex items-center gap-1.5 ${
               activeTab === 'components'
                 ? 'bg-[color-mix(in_oklch,var(--primary-accent)_30%,transparent)] text-[var(--text-strong)] border border-[var(--primary-accent)] shadow-sm'
-                : 'text-muted hover:text-strong hover:bg-slate-800/60'
+                : 'text-muted hover:text-strong hover:bg-surface-hover/60'
             }`}
           >
             <PuzzleIcon className="w-3.5 h-3.5" />
@@ -116,7 +116,7 @@ export default function TemplateLayoutPalette({
             className={`py-1 px-3 rounded-lg text-xs font-bold transition cursor-pointer flex items-center gap-1.5 ${
               activeTab === 'recipes'
                 ? 'bg-[color-mix(in_oklch,var(--primary-accent)_30%,transparent)] text-[var(--text-strong)] border border-[var(--primary-accent)] shadow-sm'
-                : 'text-muted hover:text-strong hover:bg-slate-800/60'
+                : 'text-muted hover:text-strong hover:bg-surface-hover/60'
             }`}
           >
             <CardsIcon className="w-3.5 h-3.5" />

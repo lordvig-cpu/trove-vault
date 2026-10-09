@@ -63,25 +63,25 @@ function PlaceholderComponent({
       }}
       className={`transition-all duration-150 relative ${
         canvasMode === 'preview'
-          ? 'rounded-xl bg-slate-900/40 border border-slate-800/80 p-3'
+          ? 'rounded-xl bg-surface/40 border border-surface-hover/80 p-3'
           : isSelected
-          ? 'rounded-xl ring-2 ring-amber-500/90 bg-amber-950/20 shadow-lg shadow-amber-500/10 border border-amber-500/60 p-3 cursor-pointer'
-          : 'rounded-xl border border-slate-800 bg-slate-900/50 hover:border-slate-700/80 p-3 cursor-pointer'
+          ? 'rounded-xl ring-2 ring-accent-secondary/90 bg-accent-secondary-wash/20 shadow-lg shadow-accent-secondary/10 border border-accent-secondary/60 p-3 cursor-pointer'
+          : 'rounded-xl border border-surface-hover bg-surface/50 hover:border-border-subtle/80 p-3 cursor-pointer'
       }`}
     >
       {/* Component Header / Chip in Edit Mode */}
       {canvasMode === 'edit' && (
-        <div className="flex items-center justify-between mb-2 pb-1 border-b border-slate-800/60 select-none">
+        <div className="flex items-center justify-between mb-2 pb-1 border-b border-surface-hover/60 select-none">
           <div className="flex items-center gap-1.5 min-w-0">
-            <span className="text-[9.5px] font-mono uppercase font-bold px-1.5 py-0.5 rounded bg-slate-800 text-amber-300 border border-slate-700/50">
+            <span className="text-[9.5px] font-mono uppercase font-bold px-1.5 py-0.5 rounded bg-surface-hover text-flyout-title border border-border-subtle/50">
               {component.componentType}
             </span>
-            <span className="text-xs font-semibold text-slate-300 truncate">
+            <span className="text-xs font-semibold text-content-secondary truncate">
               {label}
             </span>
           </div>
           <div className="flex items-center gap-1">
-            <span className="text-[9px] font-mono text-slate-400">
+            <span className="text-[9px] font-mono text-content-muted">
               {!component.sizing || component.sizing.type === 'fill'
                 ? 'Fill'
                 : component.sizing.value || 'Fixed'}
@@ -92,7 +92,7 @@ function PlaceholderComponent({
                 e.stopPropagation();
                 onRemoveComponent?.(component.id);
               }}
-              className="text-[11px] text-red-400 hover:text-red-200 ml-1 p-0.5 cursor-pointer leading-none"
+              className="text-[11px] text-danger-text hover:text-danger-text ml-1 p-0.5 cursor-pointer leading-none"
               title="Remove Component"
             >
               <CloseIcon />
@@ -104,8 +104,8 @@ function PlaceholderComponent({
       {/* Render Component Content by Type */}
       {component.componentType === 'table' ? (
         <div className="flex flex-col gap-2">
-          <div className="flex items-center justify-between border-b border-slate-800 pb-1.5">
-            <span className="text-xs font-bold text-slate-200 flex items-center gap-1.5">
+          <div className="flex items-center justify-between border-b border-surface-hover pb-1.5">
+            <span className="text-xs font-bold text-content-primary flex items-center gap-1.5">
               <TableIcon />
               <span>{label}</span>
             </span>
@@ -113,20 +113,20 @@ function PlaceholderComponent({
               Specifications Table
             </span>
           </div>
-          <div className="flex flex-col gap-1 text-xs text-slate-300">
-            <div className="flex justify-between py-1 border-b border-slate-800/60">
-              <span className="text-slate-400">Rating:</span>
-              <span className="font-semibold text-slate-200">4.8 / 5.0</span>
+          <div className="flex flex-col gap-1 text-xs text-content-secondary">
+            <div className="flex justify-between py-1 border-b border-surface-hover/60">
+              <span className="text-content-muted">Rating:</span>
+              <span className="font-semibold text-content-primary">4.8 / 5.0</span>
             </div>
-            <div className="flex justify-between py-1 border-b border-slate-800/60">
-              <span className="text-slate-400">Target Audience:</span>
-              <span className="font-semibold text-slate-200">
+            <div className="flex justify-between py-1 border-b border-surface-hover/60">
+              <span className="text-content-muted">Target Audience:</span>
+              <span className="font-semibold text-content-primary">
                 Collectors & Enthusiasts
               </span>
             </div>
             <div className="flex justify-between py-1">
-              <span className="text-slate-400">Condition Grade:</span>
-              <span className="font-semibold text-slate-200">
+              <span className="text-content-muted">Condition Grade:</span>
+              <span className="font-semibold text-content-primary">
                 Mint / Near Mint
               </span>
             </div>
@@ -135,40 +135,40 @@ function PlaceholderComponent({
       ) : component.componentType === 'media' ? (
         <div className="flex flex-col gap-2 h-full min-h-[140px] justify-between">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-slate-200 flex items-center gap-1.5">
+            <span className="text-xs font-bold text-content-primary flex items-center gap-1.5">
               <ImageIcon />
               <span>{label}</span>
             </span>
-            <span className="text-[9.5px] font-mono text-amber-400">
+            <span className="text-[9.5px] font-mono text-accent-secondary">
               Media Gallery
             </span>
           </div>
-          <div className="flex-1 flex flex-col items-center justify-center py-4 bg-slate-950/40 rounded-lg border border-dashed border-slate-800 text-center">
+          <div className="flex-1 flex flex-col items-center justify-center py-4 bg-surface-popover/40 rounded-lg border border-dashed border-surface-hover text-center">
             <CameraIcon className="w-6 h-6 opacity-60" />
-            <span className="text-[11px] text-slate-400 mt-1">
+            <span className="text-[11px] text-content-muted mt-1">
               High-Resolution Photo
             </span>
           </div>
-          <div className="flex justify-between items-center text-[10px] text-slate-400 pt-1 border-t border-slate-800/60">
+          <div className="flex justify-between items-center text-[10px] text-content-muted pt-1 border-t border-surface-hover/60">
             <span>Aspect: 16:9 Banner</span>
             <span className="font-mono">Fill Box</span>
           </div>
         </div>
       ) : component.componentType === 'stat' ? (
         <div className="flex flex-col items-center justify-center p-3 gap-1 text-center">
-          <span className="text-[10px] uppercase font-bold tracking-wider text-slate-400">
+          <span className="text-[10px] uppercase font-bold tracking-wider text-content-muted">
             {label}
           </span>
           <span className="text-2xl font-extrabold text-[var(--primary-accent)] font-mono tracking-tight">
             98.5%
           </span>
-          <span className="text-[9.5px] text-emerald-400 font-medium">
+          <span className="text-[9.5px] text-ok-text font-medium">
             <StarIcon className="inline w-2.5 h-2.5 align-baseline" /> Verified Rank
           </span>
         </div>
       ) : component.componentType === 'note' ? (
-        <div className="p-3 rounded-lg bg-amber-500/10 border border-amber-500/20 text-xs text-amber-200 flex flex-col gap-1">
-          <div className="font-bold flex items-center gap-1.5 text-amber-300">
+        <div className="p-3 rounded-lg bg-accent-secondary/10 border border-accent-secondary/20 text-xs text-flyout-title flex flex-col gap-1">
+          <div className="font-bold flex items-center gap-1.5 text-flyout-title">
             <NoteIcon />
             <span>{label}</span>
           </div>
@@ -176,12 +176,12 @@ function PlaceholderComponent({
             // Real filler text (e.g. the Lorem Ipsum grabbable), not a mock placeholder -- shown
             // as-is in both modes so its actual wrapping/flow is visible.
             component.custom_props.text.split('\n\n').map((paragraph, i) => (
-              <p key={i} className="text-[11px] text-amber-200/80 leading-relaxed">
+              <p key={i} className="text-[11px] text-flyout-title/80 leading-relaxed">
                 {paragraph}
               </p>
             ))
           ) : (
-            <p className="text-[11px] text-amber-200/80 leading-relaxed">
+            <p className="text-[11px] text-flyout-title/80 leading-relaxed">
               {canvasMode === 'preview'
                 ? 'Condition verified by official registry. Stored in temperature-controlled archive.'
                 : 'Add curator remarks, notes, or grading certificates.'}
@@ -192,16 +192,16 @@ function PlaceholderComponent({
         /* Field Attribute Component */
         <div className="flex flex-col gap-1.5 min-w-0">
           <div className="flex items-center justify-between gap-1">
-            <span className="text-xs font-bold text-slate-200 truncate">
+            <span className="text-xs font-bold text-content-primary truncate">
               {label}
             </span>
             {boundField && (
-              <span className="text-[9px] font-mono font-bold uppercase px-1 py-0.5 rounded bg-slate-800 text-[var(--primary-accent)] border border-slate-700/60 shrink-0">
+              <span className="text-[9px] font-mono font-bold uppercase px-1 py-0.5 rounded bg-surface-hover text-[var(--primary-accent)] border border-border-subtle/60 shrink-0">
                 {boundField.field_type}
               </span>
             )}
           </div>
-          <div className="text-xs text-slate-300 bg-slate-950/60 px-2.5 py-1.5 rounded-lg border border-slate-800/80 truncate">
+          <div className="text-xs text-content-secondary bg-surface-popover/60 px-2.5 py-1.5 rounded-lg border border-surface-hover/80 truncate">
             {canvasMode === 'preview'
               ? boundField?.options?.[0] || 'Sample attribute value'
               : boundField?.is_required

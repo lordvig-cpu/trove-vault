@@ -725,14 +725,14 @@ function ComponentNodeRow({
 
         {/* Variant / Sizing Badge */}
         {component.variant && component.variant !== 'standard' && (
-          <span className="text-[9px] font-mono px-1 py-0.2 rounded bg-amber-500/10 text-amber-300 border border-amber-500/20 shrink-0">
+          <span className="text-[9px] font-mono px-1 py-0.2 rounded bg-accent-secondary/10 text-flyout-title border border-accent-secondary/20 shrink-0">
             {component.variant}
           </span>
         )}
 
         {/* Sizing Indicator */}
         {component.sizing && component.sizing.type !== 'fill' && (
-          <span className="text-[9px] font-mono text-slate-400 shrink-0">
+          <span className="text-[9px] font-mono text-content-muted shrink-0">
             {component.sizing.type === 'fixed'
               ? component.sizing.value || 'fixed'
               : 'auto'}
@@ -829,10 +829,10 @@ export default function TemplateHierarchyTree({
 
   if (!root) {
     return (
-      <div className="p-4 flex flex-col items-center justify-center text-center gap-2 text-slate-500 h-full">
+      <div className="p-4 flex flex-col items-center justify-center text-center gap-2 text-content-muted h-full">
         <LayoutGridIcon className="w-6 h-6" />
-        <span className="text-xs font-semibold text-slate-400">No Layout Loaded</span>
-        <p className="text-[11px] text-slate-500">
+        <span className="text-xs font-semibold text-content-muted">No Layout Loaded</span>
+        <p className="text-[11px] text-content-muted">
           Open a template to inspect and configure its visual content structure.
         </p>
       </div>
@@ -841,10 +841,10 @@ export default function TemplateHierarchyTree({
 
   if (visibleIds && !visibleIds.has(root.id)) {
     return (
-      <div className="p-4 flex flex-col items-center justify-center text-center gap-2 text-slate-500 h-full">
+      <div className="p-4 flex flex-col items-center justify-center text-center gap-2 text-content-muted h-full">
         <SearchGlassIcon className="w-6 h-6" />
-        <span className="text-xs font-semibold text-slate-400">No matches</span>
-        <p className="text-[11px] text-slate-500">
+        <span className="text-xs font-semibold text-content-muted">No matches</span>
+        <p className="text-[11px] text-content-muted">
           Nothing in this layout matches your search or filter.
         </p>
       </div>

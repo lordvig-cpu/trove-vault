@@ -207,7 +207,7 @@ function TemplateFieldTreeRow({
         <div className="flex items-center gap-1.5 min-w-0 flex-1">
           <span
             onPointerDown={(e) => e.stopPropagation()}
-            className="text-[10px] text-muted/50 group-hover:text-muted cursor-grab active:cursor-grabbing tracking-tighter shrink-0 select-none p-0.5 rounded hover:bg-slate-800"
+            className="text-[10px] text-muted/50 group-hover:text-muted cursor-grab active:cursor-grabbing tracking-tighter shrink-0 select-none p-0.5 rounded hover:bg-surface-hover"
             title="Drag to place in container"
             aria-label="Drag handle"
           >
@@ -220,7 +220,7 @@ function TemplateFieldTreeRow({
           <div className="min-w-0 flex-1">
             <span
               className={`text-xs font-medium truncate block ${
-                isSelected ? 'text-[var(--text-strong)] font-bold' : 'text-slate-200'
+                isSelected ? 'text-[var(--text-strong)] font-bold' : 'text-content-primary'
               }`}
             >
               {field.label}
@@ -239,7 +239,7 @@ function TemplateFieldTreeRow({
             </span>
           )}
           {field.field_type === 'select' && (
-            <span className="text-[9px] font-mono text-amber-400/80 bg-amber-400/10 px-1 py-0.5 rounded border border-amber-400/20 select-none">
+            <span className="text-[9px] font-mono text-accent-secondary/80 bg-accent-secondary/10 px-1 py-0.5 rounded border border-accent-secondary/20 select-none">
               {field.options?.length || 0} opts
             </span>
           )}
@@ -389,12 +389,12 @@ export default function TemplateFieldInspector({
           1. SYSTEM ALERTS / NOTICES
           -------------------------------------------------------------------- */}
       {error && (
-        <div className="tmpl-alert-error text-xs p-2 rounded-lg bg-red-500/10 border border-red-500/30 text-red-400">
+        <div className="tmpl-alert-error text-xs p-2 rounded-lg bg-danger/10 border border-danger/30 text-danger-text">
           {error}
         </div>
       )}
       {successMsg && (
-        <div className="tmpl-alert-success text-xs p-2 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-400">
+        <div className="tmpl-alert-success text-xs p-2 rounded-lg bg-ok/10 border border-ok/30 text-ok-text">
           {successMsg}
         </div>
       )}
@@ -413,7 +413,7 @@ export default function TemplateFieldInspector({
               setIsLoremDragging(true);
             }}
             onDragEnd={() => setIsLoremDragging(false)}
-            className={`text-[10px] text-muted/50 hover:text-muted cursor-grab active:cursor-grabbing tracking-tighter shrink-0 select-none p-0.5 rounded hover:bg-slate-800 ${
+            className={`text-[10px] text-muted/50 hover:text-muted cursor-grab active:cursor-grabbing tracking-tighter shrink-0 select-none p-0.5 rounded hover:bg-surface-hover ${
               isLoremDragging ? 'opacity-40' : ''
             }`}
             title="Drag to place in a container"
@@ -452,7 +452,7 @@ export default function TemplateFieldInspector({
                   setDraggingBuiltin(key);
                 }}
                 onDragEnd={() => setDraggingBuiltin(null)}
-                className={`text-[10px] text-muted/50 hover:text-muted cursor-grab active:cursor-grabbing tracking-tighter shrink-0 select-none p-0.5 rounded hover:bg-slate-800 ${
+                className={`text-[10px] text-muted/50 hover:text-muted cursor-grab active:cursor-grabbing tracking-tighter shrink-0 select-none p-0.5 rounded hover:bg-surface-hover ${
                   draggingBuiltin === key ? 'opacity-40' : ''
                 }`}
                 title="Drag to place in a container"
@@ -481,9 +481,9 @@ export default function TemplateFieldInspector({
           3. UNPLACED SCHEMA FIELDS TRAY (when fields remain to place)
           -------------------------------------------------------------------- */}
       {unplacedFields.length > 0 && onPlaceField && (
-        <div className="p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/25 flex flex-col gap-2 shrink-0">
+        <div className="p-2.5 rounded-xl bg-accent-secondary/10 border border-accent-secondary/25 flex flex-col gap-2 shrink-0">
           <div className="flex items-center justify-between">
-            <span className="text-[10.5px] font-bold uppercase tracking-wider text-amber-300 flex items-center gap-1.5">
+            <span className="text-[10.5px] font-bold uppercase tracking-wider text-flyout-title flex items-center gap-1.5">
               <WarningIcon />
               <span>Unplaced Fields ({unplacedFields.length})</span>
             </span>
@@ -495,10 +495,10 @@ export default function TemplateFieldInspector({
                 key={f.id}
                 type="button"
                 onClick={() => onPlaceField(f.id)}
-                className="px-2 py-1 text-[11px] font-medium rounded-lg bg-amber-500/15 hover:bg-amber-500/30 border border-amber-500/30 text-amber-200 hover:text-[var(--text-strong)] transition cursor-pointer flex items-center gap-1.5 shadow-sm"
+                className="px-2 py-1 text-[11px] font-medium rounded-lg bg-accent-secondary/15 hover:bg-accent-secondary/30 border border-accent-secondary/30 text-flyout-title hover:text-[var(--text-strong)] transition cursor-pointer flex items-center gap-1.5 shadow-sm"
                 title={`Place ${f.label} into active container`}
               >
-                <span className="font-bold text-amber-400">+</span>
+                <span className="font-bold text-accent-secondary">+</span>
                 <span className="truncate max-w-[120px]">{f.label}</span>
               </button>
             ))}
@@ -541,7 +541,7 @@ export default function TemplateFieldInspector({
                       onAddField(ft);
                       setShowAddMenu(false);
                     }}
-                    className="flex items-center gap-2 px-2 py-1.5 rounded-lg text-xs text-strong hover:bg-slate-800 transition cursor-pointer text-left"
+                    className="flex items-center gap-2 px-2 py-1.5 rounded-lg text-xs text-strong hover:bg-surface-hover transition cursor-pointer text-left"
                   >
                     <FieldTypeIcon type={ft} className="w-3.5 h-3.5" />
                     <span>{FIELD_TYPE_CONFIG[ft].label}</span>
