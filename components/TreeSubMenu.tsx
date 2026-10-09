@@ -121,7 +121,7 @@ export default function TreeSubMenu({
       <span className="hintTitleGroup">
         <HintGripIcon className="w-3 h-4 hintGrip" />
         <span className="headerIcon floatingTitleIcon">{titleIcon}</span>
-        <span className="headerTitle">{title}</span>
+        <span className="headerTitle" onMouseEnter={(e) => showFullTextIfCut(e, title)}>{title}</span>
       </span>
       <span className="headerIcon">
         <button type="button" className="hintHeaderBtn" onClick={floating.onClose} aria-label={`Close ${title}`} title="Close">
@@ -196,6 +196,15 @@ export default function TreeSubMenu({
   ========================================================================== */
 
 // Standard action with a neutral hover treatment.
+/** On hover, gives an element a native tooltip with its full text -- but only while some of that text is cut
+ *  off with "..." (any `.truncate` inside it, or the element itself, overflowing); text that fits gets none. */
+function showFullTextIfCut(e: React.MouseEvent<HTMLElement>, ...text: (string | undefined)[]) {
+  const el = e.currentTarget;
+  const parts = [el, ...el.querySelectorAll<HTMLElement>('.truncate')];
+  const isCut = parts.some((part) => part.scrollWidth > part.clientWidth);
+  el.title = isCut ? text.filter(Boolean).join('\n') : '';
+}
+
 export function ActionMenuItem({
   icon,
   label,
@@ -211,6 +220,7 @@ export function ActionMenuItem({
     <button
       type="button"
       onClick={onClick}
+      onMouseEnter={(e) => showFullTextIfCut(e, label, subtext)}
       className="actionMenuItem group"
     >
       <span className="actionMenuItemIcon w-4 h-4 flex items-center justify-center shrink-0">
@@ -246,6 +256,7 @@ export function ActionMenuDangerItem({
     <button
       type="button"
       onClick={onClick}
+      onMouseEnter={(e) => showFullTextIfCut(e, label, subtext)}
       className="actionMenuDangerItem group"
     >
       <span className="actionMenuDangerIcon">

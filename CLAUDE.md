@@ -342,7 +342,9 @@ commit whenever you add, remove, split or rename a file — it goes stale otherw
   and rotated a quarter turn for a Column. They only show when children don't already fill the
   container (Auto children stretch); a per-item override (`align-self`) is a possible later addition.
 - Help for a control is a `HoverHint` bubble (`components/HoverHint.tsx`), not a native `title`
-  tooltip, whenever it's more than a few words. It renders the exact same split head/body shell as a
+  tooltip, whenever it's more than a few words. (Text that is merely cut off with "..." is different: a flyout
+  row or floating title shows its full text as a native tooltip, only while it doesn't fit --
+  `showFullTextIfCut` in `TreeSubMenu.tsx`.) It renders the exact same split head/body shell as a
   headless `TreeSubMenu` (`menuShellSplit` / `menuShell.menuShellHead` / `menuShell.menuShellBody`,
   with the same empty `.menuTabs` divider band) rather than a shell of its own, so its title bar (the
   `?` at the right) is never a second, hand-tuned definition of the same look -- the `.hoverHint`
