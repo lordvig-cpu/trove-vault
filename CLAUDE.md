@@ -242,7 +242,7 @@ commit whenever you add, remove, split or rename a file — it goes stale otherw
   (`lib/floatingNodeMenu.ts` store, drawn by `FloatingNodeMenuHost` in the editor stage): at the pointer for a
   right-click, just under the gear for the gear (on its Properties tab; clicking the gear again closes it). It
   wears a help window's chrome (TreeSubMenu's `floating` prop: grab dots then the element's type icon before
-  the title, the title bar is the drag handle, a close button at the right), its title names the element ("Container: General Information", "Content: ...", "Body"),
+  the title, the title bar is the drag handle, a close button at the right), its title is just the element's name ("General Information", "Body"; a long one ends in "..."),
   it appears in place rather than sliding, and it stays until its close button, Escape, or another menu opens
   (one at a time; opening a tree flyout closes it). While open it holds the gear pin (`holdMenuPin`), so
   hovering a gear can't open another menu over it, and it uses the tree menus' open / close events, so the

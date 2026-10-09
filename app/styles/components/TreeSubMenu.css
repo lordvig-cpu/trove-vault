@@ -402,8 +402,23 @@
   flex-shrink: 0;
 }
 
-/* Its title names the element ("Container: General Information"), so a long name truncates. */
+/* Its title is the element's name, so a long one is cut off with "...": the title group takes the room
+   left of the close button (with a gap before it) and may shrink, and the title is a block -- .headerTitle's
+   own display: flex would make the text a flex item, which never shows an ellipsis -- with the same 1rem
+   line box, so it stays centered. */
+.menuShellFloating .menuShellHead .headerPill {
+  gap: 0.5rem;
+}
+
+.menuShellFloating .hintTitleGroup {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
 .menuShellFloating .hintTitleGroup .headerTitle {
+  display: block;
+  min-width: 0;
+  line-height: 1rem;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
