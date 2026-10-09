@@ -631,7 +631,7 @@
 /* Real tabs are the side panels' paper-folder tabs (.tree-folder-tab + PanelFolderTabSvg, so they take
    the panel tabs' fill, outline and glow), sized for a menu and standing on the band's bottom edge. That
    edge is drawn in the active tab's outline color, as on a side panel's header, so the tab's sides run
-   straight into it; the active tab sits over the line (margin-bottom: -1px) and its fill fades into the
+   straight into it; only the active tab sits over the line (margin-bottom: -1px) and its fill fades into the
    menu body's color at its foot, so it opens into the body below. Same width whichever tab is active, and
    centered, so switching to the wider Properties body never moves them. */
 .menuShellHead .menuTabs-folder {
@@ -647,8 +647,13 @@
   min-width: 6.75rem;
   height: 1.875rem;
   padding: 0 1.25rem;
-  margin-bottom: -1px;
   font-size: 0.6875rem;
+}
+
+/* Only the active tab sits down over the band's amber edge (and so hides it, opening into the body); an
+   idle tab stands on the line, which stays visible under it. */
+.menuTabs .menuFolderTab.tree-folder-tab-active {
+  margin-bottom: -1px;
 }
 
 /* Neighbors overlap a little, like the panel tabs (which overlap 18px at their larger size). */
