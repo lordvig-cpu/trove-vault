@@ -34,6 +34,8 @@ interface PrimarySidePanelProps extends PanelHeaderPassThroughProps {
   moveTooltip?: string;
   canMove?: boolean;
   onDock?: (position: 'left' | 'right') => void;
+  /** Whether that side's panel has room for this content as a tab (false: its dock button is unavailable). */
+  canDock?: (position: 'left' | 'right') => boolean;
   isOpen: boolean;
   isPinned?: boolean;
   onOpen?: () => void;
@@ -70,6 +72,7 @@ export default function PrimarySidePanel({
   moveTooltip,
   canMove = true,
   onDock,
+  canDock,
   isOpen,
   isPinned: isPinnedProp,
   onOpen,
@@ -209,6 +212,7 @@ export default function PrimarySidePanel({
         moveTooltip={moveTooltip}
         canMove={canMove}
         onDock={onDock}
+        canDock={canDock}
         treeView={treeView}
         activeTab={activeTab}
         onTabChange={onTabChange}

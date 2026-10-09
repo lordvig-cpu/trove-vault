@@ -27,6 +27,8 @@ export interface PrimarySidePanelHeaderProps {
   moveTooltip?: string;
   canMove?: boolean;
   onDock?: (position: 'left' | 'right') => void;
+  /** Whether that side's panel has room for this content as a tab (false: its dock button is unavailable). */
+  canDock?: (position: 'left' | 'right') => boolean;
   treeView?: TreeTab;
   activeTab?: TreeTab | DockContent;
   onTabChange?: (tab: DockContent) => void;
@@ -127,6 +129,7 @@ export default function PrimarySidePanelHeader({
   moveTooltip,
   canMove = true,
   onDock,
+  canDock,
   treeView,
   activeTab = 'items',
   onTabChange,
@@ -243,6 +246,7 @@ export default function PrimarySidePanelHeader({
         moveTooltip={moveTooltip}
         canMove={canMove}
         onDock={onDock}
+        canDock={canDock}
         panelName={panelName}
         onTogglePin={onTogglePin}
         onClose={onClose}

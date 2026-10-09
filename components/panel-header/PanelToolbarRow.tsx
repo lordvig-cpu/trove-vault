@@ -21,6 +21,7 @@ interface PanelToolbarRowProps {
   moveTooltip?: string;
   canMove: boolean;
   onDock?: (position: 'left' | 'right') => void;
+  canDock?: (position: 'left' | 'right') => boolean;
   panelName: string;
   onTogglePin?: () => void;
   onClose: () => void;
@@ -38,6 +39,7 @@ export default function PanelToolbarRow({
   moveTooltip,
   canMove,
   onDock,
+  canDock,
   panelName,
   onTogglePin,
   onClose,
@@ -109,27 +111,30 @@ export default function PanelToolbarRow({
           </button>
         )}
 
-        {/* Items docks into either sidebar; pinning belongs to the sidebars. */}
+        {/* Items docks into either sidebar, as a tab beside what is already there; pinning belongs to the sidebars. */}
         {variant === 'flyout' && onDock && (
           <>
-            <button
-              type="button"
-              onClick={() => onDock('left')}
-              className="primary-side-panel-position-btn group"
-              title={`Dock ${panelName} to Left`}
-              aria-label={`Dock ${panelName} to Left`}
-            >
-              <DockLeftPanelIcon className="w-3.5 h-3.5 text-[var(--tree-action-icon)] group-hover:text-[var(--text-strong)]" isOpen={true} />
-            </button>
-            <button
-              type="button"
-              onClick={() => onDock('right')}
-              className="primary-side-panel-position-btn group"
-              title={`Dock ${panelName} to Right`}
-              aria-label={`Dock ${panelName} to Right`}
-            >
-              <DockRightPanelIcon className="w-3.5 h-3.5 text-[var(--tree-action-icon)] group-hover:text-[var(--text-strong)]" isOpen={true} />
-            </button>
+            {(['left', 'right'] as const).map((side) => {
+              const sideName = side === 'left' ? 'Left' : 'Right';
+              const hasRoom = canDock ? canDock(side) : true;
+              const hint = hasRoom
+                ? `Dock ${panelName} to ${sideName}`
+                : `No room to dock ${panelName} on the ${side}: that panel already has 3 tabs`;
+              const Icon = side === 'left' ? DockLeftPanelIcon : DockRightPanelIcon;
+              return (
+                <button
+                  key={side}
+                  type="button"
+                  onClick={() => onDock(side)}
+                  disabled={!hasRoom}
+                  className="primary-side-panel-position-btn group disabled:opacity-35 disabled:cursor-not-allowed"
+                  title={hint}
+                  aria-label={hint}
+                >
+                  <Icon className="w-3.5 h-3.5 text-[var(--tree-action-icon)] group-enabled:group-hover:text-[var(--text-strong)]" isOpen={true} />
+                </button>
+              );
+            })}
           </>
         )}
 

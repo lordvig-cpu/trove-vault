@@ -279,6 +279,12 @@ export function useWorkspaceDock() {
 
   const canMoveBottomLeft = !slidingState && isDockZoneAllowed('bottom', 'left', dockContents);
   const canMoveBottomRight = !slidingState && isDockZoneAllowed('bottom', 'right', dockContents);
+  /** Whether a side panel has room for this content as a tab: it already holds it, or has fewer than 3 tabs. */
+  const canDockAsTab = useCallback(
+    (content: Exclude<DockContent, 'empty'>, side: 'left' | 'right') =>
+      !slidingState && isDockZoneAllowed(content, side === 'left' ? 'left-tab' : 'right-tab', dockContents),
+    [slidingState, dockContents]
+  );
 
   const handleDropPanel = useCallback(
     (panelId: DockablePanelId, targetZone: DockDropTargetZone, dropIndex?: number) => {
@@ -568,6 +574,7 @@ export function useWorkspaceDock() {
     handleMoveSecondaryContent,
     canMoveBottomLeft,
     canMoveBottomRight,
+    canDockAsTab,
     handleDropPanel,
     isDraggingPanel,
     draggingPanel,

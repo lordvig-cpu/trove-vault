@@ -132,6 +132,7 @@ export default function Home() {
     handleMoveSecondaryContent,
     canMoveBottomLeft,
     canMoveBottomRight,
+    canDockAsTab,
     handleDropPanel,
     isDraggingPanel,
     draggingPanel,
@@ -380,6 +381,13 @@ export default function Home() {
   });
 
 
+  // A header flyout's dock buttons add it as a tab beside whatever that side panel already shows, never
+  // replacing it; with 3 tabs there already, the button is unavailable.
+  const dockAsTabProps = (content: 'items' | 'collections' | 'templates') => ({
+    onDock: (side: 'left' | 'right') => handleDropPanel(content, side === 'left' ? 'left-tab' : 'right-tab'),
+    canDock: (side: 'left' | 'right') => canDockAsTab(content, side),
+  });
+
   const itemsFlyoutPanel = (
     <PrimarySidePanel
       title="ITEMS"
@@ -389,7 +397,7 @@ export default function Home() {
       position="left"
       isOpen={isPrimaryFlyoutOpen}
       onClose={() => setIsPrimaryFlyoutOpen(false)}
-      onDock={(position) => handleDropPanel('items', position)}
+      {...dockAsTabProps('items')}
       loading={loading}
       error={error}
       onAddNewItem={() => openCreateItem(null, null)}
@@ -412,7 +420,7 @@ export default function Home() {
       position="left"
       isOpen={isCollectionsFlyoutOpen}
       onClose={() => setIsCollectionsFlyoutOpen(false)}
-      onDock={(position) => handleDropPanel('collections', position)}
+      {...dockAsTabProps('collections')}
       loading={loading}
       error={error}
       onAddNewItem={() => openCreateItem(null, null)}
@@ -435,7 +443,7 @@ export default function Home() {
       position="left"
       isOpen={isTemplatesFlyoutOpen}
       onClose={() => setIsTemplatesFlyoutOpen(false)}
-      onDock={(position) => handleDropPanel('templates', position)}
+      {...dockAsTabProps('templates')}
       loading={loading}
       error={error}
       onAddNewItem={() => openCreateItem(null, null)}

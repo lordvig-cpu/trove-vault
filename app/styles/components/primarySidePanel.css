@@ -218,7 +218,7 @@
   transition: all 150ms ease;
 }
 
-.primary-side-panel-position-btn:hover {
+.primary-side-panel-position-btn:not(:disabled):hover {
   border-color: var(--primary-border-subtle);
   background-color: var(--surface-primary-hover);
   color: var(--tree-action-icon-hover);
