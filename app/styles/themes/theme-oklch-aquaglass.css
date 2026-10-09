@@ -87,11 +87,13 @@
   --popover-surface-bg: var(--aqua-glass-sunk);
   --panel-border-subtle: var(--aqua-line);
   --panel-border-strong: var(--aqua-line-strong);
-  --tree-panel-bg: var(--aqua-glass);
+  /* Side panels: 90% opaque, the same see-through as Sunset Tide's, so the canvas shows faintly behind them. */
+  --aqua-panel-glass: color-mix(in oklab, var(--aqua-glass) 90%, transparent);
+  --tree-panel-bg: var(--aqua-panel-glass);
   --tree-panel-border: var(--aqua-line);
   --tree-panel-flare-bg: var(--aqua-none);
   --tree-panel-texture-bg: var(--aqua-none);
-  --right-panel-bg: var(--aqua-glass);
+  --right-panel-bg: var(--aqua-panel-glass);
   --right-panel-border: var(--aqua-line);
   --right-panel-flare-bg: var(--aqua-none);
   --right-panel-texture-bg: var(--aqua-none);

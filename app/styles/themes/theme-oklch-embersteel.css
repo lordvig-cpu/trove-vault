@@ -86,11 +86,13 @@
   --popover-surface-bg: var(--ember-popover);
   --panel-border-subtle: var(--ember-line);
   --panel-border-strong: var(--ember-line-strong);
-  --tree-panel-bg: var(--ember-panel);
+  /* Side panels: 90% opaque, the same see-through as Sunset Tide's, so the canvas shows faintly behind them. */
+  --ember-panel-glass: color-mix(in oklab, var(--ember-panel) 90%, transparent);
+  --tree-panel-bg: var(--ember-panel-glass);
   --tree-panel-border: var(--ember-line);
   --tree-panel-flare-bg: var(--ember-none);
   --tree-panel-texture-bg: var(--ember-none);
-  --right-panel-bg: var(--ember-panel);
+  --right-panel-bg: var(--ember-panel-glass);
   --right-panel-border: var(--ember-line);
   --right-panel-flare-bg: var(--ember-none);
   --right-panel-texture-bg: var(--ember-none);
