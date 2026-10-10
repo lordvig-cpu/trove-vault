@@ -200,7 +200,7 @@ export const DISPLAY_LABELS: Record<ContentDisplayStyle, string> = {
   checkbox: 'Checkbox',
   toggle: 'Toggle',
   pill: 'Pill',
-  yesno: 'Yes / No',
+  yesno: 'Y/N',
   'date-short': 'Short',
   'date-long': 'Long',
   'date-iso': 'ISO',
