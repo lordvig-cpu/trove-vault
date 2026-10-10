@@ -364,7 +364,7 @@ export function useTemplateLayoutTree({
         componentType: 'field',
         field_id: fieldId,
         binding: { kind: 'field', field_id: fieldId },
-        label: fieldDef.label,
+        // No label copied in: it shows the field's own label, live, so renaming the field renames it here too
       });
     },
     [activeTemplate, activeContainerId, flexLayoutConfig, addFlexComponent]

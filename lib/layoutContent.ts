@@ -59,6 +59,38 @@ export function collectPlacedBuiltins(root: FlexContainerNode): Set<BuiltinKey> 
   return keys;
 }
 
+/** `root` with `change` applied to every content element (returns the same node when nothing changed). */
+function mapComponents(root: FlexContainerNode, change: (c: FlexComponentNode) => FlexComponentNode): FlexContainerNode {
+  let changed = false;
+  const children = root.children.map((child) => {
+    const next = child.nodeType === 'container' ? mapComponents(child, change) : change(child);
+    if (next !== child) changed = true;
+    return next;
+  });
+  return changed ? { ...root, children } : root;
+}
+
+/** A placed field shows its field's label live -- unless the element has its own. An element that merely holds
+ *  a copy of the label (older layouts copied it in when the field was placed) follows the field again, so a
+ *  renamed field is renamed in the layout too. `oldLabel`, when given, is the label the field had before a
+ *  rename: copies of it (and a name equal to it) are let go as well. A label the user typed differs from both,
+ *  and stays. Returns the same root when nothing changed. */
+export function followFieldLabels(root: FlexContainerNode, fields: FieldDefinition[], renamed?: { fieldId: number; oldLabel: string }): FlexContainerNode {
+  return mapComponents(root, (c) => {
+    const binding = bindingOf(c);
+    const field = fieldOf(binding, fields);
+    if (!field) return c;
+    const copies = [field.label, ...(renamed && renamed.fieldId === field.id ? [renamed.oldLabel] : [])];
+    const dropLabel = c.label !== undefined && copies.includes(c.label);
+    const dropName = renamed?.fieldId === field.id && c.name !== undefined && c.name === renamed.oldLabel;
+    if (!dropLabel && !dropName) return c;
+    const next = { ...c };
+    if (dropLabel) delete next.label;
+    if (dropName) delete next.name;
+    return next;
+  });
+}
+
 /** The template field a binding points at, if it is a field binding and the field still exists. */
 export function fieldOf(binding: ContentBinding | null, fields: FieldDefinition[]): FieldDefinition | undefined {
   return binding?.kind === 'field' ? fields.find((f) => f.id === binding.field_id) : undefined;

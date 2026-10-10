@@ -112,7 +112,7 @@ test.describe('Layout tree operations (pure)', () => {
 
     const relabeled = updateComponent(root, 'comp-2', { label: 'Changed' });
     expect(findFlexNode(relabeled, 'comp-2')).toMatchObject({ label: 'Changed' });
-    expect(findFlexNode(relabeled, 'comp-1')).toMatchObject({ label: 'Alpha' });
+    expect(findFlexNode(relabeled, 'comp-1')).toEqual(findFlexNode(root, 'comp-1'));
 
     expect(updateContainer(root, 'no-such-id', { label: 'x' })).toEqual(root);
     expect(updateComponent(root, 'no-such-id', { label: 'x' })).toEqual(root);

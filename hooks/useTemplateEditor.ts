@@ -13,6 +13,7 @@ import { errorMessage } from '@/lib/errors';
 import { useTemplateLayoutTree } from '@/hooks/useTemplateLayoutTree';
 import { layoutCacheKey, readCachedLayout, resolveSavedLayout } from '@/lib/layoutStorage';
 import { useLayoutHistory } from '@/hooks/useLayoutHistory';
+import { followFieldLabels } from '@/lib/layoutContent';
 
 // Sentinels for the "select none" filter state -- see selectNoneFieldTypeFilter /
 // selectNoneHierarchyTypeFilter below.
@@ -250,9 +251,13 @@ export function useTemplateEditor({
       const loadedTemplate: ItemTemplate = await fetchTemplate(rawId);
 
       // The same copy the item view draws (a valid browser copy, else the stored layout), else the default
-      const resolvedFlex: TemplateFlexLayoutConfig =
+      const storedFlex: TemplateFlexLayoutConfig =
         resolveSavedLayout(readCachedLayout(rawId), loadedTemplate.layout_config) ??
         createDefaultFlexLayout(loadedTemplate.fields || []);
+      // A placed field shows its field's label live: copies of it that older layouts stored are let go
+      const followedRoot = followFieldLabels(storedFlex.root, loadedTemplate.fields || []);
+      const resolvedFlex: TemplateFlexLayoutConfig =
+        followedRoot === storedFlex.root ? storedFlex : { ...storedFlex, root: followedRoot };
 
       setActiveTemplate(loadedTemplate);
       setFlexLayout(resolvedFlex);
@@ -480,6 +485,24 @@ export function useTemplateEditor({
         setIsSaving(true);
         setError(null);
 
+        // A renamed field is renamed in the layout too: every placed copy still showing its old label follows
+        // the field again (a label the user typed for it stays). Not a layout edit of the user's, so it is not
+        // an undo step or an unsaved change: the saved baseline follows the same way.
+        const oldField = activeTemplate.fields?.find((f) => f.id === fieldId);
+        if (oldField && partial.label !== undefined && partial.label !== oldField.label && flexLayoutRef.current) {
+          const nextFields = (activeTemplate.fields || []).map((f) => (f.id === fieldId ? { ...f, ...partial } : f));
+          const renamed = { fieldId, oldLabel: oldField.label };
+          const current = flexLayoutRef.current;
+          const followed = followFieldLabels(current.root, nextFields, renamed);
+          if (followed !== current.root) {
+            const next = { ...current, root: followed };
+            setFlexLayout(next);
+            persistLayout(editingTemplateId, next);
+          }
+          const saved = savedLayoutRef.current;
+          if (saved) savedLayoutRef.current = { ...saved, root: followFieldLabels(saved.root, nextFields, renamed) };
+        }
+
         // Optimistic local update
         setActiveTemplate((prev) => {
           if (!prev) return null;
@@ -510,7 +533,7 @@ export function useTemplateEditor({
         setIsSaving(false);
       }
     },
-    [editingTemplateId, activeTemplate, onRefreshData, loadTemplate]
+    [editingTemplateId, activeTemplate, onRefreshData, loadTemplate, setFlexLayout, persistLayout]
   );
 
   /**

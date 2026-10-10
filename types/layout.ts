@@ -291,7 +291,6 @@ export function createDefaultFlexLayout(
     componentType: 'field' as const,
     field_id: f.id,
     binding: { kind: 'field' as const, field_id: f.id },
-    label: f.label,
   }));
 
   return {

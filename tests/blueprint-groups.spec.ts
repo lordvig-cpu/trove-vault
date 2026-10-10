@@ -84,3 +84,35 @@ test('collectPlacedBuiltins finds built-in values anywhere in the layout', () =>
   } as FlexContainerNode;
   expect([...collectPlacedBuiltins(root)].sort()).toEqual(['created', 'name']);
 });
+
+test('followFieldLabels lets placed copies of a field label follow the field, and keeps typed labels', async () => {
+  const { followFieldLabels } = await import('../lib/layoutContent');
+  const published = field(3, 'Published', 'date');
+  const root = {
+    id: 'root',
+    nodeType: 'container',
+    children: [
+      { id: 'copy', nodeType: 'component', componentType: 'field', field_id: 3, binding: { kind: 'field', field_id: 3 }, label: 'Published:' },
+      { id: 'named', nodeType: 'component', componentType: 'field', field_id: 3, binding: { kind: 'field', field_id: 3 }, name: 'Published:' },
+      { id: 'typed', nodeType: 'component', componentType: 'field', field_id: 3, binding: { kind: 'field', field_id: 3 }, label: 'Release date' },
+      { id: 'same', nodeType: 'component', componentType: 'field', field_id: 3, binding: { kind: 'field', field_id: 3 }, label: 'Published' },
+    ],
+  } as FlexContainerNode;
+  const byId = (r: FlexContainerNode) => Object.fromEntries(r.children.map((c) => [c.id, c]));
+
+  // At load: only copies equal to the field's current label go
+  const loaded = byId(followFieldLabels(root, [published]));
+  expect(loaded.copy).toHaveProperty('label', 'Published:');
+  expect(loaded.same).not.toHaveProperty('label');
+  expect(loaded.typed).toHaveProperty('label', 'Release date');
+
+  // On a rename from "Published:", copies of the old label (and a name equal to it) go too
+  const renamed = byId(followFieldLabels(root, [published], { fieldId: 3, oldLabel: 'Published:' }));
+  expect(renamed.copy).not.toHaveProperty('label');
+  expect(renamed.named).not.toHaveProperty('name');
+  expect(renamed.typed).toHaveProperty('label', 'Release date');
+
+  // Nothing to change: the same root comes back
+  const clean = { ...root, children: [root.children[2]] } as FlexContainerNode;
+  expect(followFieldLabels(clean, [published])).toBe(clean);
+});

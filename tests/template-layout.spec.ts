@@ -59,7 +59,8 @@ test.describe('Template Layout Engine', () => {
       expect(firstComp.nodeType).toBe('component');
       if (firstComp.nodeType === 'component') {
         expect(firstComp.field_id).toBe(101);
-        expect(firstComp.label).toBe('Player Count');
+        // No label copied in: it shows the field's own label live, so a renamed field renames it too
+        expect(firstComp.label).toBeUndefined();
         expect(firstComp.binding).toEqual({ kind: 'field', field_id: 101 });
         expect(firstComp.sizing).toBeUndefined();
       }

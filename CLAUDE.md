@@ -413,7 +413,13 @@ commit whenever you add, remove, split or rename a file — it goes stale otherw
   pill / Yes-No; the first offered is the default), and a *look* (`textStyle` for the value, `labelStyle`
   for its label, the same box-look properties a container has). `lib/layoutContent.ts` holds the pure
   rules (`bindingOf`, `displayStylesFor`, `resolveValue`, text presets Title/Heading/Body/Caption/Label --
-  presets are copied onto an element as a starting point, not linked). A layout saved before bindings
+  presets are copied onto an element as a starting point, not linked). A placed field never stores a copy of
+  its field's label: it shows the field's label live (`labelTextOf` falls back to it), so renaming a field renames it
+  on the canvas and in the Layout tree at once. Only a label typed in the content flyout's Label card is stored,
+  and clearing that text makes it follow the field again. Copies older layouts stored are let go
+  (`followFieldLabels` in `lib/layoutContent.ts`): when the editor opens, those equal to the field's label; when a
+  field is renamed, those equal to its old label (and a name equal to it) -- neither an undo step nor an unsaved
+  change. A layout saved before bindings
   existed still works: `bindingOf` derives a binding from the old `field_id`/note text, and a legacy
   `sizing` on a component is still honored (it is deprecated and never written for new content). Content
   is drawn by `ContentValue` from the item in `ContentDataContext` (the editor shows the first item of
