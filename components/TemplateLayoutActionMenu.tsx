@@ -644,8 +644,7 @@ export function TemplateContainerActionMenu({
               <ActionMenuDivider />
               <ActionMenuDangerItem
                 icon={<TrashCanIcon />}
-                label="Delete:"
-                labelDetail="Container"
+                label="Delete"
                 subtext="Permanently remove container and all contents"
                 onClick={act(() => onRemoveContainer(container.id))}
               />
@@ -930,8 +929,7 @@ export function TemplateComponentActionMenu({
           {onRemoveComponent ? (
             <ActionMenuDangerItem
               icon={<TrashCanIcon />}
-              label="Delete:"
-              labelDetail="Content"
+              label="Delete"
               subtext="Remove this from its container"
               onClick={() => {
                 onRemoveComponent(component.id);

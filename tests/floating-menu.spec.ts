@@ -18,7 +18,7 @@ async function openEditorWithLayoutHidden(page: Page) {
   await page.goto('/');
   await page.locator('header button', { hasText: /templates/i }).click();
   await page.getByRole('button', { name: 'Open actions', exact: true }).first().click();
-  await page.getByRole('button', { name: /Edit Template/ }).click();
+  await page.getByRole('button', { name: /Edit: Template/ }).click();
   const child = page.locator('[data-container-id="root-container"] [data-container-id]').first();
   await expect(child).toBeVisible();
   return child;

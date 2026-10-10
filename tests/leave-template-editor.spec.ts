@@ -11,7 +11,7 @@ test.describe('Leaving the template editor', () => {
   const openEditor = async (page: Page) => {
     await page.getByRole('button', { name: 'Open Templates or drag to dock in a sidebar', exact: true }).click();
     await page.locator('aside.nav-flyout-menu .tree-category-row, aside.nav-flyout-menu .tree-category-row-active').first().click({ button: 'right' });
-    await page.getByText('Edit Template', { exact: true }).first().click();
+    await page.getByText('Edit: Template', { exact: true }).first().click();
     await expect(page.locator('#template-toolbar-slot').getByRole('button', { name: /Custom/ }).first()).toBeVisible();
   };
   const clickAnItem = async (page: Page) => {

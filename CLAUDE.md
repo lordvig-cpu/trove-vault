@@ -321,13 +321,13 @@ commit whenever you add, remove, split or rename a file — it goes stale otherw
   Sections are controlled -- the flyout component owns the open/closed and active-tab state,
   so they survive the flyout closing and reopening. The Body and standard-container flyouts
   (`TemplateLayoutActionMenu.tsx`) both use it. A standard container's Actions tab is Add: Before / Inside / After, Split: 2 Columns /
-  Rows, and Delete Container (always last); its Properties tab is Container Name (a plain field), then the cards Size
+  Rows, and Delete (always last); its Properties tab is Container Name (a plain field), then the cards Size
   (Auto/Fit/Custom, Width, a Min/Max width slider, Height, a Min/Max height slider), Spacing, Layout
   (Row/Column, then two icon-button groups for alignment) and Appearance. The Body's is Size, Layout
   (a locked toggle) and Spacing. Deliberately absent: Child Item Gap (the `gap`
   value itself is unchanged, it just has no UI), Wrap Children and Card Frame Style (cards are
   expected to become draggable components rather than a per-container option), a Select Parent
-  action (click the parent instead), and Maximum Content Width (Body-only). A content element's flyout ("Content Properties", `TemplateComponentActionMenu`) is the same split shell: an Actions tab (Delete Content) and a Properties tab of collapsible cards -- Content (the binding picker, static text, display style, image shape), Label (show/hide, above/beside, its own text and text style), Text (a "Start from" preset, size, spacing, weight, color, case, alignment, italic, underline, line height, reset) and Appearance (the same `TemplateAppearanceControls` a container uses) -- and deliberately no Size, Spacing or Layout card. The controls live in `TemplateContentControls.tsx`. The old table / media / stat placeholder blocks, which have no data, only get a name field and Appearance.
+  action (click the parent instead), and Maximum Content Width (Body-only). A content element's flyout ("Content Properties", `TemplateComponentActionMenu`) is the same split shell: an Actions tab (Delete) and a Properties tab of collapsible cards -- Content (the binding picker, static text, display style, image shape), Label (show/hide, above/beside, its own text and text style), Text (a "Start from" preset, size, spacing, weight, color, case, alignment, italic, underline, line height, reset) and Appearance (the same `TemplateAppearanceControls` a container uses) -- and deliberately no Size, Spacing or Layout card. The controls live in `TemplateContentControls.tsx`. The old table / media / stat placeholder blocks, which have no data, only get a name field and Appearance.
 - `isCard` on a container is an internal look, not something the user picks: it gives the container the
   themed card frame (rounded, card background, border, shadow) in Preview and the item view. The default
   layout, the Simple Templates, Stat Row tiles and the 2-/3-Column Split palette columns set it. It is

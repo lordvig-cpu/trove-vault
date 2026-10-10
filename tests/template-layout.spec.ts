@@ -91,7 +91,7 @@ test.describe('Template Layout Engine', () => {
     const gearBtn = page.locator('[aria-label="Open actions"]').first();
     await gearBtn.click();
     await page.waitForTimeout(400);
-    await page.locator('button', { hasText: 'Edit Template' }).click();
+    await page.locator('button', { hasText: 'Edit: Template' }).click();
     await page.waitForTimeout(1000);
 
     // 1. Layout tab in left panel (icon-only, so check its aria-label rather than rendered text)
@@ -228,7 +228,7 @@ test.describe('Template Layout Engine', () => {
     const gearBtn = page.locator('[aria-label="Open actions"]').first();
     await gearBtn.click();
     await page.waitForTimeout(400);
-    await page.locator('button', { hasText: 'Edit Template' }).click();
+    await page.locator('button', { hasText: 'Edit: Template' }).click();
     await page.waitForTimeout(1000);
 
     // In template editor: right panel has Content search with Ctrl-L

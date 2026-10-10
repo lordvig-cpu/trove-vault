@@ -12,7 +12,7 @@ test('deleting a container that holds content asks first and lists what goes wit
   await page.waitForLoadState('networkidle');
   await page.getByRole('button', { name: 'Open Templates or drag to dock in a sidebar', exact: true }).click();
   await page.locator('aside.nav-flyout-menu .tree-category-row, aside.nav-flyout-menu .tree-category-row-active').first().click({ button: 'right' });
-  await page.getByText('Edit Template', { exact: true }).first().click();
+  await page.getByText('Edit: Template', { exact: true }).first().click();
 
   const bar = page.locator('#template-toolbar-slot');
   const deleteBtn = bar.getByRole('button', { name: 'Delete Container' });

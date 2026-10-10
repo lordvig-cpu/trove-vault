@@ -84,8 +84,7 @@ export default function TreeItemActionMenu({
 
           <ActionMenuDangerItem
             icon={<TrashCanIcon />}
-            label="Delete:"
-            labelDetail="Item"
+            label="Delete"
             subtext="Permanently remove"
             onClick={() => {
               onDeleteItem(item, collectionId);

@@ -131,7 +131,8 @@ export default function TreeCollectionActionMenu({
       {onEditCollection && (
         <ActionMenuItem
           icon={<GearIcon className="w-3.5 h-3.5" />}
-          label="Collection Settings"
+          label="Edit:"
+          labelDetail="Collection Settings"
           subtext="Manage collection metadata"
           onClick={() => {
             onEditCollection(collection);
@@ -143,7 +144,8 @@ export default function TreeCollectionActionMenu({
       {onAddSubCollection && (
         <ActionMenuItem
           icon={<FolderIcon />}
-          label="New Sub-Collection"
+          label="New:"
+          labelDetail="Sub-Collection"
           subtext="Create a nested collection"
           onClick={() => {
             onAddSubCollection(collection.id);
@@ -157,8 +159,7 @@ export default function TreeCollectionActionMenu({
       {onDeleteCollection && (
         <ActionMenuDangerItem
           icon={<TrashCanIcon />}
-          label="Delete:"
-          labelDetail="Collection"
+          label="Delete"
           subtext="Permanently remove"
           onClick={() => {
             onDeleteCollection(collection);

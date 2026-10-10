@@ -14,7 +14,7 @@ test('nested container drag highlights clear on drop and cancellation', async ({
   await page.goto('/');
   await page.locator('header button', { hasText: /templates/i }).click();
   await page.getByRole('button', { name: 'Open actions', exact: true }).first().click();
-  await page.getByRole('button', { name: /Edit Template/ }).click();
+  await page.getByRole('button', { name: /Edit: Template/ }).click();
   const root = page.locator('[data-container-id="root-container"]');
   const child = root.locator('[data-container-id]').first();
   await expect(child).toBeVisible();
