@@ -44,6 +44,7 @@ import {
 } from '@/components/TemplateContentControls';
 import { bindingOf, contentNameOf } from '@/lib/layoutContent';
 import { MENU_TAB_REQUEST_EVENT, type MenuTab, type MenuTabRequest } from '@/lib/menuTabRequest';
+import { openFloatingNodeMenu } from '@/lib/floatingNodeMenu';
 import HoverHint, { HintRef, type HintContent } from '@/components/HoverHint';
 import {
   BodyIcon,
@@ -328,6 +329,17 @@ function useMenuTabRequest(nodeId: string, setActiveTab: (tab: MenuTab) => void)
   }, [nodeId, setActiveTab]);
 }
 
+/** A Layout-tree flyout pinned open when its panel is hidden carries on as the floating node menu, where it
+ *  stood and on the tab it showed, rather than closing (useTreeActionMenu's panel-hidden handler). */
+function useFloatWhenPanelHides(menu: ReturnType<typeof useTreeActionMenu>, nodeId: string, activeTab: MenuTab, floating: unknown) {
+  const { setPanelHiddenHandler } = menu;
+  useEffect(() => {
+    if (floating) return;
+    setPanelHiddenHandler((at) => openFloatingNodeMenu(nodeId, at.left, at.top, activeTab));
+    return () => setPanelHiddenHandler(null);
+  }, [setPanelHiddenHandler, nodeId, activeTab, floating]);
+}
+
 export function TemplateContainerActionMenu({
   container,
   menu,
@@ -351,6 +363,7 @@ export function TemplateContainerActionMenu({
   // (not inside the menu shell) so they survive the flyout closing and reopening.
   const [activeTab, setActiveTab] = useState<MenuTab>(initialTab);
   useMenuTabRequest(container.id, setActiveTab);
+  useFloatWhenPanelHides(menu, container.id, activeTab, floating);
   const [openSections, setOpenSections] = useState({ size: true, layout: true, spacing: true, appearance: true });
   const toggleSection = (key: keyof typeof openSections) =>
     setOpenSections((prev) => ({ ...prev, [key]: !prev[key] }));
@@ -882,6 +895,7 @@ export function TemplateComponentActionMenu({
   // they survive the flyout closing and reopening.
   const [activeTab, setActiveTab] = useState<MenuTab>(initialTab);
   useMenuTabRequest(component.id, setActiveTab);
+  useFloatWhenPanelHides(menu, component.id, activeTab, floating);
   const [openSections, setOpenSections] = useState({ content: true, label: false, text: true, appearance: false });
   const toggleSection = (key: keyof typeof openSections) =>
     setOpenSections((prev) => ({ ...prev, [key]: !prev[key] }));

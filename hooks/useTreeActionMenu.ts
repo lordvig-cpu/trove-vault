@@ -56,6 +56,10 @@ export function useTreeActionMenu(
   const timeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
   const activeGearRectRef = useRef<DOMRect | null>(null);
   const activeTargetElRef = useRef<HTMLElement | null>(null);
+  /** Set by a menu that can live on without its panel (the Layout tree's container / content menus, which
+      reopen as the floating node menu): called with where the menu stood when its panel was hidden while it
+      was pinned open. Without one, hiding the panel just closes the menu. */
+  const panelHiddenHandlerRef = useRef<((at: { top: number; left: number }) => void) | null>(null);
 
   /* ------------------------------------------------------------------------
      2.2 LOCAL MENU & INTERACTION STATES
@@ -324,7 +328,42 @@ export function useTreeActionMenu(
     };
   }, [isMenuOpen, closeMenu]);
 
+  /* A menu belongs to the panel its gear is in: when that panel is hidden (it stays mounted but goes inert),
+     the menu closes rather than staying on screen with no way back to its gear -- or, pinned open with a
+     takeover handler, hands over to it (the floating node menu) at the same spot. */
+  useEffect(() => {
+    if (!isMenuOpen) return;
+    const panel = activeTargetElRef.current?.closest<HTMLElement>('aside');
+    if (!panel) return;
+    const check = () => {
+      if (!panel.hasAttribute('inert') && panel.getAttribute('aria-hidden') !== 'true') return;
+      const takeOver = pinnedRef.current ? panelHiddenHandlerRef.current : null;
+      closeMenu();
+      takeOver?.(menuCoords);
+    };
+    const observer = new MutationObserver(check);
+    observer.observe(panel, { attributes: true, attributeFilter: ['inert', 'aria-hidden'] });
+    return () => observer.disconnect();
+  }, [isMenuOpen, closeMenu, menuCoords]);
+
+  // A menu whose row unmounts while open (its tree swapped for another tab) tells mirrors (the toolbar gear) it closed.
+  const isMenuOpenRef = useRef(false);
+  useEffect(() => {
+    isMenuOpenRef.current = isMenuOpen;
+  }, [isMenuOpen]);
+  useEffect(
+    () => () => {
+      if (isMenuOpenRef.current) window.dispatchEvent(new CustomEvent(GLOBAL_MENU_CLOSE_EVENT, { detail: id }));
+    },
+    [id]
+  );
+
+  const setPanelHiddenHandler = useCallback((handler: ((at: { top: number; left: number }) => void) | null) => {
+    panelHiddenHandlerRef.current = handler;
+  }, []);
+
   return {
+    setPanelHiddenHandler,
     handleGearKeyDown,
     isMenuOpen,
     isPinned,

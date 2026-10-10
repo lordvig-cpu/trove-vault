@@ -94,6 +94,8 @@ export default function FloatingNodeMenuHost({ root, fields, onSelectNode, ...ca
     handleMenuMouseEnter: noop,
     handleMouseLeave: noop,
     closeMenu: closeFloatingNodeMenu,
+    // It has no panel to be hidden
+    setPanelHiddenHandler: noop,
   };
 
   const startDrag = (e: React.PointerEvent<HTMLDivElement>) => {

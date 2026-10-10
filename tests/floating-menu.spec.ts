@@ -84,3 +84,23 @@ test('the toolbar gear floats the menu under itself on Properties, and closes it
   await expect(floating).toHaveCount(0);
   await expect(gear).toHaveAttribute('aria-expanded', 'false');
 });
+
+test('hiding the Layout panel with a pinned menu open turns it into the floating menu, same spot and tab', async ({ page }) => {
+  await openEditorWithLayoutHidden(page);
+  await page.getByRole('button', { name: 'Toggle Left Panel' }).click();
+  const gear = page.locator('.primary-side-panel [data-tree-gear]').nth(1);
+  await gear.click();
+  const menu = page.locator('.menuShellSplit:not(.menuShellFloating):not(.hoverHint)').last();
+  await menu.getByRole('tab', { name: 'Properties' }).click();
+  const before = (await menu.boundingBox())!;
+
+  await page.getByRole('button', { name: 'Toggle Left Panel' }).click();
+  const floating = page.locator('.menuShellFloating');
+  await expect(floating).toBeVisible();
+  await expect(floating.getByRole('tab', { name: 'Properties' })).toHaveAttribute('aria-selected', 'true');
+  const after = (await floating.boundingBox())!;
+  expect(Math.abs(after.x - before.x)).toBeLessThan(4);
+  expect(Math.abs(after.y - before.y)).toBeLessThan(4);
+  // the tree row's menu let go of its pin
+  await expect(page.locator('.tree-gear-trigger-pinned')).toHaveCount(0);
+});

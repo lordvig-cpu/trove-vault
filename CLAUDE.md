@@ -247,6 +247,12 @@ commit whenever you add, remove, split or rename a file — it goes stale otherw
   (one at a time; opening a tree flyout closes it). While open it holds the gear pin (`holdMenuPin`), so
   hovering a gear can't open another menu over it, and it uses the tree menus' open / close events, so the
   toolbar gear shows it as open. Its layer is 88 (`Z_INDEX.md`).
+- A gear flyout belongs to the panel its gear is in: hiding that panel (its own hide button, the footer, a header
+  flyout closing) closes the flyout, so it is never left on screen with no gear to close it from
+  (`useTreeActionMenu` watches the panel go `inert`). The one exception is a Layout-tree flyout that was pinned open:
+  hiding the Layout tree is exactly when a node's menu floats anyway, so it carries on as the floating menu, where it
+  stood and on the same tab (`useFloatWhenPanelHides` in `TemplateLayoutActionMenu.tsx`, through the hook's
+  `setPanelHiddenHandler`).
 - The Items / Collections / Templates trees' menus are Actions | Properties flyouts titled "Item Properties",
   "Collection Properties", "Template Properties" (wide shell, like the template flyouts). Properties edits what
   is already saved -- creating stays in the Actions tab's modals (New Item, Add Sub-Item, New Sub-Collection).
