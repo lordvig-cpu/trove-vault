@@ -7,7 +7,7 @@ import { ItemTemplate } from '@/types/template';
 import { FieldDefinition, FieldType } from '@/types/field';
 import { TemplateFlexLayoutConfig, createDefaultFlexLayout, findFlexNode } from '@/types/layout';
 import { HierarchyFilterCategory, HIERARCHY_FILTER_METAS } from '@/lib/hierarchyFilterMetas';
-import { FIELD_TYPE_METAS } from '@/lib/fieldTypeMetas';
+import { BLUEPRINT_GROUPS, type BlueprintGroupId } from '@/lib/blueprintGroups';
 import { DockContent } from '@/hooks/usePanelDockDrag';
 import { errorMessage } from '@/lib/errors';
 import { useTemplateLayoutTree } from '@/hooks/useTemplateLayoutTree';
@@ -16,7 +16,7 @@ import { useLayoutHistory } from '@/hooks/useLayoutHistory';
 
 // Sentinels for the "select none" filter state -- see selectNoneFieldTypeFilter /
 // selectNoneHierarchyTypeFilter below.
-const NONE_FIELD_TYPE_FILTER = '__none__' as FieldType;
+const NONE_FIELD_TYPE_FILTER = '__none__' as BlueprintGroupId;
 const NONE_HIERARCHY_TYPE_FILTER = '__none__' as HierarchyFilterCategory;
 
 export interface WorkspaceTabSnapshot {
@@ -55,7 +55,27 @@ export function useTemplateEditor({
   const [selectedFieldId, setSelectedFieldId] = useState<number | null>(null);
   const [isRootSelected, setIsRootSelected] = useState<boolean>(false);
   const [fieldSearchQuery, setFieldSearchQuery] = useState<string>('');
-  const [filterFieldTypes, setFilterFieldTypes] = useState<FieldType[]>([]);
+  // The Blueprint tree's group filter (its Advanced filter menu): the groups to show, empty = all.
+  const [filterFieldTypes, setFilterFieldTypes] = useState<BlueprintGroupId[]>([]);
+  // The Blueprint header's "missing only" toggle: hide what is already placed in the layout. Session-only.
+  const [showUnplacedOnly, setShowUnplacedOnly] = useState(false);
+  const toggleShowUnplacedOnly = useCallback(() => setShowUnplacedOnly((on) => !on), []);
+  // The Blueprint tree's collapsed groups (all open by default). Session-only.
+  const [collapsedBlueprintGroups, setCollapsedBlueprintGroups] = useState<ReadonlySet<BlueprintGroupId>>(new Set());
+  const toggleBlueprintGroup = useCallback((id: BlueprintGroupId) => {
+    setCollapsedBlueprintGroups((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }, []);
+  /** Expand / collapse all: collapses every group while any is open, else opens them all. */
+  const toggleAllBlueprintGroups = useCallback(() => {
+    setCollapsedBlueprintGroups((prev) =>
+      prev.size < BLUEPRINT_GROUPS.length ? new Set(BLUEPRINT_GROUPS.map((g) => g.type)) : new Set()
+    );
+  }, []);
   const [hierarchySearchQuery, setHierarchySearchQuery] = useState<string>('');
   const [filterHierarchyTypes, setFilterHierarchyTypes] = useState<HierarchyFilterCategory[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -86,9 +106,9 @@ export function useTemplateEditor({
   // as "everything currently selected" and unchecking one; toggling back up to the full set
   // collapses back to empty rather than sitting at a redundant "all N explicitly listed" state,
   // which would needlessly show the "filter applied" indicator for a filter that changes nothing.
-  const toggleFieldTypeFilter = useCallback((type: FieldType) => {
+  const toggleFieldTypeFilter = useCallback((type: BlueprintGroupId) => {
     setFilterFieldTypes((prev) => {
-      const allTypes = FIELD_TYPE_METAS.map((m) => m.type);
+      const allTypes = BLUEPRINT_GROUPS.map((m) => m.type);
       const effective = prev.length === 0 ? allTypes : prev;
       const next = effective.includes(type) ? effective.filter((t) => t !== type) : [...effective, type];
       return next.length === allTypes.length ? [] : next;
@@ -100,7 +120,7 @@ export function useTemplateEditor({
   }, []);
 
   // "Select none" needs a state distinct from the reserved "empty = everything" one, so it's
-  // represented as a single-entry array holding a value that can never equal a real FieldType --
+  // represented as a single-entry array holding a value that can never equal a real group --
   // every `.includes()` check downstream then naturally excludes every real type, while the array
   // stays non-empty (so it isn't mistaken for "no filter applied").
   const selectNoneFieldTypeFilter = useCallback(() => {
@@ -285,6 +305,8 @@ export function useTemplateEditor({
       setEditingTemplateId(rawId);
       setFieldSearchQuery('');
       setFilterFieldTypes([]);
+      setShowUnplacedOnly(false);
+      setCollapsedBlueprintGroups(new Set());
       setHierarchySearchQuery('');
       setFilterHierarchyTypes([]);
       setSuccessMsg(null);
@@ -361,7 +383,7 @@ export function useTemplateEditor({
     await flushRemoteSave();
   }, [editingTemplateId, persistLayout, flushRemoteSave, setFlexLayout]);
 
-  /** The toolbar Save / Content tab Done: save, then close the editor. */
+  /** The toolbar Save: save, then close the editor. */
   const saveAndClose = useCallback(async () => {
     await saveLayoutChanges();
     stopEditing();
@@ -607,6 +629,11 @@ export function useTemplateEditor({
     isRootSelected,
     fieldSearchQuery,
     filterFieldTypes,
+    showUnplacedOnly,
+    toggleShowUnplacedOnly,
+    collapsedBlueprintGroups,
+    toggleBlueprintGroup,
+    toggleAllBlueprintGroups,
     toggleFieldTypeFilter,
     clearFieldTypeFilters,
     selectNoneFieldTypeFilter,

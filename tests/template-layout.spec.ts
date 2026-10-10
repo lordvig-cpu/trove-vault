@@ -105,7 +105,7 @@ test.describe('Template Layout Engine', () => {
     // 2. Only Content tab in right panel (Properties tab has been safely removed)
     const rightTabs = page.locator('.secondary-side-panel button[role="tab"]');
     await expect(rightTabs).toHaveCount(1);
-    await expect(rightTabs.nth(0)).toHaveAttribute('aria-label', 'Content');
+    await expect(rightTabs.nth(0)).toHaveAttribute('aria-label', 'Blueprint');
     await expect(rightTabs.nth(0)).toHaveAttribute('aria-selected', 'true');
   });
 
@@ -278,10 +278,11 @@ test.describe('Template Layout Engine', () => {
     await expect(layoutPanel).toContainText('LAYOUT');
     await expect(layoutPanel).toContainText('Body');
 
-    // 6. Verify Content panel is loaded on the right (contains Board Games & Tabletop)
+    // 6. Verify the Blueprint panel is loaded on the right (its Text group leads with the built-in Name)
     const contentPanel = page.locator('.secondary-side-panel');
-    await expect(contentPanel).toContainText('CONTENT');
-    await expect(contentPanel).toContainText('Board Games & Tabletop');
+    await expect(contentPanel).toContainText('BLUEPRINT');
+    await expect(contentPanel.locator('.tree-category-row', { hasText: 'Text' })).toBeVisible();
+    await expect(contentPanel.locator('.tree-item', { hasText: 'Name' }).first()).toBeVisible();
 
     // 7. Verify the editor toolbar shows the template's name (the template-wide toolbar, footer slot)
     const editorToolbar = page.locator('#template-toolbar-slot-bottom');

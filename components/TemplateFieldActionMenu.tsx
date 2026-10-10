@@ -13,10 +13,11 @@ import TreeSubMenu, {
 } from '@/components/TreeSubMenu';
 import { ChevronUpIcon } from '@/components/icons/GlyphIcons';
 import { FieldTypeIcon } from '@/components/icons/ContentIcons';
+import { PlaceIntoIcon } from '@/components/icons/LayoutIcons';
 
-/** Gear flyout for a field in the template editor's Content tab: a Properties tab (label, key, type,
-    required, options) and an Actions tab (move up/down, delete). Edits are saved through
-    `onUpdateField`; moving is offered only when `onMoveField` is given and the field can move. */
+/** Gear flyout for a field in the template editor's Blueprint tab: a Properties tab (label, key, type,
+    required, options) and an Actions tab (place it, move it within its group, delete). Edits are saved
+    through `onUpdateField`; a move is offered only in a direction the field can go. */
 interface TemplateFieldActionMenuProps {
   field: FieldDefinition;
   menu: ReturnType<typeof useTreeActionMenu>;
@@ -26,14 +27,17 @@ interface TemplateFieldActionMenuProps {
   onMoveField?: (fieldId: number, direction: 'up' | 'down') => void;
   canMoveUp?: boolean;
   canMoveDown?: boolean;
+  /** Places the field into the editor's active container, named by `placeTarget`. */
+  onPlace?: () => void;
+  placeTarget?: string;
 }
 
 /** The field types the Type picker offers, in display order. */
 const FIELD_TYPES: { type: FieldType; label: string }[] = [
   { type: 'text', label: 'Text' },
   { type: 'number', label: 'Number' },
-  { type: 'select', label: 'Select' },
-  { type: 'boolean', label: 'Boolean' },
+  { type: 'select', label: 'Choice' },
+  { type: 'boolean', label: 'Yes/No' },
   { type: 'date', label: 'Date' },
 ];
 
@@ -46,6 +50,8 @@ export default function TemplateFieldActionMenu({
   onMoveField,
   canMoveUp = false,
   canMoveDown = false,
+  onPlace,
+  placeTarget,
 }: TemplateFieldActionMenuProps) {
   const [label, setLabel] = useState(field.label);
   const [key, setKey] = useState(field.name);
@@ -129,7 +135,7 @@ export default function TemplateFieldActionMenu({
       left={menu.menuCoords.left}
       position={position}
       splitBody
-      title="Field"
+      title="Field Properties"
       titleIcon={<FieldTypeIcon type={activeTypeMeta.type} className="w-3.5 h-3.5" />}
       className="menuShellWide"
       subheader={
@@ -272,30 +278,36 @@ export default function TemplateFieldActionMenu({
 
       {activeTab === 'actions' && (
       <>
-      {/* Move Actions */}
-      {onMoveField && (
-        <div className="flex flex-col">
-          <ActionMenuItem
-            icon={<ChevronUpIcon />}
-            label="Move Up"
-            subtext="Shift field earlier in order"
-            onClick={() => {
-              if (canMoveUp) {
-                onMoveField(field.id, 'up');
-              }
-            }}
-          />
-          <ActionMenuItem
-            icon={<ChevronDownIcon className="w-3 h-3" />}
-            label="Move Down"
-            subtext="Shift field later in order"
-            onClick={() => {
-              if (canMoveDown) {
-                onMoveField(field.id, 'down');
-              }
-            }}
-          />
-        </div>
+      {onPlace && (
+        <ActionMenuItem
+          icon={<PlaceIntoIcon className="w-3.5 h-3.5" />}
+          label="Place:"
+          labelDetail={placeTarget ?? 'Selected container'}
+          subtext="Add it to the selected container"
+          onClick={() => {
+            onPlace();
+            menu.closeMenu();
+          }}
+        />
+      )}
+      {/* Moves within its Blueprint group (the field order the item forms follow) */}
+      {onMoveField && canMoveUp && (
+        <ActionMenuItem
+          icon={<ChevronUpIcon />}
+          label="Move:"
+          labelDetail="Up"
+          subtext="Earlier in its group"
+          onClick={() => onMoveField(field.id, 'up')}
+        />
+      )}
+      {onMoveField && canMoveDown && (
+        <ActionMenuItem
+          icon={<ChevronDownIcon className="w-3 h-3" />}
+          label="Move:"
+          labelDetail="Down"
+          subtext="Later in its group"
+          onClick={() => onMoveField(field.id, 'down')}
+        />
       )}
 
       <ActionMenuDivider />
@@ -303,7 +315,7 @@ export default function TemplateFieldActionMenu({
       {/* Delete Field */}
       <ActionMenuDangerItem
         icon={<TrashCanIcon />}
-        label="Delete Field"
+        label="Delete"
         subtext="Remove from template schema"
         onClick={() => {
           onDeleteField(field.id);

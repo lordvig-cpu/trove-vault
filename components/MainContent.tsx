@@ -67,7 +67,6 @@ interface MainContentProps {
   ) => void;
   onRemoveFlexComponent?: (componentId: string) => void;
   onPlaceField?: (fieldId: number, targetContainerId?: string) => void;
-  onPlaceLoremIpsum?: (targetContainerId?: string) => void;
   onPlaceBuiltin?: PlaceBuiltinHandler;
   onResetFlexLayout?: () => void;
   onOverflowChange?: (containerId: string, isOverflowing: boolean) => void;
@@ -114,7 +113,6 @@ export default function MainContent({
   onUpdateFlexComponent,
   onRemoveFlexComponent,
   onPlaceField,
-  onPlaceLoremIpsum,
   onPlaceBuiltin,
   onResetFlexLayout,
   onOverflowChange,
@@ -166,7 +164,6 @@ export default function MainContent({
                   onUpdateFlexComponent={onUpdateFlexComponent}
                   onRemoveFlexComponent={onRemoveFlexComponent}
                   onPlaceField={onPlaceField}
-                  onPlaceLoremIpsum={onPlaceLoremIpsum}
                   onPlaceBuiltin={onPlaceBuiltin}
                   onResetFlexLayout={onResetFlexLayout}
                   onOverflowChange={onOverflowChange}

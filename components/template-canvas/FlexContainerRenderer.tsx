@@ -39,7 +39,6 @@ export default function FlexContainerRenderer({
   onUpdateComponent,
   onRemoveComponent,
   onPlaceField,
-  onPlaceLoremIpsum,
   onPlaceBuiltin,
   parentStacked,
   onOverflowChange,
@@ -77,7 +76,6 @@ export default function FlexContainerRenderer({
   onUpdateComponent?: (id: string, partial: Partial<FlexComponentNode>) => void;
   onRemoveComponent?: (id: string) => void;
   onPlaceField?: (fieldId: number, targetContainerId?: string) => void;
-  onPlaceLoremIpsum?: (targetContainerId?: string) => void;
   onPlaceBuiltin?: PlaceBuiltinHandler;
   /** Nodes hidden from the edit canvas by the Layout tree's eye (editor-only; Preview shows everything). */
   hiddenNodeIds?: Set<string>;
@@ -308,11 +306,6 @@ export default function FlexContainerRenderer({
         e.preventDefault();
         e.stopPropagation();
         setIsDragOver(false);
-        if (e.dataTransfer.getData('application/x-trove-lorem-ipsum')) {
-          onPlaceLoremIpsum?.(container.id);
-          onSelectNode?.(container.id);
-          return;
-        }
         const builtinKey = e.dataTransfer.getData('application/x-trove-builtin');
         if (builtinKey) {
           onPlaceBuiltin?.(builtinKey as BuiltinKey, container.id);
@@ -427,7 +420,6 @@ export default function FlexContainerRenderer({
                   onUpdateComponent={onUpdateComponent}
                   onRemoveComponent={onRemoveComponent}
                   onPlaceField={onPlaceField}
-                  onPlaceLoremIpsum={onPlaceLoremIpsum}
                   onPlaceBuiltin={onPlaceBuiltin}
                   onOverflowChange={onOverflowChange}
                   hiddenNodeIds={hiddenNodeIds}

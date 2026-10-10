@@ -163,6 +163,15 @@ export function FieldTypeIcon({ type, className }: { type: string; className?: s
   return <Icon className={className} />;
 }
 
+/** The icon for one of the Blueprint tree's groups (lib/blueprintGroups.ts): a field type's icon, or the
+ *  built-in Image / Collections / Sub-Items value's. */
+export function BlueprintGroupIcon({ type, className }: { type: string; className?: string }) {
+  if (type === 'image') return <ImageIcon className={className} />;
+  if (type === 'collections') return <FolderIcon className={className} />;
+  if (type === 'subitems') return <ListIcon className={className} />;
+  return <FieldTypeIcon type={type} className={className} />;
+}
+
 /** The icon for one of the Layout tree filter's categories: container, field or predefined. */
 export function HierarchyCategoryIcon({ type, className }: { type: string; className?: string }) {
   const Icon = type === 'container' ? LayoutGridIcon : type === 'field' ? TextFieldIcon : PuzzleIcon;

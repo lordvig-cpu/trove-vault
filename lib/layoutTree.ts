@@ -110,7 +110,7 @@ export function buildUniqueContainer(
 }
 
 /**
- * Where content (a field, Lorem Ipsum, ...) actually lands when placed "into" `containerId`: that
+ * Where content (a field, a built-in value, ...) actually lands when placed "into" `containerId`: that
  * container, unless it's a split wrapper (isSplitWrapper), in which case its first child -- a
  * wrapper holds exactly its two Split halves and is never itself a content slot (dropping a 3rd,
  * un-halved child into it would break the split's 50/50 sizing). Falls through nested wrappers,

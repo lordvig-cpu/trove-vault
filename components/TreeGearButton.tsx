@@ -12,8 +12,6 @@ interface TreeGearButtonProps {
   title?: string;
   /** Runs before the click pins the menu (e.g. select the row's node). */
   onBeforeClick?: () => void;
-  /** Hidden until the row (a `group`) is hovered, while closed (the Content tab's rows). */
-  revealOnRowHover?: boolean;
   /** Set as `data-tree-gear-id`, so a toolbar gear can open this row's menu. */
   gearId?: string;
 }
@@ -24,7 +22,7 @@ interface TreeGearButtonProps {
  * icon rotated in the selected yellow (`.tree-gear-*` in TreePrimitives.css). Every tree uses this one
  * definition so the states never drift apart between trees.
  */
-export default function TreeGearButton({ menu, label, title, onBeforeClick, revealOnRowHover = false, gearId }: TreeGearButtonProps) {
+export default function TreeGearButton({ menu, label, title, onBeforeClick, gearId }: TreeGearButtonProps) {
   return (
     <div
       role="button"
@@ -47,8 +45,8 @@ export default function TreeGearButton({ menu, label, title, onBeforeClick, reve
         menu.isPinned
           ? `tree-gear-trigger-pinned ${activeBtn}`
           : menu.isMenuOpen
-          ? `tree-gear-trigger-active${revealOnRowHover ? ' opacity-100' : ''}`
-          : `tree-gear-trigger${revealOnRowHover ? ' opacity-0 group-hover:opacity-100' : ''}`,
+          ? 'tree-gear-trigger-active'
+          : 'tree-gear-trigger',
       ].join(' ')}
     >
       <GearIcon

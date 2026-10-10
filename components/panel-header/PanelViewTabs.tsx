@@ -1,6 +1,7 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import {
   FolderCollapseIcon,
   FolderExpandIcon,
@@ -12,13 +13,22 @@ import {
   CollectionsTabIcon,
   TemplatesTabIcon,
   LayoutTabIcon,
-  ContentTabIcon,
+  BlueprintTabIcon,
   ComponentsTabIcon,
 } from '@/components/icons/PanelIcons';
 import { DockContent, TabReorderInfo } from '@/hooks/usePanelDockDrag';
 import { PrimarySidebarPosition } from '@/types/layout';
 import VisibilityEyeIcon from '@/components/VisibilityEyeIcon';
 import { activeIconColor } from '@/components/editorBarStyles';
+import { CheckIcon } from '@/components/icons/GlyphIcons';
+import { FieldTypeIcon } from '@/components/icons/ContentIcons';
+import { BLUEPRINT_GROUPS } from '@/lib/blueprintGroups';
+import type { FieldType } from '@/types/field';
+
+/** The field types the Blueprint "+" adds, labelled as their Blueprint groups. */
+const NEW_FIELD_TYPES = BLUEPRINT_GROUPS.filter((g) =>
+  (['text', 'number', 'select', 'boolean', 'date'] as string[]).includes(g.type)
+) as { type: FieldType; label: string }[];
 
 interface PanelViewTabsProps {
   headerId: string;
@@ -40,7 +50,11 @@ interface PanelViewTabsProps {
   /** Layout only: the header eye that shows every row's visibility eye, and its toggle. */
   showAllEyes?: boolean;
   onToggleShowAllEyes?: () => void;
-  onAddNewField?: () => void;
+  /** Blueprint only: the header check that hides rows already placed in the layout, and its toggle. */
+  showUnplacedOnly?: boolean;
+  onToggleShowUnplacedOnly?: () => void;
+  /** Blueprint: adds a field of the type picked from the "+" menu. */
+  onAddNewField?: (type: FieldType) => void;
   onAddNewTemplate?: () => void;
   onAddNewCollection?: () => void;
   onAddNewItem?: () => void;
@@ -69,6 +83,8 @@ export default function PanelViewTabs({
   hierarchyNodeCount,
   showAllEyes,
   onToggleShowAllEyes,
+  showUnplacedOnly,
+  onToggleShowUnplacedOnly,
   onAddNewField,
   onAddNewTemplate,
   onAddNewCollection,
@@ -77,6 +93,34 @@ export default function PanelViewTabs({
   activeIsExpanded,
   activeToggleAll,
 }: PanelViewTabsProps) {
+  // The Blueprint "+" menu: drawn on the page body (the panel header clips what overflows it), under the button,
+  // until a type is picked, Escape, or a click elsewhere.
+  const [addFieldMenuAt, setAddFieldMenuAt] = useState<{ top: number; right: number } | null>(null);
+  const addFieldButtonRef = useRef<HTMLButtonElement>(null);
+  const addFieldMenuRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!addFieldMenuAt) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setAddFieldMenuAt(null);
+    };
+    const onDown = (e: MouseEvent) => {
+      const target = e.target as Node;
+      if (addFieldMenuRef.current?.contains(target) || addFieldButtonRef.current?.contains(target)) return;
+      setAddFieldMenuAt(null);
+    };
+    window.addEventListener('keydown', onKey);
+    document.addEventListener('mousedown', onDown);
+    return () => {
+      window.removeEventListener('keydown', onKey);
+      document.removeEventListener('mousedown', onDown);
+    };
+  }, [addFieldMenuAt]);
+  const toggleAddFieldMenu = () => {
+    if (addFieldMenuAt) return setAddFieldMenuAt(null);
+    const rect = addFieldButtonRef.current?.getBoundingClientRect();
+    if (rect) setAddFieldMenuAt({ top: Math.round(rect.bottom + 4), right: Math.round(window.innerWidth - rect.right) });
+  };
+
   if (displayedTabs.length === 0) return null;
 
   return (
@@ -91,7 +135,7 @@ export default function PanelViewTabs({
             : isGrabbed
             ? 'Grabbed Content'
             : isContent
-            ? 'Fields & Content'
+            ? 'Browse Fields'
             : isComponents
             ? 'Component Palette'
             : isLayout
@@ -112,7 +156,7 @@ export default function PanelViewTabs({
                 : tab === 'templates'
                 ? 'Templates'
                 : tab === 'template_editor'
-                ? 'Content'
+                ? 'Blueprint'
                 : tab === 'template_builder'
                 ? 'Components'
                 : tab === 'template_hierarchy'
@@ -128,7 +172,7 @@ export default function PanelViewTabs({
                 : tab === 'template_hierarchy'
                 ? LayoutTabIcon
                 : tab === 'template_editor'
-                ? ContentTabIcon
+                ? BlueprintTabIcon
                 : tab === 'template_builder'
                 ? ComponentsTabIcon
                 : null;
@@ -140,7 +184,7 @@ export default function PanelViewTabs({
                 : tab === 'templates'
                 ? 'Show Templates blueprint tree (drag to move tab)'
                 : tab === 'template_editor'
-                ? 'Show Content: fields and other droppable content (drag to move tab)'
+                ? 'Show Blueprint: the template’s fields (drag to move tab)'
                 : tab === 'template_builder'
                 ? 'Show Components (drag to move tab)'
                 : tab === 'template_hierarchy'
@@ -201,14 +245,49 @@ export default function PanelViewTabs({
           <div className="flex items-center gap-1.5 shrink-0 pr-1 pb-1">
             {isContent ? (
               onAddNewField && (
-                <button
-                  type="button"
-                  onClick={onAddNewField}
-                  className="tree-tab-action-btn group"
-                  title="Add New Field Definition"
-                >
-                  <PlusIcon className="w-2.5 h-2.5 origin-center transition-transform duration-150 ease-out group-hover:scale-110 text-[var(--tree-action-icon)] group-hover:text-[var(--text-strong)]" />
-                </button>
+                <div className="relative flex">
+                  <button
+                    ref={addFieldButtonRef}
+                    type="button"
+                    onClick={toggleAddFieldMenu}
+                    aria-haspopup="menu"
+                    aria-expanded={addFieldMenuAt !== null}
+                    className="tree-tab-action-btn group"
+                    title="Add a field"
+                  >
+                    <PlusIcon className="w-2.5 h-2.5 origin-center transition-transform duration-150 ease-out group-hover:scale-110 text-[var(--tree-action-icon)] group-hover:text-[var(--text-strong)]" />
+                  </button>
+                  {/* The field types, each added into its own Blueprint group */}
+                  {addFieldMenuAt && createPortal(
+                    <div
+                      ref={addFieldMenuRef}
+                      role="menu"
+                      aria-label="Add a field"
+                      style={{ position: 'fixed', top: addFieldMenuAt.top, right: addFieldMenuAt.right, zIndex: 89 }}
+                      className="w-40 bg-[var(--surface-panel)] border border-[var(--primary-border-strong)] rounded-xl shadow-2xl p-1 flex flex-col gap-0.5"
+                    >
+                      <div className="px-2 py-1 text-[10px] font-bold text-muted uppercase tracking-wider border-b border-subtle mb-1">
+                        Add Field
+                      </div>
+                      {NEW_FIELD_TYPES.map(({ type, label }) => (
+                        <button
+                          key={type}
+                          type="button"
+                          role="menuitem"
+                          onClick={() => {
+                            setAddFieldMenuAt(null);
+                            onAddNewField(type);
+                          }}
+                          className="flex items-center gap-2 px-2 py-1.5 rounded-lg text-xs text-strong hover:bg-surface-hover transition cursor-pointer text-left"
+                        >
+                          <FieldTypeIcon type={type} className="w-3.5 h-3.5" />
+                          <span>{label}</span>
+                        </button>
+                      ))}
+                    </div>,
+                    document.body
+                  )}
+                </div>
               )
             ) : isTemplates ? (
               onAddNewTemplate && (
@@ -264,6 +343,21 @@ export default function PanelViewTabs({
                   } group-hover:text-[var(--text-strong)]`}
                 >
                   <VisibilityEyeIcon hidden={!showAllEyes} className="w-3.5 h-3.5" />
+                </span>
+              </button>
+            )}
+
+            {/* Blueprint only: hide rows already placed in the layout, leaving what is still missing */}
+            {onToggleShowUnplacedOnly && (
+              <button
+                type="button"
+                onClick={onToggleShowUnplacedOnly}
+                aria-pressed={!!showUnplacedOnly}
+                className="tree-tab-action-btn group"
+                title={showUnplacedOnly ? 'Showing only what is not placed yet: click to show everything' : 'Show only what is not placed in the layout yet'}
+              >
+                <span className={`flex ${showUnplacedOnly ? activeIconColor : 'text-[var(--tree-action-icon)]'} group-hover:text-[var(--text-strong)]`}>
+                  <CheckIcon className="w-3 h-3" />
                 </span>
               </button>
             )}

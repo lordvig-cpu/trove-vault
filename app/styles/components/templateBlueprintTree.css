@@ -1,0 +1,29 @@
+/* ==========================================================================
+   BLUEPRINT TREE (TemplateBlueprintTree.tsx)
+   The rows themselves use the shared tree classes (tree-category-row, tree-item, tree-badge); these are
+   only the small tags a Blueprint row carries.
+   ========================================================================== */
+
+/* A required field's REQ tag. */
+.blueprint-required-tag {
+  font-size: 8.5px;
+  font-weight: 800;
+  color: var(--status-danger-soft);
+  background-color: oklch(from var(--status-danger) l c h / 0.15);
+  border: 1px solid oklch(from var(--status-danger) l c h / 0.3);
+  padding: 0.05rem 0.3rem;
+  border-radius: 0.25rem;
+  text-transform: uppercase;
+}
+
+/* A quiet tag: "Built-in" on the values every item has, a choice field's option count. */
+.blueprint-builtin-tag {
+  font-size: 9px;
+  font-weight: 600;
+  color: var(--text-muted);
+  border: 1px solid var(--primary-border-subtle);
+  padding: 0 0.3rem;
+  border-radius: 0.25rem;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}

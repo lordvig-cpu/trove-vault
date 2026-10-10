@@ -32,8 +32,8 @@ commit whenever you add, remove, split or rename a file — it goes stale otherw
   (open/close/position state) that both kinds of menu call, so its name doesn't imply Actions-only.
 - **Naming, template editor tabs:** the `template_hierarchy` dock content (`TemplateHierarchyTree.tsx`)
   is labeled "Layout" in the UI; the old "Structure" name is gone, don't reintroduce it. The
-  `template_editor` dock content (`TemplateFieldInspector.tsx`) is labeled "Content"; the old
-  "Inspector"/"Template Inspector" name is gone too. The `template_builder` dock content
+  `template_editor` dock content (`TemplateBlueprintTree.tsx`) is labeled "Blueprint"; the older
+  "Content" and "Inspector"/"Template Inspector" names are gone too. The `template_builder` dock content
   (`TemplateLayoutPalette.tsx`, the bottom-panel drag-primitives palette) is labeled "Components";
   the old "Layout Builder" name is gone. There is no docked "Properties" panel any more (the old
   `template_properties` tab / `TemplatePropertiesInspector.tsx` was removed): a node's properties live
@@ -142,7 +142,7 @@ commit whenever you add, remove, split or rename a file — it goes stale otherw
   the common case since the Body is always column). That wrapper is tagged `isSplitWrapper: true`:
   it holds exactly those two halves and is never itself a valid drop/Place target — placing content
   "into" one redirects to its first half instead (`resolveContentTarget`, used by `placeField` and
-  `placeLoremIpsum`), the same way dragging onto the canvas already can only ever hit a half (the
+  `placeBuiltin`, and for the name a Blueprint row's Place: action shows), the same way dragging onto the canvas already can only ever hit a half (the
   wrapper has no exposed area; its children fill it completely). A new half's own `direction`
   (how *its* future children will flow) always alternates with whichever container actually becomes
   its parent — the wrapper if one was created, otherwise the original parent — never copied from the
@@ -156,12 +156,30 @@ commit whenever you add, remove, split or rename a file — it goes stale otherw
   container-adding path (Add Before/Inside/After, the layout palette) runs its label through the
   same helper via `buildUniqueContainer`, so repeatedly clicking "Add Inside" doesn't produce a pile
   of identically-named "New Container" nodes either.
+- The **Blueprint** tab (`TemplateBlueprintTree.tsx`) is which values a template's items have, regardless of
+  layout: one tree in the Collections tree's look, grouped by kind of data (`lib/blueprintGroups.ts`, pure, covered
+  by `tests/blueprint-groups.spec.ts`) -- Text, Number, Choice, Yes/No, Date, Image, Collections, Sub-Items, in that
+  order, a group shown only once it holds something. The built-in values every item has (Name under Text, Created
+  under Date, and Image, Collections, Sub-items) lead their groups, tagged "Built-in"; their gear is Actions only
+  (`BlueprintBuiltinActionMenu`), since there is nothing to rename, retype, move or delete. The template's own
+  fields follow in field order; their gear is `TemplateFieldActionMenu` (Properties, plus Move: Up / Down within the
+  group -- `moveWithinGroup`, which swaps with the nearest same-group field, since the overall order still drives
+  the item forms -- and Delete). Every row's Actions offers **Place: <container>** (the active container, named as
+  `resolveContentTarget` resolves it), and every row drags onto the canvas or a Layout-tree container
+  (`application/x-trove-field-id` / `application/x-trove-builtin`). A placed row shows a check in the selected
+  yellow (`placedFieldIds` / `placedBuiltins`, via `collectPlacedBuiltins` in `lib/layoutContent.ts`); the
+  header's check toggle (`showUnplacedOnly`, session-only, like the Layout eye) hides placed rows and any group they
+  empty, leaving only what is still missing. The header "+" opens a field-type menu (a body portal at the 89
+  pulldown layer, since the panel header clips what overflows it) and the new field lands in its group, opened.
+  Search matches a row's label or a field's key and opens the groups it leaves; the Advanced filter's options are
+  the groups. There is no template root row (the toolbar edits the name and icon, and Save closes the editor) and
+  no Lorem Ipsum filler any more (filler already saved in a layout still renders).
 - The Layout tab's search bar filters by node name; its Advanced filter menu offers three
-  categories instead of the Content tab's field types (`lib/hierarchyFilterMetas.ts`): Layout items
+  categories instead of the Blueprint tab's groups (`lib/hierarchyFilterMetas.ts`): Layout items
   (containers), Content items (`componentType === 'field'`, i.e. real bound template fields placed
-  from the Content tab), and Pre-defined Content (everything else — table/media/stat/note/divider,
-  whether it came from the Components palette or the Lorem Ipsum grabbable; there's no stored way to
-  tell those two origins apart, and both are equally "not a real field", so they're grouped
+  from the Blueprint tab), and Pre-defined Content (everything else — table/media/stat/note/divider,
+  whether it came from the Components palette or older filler text; there's no stored way to
+  tell those origins apart, and they are equally "not a real field", so they're grouped
   together). A search/filter prunes the tree to matches and their ancestors, force-expanding
   whatever remains (`computeVisibleHierarchyIds` in `TemplateHierarchyTree.tsx`) so a match is never
   hidden behind a collapsed container.
@@ -171,7 +189,7 @@ commit whenever you add, remove, split or rename a file — it goes stale otherw
   (covered by `tests/layout-tree.spec.ts`): nothing beside or in place of the Body, no container into its
   own subtree, nothing into or out of a split wrapper (its two halves can only swap), and a drop that
   would change nothing is refused -- a refused spot simply shows no indicator. A move is one undo step.
-  Field / built-in / Lorem Ipsum drags from the Content tab still only drop inside a container row.
+  Field / built-in drags from the Blueprint tab still only drop inside a container row.
 - Each Layout-tree row but the Body has an eye (left of the gear) that hides that node, and everything
   inside it, from the **edit** canvas, to cut clutter while working on one area. It is editor-only state
   like zoom (`hiddenNodeIds` / `toggleNodeHidden` in `useTemplateEditor.ts`, cleared when the editor
@@ -182,7 +200,7 @@ commit whenever you add, remove, split or rename a file — it goes stale otherw
   off), and the Layout panel header's own eye (left of expand/collapse all; `showAllEyes` in
   `useHierarchyState.ts`, session-only) shows every row's eye while it is on. Every eye blinks when it
   changes state (`VisibilityEyeIcon.tsx`).
-- Every panel's filter menu (this one, the Content tab's field types, and the Items/Collections/
+- Every panel's filter menu (this one, the Blueprint tab's groups, and the Items/Collections/
   Templates trees' collection filter) shares one convention: an empty filter array means "nothing
   excluded" and is shown as every checkbox checked, not every checkbox unchecked, because that's
   what it actually matches (everything). Each domain's toggle handler
@@ -252,7 +270,7 @@ commit whenever you add, remove, split or rename a file — it goes stale otherw
   watches the panel go `inert`). A flyout that was only hover-opened just closes, at once rather than sliding out.
   One pinned open (clicked or right-clicked) carries on instead: a Layout-tree flyout as the editor's floating node
   menu, where it stood and on the same tab (`useFloatWhenPanelHides` in `TemplateLayoutActionMenu.tsx`, through the
-  hook's `setPanelHiddenHandler`); every other one (Items, Collections, Templates, the Content tab) floats in place
+  hook's `setPanelHiddenHandler`); every other one (Items, Collections, Templates, the Blueprint tab) floats in place
   -- the same menu instance, so its tab and unsaved Properties edits stay -- in the floating chrome (`floatingChrome`:
   drag by the title bar, close button, Escape), until closed or another menu opens. A header pulldown with a pinned
   menu is held mounted (hidden once closed, even after it is docked) until that menu closes (`lib/flyoutHold.ts`),
@@ -398,8 +416,8 @@ commit whenever you add, remove, split or rename a file — it goes stale otherw
   existed still works: `bindingOf` derives a binding from the old `field_id`/note text, and a legacy
   `sizing` on a component is still honored (it is deprecated and never written for new content). Content
   is drawn by `ContentValue` from the item in `ContentDataContext` (the editor shows the first item of
-  the template being edited, or sample values when it has none). The Content tab's "Item" block lists the built-in values (Name, Image, Collections, Created, Sub-items): drag one
-  into a container (`application/x-trove-builtin`) or click Place for the active one (`placeBuiltin`, built by
+  the template being edited, or sample values when it has none). The Blueprint tab lists the built-in values (Name, Image, Collections, Created, Sub-items) as rows: drag one
+  into a container (`application/x-trove-builtin`) or use its Place: action for the active one (`placeBuiltin`, built by
   `buildBuiltinComponent`). Pre-defined content (the Components palette's
   "Pre-defined Components" tab: Field List, Header, Stat Row) is not a special component: picking one opens a small
   chooser (`TemplatePresetPicker`) for which built-ins and fields it includes, then `buildPreset` in
@@ -449,7 +467,7 @@ commit whenever you add, remove, split or rename a file — it goes stale otherw
   `LeaveTemplateEditorModal`, centered over a darkened app like the item modals): **Save Changes** keeps the layout,
   **Discard Changes** puts the opened one back, then either continues to what was clicked; **Keep Editing** (or
   Escape) stays. With nothing changed it just closes the editor and continues. A new navigation path out of the
-  editor goes through `leaveEditorThen` too. The toolbar Save and the Content tab's Done save and close. Field and
+  editor goes through `leaveEditorThen` too. The toolbar Save saves and closes. Field and
   template name / icon edits write straight to the database and are not part of this, the same as undo.
 - Deleting a container that holds anything (any containers or content, at any depth) asks first: every delete path
   (Layout tree flyout, canvas / floating menu, toolbar) goes through `requestRemoveContainer`

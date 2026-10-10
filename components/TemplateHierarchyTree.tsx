@@ -52,7 +52,6 @@ export interface TemplateHierarchyTreeProps {
   onRemoveContainer: (containerId: string) => void;
   onRemoveComponent: (componentId: string) => void;
   onPlaceField?: (fieldId: number, targetContainerId?: string) => void;
-  onPlaceLoremIpsum?: (targetContainerId?: string) => void;
   onPlaceBuiltin?: PlaceBuiltinHandler;
   /** Moves a node by drag and drop within the tree (see moveNode in lib/layoutTree.ts). */
   onMoveNode?: (nodeId: string, targetId: string, position: MovePosition) => void;
@@ -144,7 +143,7 @@ function computeVisibleHierarchyIds(
    the node before or after it, the middle of a container row drops it inside (at the end). The bottom
    edge of an expanded container means "first inside it", since that is where the line is drawn. A
    position moveNode refuses (into itself, out of a split, or back where it already is) shows no
-   indicator and does nothing. Field / built-in / Lorem Ipsum drags from the Content tab are separate
+   indicator and does nothing. Field / built-in drags from the Blueprint tab are separate
    and unchanged: they only ever drop inside a container row.
    ========================================================================== */
 
@@ -357,7 +356,6 @@ interface ContainerNodeRowProps {
   onRemoveContainer: (id: string) => void;
   onRemoveComponent: (id: string) => void;
   onPlaceField?: (fieldId: number, targetContainerId?: string) => void;
-  onPlaceLoremIpsum?: (targetContainerId?: string) => void;
   onPlaceBuiltin?: PlaceBuiltinHandler;
   position?: 'left' | 'right';
   overflowingContainerIds?: Set<string>;
@@ -386,7 +384,6 @@ function ContainerNodeRow({
   onRemoveContainer,
   onRemoveComponent,
   onPlaceField,
-  onPlaceLoremIpsum,
   onPlaceBuiltin,
   position = 'left',
   overflowingContainerIds,
@@ -456,11 +453,6 @@ function ContainerNodeRow({
           e.preventDefault();
           e.stopPropagation();
           setIsDragOver(false);
-          if (e.dataTransfer.getData('application/x-trove-lorem-ipsum')) {
-            onPlaceLoremIpsum?.(container.id);
-            onSelectNode(container.id);
-            return;
-          }
           const builtinKey = e.dataTransfer.getData('application/x-trove-builtin');
           if (builtinKey) {
             onPlaceBuiltin?.(builtinKey as BuiltinKey, container.id);
@@ -600,7 +592,6 @@ function ContainerNodeRow({
                   onRemoveContainer={onRemoveContainer}
                   onRemoveComponent={onRemoveComponent}
                   onPlaceField={onPlaceField}
-                  onPlaceLoremIpsum={onPlaceLoremIpsum}
                   onPlaceBuiltin={onPlaceBuiltin}
                   position={position}
                   overflowingContainerIds={overflowingContainerIds}
@@ -773,7 +764,6 @@ export default function TemplateHierarchyTree({
   onRemoveContainer,
   onRemoveComponent,
   onPlaceField,
-  onPlaceLoremIpsum,
   onPlaceBuiltin,
   onMoveNode,
   hiddenNodeIds,
@@ -883,7 +873,6 @@ export default function TemplateHierarchyTree({
         onRemoveContainer={onRemoveContainer}
         onRemoveComponent={onRemoveComponent}
         onPlaceField={onPlaceField}
-        onPlaceLoremIpsum={onPlaceLoremIpsum}
         onPlaceBuiltin={onPlaceBuiltin}
         position={position}
         visibleIds={visibleIds}

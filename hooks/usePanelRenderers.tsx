@@ -14,10 +14,14 @@ import { useHierarchyState } from '@/hooks/useHierarchyState';
 import { useTemplateEditor } from '@/hooks/useTemplateEditor';
 import TreeContent from '@/components/TreeContent';
 import { TreePanelContext } from '@/context/TreePanelContext';
-import TemplateFieldInspector from '@/components/TemplateFieldInspector';
+import TemplateBlueprintTree from '@/components/TemplateBlueprintTree';
+import { BLUEPRINT_GROUPS, blueprintGroupCounts, blueprintGroupOf } from '@/lib/blueprintGroups';
+import { layoutNodeName } from '@/lib/layoutNavigation';
+import { resolveContentTarget } from '@/lib/layoutTree';
 import TemplateLayoutPalette from '@/components/TemplateLayoutPalette';
 import TemplateHierarchyTree from '@/components/TemplateHierarchyTree';
-import { FlexContainerNode, FlexComponentNode } from '@/types/layout';
+import { FlexContainerNode, FlexComponentNode, findFlexNode } from '@/types/layout';
+import type { FieldType } from '@/types/field';
 import { hierarchyNodeCategory } from '@/lib/hierarchyFilterMetas';
 
 type CollectionsApi = ReturnType<typeof useCollections>;
@@ -111,7 +115,6 @@ export function usePanelRenderers({
     toggleShowAllEyes,
     handleOpenProperties,
     handlePlaceField,
-    handlePlaceLoremIpsum,
     handlePlaceBuiltin,
     handleAddContainer,
   } = hierarchy;
@@ -208,7 +211,15 @@ export function usePanelRenderers({
     );
   };
 
-  // Renders whatever a docked tab holds, tree views included: the template editor's Content tab,
+  // The container a Blueprint row's Place: action puts things into (the editor's active container), by name
+  const placeTargetName = () => {
+    const root = templateEditor.flexLayoutConfig?.root;
+    // where it really lands: a split wrapper passes content on to its first half
+    const node = root ? findFlexNode(root, resolveContentTarget(root, templateEditor.activeContainerId)) : null;
+    return node ? layoutNodeName(node, templateEditor.activeTemplate?.fields ?? [], node.id === root?.id) : 'Body';
+  };
+
+  // Renders whatever a docked tab holds, tree views included: the template editor's Blueprint tab,
   // properties panel, layout palette and Layout tree, or the grabbed-content placeholder.
   const renderPanelBody = (content: DockContent, pos: 'left' | 'right' | 'bottom') => {
     if (content === 'items' || content === 'collections' || content === 'templates') {
@@ -224,26 +235,24 @@ export function usePanelRenderers({
     if (content === 'template_editor') {
       return (
         <TreePanelContext.Provider value={panelContext}>
-          <TemplateFieldInspector
+          <TemplateBlueprintTree
             template={templateEditor.activeTemplate}
             selectedFieldId={templateEditor.selectedFieldId}
-            isRootSelected={templateEditor.isRootSelected}
             searchQuery={templateEditor.fieldSearchQuery}
-            filterFieldTypes={templateEditor.filterFieldTypes}
+            filterGroups={templateEditor.filterFieldTypes}
+            unplacedOnly={templateEditor.showUnplacedOnly}
+            collapsedGroups={templateEditor.collapsedBlueprintGroups}
+            onToggleGroup={templateEditor.toggleBlueprintGroup}
             placedFieldIds={templateEditor.placedFieldIds}
-            onPlaceField={templateEditor.placeField}
-            onPlaceLoremIpsum={templateEditor.placeLoremIpsum}
-            onPlaceBuiltin={templateEditor.placeBuiltin}
+            placedBuiltins={templateEditor.placedBuiltins}
+            placeTarget={placeTargetName()}
+            onPlaceField={(fieldId) => templateEditor.placeField(fieldId)}
+            onPlaceBuiltin={(key) => templateEditor.placeBuiltin(key)}
             onSelectField={templateEditor.setSelectedFieldId}
-            onSelectRoot={templateEditor.selectRoot}
             onUpdateField={templateEditor.updateField}
-            onAddField={templateEditor.addField}
             onDeleteField={templateEditor.deleteField}
             onReorderFields={templateEditor.reorderFields}
-            onUpdateTemplateMeta={templateEditor.updateTemplateMetadata}
-            onCloseEditor={() => void templateEditor.saveAndClose()}
             isLoading={templateEditor.isLoading}
-            isSaving={templateEditor.isSaving}
             error={templateEditor.error}
             successMsg={templateEditor.successMsg}
             position={pos === 'bottom' ? 'right' : pos}
@@ -292,7 +301,6 @@ export function usePanelRenderers({
             onToggleHidden={templateEditor.toggleNodeHidden}
             showAllEyes={showAllEyes}
             onPlaceField={handlePlaceField}
-            onPlaceLoremIpsum={handlePlaceLoremIpsum}
             onPlaceBuiltin={handlePlaceBuiltin}
             position={pos === 'bottom' ? 'right' : pos}
             overflowingContainerIds={templateEditor.overflowingContainerIds}
@@ -324,7 +332,7 @@ export function usePanelRenderers({
 
   // The props PrimarySidePanelHeader/SecondarySidePanelHeader need for whatever content a docked
   // tab holds: which search/filter state to read and write (per-tab-type: Items, Collections,
-  // Templates and the Content tab's own field list each keep their own), and the expand-all state.
+  // Templates and the Blueprint tab's own field tree each keep their own), and the expand-all state.
   // Spread onto the header with {...treeHeaderProps(content)}.
   const treeHeaderProps = (content: DockContent) => {
     const isCollections = content === 'collections';
@@ -333,13 +341,8 @@ export function usePanelRenderers({
     const isComponents = content === 'template_builder';
     const isLayout = content === 'template_hierarchy';
 
-    // Calculate field type counts for template editor
-    const fieldTypeCounts: Record<string, number> = {};
-    if (templateEditor.activeTemplate?.fields) {
-      for (const f of templateEditor.activeTemplate.fields) {
-        fieldTypeCounts[f.field_type] = (fieldTypeCounts[f.field_type] || 0) + 1;
-      }
-    }
+    // How many values each Blueprint group holds (its filter menu's counts)
+    const fieldTypeCounts = blueprintGroupCounts(templateEditor.activeTemplate?.fields ?? []);
 
     // Calculate layout-tree node-category counts (Layout items / Content items / Pre-defined Content)
     const hierarchyTypeCounts: Record<string, number> = {};
@@ -393,14 +396,18 @@ export function usePanelRenderers({
           else setSearchQuery(query);
         }
       },
-      isAnyCategoryExpanded: isLayout
+      isAnyCategoryExpanded: isContent
+        ? templateEditor.collapsedBlueprintGroups.size < BLUEPRINT_GROUPS.length
+        : isLayout
         ? isAllHierarchyExpanded
         : isCollections
         ? collectionsTree.isAnyCategoryExpanded
         : isTemplates
         ? templatesTree.isAnyCategoryExpanded
         : isAnyCategoryExpanded,
-      onToggleAllCategories: isLayout
+      onToggleAllCategories: isContent
+        ? templateEditor.toggleAllBlueprintGroups
+        : isLayout
         ? toggleAllHierarchy
         : isCollections
         ? collectionsTree.handleToggleAllCategories
@@ -411,6 +418,9 @@ export function usePanelRenderers({
       // Layout only: the header eye that shows every row's visibility eye.
       showAllEyes: isLayout ? showAllEyes : undefined,
       onToggleShowAllEyes: isLayout ? toggleShowAllEyes : undefined,
+      // Blueprint only: the header check that hides what is already placed
+      showUnplacedOnly: isContent ? templateEditor.showUnplacedOnly : undefined,
+      onToggleShowUnplacedOnly: isContent ? templateEditor.toggleShowUnplacedOnly : undefined,
       filterCollectionIds: isCollections ? collectionsFilterIds : isTemplates ? templatesFilterIds : filterCollectionIds,
       onToggleFilterCollection: isCollections ? handleToggleCollectionsFilter : isTemplates ? handleToggleTemplatesFilter : handleToggleFilterCollection,
       onClearCollectionFilters: isCollections ? () => setCollectionsFilterIds([]) : isTemplates ? () => setTemplatesFilterIds([]) : handleClearCollectionFilters,
@@ -420,7 +430,11 @@ export function usePanelRenderers({
       onClearFieldTypeFilters: templateEditor.clearFieldTypeFilters,
       onSelectNoneFieldTypeFilter: templateEditor.selectNoneFieldTypeFilter,
       fieldTypeCounts,
-      onAddNewField: () => templateEditor.addField('text'),
+      // A new field lands in its own group, opened if it was collapsed
+      onAddNewField: (type: FieldType) => {
+        if (templateEditor.collapsedBlueprintGroups.has(blueprintGroupOf(type))) templateEditor.toggleBlueprintGroup(blueprintGroupOf(type));
+        void templateEditor.addField(type);
+      },
       filterHierarchyTypes: templateEditor.filterHierarchyTypes,
       onToggleFilterHierarchyType: templateEditor.toggleHierarchyTypeFilter,
       onClearHierarchyTypeFilters: templateEditor.clearHierarchyTypeFilters,

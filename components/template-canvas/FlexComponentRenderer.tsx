@@ -173,7 +173,7 @@ function PlaceholderComponent({
             <span>{label}</span>
           </div>
           {typeof component.custom_props?.text === 'string' ? (
-            // Real filler text (e.g. the Lorem Ipsum grabbable), not a mock placeholder -- shown
+            // Real filler text (e.g. filler text a layout already holds), not a mock placeholder -- shown
             // as-is in both modes so its actual wrapping/flow is visible.
             component.custom_props.text.split('\n\n').map((paragraph, i) => (
               <p key={i} className="text-[11px] text-flyout-title/80 leading-relaxed">

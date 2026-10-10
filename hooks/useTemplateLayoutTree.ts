@@ -1,7 +1,7 @@
 'use client';
 
-import { useCallback, useState } from 'react';
-import { buildBuiltinComponent } from '@/lib/layoutContent';
+import { useCallback, useMemo, useState } from 'react';
+import { buildBuiltinComponent, collectPlacedBuiltins } from '@/lib/layoutContent';
 import { buildPreset, type PresetRequest } from '@/lib/layoutPresets';
 import { buildRecipe, type RecipeId } from '@/lib/layoutRecipes';
 import { ItemTemplate } from '@/types/template';
@@ -29,19 +29,6 @@ import {
   updateComponent,
   updateContainer,
 } from '@/lib/layoutTree';
-
-/** Two paragraphs of filler text for the Lorem Ipsum grabbable (TemplateFieldInspector), so its
-    wrapping/flow can be previewed inside a container without needing a real bound field. */
-const LOREM_IPSUM_TEXT =
-  'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut ' +
-  'labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco ' +
-  'laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in ' +
-  'voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat ' +
-  'non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.\n\n' +
-  'Curabitur pretium tincidunt lacus, ut interdum tellus elit sed risus. Maecenas eget condimentum ' +
-  'velit, sit amet feugiat lectus. Class aptent taciti sociosqu ad litora torquent per conubia ' +
-  'nostra, per inceptos himenaeos. Praesent auctor purus luctus enim egestas, ac scelerisque ante ' +
-  'pulvinar. Donec ut rhoncus ex. Suspendisse ac rhoncus nisl, eu tempor urna.';
 
 interface UseTemplateLayoutTreeOptions {
   flexLayoutConfig: TemplateFlexLayoutConfig | null;
@@ -88,6 +75,12 @@ export function useTemplateLayoutTree({
   // palette's "Add" buttons, placeField without a drop target).
   const activeContainerId: string =
     selectedContainer?.id || flexLayoutConfig?.root?.id || 'root-container';
+
+  // The built-in values (Name, Image, ...) placed in the layout: the Blueprint tree's placed checks
+  const placedBuiltins = useMemo(
+    () => (flexLayoutConfig?.root ? collectPlacedBuiltins(flexLayoutConfig.root) : new Set<BuiltinKey>()),
+    [flexLayoutConfig]
+  );
 
   const placedFieldIds: number[] = flexLayoutConfig?.root
     ? collectPlacedFieldIds(flexLayoutConfig.root)
@@ -414,22 +407,6 @@ export function useTemplateLayoutTree({
     [activeTemplate, saveFlexLayoutConfig, setSelectedNodeId]
   );
 
-  // Not bound to a real field: a quick way to drop filler text into a container to see how it
-  // actually flows/wraps (e.g. while testing a Split), independent of the template's own schema.
-  const placeLoremIpsum = useCallback(
-    (targetContainerId?: string) => {
-      if (!flexLayoutConfig) return;
-      const target = resolveContentTarget(flexLayoutConfig.root, targetContainerId || activeContainerId);
-      addFlexComponent(target, {
-        componentType: 'note',
-        label: 'Lorem Ipsum',
-        binding: { kind: 'static', text: LOREM_IPSUM_TEXT },
-        custom_props: { text: LOREM_IPSUM_TEXT },
-      });
-    },
-    [activeContainerId, flexLayoutConfig, addFlexComponent]
-  );
-
   const resetFlexLayoutToDefault = useCallback(() => {
     if (!activeTemplate) return;
     const defaultFlex = createDefaultFlexLayout(activeTemplate.fields || []);
@@ -460,6 +437,7 @@ export function useTemplateLayoutTree({
     selectedComponent,
     activeContainerId,
     placedFieldIds,
+    placedBuiltins,
     selectNode,
     addFlexContainer,
     insertFlexContainerSibling,
@@ -472,7 +450,6 @@ export function useTemplateLayoutTree({
     updateFlexComponent,
     removeFlexComponent,
     placeField,
-    placeLoremIpsum,
     placeBuiltin,
     placePreset,
     applyRecipe,

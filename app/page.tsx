@@ -220,7 +220,7 @@ export default function Home() {
   );
 
   const hierarchy = useHierarchyState(templateEditor);
-  const { hierarchyNodeCount, handleOpenProperties, handlePlaceField, handlePlaceLoremIpsum, handlePlaceBuiltin, handleAddContainer } = hierarchy;
+  const { hierarchyNodeCount, handleOpenProperties, handlePlaceField, handlePlaceBuiltin, handleAddContainer } = hierarchy;
 
   // Whether the Layout tree is on screen -- the side panel holding the Layout tab is open and showing it --
   // so a node's gear flyout can slide out of its tree row; otherwise the toolbar gear and a canvas
@@ -650,7 +650,6 @@ export default function Home() {
               onUpdateFlexComponent={templateEditor.updateFlexComponent}
               onRemoveFlexComponent={templateEditor.removeFlexComponent}
               onPlaceField={handlePlaceField}
-              onPlaceLoremIpsum={handlePlaceLoremIpsum}
               onPlaceBuiltin={handlePlaceBuiltin}
               onResetFlexLayout={templateEditor.resetFlexLayoutToDefault}
               onOverflowChange={templateEditor.reportContainerOverflow}

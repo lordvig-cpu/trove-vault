@@ -58,7 +58,6 @@ interface TemplateEditorStageProps {
   ) => void;
   onRemoveFlexComponent?: (componentId: string) => void;
   onPlaceField?: (fieldId: number, targetContainerId?: string) => void;
-  onPlaceLoremIpsum?: (targetContainerId?: string) => void;
   onPlaceBuiltin?: PlaceBuiltinHandler;
   onResetFlexLayout?: () => void;
   onSplitContainer?: (containerId: string, splitType: 'columns' | 'rows', measuredPx: number) => void;
@@ -99,7 +98,6 @@ export default function TemplateEditorStage({
   onUpdateFlexComponent,
   onRemoveFlexComponent,
   onPlaceField,
-  onPlaceLoremIpsum,
   onPlaceBuiltin,
   onResetFlexLayout,
   onSplitContainer,
@@ -240,7 +238,6 @@ export default function TemplateEditorStage({
             onUpdateComponent={onUpdateFlexComponent}
             onRemoveComponent={onRemoveFlexComponent}
             onPlaceField={onPlaceField}
-            onPlaceLoremIpsum={onPlaceLoremIpsum}
             onPlaceBuiltin={onPlaceBuiltin}
             onOverflowChange={onOverflowChange}
           />

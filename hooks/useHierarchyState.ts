@@ -120,17 +120,6 @@ export function useHierarchyState(templateEditor: TemplateEditor) {
     }
   }, [templateEditor]);
 
-  const handlePlaceLoremIpsum = useCallback((targetContainerId?: string) => {
-    templateEditor.placeLoremIpsum(targetContainerId);
-    if (targetContainerId) {
-      setHierarchyExpandedIds((prev) => {
-        const next = new Set(prev);
-        next.add(targetContainerId);
-        return next;
-      });
-    }
-  }, [templateEditor]);
-
   const handlePlaceBuiltin = useCallback((key: BuiltinKey, targetContainerId?: string) => {
     templateEditor.placeBuiltin(key, targetContainerId);
     if (targetContainerId) {
@@ -167,7 +156,6 @@ export function useHierarchyState(templateEditor: TemplateEditor) {
     toggleShowAllEyes,
     handleOpenProperties,
     handlePlaceField,
-    handlePlaceLoremIpsum,
     handlePlaceBuiltin,
     handleAddContainer,
   };

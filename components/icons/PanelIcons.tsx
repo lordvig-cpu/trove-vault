@@ -319,9 +319,9 @@ export const LayoutTabIcon = ({ className = 'w-3.5 h-3.5' }: { className?: strin
   </svg>
 );
 
-/** ContentTabIcon: a bulleted list beside two content blocks, for the template editor's Content
-    tab (fields and other droppable content). */
-export const ContentTabIcon = ({ className = 'w-3.5 h-3.5' }: { className?: string }) => (
+/** BlueprintTabIcon: a bulleted list beside two content blocks, for the template editor's Blueprint
+    tab (the template's fields). */
+export const BlueprintTabIcon = ({ className = 'w-3.5 h-3.5' }: { className?: string }) => (
   <svg
     className={className}
     viewBox="0 0 24 24"

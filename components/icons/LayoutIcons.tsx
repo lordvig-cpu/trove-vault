@@ -180,6 +180,30 @@ export const AddChildContainerIcon = ({ className = 'w-4 h-4', strokeWidth = 1.8
 );
 
 /**
+ * PlaceIntoIcon:
+ * An open-topped box with an arrow dropping into it. Conveys placing a field or value into the
+ * selected container (the Blueprint tree's "Place:" action).
+ */
+export const PlaceIntoIcon = ({ className = 'w-4 h-4', strokeWidth = 1.8 }: LayoutIconProps) => (
+  <svg
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth={strokeWidth}
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className={`origin-center shrink-0 ${className}`}
+    aria-hidden="true"
+  >
+    {/* Box, open at the top */}
+    <path d="M4 10v8.5A2.5 2.5 0 0 0 6.5 21h11a2.5 2.5 0 0 0 2.5-2.5V10" />
+    {/* Arrow dropping in */}
+    <line x1="12" y1="3" x2="12" y2="14" />
+    <polyline points="8.5 10.5 12 14 15.5 10.5" />
+  </svg>
+);
+
+/**
  * AddContainerAfterIcon:
  * Clean solid container box on the left, with a plus sign on the right ([ ] +).
  * Conveys inserting a container after the current one; clear and legible at small sizes.

@@ -7,11 +7,10 @@ import CollectionFilterTree from '@/components/CollectionFilterTree';
 import { CollectionRecord } from '@/types/collection';
 import { PrimarySidebarPosition } from '@/types/layout';
 import { useUIPreferences } from '@/context/UIPreferencesContext';
-import { FieldType } from '@/types/field';
-import { FIELD_TYPE_METAS } from '@/lib/fieldTypeMetas';
+import { BLUEPRINT_GROUPS, type BlueprintGroupId } from '@/lib/blueprintGroups';
 import { HIERARCHY_FILTER_METAS, HierarchyFilterCategory } from '@/lib/hierarchyFilterMetas';
 import { CloseIcon } from '@/components/icons/PanelIcons';
-import { FieldTypeIcon, HierarchyCategoryIcon, FolderIcon } from '@/components/icons/ContentIcons';
+import { BlueprintGroupIcon, HierarchyCategoryIcon, FolderIcon } from '@/components/icons/ContentIcons';
 
 interface SearchAndFilterSectionProps {
   variant: 'flyout' | 'sidebar';
@@ -29,8 +28,8 @@ interface SearchAndFilterSectionProps {
   onSearchChange: (val: string) => void;
   searchInputTitle: string;
   shortcutAria: string;
-  filterFieldTypes: FieldType[];
-  onToggleFilterFieldType: (type: FieldType) => void;
+  filterFieldTypes: BlueprintGroupId[];
+  onToggleFilterFieldType: (type: BlueprintGroupId) => void;
   onClearFieldTypeFilters: () => void;
   onSelectNoneFieldTypeFilter: () => void;
   fieldTypeCounts: Record<string, number>;
@@ -48,7 +47,7 @@ interface SearchAndFilterSectionProps {
 
 /**
  * The panel header's search bar, its collapsible "Filters Applied" chip list, and the Advanced
- * Search action-menu portal (field-type filters for the Content tab, node-category filters for
+ * Search action-menu portal (group filters for the Blueprint tab, node-category filters for
  * the Layout tab, collection filters otherwise). Owns the menu's own open/closed and focus state.
  */
 /** The select-all / select-none row at the top of a filter menu. Nothing excluded (an empty filter) shows as
@@ -215,10 +214,10 @@ export default function SearchAndFilterSection({
         <span className="text-xs font-medium tree-panel-primary truncate">Field Type(s):</span>
       </span>
       <span
-        title={`${FIELD_TYPE_METAS.length} field types available`}
+        title={`${BLUEPRINT_GROUPS.length} field types available`}
         className="tree-filter-option px-2 py-0.5 rounded-md text-[10px] font-mono font-bold shrink-0 select-none"
       >
-        {FIELD_TYPE_METAS.length}
+        {BLUEPRINT_GROUPS.length}
       </span>
     </>
   ) : isLayout ? (
@@ -492,7 +491,7 @@ export default function SearchAndFilterSection({
             )}
             {isContent ? (
               filterFieldTypes.map((ft) => {
-                const meta = FIELD_TYPE_METAS.find((m) => m.type === ft);
+                const meta = BLUEPRINT_GROUPS.find((m) => m.type === ft);
                 if (!meta) return null;
 
                 return (
@@ -508,7 +507,7 @@ export default function SearchAndFilterSection({
                     >
                       <CloseIcon />
                     </button>
-                    <span className="text-[11px] tree-filter-indicator"><FieldTypeIcon type={meta.type} className="w-3 h-3" /></span>
+                    <span className="text-[11px] tree-filter-indicator"><BlueprintGroupIcon type={meta.type} className="w-3 h-3" /></span>
                     <span className="tree-filter-name max-w-[110px] truncate font-medium transition-colors">
                       {meta.label}
                     </span>
@@ -597,19 +596,19 @@ export default function SearchAndFilterSection({
                 (the reset action). */}
             <FilterMasterRow
               hasFilters={hasFieldTypeFilters}
-              selectedCount={FIELD_TYPE_METAS.filter((m) => filterFieldTypes.includes(m.type)).length}
-              total={FIELD_TYPE_METAS.length}
+              selectedCount={BLUEPRINT_GROUPS.filter((m) => filterFieldTypes.includes(m.type)).length}
+              total={BLUEPRINT_GROUPS.length}
               onSelectAll={onClearFieldTypeFilters}
               onSelectNone={onSelectNoneFieldTypeFilter}
             />
 
             {/* Field Types List */}
             <FilterOptionList
-              options={FIELD_TYPE_METAS}
+              options={BLUEPRINT_GROUPS}
               isChecked={(type) => !hasFieldTypeFilters || filterFieldTypes.includes(type)}
               counts={fieldTypeCounts}
               onToggle={onToggleFilterFieldType}
-              icon={(type) => <FieldTypeIcon type={type} className="w-3.5 h-3.5" />}
+              icon={(type) => <BlueprintGroupIcon type={type} className="w-3.5 h-3.5" />}
             />
 
             {clearFiltersFooter}

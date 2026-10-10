@@ -99,9 +99,11 @@ Conventions and architecture (data access, theming, template editor internals, b
 - `VisibilityEyeIcon.tsx` — the show / hide eye (Layout tree and toolbars), which blinks when it changes state.
 - `TemplateEditorStage.tsx` — the template editor's canvas: composes
   `components/template-canvas/*`; its header and mode toggle live in the toolbar.
-- `TemplateFieldActionMenu.tsx` / `TemplateLayoutActionMenu.tsx` / `TemplateRootActionMenu.tsx` —
-  the tree-gear popup menus for a field, a layout container/component, and the template root.
-- `TemplateFieldInspector.tsx` — the template editor's field schema tree (Content tab).
+- `TemplateFieldActionMenu.tsx` / `TemplateLayoutActionMenu.tsx` —
+  the tree-gear popup menus for a Blueprint field and for a layout container / content element.
+- `TemplateBlueprintTree.tsx` — the template editor's Blueprint tab: the built-in values and the template's fields as
+  one tree grouped by kind of data, with placed checks; rows drag into the layout or Place: via their gear.
+- `BlueprintBuiltinActionMenu.tsx` — a Blueprint built-in row's gear flyout (Actions only: Place:).
 - `TemplateHierarchyTree.tsx` — the template editor's container hierarchy tree (Layout tab), with drag-and-drop reordering and
   per-node show/hide eyes for the edit canvas.
 - `TemplateLayoutPalette.tsx` — the Components palette: layout primitives (row, column, splits, card) and the
@@ -229,7 +231,8 @@ its display style, with label and typography).
 - `data/workspace.ts` — loads the whole workspace (all pages of every table) and the DB health check.
 - `errors.ts` — `errorMessage()`: turns a thrown value into a user-facing string.
 - `fetchAllPages.ts` — pages through a Supabase query until it's exhausted.
-- `fieldTypeMetas.ts` — display metadata (label, icon) for each field type.
+- `blueprintGroups.ts` — the Blueprint tree's groups (pure): grouping, search, group filter, missing-only, group counts
+  and moving a field within its group.
 - `filterTreeForest.ts` — builds the dynamic template-category nodes merged into the unified forest,
   and the forest search/filter logic.
 - `hierarchyFilterMetas.ts` — the Layout tree's three node categories (Layout/Content/Pre-defined

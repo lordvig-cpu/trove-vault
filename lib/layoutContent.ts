@@ -6,6 +6,8 @@ import type {
   ContentBinding,
   ContentDisplayStyle,
   FlexComponentNode,
+  FlexContainerNode,
+  FlexLayoutNode,
   TextStyle,
 } from '@/types/layout';
 
@@ -17,7 +19,7 @@ import type {
    The rule behind it: a container owns Layout, Spacing and Size; content only has visual styling.
    ========================================================================== */
 
-/** Display names of the built-in item values, in the order the Content tab lists them. */
+/** Display names of the built-in item values. */
 export const BUILTIN_LABELS: Record<BuiltinKey, string> = {
   name: 'Name',
   image: 'Image',
@@ -41,6 +43,20 @@ export function bindingOf(component: FlexComponentNode): ContentBinding | null {
     return { kind: 'static', text: component.custom_props.text };
   }
   return null;
+}
+
+/** The built-in values (Name, Image, ...) shown somewhere in a layout -- the Blueprint tree's placed checks. */
+export function collectPlacedBuiltins(root: FlexContainerNode): Set<BuiltinKey> {
+  const keys = new Set<BuiltinKey>();
+  const walk = (node: FlexLayoutNode) => {
+    if (node.nodeType === 'container') node.children.forEach(walk);
+    else {
+      const binding = bindingOf(node);
+      if (binding?.kind === 'builtin') keys.add(binding.key);
+    }
+  };
+  walk(root);
+  return keys;
 }
 
 /** The template field a binding points at, if it is a field binding and the field still exists. */

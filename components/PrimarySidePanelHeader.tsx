@@ -5,7 +5,8 @@ import { CollectionRecord } from '@/types/collection';
 import { TreeTab } from '@/lib/filterTreeForest';
 import { PrimarySidebarPosition } from '@/types/layout';
 import { DockContent, TabReorderInfo } from '@/hooks/usePanelDockDrag';
-import { FieldType } from '@/types/field';
+import type { BlueprintGroupId } from '@/lib/blueprintGroups';
+import type { FieldType } from '@/types/field';
 import PanelToolbarRow from '@/components/panel-header/PanelToolbarRow';
 import SearchAndFilterSection from '@/components/panel-header/SearchAndFilterSection';
 import PanelViewTabs from '@/components/panel-header/PanelViewTabs';
@@ -50,13 +51,13 @@ export interface PrimarySidePanelHeaderProps {
   onClearCollectionFilters?: () => void;
   onSelectNoneCollectionFilter?: () => void;
 
-  // Field Type Filter Props (Content tab mode)
-  filterFieldTypes?: FieldType[];
-  onToggleFilterFieldType?: (type: FieldType) => void;
+  // Group filter props (Blueprint tab mode)
+  filterFieldTypes?: BlueprintGroupId[];
+  onToggleFilterFieldType?: (type: BlueprintGroupId) => void;
   onClearFieldTypeFilters?: () => void;
   onSelectNoneFieldTypeFilter?: () => void;
   fieldTypeCounts?: Record<string, number>;
-  onAddNewField?: () => void;
+  onAddNewField?: (type: FieldType) => void;
 
   // Layout tree Filter Props (Layout tab mode)
   filterHierarchyTypes?: HierarchyFilterCategory[];
@@ -76,6 +77,9 @@ export interface PrimarySidePanelHeaderProps {
   /** Layout only: the header eye that shows every row's visibility eye, and its toggle. */
   showAllEyes?: boolean;
   onToggleShowAllEyes?: () => void;
+  /** Blueprint only: hide rows already placed in the layout ("missing only"). */
+  showUnplacedOnly?: boolean;
+  onToggleShowUnplacedOnly?: () => void;
 }
 
 /** The header props a side panel only forwards (search, filters, add actions, tab drag, Layout eyes): both
@@ -109,6 +113,8 @@ export type PanelHeaderPassThroughProps = Pick<
   | 'hierarchyNodeCount'
   | 'showAllEyes'
   | 'onToggleShowAllEyes'
+  | 'showUnplacedOnly'
+  | 'onToggleShowUnplacedOnly'
 >;
 
 /* ==========================================================================
@@ -143,6 +149,8 @@ export default function PrimarySidePanelHeader({
   hierarchyNodeCount,
   showAllEyes,
   onToggleShowAllEyes,
+  showUnplacedOnly,
+  onToggleShowUnplacedOnly,
   onTogglePin,
   onClose,
   onAddNewItem,
@@ -173,7 +181,7 @@ export default function PrimarySidePanelHeader({
   const isCollections = treeView === 'collections' || activeTab === 'collections' || title === 'COLLECTIONS';
   const isTemplates = treeView === 'templates' || activeTab === 'templates' || title === 'TEMPLATES';
   const isGrabbed = activeTab === 'grabbed_content' || title === 'GRABBED CONTENT';
-  const isContent = activeTab === 'template_editor' || title === 'CONTENT';
+  const isContent = activeTab === 'template_editor' || title === 'BLUEPRINT';
   const isComponents = activeTab === 'template_builder' || title === 'COMPONENTS';
   const isLayout = activeTab === 'template_hierarchy' || title === 'LAYOUT';
   const panelName = isCollections
@@ -315,6 +323,8 @@ export default function PrimarySidePanelHeader({
         hierarchyNodeCount={hierarchyNodeCount}
         showAllEyes={showAllEyes}
         onToggleShowAllEyes={onToggleShowAllEyes}
+        showUnplacedOnly={showUnplacedOnly}
+        onToggleShowUnplacedOnly={onToggleShowUnplacedOnly}
         onAddNewField={onAddNewField}
         onAddNewTemplate={onAddNewTemplate}
         onAddNewCollection={onAddNewCollection}
