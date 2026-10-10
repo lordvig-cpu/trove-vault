@@ -134,7 +134,7 @@ function UnifiedTreeItem({
           {typeIcon}
         </span>
 
-        <span className="text-[13px] tracking-tight truncate flex-1 min-w-0">
+        <span className="text-[13px] tracking-tight truncate flex-1 min-w-0 tree-muted">
           {item.name}
         </span>
 
