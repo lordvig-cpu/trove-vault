@@ -106,10 +106,6 @@ const SPACING_HINT: HintContent = {
   ],
 };
 
-// menuShellXWide (17.5rem = 280px) minus the flyout's normal 14rem (224px): how much further left a
-// right-docked flyout must start so the wide shell still ends at the panel seam.
-const PROPERTIES_EXTRA_WIDTH_PX = 56;
-
 /**
  * Help for one alignment group, worded for the container's direction: "Align items" runs across the
  * flow (up/down in a Row, left/right in a Column) and "Justify content" along it, so the same option
@@ -400,7 +396,7 @@ export function TemplateContainerActionMenu({
         onMouseEnter={menu.handleMenuMouseEnter}
         onMouseLeave={menu.handleMouseLeave}
         top={menu.menuCoords.top}
-        left={menu.menuCoords.left - (position === 'right' ? PROPERTIES_EXTRA_WIDTH_PX : 0)}
+        left={menu.menuCoords.left}
         position={position}
         splitBody
         className="menuShellXWide"
@@ -596,7 +592,7 @@ export function TemplateContainerActionMenu({
       onMouseEnter={menu.handleMenuMouseEnter}
       onMouseLeave={menu.handleMouseLeave}
       top={menu.menuCoords.top}
-      left={menu.menuCoords.left - (position === 'right' ? PROPERTIES_EXTRA_WIDTH_PX : 0)}
+      left={menu.menuCoords.left}
       position={position}
       splitBody
       className="menuShellXWide"
@@ -922,7 +918,7 @@ export function TemplateComponentActionMenu({
       onMouseEnter={menu.handleMenuMouseEnter}
       onMouseLeave={menu.handleMouseLeave}
       top={menu.menuCoords.top}
-      left={menu.menuCoords.left - (position === 'right' ? PROPERTIES_EXTRA_WIDTH_PX : 0)}
+      left={menu.menuCoords.left}
       position={position}
       splitBody
       className="menuShellXWide"

@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { ItemRecord } from '@/types/item';
-import { useTreeActionMenu } from '@/hooks/useTreeActionMenu';
+import { MENU_WIDTH_PX, useTreeActionMenu } from '@/hooks/useTreeActionMenu';
 import { useTreeSelection } from '@/context/TreeSelectionContext';
 import TreeCollectionActionMenu from '@/components/TreeCollectionActionMenu';
 import TreeTemplateActionMenu from '@/components/TreeTemplateActionMenu';
@@ -77,8 +77,8 @@ function UnifiedTreeItem({
   const isRightSide = position === 'right';
   const [isOpen, setIsOpen] = useState(true);
   const [displayLimit, setDisplayLimit] = useState(CHUNK_SIZE);
-  // 280px: the item flyout is the wide two-tab shell (menuShellXWide), which a right-docked panel opens leftward by
-  const menu = useTreeActionMenu(`item-${item.id}`, 215, position, 280);
+  // The item flyout is the two-tab shell (menuShellXWide), which a right-docked panel opens leftward by
+  const menu = useTreeActionMenu(`item-${item.id}`, 215, position, MENU_WIDTH_PX.xwide);
   const isSelected = (searchHighlight?.itemId ?? selectedItemId) === item.id;
   const effectiveIsOpen = isOpen || !!searchHighlight?.ancestorItemIds.has(item.id);
   const childrenList = item.children || [];
@@ -215,7 +215,7 @@ export default function UnifiedTree({
 
   const isVirtualCategory = collection.id < 0;
   // Collection and template flyouts are the wide two-tab shell; a category's (Actions only) is the narrow one
-  const menu = useTreeActionMenu(`node-${collection.id}`, 240, position, treeType === 'templates' || !isVirtualCategory ? 280 : 224);
+  const menu = useTreeActionMenu(`node-${collection.id}`, 240, position, treeType === 'templates' || !isVirtualCategory ? MENU_WIDTH_PX.xwide : MENU_WIDTH_PX.normal);
   const effectiveCollectionId =
     collection.id === STANDALONE_COLLECTION_ID ? null : collection.id;
   const [uncontrolledOpen, setUncontrolledOpen] = useState(true);

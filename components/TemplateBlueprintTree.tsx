@@ -4,7 +4,7 @@ import React, { useMemo, useState } from 'react';
 import type { BuiltinKey } from '@/types/layout';
 import type { ItemTemplate } from '@/types/template';
 import type { FieldDefinition } from '@/types/field';
-import { useTreeActionMenu } from '@/hooks/useTreeActionMenu';
+import { MENU_WIDTH_PX, useTreeActionMenu } from '@/hooks/useTreeActionMenu';
 import TemplateFieldActionMenu from '@/components/TemplateFieldActionMenu';
 import BlueprintBuiltinActionMenu from '@/components/BlueprintBuiltinActionMenu';
 import TreeGearButton from '@/components/TreeGearButton';
@@ -138,7 +138,7 @@ function BuiltinRow({
   placeTarget: string;
   onPlace: () => void;
 }) {
-  const menu = useTreeActionMenu(`blueprint-builtin-${builtinKey}`, 140, position, 224);
+  const menu = useTreeActionMenu(`blueprint-builtin-${builtinKey}`, 140, position, MENU_WIDTH_PX.normal);
   const [isDragging, setIsDragging] = useState(false);
   const gear = (
     <div className={`transition shrink-0 ${isRightSide ? 'absolute left-2' : 'relative'}`}>
@@ -204,7 +204,7 @@ function FieldRow({
   onDeleteField: TemplateBlueprintTreeProps['onDeleteField'];
   onReorderFields: TemplateBlueprintTreeProps['onReorderFields'];
 }) {
-  const menu = useTreeActionMenu(`template-field-${field.id}`, 480, position, 272);
+  const menu = useTreeActionMenu(`template-field-${field.id}`, 480, position, MENU_WIDTH_PX.wide);
   const [isDragging, setIsDragging] = useState(false);
   const gear = (
     <div className={`transition shrink-0 ${isRightSide ? 'absolute left-2' : 'relative'}`}>

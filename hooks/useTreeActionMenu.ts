@@ -29,6 +29,17 @@ export function releaseMenuPin(menuId: string) {
   if (pinnedMenuId === menuId) pinnedMenuId = null;
 }
 
+/** The flyout shells' widths in px (TreeSubMenu.css, at the 16px root size): a right-docked panel's flyout opens
+    leftward from the panel's edge by its width, so each row must pass the width its menu really renders at. */
+export const MENU_WIDTH_PX = {
+  /** `.menuShell`, 14rem: an Actions-only flyout (a category, a Blueprint built-in). */
+  normal: 224,
+  /** `.menuShellXWide`, 17.5rem: the two-tab flyouts (item, collection, template, Layout container / content). */
+  xwide: 280,
+  /** `.menuShellWide`, 20.5rem: a Blueprint field's flyout. */
+  wide: 328,
+} as const;
+
 /** What every gear flyout takes as its `menu` prop. */
 export type TreeActionMenuApi = ReturnType<typeof useTreeActionMenu>;
 

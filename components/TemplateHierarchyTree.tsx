@@ -16,7 +16,7 @@ import { openNodeMenu } from '@/lib/layoutTreeMenu';
 import { LayoutNavigationProvider } from '@/context/LayoutNavigationContext';
 import { contentNameOf } from '@/lib/layoutContent';
 import { SearchGlassIcon } from '@/components/icons/TreeIcons';
-import { useTreeActionMenu } from '@/hooks/useTreeActionMenu';
+import { MENU_WIDTH_PX, useTreeActionMenu } from '@/hooks/useTreeActionMenu';
 import {
   TemplateContainerActionMenu,
   TemplateComponentActionMenu,
@@ -402,10 +402,9 @@ function ContainerNodeRow({
   const showDropInside = isDragOver || move.hint === 'inside';
   const { hiddenIds } = useContext(TreeVisibilityContext);
   const isDimmed = ancestorHidden || hiddenIds.has(container.id);
-  // Right-docked panels position the flyout by its real width: every container's flyout (Body or not)
-  // is the 224px (14rem) shell default -- its wider Properties tab shifts itself left (see
-  // PROPERTIES_EXTRA_WIDTH_PX in TemplateLayoutActionMenu).
-  const menu = useTreeActionMenu(`tree-container-${container.id}`, 280, position, 224);
+  // Right-docked panels position the flyout by its real width: every container's flyout (Body or not) is the
+  // two-tab menuShellXWide shell.
+  const menu = useTreeActionMenu(`tree-container-${container.id}`, 280, position, MENU_WIDTH_PX.xwide);
 
   // Semantic layout icon (a card frame is only a look, not a kind of container, so it shows its direction too)
   const containerIcon = isRoot ? (
@@ -657,9 +656,8 @@ function ComponentNodeRow({
   const isRightSide = position === 'right';
   const isSelected = selectedNodeId === component.id;
   // Right-docked panels position the flyout by its real width: like a container's, a content flyout is the
-  // 224px (14rem) shell default, and its wider Properties tab shifts itself left (PROPERTIES_EXTRA_WIDTH_PX
-  // in TemplateLayoutActionMenu).
-  const menu = useTreeActionMenu(`tree-comp-${component.id}`, 280, position, 224);
+  // two-tab menuShellXWide shell.
+  const menu = useTreeActionMenu(`tree-comp-${component.id}`, 280, position, MENU_WIDTH_PX.xwide);
   const move = useNodeDrag(component.id, 'component');
   const { hiddenIds } = useContext(TreeVisibilityContext);
   const isDimmed = ancestorHidden || hiddenIds.has(component.id);
