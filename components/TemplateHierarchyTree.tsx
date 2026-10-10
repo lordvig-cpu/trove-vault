@@ -702,7 +702,7 @@ function ComponentNodeRow({
         </span>
 
         {/* Node Label */}
-        <span className={`text-[13px] tracking-tight truncate flex-1 min-w-0 ${isDimmed ? 'opacity-50' : ''}`}>
+        <span className={`text-[13px] tracking-tight truncate flex-1 min-w-0 tree-muted ${isDimmed ? 'opacity-50' : ''}`}>
           {label}
         </span>
 
