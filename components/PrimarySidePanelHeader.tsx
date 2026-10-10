@@ -191,7 +191,7 @@ export default function PrimarySidePanelHeader({
     : isGrabbed
     ? 'Grabbed Content'
     : isContent
-    ? 'Content'
+    ? 'Blueprint'
     : isComponents
     ? 'Components'
     : isLayout

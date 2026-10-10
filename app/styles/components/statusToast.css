@@ -1,0 +1,50 @@
+/* ==========================================================================
+   STATUS TOAST (StatusToast.tsx)
+   The template editor's status message at the top centre of the app: a solid popover card with a coloured
+   edge and ink -- the ok green for a success, the danger red for an error. Its layer is in Z_INDEX.md.
+   ========================================================================== */
+
+.status-toast {
+  z-index: 95;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: var(--popover-surface-bg);
+  border: 1px solid var(--toast-edge);
+  color: var(--toast-ink);
+  box-shadow: 0 8px 24px -6px oklch(from var(--toast-edge) l c h / 0.45);
+  animation: statusToastIn 180ms ease-out both;
+}
+
+.status-toast-success {
+  --toast-edge: var(--status-ok);
+  --toast-ink: var(--tmpl-alert-success-text);
+}
+
+.status-toast-error {
+  --toast-edge: var(--status-danger);
+  --toast-ink: var(--tree-menu-danger-text);
+}
+
+.status-toast-close {
+  color: var(--text-muted);
+}
+
+.status-toast-close:hover {
+  color: var(--text-strong);
+  background-color: var(--surface-primary-hover);
+}
+
+@keyframes statusToastIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -6px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .status-toast { animation: none; }
+}

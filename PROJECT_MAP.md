@@ -101,6 +101,8 @@ Conventions and architecture (data access, theming, template editor internals, b
   `components/template-canvas/*`; its header and mode toggle live in the toolbar.
 - `TemplateFieldActionMenu.tsx` / `TemplateLayoutActionMenu.tsx` —
   the tree-gear popup menus for a Blueprint field and for a layout container / content element.
+- `StatusToast.tsx` — the template editor's success / error message at the top centre of the app; dismiss with
+  its close button, or it goes by itself after 5 seconds (held while hovered).
 - `TemplateBlueprintTree.tsx` — the template editor's Blueprint tab: the built-in values and the template's fields as
   one tree grouped by kind of data, with placed checks; rows drag into the layout or Place: via their gear.
 - `BlueprintBuiltinActionMenu.tsx` — a Blueprint built-in row's gear flyout (Actions only: Place:).

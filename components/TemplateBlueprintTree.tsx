@@ -42,8 +42,6 @@ interface TemplateBlueprintTreeProps {
   onPlaceField: (fieldId: number) => void;
   onPlaceBuiltin: (key: BuiltinKey) => void;
   isLoading?: boolean;
-  error?: string | null;
-  successMsg?: string | null;
   position?: 'left' | 'right';
 }
 
@@ -298,8 +296,6 @@ export default function TemplateBlueprintTree({
   onPlaceField,
   onPlaceBuiltin,
   isLoading = false,
-  error = null,
-  successMsg = null,
   position = 'left',
 }: TemplateBlueprintTreeProps) {
   const isRightSide = position === 'right';
@@ -336,9 +332,6 @@ export default function TemplateBlueprintTree({
 
   return (
     <div className="flex-1 min-h-0 overflow-y-auto primary-panel-scroll p-1 flex flex-col gap-1 select-none">
-      {error && <div className="text-xs p-2 rounded-lg bg-danger/10 border border-danger/30 text-danger-text">{error}</div>}
-      {successMsg && <div className="text-xs p-2 rounded-lg bg-ok/10 border border-ok/30 text-ok-text">{successMsg}</div>}
-
       {groups.length === 0 ? (
         <div className="py-4 px-2 text-center text-xs text-content-muted italic">
           {unplacedOnly && !isSearching && filterGroups.length === 0

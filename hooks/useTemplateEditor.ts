@@ -360,6 +360,12 @@ export function useTemplateEditor({
     savedLayoutRef.current = null;
   }, [onRestoreTabs, clearLayoutHistory]);
 
+  /** Dismisses the status message (StatusToast). Stable, so the toast's auto-dismiss timer isn't restarted. */
+  const clearMessages = useCallback(() => {
+    setError(null);
+    setSuccessMsg(null);
+  }, []);
+
   /** Whether the layout differs from the one the editor opened with (or last saved). */
   const hasUnsavedLayoutChanges = useCallback(() => {
     const saved = savedLayoutRef.current;
@@ -658,10 +664,7 @@ export function useTemplateEditor({
       setSelectedFieldId(null);
       setIsRootSelected(true);
     },
-    clearMessages: () => {
-      setError(null);
-      setSuccessMsg(null);
-    },
+    clearMessages,
     startEditing,
     stopEditing,
     saveAndClose,

@@ -253,8 +253,6 @@ export function usePanelRenderers({
             onDeleteField={templateEditor.deleteField}
             onReorderFields={templateEditor.reorderFields}
             isLoading={templateEditor.isLoading}
-            error={templateEditor.error}
-            successMsg={templateEditor.successMsg}
             position={pos === 'bottom' ? 'right' : pos}
           />
         </TreePanelContext.Provider>

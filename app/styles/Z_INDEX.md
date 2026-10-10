@@ -17,6 +17,7 @@ Reach the whole app (or the workspace), except where a narrower scope is noted.
 | 300        | Seed color picker                     | Portal to `document.body`                            | SeedColorPicker.tsx; navigationFooter.css    |
 | 150        | Dock drop-target overlay              | Fixed; rendered inside workspace                     | PanelDockDropZones.tsx / CSS                 |
 | 100        | Logo introduction trigger             | Application shell                                    | DynamicWatermark.tsx                         |
+| 95         | Status toast (the template editor's success / error message) | Body portal, fixed at the top centre over the header; above help windows (92) and every menu, below the seed picker (300) and modals (400) | StatusToast.tsx; statusToast.css |
 | 92         | Help windows (popped-out `?` bubble) | Fixed, rendered once at the app root; above hover hints, below modals (400); windows share it, DOM order decides | HelpWindowHost.tsx; TreeSubMenu.css |
 | 90         | Hover hint popup (`?` help text)      | Body portal; above every menu and flyout it can describe | HoverHint.tsx; TreeSubMenu.css            |
 | 89         | UnitSelect's open pulldown list; the Blueprint header's "+" field-type menu | Body portal; above the flyout or panel header its trigger sits in (a panel header clips what overflows it) | UnitSelect.tsx; panel-header/PanelViewTabs.tsx |

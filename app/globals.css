@@ -23,6 +23,7 @@
 @import "./styles/components/templateBlueprintTree.css";
 @import "./styles/components/templateLayoutBuilder.css";
 @import "./styles/components/ItemModal.css";
+@import "./styles/components/statusToast.css";
 @import "./styles/components/BottomPanel.css";
 @import "./styles/components/PanelDockDropZones.css";
 

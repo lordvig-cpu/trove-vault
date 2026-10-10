@@ -25,6 +25,7 @@ import { useLeaveTemplateEditorGuard } from '@/hooks/useLeaveTemplateEditorGuard
 import LeaveTemplateEditorModal from '@/components/LeaveTemplateEditorModal';
 import { useConfirmRemoveContainer } from '@/hooks/useConfirmRemoveContainer';
 import DeleteContainerModal from '@/components/DeleteContainerModal';
+import StatusToast from '@/components/StatusToast';
 import { getPanelTitle } from '@/lib/panelTitles';
 
 /**
@@ -523,7 +524,9 @@ export default function Home() {
       }}
       reservedWidth={isSecondaryActive ? secondaryPanelWidth : 0}
       onWidthChange={setPrimaryPanelWidth}
-      loading={loading}
+      // "Syncing hierarchy..." is about the Items / Collections / Templates trees; a workspace refresh (after a
+      // field edit, say) must not flash it over the Layout tree or another tab it says nothing about
+      loading={loading && (primaryActiveTab === 'items' || primaryActiveTab === 'collections' || primaryActiveTab === 'templates')}
       error={error}
       onAddNewItem={() => openCreateItem(null, null)}
       onAddNewCollection={() => openCreateCollection(null)}
@@ -925,6 +928,12 @@ export default function Home() {
       />
       {leaveEditorPrompt && <LeaveTemplateEditorModal {...leaveEditorPrompt} />}
       {removeContainerPrompt && <DeleteContainerModal {...removeContainerPrompt} />}
+      {/* The template editor's status message (an error wins over a success) */}
+      <StatusToast
+        message={templateEditor.error ?? templateEditor.successMsg}
+        kind={templateEditor.error ? 'error' : 'success'}
+        onDismiss={templateEditor.clearMessages}
+      />
     </div>
   );
 }

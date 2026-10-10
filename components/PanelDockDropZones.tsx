@@ -55,7 +55,7 @@ export default function PanelDockDropZones({
       case 'templates':
         return 'Templates';
       case 'template_editor':
-        return 'Content';
+        return 'Blueprint';
       case 'template_builder':
         return 'Components';
       case 'template_hierarchy':

@@ -474,6 +474,10 @@ commit whenever you add, remove, split or rename a file — it goes stale otherw
   (`useConfirmRemoveContainer`), which opens `DeleteContainerModal` listing everything inside it, indented as in the
   Layout tree. An empty container is deleted at once. Either way it is one undo step. Both this and the leave prompt
   are `CautionModal`, the shared dialog shell; a new "are you sure" check should use it too.
+- The template editor's status messages ("Added field ...", or an error) show as `StatusToast` at the top centre of
+  the app, over the header (layer 95, `Z_INDEX.md`), not inside a panel: a close button, or it goes by itself after
+  5 seconds (held while hovered). A field edit refreshes the workspace data, but the left panel's "Syncing
+  hierarchy..." banner only shows over the Items / Collections / Templates trees, never the Layout tree.
 - Layout persistence: localStorage on every change, plus a debounced Supabase write to
   `item_templates.layout_config` (in `.supabase/schema.sql`). Until that column exists in the live
   database (see the first item under "To do before real template saving"), remote saves fail with
