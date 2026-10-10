@@ -263,7 +263,7 @@ commit whenever you add, remove, split or rename a file — it goes stale otherw
   the missing ones and opening the Fields card), not by the browser, which can't check a field in a closed card.
   The item view's Edit button still opens the modal.
 - Every container / content flyout's Actions tab (Body included) leads with **Select Previous: <name>** and
-  **Select Next: <name>** (then a divider): the element just above / below in the Layout tree's order
+  **Select Next: <name>** (then a divider; the name is in the Primary Accent, `ActionMenuItem`'s `labelDetail`): the element just above / below in the Layout tree's order
   (`lib/layoutNavigation.ts`: each container, then everything inside it; the Body first), each left out at
   either end. They exist so any element -- above all the Body, which a child usually covers completely on the
   canvas -- is reachable without the tree. Choosing one selects that element and opens *its* menu, on Actions,

@@ -270,7 +270,8 @@ function LayoutNavigationActions({ nodeId }: { nodeId: string }) {
       {prev && (
         <ActionMenuItem
           icon={<ChevronUpIcon className="w-3.5 h-3.5" />}
-          label={`Select Previous: ${prev.name}`}
+          label="Select Previous:"
+          labelDetail={prev.name}
           subtext="The element above this one in the layout"
           onClick={() => goTo(prev.id)}
         />
@@ -278,7 +279,8 @@ function LayoutNavigationActions({ nodeId }: { nodeId: string }) {
       {next && (
         <ActionMenuItem
           icon={<ChevronDownIcon className="w-3.5 h-3.5" />}
-          label={`Select Next: ${next.name}`}
+          label="Select Next:"
+          labelDetail={next.name}
           subtext="The element below this one in the layout"
           onClick={() => goTo(next.id)}
         />

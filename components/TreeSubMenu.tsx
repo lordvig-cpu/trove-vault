@@ -208,11 +208,14 @@ function showFullTextIfCut(e: React.MouseEvent<HTMLElement>, ...text: (string | 
 export function ActionMenuItem({
   icon,
   label,
+  labelDetail,
   subtext,
   onClick,
 }: {
   icon: React.ReactNode;
   label: string;
+  /** Shown after the label in the Primary Accent, e.g. the element a "Select Next:" goes to. */
+  labelDetail?: string;
   subtext?: string;
   onClick: () => void;
 }) {
@@ -220,7 +223,7 @@ export function ActionMenuItem({
     <button
       type="button"
       onClick={onClick}
-      onMouseEnter={(e) => showFullTextIfCut(e, label, subtext)}
+      onMouseEnter={(e) => showFullTextIfCut(e, labelDetail ? `${label} ${labelDetail}` : label, subtext)}
       className="actionMenuItem group"
     >
       <span className="actionMenuItemIcon w-4 h-4 flex items-center justify-center shrink-0">
@@ -229,6 +232,7 @@ export function ActionMenuItem({
       <div className="flex flex-col leading-tight min-w-0">
         <span className="actionMenuItemLabel truncate">
           {label}
+          {labelDetail && <span className="actionMenuItemLabelDetail"> {labelDetail}</span>}
         </span>
         {subtext && (
           <span className="actionMenuItemSubtext truncate">
