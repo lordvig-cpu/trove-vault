@@ -34,7 +34,7 @@ const WIDTH_HINT: HintContent = {
   ],
   notes: [
     { kind: 'tip', text: <>Preview only; templates stay fluid.</> },
-    { kind: 'caution', text: <>A <strong>Maximum Content Width</strong> set on the Body (the Body's gear menu, Properties tab, Size section) overrides this: the layout stays capped at that width, and is centered when the preview is wider.</> },
+    { kind: 'caution', text: <>A <strong>Maximum Content Width</strong> set on the Body (the Body&apos;s gear menu, Properties tab, Size section) overrides this: the layout stays capped at that width, and is centered when the preview is wider.</> },
   ],
 };
 const FIT_SETTINGS = [

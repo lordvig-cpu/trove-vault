@@ -82,6 +82,7 @@ export default function FlexContainerRenderer({
 }) {
   const [isDragOver, setIsDragOver] = useState(false);
   const isSelected = selectedNodeId === container.id;
+  const dropHint = `Drop field to insert into ${container.label || (isRoot ? 'Body' : 'Container')}`;
   const isActive = activeContainerId === container.id;
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -373,6 +374,17 @@ export default function FlexContainerRenderer({
           />
         )}
 
+      {/* Dragging over a container that already holds content: the same drop hint, over its contents (it takes
+          no room, so nothing reflows under the pointer mid-drag). isDragOver is only ever true for the innermost
+          container under the pointer, so a parent never shows its hint over a child's. */}
+      {canvasMode === 'edit' && isDragOver && container.children.length > 0 && (
+        <div className="pointer-events-none absolute inset-0 z-30 flex items-center justify-center p-4" aria-hidden="true">
+          <span className="text-xs font-bold text-[var(--primary-accent)] flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[var(--surface-panel)] border border-[color-mix(in_oklch,var(--primary-accent)_45%,transparent)] shadow-lg animate-pulse">
+            <InboxIcon className="inline w-3.5 h-3.5 align-text-bottom" /> {dropHint}
+          </span>
+        </div>
+      )}
+
       {/* Children or Empty State */}
       <div ref={innerRef} style={innerFlexStyle} className="w-full flex-1 min-h-0">
         {container.children.length === 0 ? (
@@ -390,7 +402,7 @@ export default function FlexContainerRenderer({
             >
               {isDragOver && (
                 <span className="text-xs font-bold text-[var(--primary-accent)] flex items-center gap-1.5 animate-pulse">
-                  <InboxIcon className="inline w-3.5 h-3.5 align-text-bottom" /> Drop field to insert into {container.label || (isRoot ? 'Body' : 'Container')}
+                  <InboxIcon className="inline w-3.5 h-3.5 align-text-bottom" /> {dropHint}
                 </span>
               )}
             </div>
