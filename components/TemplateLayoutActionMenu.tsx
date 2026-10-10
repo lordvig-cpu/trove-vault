@@ -400,7 +400,7 @@ export function TemplateContainerActionMenu({
         position={position}
         splitBody
         className="menuShellXWide"
-        title={floating ? 'Body' : 'Body Properties'}
+        title="Body"
         floating={floating}
         titleIcon={<BodyIcon className="w-4 h-4" />}
         subheader={
@@ -596,7 +596,7 @@ export function TemplateContainerActionMenu({
       position={position}
       splitBody
       className="menuShellXWide"
-      title={floating ? defaultLabel : 'Container Properties'}
+      title={floating ? defaultLabel : 'Container'}
       floating={floating}
       titleIcon={containerIcon}
       subheader={
@@ -922,7 +922,7 @@ export function TemplateComponentActionMenu({
       position={position}
       splitBody
       className="menuShellXWide"
-      title={floating ? contentNameOf(component, fields) || 'Content' : 'Content Properties'}
+      title={floating ? contentNameOf(component, fields) || 'Content' : 'Content'}
       floating={floating}
       titleIcon={compIcon}
       subheader={

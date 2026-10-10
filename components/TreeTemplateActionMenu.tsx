@@ -59,7 +59,7 @@ export default function TreeTemplateActionMenu({
       position={position}
       splitBody
       className="menuShellXWide"
-      title="Template Properties"
+      title="Template"
       titleIcon={<PackageIcon className="w-4 h-4" />}
       subheader={<ActionMenuTabs tabs={TABS} active={activeTab} onChange={setActiveTab} />}
     >

@@ -65,7 +65,7 @@ export default function TreeItemActionMenu({
       position={position}
       splitBody
       className="menuShellXWide"
-      title="Item Properties"
+      title="Item"
       titleIcon={<FileIcon className="w-4 h-4" />}
       subheader={<ActionMenuTabs tabs={TABS} active={activeTab} onChange={setActiveTab} />}
     >

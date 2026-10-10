@@ -102,7 +102,7 @@ export default function TreeCollectionActionMenu({
       position={position}
       splitBody
       className="menuShellXWide"
-      title="Collection Properties"
+      title="Collection"
       titleIcon={<FolderIcon className="w-4 h-4" />}
       subheader={<ActionMenuTabs tabs={TABS} active={activeTab} onChange={setActiveTab} />}
     >

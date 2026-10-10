@@ -134,7 +134,7 @@ export default function TreeSubMenu({
     </div>
   ) : (
     <div className="headerPill">
-      <span className="headerTitle">{title}</span>
+      <span className="headerTitle" onMouseEnter={(e) => showFullTextIfCut(e, title)}>{title}</span>
       <span className="headerIcon">{titleIcon}</span>
     </div>
   );

@@ -410,6 +410,17 @@
   gap: 0.5rem;
 }
 
+/* A docked flyout's title (a Blueprint field's own name can be long) cuts off with "..." before the icon at
+   the right, the same way the floating title does: a block with the same 1rem line box, so it stays centered. */
+.menuShellHead .headerPill > .headerTitle {
+  display: block;
+  min-width: 0;
+  line-height: 1rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .menuShellFloating .hintTitleGroup {
   flex: 1 1 auto;
   min-width: 0;

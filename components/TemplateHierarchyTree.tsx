@@ -539,7 +539,7 @@ function ContainerNodeRow({
 
         {!isRoot && <VisibilityToggle nodeId={container.id} label={containerLabel} />}
 
-        {/* Gear Icon: Triggers Tree Action Menu with Item Properties or Body Actions */}
+        {/* Gear Icon: Triggers Tree Action Menu with the container's or the Body's Actions / Properties */}
         <div className={isRightSide ? 'absolute left-2 shrink-0' : 'relative ml-auto shrink-0'}>
           <TreeGearButton menu={menu} label={`Open ${containerLabel} actions`} gearId={container.id} onBeforeClick={() => onSelectNode(container.id)} />
         </div>
@@ -724,7 +724,7 @@ function ComponentNodeRow({
 
         <VisibilityToggle nodeId={component.id} label={label} />
 
-        {/* Gear Icon: Triggers Tree Action Menu with Item Properties */}
+        {/* Gear Icon: Triggers Tree Action Menu with the content's Actions / Properties */}
         <div className={isRightSide ? 'absolute left-2 shrink-0' : 'relative ml-auto shrink-0'}>
           <TreeGearButton menu={menu} label={`Open ${label} actions`} gearId={component.id} onBeforeClick={() => onSelectNode(component.id)} />
         </div>

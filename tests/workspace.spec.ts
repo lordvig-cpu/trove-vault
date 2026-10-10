@@ -163,7 +163,7 @@ test('right-clicking a tree row opens its gear menu pinned; Shift+right-click ke
 
   await row.click({ button: 'right' });
   await expect(menu).toBeVisible();
-  await expect(menu).toContainText('Item Properties');
+  await expect(menu.locator('.menuShellHead .headerTitle')).toHaveText('Item');
   await expect(row.locator('.tree-gear-trigger-pinned')).toHaveCount(1);
   // Pinned: the pointer leaving and a second right-click both keep it open
   await page.mouse.move(1200, 800);

@@ -135,7 +135,7 @@ export default function TemplateFieldActionMenu({
       left={menu.menuCoords.left}
       position={position}
       splitBody
-      title="Field Properties"
+      title={field.label}
       titleIcon={<FieldTypeIcon type={activeTypeMeta.type} className="w-3.5 h-3.5" />}
       className="menuShellWide"
       subheader={

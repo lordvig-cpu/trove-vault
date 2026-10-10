@@ -231,7 +231,7 @@ commit whenever you add, remove, split or rename a file — it goes stale otherw
   is just where each is portaled in `TemplateEditorStage.tsx` — swap it there if that changes again.
   When a content element is selected, `TemplateEditorContentBar` takes the header slot instead: the eye, its name
   (a content `name`, separate from its `label` caption -- `contentNameOf` falls back to the label text, so
-  renaming never changes what the item shows), then quick versions of the Content Properties sections
+  renaming never changes what the item shows), then quick versions of the content flyout's Properties sections
   (Shows, Display, Label off/above/beside, Text style + bold/italic/underline + alignment), then
   the gear (the full flyout) and delete. Either bar's gear opens the flyout on its Properties tab
   (`lib/menuTabRequest.ts`); the tree row's own gear keeps whichever tab was last used. Both bars build from the shared `editorBarControls.tsx`, and
@@ -275,8 +275,9 @@ commit whenever you add, remove, split or rename a file — it goes stale otherw
   drag by the title bar, close button, Escape), until closed or another menu opens. A header pulldown with a pinned
   menu is held mounted (hidden once closed, even after it is docked) until that menu closes (`lib/flyoutHold.ts`),
   since the menu still lives in its tree.
-- The Items / Collections / Templates trees' menus are Actions | Properties flyouts titled "Item Properties",
-  "Collection Properties", "Template Properties" (wide shell, like the template flyouts). Properties edits what
+- The Items / Collections / Templates trees' menus are Actions | Properties flyouts titled "Item",
+  "Collection", "Template" (wide shell, like the template flyouts; a title never repeats "Properties", since the
+  tabs already say it). Properties edits what
   is already saved -- creating stays in the Actions tab's modals (New Item, Add Sub-Item, New Sub-Collection).
   An item's Properties (`TreeItemProperties.tsx`) is everything the Edit Item modal edits -- name, then the
   Template, Photo, Fields and Custom Fields cards -- through the modal's own load and save (`useItemEditor`,
@@ -314,7 +315,7 @@ commit whenever you add, remove, split or rename a file — it goes stale otherw
   a card this tall, but the original bug when a much shorter head reused the same rule), so it's
   fixed in absolute px instead. `subheader` (`ActionMenuTabs`) always renders, giving the head card
   its band and divider unconditionally too -- what varies is only its *content*: with two or more
-  tabs (Body/Container Properties; `TemplateFieldActionMenu.tsx`'s Content field editor, which
+  tabs (the Body / Container flyouts; `TemplateFieldActionMenu.tsx`'s Content field editor, which
   already had real properties -- label, key, type, required, options -- and real actions -- move
   up/down, delete -- so it kept both as genuine tabs) it renders real tabs: the side panels'
   paper-folder tabs (`PanelFolderTabSvg` + `.tree-folder-tab`, icon and label inside), standing on the
@@ -329,8 +330,8 @@ commit whenever you add, remove, split or rename a file — it goes stale otherw
   never add a second shell, a bespoke header class, or a per-menu override for a card that happens
   to be shorter -- if a head card ever looks wrong again, the fix is either in `.menuShellHead`'s
   own unconditional rule, or in giving `ActionMenuTabs` more to render, never a new special case.
-  The title bar names the object itself ("Body Properties", in the same boxed amber pill with the
-  icon at the far right as every other flyout, matching "Container Properties"). The Actions tab is
+  The title bar names the object itself ("Body", "Container", "Content"; a Blueprint field's flyout shows the
+  field's own name), in the same boxed amber pill with the icon at the far right as every other flyout. The Actions tab is
   plain full-width rows (`ActionMenuItem`, no borders).
   Inputs, pulldowns and buttons in the Properties tab share the top toolbar's control height
   (`barControlHeight`, 26px) so rows of mixed controls line up.
@@ -355,7 +356,7 @@ commit whenever you add, remove, split or rename a file — it goes stale otherw
   (a locked toggle) and Spacing. Deliberately absent: Child Item Gap (the `gap`
   value itself is unchanged, it just has no UI), Wrap Children and Card Frame Style (cards are
   expected to become draggable components rather than a per-container option), a Select Parent
-  action (click the parent instead), and Maximum Content Width (Body-only). A content element's flyout ("Content Properties", `TemplateComponentActionMenu`) is the same split shell: an Actions tab (Delete) and a Properties tab of collapsible cards -- Content (the binding picker, static text, display style, image shape), Label (show/hide, above/beside, its own text and text style), Text (a "Start from" preset, size, spacing, weight, color, case, alignment, italic, underline, line height, reset) and Appearance (the same `TemplateAppearanceControls` a container uses) -- and deliberately no Size, Spacing or Layout card. The controls live in `TemplateContentControls.tsx`. The old table / media / stat placeholder blocks, which have no data, only get a name field and Appearance.
+  action (click the parent instead), and Maximum Content Width (Body-only). A content element's flyout ("Content", `TemplateComponentActionMenu`) is the same split shell: an Actions tab (Delete) and a Properties tab of collapsible cards -- Content (the binding picker, static text, display style, image shape), Label (show/hide, above/beside, its own text and text style), Text (a "Start from" preset, size, spacing, weight, color, case, alignment, italic, underline, line height, reset) and Appearance (the same `TemplateAppearanceControls` a container uses) -- and deliberately no Size, Spacing or Layout card. The controls live in `TemplateContentControls.tsx`. The old table / media / stat placeholder blocks, which have no data, only get a name field and Appearance.
 - `isCard` on a container is an internal look, not something the user picks: it gives the container the
   themed card frame (rounded, card background, border, shadow) in Preview and the item view. The default
   layout, the Simple Templates, Stat Row tiles and the 2-/3-Column Split palette columns set it. It is
