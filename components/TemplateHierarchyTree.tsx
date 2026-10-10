@@ -510,7 +510,7 @@ function ContainerNodeRow({
         </span>
 
         {/* Node Label */}
-        <span className={`text-[13px] tracking-tight truncate flex-1 min-w-0 ${isDimmed ? 'opacity-50' : ''}`}>
+        <span className={`text-[13px] tracking-tight truncate min-w-0 ${isDimmed ? 'opacity-50' : ''}`}>
           {containerLabel}
         </span>
 
@@ -533,6 +533,9 @@ function ContainerNodeRow({
             {visibleChildren.length}
           </span>
         )}
+
+        {/* The name and its count stay together on the left; the eye and gear sit at the right */}
+        <span className="flex-1" aria-hidden="true" />
 
         {!isRoot && <VisibilityToggle nodeId={container.id} label={containerLabel} />}
 

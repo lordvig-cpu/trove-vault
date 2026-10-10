@@ -104,7 +104,7 @@ function GroupRow({
           <BlueprintGroupIcon type={group.id} className="w-3.5 h-3.5" />
         </span>
         <span className="text-[13px] tracking-tight font-medium truncate shrink min-w-0">{group.label}</span>
-        <span className="tree-badge px-2 py-0.5 rounded-full text-[10.5px] font-mono shrink-0 select-none ml-auto">
+        <span className="tree-badge px-2 py-0.5 rounded-full text-[10.5px] font-mono shrink-0 select-none">
           {group.rows.length}
         </span>
       </div>
