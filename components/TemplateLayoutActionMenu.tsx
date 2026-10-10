@@ -409,7 +409,8 @@ export function TemplateContainerActionMenu({
             <LayoutNavigationActions nodeId={container.id} />
             <ActionMenuItem
               icon={<AddChildContainerIcon className="w-3.5 h-3.5" />}
-              label="Add Child Container"
+              label="Add:"
+              labelDetail="Child Container"
               subtext="Insert nested container"
               onClick={() => {
                 setNewContainerName('New Container');
@@ -643,7 +644,8 @@ export function TemplateContainerActionMenu({
               <ActionMenuDivider />
               <ActionMenuDangerItem
                 icon={<TrashCanIcon />}
-                label="Delete Container"
+                label="Delete:"
+                labelDetail="Container"
                 subtext="Permanently remove container and all contents"
                 onClick={act(() => onRemoveContainer(container.id))}
               />
@@ -928,7 +930,8 @@ export function TemplateComponentActionMenu({
           {onRemoveComponent ? (
             <ActionMenuDangerItem
               icon={<TrashCanIcon />}
-              label="Delete Content"
+              label="Delete:"
+              labelDetail="Content"
               subtext="Remove this from its container"
               onClick={() => {
                 onRemoveComponent(component.id);

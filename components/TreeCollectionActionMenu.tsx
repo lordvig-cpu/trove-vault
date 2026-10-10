@@ -66,7 +66,8 @@ export default function TreeCollectionActionMenu({
       >
         <ActionMenuItem
           icon={<FileIcon />}
-          label="New Item"
+          label="New:"
+          labelDetail="Item"
           subtext="Add record to this category"
           onClick={() => {
             onAddSubItem(collection.id, null);
@@ -75,7 +76,8 @@ export default function TreeCollectionActionMenu({
         />
         <ActionMenuItem
           icon={<GearIcon className="w-3.5 h-3.5" />}
-          label="Edit Item Template"
+          label="Edit:"
+          labelDetail="Item Template"
           subtext="Manage attributes & schema"
           onClick={() => {
             if (collection.id !== UNCATEGORIZED_CATEGORY_ID) onEditTemplate?.(Math.abs(collection.id));
@@ -106,7 +108,8 @@ export default function TreeCollectionActionMenu({
       <>
       <ActionMenuItem
         icon={<FileIcon />}
-        label="New Item"
+        label="New:"
+        labelDetail="Item"
         subtext="Create item in this collection"
         onClick={() => {
           onAddSubItem(collection.id, null);
@@ -116,7 +119,8 @@ export default function TreeCollectionActionMenu({
 
       <ActionMenuItem
         icon={<InboxIcon />}
-        label="Add Existing Item"
+        label="Add:"
+        labelDetail="Existing Item"
         subtext="Link catalog item here"
         onClick={() => {
           // Not implemented yet: linking an existing catalog item to a collection.
@@ -153,7 +157,8 @@ export default function TreeCollectionActionMenu({
       {onDeleteCollection && (
         <ActionMenuDangerItem
           icon={<TrashCanIcon />}
-          label="Delete Collection"
+          label="Delete:"
+          labelDetail="Collection"
           subtext="Permanently remove"
           onClick={() => {
             onDeleteCollection(collection);

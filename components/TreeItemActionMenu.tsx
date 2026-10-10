@@ -71,7 +71,8 @@ export default function TreeItemActionMenu({
         <>
           <ActionMenuItem
             icon={<AddSubItemIcon className="w-3.5 h-3.5" />}
-            label="Add Sub-Item"
+            label="Add:"
+            labelDetail="Child Item"
             subtext="Create a nested record"
             onClick={() => {
               onAddSubItem(collectionId, item.id);
@@ -83,7 +84,8 @@ export default function TreeItemActionMenu({
 
           <ActionMenuDangerItem
             icon={<TrashCanIcon />}
-            label="Delete Item"
+            label="Delete:"
+            labelDetail="Item"
             subtext="Permanently remove"
             onClick={() => {
               onDeleteItem(item, collectionId);

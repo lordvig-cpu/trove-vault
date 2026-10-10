@@ -248,11 +248,14 @@ export function ActionMenuItem({
 export function ActionMenuDangerItem({
   icon,
   label,
+  labelDetail,
   subtext,
   onClick,
 }: {
   icon: React.ReactNode;
   label: string;
+  /** As ActionMenuItem's: shown after the label in the brightened Primary Accent. */
+  labelDetail?: string;
   subtext?: string;
   onClick: () => void;
 }) {
@@ -260,7 +263,7 @@ export function ActionMenuDangerItem({
     <button
       type="button"
       onClick={onClick}
-      onMouseEnter={(e) => showFullTextIfCut(e, label, subtext)}
+      onMouseEnter={(e) => showFullTextIfCut(e, labelDetail ? `${label} ${labelDetail}` : label, subtext)}
       className="actionMenuDangerItem group"
     >
       <span className="actionMenuDangerIcon">
@@ -269,6 +272,7 @@ export function ActionMenuDangerItem({
       <div className="flex flex-col leading-tight min-w-0">
         <span className="actionMenuDangerLabel truncate">
           {label}
+          {labelDetail && <span className="actionMenuItemLabelDetail"> {labelDetail}</span>}
         </span>
         {subtext && (
           <span className="actionMenuDangerSubtext truncate">

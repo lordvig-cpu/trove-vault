@@ -267,8 +267,8 @@ test.describe('Template Layout Engine', () => {
     await categoryGear.click();
     await page.waitForTimeout(400);
 
-    // 4. Click "Edit Item Template"
-    const editTemplateBtn = page.locator('[data-tree-menu] button', { hasText: 'Edit Item Template' });
+    // 4. Click "Edit: Item Template"
+    const editTemplateBtn = page.locator('[data-tree-menu] button', { hasText: 'Edit: Item Template' });
     await expect(editTemplateBtn).toBeVisible();
     await editTemplateBtn.click();
     await page.waitForTimeout(1000);
