@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useRef, useId, useCallback, useEffect } from 'react';
+import { useState, useRef, useId, useCallback, useEffect, useMemo } from 'react';
+import { holdFlyout, releaseFlyout } from '@/lib/flyoutHold';
 
 /* ==========================================================================
    1. CUSTOM EVENT DEFINITIONS
@@ -68,18 +69,40 @@ export function useTreeActionMenu(
   // Closed because its panel was hidden: it disappears at once instead of sliding out alongside the panel
   // (and before the floating menu that may take its place appears). Cleared on the next open.
   const [closedWithPanel, setClosedWithPanel] = useState(false);
+  // Floating: pinned open when its panel was hidden, it carries on in place as a movable window with a close
+  // button (TreeSubMenu's `floating` chrome) instead of closing. A header pulldown it came from stays mounted
+  // meanwhile (held since the menu was pinned, see setPinned), since the menu still lives in that pulldown's tree.
+  const [isFloating, setIsFloating] = useState(false);
+  const isFloatingRef = useRef(false);
+  const endFloating = useCallback(() => {
+    isFloatingRef.current = false;
+    setIsFloating(false);
+  }, []);
   const [menuCoords, setMenuCoords] = useState({ top: 0, left: 0 });
   // Pinned = opened by a click on the gear (not just a hover): it stays open when the pointer leaves
   // or the user clicks elsewhere, until the gear is clicked again (or Escape, or another menu opens).
   // A ref too, so the close timers and document listeners see the current value.
   const [isPinned, setIsPinnedState] = useState(false);
   const pinnedRef = useRef(false);
+  // While pinned inside a header pulldown, the pulldown is held mounted (lib/flyoutHold.ts): closing or docking
+  // it then can't unmount the menu before it gets the chance to float.
+  const heldFlyoutRef = useRef<string | null>(null);
   const setPinned = useCallback(
     (pinned: boolean) => {
       pinnedRef.current = pinned;
       setIsPinnedState(pinned);
       if (pinned) pinnedMenuId = id;
       else if (pinnedMenuId === id) pinnedMenuId = null;
+      if (pinned && !heldFlyoutRef.current) {
+        const flyoutKey = activeTargetElRef.current?.closest<HTMLElement>('aside[data-flyout-panel]')?.dataset.flyoutPanel;
+        if (flyoutKey) {
+          holdFlyout(flyoutKey);
+          heldFlyoutRef.current = flyoutKey;
+        }
+      } else if (!pinned && heldFlyoutRef.current) {
+        releaseFlyout(heldFlyoutRef.current);
+        heldFlyoutRef.current = null;
+      }
     },
     [id]
   );
@@ -95,6 +118,7 @@ export function useTreeActionMenu(
         if (timeoutRef.current) clearTimeout(timeoutRef.current);
         setIsMenuOpen(false);
         setPinned(false);
+        endFloating();
       }
     };
 
@@ -104,8 +128,10 @@ export function useTreeActionMenu(
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
       // A row that unmounts while pinned (deleted, panel closed) must not leave hovers blocked everywhere.
       if (pinnedMenuId === id) pinnedMenuId = null;
+      if (heldFlyoutRef.current) releaseFlyout(heldFlyoutRef.current);
+      heldFlyoutRef.current = null;
     };
-  }, [id, setPinned]);
+  }, [id, setPinned, endFloating]);
 
   /* ------------------------------------------------------------------------
      2.4 VIEWPORT GEOMETRY & CLAMPING
@@ -215,6 +241,7 @@ export function useTreeActionMenu(
   const handleGearMouseEnter = useCallback(
     (e: React.SyntheticEvent<HTMLElement>, customHeight?: number) => {
       if (pinnedMenuId !== null && pinnedMenuId !== id) return;
+      if (isFloatingRef.current) return; // floating, it stays where it was moved to
       openMenu(e, customHeight);
     },
     [id, openMenu]
@@ -253,10 +280,11 @@ export function useTreeActionMenu(
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
     setIsMenuOpen(false);
     setPinned(false);
+    endFloating();
     window.dispatchEvent(
       new CustomEvent(GLOBAL_MENU_CLOSE_EVENT, { detail: id })
     );
-  }, [id, setPinned]);
+  }, [id, setPinned, endFloating]);
 
   /**
    * A click on the gear: pins the menu open (opening it first if a hover hasn't already), or, when it
@@ -340,8 +368,15 @@ export function useTreeActionMenu(
     const panel = activeTargetElRef.current?.closest<HTMLElement>('aside');
     if (!panel) return;
     const check = () => {
+      if (isFloatingRef.current) return;
       if (!panel.hasAttribute('inert') && panel.getAttribute('aria-hidden') !== 'true') return;
       const takeOver = pinnedRef.current ? panelHiddenHandlerRef.current : null;
+      if (pinnedRef.current && !takeOver) {
+        // Carry on in place as a floating window
+        isFloatingRef.current = true;
+        setIsFloating(true);
+        return;
+      }
       setClosedWithPanel(true);
       closeMenu();
       takeOver?.(menuCoords);
@@ -367,7 +402,41 @@ export function useTreeActionMenu(
     panelHiddenHandlerRef.current = handler;
   }, []);
 
+  const menuCoordsRef = useRef(menuCoords);
+  useEffect(() => {
+    menuCoordsRef.current = menuCoords;
+  }, [menuCoords]);
+  /** Floating, its title bar drags it (kept partly on screen, like the floating node menu). */
+  const handleFloatingTitlePointerDown = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
+    if (e.button !== 0 || (e.target as HTMLElement).closest('button')) return;
+    e.preventDefault();
+    const handle = e.currentTarget;
+    handle.setPointerCapture(e.pointerId);
+    const startX = e.clientX;
+    const startY = e.clientY;
+    const start = menuCoordsRef.current;
+    const onMove = (ev: PointerEvent) => {
+      const left = Math.min(Math.max(start.left + ev.clientX - startX, 48 - menuWidth), window.innerWidth - 48);
+      const top = Math.min(Math.max(start.top + ev.clientY - startY, 0), window.innerHeight - 48);
+      setMenuCoords({ top, left });
+    };
+    const onEnd = () => {
+      handle.removeEventListener('pointermove', onMove);
+      handle.removeEventListener('pointerup', onEnd);
+      handle.removeEventListener('pointercancel', onEnd);
+    };
+    handle.addEventListener('pointermove', onMove);
+    handle.addEventListener('pointerup', onEnd);
+    handle.addEventListener('pointercancel', onEnd);
+  }, [menuWidth]);
+  const floatingChrome = useMemo(
+    () => (isFloating ? { onClose: closeMenu, onTitlePointerDown: handleFloatingTitlePointerDown } : undefined),
+    [isFloating, closeMenu, handleFloatingTitlePointerDown]
+  );
+
   return {
+    /** TreeSubMenu's `floating` chrome while the menu floats (its panel was hidden while pinned), else undefined. */
+    floatingChrome,
     closedWithPanel,
     setPanelHiddenHandler,
     handleGearKeyDown,

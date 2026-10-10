@@ -18,6 +18,7 @@ import EmptyPanelDropZone from '@/components/EmptyPanelDropZone';
 import PanelContentTransition from '@/components/PanelContentTransition';
 import { DockContent } from '@/hooks/usePanelDockDrag';
 import { HourglassIcon } from '@/components/icons/GlyphIcons';
+import { useFlyoutHeld } from '@/lib/flyoutHold';
 
 /* ==========================================================================
    1. TYPE DEFINITIONS & CONSTANTS
@@ -130,6 +131,8 @@ export default function PrimarySidePanel({
     animationsEnabled,
     variant
   );
+  const flyoutKey = (title || 'items').toLowerCase();
+  const isFlyoutHeld = useFlyoutHeld(flyoutKey);
 
   const transitionClass =
     !isDragging && animationsEnabled && isHydrated
@@ -264,11 +267,12 @@ export default function PrimarySidePanel({
      3. FLYOUT VARIANT
      ------------------------------------------------------------------------ */
   if (variant === 'flyout') {
-    if (!renderMenu) return null;
+    // Closed, it unmounts -- unless a gear menu is floating out of it, which keeps it mounted but hidden
+    if (!renderMenu && !isFlyoutHeld) return null;
 
     return (
       <>
-        {isHydrated &&
+        {isHydrated && renderMenu &&
           createPortal(
             <div
               onClick={onClose}
@@ -288,6 +292,8 @@ export default function PrimarySidePanel({
         <aside
           inert={!isOpen}
           aria-hidden={!isOpen}
+          hidden={!renderMenu}
+          data-flyout-panel={flyoutKey}
           style={{ zIndex: 80 }}
           className={[
             'nav-flyout-menu',

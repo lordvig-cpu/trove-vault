@@ -57,6 +57,7 @@ export default function TreeItemActionMenu({
     <TreeSubMenu
       isOpen={menu.isMenuOpen}
       closeInstantly={menu.closedWithPanel}
+      floating={menu.floatingChrome}
       onMouseEnter={menu.handleMenuMouseEnter}
       onMouseLeave={menu.handleMouseLeave}
       top={menu.menuCoords.top}

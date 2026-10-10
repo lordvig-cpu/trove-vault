@@ -104,3 +104,23 @@ test('hiding the Layout panel with a pinned menu open turns it into the floating
   // the tree row's menu let go of its pin
   await expect(page.locator('.tree-gear-trigger-pinned')).toHaveCount(0);
 });
+
+test('a menu pinned in a header pulldown floats when the pulldown closes, and the pulldown is let go when it closes', async ({ page }) => {
+  await openEditorWithLayoutHidden(page); // just for the mocked data
+  await page.locator('header button', { hasText: /items/i }).click();
+  const flyout = page.locator('aside[data-flyout-panel="items"]');
+  await flyout.locator('[data-tree-gear]').first().click();
+  const menu = page.locator('.menuShellSplit:not(.hoverHint)').last();
+  const before = (await menu.boundingBox())!;
+
+  await page.locator('header button', { hasText: /items/i }).click(); // close the pulldown
+  const floating = page.locator('.menuShellFloating');
+  await expect(floating).toBeVisible();
+  const after = (await floating.boundingBox())!;
+  expect(Math.abs(after.x - before.x)).toBeLessThan(4);
+  await expect(flyout).toBeHidden();
+
+  await floating.getByRole('button', { name: /^Close / }).click();
+  await expect(floating).toHaveCount(0);
+  await expect(flyout).toHaveCount(0);
+});

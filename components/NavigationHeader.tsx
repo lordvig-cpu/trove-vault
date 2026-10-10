@@ -8,6 +8,7 @@ import { useUIPreferences } from '@/context/UIPreferencesContext';
 import { HintGripIcon } from '@/components/icons/HintIcons';
 import { PackageIcon } from '@/components/icons/GlyphIcons';
 import { UserIcon } from '@/components/icons/ContentIcons';
+import { useFlyoutHeld } from '@/lib/flyoutHold';
 
 /* ==========================================================================
    1. TYPE DEFINITIONS & INTERFACES
@@ -196,6 +197,8 @@ interface NavTabPanel {
 function NavTab({ panel, animationsEnabled }: { panel: NavTabPanel; animationsEnabled: boolean }) {
   const isDocked = panel.dockedSide !== null;
   const isTabActive = isDocked || panel.isOpen;
+  // A gear menu floating out of this pulldown keeps it mounted (hidden), even once docked (lib/flyoutHold.ts)
+  const isHeld = useFlyoutHeld(panel.name.toLowerCase());
   const tabTitle = isDocked
     ? panel.name + ' is already docked in the ' + (panel.dockedSide === 'left' ? 'primary (left)' : 'secondary (right)') + ' panel'
     : 'Open ' + panel.name + ' or drag to dock in a sidebar';
@@ -262,7 +265,7 @@ function NavTab({ panel, animationsEnabled }: { panel: NavTabPanel; animationsEn
       </button>
 
       {/* Unpinned Floating Flyout Mount Slot */}
-      {!isDocked && panel.flyout}
+      {(!isDocked || isHeld) && panel.flyout}
     </div>
   );
 }

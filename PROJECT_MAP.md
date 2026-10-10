@@ -250,6 +250,8 @@ its display style, with label and typography).
   the name a node shows in the tree (`layoutNodeName`).
 - `layoutTreeMenu.ts` — `openNodeMenu`: opens a node's gear flyout from outside the Layout tree (the toolbars' gear, a
   canvas right-click) -- out of its tree row when the Layout tree is showing, otherwise as the floating menu.
+- `flyoutHold.ts` — keeps a header pulldown (Items / Collections / Templates) mounted, hidden, while a gear menu
+  pinned in it floats after it closed or was docked.
 - `floatingNodeMenu.ts` — the store for that floating menu (which node, where, which tab; open / move / close).
 - `menuTabRequest.ts` — the event the toolbar gear sends so a Layout-tree flyout opens on its Properties tab.
 - `panelTitles.ts` — `getPanelTitle()`: the header title for a panel's docked tab(s).
