@@ -471,15 +471,17 @@ function ContainerNodeRow({
         }}
         data-tree-container-id={container.id}
         title={containerLabel}
-        style={isRightSide ? { paddingLeft: depth * 24.5 + 44 } : undefined}
+        // A container row is a category card, like a collection's in the Items / Collections trees: sticky as you
+        // scroll its contents, nested ones stacking under their parent's
+        style={{ top: `${depth * 28}px`, zIndex: 20 - depth, ...(isRightSide ? { paddingLeft: depth * 24.5 + 44 } : {}) }}
         className={[
-          'tree-item group relative flex items-center h-7 px-1.5 gap-1.5 rounded-md cursor-pointer transition w-full min-w-0',
+          'group flex items-center h-8 px-2 gap-1.5 cursor-pointer transition w-full min-w-0 tree-category-sticky-header',
           move.isDragging && 'opacity-40',
           showDropInside
             ? 'ring-1 ring-[var(--primary-accent)] bg-[color-mix(in_oklch,var(--primary-accent)_25%,transparent)] text-[var(--text-strong)] font-semibold'
             : isSelected
-            ? 'tree-item-selected font-medium'
-            : '',
+            ? 'tree-category-row-active font-medium'
+            : 'tree-category-row',
         ].filter(Boolean).join(' ')}
       >
         {(move.hint === 'before' || move.hint === 'after') && <DropLine edge={move.hint} />}
@@ -510,7 +512,7 @@ function ContainerNodeRow({
         </span>
 
         {/* Node Label */}
-        <span className={`text-[13px] tracking-tight truncate min-w-0 ${isDimmed ? 'opacity-50' : ''}`}>
+        <span className={`text-[13px] tracking-tight font-medium truncate min-w-0 ${isDimmed ? 'opacity-50' : ''}`}>
           {containerLabel}
         </span>
 

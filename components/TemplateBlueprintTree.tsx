@@ -165,7 +165,7 @@ function BuiltinRow({
       >
         {isRightSide && gear}
         <span className="w-4 h-4 flex items-center justify-center opacity-80 shrink-0">{BUILTIN_ICONS[builtinKey]}</span>
-        <span className="text-[13px] tracking-tight truncate min-w-0">{label}</span>
+        <span className="text-[13px] tracking-tight truncate min-w-0 tree-muted">{label}</span>
         <span className="blueprint-builtin-tag shrink-0 select-none">Built-in</span>
         <span className="ml-auto flex items-center gap-1.5 shrink-0">
           {placed && <PlacedCheck />}
@@ -246,7 +246,7 @@ function FieldRow({
         <span className="w-4 h-4 flex items-center justify-center opacity-80 shrink-0">
           <FieldTypeIcon type={field.field_type} className="w-3.5 h-3.5" />
         </span>
-        <span className="text-[13px] tracking-tight truncate min-w-0">{field.label}</span>
+        <span className="text-[13px] tracking-tight truncate min-w-0 tree-muted">{field.label}</span>
         <span className="ml-auto flex items-center gap-1.5 shrink-0">
           {field.is_required && (
             <span className="blueprint-required-tag select-none" title="Required field">

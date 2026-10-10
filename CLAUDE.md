@@ -183,6 +183,10 @@ commit whenever you add, remove, split or rename a file — it goes stale otherw
   together). A search/filter prunes the tree to matches and their ancestors, force-expanding
   whatever remains (`computeVisibleHierarchyIds` in `TemplateHierarchyTree.tsx`) so a match is never
   hidden behind a collapsed container.
+- In the Layout tree, every container row (the Body included) is a category card, the same as a collection's row
+  in the Items / Collections trees (`tree-category-sticky-header` / `tree-category-row`, amber
+  `tree-category-row-active` when selected): sticky while its contents scroll, nested ones stacking under their
+  parent's. Content rows are plain rows in the muted row text, as are the Blueprint tree's value rows.
 - Layout-tree rows (everything but the Body) can be dragged to reorder: a row's top or bottom edge drops
   the node before or after it, the middle of a container row drops it inside (at the end), and the bottom
   edge of an expanded container drops it first inside. The rules are `moveNode` in `lib/layoutTree.ts`
