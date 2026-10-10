@@ -65,6 +65,9 @@ export function useTreeActionMenu(
      2.2 LOCAL MENU & INTERACTION STATES
      ------------------------------------------------------------------------ */
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  // Closed because its panel was hidden: it disappears at once instead of sliding out alongside the panel
+  // (and before the floating menu that may take its place appears). Cleared on the next open.
+  const [closedWithPanel, setClosedWithPanel] = useState(false);
   const [menuCoords, setMenuCoords] = useState({ top: 0, left: 0 });
   // Pinned = opened by a click on the gear (not just a hover): it stays open when the pointer leaves
   // or the user clicks elsewhere, until the gear is clicked again (or Escape, or another menu opens).
@@ -192,6 +195,7 @@ export function useTreeActionMenu(
 
       const height = customHeight ?? defaultMenuHeight;
       setMenuCoords(computeCoordinates(rect, height, trigger));
+      setClosedWithPanel(false);
 
       // Broadcast event so other tree rows close their open popovers
       window.dispatchEvent(
@@ -338,6 +342,7 @@ export function useTreeActionMenu(
     const check = () => {
       if (!panel.hasAttribute('inert') && panel.getAttribute('aria-hidden') !== 'true') return;
       const takeOver = pinnedRef.current ? panelHiddenHandlerRef.current : null;
+      setClosedWithPanel(true);
       closeMenu();
       takeOver?.(menuCoords);
     };
@@ -363,6 +368,7 @@ export function useTreeActionMenu(
   }, []);
 
   return {
+    closedWithPanel,
     setPanelHiddenHandler,
     handleGearKeyDown,
     isMenuOpen,

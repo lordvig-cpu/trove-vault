@@ -19,6 +19,8 @@ import { useTreePanel } from '@/context/TreePanelContext';
   -------------------------------------------------------------------------- */
 interface TreeSubMenuProps {
   isOpen: boolean;
+  /** Close without the slide-out (the menu's panel was hidden; useTreeActionMenu's `closedWithPanel`). */
+  closeInstantly?: boolean;
   onMouseEnter: () => void;
   onMouseLeave: () => void;
   top: number;
@@ -51,6 +53,7 @@ interface TreeSubMenuProps {
 
 export default function TreeSubMenu({
   isOpen,
+  closeInstantly = false,
   onMouseEnter,
   onMouseLeave,
   top,
@@ -69,7 +72,7 @@ export default function TreeSubMenu({
   const isPinned = panel?.isPinned ?? primaryPinned;
   const effectivePosition = position ?? 'left';
 
-  const { mounted, renderMenu, isClosing } = usePresence(isOpen, 340, animationsEnabled);
+  const { mounted, renderMenu, isClosing } = usePresence(isOpen, 340, animationsEnabled && !closeInstantly);
   const menuRef = useRef<HTMLDivElement>(null);
   const [adjustedTop, setAdjustedTop] = useState(top);
 

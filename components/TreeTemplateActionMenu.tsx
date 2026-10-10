@@ -50,6 +50,7 @@ export default function TreeTemplateActionMenu({
     <>
     <TreeSubMenu
       isOpen={menu.isMenuOpen}
+      closeInstantly={menu.closedWithPanel}
       onMouseEnter={menu.handleMenuMouseEnter}
       onMouseLeave={menu.handleMouseLeave}
       top={menu.menuCoords.top}

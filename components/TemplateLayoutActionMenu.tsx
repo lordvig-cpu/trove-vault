@@ -396,6 +396,7 @@ export function TemplateContainerActionMenu({
     return (
       <TreeSubMenu
         isOpen={menu.isMenuOpen}
+        closeInstantly={menu.closedWithPanel}
         onMouseEnter={menu.handleMenuMouseEnter}
         onMouseLeave={menu.handleMouseLeave}
         top={menu.menuCoords.top}
@@ -591,6 +592,7 @@ export function TemplateContainerActionMenu({
   return (
     <TreeSubMenu
       isOpen={menu.isMenuOpen}
+      closeInstantly={menu.closedWithPanel}
       onMouseEnter={menu.handleMenuMouseEnter}
       onMouseLeave={menu.handleMouseLeave}
       top={menu.menuCoords.top}
@@ -916,6 +918,7 @@ export function TemplateComponentActionMenu({
   return (
     <TreeSubMenu
       isOpen={menu.isMenuOpen}
+      closeInstantly={menu.closedWithPanel}
       onMouseEnter={menu.handleMenuMouseEnter}
       onMouseLeave={menu.handleMouseLeave}
       top={menu.menuCoords.top}
