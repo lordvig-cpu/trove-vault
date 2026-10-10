@@ -479,7 +479,8 @@ commit whenever you add, remove, split or rename a file — it goes stale otherw
   `LeaveTemplateEditorModal`, centered over a darkened app like the item modals): **Save Changes** keeps the layout,
   **Discard Changes** puts the opened one back, then either continues to what was clicked; **Keep Editing** (or
   Escape) stays. With nothing changed it just closes the editor and continues. A new navigation path out of the
-  editor goes through `leaveEditorThen` too. The toolbar Save saves and closes. Field and
+  editor goes through `leaveEditorThen` too -- but only a deliberate one: the trees' automatic load of a search's sole
+  match is simply off while the editor is open (it ran in an effect, and routing it through the prompt looped). The toolbar Save saves and closes. Field and
   template name / icon edits write straight to the database and are not part of this, the same as undo.
 - Deleting a container that holds anything (any containers or content, at any depth) asks first: every delete path
   (Layout tree flyout, canvas / floating menu, toolbar) goes through `requestRemoveContainer`

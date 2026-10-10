@@ -56,4 +56,22 @@ test.describe('Leaving the template editor', () => {
       await expect(page.getByRole('alertdialog')).toHaveCount(0);
     }
   });
+
+  test('a search narrowed to one item does not leave the editor by itself (no prompt, no loop)', async ({ page }) => {
+    const pageErrors: string[] = [];
+    page.on('pageerror', (e) => pageErrors.push(e.message));
+    await page.goto('/');
+    await page.waitForLoadState('networkidle');
+    await openEditor(page);
+    await page.locator('#template-toolbar-slot').getByRole('button', { name: /Custom/ }).first().click();
+
+    await page.getByRole('button', { name: 'Open Items or drag to dock in a sidebar', exact: true }).click();
+    const firstItem = (await page.locator('aside.nav-flyout-menu .tree-item').first().innerText()).trim();
+    await page.locator('aside.nav-flyout-menu input[placeholder^="Search"]').first().fill(firstItem);
+    await page.waitForTimeout(800);
+
+    await expect(page.getByRole('alertdialog')).toHaveCount(0);
+    await expect(editorOpen(page)).toBeVisible();
+    expect(pageErrors).toEqual([]);
+  });
 });

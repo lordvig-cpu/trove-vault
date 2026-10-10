@@ -182,10 +182,11 @@ export function usePanelRenderers({
               } else handleTreeSelectItem(item, collectionId);
             });
           }}
+          // A search narrowed to one item loads it by itself (TreeContent's effect) -- but never while the
+          // template editor is open: only a deliberate click leaves the editor (through leaveEditorThen). Passed
+          // as the stable selectItemWithChildren, not a fresh closure, so that effect doesn't re-run every render.
           onSelectSearchResult={
-            activeSearchPanel === content
-              ? (item, collectionId) => leaveEditorThen(() => selectItemWithChildren(item, collectionId))
-              : undefined
+            activeSearchPanel === content && !templateEditor.isEditing ? selectItemWithChildren : undefined
           }
           onAddSubItem={openCreateItem}
           onAddSubCollection={openCreateCollection}
