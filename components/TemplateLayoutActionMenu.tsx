@@ -603,32 +603,37 @@ export function TemplateContainerActionMenu({
           <LayoutNavigationActions nodeId={container.id} />
           <ActionMenuItem
             icon={<AddContainerBeforeIcon className="w-3.5 h-3.5" />}
-            label="Add Before"
+            label="Add:"
+            labelDetail="Before"
             subtext="Insert a container before this one"
             onClick={act(() => onInsertContainerSibling?.(container.id, 'before', { ...NEW_CONTAINER_OPTIONS }))}
           />
           <ActionMenuItem
             icon={<AddChildContainerIcon className="w-3.5 h-3.5" />}
-            label="Add Inside"
+            label="Add:"
+            labelDetail="Inside"
             subtext="Nest a new container in this one"
             onClick={act(() => onAddContainer?.(container.id, { ...NEW_CONTAINER_OPTIONS }))}
           />
           <ActionMenuItem
             icon={<AddContainerAfterIcon className="w-3.5 h-3.5" />}
-            label="Add After"
+            label="Add:"
+            labelDetail="After"
             subtext="Insert a container after this one"
             onClick={act(() => onInsertContainerSibling?.(container.id, 'after', { ...NEW_CONTAINER_OPTIONS }))}
           />
           <ActionMenuDivider />
           <ActionMenuItem
             icon={<SplitColumnsIcon className="w-3.5 h-3.5 menu-icon-accent" />}
-            label="Split into 2 Columns"
+            label="Split:"
+            labelDetail="2 Columns"
             subtext="Side by side"
             onClick={act(() => onSplitContainer?.(container.id, 'columns', measureContainerPx(container.id, 'width')))}
           />
           <ActionMenuItem
             icon={<SplitRowsIcon className="w-3.5 h-3.5 menu-icon-accent" />}
-            label="Split into 2 Rows"
+            label="Split:"
+            labelDetail="2 Rows"
             subtext="Stacked"
             onClick={act(() => onSplitContainer?.(container.id, 'rows', measureContainerPx(container.id, 'height')))}
           />

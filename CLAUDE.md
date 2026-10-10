@@ -320,7 +320,7 @@ commit whenever you add, remove, split or rename a file — it goes stale otherw
   flyout-only overrides. The Spacing diagram's Margin / Padding captions are the primary accent.
   Sections are controlled -- the flyout component owns the open/closed and active-tab state,
   so they survive the flyout closing and reopening. The Body and standard-container flyouts
-  (`TemplateLayoutActionMenu.tsx`) both use it. A standard container's Actions tab is Add Before / Inside / After, Split into 2 Columns /
+  (`TemplateLayoutActionMenu.tsx`) both use it. A standard container's Actions tab is Add: Before / Inside / After, Split: 2 Columns /
   Rows, and Delete Container (always last); its Properties tab is Container Name (a plain field), then the cards Size
   (Auto/Fit/Custom, Width, a Min/Max width slider, Height, a Min/Max height slider), Spacing, Layout
   (Row/Column, then two icon-button groups for alignment) and Appearance. The Body's is Size, Layout
