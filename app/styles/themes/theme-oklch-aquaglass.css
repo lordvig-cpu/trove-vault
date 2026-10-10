@@ -177,6 +177,8 @@
 
   /* The Primary Accent is used at full strength (the recipe would darken it for light mode). */
   --brand-primary: var(--oklch-blue);
+  /* On white, lifting the accent would only fade it, so the "bright" accent is the accent itself. */
+  --primary-accent-bright: var(--primary-accent);
   --brand-primary-hover: oklch(from var(--oklch-blue) calc(l - 0.05) c h);
   --tree-muted: var(--aqua-ink-soft);
 

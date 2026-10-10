@@ -9,6 +9,9 @@
   --primary-accent: var(--brand-primary);
   --focus-blue: color-mix(in oklab, var(--brand-primary) 35%, var(--pole-focus));
   --primary-accent-hover: var(--brand-primary-hover);
+  /* The Primary Accent lifted for small text on a dark menu: same hue, lighter and a little more vivid
+     (#9FC4F5 from Embersteel's default #6C85A6 seed). */
+  --primary-accent-bright: oklch(from var(--primary-accent) calc(l + 0.2) calc(c * 1.38) h);
   --primary-border-input: var(--tree-search-input-border);
   --primary-border-input-hover: var(--tree-input-border-hover);
   --primary-border-strong: var(--panel-border-strong);

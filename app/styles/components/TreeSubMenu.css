@@ -1011,9 +1011,9 @@
   color: var(--tree-menu-item-hover-text);
 }
 
-/* The part after a label's colon (Select Next: <element>): the Primary Accent, hovered or not. */
+/* The part after a label's colon (Select Next: <element>): the Primary Accent, brightened, hovered or not. */
 .actionMenuItemLabelDetail {
-  color: var(--primary-accent);
+  color: var(--primary-accent-bright);
 }
 
 .actionMenuItemSubtext {
