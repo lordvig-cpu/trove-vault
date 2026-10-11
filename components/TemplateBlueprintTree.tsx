@@ -86,7 +86,7 @@ function GroupRow({
         onClick={onToggle}
         title={`${group.label}: ${group.rows.length} ${group.rows.length === 1 ? 'value' : 'values'}`}
         style={{ top: 0, zIndex: 20, ...rowPadding(isRightSide, 0) }}
-        className="group flex items-center h-8 px-2 gap-1.5 cursor-pointer transition w-full min-w-0 tree-category-sticky-header tree-category-row"
+        className="group flex items-center h-8 px-2 gap-1.5 cursor-pointer transition w-full min-w-0 tree-category-sticky-header tree-category-row tree-category-row-quiet"
       >
         <button
           type="button"

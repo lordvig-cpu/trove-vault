@@ -841,6 +841,13 @@
   border-color: var(--secondary-tree-category-card-active-border);
 }
 
+/* The Layout and Blueprint trees nest many category cards, so theirs are quiet: no border or shadow until
+   hovered (a selected one keeps its amber border), so the tree doesn't read as a stack of boxes. */
+.tree-category-sticky-header.tree-category-row-quiet:not(:hover):not(.tree-category-row-active) {
+  border-color: transparent;
+  box-shadow: none;
+}
+
 /* Lift only the hovered sticky category above its sibling rows. The important
    override is needed for the depth-based inline z-index on these headers. */
 .tree-category-sticky-header:hover {

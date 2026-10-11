@@ -189,7 +189,8 @@ commit whenever you add, remove, split or rename a file — it goes stale otherw
 - In the Layout tree, every container row (the Body included) is a category card, the same as a collection's row
   in the Items / Collections trees (`tree-category-sticky-header` / `tree-category-row`, amber
   `tree-category-row-active` when selected): sticky while its contents scroll, nested ones stacking under their
-  parent's. Content rows are plain rows in the muted row text, as are the Blueprint tree's value rows and the item rows of
+  parent's. These cards are quiet (`tree-category-row-quiet`, also on the Blueprint's group rows): no border
+  or shadow until hovered, a selected one keeping its amber border, so a deep tree doesn't read as stacked boxes. Content rows are plain rows in the muted row text, as are the Blueprint tree's value rows and the item rows of
   the Items / Collections / Templates trees (`tree-muted`), so every tree reads the same: cards for groups, muted rows inside.
 - Layout-tree rows (everything but the Body) can be dragged to reorder: a row's top or bottom edge drops
   the node before or after it, the middle of a container row drops it inside (at the end), and the bottom

@@ -476,7 +476,7 @@ function ContainerNodeRow({
         // scroll its contents, nested ones stacking under their parent's
         style={{ top: `${depth * 28}px`, zIndex: 20 - depth, ...(isRightSide ? { paddingLeft: depth * 24.5 + 44 } : {}) }}
         className={[
-          'group flex items-center h-8 px-2 gap-1.5 cursor-pointer transition w-full min-w-0 tree-category-sticky-header',
+          'group flex items-center h-8 px-2 gap-1.5 cursor-pointer transition w-full min-w-0 tree-category-sticky-header tree-category-row-quiet',
           move.isDragging && 'opacity-40',
           showDropInside
             ? 'ring-1 ring-[var(--primary-accent)] bg-[color-mix(in_oklch,var(--primary-accent)_25%,transparent)] text-[var(--text-strong)] font-semibold'
