@@ -35,7 +35,7 @@ commit whenever you add, remove, split or rename a file — it goes stale otherw
   `template_editor` dock content (`TemplateBlueprintTree.tsx`) is labeled "Blueprint"; the older
   "Content" and "Inspector"/"Template Inspector" names are gone too. There is no Components palette (the old
   `template_builder` bottom-panel dock content, once "Layout Builder"): its pre-defined blocks are in the Add menus,
-  its simple templates in the bottom toolbar's Start from, and its Row / Column / split primitives were the same as
+  its simple templates in the bottom toolbar's Apply: pulldown, and its Row / Column / split primitives were the same as
   Add and Split. Edit Template docks nothing in the bottom panel, which holds Grabbed Content only. There is no docked "Properties" panel any more (the old
   `template_properties` tab / `TemplatePropertiesInspector.tsx` was removed): a node's properties live
   in its gear flyout's Properties tab and in the toolbars. Don't bring back a second place to edit them.
@@ -453,7 +453,7 @@ commit whenever you add, remove, split or rename a file — it goes stale otherw
   template) keeps the original detail view, so nothing changes until a template is given a layout. The workspace
   loader (`lib/data/workspace.ts`) loads every template together with its fields, because a field element needs its
   field to know which attribute it reads and what it is called.
-- **Simple templates** (the bottom toolbar's **Start from** pulldown, beside Reset Layout: Classic, Spec Sheet,
+- **Simple templates** (the bottom toolbar's **Apply:** pulldown, between the View toggle and Zoom: Classic, Spec Sheet,
   Gallery; it opens upward -- `ToolGroup`'s `placement="above"`) are recipes in
   `lib/layoutRecipes.ts`: pure functions of the template's fields that assemble the same pre-defined blocks inside
   cards (they adapt: no number fields means no stat row). `applyRecipe` replaces the whole layout through the normal

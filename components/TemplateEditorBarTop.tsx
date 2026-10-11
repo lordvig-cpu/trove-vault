@@ -131,6 +131,23 @@ export default function TemplateEditorBarTop({
           </button>
         </div>
 
+        {/* Apply a simple template: replaces the whole layout with one built from this template's fields */}
+        {onApplyRecipe && (
+          <>
+            <div className={divider} aria-hidden="true" />
+            <ToolGroup
+              icon={<CardsIcon className="w-3.5 h-3.5" />}
+              label="Apply:"
+              title="Apply a simple template: replaces the layout with one built from this template's fields (Undo restores it)"
+              placement="above"
+            >
+              {RECIPES.map((recipe) => (
+                <GroupOption key={recipe.id} label={recipe.label} title={recipe.description} onClick={() => onApplyRecipe(recipe.id)} />
+              ))}
+            </ToolGroup>
+          </>
+        )}
+
         {hasLayout && (
           <>
             <div className={divider} aria-hidden="true" />
@@ -141,9 +158,10 @@ export default function TemplateEditorBarTop({
             <PreviewWidthPicker />
           </>
         )}
+        <div className={divider} aria-hidden="true" />
       </div>
 
-      <div className="flex items-center gap-1.5 shrink-0 ml-8">
+      <div className="flex items-center gap-1.5 shrink-0 ml-2">
         <button
           type="button"
           disabled={!canUndo}
@@ -174,19 +192,6 @@ export default function TemplateEditorBarTop({
         >
           <ResetIcon className="w-3.5 h-3.5" />
         </button>
-        {/* Start from a simple template: replaces the whole layout with one built from this template's fields */}
-        {onApplyRecipe && (
-          <ToolGroup
-            icon={<CardsIcon className="w-3.5 h-3.5" />}
-            label="Start from"
-            title="Replace the layout with a simple template built from this template's fields (Undo restores it)"
-            placement="above"
-          >
-            {RECIPES.map((recipe) => (
-              <GroupOption key={recipe.id} label={recipe.label} title={recipe.description} onClick={() => onApplyRecipe(recipe.id)} />
-            ))}
-          </ToolGroup>
-        )}
 
         <div
           className="h-4 w-px bg-[color-mix(in_oklch,var(--secondary-accent)_40%,transparent)] shrink-0 mx-0.5"

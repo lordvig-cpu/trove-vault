@@ -5,7 +5,7 @@ import type { RecipeId } from '@/lib/layoutRecipes';
 
 /* ==========================================================================
    Template editor bar: the chrome for the template-wide panel, anchored to the workspace footer.
-   Template-wide tools only (icon + name, View toggle, Zoom, Width/Fit, Undo/Redo, Reset Layout, Start from, Save) — the
+   Template-wide tools only (icon + name, View toggle, Zoom, Width/Fit, Apply:, Undo/Redo, Reset Layout, Save) — the
    selected container's own tools live in their own panel anchored to the header instead
    (TemplateEditorContainerBar, used more often so it sits where it's easier to reach), so the two
    never fight for space in one bar.

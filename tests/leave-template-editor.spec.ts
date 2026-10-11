@@ -75,7 +75,7 @@ test.describe('Leaving the template editor', () => {
     expect(pageErrors).toEqual([]);
   });
 
-  test('the editor docks nothing in the bottom panel; Add, Split and Start from carry what the palette had', async ({ page }) => {
+  test('the editor docks nothing in the bottom panel; Add, Split and Apply: carry what the palette had', async ({ page }) => {
     await page.goto('/');
     await page.waitForLoadState('networkidle');
     await openEditor(page);
@@ -87,6 +87,6 @@ test.describe('Leaving the template editor', () => {
     await bar.getByRole('button', { name: /^Split/ }).click();
     await expect(page.locator('[role="menu"] button', { hasText: '3 Columns' })).toBeVisible();
     await page.keyboard.press('Escape');
-    await expect(page.locator('#template-toolbar-slot-bottom').getByRole('button', { name: /Start from/ })).toBeVisible();
+    await expect(page.locator('#template-toolbar-slot-bottom').getByRole('button', { name: /^Apply/ })).toBeVisible();
   });
 });
