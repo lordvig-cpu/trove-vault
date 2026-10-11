@@ -36,6 +36,17 @@ const VIEW_HINT: HintContent = {
   ],
 };
 
+const APPLY_HINT: HintContent = {
+  title: 'Apply',
+  // One line per simple template, from the same list the pulldown offers
+  settings: RECIPES.map((recipe) => ({ name: recipe.label, text: `${recipe.description}.` })),
+  notes: [
+    { kind: 'use', text: <>Each one builds a whole layout from this template&apos;s own fields, ready to adjust.</> },
+    { kind: 'tip', text: <>They adapt to the fields you have: with no number fields, Spec Sheet has no stat row.</> },
+    { kind: 'caution', text: <>Applying replaces the entire current layout. <HintRef icon={<UndoIcon className="w-2.5 h-2.5" />}>Undo</HintRef> brings the old one back.</> },
+  ],
+};
+
 const iconOnlyBtn = `w-[26px] ${barControlHeight} rounded-md border transition flex items-center justify-center shrink-0`;
 const divider = 'h-4 w-px bg-[color-mix(in_oklch,var(--secondary-accent)_40%,transparent)] shrink-0 mx-0.5';
 
@@ -135,6 +146,9 @@ export default function TemplateEditorBarTop({
         {onApplyRecipe && (
           <>
             <div className={divider} aria-hidden="true" />
+            <HoverHint hint={APPLY_HINT}>
+              <HelpCircleIcon className="w-3 h-3 text-[var(--secondary-tree-menu-header-title)]" />
+            </HoverHint>
             <ToolGroup
               icon={<CardsIcon className="w-3.5 h-3.5" />}
               label="Apply:"
