@@ -277,6 +277,8 @@ export const CollectionsTabIcon = ({ className = 'w-3.5 h-3.5' }: { className?: 
   </svg>
 );
 
+/** TemplatesTabIcon: a page layout in three blocks -- a wide header over a narrow column and a wider one --
+    for the Templates tab. */
 export const TemplatesTabIcon = ({ className = 'w-3.5 h-3.5' }: { className?: string }) => (
   <svg
     className={className}
@@ -288,11 +290,9 @@ export const TemplatesTabIcon = ({ className = 'w-3.5 h-3.5' }: { className?: st
     strokeLinejoin="round"
     aria-hidden="true"
   >
-    <rect x="4.5" y="4.5" width="15" height="15" rx="2.2" />
-    <rect x="7.5" y="7.2" width="9" height="3.2" rx="0.8" />
-    <rect x="7.5" y="12.2" width="3.2" height="4.2" rx="0.6" />
-    <path d="M12.5 12.7h4" />
-    <path d="M12.5 15.3h4" />
+    <rect x="3.5" y="3.5" width="17" height="6" rx="1.5" />
+    <rect x="3.5" y="12.5" width="5" height="8" rx="1.5" />
+    <rect x="11.5" y="12.5" width="9" height="8" rx="1.5" />
   </svg>
 );
 
@@ -319,8 +319,8 @@ export const LayoutTabIcon = ({ className = 'w-3.5 h-3.5' }: { className?: strin
   </svg>
 );
 
-/** BlueprintTabIcon: a bulleted list beside two content blocks, for the template editor's Blueprint
-    tab (the template's fields). */
+/** BlueprintTabIcon: a checklist -- two ticked rows and an open one -- for the template editor's Blueprint tab
+    (the template's fields, each checked once it is placed in the layout). */
 export const BlueprintTabIcon = ({ className = 'w-3.5 h-3.5' }: { className?: string }) => (
   <svg
     className={className}
@@ -332,13 +332,12 @@ export const BlueprintTabIcon = ({ className = 'w-3.5 h-3.5' }: { className?: st
     strokeLinejoin="round"
     aria-hidden="true"
   >
-    <rect x="4" y="4" width="16" height="16" rx="2" />
-    <circle cx="7.5" cy="8" r=".6" fill="currentColor" stroke="none" />
-    <circle cx="7.5" cy="11" r=".6" fill="currentColor" stroke="none" />
-    <circle cx="7.5" cy="14" r=".6" fill="currentColor" stroke="none" />
-    <circle cx="7.5" cy="17" r=".6" fill="currentColor" stroke="none" />
-    <rect x="10" y="7" width="7" height="3" rx=".7" />
-    <rect x="10" y="12" width="7" height="5" rx=".7" />
+    <path d="M3.5 5.5l1.8 1.8 3.4-3.6" />
+    <path d="M12 5.5h8.5" />
+    <path d="M3.5 12l1.8 1.8 3.4-3.6" />
+    <path d="M12 12h8.5" />
+    <rect x="3.9" y="16.4" width="4.4" height="4.4" rx="1" />
+    <path d="M12 18.6h6" />
   </svg>
 );
 
