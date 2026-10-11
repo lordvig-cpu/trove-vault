@@ -150,6 +150,27 @@ test.describe('Layout tree operations (pure)', () => {
     expect(second.direction).toBe('column'); // alternates with its real (in-place) parent, a row
   });
 
+  test('splitContainer into 3: three equal parts, in place or in one wrapper, numbered in turn', () => {
+    const box = buildContainer({ label: 'Box' }, 'x', 'column');
+    const root = insertChild(freshRoot(), 'container-general', box);
+
+    // In place (the parent is a row): 300px -> three 100px-wide parts after comp-1 and comp-2
+    const inPlace = splitContainer(root, box.id, 'columns', 300, 3)!;
+    const parts = general(inPlace.root).children.slice(2) as FlexContainerNode[];
+    expect(parts).toHaveLength(3);
+    expect(parts.map((p) => p.label)).toEqual(['Box', 'Box 2', 'Box 3']);
+    expect(parts.map((p) => p.sizing.value)).toEqual(['100px', '100px', '100px']);
+    expect(parts[1].id).toBe(inPlace.newId);
+    expect(new Set(parts.map((p) => p.id)).size).toBe(3);
+
+    // Wrapped (rows in a row parent): one wrapper holding all three
+    const wrapped = splitContainer(root, box.id, 'rows', 330, 3)!;
+    const wrapper = general(wrapped.root).children[2] as FlexContainerNode;
+    expect(wrapper.isSplitWrapper).toBe(true);
+    expect(wrapper.children.map((c) => (c as FlexContainerNode).height)).toEqual(['110px', '110px', '110px']);
+    expect(wrapper.children.map((c) => (c as FlexContainerNode).label)).toEqual(['Box', 'Box 2', 'Box 3']);
+  });
+
   test('splitContainer: rows inside a row parent are wrapped so the parent is undisturbed', () => {
     const box = buildContainer({ label: 'Box' }, 'x', 'column');
     const root = insertChild(freshRoot(), 'container-general', box);

@@ -1,8 +1,8 @@
 import { FlexContainerNode, FlexComponentNode } from '@/types/layout';
 
 /** The Layout tree's three node kinds, for its filter menu: containers, real bound fields
-    (placed from the Content tab), and everything else (any preset dropped in
-    from the Components tab -- table/media/stat/note/divider). */
+    (placed from the Blueprint tab), and everything else (static text, and the old table / media / stat /
+    note / divider blocks). */
 export type HierarchyFilterCategory = 'container' | 'field' | 'predefined';
 
 /** Display metadata (label, icon) for each category, used by the Layout tree's filter menu. */

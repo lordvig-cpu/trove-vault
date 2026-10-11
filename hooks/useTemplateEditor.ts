@@ -29,7 +29,7 @@ export interface WorkspaceTabSnapshot {
   isSecondaryOpen: boolean;
   isPinned: boolean;
   isSecondaryPinned: boolean;
-  bottomPanelContent: 'empty' | 'grabbed_content' | 'template_builder';
+  bottomPanelContent: 'empty' | 'grabbed_content';
   isBottomPanelOpen: boolean;
   isBottomPinned: boolean;
 }
@@ -40,7 +40,6 @@ interface UseTemplateEditorOptions {
   onRestoreTabs?: (snapshot: WorkspaceTabSnapshot) => void;
   onOpenPrimaryPanel?: (tabs: DockContent[], activeTab: DockContent) => void;
   onOpenSecondaryPanel?: (tabs: DockContent[], activeTab: DockContent) => void;
-  onOpenBottomPanel?: (content: 'template_builder') => void;
 }
 
 export function useTemplateEditor({
@@ -49,7 +48,6 @@ export function useTemplateEditor({
   onRestoreTabs,
   onOpenPrimaryPanel,
   onOpenSecondaryPanel,
-  onOpenBottomPanel,
 }: UseTemplateEditorOptions = {}) {
   const [editingTemplateId, setEditingTemplateId] = useState<number | null>(null);
   const [activeTemplate, setActiveTemplate] = useState<ItemTemplate | null>(null);
@@ -324,21 +322,16 @@ export function useTemplateEditor({
         onOpenPrimaryPanel(['template_hierarchy'], 'template_hierarchy');
       }
 
-      // 3. Open right panel with Content
+      // 3. Open right panel with the Blueprint
       if (onOpenSecondaryPanel) {
         onOpenSecondaryPanel(['template_editor'], 'template_editor');
       }
 
-      // 4. Open bottom panel with Components (its own Layout & Components sub-tabs)
-      if (onOpenBottomPanel) {
-        onOpenBottomPanel('template_builder');
-      }
-
-      // 5. Load the template (its layout is the one Discard puts back)
+      // 4. Load the template (its layout is the one Discard puts back)
       captureSavedLayoutRef.current = true;
       await loadTemplate(rawId);
     },
-    [getTabSnapshot, loadTemplate, clearLayoutHistory, onOpenPrimaryPanel, onOpenSecondaryPanel, onOpenBottomPanel]
+    [getTabSnapshot, loadTemplate, clearLayoutHistory, onOpenPrimaryPanel, onOpenSecondaryPanel]
   );
 
   /**

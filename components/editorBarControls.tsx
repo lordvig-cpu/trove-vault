@@ -56,6 +56,7 @@ export function ToolGroup({
   title,
   disabled,
   set,
+  placement = 'below',
   children,
 }: {
   icon?: React.ReactNode;
@@ -64,6 +65,8 @@ export function ToolGroup({
   disabled?: boolean;
   /** A value is chosen in this group: show the pill in light blue, like a set field. */
   set?: boolean;
+  /** Where the options open: under the pill (default), or over it for a bar at the bottom of the screen. */
+  placement?: 'below' | 'above';
   children: React.ReactNode;
 }) {
   const [open, setOpen] = useState(false);
@@ -131,8 +134,8 @@ export function ToolGroup({
         <ChevronDownIcon className="w-2.5 h-2.5 opacity-70" />
       </button>
       {isOpen && (
-        // pt-1 (not a margin) keeps the hover area continuous between the icon and its options
-        <div className="absolute top-full left-0 pt-1 z-10" role="menu">
+        // pt-1 / pb-1 (not a margin) keeps the hover area continuous between the icon and its options
+        <div className={placement === 'above' ? 'absolute bottom-full left-0 pb-1 z-10' : 'absolute top-full left-0 pt-1 z-10'} role="menu">
           <div className="tmpl-edge-panel tmpl-edge-menu rounded-xl p-1 flex flex-col gap-0.5 min-w-[9rem] max-h-[60vh] overflow-y-auto">
             <ToolGroupContext.Provider value={close}>{children}</ToolGroupContext.Provider>
           </div>

@@ -40,7 +40,7 @@ export function useWorkspaceDock() {
   const [isPrimarySidePanelOpen, setIsPrimarySidePanelOpen] = useState<boolean>(false);
   const [isSecondaryOpen, setIsSecondaryOpen] = useState<boolean>(false);
   const [isBottomPanelOpen, setIsBottomPanelOpen] = useState<boolean>(false);
-  const [bottomPanelContent, setBottomPanelContent] = useState<'empty' | 'grabbed_content' | 'template_builder'>('empty');
+  const [bottomPanelContent, setBottomPanelContent] = useState<'empty' | 'grabbed_content'>('empty');
   const isBottomActive = isBottomPanelOpen || isBottomPinned;
   const [primaryPanelWidth, setPrimaryPanelWidth] = useState<number>(304);
   const [secondaryPanelWidth, setSecondaryPanelWidth] = useState<number>(304);
@@ -302,7 +302,6 @@ export function useWorkspaceDock() {
           panelId === 'templates' ||
           panelId === 'grabbed_content' ||
           panelId === 'template_editor' ||
-          panelId === 'template_builder' ||
           panelId === 'template_hierarchy'
         )
           return panelId;
@@ -356,7 +355,6 @@ export function useWorkspaceDock() {
           panelId === 'templates' ||
           panelId === 'grabbed_content' ||
           panelId === 'template_editor' ||
-          panelId === 'template_builder' ||
           panelId === 'template_hierarchy'
         ) {
           removeTabFromPrimary(panelId);
@@ -500,7 +498,7 @@ export function useWorkspaceDock() {
 
       // 6. Dock to Bottom Panel
       if (targetZone === 'bottom') {
-        if (incoming === 'grabbed_content' || incoming === 'template_builder') {
+        if (incoming === 'grabbed_content') {
           setBottomPanelContent(incoming);
           removeTabFromPrimary(incoming);
           removeTabFromSecondary(incoming);

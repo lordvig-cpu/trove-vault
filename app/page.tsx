@@ -12,7 +12,6 @@ import PrimarySidePanel from '@/components/PrimarySidePanel';
 import PrimarySidePanelHeader from '@/components/PrimarySidePanelHeader';
 import SecondarySidePanel from '@/components/SecondarySidePanel';
 import BottomPanel from '@/components/BottomPanel';
-import { ComponentsTabIcon } from '@/components/icons/PanelIcons';
 import PanelDockDropZones from '@/components/PanelDockDropZones';
 import ModalContainers from '@/components/ModalContainers';
 import DynamicWatermark from '@/components/DynamicWatermark';
@@ -26,6 +25,9 @@ import LeaveTemplateEditorModal from '@/components/LeaveTemplateEditorModal';
 import { useConfirmRemoveContainer } from '@/hooks/useConfirmRemoveContainer';
 import DeleteContainerModal from '@/components/DeleteContainerModal';
 import StatusToast from '@/components/StatusToast';
+import AddPresetDialog from '@/components/AddPresetDialog';
+import { closePresetDialog, usePresetDialog } from '@/lib/presetDialog';
+import { contentTargetName } from '@/lib/layoutNavigation';
 import { getPanelTitle } from '@/lib/panelTitles';
 
 /**
@@ -196,13 +198,6 @@ export default function Home() {
         setIsSecondaryPinned(true);
       }
     },
-    onOpenBottomPanel: (content) => {
-      setBottomPanelContent(content);
-      if (AUTO_OPEN_TEMPLATE_PANELS) {
-        setIsBottomPanelOpen(true);
-        setIsBottomPinned(true);
-      }
-    },
   });
 
   // What the template editor's canvas and preview draw content with: the first real item of the template
@@ -368,6 +363,10 @@ export default function Home() {
      ------------------------------------------------------------------------ */
   // Leaving the template editor (opening an item, another template) asks about unsaved layout changes first.
   const { leaveEditorThen, prompt: leaveEditorPrompt } = useLeaveTemplateEditorGuard(templateEditor);
+  // Adding a pre-defined block (Field List, Header, Stat Row) from an Add menu: its include-chooser dialog
+  const presetDialog = usePresetDialog();
+  const presetRoot = templateEditor.flexLayoutConfig?.root;
+
   // Deleting a container that holds anything asks first, listing what goes with it.
   const { requestRemoveContainer, prompt: removeContainerPrompt } = useConfirmRemoveContainer(templateEditor);
 
@@ -643,7 +642,6 @@ export default function Home() {
               selectedNodeId={templateEditor.selectedNodeId}
               activeContainerId={templateEditor.activeContainerId}
               onSelectNode={handleOpenProperties}
-              onAddPrimitive={templateEditor.addFlexPrimitive}
               onAddFlexContainer={handleAddContainer}
               onInsertFlexContainerSibling={templateEditor.insertFlexContainerSibling}
               onUpdateFlexContainer={templateEditor.updateFlexContainer}
@@ -655,6 +653,7 @@ export default function Home() {
               onPlaceField={handlePlaceField}
               onPlaceBuiltin={handlePlaceBuiltin}
               onResetFlexLayout={templateEditor.resetFlexLayoutToDefault}
+              onApplyRecipe={templateEditor.applyRecipe}
               onOverflowChange={templateEditor.reportContainerOverflow}
               canvasMode={templateEditor.canvasMode}
               hiddenNodeIds={templateEditor.hiddenNodeIds}
@@ -673,30 +672,19 @@ export default function Home() {
             isOpen={isBottomActive}
             isPinned={isBottomPinned}
             title={
-              bottomPanelContent === 'template_builder'
-                ? 'COMPONENTS'
-                : bottomPanelContent === 'grabbed_content'
+              bottomPanelContent === 'grabbed_content'
                 ? 'GRABBED CONTENT'
                 : 'BOTTOM PANEL'
             }
             tabLabel={
-              bottomPanelContent === 'template_builder'
-                ? 'Components'
-                : bottomPanelContent === 'grabbed_content'
+              bottomPanelContent === 'grabbed_content'
                 ? 'Grabbed Content'
                 : undefined
             }
             tabTitle={
-              bottomPanelContent === 'template_builder'
-                ? 'Components (drag to move tab)'
-                : bottomPanelContent === 'grabbed_content'
+              bottomPanelContent === 'grabbed_content'
                 ? 'Grabbed Content (drag to move tab)'
                 : undefined
-            }
-            tabIcon={
-              bottomPanelContent === 'template_builder' ? (
-                <ComponentsTabIcon className="w-[22.5px] h-[22.5px]" />
-              ) : undefined
             }
             onStartTabDrag={(e) => {
               if (bottomPanelContent !== 'empty') {
@@ -928,6 +916,19 @@ export default function Home() {
       />
       {leaveEditorPrompt && <LeaveTemplateEditorModal {...leaveEditorPrompt} />}
       {removeContainerPrompt && <DeleteContainerModal {...removeContainerPrompt} />}
+      {presetDialog && templateEditor.isEditing && presetRoot && (
+        <AddPresetDialog
+          key={`${presetDialog.kind}-${presetDialog.containerId}`}
+          kind={presetDialog.kind}
+          fields={templateEditor.activeTemplate?.fields ?? []}
+          targetName={contentTargetName(presetRoot, presetDialog.containerId, templateEditor.activeTemplate?.fields ?? [])}
+          onAdd={(request) => {
+            templateEditor.placePreset(request, presetDialog.containerId);
+            closePresetDialog();
+          }}
+          onCancel={closePresetDialog}
+        />
+      )}
       {/* The template editor's status message (an error wins over a success) */}
       <StatusToast
         message={templateEditor.error ?? templateEditor.successMsg}

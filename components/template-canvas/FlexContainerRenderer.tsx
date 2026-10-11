@@ -11,6 +11,7 @@ import {
   resolvePaddingCss,
   type BuiltinKey,
   type PlaceBuiltinHandler,
+  type SplitContainerHandler,
 } from '@/types/layout';
 import ContainerResizeHandles from '@/components/ContainerResizeHandles';
 import FlexComponentRenderer from '@/components/template-canvas/FlexComponentRenderer';
@@ -30,7 +31,6 @@ export default function FlexContainerRenderer({
   canvasMode,
   fields,
   onSelectNode,
-  onAddPrimitive,
   onAddContainer,
   onInsertContainerSibling,
   onUpdateContainer,
@@ -57,10 +57,6 @@ export default function FlexContainerRenderer({
   /** Reports whether this container's own row currently has more children than it has room for
       (wrapped onto a second line, or overflowed with wrap off) -- see the dashed-red border below. */
   onOverflowChange?: (containerId: string, isOverflowing: boolean) => void;
-  onAddPrimitive?: (
-    type: 'row' | 'column' | 'split-2' | 'split-3',
-    targetId?: string
-  ) => void;
   onAddContainer?: (
     targetContainerId: string,
     options?: Partial<FlexContainerNode>
@@ -72,7 +68,7 @@ export default function FlexContainerRenderer({
   ) => string;
   onUpdateContainer?: (id: string, partial: Partial<FlexContainerNode>) => void;
   onRemoveContainer?: (id: string) => void;
-  onSplitContainer?: (containerId: string, splitType: 'columns' | 'rows', measuredPx: number) => void;
+  onSplitContainer?: SplitContainerHandler;
   onUpdateComponent?: (id: string, partial: Partial<FlexComponentNode>) => void;
   onRemoveComponent?: (id: string) => void;
   onPlaceField?: (fieldId: number, targetContainerId?: string) => void;
@@ -423,7 +419,6 @@ export default function FlexContainerRenderer({
                   canvasMode={canvasMode}
                   fields={fields}
                   onSelectNode={onSelectNode}
-                  onAddPrimitive={onAddPrimitive}
                   onAddContainer={onAddContainer}
                   onInsertContainerSibling={onInsertContainerSibling}
                   onUpdateContainer={onUpdateContainer}

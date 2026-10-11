@@ -8,6 +8,7 @@ import {
   resolveDirection,
   type BuiltinKey,
   type PlaceBuiltinHandler,
+  type SplitContainerHandler,
 } from '@/types/layout';
 import { FieldDefinition } from '@/types/field';
 import { moveNode, type MovePosition } from '@/lib/layoutTree';
@@ -46,7 +47,7 @@ export interface TemplateHierarchyTreeProps {
     position: 'before' | 'after',
     options?: Partial<FlexContainerNode>
   ) => string;
-  onSplitContainer?: (containerId: string, splitType: 'columns' | 'rows', measuredPx: number) => void;
+  onSplitContainer?: SplitContainerHandler;
   onUpdateContainer?: (containerId: string, partial: Partial<FlexContainerNode>) => void;
   onUpdateComponent?: (componentId: string, partial: Partial<FlexComponentNode>) => void;
   onRemoveContainer: (containerId: string) => void;
@@ -350,7 +351,7 @@ interface ContainerNodeRowProps {
     position: 'before' | 'after',
     options?: Partial<FlexContainerNode>
   ) => string;
-  onSplitContainer?: (containerId: string, splitType: 'columns' | 'rows', measuredPx: number) => void;
+  onSplitContainer?: SplitContainerHandler;
   onUpdateContainer?: (id: string, partial: Partial<FlexContainerNode>) => void;
   onUpdateComponent?: (id: string, partial: Partial<FlexComponentNode>) => void;
   onRemoveContainer: (id: string) => void;

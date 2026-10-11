@@ -1,5 +1,6 @@
 'use client';
 
+import type { RecipeId } from '@/lib/layoutRecipes';
 import React from 'react';
 import ItemDetailView from './ItemDetailView';
 import TemplateEditorStage from './TemplateEditorStage';
@@ -12,6 +13,7 @@ import {
   FlexContainerNode,
   FlexComponentNode,
   type PlaceBuiltinHandler,
+  type SplitContainerHandler,
 } from '@/types/layout';
 
 /* ==========================================================================
@@ -39,10 +41,6 @@ interface MainContentProps {
   selectedNodeId?: string | null;
   activeContainerId?: string;
   onSelectNode?: (nodeId: string | null) => void;
-  onAddPrimitive?: (
-    primitiveType: 'row' | 'column' | 'split-2' | 'split-3',
-    targetContainerId?: string
-  ) => string;
   onAddFlexContainer?: (
     targetContainerId: string,
     options?: Partial<FlexContainerNode>
@@ -69,8 +67,9 @@ interface MainContentProps {
   onPlaceField?: (fieldId: number, targetContainerId?: string) => void;
   onPlaceBuiltin?: PlaceBuiltinHandler;
   onResetFlexLayout?: () => void;
+  onApplyRecipe?: (id: RecipeId) => void;
   onOverflowChange?: (containerId: string, isOverflowing: boolean) => void;
-  onSplitFlexContainer?: (containerId: string, splitType: 'columns' | 'rows', measuredPx: number) => void;
+  onSplitFlexContainer?: SplitContainerHandler;
   canvasMode?: 'edit' | 'preview';
   hiddenNodeIds?: Set<string>;
   onToggleHidden?: (nodeId: string) => void;
@@ -103,7 +102,6 @@ export default function MainContent({
   selectedNodeId = null,
   activeContainerId,
   onSelectNode,
-  onAddPrimitive,
   onAddFlexContainer,
   onInsertFlexContainerSibling,
   onUpdateFlexContainer,
@@ -115,6 +113,7 @@ export default function MainContent({
   onPlaceField,
   onPlaceBuiltin,
   onResetFlexLayout,
+  onApplyRecipe,
   onOverflowChange,
   canvasMode = 'edit',
   hiddenNodeIds,
@@ -154,7 +153,6 @@ export default function MainContent({
                   selectedNodeId={selectedNodeId}
                   activeContainerId={activeContainerId}
                   onSelectNode={onSelectNode}
-                  onAddPrimitive={onAddPrimitive}
                   onAddFlexContainer={onAddFlexContainer}
                   onInsertContainerSibling={onInsertFlexContainerSibling}
                   onUpdateFlexContainer={onUpdateFlexContainer}
@@ -166,6 +164,7 @@ export default function MainContent({
                   onPlaceField={onPlaceField}
                   onPlaceBuiltin={onPlaceBuiltin}
                   onResetFlexLayout={onResetFlexLayout}
+                  onApplyRecipe={onApplyRecipe}
                   onOverflowChange={onOverflowChange}
                   canvasMode={canvasMode}
                   hiddenNodeIds={hiddenNodeIds}

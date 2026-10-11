@@ -182,7 +182,6 @@ export default function PrimarySidePanelHeader({
   const isTemplates = treeView === 'templates' || activeTab === 'templates' || title === 'TEMPLATES';
   const isGrabbed = activeTab === 'grabbed_content' || title === 'GRABBED CONTENT';
   const isContent = activeTab === 'template_editor' || title === 'BLUEPRINT';
-  const isComponents = activeTab === 'template_builder' || title === 'COMPONENTS';
   const isLayout = activeTab === 'template_hierarchy' || title === 'LAYOUT';
   const panelName = isCollections
     ? 'Collections'
@@ -192,8 +191,6 @@ export default function PrimarySidePanelHeader({
     ? 'Grabbed Content'
     : isContent
     ? 'Blueprint'
-    : isComponents
-    ? 'Components'
     : isLayout
     ? 'Layout'
     : 'Items';
@@ -221,8 +218,6 @@ export default function PrimarySidePanelHeader({
       ? ['template_hierarchy']
       : activeTab === 'template_editor'
       ? ['template_editor']
-      : activeTab === 'template_builder'
-      ? ['template_builder']
       : treeView === 'collections'
       ? ['collections']
       : treeView === 'templates'
@@ -318,7 +313,6 @@ export default function PrimarySidePanelHeader({
         isTemplates={isTemplates}
         isGrabbed={isGrabbed}
         isContent={isContent}
-        isComponents={isComponents}
         isLayout={isLayout}
         hierarchyNodeCount={hierarchyNodeCount}
         showAllEyes={showAllEyes}

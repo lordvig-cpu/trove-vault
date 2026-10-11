@@ -16,11 +16,9 @@ import TreeContent from '@/components/TreeContent';
 import { TreePanelContext } from '@/context/TreePanelContext';
 import TemplateBlueprintTree from '@/components/TemplateBlueprintTree';
 import { BLUEPRINT_GROUPS, blueprintGroupCounts, blueprintGroupOf } from '@/lib/blueprintGroups';
-import { layoutNodeName } from '@/lib/layoutNavigation';
-import { resolveContentTarget } from '@/lib/layoutTree';
-import TemplateLayoutPalette from '@/components/TemplateLayoutPalette';
+import { contentTargetName } from '@/lib/layoutNavigation';
 import TemplateHierarchyTree from '@/components/TemplateHierarchyTree';
-import { FlexContainerNode, FlexComponentNode, findFlexNode } from '@/types/layout';
+import { FlexContainerNode, FlexComponentNode } from '@/types/layout';
 import type { FieldType } from '@/types/field';
 import { hierarchyNodeCategory } from '@/lib/hierarchyFilterMetas';
 
@@ -215,9 +213,7 @@ export function usePanelRenderers({
   // The container a Blueprint row's Place: action puts things into (the editor's active container), by name
   const placeTargetName = () => {
     const root = templateEditor.flexLayoutConfig?.root;
-    // where it really lands: a split wrapper passes content on to its first half
-    const node = root ? findFlexNode(root, resolveContentTarget(root, templateEditor.activeContainerId)) : null;
-    return node ? layoutNodeName(node, templateEditor.activeTemplate?.fields ?? [], node.id === root?.id) : 'Body';
+    return root ? contentTargetName(root, templateEditor.activeContainerId, templateEditor.activeTemplate?.fields ?? []) : 'Body';
   };
 
   // Renders whatever a docked tab holds, tree views included: the template editor's Blueprint tab,
@@ -255,23 +251,6 @@ export function usePanelRenderers({
             onReorderFields={templateEditor.reorderFields}
             isLoading={templateEditor.isLoading}
             position={pos === 'bottom' ? 'right' : pos}
-          />
-        </TreePanelContext.Provider>
-      );
-    }
-    if (content === 'template_builder') {
-      return (
-        <TreePanelContext.Provider value={panelContext}>
-          <TemplateLayoutPalette
-            selectedContainer={templateEditor.selectedContainer}
-            onAddContainer={(preset) => {
-              const mapped =
-                preset === '2-col' ? 'split-2' : preset === '3-col' ? 'split-3' : preset;
-              templateEditor.addFlexPrimitive(mapped);
-            }}
-            fields={templateEditor.activeTemplate?.fields ?? []}
-            onPlacePreset={(request) => templateEditor.placePreset(request)}
-            onApplyRecipe={(id) => templateEditor.applyRecipe(id)}
           />
         </TreePanelContext.Provider>
       );
@@ -337,7 +316,6 @@ export function usePanelRenderers({
     const isCollections = content === 'collections';
     const isTemplates = content === 'templates';
     const isContent = content === 'template_editor';
-    const isComponents = content === 'template_builder';
     const isLayout = content === 'template_hierarchy';
 
     // How many values each Blueprint group holds (its filter menu's counts)
@@ -365,8 +343,6 @@ export function usePanelRenderers({
         ? 'empty'
         : isContent
         ? 'template_editor'
-        : isComponents
-        ? 'template_builder'
         : isLayout
         ? 'template_hierarchy'
         : isCollections

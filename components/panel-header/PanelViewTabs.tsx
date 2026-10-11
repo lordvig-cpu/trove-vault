@@ -14,7 +14,6 @@ import {
   TemplatesTabIcon,
   LayoutTabIcon,
   BlueprintTabIcon,
-  ComponentsTabIcon,
 } from '@/components/icons/PanelIcons';
 import { DockContent, TabReorderInfo } from '@/hooks/usePanelDockDrag';
 import { PrimarySidebarPosition } from '@/types/layout';
@@ -44,7 +43,6 @@ interface PanelViewTabsProps {
   isTemplates: boolean;
   isGrabbed: boolean;
   isContent: boolean;
-  isComponents: boolean;
   isLayout: boolean;
   hierarchyNodeCount?: number;
   /** Layout only: the header eye that shows every row's visibility eye, and its toggle. */
@@ -78,7 +76,6 @@ export default function PanelViewTabs({
   isTemplates,
   isGrabbed,
   isContent,
-  isComponents,
   isLayout,
   hierarchyNodeCount,
   showAllEyes,
@@ -136,8 +133,6 @@ export default function PanelViewTabs({
             ? 'Grabbed Content'
             : isContent
             ? 'Browse Fields'
-            : isComponents
-            ? 'Component Palette'
             : isLayout
             ? (hierarchyNodeCount !== undefined ? `Layout & Content (${hierarchyNodeCount})` : 'Layout & Content')
             : 'Browse Items'}
@@ -157,8 +152,6 @@ export default function PanelViewTabs({
                 ? 'Templates'
                 : tab === 'template_editor'
                 ? 'Blueprint'
-                : tab === 'template_builder'
-                ? 'Components'
                 : tab === 'template_hierarchy'
                 ? 'Layout'
                 : 'Grabbed Content';
@@ -173,8 +166,6 @@ export default function PanelViewTabs({
                 ? LayoutTabIcon
                 : tab === 'template_editor'
                 ? BlueprintTabIcon
-                : tab === 'template_builder'
-                ? ComponentsTabIcon
                 : null;
             const tabTitle =
               tab === 'items'
@@ -185,8 +176,6 @@ export default function PanelViewTabs({
                 ? 'Show Templates blueprint tree (drag to move tab)'
                 : tab === 'template_editor'
                 ? 'Show Blueprint: the template’s fields (drag to move tab)'
-                : tab === 'template_builder'
-                ? 'Show Components (drag to move tab)'
                 : tab === 'template_hierarchy'
                 ? 'Show Layout (drag to move tab)'
                 : 'Show Grabbed Content (drag to move tab)';

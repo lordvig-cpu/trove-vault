@@ -231,7 +231,7 @@ export function moveNode(
 
 export interface SplitResult {
   root: FlexContainerNode;
-  /** The id of the newly created half (the one after the original). */
+  /** The id of the first new part (the one right after the original). */
   newId: string;
 }
 
@@ -249,7 +249,9 @@ export function splitContainer(
    * from, so the caller measures the real rendered box (like the Custom-sizing toolbar button
    * does) and passes it in; this function only ever halves that live number.
    */
-  measuredPx: number
+  measuredPx: number,
+  /** How many parts: the container keeps the first, and `parts - 1` new containers follow it. */
+  parts: 2 | 3 = 2
 ): SplitResult | null {
   if (targetId === root.id) return null;
 
@@ -260,10 +262,14 @@ export function splitContainer(
   if (!found || found.nodeType !== 'container') return null;
   const target: FlexContainerNode = found;
 
-  // The container being split keeps its name; the new half gets the next free number.
+  // The container being split keeps its name; each new part gets the next free number.
   const sourceLabel = target.label || 'Container';
   const takenLabels = collectLabels(root);
-  const newContainerLabel = nextNumberedLabel(sourceLabel, takenLabels);
+  const newContainerLabels: string[] = [];
+  for (let i = 1; i < parts; i++) {
+    const label = nextNumberedLabel(sourceLabel, new Set([...takenLabels, ...newContainerLabels]));
+    newContainerLabels.push(label);
+  }
 
   const parentDir = parent.direction;
   const targetSizing: FlexSizing = target.sizing || { type: 'fill' };
@@ -273,7 +279,7 @@ export function splitContainer(
   // direction nor its other children are disturbed.
   const inPlace = splitType === 'columns' ? parentDir === 'row' : parentDir === 'column';
 
-  const halfPx = `${Math.max(0, measuredPx / 2)}px`;
+  const halfPx = `${Math.max(0, measuredPx / parts)}px`;
 
   // Only the axis being split changes: columns go Custom-width and leave height alone; rows go
   // Custom-height and leave width/sizing alone (so an Auto-width row split stays Auto-width).
@@ -296,7 +302,7 @@ export function splitContainer(
     ? defaultChildDirection(parent, parent.id === root.id)
     : wrapperDirection === 'row' ? 'column' : 'row'; // opposite of the new wrapper it'll sit in
 
-  const newId = newNodeId('cont');
+  const newIds = newContainerLabels.map(() => newNodeId('cont'));
   // The source keeps its own direction if it already has children (so their arrangement isn't
   // disturbed) -- but if it's empty, as most freshly split containers are, there's nothing to
   // disturb, so it gets the same alternating direction as the new half instead of an arbitrary
@@ -307,11 +313,11 @@ export function splitContainer(
     halfSizing,
     halfHeight
   );
-  const newContainer = withDims(
+  const newContainers = newContainerLabels.map((label, i) => withDims(
     {
-      id: newId,
+      id: newIds[i],
       nodeType: 'container',
-      label: newContainerLabel,
+      label,
       direction: newContainerDirection,
       gap: target.gap !== undefined ? target.gap : 0,
       wrap: target.wrap !== undefined ? target.wrap : true,
@@ -324,19 +330,19 @@ export function splitContainer(
     },
     halfSizing,
     halfHeight
-  );
+  ));
 
   // Unnumbered ("Box Split") the first time; only numbered ("Box Split 2") once that's already
   // taken -- splitting a container that's already inside a wrapper of its own produces two
   // "Box Split" nodes otherwise, indistinguishable in the tree.
-  const wrapperLabel = uniqueLabel(`${sourceLabel} Split`, new Set(takenLabels).add(newContainerLabel));
+  const wrapperLabel = uniqueLabel(`${sourceLabel} Split`, new Set([...takenLabels, ...newContainerLabels]));
 
   // Node(s) that replace the target inside its parent
   const replacement: FlexContainerNode[] = inPlace
-    ? [updatedTarget, newContainer]
+    ? [updatedTarget, ...newContainers]
     : [
         // The wrapper inherits the target's original footprint inside the parent. It's structural
-        // (isSplitWrapper): holds exactly these two halves, and is never itself a content-drop
+        // (isSplitWrapper): holds exactly these parts, and is never itself a content-drop
         // target -- see FlexContainerRenderer / useTemplateLayoutTree's placement guards.
         {
           id: newNodeId('cont-split'),
@@ -353,7 +359,7 @@ export function splitContainer(
           height: target.height,
           isCard: false,
           isSplitWrapper: true,
-          children: [updatedTarget, newContainer],
+          children: [updatedTarget, ...newContainers],
         },
       ];
 
@@ -366,5 +372,5 @@ export function splitContainer(
     return { ...container, children };
   });
 
-  return { root: nextRoot, newId };
+  return { root: nextRoot, newId: newIds[0] };
 }

@@ -33,9 +33,10 @@ commit whenever you add, remove, split or rename a file — it goes stale otherw
 - **Naming, template editor tabs:** the `template_hierarchy` dock content (`TemplateHierarchyTree.tsx`)
   is labeled "Layout" in the UI; the old "Structure" name is gone, don't reintroduce it. The
   `template_editor` dock content (`TemplateBlueprintTree.tsx`) is labeled "Blueprint"; the older
-  "Content" and "Inspector"/"Template Inspector" names are gone too. The `template_builder` dock content
-  (`TemplateLayoutPalette.tsx`, the bottom-panel drag-primitives palette) is labeled "Components";
-  the old "Layout Builder" name is gone. There is no docked "Properties" panel any more (the old
+  "Content" and "Inspector"/"Template Inspector" names are gone too. There is no Components palette (the old
+  `template_builder` bottom-panel dock content, once "Layout Builder"): its pre-defined blocks are in the Add menus,
+  its simple templates in the bottom toolbar's Start from, and its Row / Column / split primitives were the same as
+  Add and Split. Edit Template docks nothing in the bottom panel, which holds Grabbed Content only. There is no docked "Properties" panel any more (the old
   `template_properties` tab / `TemplatePropertiesInspector.tsx` was removed): a node's properties live
   in its gear flyout's Properties tab and in the toolbars. Don't bring back a second place to edit them.
 - **Icons:** SVG components in `components/icons/`, not emoji or unicode symbols. The only emoji
@@ -136,11 +137,13 @@ commit whenever you add, remove, split or rename a file — it goes stale otherw
   used to reserve 140/220px, which forced a scrollbar on any Custom-height container smaller than
   that. "Has nothing in it yet" is instead read off the container's own border: dashed when it has
   no children, solid once it holds at least one field or nested container.
-- Splitting a container (`splitContainer` in `lib/layoutTree.ts`) sometimes wraps the two halves in
+- Splitting a container (`splitContainer` in `lib/layoutTree.ts`) makes 2 or 3 equal parts (Split: 2 / 3 Columns,
+  2 / 3 Rows, in the top toolbar and the gear's Actions; the container keeps the first part and its name, the new
+  ones are numbered on: "Box", "Box 2", "Box 3"). It sometimes wraps the parts in
   a new container instead of placing them as direct siblings — only when the parent's own direction
   doesn't already match the split axis (e.g. splitting into columns under a column parent, which is
   the common case since the Body is always column). That wrapper is tagged `isSplitWrapper: true`:
-  it holds exactly those two halves and is never itself a valid drop/Place target — placing content
+  it holds exactly those parts and is never itself a valid drop/Place target — placing content
   "into" one redirects to its first half instead (`resolveContentTarget`, used by `placeField` and
   `placeBuiltin`, and for the name a Blueprint row's Place: action shows), the same way dragging onto the canvas already can only ever hit a half (the
   wrapper has no exposed area; its children fill it completely). A new half's own `direction`
@@ -153,7 +156,7 @@ commit whenever you add, remove, split or rename a file — it goes stale otherw
   keeping an arbitrary leftover value from before the split. A wrapper's own label is the plain
   "Box Split" only when that's free; splitting an already-split container again reuses the same base
   label, so `uniqueLabel` disambiguates it into "Box Split 2" (`lib/layoutTree.ts`). Every
-  container-adding path (Add Before/Inside/After, the layout palette) runs its label through the
+  container-adding path (Add Before/Inside/After, the pre-defined blocks) runs its label through the
   same helper via `buildUniqueContainer`, so repeatedly clicking "Add Inside" doesn't produce a pile
   of identically-named "New Container" nodes either.
 - The **Blueprint** tab (`TemplateBlueprintTree.tsx`) is which values a template's items have, regardless of
@@ -178,7 +181,7 @@ commit whenever you add, remove, split or rename a file — it goes stale otherw
   categories instead of the Blueprint tab's groups (`lib/hierarchyFilterMetas.ts`): Layout items
   (containers), Content items (`componentType === 'field'`, i.e. real bound template fields placed
   from the Blueprint tab), and Pre-defined Content (everything else — table/media/stat/note/divider,
-  whether it came from the Components palette or older filler text; there's no stored way to
+  whether it came from a pre-defined block or older filler text; there's no stored way to
   tell those origins apart, and they are equally "not a real field", so they're grouped
   together). A search/filter prunes the tree to matches and their ancestors, force-expanding
   whatever remains (`computeVisibleHierarchyIds` in `TemplateHierarchyTree.tsx`) so a match is never
@@ -192,7 +195,7 @@ commit whenever you add, remove, split or rename a file — it goes stale otherw
   the node before or after it, the middle of a container row drops it inside (at the end), and the bottom
   edge of an expanded container drops it first inside. The rules are `moveNode` in `lib/layoutTree.ts`
   (covered by `tests/layout-tree.spec.ts`): nothing beside or in place of the Body, no container into its
-  own subtree, nothing into or out of a split wrapper (its two halves can only swap), and a drop that
+  own subtree, nothing into or out of a split wrapper (its parts can only reorder among themselves), and a drop that
   would change nothing is refused -- a refused spot simply shows no indicator. A move is one undo step.
   Field / built-in drags from the Blueprint tab still only drop inside a container row.
 - Each Layout-tree row but the Body has an eye (left of the gear) that hides that node, and everything
@@ -364,8 +367,8 @@ commit whenever you add, remove, split or rename a file — it goes stale otherw
   action (click the parent instead), and Maximum Content Width (Body-only). A content element's flyout ("Content", `TemplateComponentActionMenu`) is the same split shell: an Actions tab (Delete) and a Properties tab of collapsible cards -- Content (the binding picker, static text, display style, image shape), Label (show/hide, above/beside, its own text and text style), Text (a "Start from" preset, size, spacing, weight, color, case, alignment, italic, underline, line height, reset) and Appearance (the same `TemplateAppearanceControls` a container uses) -- and deliberately no Size, Spacing or Layout card. The controls live in `TemplateContentControls.tsx`. The old table / media / stat placeholder blocks, which have no data, only get a name field and Appearance.
 - `isCard` on a container is an internal look, not something the user picks: it gives the container the
   themed card frame (rounded, card background, border, shadow) in Preview and the item view. The default
-  layout, the Simple Templates, Stat Row tiles and the 2-/3-Column Split palette columns set it. It is
-  deliberately hidden in the UI -- no palette option, no tag beside the name, no special tree / flyout icon
+  layout, the Simple Templates and Stat Row tiles set it. It is
+  deliberately hidden in the UI -- no option for it, no tag beside the name, no special tree / flyout icon
   (a card shows its Row / Column icon) -- until it is decided whether frames should become a themed
   Appearance choice instead.
 - A standard container's look is set in the flyout's Appearance section (`TemplateAppearanceControls.tsx`,
@@ -430,16 +433,18 @@ commit whenever you add, remove, split or rename a file — it goes stale otherw
   is drawn by `ContentValue` from the item in `ContentDataContext` (the editor shows the first item of
   the template being edited, or sample values when it has none). The Blueprint tab lists the built-in values (Name, Image, Collections, Created, Sub-items) as rows: drag one
   into a container (`application/x-trove-builtin`) or use its Place: action for the active one (`placeBuiltin`, built by
-  `buildBuiltinComponent`). Pre-defined content (the Components palette's
-  "Pre-defined Components" tab: Field List, Header, Stat Row) is not a special component: picking one opens a small
-  chooser (`TemplatePresetPicker`) for which built-ins and fields it includes, then `buildPreset` in
+  `buildBuiltinComponent`). Pre-defined content (Field List, Header, Stat Row: the
+  top toolbar's Add pulldown under "Pre-defined", and Add: Field List / Header / Stat Row in a container's or the Body's
+  gear Actions) is not a special component: picking one opens `AddPresetDialog` (a centered modal, opened through the
+  `lib/presetDialog.ts` store so neither menu is wired to it; mounted in `app/page.tsx`) for which built-ins and
+  fields it includes, then `buildPreset` in
   `lib/layoutPresets.ts` (pure, covered by `tests/layout-presets.spec.ts`) builds an ordinary subtree of containers
-  and content -- container names made unique in the layout -- that `placePreset` inserts into the active
-  container. After that it is edited like anything else, and it does not track the template's fields. A Field List
+  and content -- container names made unique in the layout -- that `placePreset` inserts into the container the
+  menu belongs to. After that it is edited like anything else, and it does not track the template's fields. A Field List
   is a column of rows (a label on the left and the value on the right, or labels beside values); a Header is a
   fixed-width picture container beside a fill-width text container; a Stat Row is a row of card containers, each
-  with a big number and its label. The old table / media / stat placeholder blocks are no longer offered in the
-  palette, though a layout saved with one still renders it.
+  with a big number and its label. The old table / media / stat placeholder blocks are no longer offered
+  anywhere, though a layout saved with one still renders it.
 - **The item view is drawn through the template's layout.** `ItemDetailView` resolves the item's template layout
   (`resolveSavedLayout` in `lib/layoutStorage.ts`: this browser's localStorage copy if valid -- the editor writes it on
   every change -- else the stored `layout_config`) and, when there is one, shows a slim bar of identity badges and
@@ -448,7 +453,8 @@ commit whenever you add, remove, split or rename a file — it goes stale otherw
   template) keeps the original detail view, so nothing changes until a template is given a layout. The workspace
   loader (`lib/data/workspace.ts`) loads every template together with its fields, because a field element needs its
   field to know which attribute it reads and what it is called.
-- **Simple templates** (the palette's "Simple Templates" tab: Classic, Spec Sheet, Gallery) are recipes in
+- **Simple templates** (the bottom toolbar's **Start from** pulldown, beside Reset Layout: Classic, Spec Sheet,
+  Gallery; it opens upward -- `ToolGroup`'s `placement="above"`) are recipes in
   `lib/layoutRecipes.ts`: pure functions of the template's fields that assemble the same pre-defined blocks inside
   cards (they adapt: no number fields means no stat row). `applyRecipe` replaces the whole layout through the normal
   save, so Undo restores the old one.

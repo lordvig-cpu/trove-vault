@@ -17,7 +17,7 @@ import {
   useFloatingNodeMenu,
 } from '@/lib/floatingNodeMenu';
 import { LayoutNavigationProvider } from '@/context/LayoutNavigationContext';
-import { findFlexNode, findParentFlexContainer, type FlexComponentNode, type FlexContainerNode } from '@/types/layout';
+import { findFlexNode, findParentFlexContainer, type FlexComponentNode, type FlexContainerNode, type SplitContainerHandler } from '@/types/layout';
 import type { FieldDefinition } from '@/types/field';
 
 const MIN_VISIBLE_PX = 120; // how much of the title bar must stay on screen while dragging
@@ -29,7 +29,7 @@ interface FloatingNodeMenuHostProps {
   onSelectNode?: (nodeId: string | null) => void;
   onAddContainer?: (targetContainerId: string, options?: Partial<FlexContainerNode>) => string;
   onInsertContainerSibling?: (targetContainerId: string, position: 'before' | 'after', options?: Partial<FlexContainerNode>) => string;
-  onSplitContainer?: (containerId: string, splitType: 'columns' | 'rows', measuredPx: number) => void;
+  onSplitContainer?: SplitContainerHandler;
   onUpdateContainer?: (containerId: string, partial: Partial<FlexContainerNode>) => void;
   onRemoveContainer?: (containerId: string) => void;
   onUpdateComponent?: (componentId: string, partial: Partial<FlexComponentNode>) => void;

@@ -1,6 +1,7 @@
 import { contentNameOf } from '@/lib/layoutContent';
 import type { FieldDefinition } from '@/types/field';
-import type { FlexContainerNode, FlexLayoutNode } from '@/types/layout';
+import { findFlexNode, type FlexContainerNode, type FlexLayoutNode } from '@/types/layout';
+import { resolveContentTarget } from '@/lib/layoutTree';
 
 /* ==========================================================================
    Walking the layout in the Layout tree's own order -- each container, then everything inside it, top to
@@ -26,6 +27,13 @@ export function layoutNeighbors(root: FlexContainerNode, nodeId: string): { prev
   const i = order.findIndex((node) => node.id === nodeId);
   if (i < 0) return { prev: null, next: null };
   return { prev: order[i - 1] ?? null, next: order[i + 1] ?? null };
+}
+
+/** The name of the container content placed "into" `containerId` really lands in (a split wrapper passes it on
+ *  to its first part) -- what Place: and the Add dialogs name. */
+export function contentTargetName(root: FlexContainerNode, containerId: string, fields: FieldDefinition[]): string {
+  const node = findFlexNode(root, resolveContentTarget(root, containerId));
+  return node ? layoutNodeName(node, fields, node.id === root.id) : 'Body';
 }
 
 /** The name a node shows in the Layout tree: "Body", a container's label, or a content element's name. */

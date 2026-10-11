@@ -74,4 +74,19 @@ test.describe('Leaving the template editor', () => {
     await expect(editorOpen(page)).toBeVisible();
     expect(pageErrors).toEqual([]);
   });
+
+  test('the editor docks nothing in the bottom panel; Add, Split and Start from carry what the palette had', async ({ page }) => {
+    await page.goto('/');
+    await page.waitForLoadState('networkidle');
+    await openEditor(page);
+    await expect(page.getByRole('button', { name: 'Show Bottom Panel' })).toBeVisible();
+    const bar = page.locator('#template-toolbar-slot');
+    await bar.getByRole('button', { name: /^Add/ }).click();
+    await expect(page.locator('[role="menu"] button', { hasText: 'Field List...' })).toBeVisible();
+    await page.keyboard.press('Escape');
+    await bar.getByRole('button', { name: /^Split/ }).click();
+    await expect(page.locator('[role="menu"] button', { hasText: '3 Columns' })).toBeVisible();
+    await page.keyboard.press('Escape');
+    await expect(page.locator('#template-toolbar-slot-bottom').getByRole('button', { name: /Start from/ })).toBeVisible();
+  });
 });

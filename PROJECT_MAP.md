@@ -108,10 +108,8 @@ Conventions and architecture (data access, theming, template editor internals, b
 - `BlueprintBuiltinActionMenu.tsx` — a Blueprint built-in row's gear flyout (Actions only: Place:).
 - `TemplateHierarchyTree.tsx` — the template editor's container hierarchy tree (Layout tab), with drag-and-drop reordering and
   per-node show/hide eyes for the edit canvas.
-- `TemplateLayoutPalette.tsx` — the Components palette: layout primitives (row, column, splits, card) and the
-  pre-defined content cards (Field List, Header, Stat Row).
-- `TemplatePresetPicker.tsx` — the step after choosing a pre-defined block: which built-ins and fields it includes
-  (and a field list's row style), then add.
+- `AddPresetDialog.tsx` — adding a pre-defined block (Field List, Header, Stat Row) from an Add menu: which built-ins
+  and fields it includes (and a field list's row style), then add into the container (`lib/presetDialog.ts` opens it).
 - `TemplateManagerModal.tsx` — browse/apply/create-custom template picker (from Collections menus).
 - `TreeCollectionActionMenu.tsx` / `TreeItemActionMenu.tsx` / `TreeTemplateActionMenu.tsx` — the
   tree-gear popup menus for a collection (or category), item, and template row: Actions | Properties tabs
@@ -255,6 +253,8 @@ its display style, with label and typography).
   the name a node shows in the tree (`layoutNodeName`).
 - `layoutTreeMenu.ts` — `openNodeMenu`: opens a node's gear flyout from outside the Layout tree (the toolbars' gear, a
   canvas right-click) -- out of its tree row when the Layout tree is showing, otherwise as the floating menu.
+- `presetDialog.ts` — which pre-defined block's add dialog is open, and for which container (a tiny store the Add
+  menus write and `AddPresetDialog` reads).
 - `flyoutHold.ts` — keeps a header pulldown (Items / Collections / Templates) mounted, hidden, while a gear menu
   pinned in it floats after it closed or was docked.
 - `floatingNodeMenu.ts` — the store for that floating menu (which node, where, which tab; open / move / close).

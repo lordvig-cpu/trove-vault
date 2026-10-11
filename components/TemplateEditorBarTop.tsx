@@ -14,7 +14,9 @@ import {
 } from '@/components/editorBarStyles';
 import HoverHint, { HintRef, type HintContent } from '@/components/HoverHint';
 import TemplateIconPicker from '@/components/TemplateIconPicker';
-import { EditableName } from '@/components/editorBarControls';
+import { EditableName, GroupOption, ToolGroup } from '@/components/editorBarControls';
+import { RECIPES, type RecipeId } from '@/lib/layoutRecipes';
+import { CardsIcon } from '@/components/icons/ContentIcons';
 
 /* ==========================================================================
    Top row of the template editor bar.
@@ -54,6 +56,8 @@ interface TemplateEditorBarTopProps {
   onRedo?: () => void;
   /** Replaces the layout with the template's default (Undo restores it). */
   onResetLayout?: () => void;
+  /** Replaces the whole layout with a simple-template recipe (Undo restores it). */
+  onApplyRecipe?: (id: RecipeId) => void;
   /** Leaves the editor (edits are already saved as they are made). */
   onSave: () => void;
 }
@@ -71,6 +75,7 @@ export default function TemplateEditorBarTop({
   onUndo,
   onRedo,
   onResetLayout,
+  onApplyRecipe,
   onSave,
 }: TemplateEditorBarTopProps) {
   return (
@@ -169,6 +174,19 @@ export default function TemplateEditorBarTop({
         >
           <ResetIcon className="w-3.5 h-3.5" />
         </button>
+        {/* Start from a simple template: replaces the whole layout with one built from this template's fields */}
+        {onApplyRecipe && (
+          <ToolGroup
+            icon={<CardsIcon className="w-3.5 h-3.5" />}
+            label="Start from"
+            title="Replace the layout with a simple template built from this template's fields (Undo restores it)"
+            placement="above"
+          >
+            {RECIPES.map((recipe) => (
+              <GroupOption key={recipe.id} label={recipe.label} title={recipe.description} onClick={() => onApplyRecipe(recipe.id)} />
+            ))}
+          </ToolGroup>
+        )}
 
         <div
           className="h-4 w-px bg-[color-mix(in_oklch,var(--secondary-accent)_40%,transparent)] shrink-0 mx-0.5"

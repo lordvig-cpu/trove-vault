@@ -1,12 +1,14 @@
 'use client';
 
 import React from 'react';
-import { FlexContainerNode, resolveDirection } from '@/types/layout';
+import { FlexContainerNode, resolveDirection, type SplitContainerHandler } from '@/types/layout';
 import {
   FlexRowIcon,
   FlexColumnIcon,
   SplitColumnsIcon,
   SplitRowsIcon,
+  Split3ColumnsIcon,
+  Split3RowsIcon,
   AddContainerBeforeIcon,
   AddChildContainerIcon,
   AddContainerAfterIcon,
@@ -26,6 +28,7 @@ import {
   BarSectionLabel,
   DeleteButton,
   EditableName,
+  GroupHeading,
   GroupOption,
   ToolGroup,
   TreeGearButton,
@@ -34,6 +37,9 @@ import {
 } from '@/components/editorBarControls';
 import { NEW_CONTAINER_OPTIONS } from '@/lib/layoutTree';
 import { measureContainerPx } from '@/lib/measureContainer';
+import { PRESET_INFO, type PresetKind } from '@/lib/layoutPresets';
+import { openPresetDialog } from '@/lib/presetDialog';
+import { PRESET_ICONS } from '@/components/AddPresetDialog';
 
 /* ==========================================================================
    Template editor bar: the container toolbar, anchored to the top navigation header (see
@@ -83,7 +89,7 @@ interface TemplateEditorContainerBarProps {
     position: 'before' | 'after',
     options?: Partial<FlexContainerNode>
   ) => string;
-  onSplitContainer?: (containerId: string, splitType: 'columns' | 'rows', measuredPx: number) => void;
+  onSplitContainer?: SplitContainerHandler;
   onRemoveContainer?: (id: string) => void;
   onSelectNode?: (id: string | null) => void;
   /** Whether the Layout tree's side panel is currently visible (pinned or unpinned). */
@@ -289,6 +295,17 @@ export default function TemplateEditorContainerBar({
                 disabled={isRoot}
                 onClick={() => { onInsertContainerSibling?.(container.id, 'after', { ...NEW_CONTAINER_OPTIONS }); }}
               />
+              {/* Pre-defined blocks, built from ordinary containers and content: each opens its include-chooser */}
+              <GroupHeading label="Pre-defined" />
+              {(['fieldList', 'header', 'statRow'] as PresetKind[]).map((kind) => (
+                <GroupOption
+                  key={kind}
+                  icon={PRESET_ICONS[kind]}
+                  label={`${PRESET_INFO[kind].label}...`}
+                  title={`Add a ${PRESET_INFO[kind].label}: ${PRESET_INFO[kind].description}`}
+                  onClick={() => openPresetDialog(kind, container.id)}
+                />
+              ))}
           </>
         </ToolGroup>
   
@@ -310,6 +327,18 @@ export default function TemplateEditorContainerBar({
                 label="2 Rows"
                 title="Split into 2 Rows (stacked)"
                 onClick={() => { onSplitContainer?.(container.id, 'rows', measureContainerPx(container.id, 'height')); }}
+              />
+              <GroupOption
+                icon={<Split3ColumnsIcon className="w-3.5 h-3.5" />}
+                label="3 Columns"
+                title="Split into 3 Columns (side-by-side)"
+                onClick={() => { onSplitContainer?.(container.id, 'columns', measureContainerPx(container.id, 'width'), 3); }}
+              />
+              <GroupOption
+                icon={<Split3RowsIcon className="w-3.5 h-3.5" />}
+                label="3 Rows"
+                title="Split into 3 Rows (stacked)"
+                onClick={() => { onSplitContainer?.(container.id, 'rows', measureContainerPx(container.id, 'height'), 3); }}
               />
           </>
         </ToolGroup>

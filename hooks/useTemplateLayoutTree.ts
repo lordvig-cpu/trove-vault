@@ -151,114 +151,13 @@ export function useTemplateLayoutTree({
     [flexLayoutConfig, saveFlexLayoutConfig, addFlexContainer, setSelectedNodeId]
   );
 
-  const addFlexPrimitive = useCallback(
-    (
-      primitiveType: 'row' | 'column' | 'split-2' | 'split-3',
-      targetContainerId?: string
-    ) => {
-      const target = targetContainerId || activeContainerId;
-      if (primitiveType === 'row') {
-        return addFlexContainer(target, {
-          label: 'Row Container',
-          direction: 'row',
-          gap: 0,
-          wrap: true,
-          isCard: false,
-          padding: '0px',
-        });
-      }
-      if (primitiveType === 'column') {
-        return addFlexContainer(target, {
-          label: 'Column Container',
-          direction: 'column',
-          gap: 0,
-          wrap: false,
-          isCard: false,
-          padding: '0px',
-        });
-      }
-      if (primitiveType === 'split-2') {
-        const splitId = Date.now();
-        const leftCol: FlexContainerNode = {
-          id: `cont-left-${splitId}`,
-          nodeType: 'container',
-          label: 'Left Column',
-          direction: 'column',
-          gap: 0,
-          wrap: false,
-          align: 'stretch',
-          justify: 'start',
-          padding: '0px',
-          sizing: { type: 'fixed', value: '50%' },
-          isCard: true,
-          children: [],
-        };
-        const rightCol: FlexContainerNode = {
-          id: `cont-right-${splitId}`,
-          nodeType: 'container',
-          label: 'Right Column',
-          direction: 'column',
-          gap: 0,
-          wrap: false,
-          align: 'stretch',
-          justify: 'start',
-          padding: '0px',
-          sizing: { type: 'fixed', value: '50%' },
-          isCard: true,
-          children: [],
-        };
-        return addFlexContainer(target, {
-          label: '2-Col Split',
-          direction: 'row',
-          gap: 0,
-          wrap: false,
-          align: 'stretch',
-          justify: 'between',
-          padding: '0px',
-          isCard: false,
-          children: [leftCol, rightCol],
-        });
-      }
-      if (primitiveType === 'split-3') {
-        const splitId = Date.now();
-        const makeCol = (num: number, label: string): FlexContainerNode => ({
-          id: `cont-col${num}-${splitId}`,
-          nodeType: 'container',
-          label,
-          direction: 'column',
-          gap: 0,
-          wrap: false,
-          align: 'stretch',
-          justify: 'start',
-          padding: '0px',
-          sizing: { type: 'fixed', value: '33.333%' },
-          isCard: true,
-          children: [],
-        });
-        return addFlexContainer(target, {
-          label: '3-Col Split',
-          direction: 'row',
-          gap: 0,
-          wrap: false,
-          align: 'stretch',
-          justify: 'between',
-          padding: '0px',
-          isCard: false,
-          children: [makeCol(1, 'Column 1'), makeCol(2, 'Column 2'), makeCol(3, 'Column 3')],
-        });
-      }
-      return '';
-    },
-    [activeContainerId, addFlexContainer]
-  );
-
   const splitFlexContainer = useCallback(
-    (targetContainerId: string, splitType: 'columns' | 'rows', measuredPx: number): string => {
+    (targetContainerId: string, splitType: 'columns' | 'rows', measuredPx: number, parts: 2 | 3 = 2): string => {
       if (!flexLayoutConfig) return '';
-      const result = splitContainer(flexLayoutConfig.root, targetContainerId, splitType, measuredPx);
+      const result = splitContainer(flexLayoutConfig.root, targetContainerId, splitType, measuredPx, parts);
       if (!result) return '';
       saveFlexLayoutConfig({ ...flexLayoutConfig, root: result.root });
-      // The container that was split stays selected, not the new half
+      // The container that was split stays selected, not a new part
       setSelectedNodeId(targetContainerId);
       return result.newId;
     },
@@ -441,7 +340,6 @@ export function useTemplateLayoutTree({
     selectNode,
     addFlexContainer,
     insertFlexContainerSibling,
-    addFlexPrimitive,
     splitFlexContainer,
     updateFlexContainer,
     removeFlexContainer,

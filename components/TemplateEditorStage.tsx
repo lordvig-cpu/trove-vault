@@ -1,5 +1,6 @@
 'use client';
 
+import type { RecipeId } from '@/lib/layoutRecipes';
 import { useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { ItemTemplate } from '@/types/template';
@@ -9,6 +10,7 @@ import {
   FlexComponentNode,
   findFlexNode,
   type PlaceBuiltinHandler,
+  type SplitContainerHandler,
 } from '@/types/layout';
 import { useCanvasZoom } from '@/context/CanvasZoomContext';
 import TemplateEditorBar from '@/components/TemplateEditorBar';
@@ -30,10 +32,6 @@ interface TemplateEditorStageProps {
   selectedNodeId?: string | null;
   activeContainerId?: string;
   onSelectNode?: (nodeId: string | null) => void;
-  onAddPrimitive?: (
-    primitiveType: 'row' | 'column' | 'split-2' | 'split-3',
-    targetContainerId?: string
-  ) => string;
   onAddFlexContainer?: (
     targetContainerId: string,
     options?: Partial<FlexContainerNode>
@@ -60,7 +58,8 @@ interface TemplateEditorStageProps {
   onPlaceField?: (fieldId: number, targetContainerId?: string) => void;
   onPlaceBuiltin?: PlaceBuiltinHandler;
   onResetFlexLayout?: () => void;
-  onSplitContainer?: (containerId: string, splitType: 'columns' | 'rows', measuredPx: number) => void;
+  onApplyRecipe?: (id: RecipeId) => void;
+  onSplitContainer?: SplitContainerHandler;
   onOverflowChange?: (containerId: string, isOverflowing: boolean) => void;
 
   canvasMode: 'edit' | 'preview';
@@ -90,7 +89,6 @@ export default function TemplateEditorStage({
   selectedNodeId,
   activeContainerId,
   onSelectNode,
-  onAddPrimitive,
   onAddFlexContainer,
   onInsertContainerSibling,
   onUpdateFlexContainer,
@@ -100,6 +98,7 @@ export default function TemplateEditorStage({
   onPlaceField,
   onPlaceBuiltin,
   onResetFlexLayout,
+  onApplyRecipe,
   onSplitContainer,
   onOverflowChange,
 
@@ -207,6 +206,7 @@ export default function TemplateEditorStage({
             onUndo={onUndo}
             onRedo={onRedo}
             onResetLayout={onResetFlexLayout}
+            onApplyRecipe={onApplyRecipe}
             onSave={onDoneEditing}
             hasLayout={isFlexActive}
           />,
@@ -229,7 +229,6 @@ export default function TemplateEditorStage({
             hiddenNodeIds={hiddenNodeIds}
             fields={fields}
             onSelectNode={onSelectNode}
-            onAddPrimitive={onAddPrimitive}
             onAddContainer={onAddFlexContainer}
             onInsertContainerSibling={onInsertContainerSibling}
             onUpdateContainer={onUpdateFlexContainer}

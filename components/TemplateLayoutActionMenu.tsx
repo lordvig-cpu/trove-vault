@@ -7,6 +7,7 @@ import {
   resolveDirection,
   normalizeAlign,
   normalizeJustify,
+  type SplitContainerHandler,
 } from '@/types/layout';
 import { FieldDefinition } from '@/types/field';
 import { useTreeActionMenu } from '@/hooks/useTreeActionMenu';
@@ -45,6 +46,9 @@ import {
 import { bindingOf, contentNameOf } from '@/lib/layoutContent';
 import { MENU_TAB_REQUEST_EVENT, type MenuTab, type MenuTabRequest } from '@/lib/menuTabRequest';
 import { openFloatingNodeMenu } from '@/lib/floatingNodeMenu';
+import { PRESET_INFO, type PresetKind } from '@/lib/layoutPresets';
+import { openPresetDialog } from '@/lib/presetDialog';
+import { PRESET_ICONS } from '@/components/AddPresetDialog';
 import HoverHint, { HintRef, type HintContent } from '@/components/HoverHint';
 import {
   BodyIcon,
@@ -55,6 +59,8 @@ import {
   AddContainerAfterIcon,
   SplitColumnsIcon,
   SplitRowsIcon,
+  Split3ColumnsIcon,
+  Split3RowsIcon,
   ActionIcon,
   PropertiesIcon,
   AutoSizingIcon,
@@ -301,7 +307,7 @@ interface TemplateContainerActionMenuProps {
     position: 'before' | 'after',
     options?: Partial<FlexContainerNode>
   ) => string;
-  onSplitContainer?: (containerId: string, splitType: 'columns' | 'rows', measuredPx: number) => void;
+  onSplitContainer?: SplitContainerHandler;
   onUpdateContainer?: (containerId: string, partial: Partial<FlexContainerNode>) => void;
   onRemoveContainer?: (containerId: string) => void;
   /** Shown as a floating window instead of sliding out of the Layout tree (lib/floatingNodeMenu.ts). */
@@ -334,6 +340,27 @@ function useFloatWhenPanelHides(menu: ReturnType<typeof useTreeActionMenu>, node
     setPanelHiddenHandler((at) => openFloatingNodeMenu(nodeId, at.left, at.top, activeTab));
     return () => setPanelHiddenHandler(null);
   }, [setPanelHiddenHandler, nodeId, activeTab, floating]);
+}
+
+/** Add: Field List / Header / Stat Row -- each opens its include-chooser (AddPresetDialog) for this container. */
+function PresetAddActions({ containerId, onDone }: { containerId: string; onDone: () => void }) {
+  return (
+    <>
+      {(['fieldList', 'header', 'statRow'] as PresetKind[]).map((kind) => (
+        <ActionMenuItem
+          key={kind}
+          icon={PRESET_ICONS[kind]}
+          label="Add:"
+          labelDetail={PRESET_INFO[kind].label}
+          subtext={PRESET_INFO[kind].description}
+          onClick={() => {
+            onDone();
+            openPresetDialog(kind, containerId);
+          }}
+        />
+      ))}
+    </>
+  );
 }
 
 export function TemplateContainerActionMenu({
@@ -471,6 +498,8 @@ export function TemplateContainerActionMenu({
                 </div>
               </form>
             )}
+            <ActionMenuDivider />
+            <PresetAddActions containerId={container.id} onDone={menu.closeMenu} />
           </>
         )}
 
@@ -635,6 +664,8 @@ export function TemplateContainerActionMenu({
             onClick={act(() => onInsertContainerSibling?.(container.id, 'after', { ...NEW_CONTAINER_OPTIONS }))}
           />
           <ActionMenuDivider />
+          <PresetAddActions containerId={container.id} onDone={menu.closeMenu} />
+          <ActionMenuDivider />
           <ActionMenuItem
             icon={<SplitColumnsIcon className="w-3.5 h-3.5 menu-icon-accent" />}
             label="Split:"
@@ -648,6 +679,20 @@ export function TemplateContainerActionMenu({
             labelDetail="2 Rows"
             subtext="Stacked"
             onClick={act(() => onSplitContainer?.(container.id, 'rows', measureContainerPx(container.id, 'height')))}
+          />
+          <ActionMenuItem
+            icon={<Split3ColumnsIcon className="w-3.5 h-3.5 menu-icon-accent" />}
+            label="Split:"
+            labelDetail="3 Columns"
+            subtext="Three side by side"
+            onClick={act(() => onSplitContainer?.(container.id, 'columns', measureContainerPx(container.id, 'width'), 3))}
+          />
+          <ActionMenuItem
+            icon={<Split3RowsIcon className="w-3.5 h-3.5 menu-icon-accent" />}
+            label="Split:"
+            labelDetail="3 Rows"
+            subtext="Three stacked"
+            onClick={act(() => onSplitContainer?.(container.id, 'rows', measureContainerPx(container.id, 'height'), 3))}
           />
 
           {onRemoveContainer && (

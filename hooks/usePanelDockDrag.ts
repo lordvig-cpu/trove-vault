@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect, useCallback } from 'react';
 
-export type DockablePanelId = 'primary' | 'secondary' | 'bottom' | 'items' | 'collections' | 'templates' | 'grabbed_content' | 'template_editor' | 'template_builder' | 'template_hierarchy';
+export type DockablePanelId = 'primary' | 'secondary' | 'bottom' | 'items' | 'collections' | 'templates' | 'grabbed_content' | 'template_editor' | 'template_hierarchy';
 export type DockDropTargetZone =
   | 'left'
   | 'left-tab'
@@ -12,7 +12,7 @@ export type DockDropTargetZone =
   | 'right-replace'
   | 'bottom'
   | 'remove';
-export type DockContent = 'empty' | 'items' | 'collections' | 'templates' | 'grabbed_content' | 'template_editor' | 'template_builder' | 'template_hierarchy';
+export type DockContent = 'empty' | 'items' | 'collections' | 'templates' | 'grabbed_content' | 'template_editor' | 'template_hierarchy';
 export interface DockContents {
   primary?: DockContent;
   secondary?: DockContent;
@@ -42,7 +42,6 @@ export function isDockZoneAllowed(
     panelId === 'templates' ||
     panelId === 'grabbed_content' ||
     panelId === 'template_editor' ||
-    panelId === 'template_builder' ||
     panelId === 'template_hierarchy'
       ? panelId
       : panelId === 'primary'
@@ -52,7 +51,7 @@ export function isDockZoneAllowed(
       : (contents[panelId] ?? 'empty');
 
   if (content === 'empty') return false;
-  if (targetZone === 'bottom') return content === 'grabbed_content' || content === 'template_builder';
+  if (targetZone === 'bottom') return content === 'grabbed_content';
   if (targetZone === 'remove') return true;
 
   const primaryTabs = contents.primaryTabs ?? (contents.primary && contents.primary !== 'empty' ? [contents.primary] : []);
@@ -214,7 +213,6 @@ export function usePanelDockDrag({ onDropPanel, contents }: UsePanelDockDragOpti
           panelId === 'templates' ||
           panelId === 'grabbed_content' ||
           panelId === 'template_editor' ||
-          panelId === 'template_builder' ||
           panelId === 'template_hierarchy'
         ) {
           const elements = document.elementsFromPoint(moveEv.clientX, moveEv.clientY);

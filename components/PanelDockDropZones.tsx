@@ -14,7 +14,7 @@ interface PanelDockDropZonesProps {
   isTabReorder?: boolean;
   primaryPanelContent?: DockContent;
   secondaryPanelContent?: DockContent;
-  bottomPanelContent?: 'empty' | 'grabbed_content' | 'template_builder';
+  bottomPanelContent?: 'empty' | 'grabbed_content';
   primaryTabs?: DockContent[];
   secondaryTabs?: DockContent[];
   primaryActiveTab?: DockContent;
@@ -56,8 +56,6 @@ export default function PanelDockDropZones({
         return 'Templates';
       case 'template_editor':
         return 'Blueprint';
-      case 'template_builder':
-        return 'Components';
       case 'template_hierarchy':
         return 'Layout';
       case 'grabbed_content':
@@ -77,8 +75,6 @@ export default function PanelDockDropZones({
         return 'templates';
       case 'template_editor':
         return 'template_editor';
-      case 'template_builder':
-        return 'template_builder';
       case 'template_hierarchy':
         return 'template_hierarchy';
       case 'grabbed_content':

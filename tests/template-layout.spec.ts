@@ -25,15 +25,16 @@ test.describe('Template Layout Engine', () => {
   });
 
 
-  test('docking engine permits template_builder to dock to bottom panel and side panels', () => {
-    // Docking to bottom is allowed for template_builder
-    expect(isDockZoneAllowed('template_builder', 'bottom')).toBe(true);
+  test('docking engine: only grabbed content docks to the bottom panel, and moves on to the side panels', () => {
+    // The bottom panel holds grabbed content only (the template editor's panels are side-panel tabs)
+    expect(isDockZoneAllowed('grabbed_content', 'bottom')).toBe(true);
     expect(isDockZoneAllowed('template_editor', 'bottom')).toBe(false);
+    expect(isDockZoneAllowed('template_hierarchy', 'bottom')).toBe(false);
 
     // Docking from bottom to sidebars is allowed
-    expect(isDockZoneAllowed('bottom', 'left', { bottom: 'template_builder' })).toBe(true);
-    expect(isDockZoneAllowed('bottom', 'right', { bottom: 'template_builder' })).toBe(true);
-    expect(isDockZoneAllowed('bottom', 'left-tab', { bottom: 'template_builder', primaryTabs: ['items'] })).toBe(true);
+    expect(isDockZoneAllowed('bottom', 'left', { bottom: 'grabbed_content' })).toBe(true);
+    expect(isDockZoneAllowed('bottom', 'right', { bottom: 'grabbed_content' })).toBe(true);
+    expect(isDockZoneAllowed('bottom', 'left-tab', { bottom: 'grabbed_content', primaryTabs: ['items'] })).toBe(true);
   });
 
   test('creates default Flexbox Container layout with root, card wrapper, and child components', async () => {

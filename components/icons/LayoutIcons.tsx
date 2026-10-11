@@ -111,6 +111,48 @@ export const SplitRowsIcon = ({ className = 'w-4 h-4', strokeWidth = 1.8 }: Layo
 );
 
 /**
+ * Split3ColumnsIcon:
+ * A square split into three columns by two dashed lines.
+ */
+export const Split3ColumnsIcon = ({ className = 'w-4 h-4', strokeWidth = 1.8 }: LayoutIconProps) => (
+  <svg
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth={strokeWidth}
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className={`origin-center shrink-0 ${className}`}
+    aria-hidden="true"
+  >
+    <rect x="3" y="3" width="18" height="18" rx="2.5" />
+    <line x1="9" y1="3" x2="9" y2="21" strokeDasharray="2.5 2" />
+    <line x1="15" y1="3" x2="15" y2="21" strokeDasharray="2.5 2" />
+  </svg>
+);
+
+/**
+ * Split3RowsIcon:
+ * A square split into three rows by two dashed lines.
+ */
+export const Split3RowsIcon = ({ className = 'w-4 h-4', strokeWidth = 1.8 }: LayoutIconProps) => (
+  <svg
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth={strokeWidth}
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className={`origin-center shrink-0 ${className}`}
+    aria-hidden="true"
+  >
+    <rect x="3" y="3" width="18" height="18" rx="2.5" />
+    <line x1="3" y1="9" x2="21" y2="9" strokeDasharray="2.5 2" />
+    <line x1="3" y1="15" x2="21" y2="15" strokeDasharray="2.5 2" />
+  </svg>
+);
+
+/**
  * ContainerOverflowIcon:
  * Warning triangle (used in the Layout tree to flag a container whose children don't fit
  * their own row at their set widths).

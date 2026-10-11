@@ -128,6 +128,15 @@ export type LayoutVariant =
 export type BuiltinKey = 'name' | 'image' | 'collections' | 'created' | 'subitems';
 
 /** Places a built-in item value as content in a container (the active one when none is given). */
+/** Splits a container into 2 or 3 parts side by side ('columns') or stacked ('rows'). `measuredPx` is its
+ *  rendered size along that axis (each part gets an equal share); `parts` defaults to 2. */
+export type SplitContainerHandler = (
+  containerId: string,
+  splitType: 'columns' | 'rows',
+  measuredPx: number,
+  parts?: 2 | 3
+) => void;
+
 export type PlaceBuiltinHandler = (key: BuiltinKey, targetContainerId?: string) => void;
 
 /** What a content element shows: a built-in item value, a template field, or fixed text. A component
