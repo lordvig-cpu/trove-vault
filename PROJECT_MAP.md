@@ -184,6 +184,8 @@ its display style, with label and typography).
 - `useFlyoutLifecycle.ts` — a flyout/sidebar's mount-and-animate-out lifecycle.
 - `useHierarchyState.ts` — the Layout tree's expansion state and open-properties/place-field/
   add-container handlers; takes `useTemplateEditor`'s return value as its argument.
+- `useActionSections.ts` — which Actions-tab sections are open in the container / Body / content flyouts: one
+  remembered setting per section, shared by every flyout.
 - `useConfirmRemoveContainer.ts` — `requestRemoveContainer`, every container delete's entry point: an empty one goes at
   once, one that holds anything waits for `DeleteContainerModal`.
 - `useItemForm.ts` — shared state/logic for the Create and Edit item modals.

@@ -83,3 +83,44 @@ export const SectionTextIcon = ({ className = 'w-5 h-5', strokeWidth = 1.7 }: Se
     <path d="M7.8 14h8.4" />
   </svg>
 );
+
+/* Icons for an Actions section's header tile (container / Body / content flyouts): Select Element, Add Container,
+   Add Content and Split Container. */
+
+/** SectionSelectIcon: a row with a chevron above and below it -- step to the element above or below. */
+export const SectionSelectIcon = ({ className = 'w-5 h-5', strokeWidth = 1.7 }: SectionIconProps) => (
+  <svg {...base(className, strokeWidth)}>
+    <rect x="4" y="9.5" width="16" height="5" rx="1.5" />
+    <path d="m8.5 6 3.5-3 3.5 3" />
+    <path d="m8.5 18 3.5 3 3.5-3" />
+  </svg>
+);
+
+/** SectionAddContainerIcon: a frame with a plus -- a new container. */
+export const SectionAddContainerIcon = ({ className = 'w-5 h-5', strokeWidth = 1.7 }: SectionIconProps) => (
+  <svg {...base(className, strokeWidth)}>
+    <rect x="3.5" y="3.5" width="17" height="17" rx="2.5" />
+    <path d="M12 8v8" />
+    <path d="M8 12h8" />
+  </svg>
+);
+
+/** SectionAddContentIcon: two blocks of lines, the second being added -- a pre-defined block of fields. */
+export const SectionAddContentIcon = ({ className = 'w-5 h-5', strokeWidth = 1.7 }: SectionIconProps) => (
+  <svg {...base(className, strokeWidth)}>
+    <rect x="3.5" y="3.5" width="17" height="7" rx="1.5" />
+    <path d="M7 7h7" />
+    <path d="M3.5 15h8" />
+    <path d="M3.5 19.5h6" />
+    <path d="M17.5 13.5v7" />
+    <path d="M14 17h7" />
+  </svg>
+);
+
+/** SectionSplitIcon: a frame divided down the middle -- split into parts. */
+export const SectionSplitIcon = ({ className = 'w-5 h-5', strokeWidth = 1.7 }: SectionIconProps) => (
+  <svg {...base(className, strokeWidth)}>
+    <rect x="3.5" y="3.5" width="17" height="17" rx="2.5" />
+    <path d="M12 3.5v17" strokeDasharray="2.5 2" />
+  </svg>
+);

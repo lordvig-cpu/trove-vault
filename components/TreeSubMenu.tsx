@@ -200,12 +200,16 @@ export default function TreeSubMenu({
 
 // Standard action with a neutral hover treatment.
 /** On hover, gives an element a native tooltip with its full text -- but only while some of that text is cut
- *  off with "..." (any `.truncate` inside it, or the element itself, overflowing); text that fits gets none. */
+ *  off with "..." (any `.truncate` inside it, or the element itself, overflowing); text that fits gets none --
+ *  or just `fallback` (a short row's own description), when one is given. */
 function showFullTextIfCut(e: React.MouseEvent<HTMLElement>, ...text: (string | undefined)[]) {
+  showFullTextOr(e, undefined, ...text);
+}
+function showFullTextOr(e: React.MouseEvent<HTMLElement>, fallback: string | undefined, ...text: (string | undefined)[]) {
   const el = e.currentTarget;
   const parts = [el, ...el.querySelectorAll<HTMLElement>('.truncate')];
   const isCut = parts.some((part) => part.scrollWidth > part.clientWidth);
-  el.title = isCut ? text.filter(Boolean).join('\n') : '';
+  el.title = isCut ? [...text, fallback].filter(Boolean).join('\n') : (fallback ?? '');
 }
 
 export function ActionMenuItem({
@@ -213,20 +217,23 @@ export function ActionMenuItem({
   label,
   labelDetail,
   subtext,
+  title,
   onClick,
 }: {
   icon: React.ReactNode;
   label: string;
-  /** Shown after the label in the Primary Accent, e.g. the element a "Select Next:" goes to. */
+  /** Shown after the label in the Primary Accent, e.g. the element a "Next:" goes to. */
   labelDetail?: string;
   subtext?: string;
+  /** A description shown as the row's tooltip (a short row in an Actions section has no subtext). */
+  title?: string;
   onClick: () => void;
 }) {
   return (
     <button
       type="button"
       onClick={onClick}
-      onMouseEnter={(e) => showFullTextIfCut(e, labelDetail ? `${label} ${labelDetail}` : label, subtext)}
+      onMouseEnter={(e) => showFullTextOr(e, title, labelDetail ? `${label} ${labelDetail}` : label, subtext)}
       className="actionMenuItem group"
     >
       <span className="actionMenuItemIcon w-4 h-4 flex items-center justify-center shrink-0">

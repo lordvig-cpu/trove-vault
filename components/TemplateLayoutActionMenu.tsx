@@ -31,6 +31,10 @@ import {
   SectionSizeIcon,
   SectionSpacingIcon,
   SectionTextIcon,
+  SectionSelectIcon,
+  SectionAddContainerIcon,
+  SectionAddContentIcon,
+  SectionSplitIcon,
 } from '@/components/icons/SectionIcons';
 import { measureContainerPx } from '@/lib/measureContainer';
 import TemplateSpacingBox from '@/components/TemplateSpacingBox';
@@ -72,6 +76,7 @@ import {
 import { ChevronDownIcon, TrashCanIcon } from '@/components/icons/PanelIcons';
 import { ChevronUpIcon } from '@/components/icons/GlyphIcons';
 import { useLayoutNeighbors } from '@/context/LayoutNavigationContext';
+import { useActionSections } from '@/hooks/useActionSections';
 import { ComponentTypeIcon, BulbIcon } from '@/components/icons/ContentIcons';
 
 /* Help bubbles for the Body flyout's Properties sections (see HoverHint for the shape). */
@@ -264,32 +269,38 @@ const CONTAINER_SPACING_HINT: HintContent = {
 /** Select Previous / Next: step to the element just above or below this one in the Layout tree's order
  *  (the Body comes first), without needing the tree on screen. Leads every Actions tab; either is left out
  *  at the start or end of the layout, and both outside a LayoutNavigationProvider. */
-function LayoutNavigationActions({ nodeId }: { nodeId: string }) {
+function SelectElementSection({ nodeId }: { nodeId: string }) {
   const nav = useLayoutNeighbors(nodeId);
+  const sections = useActionSections();
   if (!nav || (!nav.prev && !nav.next)) return null;
   const { prev, next, goTo } = nav;
   return (
-    <>
+    <ActionMenuSection
+      label="Select Element"
+      icon={<SectionSelectIcon />}
+      subtitle="The one above or below this"
+      isOpen={sections.isOpen('select')}
+      onToggle={() => sections.toggle('select')}
+    >
       {prev && (
         <ActionMenuItem
           icon={<ChevronUpIcon className="w-3.5 h-3.5" />}
-          label="Select Previous:"
+          label="Previous:"
           labelDetail={prev.name}
-          subtext="The element above this one in the layout"
+          title="Select the element above this one in the layout"
           onClick={() => goTo(prev.id)}
         />
       )}
       {next && (
         <ActionMenuItem
           icon={<ChevronDownIcon className="w-3.5 h-3.5" />}
-          label="Select Next:"
+          label="Next:"
           labelDetail={next.name}
-          subtext="The element below this one in the layout"
+          title="Select the element below this one in the layout"
           onClick={() => goTo(next.id)}
         />
       )}
-      <ActionMenuDivider />
-    </>
+    </ActionMenuSection>
   );
 }
 
@@ -342,24 +353,31 @@ function useFloatWhenPanelHides(menu: ReturnType<typeof useTreeActionMenu>, node
   }, [setPanelHiddenHandler, nodeId, activeTab, floating]);
 }
 
-/** Add: Field List / Header / Stat Row -- each opens its include-chooser (AddPresetDialog) for this container. */
-function PresetAddActions({ containerId, onDone }: { containerId: string; onDone: () => void }) {
+/** The Add Content section: Field List / Header / Stat Row -- each opens its include-chooser (AddPresetDialog)
+ *  for this container. */
+function AddContentSection({ containerId, onDone }: { containerId: string; onDone: () => void }) {
+  const sections = useActionSections();
   return (
-    <>
+    <ActionMenuSection
+      label="Add Content"
+      icon={<SectionAddContentIcon />}
+      subtitle="Pre-defined blocks of fields"
+      isOpen={sections.isOpen('addContent')}
+      onToggle={() => sections.toggle('addContent')}
+    >
       {(['fieldList', 'header', 'statRow'] as PresetKind[]).map((kind) => (
         <ActionMenuItem
           key={kind}
           icon={PRESET_ICONS[kind]}
-          label="Add:"
-          labelDetail={PRESET_INFO[kind].label}
-          subtext={PRESET_INFO[kind].description}
+          label={PRESET_INFO[kind].label}
+          title={PRESET_INFO[kind].description}
           onClick={() => {
             onDone();
             openPresetDialog(kind, containerId);
           }}
         />
       ))}
-    </>
+    </ActionMenuSection>
   );
 }
 
@@ -387,6 +405,8 @@ export function TemplateContainerActionMenu({
   const [activeTab, setActiveTab] = useState<MenuTab>(initialTab);
   useMenuTabRequest(container.id, setActiveTab);
   useFloatWhenPanelHides(menu, container.id, activeTab, floating);
+  // The Actions tab's sections, open / closed for every flyout alike (remembered)
+  const sections = useActionSections();
   const [openSections, setOpenSections] = useState({ size: true, layout: true, spacing: true, appearance: true });
   const toggleSection = (key: keyof typeof openSections) =>
     setOpenSections((prev) => ({ ...prev, [key]: !prev[key] }));
@@ -443,12 +463,18 @@ export function TemplateContainerActionMenu({
       >
         {activeTab === 'actions' && (
           <>
-            <LayoutNavigationActions nodeId={container.id} />
+            <SelectElementSection nodeId={container.id} />
+            <ActionMenuSection
+              label="Add Container"
+              icon={<SectionAddContainerIcon />}
+              subtitle="Inside the Body"
+              isOpen={sections.isOpen('addContainer')}
+              onToggle={() => sections.toggle('addContainer')}
+            >
             <ActionMenuItem
               icon={<AddChildContainerIcon className="w-3.5 h-3.5" />}
-              label="Add:"
-              labelDetail="Child Container"
-              subtext="Insert nested container"
+              label="Inside"
+              title="Nest a new container in the Body, naming it first"
               onClick={() => {
                 setNewContainerName('New Container');
                 setIsAddingContent((prev) => !prev);
@@ -498,8 +524,8 @@ export function TemplateContainerActionMenu({
                 </div>
               </form>
             )}
-            <ActionMenuDivider />
-            <PresetAddActions containerId={container.id} onDone={menu.closeMenu} />
+            </ActionMenuSection>
+            <AddContentSection containerId={container.id} onDone={menu.closeMenu} />
           </>
         )}
 
@@ -641,59 +667,66 @@ export function TemplateContainerActionMenu({
     >
       {activeTab === 'actions' && (
         <>
-          <LayoutNavigationActions nodeId={container.id} />
-          <ActionMenuItem
-            icon={<AddContainerBeforeIcon className="w-3.5 h-3.5" />}
-            label="Add:"
-            labelDetail="Before"
-            subtext="Insert a container before this one"
-            onClick={act(() => onInsertContainerSibling?.(container.id, 'before', { ...NEW_CONTAINER_OPTIONS }))}
-          />
-          <ActionMenuItem
-            icon={<AddChildContainerIcon className="w-3.5 h-3.5" />}
-            label="Add:"
-            labelDetail="Inside"
-            subtext="Nest a new container in this one"
-            onClick={act(() => onAddContainer?.(container.id, { ...NEW_CONTAINER_OPTIONS }))}
-          />
-          <ActionMenuItem
-            icon={<AddContainerAfterIcon className="w-3.5 h-3.5" />}
-            label="Add:"
-            labelDetail="After"
-            subtext="Insert a container after this one"
-            onClick={act(() => onInsertContainerSibling?.(container.id, 'after', { ...NEW_CONTAINER_OPTIONS }))}
-          />
-          <ActionMenuDivider />
-          <PresetAddActions containerId={container.id} onDone={menu.closeMenu} />
-          <ActionMenuDivider />
-          <ActionMenuItem
-            icon={<SplitColumnsIcon className="w-3.5 h-3.5 menu-icon-accent" />}
-            label="Split:"
-            labelDetail="2 Columns"
-            subtext="Side by side"
-            onClick={act(() => onSplitContainer?.(container.id, 'columns', measureContainerPx(container.id, 'width')))}
-          />
-          <ActionMenuItem
-            icon={<SplitRowsIcon className="w-3.5 h-3.5 menu-icon-accent" />}
-            label="Split:"
-            labelDetail="2 Rows"
-            subtext="Stacked"
-            onClick={act(() => onSplitContainer?.(container.id, 'rows', measureContainerPx(container.id, 'height')))}
-          />
-          <ActionMenuItem
-            icon={<Split3ColumnsIcon className="w-3.5 h-3.5 menu-icon-accent" />}
-            label="Split:"
-            labelDetail="3 Columns"
-            subtext="Three side by side"
-            onClick={act(() => onSplitContainer?.(container.id, 'columns', measureContainerPx(container.id, 'width'), 3))}
-          />
-          <ActionMenuItem
-            icon={<Split3RowsIcon className="w-3.5 h-3.5 menu-icon-accent" />}
-            label="Split:"
-            labelDetail="3 Rows"
-            subtext="Three stacked"
-            onClick={act(() => onSplitContainer?.(container.id, 'rows', measureContainerPx(container.id, 'height'), 3))}
-          />
+          <SelectElementSection nodeId={container.id} />
+          <ActionMenuSection
+            label="Add Container"
+            icon={<SectionAddContainerIcon />}
+            subtitle="Before, inside or after this one"
+            isOpen={sections.isOpen('addContainer')}
+            onToggle={() => sections.toggle('addContainer')}
+          >
+            <ActionMenuItem
+              icon={<AddContainerBeforeIcon className="w-3.5 h-3.5" />}
+              label="Before"
+              title="Insert a container before this one"
+              onClick={act(() => onInsertContainerSibling?.(container.id, 'before', { ...NEW_CONTAINER_OPTIONS }))}
+            />
+            <ActionMenuItem
+              icon={<AddChildContainerIcon className="w-3.5 h-3.5" />}
+              label="Inside"
+              title="Nest a new container in this one"
+              onClick={act(() => onAddContainer?.(container.id, { ...NEW_CONTAINER_OPTIONS }))}
+            />
+            <ActionMenuItem
+              icon={<AddContainerAfterIcon className="w-3.5 h-3.5" />}
+              label="After"
+              title="Insert a container after this one"
+              onClick={act(() => onInsertContainerSibling?.(container.id, 'after', { ...NEW_CONTAINER_OPTIONS }))}
+            />
+          </ActionMenuSection>
+          <AddContentSection containerId={container.id} onDone={menu.closeMenu} />
+          <ActionMenuSection
+            label="Split Container"
+            icon={<SectionSplitIcon />}
+            subtitle="Into equal parts"
+            isOpen={sections.isOpen('split')}
+            onToggle={() => sections.toggle('split')}
+          >
+            <ActionMenuItem
+              icon={<SplitColumnsIcon className="w-3.5 h-3.5 menu-icon-accent" />}
+              label="2 Columns"
+              title="Split into 2 columns, side by side"
+              onClick={act(() => onSplitContainer?.(container.id, 'columns', measureContainerPx(container.id, 'width')))}
+            />
+            <ActionMenuItem
+              icon={<Split3ColumnsIcon className="w-3.5 h-3.5 menu-icon-accent" />}
+              label="3 Columns"
+              title="Split into 3 columns, side by side"
+              onClick={act(() => onSplitContainer?.(container.id, 'columns', measureContainerPx(container.id, 'width'), 3))}
+            />
+            <ActionMenuItem
+              icon={<SplitRowsIcon className="w-3.5 h-3.5 menu-icon-accent" />}
+              label="2 Rows"
+              title="Split into 2 rows, stacked"
+              onClick={act(() => onSplitContainer?.(container.id, 'rows', measureContainerPx(container.id, 'height')))}
+            />
+            <ActionMenuItem
+              icon={<Split3RowsIcon className="w-3.5 h-3.5 menu-icon-accent" />}
+              label="3 Rows"
+              title="Split into 3 rows, stacked"
+              onClick={act(() => onSplitContainer?.(container.id, 'rows', measureContainerPx(container.id, 'height'), 3))}
+            />
+          </ActionMenuSection>
 
           {onRemoveContainer && (
             <>
@@ -983,7 +1016,8 @@ export function TemplateComponentActionMenu({
     >
       {activeTab === 'actions' && (
         <>
-          <LayoutNavigationActions nodeId={component.id} />
+          <SelectElementSection nodeId={component.id} />
+          <ActionMenuDivider />
           {onRemoveComponent ? (
             <ActionMenuDangerItem
               icon={<TrashCanIcon />}

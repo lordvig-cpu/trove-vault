@@ -300,8 +300,15 @@ commit whenever you add, remove, split or rename a file — it goes stale otherw
   state lives in the always-mounted menu component). Its required template fields are checked on Save (naming
   the missing ones and opening the Fields card), not by the browser, which can't check a field in a closed card.
   The item view's Edit button still opens the modal.
-- Every container / content flyout's Actions tab (Body included) leads with **Select Previous: <name>** and
-  **Select Next: <name>** (then a divider; the name is in the Primary Accent, `ActionMenuItem`'s `labelDetail`): the element just above / below in the Layout tree's order
+- A container / Body / content flyout's Actions tab is collapsible sections, the same `ActionMenuSection` cards as
+  Properties, so it stays short however many actions it gains: **Select Element** (Previous / Next), **Add Container**
+  (Before / Inside / After; the Body just Inside), **Add Content** (Field List / Header / Stat Row) and **Split
+  Container** (2 / 3 Columns, 2 / 3 Rows) -- a content element has only Select Element -- then Delete below them,
+  outside any section. Rows are short names with no subtext (their description is the row's tooltip, `ActionMenuItem`'s
+  `title`). A section's open / closed state is one setting shared by every flyout and remembered across sessions
+  (`useActionSections`, localStorage `uc_action_sections`), all collapsed to start.
+- The Select Element section's rows are **Previous: <name>** and
+  **Next: <name>** (the name is in the Primary Accent, `ActionMenuItem`'s `labelDetail`): the element just above / below in the Layout tree's order
   (`lib/layoutNavigation.ts`: each container, then everything inside it; the Body first), each left out at
   either end. They exist so any element -- above all the Body, which a child usually covers completely on the
   canvas -- is reachable without the tree. Choosing one selects that element and opens *its* menu, on Actions,
@@ -358,8 +365,8 @@ commit whenever you add, remove, split or rename a file — it goes stale otherw
   flyout-only overrides. The Spacing diagram's Margin / Padding captions are the primary accent.
   Sections are controlled -- the flyout component owns the open/closed and active-tab state,
   so they survive the flyout closing and reopening. The Body and standard-container flyouts
-  (`TemplateLayoutActionMenu.tsx`) both use it. A standard container's Actions tab is Add: Before / Inside / After, Split: 2 Columns /
-  Rows, and Delete (always last); its Properties tab is Container Name (a plain field), then the cards Size
+  (`TemplateLayoutActionMenu.tsx`) both use it. A standard container's Actions tab is its sections (Select Element, Add Container, Add Content,
+  Split Container) and Delete (always last); its Properties tab is Container Name (a plain field), then the cards Size
   (Auto/Fit/Custom, Width, a Min/Max width slider, Height, a Min/Max height slider), Spacing, Layout
   (Row/Column, then two icon-button groups for alignment) and Appearance. The Body's is Size, Layout
   (a locked toggle) and Spacing. Deliberately absent: Child Item Gap (the `gap`
