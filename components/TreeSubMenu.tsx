@@ -77,6 +77,8 @@ export default function TreeSubMenu({
   const [adjustedTop, setAdjustedTop] = useState(top);
   // While the pointer is over it, a panel's flyout comes to the front (Z_INDEX.md's hover-raised layer), so the
   // bottom toolbar or anything else that overlaps it can't cover the row being reached for; it drops back on leave.
+  // Only over its cards, not its hover bridge: the bridge reaches back over the panel toward the gear, and raised it
+  // would cover the gear, so a pinned menu's gear could no longer be clicked to close it.
   const [isHovered, setIsHovered] = useState(false);
 
   // Adjust state during render rather than in an effect, per
@@ -151,10 +153,8 @@ export default function TreeSubMenu({
       inert={!isOpen}
       aria-hidden={!isOpen}
       onFocus={onMouseEnter}
-      onMouseEnter={() => {
-        setIsHovered(true);
-        onMouseEnter();
-      }}
+      onMouseEnter={onMouseEnter}
+      onPointerOver={(e) => setIsHovered(!(e.target as Element).closest('.bridge'))}
       onMouseLeave={() => {
         setIsHovered(false);
         onMouseLeave();
