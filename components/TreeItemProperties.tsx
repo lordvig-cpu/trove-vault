@@ -67,7 +67,7 @@ export default function TreeItemProperties({ editor, openSections, onToggleSecti
       <ActionMenuSection
         label="Template"
         icon={<FileIcon className="w-5 h-5" />}
-        subtitle={template ? `${template.name} - ${fields.length} field${fields.length === 1 ? '' : 's'}` : 'No template'}
+        subtitle={template ? template.name : 'No template'}
         isOpen={openSections.template}
         onToggle={() => onToggleSection('template')}
       >
@@ -126,7 +126,7 @@ export default function TreeItemProperties({ editor, openSections, onToggleSecti
         <ActionMenuSection
           label="Fields"
           icon={<ListIcon className="w-5 h-5" />}
-          subtitle={`The ${template?.name ?? 'template'} fields`}
+          subtitle={template?.name ?? 'The template'}
           isOpen={openSections.fields}
           onToggle={() => onToggleSection('fields')}
         >
