@@ -75,6 +75,9 @@ export default function TreeSubMenu({
   const { mounted, renderMenu, isClosing } = usePresence(isOpen, 340, animationsEnabled && !closeInstantly);
   const menuRef = useRef<HTMLDivElement>(null);
   const [adjustedTop, setAdjustedTop] = useState(top);
+  // While the pointer is over it, a panel's flyout comes to the front (Z_INDEX.md's hover-raised layer), so the
+  // bottom toolbar or anything else that overlaps it can't cover the row being reached for; it drops back on leave.
+  const [isHovered, setIsHovered] = useState(false);
 
   // Adjust state during render rather than in an effect, per
   // https://react.dev/learn/you-might-not-need-an-effect#adjusting-some-state-when-a-prop-changes
@@ -148,14 +151,20 @@ export default function TreeSubMenu({
       inert={!isOpen}
       aria-hidden={!isOpen}
       onFocus={onMouseEnter}
-      onMouseEnter={onMouseEnter}
-      onMouseLeave={onMouseLeave}
+      onMouseEnter={() => {
+        setIsHovered(true);
+        onMouseEnter();
+      }}
+      onMouseLeave={() => {
+        setIsHovered(false);
+        onMouseLeave();
+      }}
       style={{
         position: 'fixed',
         top: `${adjustedTop}px`,
         left: `${adjustedLeft}px`,
         margin: 0,
-        zIndex: floating ? 88 : panel?.isFlyout ? 70 : isPinned ? 35 : 45,
+        zIndex: floating ? 88 : isHovered && isOpen ? 87 : panel?.isFlyout ? 70 : isPinned ? 35 : 45,
       }}
       role={floating ? 'dialog' : undefined}
       aria-label={floating ? title : undefined}
