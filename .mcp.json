@@ -1,8 +1,19 @@
 {
   "mcpServers": {
     "supabase": {
-      "type": "http",
-      "url": "https://mcp.supabase.com/mcp?project_ref=bctetmtulgvvncozowwu&read_only=true&features=docs%2Cdatabase%2Cdebugging%2Cdevelopment%2Cfunctions"
+      "command": "cmd",
+      "args": [
+        "/c",
+        "npx",
+        "-y",
+        "@supabase/mcp-server-supabase@latest",
+        "--read-only",
+        "--project-ref=bctetmtulgvvncozowwu",
+        "--features=docs,database,debugging,development,functions"
+      ],
+      "env": {
+        "SUPABASE_ACCESS_TOKEN": "${SUPABASE_ACCESS_TOKEN}"
+      }
     }
   }
 }
