@@ -508,18 +508,24 @@ commit whenever you add, remove, split or rename a file — it goes stale otherw
   5 seconds (held while hovered). A field edit refreshes the workspace data, but the left panel's "Syncing
   hierarchy..." banner only shows over the Items / Collections / Templates trees, never the Layout tree.
 - Layout persistence: localStorage on every change, plus a debounced Supabase write to
-  `item_templates.layout_config` (in `.supabase/schema.sql`). Until that column exists in the live
-  database (see the first item under "To do before real template saving"), remote saves fail with
-  one console warning per session and the layout lives only in this browser.
+  `item_templates.layout_config` (in `.supabase/schema.sql`; the column exists in the live database, checked
+  2026-10-13, so layouts are saved there too). If a remote save fails it warns once per session and the layout is
+  still kept in this browser.
 
-## To do before real template saving
+## Supabase access for Claude
 
-- Run `ALTER TABLE item_templates ADD COLUMN IF NOT EXISTS layout_config JSONB;` once in the live
-  Supabase project (SQL editor). `.supabase/schema.sql` already has the column (and that same ALTER for
-  older databases), but the live database is not changed by editing the file. Until it is run, layout
-  edits are only kept in this browser's localStorage and each remote save fails (one console warning
-  per session). The app already writes the whole layout to that column, debounced, in
-  `hooks/useTemplateEditor.ts`.
+- The project's `.mcp.json` runs Supabase's local MCP server **read-only**, scoped to this project
+  (`--project-ref`), with the docs / database / debugging / development / functions tools (no account or branching
+  tools). Its token is the `SUPABASE_ACCESS_TOKEN` environment variable, never stored in the repo. (The hosted
+  server's sign-in rejects a URL carrying `project_ref` / `read_only`, which is why it isn't used.)
+- A schema or data change is proposed and approved first, then made with read-only switched off for that job
+  (remove `--read-only`, restart the session) and switched back on after; the change also goes into
+  `.supabase/schema.sql` in the same commit.
+- The live database also has Supabase's own `rls_auto_enable()` / `ensure_rls` event trigger (from the
+  project setting that turns RLS on for every new `public` table). It is not part of `schema.sql`.
+
+## Before accounts / production
+
 - Replace the open development RLS policies with per-user policies when authentication is added, so
   templates and preferences belong to the person who made them.
 - `.supabase/schema.sql` is the re-initialization script for a fresh Supabase project — it is not
