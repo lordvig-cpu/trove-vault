@@ -75,12 +75,6 @@ export default function TreeSubMenu({
   const { mounted, renderMenu, isClosing } = usePresence(isOpen, 340, animationsEnabled && !closeInstantly);
   const menuRef = useRef<HTMLDivElement>(null);
   const [adjustedTop, setAdjustedTop] = useState(top);
-  // While the pointer is over it, a panel's flyout comes to the front (Z_INDEX.md's hover-raised layer), so the
-  // bottom toolbar or anything else that overlaps it can't cover the row being reached for; it drops back on leave.
-  // Only over its cards, not its hover bridge: the bridge reaches back over the panel toward the gear, and raised it
-  // would cover the gear, so a pinned menu's gear could no longer be clicked to close it.
-  const [isHovered, setIsHovered] = useState(false);
-
   // Adjust state during render rather than in an effect, per
   // https://react.dev/learn/you-might-not-need-an-effect#adjusting-some-state-when-a-prop-changes
   const [prevTop, setPrevTop] = useState(top);
@@ -154,17 +148,13 @@ export default function TreeSubMenu({
       aria-hidden={!isOpen}
       onFocus={onMouseEnter}
       onMouseEnter={onMouseEnter}
-      onPointerOver={(e) => setIsHovered(!(e.target as Element).closest('.bridge'))}
-      onMouseLeave={() => {
-        setIsHovered(false);
-        onMouseLeave();
-      }}
+      onMouseLeave={onMouseLeave}
       style={{
         position: 'fixed',
         top: `${adjustedTop}px`,
         left: `${adjustedLeft}px`,
         margin: 0,
-        zIndex: floating ? 88 : isHovered && isOpen ? 87 : panel?.isFlyout ? 70 : isPinned ? 35 : 45,
+        zIndex: floating ? 88 : panel?.isFlyout ? 70 : isPinned ? 35 : 45,
       }}
       role={floating ? 'dialog' : undefined}
       aria-label={floating ? title : undefined}

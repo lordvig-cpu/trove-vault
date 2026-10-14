@@ -73,9 +73,10 @@ commit whenever you add, remove, split or rename a file — it goes stale otherw
   app to what it's for and why, plus the stacking-context contract (transforms, filters, opacity
   and portals all change what a z-index can actually reach). A new stacking layer gets added there
   in the same commit, and the tree-menu/sidebar overlap it documents (menus render a few pixels
-  *under* their own panel's edge) is intentional, not a bug to fix. While the pointer is over a panel's flyout or an
-  editor toolbar, that one is lifted to the hover-raised layer (87) so nothing overlapping it covers what is being
-  reached for, and drops back on leave.
+  *under* their own panel's edge) is intentional, not a bug to fix. While the pointer is over the template editor's
+  bottom (footer) toolbar, it is lifted to the hover-raised layer (87) so it can be used even when an open flyout
+  overlaps it, and drops back on leave so the flyout takes precedence again. Flyouts and the header are not raised on
+  hover: a flyout stays tucked under its panel's edge.
 - **Styling states:** controls are amber by default, white on hover, `--flyout-selected` yellow
   (`editorBarStyles.ts`'s `activeBtn`/`activeIconColor` -- the same yellow as a flyout's header
   text/icon and an active tab) when they represent a selected/set value; destructive hover uses the

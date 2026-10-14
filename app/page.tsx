@@ -562,9 +562,7 @@ export default function Home() {
       {/* Primary Application Shell */}
       <div className="flex flex-col h-full w-full">
         {/* Tier 1: Top Navigation Header */}
-        {/* Hovering the template editor's top toolbar lifts the whole header to the hover-raised layer (87), over any
-            flyout reaching up under it; it drops back on leave. */}
-        <div className="shrink-0 relative z-[80] has-[#template-toolbar-slot:hover]:z-[87]">
+        <div className="shrink-0 relative z-[80]">
           <NavigationHeader
             isPrimarySidePanelOpen={isPrimaryFlyoutOpen}
             onTogglePrimarySidePanel={() => { setIsCollectionsFlyoutOpen(false); setIsTemplatesFlyoutOpen(false); setIsPrimaryFlyoutOpen(!isPrimaryFlyoutOpen); }}
