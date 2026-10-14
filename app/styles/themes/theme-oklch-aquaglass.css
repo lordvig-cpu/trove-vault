@@ -281,3 +281,8 @@
   box-shadow: none;
 }
 
+
+/* A section card's subtitle is the lighter faint ink, so it reads apart from the deep-ink title above it. */
+[data-theme='theme-oklch-light'] .menuSectionSubtitle {
+  color: var(--aqua-ink-faint);
+}

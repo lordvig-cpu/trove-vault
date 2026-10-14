@@ -29,10 +29,10 @@ const DEFAULT_SEEDS: Record<ThemePreset, Seeds> = {
   },
   'theme-oklch-sunset-tide': {
     primary: '#0077FF',
-    secondary: '#FF9D00',
+    secondary: '#FF8400',
     background: '#0A0F18', // the calibrated canvas sample
     primaryColor: '#0077FF',
-    secondaryColor: '#B06C00',
+    secondaryColor: '#B04900',
   },
 };
 function defaultSeeds(theme: ThemePreset): Seeds {

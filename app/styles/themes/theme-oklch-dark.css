@@ -3,13 +3,13 @@
    Light mode transforms the same dark recipe through role coefficients. */
 :is([data-theme='theme-oklch-dark'], [data-theme='theme-oklch-light'], [data-theme='theme-oklch-sunset-tide']) {
   --oklch-blue: rgba(0, 119, 255, 1);
-  --oklch-yellow: rgba(255, 157, 0, 1);
+  --oklch-yellow: rgba(255, 132, 0, 1);
   /* Primary and Secondary start at the same colors as the accents but are their own seeds, never
      linked to them: moving an accent picker must not move these. Primary = header, footer and main
      content; Secondary = tree submenus, search menus and template toolbars. Accents: blue = panels,
      yellow = menu text and edges. */
   --oklch-primary: rgba(0, 119, 255, 1);
-  --oklch-secondary: rgba(176, 108, 0, 1);
+  --oklch-secondary: rgba(176, 73, 0, 1);
 
   /* L_out = offset + L_dark * scale; C_out = C_dark * chroma. */
   --oklch-surface-offset: 0;

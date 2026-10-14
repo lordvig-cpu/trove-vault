@@ -341,7 +341,7 @@ export default function FlexContainerRenderer({
           : isOverflowing
           ? 'rounded-2xl outline-2 outline-dashed outline-[var(--editor-invalid)] -outline-offset-2 bg-[color-mix(in_oklch,var(--editor-invalid)_10%,transparent)] shadow-lg shadow-[color-mix(in_oklch,var(--editor-invalid)_20%,transparent)]'
           : isSelected
-          ? 'rounded-2xl outline-2 outline-[var(--primary-accent)] -outline-offset-2 bg-[color-mix(in_oklab,var(--oklch-secondary)_70%,transparent)] shadow-xl shadow-[color-mix(in_oklch,var(--primary-accent)_10%,transparent)]'
+          ? 'rounded-2xl outline-2 outline-[var(--primary-accent)] -outline-offset-2 bg-[var(--editor-selected-fill)] shadow-xl shadow-[color-mix(in_oklch,var(--primary-accent)_10%,transparent)]'
           : isActive
           ? 'rounded-2xl outline outline-1 outline-[color-mix(in_oklch,var(--primary-accent)_50%,transparent)] -outline-offset-1 bg-[color-mix(in_oklch,var(--primary-accent)_6%,transparent)]'
           : isCard
