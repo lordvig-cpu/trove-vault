@@ -326,8 +326,18 @@
   stroke: var(--secondary-tree-menu-rename-input-focus);
 }
 
-/* Cast luminous amber glow and 3D shadow on active tab */
-.tree-folder-tab-active svg {
+/* The active panel tab's icon / label is the strong text color (white in the dark themes), and the tab
+   casts a slight drop shadow rather than a glow. A flyout's tabs (.menuFolderTab) keep their own look. */
+.tree-folder-tab-active:not(.menuFolderTab) {
+  color: var(--text-strong);
+}
+
+.tree-folder-tab-active:not(.menuFolderTab) svg {
+  filter: drop-shadow(0 2px 3px color-mix(in oklab, var(--pole-shade) 45%, transparent));
+}
+
+/* Flyout tabs keep the glow. */
+.tree-folder-tab-active.menuFolderTab svg {
   filter: var(--secondary-tree-tab-glow-active);
 }
 

@@ -12,14 +12,14 @@
    Surfaces are the color mixed into the background, so a picked color reads as a dark tint of
    itself rather than a bright slab. */
 [data-theme='theme-oklch-dark'] {
-  --oklch-bg: rgba(20, 23, 27, 1);
+  --oklch-bg: rgba(20, 29, 37, 1);
   /* What every surface mix below darkens toward: the default Background, held fixed so the Background
      picker recolors only the canvas and grid, not every panel, menu and ink built on top of it. */
   --ember-base: rgba(8, 13, 16, 1);
-  --oklch-primary: rgba(29, 33, 39, 1);
-  --oklch-blue: rgba(108, 133, 166, 1);
-  --oklch-secondary: rgba(58, 54, 50, 1);
-  --oklch-yellow: rgba(255, 157, 0, 1);
+  --oklch-primary: rgba(27, 39, 49, 1);
+  --oklch-blue: rgba(130, 153, 171, 1);
+  --oklch-secondary: rgba(55, 70, 82, 1);
+  --oklch-yellow: rgba(238, 163, 47, 1);
 
   /* Header / footer (Primary) */
   /* The Primary seed exactly, at the bar's outer edge (header top, footer bottom), shading toward the workspace. */
