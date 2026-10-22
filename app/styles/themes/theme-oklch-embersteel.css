@@ -39,7 +39,7 @@
   /* Menus and toolbars (Secondary), with the Secondary Accent as their ink and edge */
   --ember-menu: color-mix(in oklab, var(--oklch-secondary) 85%, var(--ember-base));
   --ember-menu-deep: color-mix(in oklab, var(--oklch-secondary) 70%, var(--ember-base));
-  /* A submenu's body and its section cards: the Primary seed itself, the same as the canvas behind it. */
+  /* A submenu's body and its section cards: the Primary seed itself. */
   --ember-menu-body: var(--oklch-primary);
   --ember-menu-line: color-mix(in oklab, var(--brand-secondary-amber) 28%, var(--ember-menu));
   --ember-amber-edge: color-mix(in oklab, var(--brand-secondary-amber) 70%, var(--ember-base));
@@ -58,9 +58,12 @@
   --text-muted: oklch(from var(--ember-base) 0.68 0.03 h);
 
   /* Background */
-  --canvas-bg-primary: var(--oklch-primary);
-  --studio-grid-bg: var(--oklch-primary);
-  --studio-grid-line: oklch(from var(--oklch-primary) calc(l + 0.05) c h / 0.7);
+  /* The canvas is the Primary seed deepened toward the base (#0C1115 at the defaults); the panels keep the
+     lighter Primary mixes above. */
+  --ember-canvas: color-mix(in oklab, var(--oklch-primary) 16%, var(--ember-base));
+  --canvas-bg-primary: var(--ember-canvas);
+  --studio-grid-bg: var(--ember-canvas);
+  --studio-grid-line: oklch(from var(--ember-canvas) calc(l + 0.05) c h / 0.7);
   --studio-grid-glow-top-left-core: color-mix(in oklab, var(--brand-primary) 22%, transparent);
   --studio-grid-glow-top-left-edge: color-mix(in oklab, var(--brand-primary) 8%, transparent);
   --studio-grid-glow-bottom-right-core: color-mix(in oklab, var(--brand-secondary-amber) 10%, transparent);
@@ -116,7 +119,7 @@
   /* Inset wells are the Background seed; the selected row is the Secondary seed. */
   --tree-search-input-bg: var(--oklch-bg);
   --ember-row-selected: var(--oklch-secondary);
-  --tree-search-input-border: color-mix(in oklab, var(--oklch-secondary) 54%, var(--oklch-bg));
+  --tree-search-input-border: color-mix(in oklab, var(--oklch-secondary) 75%, var(--oklch-bg));
   --tmpl-item-selected-bg: color-mix(in oklab, var(--brand-secondary-amber) 9%, var(--ember-panel));
   --tmpl-item-selected-border: var(--ember-amber-edge);
 

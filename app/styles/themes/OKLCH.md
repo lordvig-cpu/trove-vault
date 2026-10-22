@@ -127,7 +127,7 @@ variable contract EmberSteel uses.
 | Picker | Seed | Drives |
 | --- | --- | --- |
 | Background | `--oklch-bg` | the darkest: inset wells (search fields, inputs, segmented controls) |
-| Primary | `--oklch-primary` | the main surface: canvas and grid, side/bottom panels (deepened), flyout bodies and section cards; the header shades from it (lightened toward Secondary) and the footer is a darker flat tint of it |
+| Primary | `--oklch-primary` | the main surface: canvas and grid (deepened to about 16% of it, `#0C1115` by default), side/bottom panels (deepened less), flyout bodies and section cards; the header shades from it (lightened toward Secondary) and the footer is a darker flat tint of it |
 | Primary Accent | `--oklch-blue` | rules and borders, muted text and icons; buttons, focus |
 | Secondary | `--oklch-secondary` | raised surfaces: the selected tree row, flyout heads, tab bands, template toolbars and drop-downs |
 | Secondary Accent | `--oklch-yellow` | default text, edges and selected states inside menus/toolbars |
