@@ -243,7 +243,7 @@ export default function TemplateSpacingBox({ container, onUpdate, marginDisabled
           disabled={selected.layer === 'margin' && marginDisabled}
           title={isLinked ? 'Sides are linked: editing one changes all four. Click to edit them separately.' : 'Link the four sides so they change together'}
           aria-label="Link sides"
-          className={`w-[26px] ${barControlHeight} rounded-md border transition flex items-center justify-center shrink-0 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed ${
+          className={`menuBtn w-[26px] ${barControlHeight} rounded-md border transition flex items-center justify-center shrink-0 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed ${
             isLinked ? activeBtn : idleBtn
           }`}
         >

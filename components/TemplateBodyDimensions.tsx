@@ -142,13 +142,14 @@ export default function TemplateBodyDimensions({ root, onUpdate }: TemplateBodyD
         <button
           type="button"
           onClick={() => onUpdate({ maxWidth: undefined })}
-          title="Stretch the layout to fill the screen"
-          className={`flex items-center justify-center gap-1.5 px-2 ${barControlHeight} rounded-lg border text-xs font-bold transition cursor-pointer ${
+          disabled={isFill}
+          title={isFill ? 'The layout already fills the screen' : 'Stretch the layout to fill the screen'}
+          className={`menuBtn menuBtnAction flex items-center justify-center gap-1.5 px-2 ${barControlHeight} rounded-lg border text-xs font-bold transition cursor-pointer disabled:cursor-default ${
             isFill ? activeBtn : idleBtn
           }`}
         >
           <FillIcon className="w-3.5 h-3.5" />
-          <span>Fill</span>
+          <span>{isFill ? 'Filled' : 'Fill'}</span>
         </button>
       </div>
       <input

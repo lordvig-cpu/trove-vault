@@ -639,6 +639,31 @@
   box-shadow: inset 0 1px 3px color-mix(in oklab, var(--pole-shade) 45%, transparent);
 }
 
+/* A flyout opening out of a side panel is tucked under that panel's edge (14px for a left panel, 11px for a
+   right one -- useTreeActionMenu's computeCoordinates), so that much of it is hidden. Its content gets that much
+   extra padding on the hidden side, so what shows is centered with equal room on both sides; the tab band still
+   runs the full width (it cancels the extra padding again). Floating menus and help bubbles aren't under a panel. */
+.menuShellSplit:not(.menuShellFloating):not(.menuShellSplit-right):not(.hoverHint) .innerContent {
+  padding-left: calc(0.5rem + 14px);
+}
+
+.menuShellSplit:not(.menuShellFloating):not(.menuShellSplit-right):not(.hoverHint) .menuTabs {
+  margin-left: calc(-0.5rem - 14px);
+  padding-left: calc(0.875rem + 14px);
+}
+
+.menuShellSplit-right:not(.hoverHint) .innerContent {
+  padding-left: 0.5rem;
+  padding-right: calc(0.5rem + 11px);
+}
+
+.menuShellSplit-right:not(.hoverHint) .menuTabs {
+  margin-left: -0.5rem;
+  padding-left: 0.875rem;
+  margin-right: calc(-0.5rem - 11px);
+  padding-right: calc(0.875rem + 11px);
+}
+
 /* Real tabs are the side panels' paper-folder tabs (.tree-folder-tab + PanelFolderTabSvg, so they take
    the panel tabs' fill, outline and glow), sized for a menu and standing on the band's bottom edge. That
    edge is drawn in the active tab's outline color, as on a side panel's header, so the tab's sides run

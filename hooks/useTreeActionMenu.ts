@@ -2,6 +2,7 @@
 
 import { useState, useRef, useId, useCallback, useEffect, useMemo } from 'react';
 import { holdFlyout, releaseFlyout } from '@/lib/flyoutHold';
+import { setTreeMenuDim } from '@/lib/treeMenuDim';
 
 /* ==========================================================================
    1. CUSTOM EVENT DEFINITIONS
@@ -143,6 +144,12 @@ export function useTreeActionMenu(
       heldFlyoutRef.current = null;
     };
   }, [id, setPinned, endFloating]);
+
+  // An open (hovered or pinned), docked (not floating) menu dims the canvas behind it (lib/treeMenuDim.ts).
+  useEffect(() => {
+    setTreeMenuDim(id, isMenuOpen && !isFloating);
+    return () => setTreeMenuDim(id, false);
+  }, [id, isMenuOpen, isFloating]);
 
   /* ------------------------------------------------------------------------
      2.4 VIEWPORT GEOMETRY & CLAMPING

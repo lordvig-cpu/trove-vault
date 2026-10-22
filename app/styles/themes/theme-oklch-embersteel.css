@@ -172,6 +172,18 @@
      are scoped below to the flyout classes, so the toolbars sharing --flyout-* keep their own look. */
   --ember-menu-edge: color-mix(in oklab, var(--oklch-blue) 7%, var(--oklch-secondary));
   --ember-card-edge: color-mix(in oklab, var(--oklch-secondary) 75%, var(--oklch-bg));
+
+  /* Flyout buttons (.menuBtn: Fill, Link sides, ...), after the mockup's button states: an "on" / primary button
+     is the Secondary Accent with dark text, lighter on hover; an "off" one is a Secondary slate; a disabled one a
+     flat, quieter slate with muted text. */
+  --ember-btn-bg: var(--oklch-yellow);
+  --ember-btn-bg-hover: color-mix(in oklab, var(--oklch-yellow) 80%, white);
+  --ember-btn-ink: var(--ember-base);
+  --ember-btn-off-bg: var(--oklch-secondary);
+  --ember-btn-off-bg-hover: color-mix(in oklab, var(--oklch-secondary) 88%, white);
+  --ember-btn-disabled-bg: color-mix(in oklab, var(--oklch-secondary) 92%, var(--ember-base));
+  --ember-btn-disabled-border: color-mix(in oklab, var(--oklch-blue) 14%, var(--oklch-secondary));
+  --ember-btn-disabled-ink: color-mix(in oklab, var(--flyout-white) 45%, var(--oklch-secondary));
 }
 
 
@@ -298,13 +310,91 @@
   border-color: var(--ember-menu-edge);
 }
 
+/* Pulldowns (a native select, and the px / % unit select): the same Background well and slate edge, soft white
+   text, and a light edge (never amber) on hover and focus. */
+[data-theme='theme-oklch-dark'] .menuShellBody select,
 [data-theme='theme-oklch-dark'] .unitSelect {
   background: var(--oklch-bg);
   border-color: var(--ember-menu-edge);
+  color: color-mix(in oklab, var(--flyout-white) 80%, transparent);
 }
 
+[data-theme='theme-oklch-dark'] .menuShellBody select:hover,
+[data-theme='theme-oklch-dark'] .unitSelect:hover,
+[data-theme='theme-oklch-dark'] .menuShellBody select:focus,
+[data-theme='theme-oklch-dark'] .unitSelect:focus {
+  border-color: color-mix(in oklab, var(--flyout-white) 55%, transparent);
+  box-shadow: none;
+}
+
+[data-theme='theme-oklch-dark'] .menuShellBody select option,
 [data-theme='theme-oklch-dark'] .unitSelect option {
   background: var(--oklch-bg);
+  color: var(--flyout-white);
+}
+
+/* Flyout buttons that can be on or off (Fill, Link sides): off is a Secondary slate, on is the amber primary
+   look, hover lightens either, disabled goes flat and quiet. */
+[data-theme='theme-oklch-dark'] .menuShellBody .menuBtn {
+  background: var(--ember-btn-off-bg);
+  border-color: var(--ember-menu-edge);
+  color: color-mix(in oklab, var(--flyout-white) 85%, transparent);
+  box-shadow: none;
+}
+
+[data-theme='theme-oklch-dark'] .menuShellBody .menuBtn:hover {
+  background: var(--ember-btn-off-bg-hover);
+  border-color: color-mix(in oklab, var(--flyout-white) 55%, transparent);
+  color: var(--flyout-white);
+}
+
+/* An action button (.menuBtnAction, e.g. Fill) is amber while it can be pressed and goes disabled once there is
+   nothing left for it to do; a toggle (Link sides) is amber while it is on. */
+[data-theme='theme-oklch-dark'] .menuShellBody .menuBtn[aria-pressed='true'],
+[data-theme='theme-oklch-dark'] .menuShellBody .menuBtnAction:not(:disabled) {
+  background: var(--ember-btn-bg);
+  border-color: var(--ember-btn-bg);
+  color: var(--ember-btn-ink);
+}
+
+[data-theme='theme-oklch-dark'] .menuShellBody .menuBtn[aria-pressed='true']:hover,
+[data-theme='theme-oklch-dark'] .menuShellBody .menuBtnAction:not(:disabled):hover {
+  background: var(--ember-btn-bg-hover);
+  border-color: var(--ember-btn-bg-hover);
+  color: var(--ember-btn-ink);
+}
+
+[data-theme='theme-oklch-dark'] .menuShellBody .menuBtn:disabled,
+[data-theme='theme-oklch-dark'] .menuShellBody .menuBtn:disabled:hover {
+  background: var(--ember-btn-disabled-bg);
+  border-color: var(--ember-btn-disabled-border);
+  color: var(--ember-btn-disabled-ink);
+  opacity: 1;
+  cursor: not-allowed;
+}
+
+/* A little room between the tab divider and the first section, like the room left under the last one. */
+[data-theme='theme-oklch-dark'] .menuShellBody .childrenContainer {
+  padding-top: 0.75rem;
+}
+
+/* Scrollbars inside the flyouts are the app's own (the side panels'), not amber. */
+[data-theme='theme-oklch-dark'] .childrenContainer,
+[data-theme='theme-oklch-dark'] .searchMenuShell .searchMenuScrollList,
+[data-theme='theme-oklch-dark'] .searchMenuShell .tree-filter-shell {
+  scrollbar-color: var(--panel-border-strong) transparent;
+}
+
+[data-theme='theme-oklch-dark'] .childrenContainer::-webkit-scrollbar-thumb,
+[data-theme='theme-oklch-dark'] .searchMenuShell .searchMenuScrollList::-webkit-scrollbar-thumb,
+[data-theme='theme-oklch-dark'] .searchMenuShell .tree-filter-shell::-webkit-scrollbar-thumb {
+  background-color: var(--panel-border-strong);
+}
+
+[data-theme='theme-oklch-dark'] .childrenContainer::-webkit-scrollbar-thumb:hover,
+[data-theme='theme-oklch-dark'] .searchMenuShell .searchMenuScrollList::-webkit-scrollbar-thumb:hover,
+[data-theme='theme-oklch-dark'] .searchMenuShell .tree-filter-shell::-webkit-scrollbar-thumb:hover {
+  background-color: var(--brand-primary-hover);
 }
 
 /* A toggle group (Auto / Fit / Custom, Row / Column, ...): a Background track, the chosen button a flat

@@ -28,6 +28,7 @@ import StatusToast from '@/components/StatusToast';
 import AddPresetDialog from '@/components/AddPresetDialog';
 import { closePresetDialog, usePresetDialog } from '@/lib/presetDialog';
 import { contentTargetName } from '@/lib/layoutNavigation';
+import { useTreeMenuDim } from '@/lib/treeMenuDim';
 import { getPanelTitle } from '@/lib/panelTitles';
 
 /**
@@ -199,6 +200,8 @@ export default function Home() {
       }
     },
   });
+
+  const treeMenuDim = useTreeMenuDim();
 
   // What the template editor's canvas and preview draw content with: the first real item of the template
   // being edited (so a Name shows an actual name), with its collections' names. None -> sample values.
@@ -628,7 +631,14 @@ export default function Home() {
             <MainContent
               selectedItem={selectedItem}
               activeCollectionId={activeCollectionId}
-              isBlurred={isPrimaryFlyoutOpen}
+              isBlurred={
+                isPrimaryFlyoutOpen ||
+                isCollectionsFlyoutOpen ||
+                isTemplatesFlyoutOpen ||
+                // A pinned tree submenu dims the canvas too -- but not while editing a template, where the canvas
+                // is what the menu's controls are changing.
+                (treeMenuDim && !templateEditor.isEditing)
+              }
               onAddSubItem={openCreateItem}
               onEditItem={handleTriggerEditItem}
               onDeleteItem={handleTriggerDeleteItem}

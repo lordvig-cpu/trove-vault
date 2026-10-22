@@ -267,6 +267,8 @@ its display style, with label and typography).
 - `storage.ts` — item photo upload/remove/validate against Supabase Storage.
 - `templateIcons.ts` — the template icon picker's quick choices and `firstGrapheme` (a typed icon keeps one character).
 - `supabase.ts` — the typed Supabase client instance.
+- `treeMenuDim.ts` — the store of tree gear submenus open (hovered or pinned); while any is, the canvas is dimmed and blurred
+  like it is behind a header pulldown (`isBlurred` in `app/page.tsx`).
 - `treeUtils.ts` — shared tree helpers (the standalone-collection sentinel id, search highlighting,
   item-matches-query).
 
