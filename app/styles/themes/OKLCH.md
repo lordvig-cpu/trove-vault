@@ -126,13 +126,13 @@ variable contract EmberSteel uses.
 
 | Picker | Seed | Drives |
 | --- | --- | --- |
-| Background | `--oklch-bg` | canvas and grid, behind everything |
-| Primary | `--oklch-primary` | header and footer bars; main content (item cards, pills, rules, canvas glow) |
-| Primary Accent | `--oklch-blue` | side and bottom panels and their rules; buttons, focus (not the main content) |
-| Secondary | `--oklch-secondary` | tree submenus, search menus, template toolbars and their drop-downs |
-| Secondary Accent | `--oklch-yellow` | default text, edges and selected states inside those menus/toolbars |
+| Background | `--oklch-bg` | the darkest: inset wells (search fields, inputs, segmented controls) |
+| Primary | `--oklch-primary` | the main surface: canvas and grid, side/bottom panels (deepened), flyout bodies and section cards; the header shades from it (lightened toward Secondary) and the footer is a darker flat tint of it |
+| Primary Accent | `--oklch-blue` | rules and borders, muted text and icons; buttons, focus |
+| Secondary | `--oklch-secondary` | raised surfaces: the selected tree row, flyout heads, tab bands, template toolbars and drop-downs |
+| Secondary Accent | `--oklch-yellow` | default text, edges and selected states inside menus/toolbars |
 
-Surface colors are the seed mixed into the fixed dark `--ember-base`, so the Background picker recolors only the canvas and grid, and a picked color shows as a dark tint of itself.
+Panels, flyout heads and toolbars are their seed mixed 70-86% into the fixed dark `--ember-base`, so they sit just under the seed; the canvas, flyout bodies, inset wells and selected row are the seed itself. These roles were remapped to match the design mockup (sampled pixel values).
 
 ### Five colors in Sunset Tide
 

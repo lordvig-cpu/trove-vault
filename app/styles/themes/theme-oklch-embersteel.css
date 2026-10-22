@@ -2,44 +2,45 @@
    It reuses the shared OKLCH recipe (theme-oklch.css) and its dark role coefficients, then re-states
    the chrome that recipe would otherwise tint with the blue seed.
 
-   Five colors (the footer's pickers override them at runtime):
-     --oklch-bg        Background        behind everything: canvas, grid
-     --oklch-primary   Primary           header and footer bars
-     --oklch-blue      Primary Accent    side and bottom panels, their rules; buttons, focus
-     --oklch-secondary Secondary         tree submenus, search menus, template toolbars/drop-downs
-     --oklch-yellow    Secondary Accent  text, edges and selected states inside those menus/toolbars, and
-                                         (as a dark tint) the submenus' body
-   Surfaces are the color mixed into the background, so a picked color reads as a dark tint of
-   itself rather than a bright slab. */
+   Five colors (the footer's pickers override them at runtime), matching the design mockup's roles:
+     --oklch-bg        Background        the darkest: inset wells (search, inputs, segmented controls)
+     --oklch-primary   Primary           the main surface: canvas and grid, side/bottom panels, flyout bodies,
+                                         section cards; header and footer bars shade from it
+     --oklch-blue      Primary Accent    rules and borders, muted text and icons; buttons, focus
+     --oklch-secondary Secondary         raised surfaces: the selected tree row, flyout heads, tab bands,
+                                         toolbars and drop-downs
+     --oklch-yellow    Secondary Accent  text, edges and selected states inside menus/toolbars
+   Panels, flyout heads and toolbars are their seed mixed a little into the base, so they sit just under the
+   seed rather than being a bright slab. */
 [data-theme='theme-oklch-dark'] {
   --oklch-bg: rgba(20, 29, 37, 1);
-  /* What every surface mix below darkens toward: the default Background, held fixed so the Background
-     picker recolors only the canvas and grid, not every panel, menu and ink built on top of it. */
+  /* What every surface mix below darkens toward, held fixed so changing the Background picker recolors only
+     the inset wells, not every panel, menu and ink built on top of it. */
   --ember-base: rgba(8, 13, 16, 1);
   --oklch-primary: rgba(27, 39, 49, 1);
   --oklch-blue: rgba(130, 153, 171, 1);
   --oklch-secondary: rgba(55, 70, 82, 1);
   --oklch-yellow: rgba(238, 163, 47, 1);
 
-  /* Header / footer (Primary) */
-  /* The Primary seed exactly, at the bar's outer edge (header top, footer bottom), shading toward the workspace. */
-  --ember-bar: var(--oklch-primary);
-  --ember-bar-deep: color-mix(in oklab, var(--oklch-primary) 20%, var(--ember-base));
+  /* Header / footer (Primary): the header lightens toward Secondary at its top edge and shades down to a dark
+     Primary; the footer is a flat, darker Primary. */
+  --ember-bar: color-mix(in oklab, var(--oklch-secondary) 32%, var(--oklch-primary));
+  --ember-bar-deep: color-mix(in oklab, var(--oklch-primary) 55%, var(--ember-base));
+  --ember-footer: color-mix(in oklab, var(--oklch-primary) 30%, var(--ember-base));
   --ember-bar-line: color-mix(in oklab, var(--oklch-primary) 55%, var(--ember-base));
 
-  /* Side and bottom panels (Primary Accent) */
-  --ember-panel: color-mix(in oklab, var(--oklch-blue) 15%, var(--ember-base));
-  --ember-panel-raised: color-mix(in oklab, var(--oklch-blue) 24%, var(--ember-base));
-  --ember-popover: color-mix(in oklab, var(--oklch-blue) 11%, var(--ember-base));
+  /* Side and bottom panels: Primary, slightly deepened; their rules come from the Primary Accent. */
+  --ember-panel: color-mix(in oklab, var(--oklch-primary) 76%, var(--ember-base));
+  --ember-panel-raised: color-mix(in oklab, var(--oklch-secondary) 45%, var(--ember-panel));
+  --ember-popover: color-mix(in oklab, var(--oklch-primary) 75%, var(--ember-base));
   --ember-line: color-mix(in oklab, var(--oklch-blue) 35%, var(--ember-base));
   --ember-line-strong: color-mix(in oklab, var(--oklch-blue) 58%, var(--ember-base));
 
   /* Menus and toolbars (Secondary), with the Secondary Accent as their ink and edge */
-  --ember-menu: color-mix(in oklab, var(--oklch-secondary) 50%, var(--ember-base));
-  --ember-menu-deep: color-mix(in oklab, var(--oklch-secondary) 36%, var(--ember-base));
-  /* A submenu's body: a dark tint of the Secondary Accent (#282119 by default), so the menus warm with the
-     accent while the header and footer keep the Primary seed. */
-  --ember-menu-body: color-mix(in oklab, var(--oklch-yellow) 16%, var(--ember-base));
+  --ember-menu: color-mix(in oklab, var(--oklch-secondary) 85%, var(--ember-base));
+  --ember-menu-deep: color-mix(in oklab, var(--oklch-secondary) 70%, var(--ember-base));
+  /* A submenu's body and its section cards: the Primary seed itself, the same as the canvas behind it. */
+  --ember-menu-body: var(--oklch-primary);
   --ember-menu-line: color-mix(in oklab, var(--brand-secondary-amber) 28%, var(--ember-menu));
   --ember-amber-edge: color-mix(in oklab, var(--brand-secondary-amber) 70%, var(--ember-base));
   --ember-menu-ink: var(--brand-secondary-amber);
@@ -57,9 +58,9 @@
   --text-muted: oklch(from var(--ember-base) 0.68 0.03 h);
 
   /* Background */
-  --canvas-bg-primary: var(--oklch-bg);
-  --studio-grid-bg: var(--oklch-bg);
-  --studio-grid-line: oklch(from var(--oklch-bg) calc(l + 0.05) c h / 0.7);
+  --canvas-bg-primary: var(--oklch-primary);
+  --studio-grid-bg: var(--oklch-primary);
+  --studio-grid-line: oklch(from var(--oklch-primary) calc(l + 0.05) c h / 0.7);
   --studio-grid-glow-top-left-core: color-mix(in oklab, var(--brand-primary) 22%, transparent);
   --studio-grid-glow-top-left-edge: color-mix(in oklab, var(--brand-primary) 8%, transparent);
   --studio-grid-glow-bottom-right-core: color-mix(in oklab, var(--brand-secondary-amber) 10%, transparent);
@@ -74,7 +75,7 @@
   --nav-header-shadow: 0 1px 0 var(--shadow-black-50);
   --nav-header-flare-bg: var(--ember-none);
   --nav-header-texture-bg: var(--ember-none);
-  --nav-footer-background: linear-gradient(0deg, var(--ember-bar), var(--ember-bar-deep));
+  --nav-footer-background: linear-gradient(0deg, var(--ember-footer), var(--ember-footer));
   --nav-footer-border-top: 1px solid var(--ember-bar-line);
   --nav-footer-shadow: 0 -1px 0 var(--shadow-black-50);
   --nav-footer-flare-bg: var(--ember-none);
@@ -98,6 +99,13 @@
   --right-panel-texture-bg: var(--ember-none);
 
   /* Main content (item view): rules and hover fill from the Primary seed, like the bars. */
+  /* Category cards (a collection's row in a tree): the Primary seed, a step above the panel they sit on. */
+  --tree-category-card-bg: var(--oklch-primary);
+  --tree-category-card-hover-bg: color-mix(in oklab, var(--oklch-secondary) 25%, var(--oklch-primary));
+  --content-card-bg:color-mix(in oklab, var(--oklch-secondary) 18%, var(--oklch-primary));
+  --content-card-border: var(--ember-line);
+  --content-pill-bg: var(--oklch-bg);
+  --content-pill-hover-bg: var(--oklch-primary);
   --content-border-subtle: color-mix(in oklab, var(--oklch-primary) 55%, var(--ember-base));
   --content-border-strong: color-mix(in oklab, var(--oklch-primary) 80%, var(--ember-base));
 
@@ -105,10 +113,10 @@
   --tree-item-active-bg: color-mix(in oklab, var(--brand-secondary-amber) 6%, transparent);
   --tree-item-active-border: var(--ember-amber-edge);
   --tree-item-hover-bg: color-mix(in oklab, var(--text-primary) 6%, transparent);
-  /* Lighter than the panel (15% Primary Accent) so the field reads as a recessed slate well, not a black hole. */
-  --tree-search-input-bg: color-mix(in oklab, var(--oklch-blue) 24%, var(--ember-base));
-  --ember-row-selected: color-mix(in oklab, var(--oklch-blue) 30%, var(--ember-base));
-  --tree-search-input-border: var(--ember-line);
+  /* Inset wells are the Background seed; the selected row is the Secondary seed. */
+  --tree-search-input-bg: var(--oklch-bg);
+  --ember-row-selected: var(--oklch-secondary);
+  --tree-search-input-border: color-mix(in oklab, var(--oklch-secondary) 54%, var(--oklch-bg));
   --tmpl-item-selected-bg: color-mix(in oklab, var(--brand-secondary-amber) 9%, var(--ember-panel));
   --tmpl-item-selected-border: var(--ember-amber-edge);
 
@@ -125,7 +133,7 @@
   --tree-menu-header-title: var(--ember-menu-ink);
   --tree-menu-divider: var(--ember-menu-line);
   --tree-menu-form-bg: var(--ember-menu);
-  --tree-menu-input-bg: var(--ember-menu-deep);
+  --tree-menu-input-bg: var(--oklch-bg);
   --tree-menu-item-text: var(--ember-menu-ink);
   --tree-menu-item-subtext: var(--text-secondary);
   --tree-menu-item-hover-text: var(--text-primary);
@@ -143,14 +151,14 @@
   --flyout-shell-bg: var(--ember-menu);
   --flyout-shell-border: var(--ember-amber-edge);
   --flyout-head-bottom: var(--ember-menu);
-  /* Submenu body under the tabs: flat --ember-menu-body (the Secondary Accent's dark tint). */
+  /* Submenu body under the tabs: flat --ember-menu-body (the Primary seed). */
   --flyout-body-top: var(--ember-menu-body);
   --flyout-body-bottom: var(--ember-menu-body);
   --flyout-title: var(--ember-menu-ink);
   --flyout-selected: var(--ember-menu-ink);
   --flyout-heading: var(--ember-menu-ink);
   --flyout-tab-band: var(--ember-menu-deep);
-  --section-card-base: var(--ember-menu-deep);
+  --section-card-base: var(--oklch-primary);
   --flyout-tab-active-top: color-mix(in oklab, var(--secondary-accent) 29%, var(--ember-menu));
   --flyout-tab-active-bottom: color-mix(in oklab, var(--secondary-accent) 17.5%, var(--ember-menu));
 }

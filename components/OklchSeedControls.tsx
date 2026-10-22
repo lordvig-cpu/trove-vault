@@ -14,11 +14,11 @@ import type { ThemePreset } from '@/types/theme';
 type Seeds = { primary: string; secondary: string; background: string; primaryColor: string; secondaryColor: string };
 const DEFAULT_SEEDS: Record<ThemePreset, Seeds> = {
   'theme-oklch-dark': {
-    primary: '#8299AB', // primary accent: side and bottom panels
+    primary: '#8299AB', // primary accent: rules, muted text and icons
     secondary: '#EEA32F', // secondary accent: text and edges in menus and toolbars
-    background: '#141D25',
-    primaryColor: '#1B2731', // header and footer
-    secondaryColor: '#374652', // tree submenus, search menus, template toolbars
+    background: '#141D25', // inset wells: search, inputs
+    primaryColor: '#1B2731', // canvas, panels, flyout bodies; header and footer shade from it
+    secondaryColor: '#374652', // selected row, flyout heads, toolbars, search menus, template toolbars
   },
   'theme-oklch-light': {
     primary: '#FF8F08', // the orange highlight: active tab, selected rows, icons, badges
