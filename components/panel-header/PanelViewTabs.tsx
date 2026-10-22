@@ -120,7 +120,7 @@ export default function PanelViewTabs({
   };
 
   // The header's divider line gets a gap under the active tab (see useTabGapLine).
-  const tabsRowRef = useTabGapLine([activeTab, displayedTabs]);
+  const tabsRowRef = useTabGapLine([activeTab, displayedTabs.join(',')]);
 
   if (displayedTabs.length === 0) return null;
 

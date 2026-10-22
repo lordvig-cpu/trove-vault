@@ -54,7 +54,7 @@
    -------------------------------------------------------------------------- */
 .secondary-side-panel {
   position: absolute;
-  top: 0;
+  top: -1px; /* same row as the pulldown's header, like .primary-side-panel */
   bottom: 0;
   max-width: none;
   isolation: isolate;

@@ -10,7 +10,10 @@
    -------------------------------------------------------------------------- */
 .primary-side-panel {
   position: absolute;
-  top: 0;
+  /* 1px up, so a docked panel's header (and its amber divider line) sits on exactly the same pixel row as the
+     header pulldown's (.nav-flyout-menu): at a fractional display scale the line rasterizes differently from one
+     row to the next, and the docked one looked dimmer. */
+  top: -1px;
   bottom: 0;
   max-width: none;
   isolation: isolate;
@@ -174,32 +177,26 @@
   flex-shrink: 0;
 }
 
-/* With view tabs (PanelViewTabs sets data-tab-gap and the gap's edges), the header's bottom line is drawn here
-   instead of as its border, in two pieces with a gap exactly under the active tab -- the tab's own foot is where
-   the panel begins. It sits over the border's own pixel row. */
-.primary-side-panel-header[data-tab-gap] {
-  border-bottom-color: transparent;
+/* With view tabs (PanelViewTabs sets data-tab-gap and the gap's edges), the header's own border stays as the
+   divider line, and a patch of the panel color exactly the width of the active tab is drawn over it, so the line
+   has a gap under the tab -- the tab's own foot is where the panel begins. The patch is a border of the same
+   width on the same row (not a taller strip), so it snaps to device pixels exactly as the line does and covers it
+   fully at any display scale; a line drawn some other way (a gradient, or pieces of a border) blurs and flickers
+   when the layer repaints at fractional scales. */
+.primary-side-panel-header[data-tab-gap]::after {
+  content: '';
+  position: absolute;
+  left: var(--tab-gap-l, 0);
+  width: calc(var(--tab-gap-r, 0px) - var(--tab-gap-l, 0px));
+  bottom: -1px;
+  height: 0;
+  border-bottom: 1px solid var(--panel-surface-bg);
+  pointer-events: none;
 }
 
 /* The bottom panel's header also has its own divider rule under the tab row; the gapped line replaces it. */
 .primary-side-panel-header[data-tab-gap] > .tree-header-divider {
   visibility: hidden;
-}
-
-.primary-side-panel-header[data-tab-gap]::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: -1px;
-  height: 1px;
-  pointer-events: none;
-  background: linear-gradient(
-    90deg,
-    var(--secondary-tree-menu-rename-input-focus) 0 var(--tab-gap-l, 100%),
-    transparent var(--tab-gap-l, 100%) var(--tab-gap-r, 100%),
-    var(--secondary-tree-menu-rename-input-focus) var(--tab-gap-r, 100%) 100%
-  );
 }
 
 .primary-panel-scroll {
