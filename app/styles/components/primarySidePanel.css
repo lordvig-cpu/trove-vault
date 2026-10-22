@@ -174,6 +174,34 @@
   flex-shrink: 0;
 }
 
+/* With view tabs (PanelViewTabs sets data-tab-gap and the gap's edges), the header's bottom line is drawn here
+   instead of as its border, in two pieces with a gap exactly under the active tab -- the tab's own foot is where
+   the panel begins. It sits over the border's own pixel row. */
+.primary-side-panel-header[data-tab-gap] {
+  border-bottom-color: transparent;
+}
+
+/* The bottom panel's header also has its own divider rule under the tab row; the gapped line replaces it. */
+.primary-side-panel-header[data-tab-gap] > .tree-header-divider {
+  visibility: hidden;
+}
+
+.primary-side-panel-header[data-tab-gap]::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 1px;
+  pointer-events: none;
+  background: linear-gradient(
+    90deg,
+    var(--secondary-tree-menu-rename-input-focus) 0 var(--tab-gap-l, 100%),
+    transparent var(--tab-gap-l, 100%) var(--tab-gap-r, 100%),
+    var(--secondary-tree-menu-rename-input-focus) var(--tab-gap-r, 100%) 100%
+  );
+}
+
 .primary-panel-scroll {
   position: relative;
   z-index: 5;
@@ -334,6 +362,14 @@
 
 .tree-folder-tab-active:not(.menuFolderTab) svg {
   filter: drop-shadow(0 2px 3px color-mix(in oklab, var(--pole-shade) 45%, transparent));
+  /* The shadow is cut off at the tab's foot, so it never draws a dark line under the open tab. */
+  clip-path: inset(-8px -8px 0 -8px);
+}
+
+/* The active panel tab opens into the panel: its fill ends in the panel color. The header's amber line is
+   interrupted under it ([data-tab-gap] below), so nothing needs covering. */
+.tree-folder-tab-active:not(.menuFolderTab) .tab-grad-bottom {
+  stop-color: var(--panel-surface-bg);
 }
 
 /* Flyout tabs keep the glow. */

@@ -119,6 +119,8 @@
   /* Inset wells are the Background seed; the selected row is the Secondary seed. */
   --tree-search-input-bg: var(--oklch-bg);
   --ember-row-selected: var(--oklch-secondary);
+  /* The selected row's label: a soft near-white (#EAEDEF by default); its icon keeps its own color. */
+  --ember-row-selected-text: oklch(from var(--ember-base) 0.94 0.005 h);
   --tree-search-input-border: color-mix(in oklab, var(--oklch-secondary) 75%, var(--oklch-bg));
   --tmpl-item-selected-bg: color-mix(in oklab, var(--brand-secondary-amber) 9%, var(--ember-panel));
   --tmpl-item-selected-border: var(--ember-amber-edge);
@@ -164,6 +166,12 @@
   --section-card-base: var(--oklch-primary);
   --flyout-tab-active-top: color-mix(in oklab, var(--secondary-accent) 29%, var(--ember-menu));
   --flyout-tab-active-bottom: color-mix(in oklab, var(--secondary-accent) 17.5%, var(--ember-menu));
+
+  /* The gear flyouts (TreeSubMenu), after the mockup: a slate shell with a quiet slate edge (no amber), Primary
+     section cards on a Secondary body, Background wells for inputs, Secondary icon tiles. The rules using these
+     are scoped below to the flyout classes, so the toolbars sharing --flyout-* keep their own look. */
+  --ember-menu-edge: color-mix(in oklab, var(--oklch-blue) 7%, var(--oklch-secondary));
+  --ember-card-edge: color-mix(in oklab, var(--oklch-secondary) 75%, var(--oklch-bg));
 }
 
 
@@ -176,6 +184,10 @@
   border-radius: 0.375rem;
   box-shadow: inset 3px 0 0 var(--brand-secondary-amber);
   color: var(--text-strong);
+}
+
+[data-theme='theme-oklch-dark'] .tree-item-selected .tree-muted.truncate {
+  color: var(--ember-row-selected-text);
 }
 
 /* A selected category card (a collection, a Layout container) looks exactly like an unselected one, with only
@@ -194,6 +206,124 @@
 [data-theme='theme-oklch-dark'] .tree-category-sticky-header.tree-category-row-active:hover {
   background: var(--primary-tree-category-card-hover-bg);
   border-color: var(--primary-tree-category-card-hover-border);
+}
+
+/* Gear flyouts, after the mockup. The shell: a slate edge and a plain dark drop shadow in place of the amber
+   edge and glow; the head is the Secondary menu color shading a little darker; the body is the deeper
+   Secondary, flat (no amber corner glows). */
+[data-theme='theme-oklch-dark'] .menuShell {
+  border-color: var(--ember-menu-edge);
+  box-shadow: 0 12px 28px color-mix(in oklab, var(--pole-shade) 55%, transparent);
+}
+
+[data-theme='theme-oklch-dark'] .menuShellHead {
+  background: linear-gradient(180deg, var(--ember-menu), var(--ember-menu-deep));
+}
+
+[data-theme='theme-oklch-dark'] .menuShellBody {
+  background: var(--ember-menu-deep);
+}
+
+[data-theme='theme-oklch-dark'] .menuShellHead .menuTabs {
+  border-top-color: var(--ember-menu-edge);
+  background: var(--ember-panel);
+}
+
+/* The band's bottom line is the amber divider under the tabs (from .menuTabs-folder); only the active tab, which
+   sits over it, interrupts it. */
+[data-theme='theme-oklch-dark'] .menuShellHead .menuTabs.menuTabs-folder {
+  border-bottom-color: var(--secondary-tree-menu-rename-input-focus);
+}
+
+/* The flyout's tabs wear the side-panel tabs' look: white icon and label, no amber glow, a slight drop shadow. */
+[data-theme='theme-oklch-dark'] .menuTabs .menuFolderTab.tree-folder-tab-active {
+  color: var(--flyout-white);
+}
+
+[data-theme='theme-oklch-dark'] .tree-folder-tab-active.menuFolderTab svg {
+  filter: drop-shadow(0 2px 3px color-mix(in oklab, var(--pole-shade) 45%, transparent));
+  clip-path: inset(-8px -8px 0 -8px);
+}
+
+[data-theme='theme-oklch-dark'] .menuTabs .menuFolderTab .tab-grad-bottom {
+  stop-color: var(--ember-menu-deep);
+}
+
+/* Title bar: the title is white (set below), its icon, grip and close button a soft gray that turns white on hover. */
+[data-theme='theme-oklch-dark'] .menuShell .headerPill .headerIcon,
+[data-theme='theme-oklch-dark'] .menuShell .headerPill .hintHeaderBtn,
+[data-theme='theme-oklch-dark'] .menuShell .headerPill .hintGrip {
+  color: color-mix(in oklab, var(--flyout-white) 55%, transparent);
+}
+
+[data-theme='theme-oklch-dark'] .menuShell .headerPill .hintHeaderBtn:hover {
+  color: var(--flyout-white);
+}
+
+/* Section cards: Primary with a quiet slate edge and no corner glows; the icon tile is a flat Secondary
+   square with a soft white icon. */
+[data-theme='theme-oklch-dark'] .menuSection {
+  border-color: var(--ember-card-edge);
+  background: var(--oklch-primary);
+}
+
+[data-theme='theme-oklch-dark'] .menuSectionIconTile {
+  border-color: transparent;
+  background: var(--oklch-secondary);
+  box-shadow: none;
+  color: color-mix(in oklab, var(--flyout-white) 80%, transparent);
+}
+
+[data-theme='theme-oklch-dark'] .menuSectionToggle:hover .menuSectionIconTile {
+  border-color: var(--ember-menu-edge);
+}
+
+[data-theme='theme-oklch-dark'] .menuSectionSubtitle,
+[data-theme='theme-oklch-dark'] .menuSectionChevron {
+  color: color-mix(in oklab, var(--flyout-white) 55%, transparent);
+}
+
+[data-theme='theme-oklch-dark'] .menuSectionBody {
+  border-top-color: var(--ember-card-edge);
+}
+
+/* Inputs and pulldown fields inside a flyout body: the Background well with the slate edge (amber when focused). */
+[data-theme='theme-oklch-dark'] .menuShellBody input[type='text']:not(.spacingInput):not(.colorHexInput),
+[data-theme='theme-oklch-dark'] .colorHexField {
+  background: var(--oklch-bg);
+  border-color: var(--ember-menu-edge);
+}
+
+[data-theme='theme-oklch-dark'] .menuShellBody .oklch-seed-picker {
+  border-color: var(--ember-menu-edge);
+}
+
+[data-theme='theme-oklch-dark'] .unitSelect {
+  background: var(--oklch-bg);
+  border-color: var(--ember-menu-edge);
+}
+
+[data-theme='theme-oklch-dark'] .unitSelect option {
+  background: var(--oklch-bg);
+}
+
+/* A toggle group (Auto / Fit / Custom, Row / Column, ...): a Background track, the chosen button a flat
+   Secondary pill with a white label and an amber underline, instead of the toolbar's gold-filled pill. */
+[data-theme='theme-oklch-dark'] .menuShellBody [role='group'] {
+  background: var(--oklch-bg);
+  border-color: var(--ember-card-edge);
+}
+
+[data-theme='theme-oklch-dark'] .menuShellBody [role='group'] button[class*="border-[var(--flyout-selected)]"] {
+  background: var(--oklch-secondary);
+  border-color: transparent;
+  box-shadow: inset 0 -2px 0 var(--brand-secondary-amber);
+  color: var(--flyout-white);
+}
+
+[data-theme='theme-oklch-dark'] .propertiesSaveBar {
+  border-top-color: var(--ember-menu-edge);
+  background: var(--ember-panel);
 }
 
 /* Menu text that reads white (deep ink in light mode): the flyout title, the active tab, each section

@@ -12,6 +12,7 @@ import {
 } from '@/components/icons/PanelIcons';
 import { useUIPreferences } from '@/context/UIPreferencesContext';
 import { useResizableHeight } from '@/hooks/useResizableHeight';
+import { useTabGapLine } from '@/hooks/useTabGapLine';
 import EmptyPanelDropZone from '@/components/EmptyPanelDropZone';
 import PanelContentTransition from '@/components/PanelContentTransition';
 import { HintGripIcon } from '@/components/icons/HintIcons';
@@ -64,6 +65,8 @@ export default function BottomPanel({
 }: BottomPanelProps) {
   const { animationsEnabled, isHydrated } = useUIPreferences();
   const occupied = Boolean(children);
+  // The header's divider line gets a gap under the active tab (see useTabGapLine).
+  const tabsRowRef = useTabGapLine([occupied, tabLabel]);
 
   const {
     panelHeight,
@@ -245,7 +248,7 @@ export default function BottomPanel({
 
         {/* Paper Folder Tab Row (when occupied with a tab) */}
         {occupied && tabLabel && (
-          <div className="flex items-end justify-between gap-1 w-full shrink-0 -mb-[1px]">
+          <div ref={tabsRowRef} className="flex items-end justify-between gap-1 w-full shrink-0 -mb-[1px]">
             <div role="tablist" aria-label="Bottom panel views" className="flex items-center relative">
               <button
                 type="button"

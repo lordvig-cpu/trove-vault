@@ -16,6 +16,7 @@ import {
   BlueprintTabIcon,
 } from '@/components/icons/PanelIcons';
 import { DockContent, TabReorderInfo } from '@/hooks/usePanelDockDrag';
+import { useTabGapLine } from '@/hooks/useTabGapLine';
 import { PrimarySidebarPosition } from '@/types/layout';
 import VisibilityEyeIcon from '@/components/VisibilityEyeIcon';
 import { activeIconColor } from '@/components/editorBarStyles';
@@ -118,6 +119,9 @@ export default function PanelViewTabs({
     if (rect) setAddFieldMenuAt({ top: Math.round(rect.bottom + 4), right: Math.round(window.innerWidth - rect.right) });
   };
 
+  // The header's divider line gets a gap under the active tab (see useTabGapLine).
+  const tabsRowRef = useTabGapLine([activeTab, displayedTabs]);
+
   if (displayedTabs.length === 0) return null;
 
   return (
@@ -138,7 +142,7 @@ export default function PanelViewTabs({
             : 'Browse Items'}
         </h3>
       </div>
-      <div className="flex items-end justify-between gap-1 w-full shrink-0 -mb-[1px]">
+      <div ref={tabsRowRef} className="flex items-end justify-between gap-1 w-full shrink-0 -mb-[1px]">
         {/* Left: View Mode Paper Folder Tabs */}
         <div role="tablist" aria-label={`${panelName} views`} className="flex items-center relative">
           {displayedTabs.map((tab, idx) => {

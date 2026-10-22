@@ -214,6 +214,8 @@ its display style, with label and typography).
   and `useLayoutHistory` for undo/redo.
 - `useTemplateLayoutTree.ts` — the flex layout tree's selection and CRUD (add/insert/split/update/
   remove container or component, place a field, reset to default).
+- `useTabGapLine.ts` — measures the active paper-folder tab so a panel header's amber divider line has a
+  gap exactly under it (side/pulldown panels via `PanelViewTabs`, and the bottom panel).
 - `useTreeActionMenu.ts` — a tree-gear popup's open/close/position state; broadcasts a window event
   so only one popup is open at a time.
 - `useTreeCategories.ts` — a tree's category expand/collapse state and search query.
