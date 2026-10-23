@@ -21,7 +21,7 @@ import TreeSubMenu, {
 } from '@/components/TreeSubMenu';
 import TemplateBodyDimensions from '@/components/TemplateBodyDimensions';
 import TemplateContainerSizing from '@/components/TemplateContainerSizing';
-import { barToggleBtn, barToggleGroup, barToggleOption } from '@/components/editorBarStyles';
+import { barToggleBtn, barToggleGroup, barToggleOption, idleBtn, menuTextBtn } from '@/components/editorBarStyles';
 import { NEW_CONTAINER_OPTIONS } from '@/lib/layoutTree';
 import { AlignItemsIcon, JustifyContentIcon } from '@/components/icons/AlignIcons';
 import {
@@ -678,10 +678,10 @@ export function TemplateContainerActionMenu({
                 />
                 {isNameDirty && (
                   <div className="actionMenuRenameActions">
-                    <button type="button" onClick={handleLabelCancel} className="actionMenuRenameCancelBtn">
+                    <button type="button" onClick={handleLabelCancel} className={`${menuTextBtn} menuBtnAction ${idleBtn}`}>
                       Cancel
                     </button>
-                    <button type="submit" className="actionMenuRenameSaveBtn">
+                    <button type="submit" className={`${menuTextBtn} menuBtnAction ${idleBtn}`}>
                       Save
                     </button>
                   </div>

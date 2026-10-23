@@ -9,6 +9,7 @@ import { CameraIcon, FileIcon, ImageIcon, ListIcon } from '@/components/icons/Co
 import { TagIcon } from '@/components/icons/GlyphIcons';
 import { AdHocAttributeRows } from '@/components/item-form/AdHocAttributesEditor';
 import { IMAGE_UPLOAD_ACCEPT, IMAGE_UPLOAD_MAX_BYTES } from '@/lib/storage';
+import { idleBtn, menuTextBtn } from '@/components/editorBarStyles';
 import type { useItemEditor } from '@/hooks/useItemEditor';
 
 export type ItemPropertySection = 'template' | 'photo' | 'fields' | 'custom';
@@ -104,10 +105,10 @@ export default function TreeItemProperties({ editor, openSections, onToggleSecti
                 <Image src={imageUrl} alt="Item photo" fill unoptimized className="object-contain" />
               </div>
               <div className="actionMenuRenameActions">
-                <button type="button" onClick={form.removeImage} className="actionMenuRenameCancelBtn">
+                <button type="button" onClick={form.removeImage} className={`${menuTextBtn} menuBtnAction ${idleBtn}`}>
                   Remove
                 </button>
-                <label className="actionMenuRenameSaveBtn">
+                <label className={`${menuTextBtn} menuBtnAction ${idleBtn}`}>
                   Replace
                   <input type="file" accept={IMAGE_UPLOAD_ACCEPT} onChange={form.chooseFile} className="sr-only" />
                 </label>
@@ -166,7 +167,7 @@ export default function TreeItemProperties({ editor, openSections, onToggleSecti
             removeIconClassName="w-3 h-3"
           />
           <div className="actionMenuRenameActions">
-            <button type="button" onClick={form.addAdHocRow} className="actionMenuRenameSaveBtn">
+            <button type="button" onClick={form.addAdHocRow} className={`${menuTextBtn} menuBtnAction ${idleBtn}`}>
               + Add Custom Field
             </button>
           </div>

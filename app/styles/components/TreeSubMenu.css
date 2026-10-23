@@ -1150,51 +1150,6 @@
   font-size: 0.625rem;
 }
 
-.actionMenuRenameCancelBtn {
-  padding: 0.125rem 0.5rem;
-  border-radius: 0.25rem;
-  color: var(--text-muted);
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  transition: color 150ms ease;
-}
-
-.actionMenuRenameCancelBtn:hover {
-  color: var(--tree-menu-rename-cancel-hover-text);
-}
-
-.actionMenuRenameSaveBtn {
-  padding: 0.125rem 0.5rem;
-  border-radius: 0.25rem;
-  font-weight: 500;
-  background-color: var(--secondary-tree-menu-rename-save-bg);
-  color: var(--secondary-tree-menu-rename-save-text);
-  border: none;
-  cursor: pointer;
-  transition: background-color 150ms ease;
-}
-
-.actionMenuRenameSaveBtn:hover {
-  background-color: var(--secondary-tree-menu-rename-save-hover-bg);
-}
-
-/* Revert / Save in a tree flyout's Properties tab (TreeMenuProperties.tsx) do nothing until there are
-   unsaved changes. */
-.actionMenuRenameCancelBtn:disabled,
-.actionMenuRenameSaveBtn:disabled {
-  opacity: 0.4;
-  cursor: default;
-}
-
-.actionMenuRenameCancelBtn:disabled:hover {
-  color: var(--text-muted);
-}
-
-.actionMenuRenameSaveBtn:disabled:hover {
-  background-color: var(--secondary-tree-menu-rename-save-bg);
-}
-
 /* A split menu's footer (TreeSubMenu's .menuShellFooter): a strip on the body's bottom edge, outside the
    scrolling content (.childrenContainer), that a Properties tab draws its Revert / Save bar into. It cancels the
    body's bottom padding so it reaches the edge (the body's rounded corners clip it), never shrinks, and takes no
