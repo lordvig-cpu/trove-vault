@@ -432,7 +432,7 @@ function MenuActionGroupButton({ group }: { group: MenuActionGroup }) {
                   showDelayMs={ACTION_HINT_DELAY_MS}
                   placement="side"
                   wrapperClassName="flex flex-col"
-                  hint={{ title: item.label, description: item.description }}
+                  hint={{ title: item.label, description: item.description, icon: item.icon }}
                 >
                   <GroupOption
                     icon={item.icon}
@@ -467,7 +467,7 @@ export function MenuActionBar({ actions }: { actions: (MenuAction | MenuActionGr
         key={entry.id}
         interactive
         showDelayMs={ACTION_HINT_DELAY_MS}
-        hint={{ title: entry.label, description: entry.description }}
+        hint={{ title: entry.label, description: entry.description, icon: <entry.Icon className="w-3.5 h-3.5" /> }}
       >
         <button
           type="button"

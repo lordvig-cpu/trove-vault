@@ -504,10 +504,20 @@
   border-top-color: color-mix(in oklab, var(--primary-accent) 45%, transparent);
 }
 
-/* A bubble's plain description under its title (HintContent.description), e.g. what an action does. */
+/* A bubble's description under its title (HintContent.description), e.g. what an action does: laid out like a
+   Settings row, the action's icon in the same mini button chip (HintContent.icon) on the left, the text on the right. */
 .hoverHintDescription {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
   margin: 0;
   padding: 0 0.25rem;
+}
+
+.hoverHintDescription .hintRefIcon {
+  width: 1.5rem;
+  height: 1.5rem;
+  flex-shrink: 0;
 }
 
 /* Settings as a borderless two-column table: option names on the left, what they do on the right,
@@ -742,8 +752,13 @@
   border-radius: 0.75rem;
   /* A 1px black line just inside the colored border. */
   box-shadow: inset 0 0 0 1px var(--pole-shade);
-  /* Two soft Secondary Accent glows, off the top-left and bottom-right corners like the flyout body's,
-     then the card's own top-edge glow (--section-card-glow, currently clear), over a dark base. */
+}
+
+/* A section card's fill, which a help bubble's body (under its header) shares, so the header stands apart from the
+   help text: two soft Secondary Accent glows, off the top-left and bottom-right corners like the flyout body's, then
+   the card's own top-edge glow (--section-card-glow, currently clear), over a dark base. */
+.menuSection,
+.hoverHint .menuShellBody {
   background:
     radial-gradient(ellipse 90% 60% at 0% 0%, color-mix(in oklab, var(--secondary-accent) 5%, transparent), transparent),
     radial-gradient(ellipse 90% 60% at 100% 100%, color-mix(in oklab, var(--secondary-accent) 5%, transparent), transparent),

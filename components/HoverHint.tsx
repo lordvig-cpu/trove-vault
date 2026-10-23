@@ -62,8 +62,10 @@ export interface HintNote {
  */
 export interface HintContent {
   title: string;
-  /** A plain line or two under the title, before any sections (e.g. what an action does). */
+  /** A line or two under the title, before any sections (e.g. what an action does), laid out like a Settings row:
+      `icon` (the action's own) in a mini button chip on the left, the text on the right. */
   description?: React.ReactNode;
+  icon?: React.ReactNode;
   settings?: HintSetting[];
   notes?: HintNote[];
 }
@@ -152,7 +154,12 @@ export function HintBubble({
       <div className="menuShell menuShellBody">
         <div className="innerContent">
           <div className="childrenContainer">
-            {hint.description && <p className="hoverHintDescription">{hint.description}</p>}
+            {hint.description && (
+              <div className="hoverHintDescription">
+                {hint.icon && <span className="hintRefIcon">{hint.icon}</span>}
+                <span>{hint.description}</span>
+              </div>
+            )}
             {hint.settings && hint.settings.length > 0 && (
               <>
                 <div className="properties-section-heading">

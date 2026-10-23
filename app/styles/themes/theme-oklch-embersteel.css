@@ -281,6 +281,11 @@
   box-shadow: none;
 }
 
+/* A help bubble's body is the section cards' fill too (see .hoverHint .menuShellBody in TreeSubMenu.css). */
+[data-theme='theme-oklch-dark'] .hoverHint .menuShellBody {
+  background: var(--oklch-primary);
+}
+
 /* Action rows are buttons in the section cards' own fill and edge (their hover is the shared white or red one). */
 [data-theme='theme-oklch-dark'] :is(.actionMenuItem, .actionMenuDangerItem):not(:hover) {
   border-color: var(--ember-card-edge);
