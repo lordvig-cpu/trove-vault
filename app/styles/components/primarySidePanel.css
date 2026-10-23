@@ -351,10 +351,13 @@
   stroke: var(--secondary-tree-menu-rename-input-focus);
 }
 
-/* The active panel tab's icon / label is the strong text color (white in the dark themes), and the tab
-   casts a slight drop shadow rather than a glow. A flyout's tabs (.menuFolderTab) keep their own look. */
+/* The active panel tab's name is the strong text color (white in the dark themes) at normal weight, lifted
+   by a slight dark text shadow, and the tab casts a slight drop shadow rather than a glow. A flyout's tabs
+   (.menuFolderTab) keep their own look, bold included. */
 .tree-folder-tab-active:not(.menuFolderTab) {
   color: var(--text-strong);
+  font-weight: 400;
+  text-shadow: 0 1px 2px color-mix(in oklab, var(--pole-shade) 70%, transparent);
 }
 
 .tree-folder-tab-active:not(.menuFolderTab) svg {
