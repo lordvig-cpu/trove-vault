@@ -295,7 +295,7 @@ export function usePanelRenderers({
             <PackageIcon className="w-6 h-6" />
           </div>
           <div className="flex flex-col gap-1">
-            <div className="text-sm font-bold text-[var(--content-primary)] uppercase tracking-wider">
+            <div className="text-sm font-bold text-content-primary uppercase tracking-wider">
               Grabbed Content
             </div>
             <p className="text-xs text-[var(--text-muted)] max-w-[200px] leading-relaxed">
