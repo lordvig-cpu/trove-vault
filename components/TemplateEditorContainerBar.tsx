@@ -18,11 +18,9 @@ import {
 } from '@/components/icons/LayoutIcons';
 import { HintRef, type HintContent } from '@/components/HoverHint';
 import {
-  activeBtn,
-  barDisabledBtn,
-  barGhostBtn,
   barToggleBtn,
   barToggleGroup,
+  barToggleOption,
 } from '@/components/editorBarStyles';
 import {
   BarSectionLabel,
@@ -162,11 +160,7 @@ export default function TemplateEditorContainerBar({
               if (!isRoot) onUpdateContainer?.(container.id, { width: undefined, sizing: { type: 'fill' } });
             }}
             title={isRoot ? 'Auto: the Body stretches automatically with content' : 'Auto: fill the available parent space'}
-            className={`${barToggleBtn} ${
-              isRoot || (container.sizing?.type || 'fill') === 'fill'
-                ? `border ${activeBtn} ${isRoot ? 'cursor-default' : 'cursor-pointer'}`
-                : `${barGhostBtn} cursor-pointer`
-            }`}
+            className={`${barToggleBtn} ${barToggleOption(isRoot || (container.sizing?.type || 'fill') === 'fill')}`}
           >
             <AutoSizingIcon className="w-3.5 h-3.5" />
             Auto
@@ -184,13 +178,7 @@ export default function TemplateEditorContainerBar({
                 ? 'Fit: add content to this container first'
                 : 'Fit: shrink the container to fit its content'
             }
-            className={`${barToggleBtn} ${
-              isRoot || !hasContent
-                ? `border border-transparent ${barDisabledBtn}`
-                : container.sizing?.type === 'auto'
-                ? `border ${activeBtn} cursor-pointer`
-                : `${barGhostBtn} cursor-pointer`
-            }`}
+            className={`${barToggleBtn} ${barToggleOption(container.sizing?.type === 'auto', isRoot || !hasContent)}`}
           >
             <FitContentIcon className="w-3.5 h-3.5" />
             Fit
@@ -200,13 +188,7 @@ export default function TemplateEditorContainerBar({
             disabled={isRoot}
             onClick={() => onUpdateContainer?.(container.id, customSizingAtCurrentWidth(container))}
             title={isRoot ? 'Custom sizing is not available for the Body' : 'Custom: set your own width/height (e.g. 50%, 300px)'}
-            className={`${barToggleBtn} ${
-              isRoot
-                ? `border border-transparent ${barDisabledBtn}`
-                : container.sizing?.type === 'fixed'
-                ? `border ${activeBtn} cursor-pointer`
-                : `${barGhostBtn} cursor-pointer`
-            }`}
+            className={`${barToggleBtn} ${barToggleOption(container.sizing?.type === 'fixed', isRoot)}`}
           >
             <CustomSizingIcon className="w-3.5 h-3.5" />
             Custom
@@ -228,13 +210,7 @@ export default function TemplateEditorContainerBar({
                 : 'Row layout (horizontal flow)'
             }
             aria-label="Row"
-            className={`${barToggleBtn} ${
-              isRoot
-                ? `border border-transparent ${barDisabledBtn}`
-                : direction === 'row'
-                ? `border ${activeBtn} cursor-pointer`
-                : `${barGhostBtn} cursor-pointer`
-            }`}
+            className={`${barToggleBtn} ${barToggleOption(direction === 'row', isRoot)}`}
           >
             <FlexRowIcon className="w-3.5 h-3.5" />
           </button>
@@ -248,11 +224,7 @@ export default function TemplateEditorContainerBar({
                 : 'Column layout (vertical flow)'
             }
             aria-label="Column"
-            className={`${barToggleBtn} ${
-              isRoot || direction === 'column'
-                ? `border ${activeBtn} ${isRoot ? 'cursor-default' : 'cursor-pointer'}`
-                : `${barGhostBtn} cursor-pointer`
-            }`}
+            className={`${barToggleBtn} ${barToggleOption(isRoot || direction === 'column')}`}
           >
             <FlexColumnIcon className="w-3.5 h-3.5" />
           </button>

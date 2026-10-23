@@ -3,7 +3,7 @@
 
 /** Idle control: amber outline and text on the orange bar; white on hover. */
 export const idleBtn =
-  'bg-shade/40 border-[var(--secondary-accent)] text-[var(--secondary-accent)] hover:border-glint hover:text-content-strong hover:bg-glint/10';
+  'bg-shade/40 border-accent-secondary text-accent-secondary hover:border-glint hover:text-content-strong hover:bg-glint/10';
 
 /** Selected / open control: the flyout's active-tab gradient (--flyout-tab-active-top / -bottom, also a
     flyout section's chevron button) -- a solid warm-gold gradient, not a translucent mix of
@@ -16,11 +16,11 @@ export const activeBtn =
     tree's Body/Row/Column glyphs) that should read as "this is a selected-style control" without
     the full pill -- the tree keeps the amber family throughout rather than picking up the toolbar's
     yellow. */
-export const activeIconColor = 'text-[var(--secondary-accent)]';
+export const activeIconColor = 'text-accent-secondary';
 
 /** Borderless menu row / icon button (zoom, sub-panel options). */
 export const ghostBtn =
-  'border border-transparent text-[var(--secondary-accent)] hover:border-glint hover:text-content-strong hover:bg-glint/10';
+  'border border-transparent text-accent-secondary hover:border-glint hover:text-content-strong hover:bg-glint/10';
 
 /** Every unselected control on the template editor toolbars (text and icon buttons alike): the same
     idle / ghost / disabled looks as idleBtn / ghostBtn above, but in a soft menu white instead of
@@ -35,7 +35,7 @@ export const barGhostBtn =
 export const barIconBtn =
   'border-transparent text-flyout-white-soft hover:border-glint hover:text-flyout-white';
 export const barIconBtnOn =
-  'border-transparent text-[var(--secondary-accent)] hover:border-glint';
+  'border-transparent text-accent-secondary hover:border-glint';
 export const barIconBtnDisabled = 'border-transparent text-flyout-white-soft opacity-55 cursor-not-allowed';
 
 /** A toolbar pulldown button (Add, Split, Shows, Style...): the same darker amber border as the
@@ -61,9 +61,10 @@ export const barToggleGroup =
 
 export const barToggleBtn = 'px-1.5 h-full flex items-center gap-1 rounded transition';
 
-/** One option of a flyout's toggle group (Auto / Fit / Custom, Row / Column, the alignment icons, the content
-    flyout's segmented choices): activeBtn while selected, barGhostBtn otherwise, barDisabledBtn when disabled.
-    Goes after barToggleBtn. */
+/** One option of a toggle group, in the toolbars and flyouts alike (Auto / Fit / Custom, Row / Column, the
+    alignment icons, the content flyout's segmented choices): activeBtn while selected (no pointer cursor, since
+    choosing it again changes nothing), barGhostBtn otherwise, barDisabledBtn when disabled. Goes after
+    barToggleBtn. */
 export function barToggleOption(selected: boolean, disabled = false): string {
   if (disabled) return `border border-transparent ${barDisabledBtn}`;
   return selected ? `border cursor-default ${activeBtn}` : `${barGhostBtn} cursor-pointer`;
