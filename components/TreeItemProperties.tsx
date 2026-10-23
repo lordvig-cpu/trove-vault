@@ -78,7 +78,7 @@ export default function TreeItemProperties({ editor, openSections, onToggleSecti
           <select value={form.selectedTemplateId || 'blank'} onChange={(e) => form.selectTemplate(e.target.value)} className={INPUT}>
             {form.availableTemplates.map((t) => (
               <option key={t.id} value={t.id}>
-                {t.icon} {t.name} ({t.fields?.length || 0} fields)
+                {t.icon} {t.name}
               </option>
             ))}
             <option value="blank">Blank / Custom (No Template)</option>

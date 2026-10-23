@@ -40,7 +40,7 @@ export default function ItemTemplatePicker({
       >
         {templates.map((template) => (
           <option key={template.id} value={template.id}>
-            {template.icon} {template.name} ({template.fields?.length || 0} fields)
+            {template.icon} {template.name}
           </option>
         ))}
         <option value="blank">Blank / Custom (No Template)</option>
