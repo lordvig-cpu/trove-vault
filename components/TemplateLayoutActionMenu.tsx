@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   FlexContainerNode,
   FlexComponentNode,
@@ -394,9 +394,6 @@ export function TemplateContainerActionMenu({
   const isRoot = container.id === 'root-container';
   const defaultLabel = isRoot ? 'Body' : container.label || 'Container';
   const [label, setLabel] = useState(defaultLabel);
-  const [isAddingContent, setIsAddingContent] = useState(false);
-  const [newContainerName, setNewContainerName] = useState('New Container');
-  const inputRef = useRef<HTMLInputElement>(null);
 
   // Body flyout's Actions / Properties tabs and which Properties sections are expanded. Kept here
   // (not inside the menu shell) so they survive the flyout closing and reopening.
@@ -409,56 +406,55 @@ export function TemplateContainerActionMenu({
   const toggleSection = (key: keyof typeof openSections) =>
     setOpenSections((prev) => ({ ...prev, [key]: !prev[key] }));
 
-  useEffect(() => {
-    if (isAddingContent) {
-      inputRef.current?.focus();
-      inputRef.current?.select();
-    }
-  }, [isAddingContent]);
-
-  // Adjust state during render, not in an effect, when the menu closes or the container's own
-  // label changes (https://react.dev/learn/you-might-not-need-an-effect#adjusting-some-state-when-a-prop-changes).
-  const [prevMenuOpen, setPrevMenuOpen] = useState(menu.isMenuOpen);
-  if (prevMenuOpen !== menu.isMenuOpen) {
-    setPrevMenuOpen(menu.isMenuOpen);
-    if (!menu.isMenuOpen) {
-      setIsAddingContent(false);
-      setNewContainerName('New Container');
-    }
-  }
-
+  // Adjust state during render, not in an effect, when the container's own label changes
+  // (https://react.dev/learn/you-might-not-need-an-effect#adjusting-some-state-when-a-prop-changes).
   const [prevDefaultLabel, setPrevDefaultLabel] = useState(defaultLabel);
   if (prevDefaultLabel !== defaultLabel) {
     setPrevDefaultLabel(defaultLabel);
     setLabel(defaultLabel);
   }
 
+  // An action: run it, then close the flyout.
+  const act = (fn?: () => void) => () => {
+    fn?.();
+    menu.closeMenu();
+  };
+
+  // The split Actions / Properties shell, the same for the Body and every other container
+  const shell = (title: string, titleIcon: React.ReactNode, children: React.ReactNode) => (
+    <TreeSubMenu
+      isOpen={menu.isMenuOpen}
+      closeInstantly={menu.closedWithPanel}
+      onMouseEnter={menu.handleMenuMouseEnter}
+      onMouseLeave={menu.handleMouseLeave}
+      top={menu.menuCoords.top}
+      left={menu.menuCoords.left}
+      position={position}
+      splitBody
+      className="menuShellXWide"
+      title={title}
+      floating={floating}
+      titleIcon={titleIcon}
+      subheader={
+        <ActionMenuTabs
+          tabs={[
+            { id: 'actions', label: 'Actions', icon: <ActionIcon className="w-4 h-4" /> },
+            { id: 'properties', label: 'Properties', icon: <PropertiesIcon className="w-4 h-4" /> },
+          ]}
+          active={activeTab}
+          onChange={setActiveTab}
+        />
+      }
+    >
+      {children}
+    </TreeSubMenu>
+  );
+
   if (isRoot) {
-    return (
-      <TreeSubMenu
-        isOpen={menu.isMenuOpen}
-        closeInstantly={menu.closedWithPanel}
-        onMouseEnter={menu.handleMenuMouseEnter}
-        onMouseLeave={menu.handleMouseLeave}
-        top={menu.menuCoords.top}
-        left={menu.menuCoords.left}
-        position={position}
-        splitBody
-        className="menuShellXWide"
-        title="Body"
-        floating={floating}
-        titleIcon={<BodyIcon className="w-4 h-4" />}
-        subheader={
-          <ActionMenuTabs
-            tabs={[
-              { id: 'actions', label: 'Actions', icon: <ActionIcon className="w-4 h-4" /> },
-              { id: 'properties', label: 'Properties', icon: <PropertiesIcon className="w-4 h-4" /> },
-            ]}
-            active={activeTab}
-            onChange={setActiveTab}
-          />
-        }
-      >
+    return shell(
+      'Body',
+      <BodyIcon className="w-4 h-4" />,
+      <>
         {activeTab === 'actions' && (
           <>
             <SelectElementSection nodeId={container.id} />
@@ -472,56 +468,9 @@ export function TemplateContainerActionMenu({
             <ActionMenuItem
               icon={<AddChildContainerIcon className="w-3.5 h-3.5" />}
               label="Inside"
-              title="Nest a new container in the Body, naming it first"
-              onClick={() => {
-                setNewContainerName('New Container');
-                setIsAddingContent((prev) => !prev);
-              }}
+              title="Nest a new container in the Body"
+              onClick={act(() => onAddContainer?.(container.id, { ...NEW_CONTAINER_OPTIONS }))}
             />
-
-            {isAddingContent && (
-              <form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  const trimmed = newContainerName.trim() || 'New Container';
-                  onAddContainer?.(container.id, { label: trimmed, padding: '0px', sizing: { type: 'fill' } });
-                  setIsAddingContent(false);
-                  menu.closeMenu();
-                }}
-                className="actionMenuRenameForm"
-              >
-                <input
-                  ref={inputRef}
-                  type="text"
-                  value={newContainerName}
-                  onChange={(e) => setNewContainerName(e.target.value)}
-                  placeholder="New Container"
-                  onKeyDown={(e) => {
-                    if (e.key === 'Escape') {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      setIsAddingContent(false);
-                    }
-                  }}
-                  className="actionMenuRenameInput"
-                />
-                <div className="actionMenuRenameActions">
-                  <button
-                    type="button"
-                    onClick={() => setIsAddingContent(false)}
-                    className="actionMenuRenameCancelBtn"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    className="actionMenuRenameSaveBtn"
-                  >
-                    Add Child Container
-                  </button>
-                </div>
-              </form>
-            )}
             </ActionMenuSection>
             <AddContentSection containerId={container.id} onDone={menu.closeMenu} />
           </>
@@ -592,7 +541,7 @@ export function TemplateContainerActionMenu({
               </ActionMenuSection>
           </>
         )}
-      </TreeSubMenu>
+      </>
     );
   }
 
@@ -622,37 +571,10 @@ export function TemplateContainerActionMenu({
   const hasContent = container.children.length > 0;
   const switchToCustomSize = () => onUpdateContainer?.(container.id, customSizingAtCurrentWidth(container));
 
-  // An action: run it, then close the flyout.
-  const act = (fn?: () => void) => () => {
-    fn?.();
-    menu.closeMenu();
-  };
-
-  return (
-    <TreeSubMenu
-      isOpen={menu.isMenuOpen}
-      closeInstantly={menu.closedWithPanel}
-      onMouseEnter={menu.handleMenuMouseEnter}
-      onMouseLeave={menu.handleMouseLeave}
-      top={menu.menuCoords.top}
-      left={menu.menuCoords.left}
-      position={position}
-      splitBody
-      className="menuShellXWide"
-      title={floating ? defaultLabel : 'Container'}
-      floating={floating}
-      titleIcon={containerIcon}
-      subheader={
-        <ActionMenuTabs
-          tabs={[
-            { id: 'actions', label: 'Actions', icon: <ActionIcon className="w-4 h-4" /> },
-            { id: 'properties', label: 'Properties', icon: <PropertiesIcon className="w-4 h-4" /> },
-          ]}
-          active={activeTab}
-          onChange={setActiveTab}
-        />
-      }
-    >
+  return shell(
+    floating ? defaultLabel : 'Container',
+    containerIcon,
+    <>
       {activeTab === 'actions' && (
         <>
           <SelectElementSection nodeId={container.id} />
@@ -900,7 +822,7 @@ export function TemplateContainerActionMenu({
             </ActionMenuSection>
         </>
       )}
-    </TreeSubMenu>
+    </>
   );
 }
 
@@ -1039,7 +961,7 @@ export function TemplateComponentActionMenu({
                 }}
                 placeholder="e.g. Hero Banner, Specs Table"
                 aria-label="Name"
-                className="w-full px-2.5 py-1.5 bg-surface-secondary border border-subtle rounded-lg text-xs text-strong focus:outline-none focus:border-[var(--secondary-accent)] font-medium transition"
+                className="w-full px-2.5 py-1.5 bg-surface-secondary border border-subtle rounded-lg text-xs text-strong focus:outline-none focus:border-accent-secondary font-medium transition"
               />
             </div>
           )}

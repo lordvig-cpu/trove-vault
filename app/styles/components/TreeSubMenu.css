@@ -1118,13 +1118,6 @@
 /* --------------------------------------------------------------------------
    Action Menu Inline Rename Form
    -------------------------------------------------------------------------- */
-.actionMenuRenameForm {
-  padding: 0.25rem 0.5rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.375rem;
-}
-
 .actionMenuRenameInput {
   font-size: 0.75rem;
   line-height: 1rem;
