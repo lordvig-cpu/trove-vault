@@ -144,7 +144,7 @@ glyph replacements), `ContentIcons.tsx` (field types, layout components, files/f
 
 Shared pieces of the Create/Edit item modals, driven by `hooks/useItemForm.ts`:
 `FieldValueInput.tsx` (one template field's input by type -- also used by an item flyout's Properties tab),
-`AdHocAttributesEditor.tsx` (free-form key/value rows), `ItemImagePicker.tsx` (photo upload/preview),
+`AdHocAttributesEditor.tsx` (free-form key/value rows; its `AdHocAttributeRows` is also the item flyout's Custom Fields), `ItemImagePicker.tsx` (photo upload/preview),
 `ItemModalShell.tsx` (keeps the error banner and buttons in view), `ItemTemplatePicker.tsx`
 (template dropdown), `TemplateFieldInputs.tsx` (renders inputs for the chosen template's fields).
 

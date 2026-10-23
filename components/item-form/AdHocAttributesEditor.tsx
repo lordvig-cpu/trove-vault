@@ -16,6 +16,64 @@ interface AdHocAttributesEditorProps {
   placeholders?: { key: string; value: string };
 }
 
+interface AdHocAttributeRowsProps {
+  attributes: AdHocAttribute[];
+  onChange: (index: number, field: 'key' | 'value', value: string) => void;
+  onRemove: (index: number) => void;
+  placeholders?: { key: string; value: string };
+  rowClassName: string;
+  inputClassName: string;
+  removeClassName: string;
+  removeIconClassName?: string;
+}
+
+/** The key / value rows themselves, each with a remove button: shared by the item modals (below) and an item
+    flyout's Custom Fields card (TreeItemProperties), which differ only in how they are styled. */
+export function AdHocAttributeRows({
+  attributes,
+  onChange,
+  onRemove,
+  placeholders = { key: 'Key', value: 'Value' },
+  rowClassName,
+  inputClassName,
+  removeClassName,
+  removeIconClassName,
+}: AdHocAttributeRowsProps) {
+  return (
+    <>
+      {attributes.map((attribute, index) => (
+        <div key={index} className={rowClassName}>
+          <input
+            type="text"
+            placeholder={placeholders.key}
+            aria-label="Custom field name"
+            value={attribute.key}
+            onChange={(event) => onChange(index, 'key', event.target.value)}
+            className={inputClassName}
+          />
+          <input
+            type="text"
+            placeholder={placeholders.value}
+            aria-label="Custom field value"
+            value={attribute.value}
+            onChange={(event) => onChange(index, 'value', event.target.value)}
+            className={inputClassName}
+          />
+          <button
+            type="button"
+            onClick={() => onRemove(index)}
+            aria-label="Remove custom field"
+            title="Remove"
+            className={removeClassName}
+          >
+            <CloseIcon className={removeIconClassName} />
+          </button>
+        </div>
+      ))}
+    </>
+  );
+}
+
 /** Editable list of free-form key/value attributes an item carries beyond its template's fields.
     Fully controlled: the parent (useItemForm) owns the list. */
 export default function AdHocAttributesEditor({
@@ -39,31 +97,15 @@ export default function AdHocAttributesEditor({
       </div>
 
       <div className="space-y-2 max-h-28 overflow-y-auto pr-1">
-        {attributes.map((attribute, index) => (
-          <div key={index} className="flex gap-2 items-center">
-            <input
-              type="text"
-              placeholder={placeholders.key}
-              value={attribute.key}
-              onChange={(event) => onChange(index, 'key', event.target.value)}
-              className="flex-1 item-modal-input rounded-lg px-2.5 py-1.5 text-xs"
-            />
-            <input
-              type="text"
-              placeholder={placeholders.value}
-              value={attribute.value}
-              onChange={(event) => onChange(index, 'value', event.target.value)}
-              className="flex-1 item-modal-input rounded-lg px-2.5 py-1.5 text-xs"
-            />
-            <button
-              type="button"
-              onClick={() => onRemove(index)}
-              className="item-modal-muted text-xs px-1 cursor-pointer" aria-label="Remove field"
-            >
-              <CloseIcon />
-            </button>
-          </div>
-        ))}
+        <AdHocAttributeRows
+          attributes={attributes}
+          onChange={onChange}
+          onRemove={onRemove}
+          placeholders={placeholders}
+          rowClassName="flex gap-2 items-center"
+          inputClassName="flex-1 item-modal-input rounded-lg px-2.5 py-1.5 text-xs"
+          removeClassName="item-modal-muted text-xs px-1 cursor-pointer"
+        />
       </div>
     </div>
   );

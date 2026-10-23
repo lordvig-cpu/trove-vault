@@ -7,7 +7,7 @@ import { PropertiesSaveBar, PropertyField } from '@/components/TreeMenuPropertie
 import FieldValueInput from '@/components/item-form/FieldValueInput';
 import { CameraIcon, FileIcon, ImageIcon, ListIcon } from '@/components/icons/ContentIcons';
 import { TagIcon } from '@/components/icons/GlyphIcons';
-import { CloseIcon } from '@/components/icons/PanelIcons';
+import { AdHocAttributeRows } from '@/components/item-form/AdHocAttributesEditor';
 import { IMAGE_UPLOAD_ACCEPT, IMAGE_UPLOAD_MAX_BYTES } from '@/lib/storage';
 import type { useItemEditor } from '@/hooks/useItemEditor';
 
@@ -154,35 +154,15 @@ export default function TreeItemProperties({ editor, openSections, onToggleSecti
         onToggle={() => onToggleSection('custom')}
       >
         <div className="px-3 pt-0 pb-2 flex flex-col gap-1.5">
-          {form.adHocAttributes.map((attribute, index) => (
-            <div key={index} className="flex gap-1.5 items-center">
-              <input
-                type="text"
-                placeholder="Key"
-                aria-label="Custom field name"
-                value={attribute.key}
-                onChange={(e) => form.changeAdHocRow(index, 'key', e.target.value)}
-                className={`${INPUT} min-w-0`}
-              />
-              <input
-                type="text"
-                placeholder="Value"
-                aria-label="Custom field value"
-                value={attribute.value}
-                onChange={(e) => form.changeAdHocRow(index, 'value', e.target.value)}
-                className={`${INPUT} min-w-0`}
-              />
-              <button
-                type="button"
-                onClick={() => form.removeAdHocRow(index)}
-                aria-label="Remove custom field"
-                title="Remove"
-                className="shrink-0 p-1 rounded text-content-muted hover:text-danger-text cursor-pointer"
-              >
-                <CloseIcon className="w-3 h-3" />
-              </button>
-            </div>
-          ))}
+          <AdHocAttributeRows
+            attributes={form.adHocAttributes}
+            onChange={form.changeAdHocRow}
+            onRemove={form.removeAdHocRow}
+            rowClassName="flex gap-1.5 items-center"
+            inputClassName={`${INPUT} min-w-0`}
+            removeClassName="shrink-0 p-1 rounded text-content-muted hover:text-danger-text cursor-pointer"
+            removeIconClassName="w-3 h-3"
+          />
           <div className="actionMenuRenameActions">
             <button type="button" onClick={form.addAdHocRow} className="actionMenuRenameSaveBtn">
               + Add Custom Field
