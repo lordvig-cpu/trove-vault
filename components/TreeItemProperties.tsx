@@ -83,11 +83,6 @@ export default function TreeItemProperties({ editor, openSections, onToggleSecti
             ))}
             <option value="blank">Blank / Custom (No Template)</option>
           </select>
-          {fields.length > 0 && (
-            <p className="text-[10px] text-content-muted">
-              {form.diffSummary.filled.length} of {fields.length} fields filled
-            </p>
-          )}
         </div>
       </ActionMenuSection>
 
