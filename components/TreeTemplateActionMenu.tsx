@@ -5,21 +5,12 @@ import DeleteTemplateModal from '@/components/DeleteTemplateModal';
 import { CollectionRecord } from '@/types/collection';
 import { useTreeActions } from '@/context/TreeActionsContext';
 import { useTreeActionMenu } from '@/hooks/useTreeActionMenu';
-import TreeSubMenu, {
-  ActionMenuDangerItem,
-  ActionMenuDivider,
-  ActionMenuItem,
-  ActionMenuTabs,
-  ACTIONS_AND_PROPERTIES_TABS,
-} from '@/components/TreeSubMenu';
+import TreeSubMenu, { MenuActionBar } from '@/components/TreeSubMenu';
 import { NameProperties } from '@/components/TreeMenuProperties';
-import type { MenuTab } from '@/lib/menuTabRequest';
 import { PackageIcon } from '@/components/icons/GlyphIcons';
 import { FileIcon } from '@/components/icons/ContentIcons';
 import { GearIcon } from '@/components/icons/TreeIcons';
 import { TrashCanIcon } from '@/components/icons/PanelIcons';
-
-const TABS = ACTIONS_AND_PROPERTIES_TABS;
 
 interface TreeTemplateActionMenuProps {
   template: CollectionRecord;
@@ -41,7 +32,6 @@ export default function TreeTemplateActionMenu({
 
   const rawTemplateId = Math.abs(template.id);
   const [confirmingDelete, setConfirmingDelete] = useState(false);
-  const [activeTab, setActiveTab] = useState<MenuTab>('actions');
 
   return (
     <>
@@ -58,49 +48,53 @@ export default function TreeTemplateActionMenu({
       className="menuShellXWide"
       title="Template"
       titleIcon={<PackageIcon className="w-4 h-4" />}
-      subheader={<ActionMenuTabs tabs={TABS} active={activeTab} onChange={setActiveTab} />}
+      subheader={
+        <MenuActionBar
+          actions={[
+            {
+              id: 'new-item',
+              label: 'New item',
+              description: 'Create item with this template',
+              Icon: FileIcon,
+              onClick: () => {
+                onAddSubItem(-rawTemplateId, null);
+                menu.closeMenu();
+              },
+            },
+            ...(onEditTemplate
+              ? [
+                  {
+                    id: 'edit-template',
+                    label: 'Edit template',
+                    description: 'Configure blueprint & fields schema',
+                    Icon: GearIcon,
+                    onClick: () => {
+                      onEditTemplate(rawTemplateId);
+                      menu.closeMenu();
+                    },
+                  },
+                ]
+              : []),
+            ...(onDeleteTemplate
+              ? [
+                  {
+                    id: 'delete',
+                    label: 'Delete',
+                    description: 'Permanently remove',
+                    Icon: TrashCanIcon,
+                    danger: true,
+                    onClick: () => {
+                      menu.closeMenu();
+                      setConfirmingDelete(true);
+                    },
+                  },
+                ]
+              : []),
+          ]}
+        />
+      }
     >
-      {activeTab === 'properties' ? (
-        <NameProperties name={template.name} onSave={(nextName) => onRenameTemplate?.(rawTemplateId, nextName)} />
-      ) : (
-      <>
-      <ActionMenuItem
-        icon={<FileIcon />}
-        label="New item"
-        subtext="Create item with this template"
-        onClick={() => {
-          onAddSubItem(-rawTemplateId, null);
-          menu.closeMenu();
-        }}
-      />
-
-      {onEditTemplate && (
-        <ActionMenuItem
-          icon={<GearIcon className="w-3.5 h-3.5" />}
-          label="Edit template"
-          subtext="Configure blueprint & fields schema"
-          onClick={() => {
-            onEditTemplate(rawTemplateId);
-            menu.closeMenu();
-          }}
-        />
-      )}
-
-      <ActionMenuDivider />
-
-      {onDeleteTemplate && (
-        <ActionMenuDangerItem
-          icon={<TrashCanIcon />}
-          label="Delete"
-          subtext="Permanently remove"
-          onClick={() => {
-            menu.closeMenu();
-            setConfirmingDelete(true);
-          }}
-        />
-      )}
-      </>
-      )}
+      <NameProperties name={template.name} onSave={(nextName) => onRenameTemplate?.(rawTemplateId, nextName)} />
     </TreeSubMenu>
     {confirmingDelete && onDeleteTemplate && (
       <DeleteTemplateModal

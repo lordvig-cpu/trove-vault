@@ -1,28 +1,25 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import { UNCATEGORIZED_CATEGORY_ID } from '@/lib/treeUtils';
 import { CollectionRecord } from '@/types/collection';
 import { useTreeActions } from '@/context/TreeActionsContext';
 import { useTreeActionMenu } from '@/hooks/useTreeActionMenu';
 import { ActionIcon } from '@/components/icons/LayoutIcons';
 import TreeSubMenu, {
-  ActionMenuDangerItem,
-  ActionMenuDivider,
   ActionMenuItem,
   ActionMenuTabs,
   ACTIONS_ONLY_TABS,
-  ACTIONS_AND_PROPERTIES_TABS,
+  MenuActionBar,
 } from '@/components/TreeSubMenu';
 import { NameProperties } from '@/components/TreeMenuProperties';
-import type { MenuTab } from '@/lib/menuTabRequest';
 import { InboxIcon } from '@/components/icons/GlyphIcons';
 import { FileIcon, FolderIcon } from '@/components/icons/ContentIcons';
 import { GearIcon } from '@/components/icons/TreeIcons';
 import { TrashCanIcon } from '@/components/icons/PanelIcons';
 
-// A category (virtual, made from a template) has only Actions; a real collection has Actions and Properties.
-const TABS = ACTIONS_AND_PROPERTIES_TABS;
+// A category (virtual, made from a template) has only actions, so it keeps them as labelled rows under a single
+// Actions tab; a real collection has an action bar over its Properties (MenuActionBar).
 
 interface TreeCollectionActionMenuProps {
   collection: CollectionRecord;
@@ -45,7 +42,6 @@ export default function TreeCollectionActionMenu({
     onEditCollection,
     onAddSubCollection,
   } = useTreeActions();
-  const [activeTab, setActiveTab] = useState<MenuTab>('actions');
 
   if (isVirtualCategory) {
     return (
@@ -99,71 +95,77 @@ export default function TreeCollectionActionMenu({
       className="menuShellXWide"
       title="Collection"
       titleIcon={<FolderIcon className="w-4 h-4" />}
-      subheader={<ActionMenuTabs tabs={TABS} active={activeTab} onChange={setActiveTab} />}
+      subheader={
+        <MenuActionBar
+          actions={[
+            {
+              id: 'new-item',
+              label: 'New item',
+              description: 'Create item in this collection',
+              Icon: FileIcon,
+              onClick: () => {
+                onAddSubItem(collection.id, null);
+                menu.closeMenu();
+              },
+            },
+            {
+              id: 'add-existing',
+              label: 'Add existing item',
+              description: 'Link catalog item here',
+              Icon: InboxIcon,
+              onClick: () => {
+                // Not implemented yet: linking an existing catalog item to a collection.
+                menu.closeMenu();
+              },
+            },
+            ...(onEditCollection
+              ? [
+                  {
+                    id: 'edit-settings',
+                    label: 'Edit collection settings',
+                    description: 'Manage collection metadata',
+                    Icon: GearIcon,
+                    onClick: () => {
+                      onEditCollection(collection);
+                      menu.closeMenu();
+                    },
+                  },
+                ]
+              : []),
+            ...(onAddSubCollection
+              ? [
+                  {
+                    id: 'new-sub-collection',
+                    label: 'New sub-collection',
+                    description: 'Create a nested collection',
+                    Icon: FolderIcon,
+                    onClick: () => {
+                      onAddSubCollection(collection.id);
+                      menu.closeMenu();
+                    },
+                  },
+                ]
+              : []),
+            ...(onDeleteCollection
+              ? [
+                  {
+                    id: 'delete',
+                    label: 'Delete',
+                    description: 'Permanently remove',
+                    Icon: TrashCanIcon,
+                    danger: true,
+                    onClick: () => {
+                      onDeleteCollection(collection);
+                      menu.closeMenu();
+                    },
+                  },
+                ]
+              : []),
+          ]}
+        />
+      }
     >
-      {activeTab === 'properties' ? (
-        <NameProperties name={collection.name} onSave={(nextName) => onRenameCollection?.(collection.id, nextName)} />
-      ) : (
-      <>
-      <ActionMenuItem
-        icon={<FileIcon />}
-        label="New item"
-        subtext="Create item in this collection"
-        onClick={() => {
-          onAddSubItem(collection.id, null);
-          menu.closeMenu();
-        }}
-      />
-
-      <ActionMenuItem
-        icon={<InboxIcon />}
-        label="Add existing item"
-        subtext="Link catalog item here"
-        onClick={() => {
-          // Not implemented yet: linking an existing catalog item to a collection.
-          menu.closeMenu();
-        }}
-      />
-
-      {onEditCollection && (
-        <ActionMenuItem
-          icon={<GearIcon className="w-3.5 h-3.5" />}
-          label="Edit collection settings"
-          subtext="Manage collection metadata"
-          onClick={() => {
-            onEditCollection(collection);
-            menu.closeMenu();
-          }}
-        />
-      )}
-
-      {onAddSubCollection && (
-        <ActionMenuItem
-          icon={<FolderIcon />}
-          label="New sub-collection"
-          subtext="Create a nested collection"
-          onClick={() => {
-            onAddSubCollection(collection.id);
-            menu.closeMenu();
-          }}
-        />
-      )}
-
-      <ActionMenuDivider />
-
-      {onDeleteCollection && (
-        <ActionMenuDangerItem
-          icon={<TrashCanIcon />}
-          label="Delete"
-          subtext="Permanently remove"
-          onClick={() => {
-            onDeleteCollection(collection);
-            menu.closeMenu();
-          }}
-        />
-      )}
-      </>
-      )}
+      <NameProperties name={collection.name} onSave={(nextName) => onRenameCollection?.(collection.id, nextName)} />
     </TreeSubMenu>
   );
 }
