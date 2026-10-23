@@ -335,13 +335,15 @@ export function ActionMenuTabs<T extends string>({
             type="button"
             role="tab"
             aria-selected={isActive}
+            aria-label={tab.label}
+            title={isActive ? undefined : tab.label}
             onClick={() => onChange?.(tab.id)}
             className={`menuFolderTab tree-folder-tab ${isActive ? 'tree-folder-tab-active z-20' : 'tree-folder-tab-idle z-10'}`}
           >
             <PanelFolderTabSvg gradientId={`${gradientId}-${tab.id}`} isActive={isActive} variant="curved" />
-            <span className="relative z-10 flex items-center gap-1.5 select-none">
-              {tab.icon}
-              <span>{tab.label}</span>
+            {/* Like the side panels' tabs: the active one shows its name, the others just their icon */}
+            <span className="relative z-10 flex items-center select-none">
+              {isActive ? <span>{tab.label}</span> : tab.icon}
             </span>
           </button>
         );

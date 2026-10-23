@@ -668,8 +668,9 @@
    the panel tabs' fill, outline and glow), sized for a menu and standing on the band's bottom edge. That
    edge is drawn in the active tab's outline color, as on a side panel's header, so the tab's sides run
    straight into it; only the active tab sits over the line (margin-bottom: -1px) and its fill fades into the
-   menu body's color at its foot, so it opens into the body below. Same width whichever tab is active, and
-   centered, so switching to the wider Properties body never moves them. */
+   menu body's color at its foot, so it opens into the body below. Like the side panels' tabs, the active tab
+   shows its name and the others just their icon: the active one has a fixed minimum width and an idle one
+   hugs its icon, so the pair is the same total width whichever is active and, centered, never shifts. */
 .menuShellHead .menuTabs-folder {
   align-items: flex-end;
   justify-content: center;
@@ -680,10 +681,13 @@
 
 .menuTabs .menuFolderTab {
   flex: 0 0 auto;
-  min-width: 6.75rem;
   height: 1.875rem;
   padding: 0 1.25rem;
   font-size: 0.6875rem;
+}
+
+.menuTabs .menuFolderTab.tree-folder-tab-active {
+  min-width: 6.75rem;
 }
 
 /* Only the active tab sits down over the band's amber edge (and so hides it, opening into the body); an
