@@ -31,7 +31,7 @@ export default function EditItemModal({
   onItemUpdated,
   item,
 }: EditItemModalProps) {
-  // Loading the item into the form and saving it are shared with an item flyout's Properties tab
+  // Loading the item into the form and saving it are shared with an item flyout's Properties
   const { form, save } = useItemEditor(item, isOpen);
 
   if (!isOpen || !item) return null;

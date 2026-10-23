@@ -27,7 +27,7 @@ interface TreeItemPropertiesProps {
 const INPUT = 'actionMenuRenameInput w-full';
 
 /**
- * An item flyout's Properties tab: everything the Edit Item modal edits -- name, template, photo, the
+ * An item flyout's Properties: everything the Edit Item modal edits -- name, template, photo, the
  * template's fields and extra custom fields -- as the template flyouts' cards, saved together with Save
  * (useItemEditor: the modal's own load and save).
  */

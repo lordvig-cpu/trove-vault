@@ -38,7 +38,7 @@ commit whenever you add, remove, split or rename a file — it goes stale otherw
   its simple templates in the bottom toolbar's Apply: pulldown, and its Row / Column / split primitives were the same as
   Add and Split. Edit Template docks nothing in the bottom panel, which holds Grabbed Content only. There is no docked "Properties" panel any more (the old
   `template_properties` tab / `TemplatePropertiesInspector.tsx` was removed): a node's properties live
-  in its gear flyout's Properties tab and in the toolbars. Don't bring back a second place to edit them.
+  in its gear flyout's Properties and in the toolbars. Don't bring back a second place to edit them.
 - **Icons:** SVG components in `components/icons/`, not emoji or unicode symbols. The only emoji
   left are user data: a template's own chosen icon (default 📦) and the item-type/virtual-category
   icons `UnifiedTree.tsx` and `lib/treeUtils.ts` derive from it.

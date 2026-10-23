@@ -7,7 +7,7 @@ import { errorMessage } from '@/lib/errors';
 import { idleBtn, menuTextBtn } from '@/components/editorBarStyles';
 
 /* ==========================================================================
-   Pieces of the Items / Collections / Templates trees' Properties tabs, which edit something saved in the
+   Pieces of the Items / Collections / Templates trees' menus' Properties, which edit something saved in the
    database. Unlike a template flyout's properties (which apply instantly, with undo), these are saved
    together with Save -- one all-or-nothing write -- or thrown away with Revert. They wear the template
    flyouts' look: the Container Name field's label, input and buttons, and ActionMenuSection cards.
@@ -39,7 +39,7 @@ export function PropertyField({
 }
 
 /**
- * The end of a Properties tab: the last save's error, if it failed, then Revert and Save. Both only act
+ * The end of a menu's Properties: the last save's error, if it failed, then Revert and Save. Both only act
  * while there are unsaved changes; Save submits the tab's form (by its id), so the form's own validation
  * runs first. It is drawn in the menu's footer, on its bottom edge outside the scrolling content.
  */
@@ -82,7 +82,7 @@ export function PropertiesSaveBar({
   return footer ? createPortal(bar, footer) : bar;
 }
 
-/** The Properties tab of something whose only property today is its name (a collection, a template). */
+/** The Properties of something whose only property today is its name (a collection, a template). */
 export function NameProperties({ name, onSave }: { name: string; onSave: (nextName: string) => Promise<void> | void }) {
   const formId = useId();
   const [draft, setDraft] = useState(name);

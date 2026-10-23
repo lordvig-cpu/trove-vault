@@ -80,8 +80,8 @@ test('Collections flyout stays interactive beside the pinned Items panel and sup
   await collection.locator('..').getByRole('button', { name: 'Open actions' }).hover();
   const menu = page.locator('[data-tree-menu]:not([inert])');
   await expect(menu).toHaveCSS('z-index', '70');
-  // its name is edited on the Properties tab (there is no Rename action any more)
-  await menu.getByRole('tab', { name: 'Properties' }).click();
+  // its name is edited in its Properties, under its action bar (there is no Rename action, and no tabs)
+  await expect(menu.getByRole('toolbar', { name: 'Actions' })).toBeVisible();
   await expect(menu.locator('input')).toHaveValue('Games');
   // one Escape closes the menu (a second would close the flyout itself)
   await page.keyboard.press('Escape');

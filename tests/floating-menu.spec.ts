@@ -66,7 +66,7 @@ test('right-clicking the canvas with the Layout tree hidden opens a floating, dr
   await expect(floating).toHaveCount(0);
 });
 
-test('the toolbar gear floats the menu under itself on Properties, and closes it again', async ({ page }) => {
+test('the toolbar gear floats the menu under itself, actions over properties, and closes it again', async ({ page }) => {
   const child = await openEditorWithLayoutHidden(page);
   await child.click({ position: { x: 20, y: 6 } });
   const gear = page.locator('#template-toolbar-slot button[data-gear-trigger]');
@@ -74,7 +74,9 @@ test('the toolbar gear floats the menu under itself on Properties, and closes it
 
   await gear.click();
   await expect(floating).toBeVisible();
-  await expect(floating.getByRole('tab', { name: 'Properties' })).toHaveAttribute('aria-selected', 'true');
+  // no tabs: the action bar and the container's properties show together
+  await expect(floating.getByRole('toolbar', { name: 'Actions' })).toBeVisible();
+  await expect(floating.getByText('Container Name')).toBeVisible();
   await expect(gear).toHaveAttribute('aria-expanded', 'true');
   const g = (await gear.boundingBox())!;
   const f = (await floating.boundingBox())!;
@@ -85,19 +87,18 @@ test('the toolbar gear floats the menu under itself on Properties, and closes it
   await expect(gear).toHaveAttribute('aria-expanded', 'false');
 });
 
-test('hiding the Layout panel with a pinned menu open turns it into the floating menu, same spot and tab', async ({ page }) => {
+test('hiding the Layout panel with a pinned menu open turns it into the floating menu, same spot', async ({ page }) => {
   await openEditorWithLayoutHidden(page);
   await page.getByRole('button', { name: 'Toggle Left Panel' }).click();
   const gear = page.locator('.primary-side-panel [data-tree-gear]').nth(1);
   await gear.click();
   const menu = page.locator('.menuShellSplit:not(.menuShellFloating):not(.hoverHint)').last();
-  await menu.getByRole('tab', { name: 'Properties' }).click();
   const before = (await menu.boundingBox())!;
 
   await page.getByRole('button', { name: 'Toggle Left Panel' }).click();
   const floating = page.locator('.menuShellFloating');
   await expect(floating).toBeVisible();
-  await expect(floating.getByRole('tab', { name: 'Properties' })).toHaveAttribute('aria-selected', 'true');
+  await expect(floating.getByRole('toolbar', { name: 'Actions' })).toBeVisible();
   const after = (await floating.boundingBox())!;
   expect(Math.abs(after.x - before.x)).toBeLessThan(4);
   expect(Math.abs(after.y - before.y)).toBeLessThan(4);

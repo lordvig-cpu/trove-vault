@@ -1,4 +1,3 @@
-import { requestMenuTab, type MenuTab } from '@/lib/menuTabRequest';
 import { closeFloatingNodeMenu, getFloatingNodeMenu, openFloatingNodeMenu } from '@/lib/floatingNodeMenu';
 
 /* ==========================================================================
@@ -12,9 +11,6 @@ interface OpenNodeMenuOptions {
   /** 'toggle' acts like clicking the gear (a second click closes it); 'open' like right-clicking the row
    *  (always opens, never closes). */
   how: 'toggle' | 'open';
-  /** The tab to show (the toolbar gear asks for Properties); otherwise a tree flyout keeps whichever tab
-   *  was last used and a floating one opens on Actions. */
-  tab?: MenuTab;
   /** Whether the Layout tree is on screen (its panel open with the Layout tab showing). */
   isLayoutPanelOpen?: boolean;
   /** Where the floating menu's top-left corner goes when the Layout tree isn't showing. */
@@ -25,10 +21,10 @@ interface OpenNodeMenuOptions {
  *  the Layout tree, so the row may only appear a render or two later. */
 const MAX_FRAMES_FOR_ROW = 30;
 
-export function openNodeMenu(nodeId: string, { how, tab, isLayoutPanelOpen, at }: OpenNodeMenuOptions) {
+export function openNodeMenu(nodeId: string, { how, isLayoutPanelOpen, at }: OpenNodeMenuOptions) {
   if (!isLayoutPanelOpen) {
     if (how === 'toggle' && getFloatingNodeMenu()?.nodeId === nodeId) closeFloatingNodeMenu();
-    else openFloatingNodeMenu(nodeId, at.x, at.y, tab);
+    else openFloatingNodeMenu(nodeId, at.x, at.y);
     return;
   }
   const operateTreeGear = (framesLeft = MAX_FRAMES_FOR_ROW) => {
@@ -37,7 +33,6 @@ export function openNodeMenu(nodeId: string, { how, tab, isLayoutPanelOpen, at }
       if (framesLeft > 0) requestAnimationFrame(() => operateTreeGear(framesLeft - 1));
       return;
     }
-    if (tab) requestMenuTab(nodeId, tab);
     if (how === 'toggle') gear.click();
     // Bubbles to the row's onContextMenu (useTreeActionMenu's handleRowContextMenu), like a real right-click
     else gear.dispatchEvent(new MouseEvent('contextmenu', { bubbles: true, cancelable: true }));

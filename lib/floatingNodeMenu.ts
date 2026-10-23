@@ -1,5 +1,4 @@
 import { useSyncExternalStore } from 'react';
-import type { MenuTab } from '@/lib/menuTabRequest';
 
 /* ==========================================================================
    The floating node menu: a container's or content element's gear flyout opened somewhere other than its
@@ -13,9 +12,7 @@ export interface FloatingNodeMenuState {
   nodeId: string;
   left: number;
   top: number;
-  /** The tab it opens on (the toolbar gear asks for Properties). */
-  tab: MenuTab;
-  /** Changes on every open, so the menu remounts with its opening tab. */
+  /** Changes on every open, so the menu remounts fresh. */
   openCount: number;
 }
 
@@ -51,10 +48,10 @@ export function useFloatingNodeMenu(): FloatingNodeMenuState | null {
 }
 
 /** Opens the floating menu for `nodeId` with its top-left corner near (`x`, `y`), kept on screen. */
-export function openFloatingNodeMenu(nodeId: string, x: number, y: number, tab: MenuTab = 'actions') {
+export function openFloatingNodeMenu(nodeId: string, x: number, y: number) {
   const left = Math.max(EDGE_MARGIN_PX, Math.min(Math.round(x), window.innerWidth - MENU_WIDTH_PX - EDGE_MARGIN_PX));
   const top = Math.max(EDGE_MARGIN_PX, Math.round(y));
-  commit({ nodeId, left, top, tab, openCount: ++openCount });
+  commit({ nodeId, left, top, openCount: ++openCount });
 }
 
 export function closeFloatingNodeMenu() {

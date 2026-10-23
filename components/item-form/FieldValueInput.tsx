@@ -19,7 +19,7 @@ interface FieldValueInputProps {
 }
 
 /** The input for one template field's value, chosen by its `field_type`: shared by the item modals
-    (TemplateFieldInputs) and an item flyout's Properties tab, so both edit a field the same way. */
+    (TemplateFieldInputs) and an item flyout's Properties, so both edit a field the same way. */
 export default function FieldValueInput({ field, value, onChange, inputClassName, checkboxLabelClassName = '' }: FieldValueInputProps) {
   switch (field.field_type) {
     case 'number':

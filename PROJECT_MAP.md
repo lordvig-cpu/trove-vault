@@ -127,8 +127,9 @@ Conventions and architecture (data access, theming, template editor internals, b
   with the tab band showing the filtered item-type count instead of tab buttons.
 - `TreeSubMenu.tsx` — the shared popup menu shell (positioning, portal, styling) every
   `Tree*ActionMenu` and `Template*ActionMenu` renders into, always as a `splitBody` two-card menu
-  styled from `TreeSubMenu.css`; `ActionMenuTabs` renders real tab buttons once there are two or
-  more, or an empty divider band for just one, so the head card's own chrome never has to vary.
+  styled from `TreeSubMenu.css`. `MenuActionBar` shows a menu's actions as icon buttons (and grouped pulldowns)
+  on the band under its title, over its Properties; `ActionMenuTabs` is left for the single Actions tab of a menu
+  with no properties (Category, a Blueprint built-in), whose actions stay labelled rows.
 - `UnifiedTree.tsx` — the recursive tree-row renderer `TreeContent` builds on.
 - `editorBarStyles.ts` — shared Tailwind class strings for the template editor toolbar's buttons.
 
@@ -184,8 +185,6 @@ its display style, with label and typography).
 - `useFlyoutLifecycle.ts` — a flyout/sidebar's mount-and-animate-out lifecycle.
 - `useHierarchyState.ts` — the Layout tree's expansion state and open-properties/place-field/
   add-container handlers; takes `useTemplateEditor`'s return value as its argument.
-- `useActionSections.ts` — which Actions-tab sections are open in the container / Body / content flyouts: one
-  remembered setting per section, shared by every flyout.
 - `useConfirmRemoveContainer.ts` — `requestRemoveContainer`, every container delete's entry point: an empty one goes at
   once, one that holds anything waits for `DeleteContainerModal`.
 - `useItemForm.ts` — shared state/logic for the Create and Edit item modals.
@@ -267,7 +266,6 @@ its display style, with label and typography).
 - `flyoutHold.ts` — keeps a header pulldown (Items / Collections / Templates) mounted, hidden, while a gear menu
   pinned in it floats after it closed or was docked.
 - `floatingNodeMenu.ts` — the store for that floating menu (which node, where, which tab; open / move / close).
-- `menuTabRequest.ts` — the event the toolbar gear sends so a Layout-tree flyout opens on its Properties tab.
 - `panelTitles.ts` — `getPanelTitle()`: the header title for a panel's docked tab(s).
 - `storage.ts` — item photo upload/remove/validate against Supabase Storage.
 - `templateIcons.ts` — the template icon picker's quick choices and `firstGrapheme` (a typed icon keeps one character).

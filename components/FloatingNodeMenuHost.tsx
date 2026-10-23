@@ -123,7 +123,7 @@ export default function FloatingNodeMenuHost({ root, fields, onSelectNode, ...ca
     handle.addEventListener('pointercancel', onEnd);
   };
   const chrome = { onClose: closeFloatingNodeMenu, onTitlePointerDown: startDrag };
-  // Remounts on every open, so it starts on the tab it was asked to open on
+  // Remounts on every open, so each open starts fresh
   const key = `${floating.nodeId}-${floating.openCount}`;
 
   // Select Previous / Next: select that node and become its menu, right where this one is
@@ -132,7 +132,7 @@ export default function FloatingNodeMenuHost({ root, fields, onSelectNode, ...ca
     fields,
     goTo: (nodeId: string) => {
       onSelectNode?.(nodeId);
-      openFloatingNodeMenu(nodeId, floating.left, floating.top, 'actions');
+      openFloatingNodeMenu(nodeId, floating.left, floating.top);
     },
   };
 
@@ -145,7 +145,6 @@ export default function FloatingNodeMenuHost({ root, fields, onSelectNode, ...ca
       menu={menu}
       position="left"
       floating={chrome}
-      initialTab={floating.tab}
       onAddContainer={callbacks.onAddContainer}
       onInsertContainerSibling={callbacks.onInsertContainerSibling}
       onSplitContainer={callbacks.onSplitContainer}
@@ -161,7 +160,6 @@ export default function FloatingNodeMenuHost({ root, fields, onSelectNode, ...ca
       menu={menu}
       position="left"
       floating={chrome}
-      initialTab={floating.tab}
       onUpdateComponent={callbacks.onUpdateComponent}
       onRemoveComponent={callbacks.onRemoveComponent}
       onSelectNode={onSelectNode}

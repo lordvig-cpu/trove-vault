@@ -12,12 +12,10 @@ import {
 import { FieldDefinition } from '@/types/field';
 import { useTreeActionMenu } from '@/hooks/useTreeActionMenu';
 import TreeSubMenu, {
-  ActionMenuDangerItem,
-  ActionMenuDivider,
-  ActionMenuItem,
   ActionMenuSection,
-  ActionMenuTabs,
-  ACTIONS_AND_PROPERTIES_TABS,
+  MenuActionBar,
+  type MenuAction,
+  type MenuActionGroup,
 } from '@/components/TreeSubMenu';
 import TemplateBodyDimensions from '@/components/TemplateBodyDimensions';
 import TemplateContainerSizing from '@/components/TemplateContainerSizing';
@@ -49,7 +47,6 @@ import {
   ContentTextControls,
 } from '@/components/TemplateContentControls';
 import { bindingOf, contentNameOf } from '@/lib/layoutContent';
-import { MENU_TAB_REQUEST_EVENT, type MenuTab, type MenuTabRequest } from '@/lib/menuTabRequest';
 import { openFloatingNodeMenu } from '@/lib/floatingNodeMenu';
 import { PRESET_INFO, type PresetKind } from '@/lib/layoutPresets';
 import { openPresetDialog } from '@/lib/presetDialog';
@@ -75,7 +72,6 @@ import {
 import { ChevronDownIcon, TrashCanIcon } from '@/components/icons/PanelIcons';
 import { ChevronUpIcon } from '@/components/icons/GlyphIcons';
 import { useLayoutNeighbors } from '@/context/LayoutNavigationContext';
-import { useActionSections } from '@/hooks/useActionSections';
 import { ComponentTypeIcon, BulbIcon } from '@/components/icons/ContentIcons';
 
 /* Help bubbles for the Body flyout's Properties sections (see HoverHint for the shape). */
@@ -263,42 +259,39 @@ const CONTAINER_SPACING_HINT: HintContent = {
   ],
 };
 
-/** Select Previous / Next: step to the element just above or below this one in the Layout tree's order
- *  (the Body comes first), without needing the tree on screen. Leads every Actions tab; either is left out
- *  at the start or end of the layout, and both outside a LayoutNavigationProvider. */
-function SelectElementSection({ nodeId }: { nodeId: string }) {
+/** The Select element group: the element just above and just below this one in the Layout tree's order
+ *  (lib/layoutNavigation.ts), each left out at the start or end of the layout, and the whole group left out when
+ *  neither exists (or outside a LayoutNavigationProvider). Choosing one selects it and opens its menu (each
+ *  provider says how), so the names stay in the options: "Next: General Information". */
+function useSelectElementGroup(nodeId: string): MenuActionGroup | null {
   const nav = useLayoutNeighbors(nodeId);
-  const sections = useActionSections();
   if (!nav || (!nav.prev && !nav.next)) return null;
   const { prev, next, goTo } = nav;
-  return (
-    <ActionMenuSection
-      label="Select Element"
-      icon={<SectionSelectIcon />}
-      subtitle="The one above or below this"
-      isOpen={sections.isOpen('select')}
-      onToggle={() => sections.toggle('select')}
-    >
-      {prev && (
-        <ActionMenuItem
-          icon={<ChevronUpIcon className="w-3.5 h-3.5" />}
-          label="Previous:"
-          labelDetail={prev.name}
-          title="Select the element above this one in the layout"
-          onClick={() => goTo(prev.id)}
-        />
-      )}
-      {next && (
-        <ActionMenuItem
-          icon={<ChevronDownIcon className="w-3.5 h-3.5" />}
-          label="Next:"
-          labelDetail={next.name}
-          title="Select the element below this one in the layout"
-          onClick={() => goTo(next.id)}
-        />
-      )}
-    </ActionMenuSection>
-  );
+  return {
+    id: 'select',
+    label: 'Select element',
+    Icon: SectionSelectIcon,
+    items: [
+      ...(prev
+        ? [{
+            id: 'previous',
+            label: `Previous: ${prev.name}`,
+            description: 'Select the element above this one in the layout',
+            icon: <ChevronUpIcon className="w-3.5 h-3.5" />,
+            onClick: () => goTo(prev.id),
+          }]
+        : []),
+      ...(next
+        ? [{
+            id: 'next',
+            label: `Next: ${next.name}`,
+            description: 'Select the element below this one in the layout',
+            icon: <ChevronDownIcon className="w-3.5 h-3.5" />,
+            onClick: () => goTo(next.id),
+          }]
+        : []),
+    ],
+  };
 }
 
 /* ==========================================================================
@@ -320,62 +313,41 @@ interface TemplateContainerActionMenuProps {
   onRemoveContainer?: (containerId: string) => void;
   /** Shown as a floating window instead of sliding out of the Layout tree (lib/floatingNodeMenu.ts). */
   floating?: FloatingMenuChrome;
-  /** The tab it opens on (default Actions); a floating menu remounts on each open, so it takes effect then. */
-  initialTab?: MenuTab;
 }
 
 /** TreeSubMenu's floating chrome (its close and drag handlers). */
 type FloatingMenuChrome = NonNullable<React.ComponentProps<typeof TreeSubMenu>['floating']>;
 
-/** Switches a flyout's tab when the toolbar gear asks it to (lib/menuTabRequest.ts). */
-function useMenuTabRequest(nodeId: string, setActiveTab: (tab: MenuTab) => void) {
-  useEffect(() => {
-    const handle = (e: Event) => {
-      const { nodeId: target, tab } = (e as CustomEvent<MenuTabRequest>).detail;
-      if (target === nodeId) setActiveTab(tab);
-    };
-    window.addEventListener(MENU_TAB_REQUEST_EVENT, handle);
-    return () => window.removeEventListener(MENU_TAB_REQUEST_EVENT, handle);
-  }, [nodeId, setActiveTab]);
-}
 
 /** A Layout-tree flyout pinned open when its panel is hidden carries on as the floating node menu, where it
- *  stood and on the tab it showed, rather than closing (useTreeActionMenu's panel-hidden handler). */
-function useFloatWhenPanelHides(menu: ReturnType<typeof useTreeActionMenu>, nodeId: string, activeTab: MenuTab, floating: unknown) {
+ *  stood, rather than closing (useTreeActionMenu's panel-hidden handler). */
+function useFloatWhenPanelHides(menu: ReturnType<typeof useTreeActionMenu>, nodeId: string, floating: unknown) {
   const { setPanelHiddenHandler } = menu;
   useEffect(() => {
     if (floating) return;
-    setPanelHiddenHandler((at) => openFloatingNodeMenu(nodeId, at.left, at.top, activeTab));
+    setPanelHiddenHandler((at) => openFloatingNodeMenu(nodeId, at.left, at.top));
     return () => setPanelHiddenHandler(null);
-  }, [setPanelHiddenHandler, nodeId, activeTab, floating]);
+  }, [setPanelHiddenHandler, nodeId, floating]);
 }
 
-/** The Add Content section: Field List / Header / Stat Row -- each opens its include-chooser (AddPresetDialog)
- *  for this container. */
-function AddContentSection({ containerId, onDone }: { containerId: string; onDone: () => void }) {
-  const sections = useActionSections();
-  return (
-    <ActionMenuSection
-      label="Add Content"
-      icon={<SectionAddContentIcon />}
-      subtitle="Pre-defined blocks of fields"
-      isOpen={sections.isOpen('addContent')}
-      onToggle={() => sections.toggle('addContent')}
-    >
-      {(['fieldList', 'header', 'statRow'] as PresetKind[]).map((kind) => (
-        <ActionMenuItem
-          key={kind}
-          icon={PRESET_ICONS[kind]}
-          label={PRESET_INFO[kind].label}
-          title={PRESET_INFO[kind].description}
-          onClick={() => {
-            onDone();
-            openPresetDialog(kind, containerId);
-          }}
-        />
-      ))}
-    </ActionMenuSection>
-  );
+/** The Add content group: Field list / Header / Stat row -- each opens its include-chooser (AddPresetDialog) for
+ *  this container. */
+function addContentGroup(containerId: string, onDone: () => void): MenuActionGroup {
+  return {
+    id: 'add-content',
+    label: 'Add content',
+    Icon: SectionAddContentIcon,
+    items: (['fieldList', 'header', 'statRow'] as PresetKind[]).map((kind) => ({
+      id: kind,
+      label: PRESET_INFO[kind].label,
+      description: PRESET_INFO[kind].description,
+      icon: PRESET_ICONS[kind],
+      onClick: () => {
+        onDone();
+        openPresetDialog(kind, containerId);
+      },
+    })),
+  };
 }
 
 export function TemplateContainerActionMenu({
@@ -388,19 +360,15 @@ export function TemplateContainerActionMenu({
   onUpdateContainer,
   onRemoveContainer,
   floating,
-  initialTab = 'actions',
 }: TemplateContainerActionMenuProps) {
   const isRoot = container.id === 'root-container';
   const defaultLabel = isRoot ? 'Body' : container.label || 'Container';
   const [label, setLabel] = useState(defaultLabel);
 
-  // Body flyout's Actions / Properties tabs and which Properties sections are expanded. Kept here
-  // (not inside the menu shell) so they survive the flyout closing and reopening.
-  const [activeTab, setActiveTab] = useState<MenuTab>(initialTab);
-  useMenuTabRequest(container.id, setActiveTab);
-  useFloatWhenPanelHides(menu, container.id, activeTab, floating);
-  // The Actions tab's sections, open / closed for every flyout alike (remembered)
-  const sections = useActionSections();
+  // Which Properties sections are expanded. Kept here (not inside the menu shell) so they survive the flyout
+  // closing and reopening.
+  useFloatWhenPanelHides(menu, container.id, floating);
+  const selectGroup = useSelectElementGroup(container.id);
   const [openSections, setOpenSections] = useState({ size: true, layout: true, spacing: true, appearance: true });
   const toggleSection = (key: keyof typeof openSections) =>
     setOpenSections((prev) => ({ ...prev, [key]: !prev[key] }));
@@ -419,8 +387,13 @@ export function TemplateContainerActionMenu({
     menu.closeMenu();
   };
 
-  // The split Actions / Properties shell, the same for the Body and every other container
-  const shell = (title: string, titleIcon: React.ReactNode, children: React.ReactNode) => (
+  // The shell, the same for the Body and every other container: the actions as its action bar, the Properties below
+  const shell = (
+    title: string,
+    titleIcon: React.ReactNode,
+    actions: (MenuAction | MenuActionGroup | null)[],
+    children: React.ReactNode
+  ) => (
     <TreeSubMenu
       isOpen={menu.isMenuOpen}
       closeInstantly={menu.closedWithPanel}
@@ -434,13 +407,7 @@ export function TemplateContainerActionMenu({
       title={title}
       floating={floating}
       titleIcon={titleIcon}
-      subheader={
-        <ActionMenuTabs
-          tabs={ACTIONS_AND_PROPERTIES_TABS}
-          active={activeTab}
-          onChange={setActiveTab}
-        />
-      }
+      subheader={<MenuActionBar actions={actions.filter((action) => action !== null)} />}
     >
       {children}
     </TreeSubMenu>
@@ -450,30 +417,18 @@ export function TemplateContainerActionMenu({
     return shell(
       'Body',
       <BodyIcon className="w-4 h-4" />,
+      [
+        selectGroup,
+        {
+          id: 'add-inside',
+          label: 'Add container inside',
+          description: 'Nest a new container in the Body',
+          Icon: AddChildContainerIcon,
+          onClick: act(() => onAddContainer?.(container.id, { ...NEW_CONTAINER_OPTIONS })),
+        },
+        addContentGroup(container.id, menu.closeMenu),
+      ],
       <>
-        {activeTab === 'actions' && (
-          <>
-            <SelectElementSection nodeId={container.id} />
-            <ActionMenuSection
-              label="Add Container"
-              icon={<SectionAddContainerIcon />}
-              subtitle="Inside the Body"
-              isOpen={sections.isOpen('addContainer')}
-              onToggle={() => sections.toggle('addContainer')}
-            >
-            <ActionMenuItem
-              icon={<AddChildContainerIcon className="w-3.5 h-3.5" />}
-              label="Inside"
-              title="Nest a new container in the Body"
-              onClick={act(() => onAddContainer?.(container.id, { ...NEW_CONTAINER_OPTIONS }))}
-            />
-            </ActionMenuSection>
-            <AddContentSection containerId={container.id} onDone={menu.closeMenu} />
-          </>
-        )}
-
-        {activeTab === 'properties' && (
-          <>
                 <ActionMenuSection label="Size" icon={<SectionSizeIcon />} subtitle="Auto and content width" hint={BODY_SIZE_HINT} isOpen={openSections.size} onToggle={() => toggleSection('size')}>
                   <div className="px-3 pt-0 pb-2">
                     <div className={`${barToggleGroup} w-full`} role="group" aria-label="Sizing mode">
@@ -535,8 +490,6 @@ export function TemplateContainerActionMenu({
                   marginDisabled
                 />
               </ActionMenuSection>
-          </>
-        )}
       </>
     );
   }
@@ -570,87 +523,84 @@ export function TemplateContainerActionMenu({
   return shell(
     floating ? defaultLabel : 'Container',
     containerIcon,
+    [
+      selectGroup,
+      {
+        id: 'add-container',
+        label: 'Add container',
+        Icon: SectionAddContainerIcon,
+        items: [
+          {
+            id: 'before',
+            label: 'Before',
+            description: 'Insert a container before this one',
+            icon: <AddContainerBeforeIcon className="w-3.5 h-3.5" />,
+            onClick: act(() => onInsertContainerSibling?.(container.id, 'before', { ...NEW_CONTAINER_OPTIONS })),
+          },
+          {
+            id: 'inside',
+            label: 'Inside',
+            description: 'Nest a new container in this one',
+            icon: <AddChildContainerIcon className="w-3.5 h-3.5" />,
+            onClick: act(() => onAddContainer?.(container.id, { ...NEW_CONTAINER_OPTIONS })),
+          },
+          {
+            id: 'after',
+            label: 'After',
+            description: 'Insert a container after this one',
+            icon: <AddContainerAfterIcon className="w-3.5 h-3.5" />,
+            onClick: act(() => onInsertContainerSibling?.(container.id, 'after', { ...NEW_CONTAINER_OPTIONS })),
+          },
+        ],
+      },
+      addContentGroup(container.id, menu.closeMenu),
+      {
+        id: 'split',
+        label: 'Split container',
+        Icon: SectionSplitIcon,
+        items: [
+          {
+            id: '2-columns',
+            label: '2 columns',
+            description: 'Split into 2 columns, side by side',
+            icon: <SplitColumnsIcon className="w-3.5 h-3.5 menu-icon-accent" />,
+            onClick: act(() => onSplitContainer?.(container.id, 'columns', measureContainerPx(container.id, 'width'))),
+          },
+          {
+            id: '3-columns',
+            label: '3 columns',
+            description: 'Split into 3 columns, side by side',
+            icon: <Split3ColumnsIcon className="w-3.5 h-3.5 menu-icon-accent" />,
+            onClick: act(() => onSplitContainer?.(container.id, 'columns', measureContainerPx(container.id, 'width'), 3)),
+          },
+          {
+            id: '2-rows',
+            label: '2 rows',
+            description: 'Split into 2 rows, stacked',
+            icon: <SplitRowsIcon className="w-3.5 h-3.5 menu-icon-accent" />,
+            onClick: act(() => onSplitContainer?.(container.id, 'rows', measureContainerPx(container.id, 'height'))),
+          },
+          {
+            id: '3-rows',
+            label: '3 rows',
+            description: 'Split into 3 rows, stacked',
+            icon: <Split3RowsIcon className="w-3.5 h-3.5 menu-icon-accent" />,
+            onClick: act(() => onSplitContainer?.(container.id, 'rows', measureContainerPx(container.id, 'height'), 3)),
+          },
+        ],
+      },
+      onRemoveContainer
+        ? {
+            id: 'delete',
+            label: 'Delete',
+            description: 'Permanently remove container and all contents',
+            Icon: TrashCanIcon,
+            danger: true,
+            onClick: act(() => onRemoveContainer(container.id)),
+          }
+        : null,
+    ],
     <>
-      {activeTab === 'actions' && (
-        <>
-          <SelectElementSection nodeId={container.id} />
-          <ActionMenuSection
-            label="Add Container"
-            icon={<SectionAddContainerIcon />}
-            subtitle="Before, inside or after this one"
-            isOpen={sections.isOpen('addContainer')}
-            onToggle={() => sections.toggle('addContainer')}
-          >
-            <ActionMenuItem
-              icon={<AddContainerBeforeIcon className="w-3.5 h-3.5" />}
-              label="Before"
-              title="Insert a container before this one"
-              onClick={act(() => onInsertContainerSibling?.(container.id, 'before', { ...NEW_CONTAINER_OPTIONS }))}
-            />
-            <ActionMenuItem
-              icon={<AddChildContainerIcon className="w-3.5 h-3.5" />}
-              label="Inside"
-              title="Nest a new container in this one"
-              onClick={act(() => onAddContainer?.(container.id, { ...NEW_CONTAINER_OPTIONS }))}
-            />
-            <ActionMenuItem
-              icon={<AddContainerAfterIcon className="w-3.5 h-3.5" />}
-              label="After"
-              title="Insert a container after this one"
-              onClick={act(() => onInsertContainerSibling?.(container.id, 'after', { ...NEW_CONTAINER_OPTIONS }))}
-            />
-          </ActionMenuSection>
-          <AddContentSection containerId={container.id} onDone={menu.closeMenu} />
-          <ActionMenuSection
-            label="Split Container"
-            icon={<SectionSplitIcon />}
-            subtitle="Into equal parts"
-            isOpen={sections.isOpen('split')}
-            onToggle={() => sections.toggle('split')}
-          >
-            <ActionMenuItem
-              icon={<SplitColumnsIcon className="w-3.5 h-3.5 menu-icon-accent" />}
-              label="2 Columns"
-              title="Split into 2 columns, side by side"
-              onClick={act(() => onSplitContainer?.(container.id, 'columns', measureContainerPx(container.id, 'width')))}
-            />
-            <ActionMenuItem
-              icon={<Split3ColumnsIcon className="w-3.5 h-3.5 menu-icon-accent" />}
-              label="3 Columns"
-              title="Split into 3 columns, side by side"
-              onClick={act(() => onSplitContainer?.(container.id, 'columns', measureContainerPx(container.id, 'width'), 3))}
-            />
-            <ActionMenuItem
-              icon={<SplitRowsIcon className="w-3.5 h-3.5 menu-icon-accent" />}
-              label="2 Rows"
-              title="Split into 2 rows, stacked"
-              onClick={act(() => onSplitContainer?.(container.id, 'rows', measureContainerPx(container.id, 'height')))}
-            />
-            <ActionMenuItem
-              icon={<Split3RowsIcon className="w-3.5 h-3.5 menu-icon-accent" />}
-              label="3 Rows"
-              title="Split into 3 rows, stacked"
-              onClick={act(() => onSplitContainer?.(container.id, 'rows', measureContainerPx(container.id, 'height'), 3))}
-            />
-          </ActionMenuSection>
-
-          {onRemoveContainer && (
-            <>
-              <ActionMenuDivider />
-              <ActionMenuDangerItem
-                icon={<TrashCanIcon />}
-                label="Delete"
-                subtext="Permanently remove container and all contents"
-                onClick={act(() => onRemoveContainer(container.id))}
-              />
-            </>
-          )}
-
-        </>
-      )}
-
-      {activeTab === 'properties' && (
-        <>
             <div className="flex flex-col gap-1 pb-2">
               <span className="menu-field-label text-[10px] font-semibold tracking-[0.04em] text-content-strong">
                 Container Name
@@ -816,16 +766,14 @@ export function TemplateContainerActionMenu({
                 onUpdate={(partial) => onUpdateContainer?.(container.id, partial)}
               />
             </ActionMenuSection>
-        </>
-      )}
     </>
   );
 }
 
 /* ==========================================================================
    2. COMPONENT ACTION MENU (Flyout Properties)
-   A content element's gear flyout: the same split shell as a container's, with an Actions tab and a
-   Properties tab. Its Properties are Content (what it shows and how), Label, Text and Appearance --
+   A content element's gear flyout: the same split shell as a container's, its actions (Select element, Delete)
+   as an action bar over its Properties: Content (what it shows and how), Label, Text and Appearance --
    deliberately no Size, Spacing or Layout: the container holding the element owns those, which is
    what keeps dropping content into a configured container a plain drag-and-drop.
    ========================================================================== */
@@ -840,7 +788,6 @@ interface TemplateComponentActionMenuProps {
   onRemoveComponent?: (componentId: string) => void;
   onSelectNode?: (nodeId: string | null) => void;
   floating?: FloatingMenuChrome;
-  initialTab?: MenuTab;
 }
 
 export function TemplateComponentActionMenu({
@@ -851,7 +798,6 @@ export function TemplateComponentActionMenu({
   onUpdateComponent,
   onRemoveComponent,
   floating,
-  initialTab = 'actions',
 }: TemplateComponentActionMenuProps) {
   const update = (partial: Partial<FlexComponentNode>) => onUpdateComponent?.(component.id, partial);
   // A bound element (or a field not bound yet) has the full set; the old table / media / stat
@@ -859,11 +805,10 @@ export function TemplateComponentActionMenu({
   // replaces them.
   const isContent = bindingOf(component) !== null || component.componentType === 'field';
 
-  // Active tab and which Properties sections are expanded. Kept here (not inside the menu shell) so
-  // they survive the flyout closing and reopening.
-  const [activeTab, setActiveTab] = useState<MenuTab>(initialTab);
-  useMenuTabRequest(component.id, setActiveTab);
-  useFloatWhenPanelHides(menu, component.id, activeTab, floating);
+  // Which Properties sections are expanded. Kept here (not inside the menu shell) so they survive the flyout
+  // closing and reopening.
+  useFloatWhenPanelHides(menu, component.id, floating);
+  const selectGroup = useSelectElementGroup(component.id);
   const [openSections, setOpenSections] = useState({ content: true, label: false, text: true, appearance: false });
   const toggleSection = (key: keyof typeof openSections) =>
     setOpenSections((prev) => ({ ...prev, [key]: !prev[key] }));
@@ -896,35 +841,27 @@ export function TemplateComponentActionMenu({
       floating={floating}
       titleIcon={compIcon}
       subheader={
-        <ActionMenuTabs
-          tabs={ACTIONS_AND_PROPERTIES_TABS}
-          active={activeTab}
-          onChange={setActiveTab}
+        <MenuActionBar
+          actions={[
+            ...(selectGroup ? [selectGroup] : []),
+            ...(onRemoveComponent
+              ? [{
+                  id: 'delete',
+                  label: 'Delete',
+                  description: 'Remove this from its container',
+                  Icon: TrashCanIcon,
+                  danger: true,
+                  onClick: () => {
+                    onRemoveComponent(component.id);
+                    menu.closeMenu();
+                  },
+                }]
+              : []),
+          ]}
         />
       }
     >
-      {activeTab === 'actions' && (
-        <>
-          <SelectElementSection nodeId={component.id} />
-          <ActionMenuDivider />
-          {onRemoveComponent ? (
-            <ActionMenuDangerItem
-              icon={<TrashCanIcon />}
-              label="Delete"
-              subtext="Remove this from its container"
-              onClick={() => {
-                onRemoveComponent(component.id);
-                menu.closeMenu();
-              }}
-            />
-          ) : (
-            <div className="px-3 py-2 text-[11px] text-muted">Nothing to do here yet.</div>
-          )}
-        </>
-      )}
-
-      {activeTab === 'properties' && (
-        <>
+      <>
           {isContent ? (
             <>
               <ActionMenuSection label="Content" icon={<SectionContentIcon />} subtitle="What it shows" hint={CONTENT_SOURCE_HINT} isOpen={openSections.content} onToggle={() => toggleSection('content')}>
@@ -962,8 +899,7 @@ export function TemplateComponentActionMenu({
           <ActionMenuSection label="Appearance" icon={<SectionAppearanceIcon />} subtitle="Background and styling" isOpen={openSections.appearance} onToggle={() => toggleSection('appearance')}>
             <TemplateAppearanceControls container={component} onUpdate={update} />
           </ActionMenuSection>
-        </>
-      )}
+      </>
     </TreeSubMenu>
   );
 }

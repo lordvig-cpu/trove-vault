@@ -173,8 +173,7 @@ need before changing the editor, the layout engine, the gear flyouts or the item
   (a content `name`, separate from its `label` caption -- `contentNameOf` falls back to the label text, so
   renaming never changes what the item shows), then quick versions of the content flyout's Properties sections
   (Shows, Display, Label off/above/beside, Text style + bold/italic/underline + alignment), then
-  the gear (the full flyout) and delete. Either bar's gear opens the flyout on its Properties tab
-  (`lib/menuTabRequest.ts`); the tree row's own gear keeps whichever tab was last used. Both bars build from the shared `editorBarControls.tsx`, and
+  the gear (the full flyout) and delete. Both bars build from the shared `editorBarControls.tsx`, and
   both lead with the same eye as the Layout tree, left of the name (not for the Body). The header slot is
   `w-max` so a wide bar is never squeezed to the half-header an absolute, centered box would otherwise get.
 - A tree gear opens its flyout on hover (closing a moment after the pointer leaves) or, when clicked, pins
@@ -198,7 +197,7 @@ need before changing the editor, the layout engine, the gear flyouts or the item
   the node's Layout-tree row when the Layout tree is showing (its panel open *and* on the Layout tab --
   `isLayoutPanelOpen` in `app/page.tsx`), and otherwise opens the same flyout as a **floating menu**
   (`lib/floatingNodeMenu.ts` store, drawn by `FloatingNodeMenuHost` in the editor stage): at the pointer for a
-  right-click, just under the gear for the gear (on its Properties tab; clicking the gear again closes it). It
+  right-click, just under the gear for the gear (clicking the gear again closes it). It
   wears a help window's chrome (TreeSubMenu's `floating` prop: grab dots then the element's type icon before
   the title, the title bar is the drag handle, a close button at the right), its title is just the element's name ("General Information", "Body"; a long one ends in "..."),
   it appears in place rather than sliding, and it stays until its close button, Escape, or another menu opens
@@ -209,21 +208,29 @@ need before changing the editor, the layout engine, the gear flyouts or the item
   pulldown closing or being docked) never leaves it on screen with no gear to close it from (`useTreeActionMenu`
   watches the panel go `inert`). A flyout that was only hover-opened just closes, at once rather than sliding out.
   One pinned open (clicked or right-clicked) carries on instead: a Layout-tree flyout as the editor's floating node
-  menu, where it stood and on the same tab (`useFloatWhenPanelHides` in `TemplateLayoutActionMenu.tsx`, through the
+  menu, where it stood (`useFloatWhenPanelHides` in `TemplateLayoutActionMenu.tsx`, through the
   hook's `setPanelHiddenHandler`); every other one (Items, Collections, Templates, the Blueprint tab) floats in place
-  -- the same menu instance, so its tab and unsaved Properties edits stay -- in the floating chrome (`floatingChrome`:
+  -- the same menu instance, so its unsaved Properties edits stay -- in the floating chrome (`floatingChrome`:
   drag by the title bar, close button, Escape), until closed or another menu opens. A header pulldown with a pinned
   menu is held mounted (hidden once closed, even after it is docked) until that menu closes (`lib/flyoutHold.ts`),
   since the menu still lives in its tree.
-- **Prototype (Item menu only):** the Item menu has no tabs. Its actions are an icon bar on the band under the
-  title (`MenuActionBar` in `TreeSubMenu.tsx`: each icon's hover help, after a short rest, names it and says what
-  it does; Delete always sits apart at the far right) over its Properties, so actions and properties show together.
-  If it works out it replaces the Actions tab in every menu, with grouped actions opening a small pulldown like the
-  toolbar's Add / Split, and menus with no properties (Category, the Blueprint's built-ins) keep labelled rows.
-- The Items / Collections / Templates trees' menus are Actions | Properties flyouts titled "Item",
-  "Collection", "Template" (wide shell, like the template flyouts; a title never repeats "Properties", since the
-  tabs already say it). Properties edits what
-  is already saved -- creating stays in the Actions tab's modals (New Item, Add Sub-Item, New Sub-Collection).
+- **Menus have no Actions / Properties tabs.** A menu with properties (Item, Collection, Template, a Blueprint
+  field, the Body, a container, a content element) shows its actions as an **action bar** on the band under its
+  title (`MenuActionBar` in `TreeSubMenu.tsx`) over its Properties, so both show together and nothing needs a click
+  to switch. Each action is an icon button (the same tinted tile as an action row's icon, amber; red for Delete);
+  resting the pointer on one for 500ms opens its hover help (`HoverHint`'s `showDelayMs`) with its name and what it
+  does (`description`), so sweeping across the bar stays quiet, and keyboard focus shows it at once. A destructive
+  action (Delete) always sits apart at the far right. Related actions are one **group** icon (with a small
+  chevron) whose options open in a pulldown like the toolbar's Add / Split (`MenuActionGroupButton`, the toolbar's
+  `GroupHeading` / `GroupOption`, portaled at the pulldown layer 89 since the menu shell clips): after the same rest,
+  or at once on a click, which pins it; Escape closes just the options. The editor menus' groups are Select
+  element (**Previous: <name>** / **Next: <name>**), Add container (Before / Inside / After; the Body has a
+  single Add container inside), Add content (Field list / Header / Stat row) and Split container (2 / 3 columns,
+  2 / 3 rows). A menu with no properties (a Category, a Blueprint built-in) keeps its actions as labelled rows
+  (`ActionMenuItem`) under a single Actions tab.
+- The Items / Collections / Templates trees' menus are titled "Item", "Collection", "Template" (wide shell, like
+  the template flyouts), an action bar over their Properties. Properties edits what is already saved -- creating
+  stays in the actions' modals (New item, Add child item, New sub-collection).
   An item's Properties (`TreeItemProperties.tsx`) is everything the Edit Item modal edits -- name, then the
   Template, Photo, Fields and Custom Fields cards -- through the modal's own load and save (`useItemEditor`,
   shared by both, over `useItemForm`), so there is no Edit Item action; a collection's or template's is just
@@ -238,19 +245,12 @@ need before changing the editor, the layout engine, the gear flyouts or the item
   state lives in the always-mounted menu component). Its required template fields are checked on Save (naming
   the missing ones and opening the Fields card), not by the browser, which can't check a field in a closed card.
   The item view's Edit button still opens the modal.
-- A container / Body / content flyout's Actions tab is collapsible sections, the same `ActionMenuSection` cards as
-  Properties, so it stays short however many actions it gains: **Select Element** (Previous / Next), **Add Container**
-  (Before / Inside / After; the Body just Inside), **Add Content** (Field List / Header / Stat Row) and **Split
-  Container** (2 / 3 Columns, 2 / 3 Rows) -- a content element has only Select Element -- then Delete below them,
-  outside any section. Rows are short names with no subtext (their description is the row's tooltip, `ActionMenuItem`'s
-  `title`). A section's open / closed state is one setting shared by every flyout and remembered across sessions
-  (`useActionSections`, localStorage `uc_action_sections`), all collapsed to start.
-- The Select Element section's rows are **Previous: <name>** and
-  **Next: <name>** (the name is `ActionMenuItem`'s `labelDetail`; every action label is the Primary Accent): the element just above / below in the Layout tree's order
+- The Select element group's options are **Previous: <name>** and **Next: <name>**: the element just above / below
+  in the Layout tree's order
   (`lib/layoutNavigation.ts`: each container, then everything inside it; the Body first), each left out at
   either end. They exist so any element -- above all the Body, which a child usually covers completely on the
-  canvas -- is reachable without the tree. Choosing one selects that element and opens *its* menu, on Actions,
-  so you can keep stepping: from the tree, its row's flyout; from a floating menu, the window turns into that
+  canvas -- is reachable without the tree. Choosing one selects that element and opens *its* menu, so you can keep
+  stepping: from the tree, its row's flyout; from a floating menu, the window turns into that
   element's menu where it is. Each owner says how through `LayoutNavigationProvider`
   (`context/LayoutNavigationContext.tsx`; provided by `TemplateHierarchyTree` and `FloatingNodeMenuHost`).
 - Every tree/template gear-icon flyout -- whether it's pure Actions (Item, Collection, Category,
@@ -267,34 +267,27 @@ need before changing the editor, the layout engine, the gear flyouts or the item
   defined once, unconditionally, and never varies by tab count; its background can't lean on
   `.menuShell`'s default radial glow, whose size is a percentage of the card's own height (fine for
   a card this tall, but the original bug when a much shorter head reused the same rule), so it's
-  fixed in absolute px instead. `subheader` (`ActionMenuTabs`) always renders, giving the head card
-  its band and divider unconditionally too -- what varies is only its *content*: with two or more
-  tabs (the Body / Container flyouts; `TemplateFieldActionMenu.tsx`'s Content field editor, which
-  already had real properties -- label, key, type, required, options -- and real actions -- move
-  up/down, delete -- so it kept both as genuine tabs) it renders real tabs: the side panels'
-  paper-folder tabs (`PanelFolderTabSvg` + `.tree-folder-tab`; like the panels' tabs, square with 8px top corners: every tab shows a small icon and its name while they
-  all fit, otherwise only the active one does and the others just their icon -- `useTabsFit`), standing on the
-  bottom edge of a full-width amber-tinted dark band, with the active one opening into the menu body
-  below (`.menuTabs-folder` / `.menuFolderTab` in `TreeSubMenu.css`) -- the same tab look as a panel
-  header, not a second button style. A menu with a single tab still shows it, as the same folder tab,
-  selected: a Category row's menu (`TreeCollectionActionMenu.tsx`'s virtual-category branch, titled "Category")
-  and a Blueprint built-in's (`BlueprintBuiltinActionMenu`, titled with the value's name) have just Actions until
-  they get Properties, and read the same as every other menu meanwhile. Only with no tabs at all does
-  `ActionMenuTabs` render that same `.menuTabs` element with no buttons inside it -- a plain divider band.
-  Item, Collection and Template menus have real Actions / Properties tabs (see below).
+  fixed in absolute px instead. `subheader` always renders, giving the head card its band and divider
+  unconditionally too -- what varies is only its *content*: a menu with properties puts its action bar there
+  (`MenuActionBar`, see above); a menu with no properties (a Category row's, `TreeCollectionActionMenu.tsx`'s
+  virtual-category branch, titled "Category"; a Blueprint built-in's, `BlueprintBuiltinActionMenu`, titled with the
+  value's name) shows a single Actions tab (`ActionMenuTabs`): the side panels' paper-folder tab
+  (`PanelFolderTabSvg` + `.tree-folder-tab`, square with 8px top corners, a small icon and its name -- `useTabsFit`
+  drops idle tabs to icons when names don't fit), standing on the bottom edge of a full-width amber-tinted dark
+  band and opening into the menu body below (`.menuTabs-folder` / `.menuFolderTab` in `TreeSubMenu.css`) -- the
+  same tab look as a panel header, not a second button style. Only with no tabs at all does `ActionMenuTabs`
+  render that same `.menuTabs` element with nothing inside it -- a plain divider band.
   The one-CSS-definition rule this preserves:
   never add a second shell, a bespoke header class, or a per-menu override for a card that happens
   to be shorter -- if a head card ever looks wrong again, the fix is either in `.menuShellHead`'s
-  own unconditional rule, or in giving `ActionMenuTabs` more to render, never a new special case.
+  own unconditional rule, or in what the band holds, never a new special case.
   The title bar names the object itself ("Body", "Container", "Content"; a Blueprint field's flyout shows the
-  field's own name), in the same boxed amber pill with the icon at the far right as every other flyout. The Actions tab is
-  buttons (`ActionMenuItem` / `ActionMenuDangerItem`): card-like rows a little apart, each icon on a tile tinted
-  with its color (amber, or red for Delete).
-  Inputs, pulldowns and buttons in the Properties tab share the top toolbar's control height
+  field's own name), in the same boxed amber pill with the icon at the far right as every other flyout. Labelled
+  action rows (a menu with no properties) are buttons (`ActionMenuItem` / `ActionMenuDangerItem`): card-like rows a
+  little apart, each icon on a tile tinted with its color (amber, or red for Delete).
+  Inputs, pulldowns and buttons in the Properties share the top toolbar's control height
   (`barControlHeight`, 26px) so rows of mixed controls line up.
-  Both tabs always take `menuShellXWide` (17.5rem), so switching tabs never changes the flyout's
-  width; the tabs are centered within that wider head and keep one total width whichever is active (while they are
-  icons, the active one has a fixed minimum width), so they never shift. The
+  Menus with properties take `menuShellXWide` (17.5rem) (a Blueprint field's, `menuShellWide`). The
   Properties body is one column of collapsible `ActionMenuSection` cards: an icon tile
   (`icons/SectionIcons.tsx`), the title with a one-line subtitle (shown open or closed, so the header never changes height), a `?` bubble and
   an up/down chevron, in an amber-bordered card over a dark fill. Inside a split flyout's body,
@@ -305,16 +298,16 @@ need before changing the editor, the layout engine, the gear flyouts or the item
   segmented choices) are the exception: they use the top toolbar's classes unchanged -- `barGhostBtn`
   (soft white) unselected, `activeBtn` (filled) selected, `barDisabledBtn` disabled -- with no
   flyout-only overrides. The Spacing diagram's Margin / Padding captions are the primary accent.
-  Sections are controlled -- the flyout component owns the open/closed and active-tab state,
+  Sections are controlled -- the flyout component owns the open/closed state,
   so they survive the flyout closing and reopening. The Body and standard-container flyouts
-  (`TemplateLayoutActionMenu.tsx`) both use it. A standard container's Actions tab is its sections (Select Element, Add Container, Add Content,
-  Split Container) and Delete (always last); its Properties tab is Container Name (a plain field), then the cards Size
+  (`TemplateLayoutActionMenu.tsx`) both use it. A standard container's actions are its groups (Select element, Add
+  container, Add content, Split container) and Delete (far right); its Properties are Container Name (a plain field), then the cards Size
   (Auto/Fit/Custom, Width, a Min/Max width slider, Height, a Min/Max height slider), Spacing, Layout
   (Row/Column, then two icon-button groups for alignment) and Appearance. The Body's is Size, Layout
   (a locked toggle) and Spacing. Deliberately absent: Child Item Gap (the `gap`
   value itself is unchanged, it just has no UI), Wrap Children and Card Frame Style (cards are
   expected to become draggable components rather than a per-container option), a Select Parent
-  action (click the parent instead), and Maximum Content Width (Body-only). A content element's flyout ("Content", `TemplateComponentActionMenu`) is the same split shell: an Actions tab (Delete) and a Properties tab of collapsible cards -- Content (the binding picker, static text, display style, image shape), Label (show/hide, above/beside, its own text and text style), Text (a "Start from" preset, size, spacing, weight, color, case, alignment, italic, underline, line height, reset) and Appearance (the same `TemplateAppearanceControls` a container uses) -- and deliberately no Size, Spacing or Layout card. The controls live in `TemplateContentControls.tsx`. The old table / media / stat placeholder blocks, which have no data, only get a name field and Appearance.
+  action (click the parent instead), and Maximum Content Width (Body-only). A content element's flyout ("Content", `TemplateComponentActionMenu`) is the same split shell: its actions (Select element, Delete) over Properties of collapsible cards -- Content (the binding picker, static text, display style, image shape), Label (show/hide, above/beside, its own text and text style), Text (a "Start from" preset, size, spacing, weight, color, case, alignment, italic, underline, line height, reset) and Appearance (the same `TemplateAppearanceControls` a container uses) -- and deliberately no Size, Spacing or Layout card. The controls live in `TemplateContentControls.tsx`. The old table / media / stat placeholder blocks, which have no data, only get a name field and Appearance.
 - `isCard` on a container is an internal look, not something the user picks: it gives the container the
   themed card frame (rounded, card background, border, shadow) in Preview and the item view. The default
   layout, the Simple Templates and Stat Row tiles set it. It is

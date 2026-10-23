@@ -6,7 +6,7 @@ import { useTabsFit } from '@/hooks/useTabsFit';
 import { createPortal } from 'react-dom';
 import '@/app/styles/components/TreeSubMenu.css';
 import { ChevronDownIcon, PanelFolderTabSvg } from '@/components/icons/PanelIcons';
-import { ActionIcon, HelpCircleIcon, PropertiesIcon } from '@/components/icons/LayoutIcons';
+import { ActionIcon, HelpCircleIcon } from '@/components/icons/LayoutIcons';
 import { HintGripIcon } from '@/components/icons/HintIcons';
 import { SearchClearIcon } from '@/components/icons/TreeIcons';
 import HoverHint, { type HintContent } from '@/components/HoverHint';
@@ -53,7 +53,7 @@ interface TreeSubMenuProps {
   children: React.ReactNode;
 }
 
-/** The split body's footer: a strip on the menu's bottom edge, outside the scrolling content, that a Properties tab
+/** The split body's footer: a strip on the menu's bottom edge, outside the scrolling content, that a menu's Properties
     renders its Revert / Save bar into (useMenuFooter, PropertiesSaveBar). Null outside a split menu. */
 const MenuFooterContext = createContext<HTMLDivElement | null>(null);
 
@@ -331,7 +331,8 @@ export interface MenuActionGroup {
     label: string;
     /** What it does, shown as the option's tooltip. */
     description?: string;
-    Icon?: React.ComponentType<{ className?: string }>;
+    /** Its icon, already sized (w-3.5 h-3.5, like the toolbar's options). */
+    icon?: React.ReactNode;
     onClick: () => void;
   }[];
 }
@@ -425,7 +426,7 @@ function MenuActionGroupButton({ group }: { group: MenuActionGroup }) {
               {group.items.map((item) => (
                 <GroupOption
                   key={item.id}
-                  icon={item.Icon ? <item.Icon className="w-3.5 h-3.5" /> : undefined}
+                  icon={item.icon}
                   label={item.label}
                   title={item.description ?? item.label}
                   onClick={() => {
@@ -497,14 +498,11 @@ export function ActionMenuDivider() {
 // Real tabs are the side panels' paper-folder tabs (the same PanelFolderTabSvg and .tree-folder-tab
 // looks), with the icon and label inside, standing on the band's bottom edge; the active one opens into
 // the menu body below it (.menuFolderTab in TreeSubMenu.css).
-/** The Actions and Properties tabs every gear flyout uses, defined once; ActionMenuTabs draws each Icon at the
-    side panels' tab icon sizes (PanelViewTabs). */
+/** The single Actions tab of a menu that has no properties (a Category, a Blueprint built-in), whose actions stay
+    labelled rows; every other menu shows its actions as an action bar (MenuActionBar) over its Properties instead.
+    ActionMenuTabs draws the Icon at the side panels' tab icon sizes (PanelViewTabs). */
 export const ACTIONS_TAB = { id: 'actions' as const, label: 'Actions', Icon: ActionIcon };
-export const PROPERTIES_TAB = { id: 'properties' as const, label: 'Properties', Icon: PropertiesIcon };
-/** A menu with only Actions so far. */
 export const ACTIONS_ONLY_TABS = [ACTIONS_TAB];
-/** A menu with Actions and Properties. */
-export const ACTIONS_AND_PROPERTIES_TABS = [ACTIONS_TAB, PROPERTIES_TAB];
 
 export function ActionMenuTabs<T extends string>({
   tabs,

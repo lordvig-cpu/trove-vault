@@ -9,8 +9,8 @@ import { ChevronUpIcon } from '@/components/icons/GlyphIcons';
 import { FieldTypeIcon } from '@/components/icons/ContentIcons';
 import { PlaceIntoIcon } from '@/components/icons/LayoutIcons';
 
-/** Gear flyout for a field in the template editor's Blueprint tab: a Properties tab (label, key, type,
-    required, options) and an Actions tab (place it, move it within its group, delete). Edits are saved
+/** Gear flyout for a field in the template editor's Blueprint tab: its actions (place it, move it within its group,
+    delete) as an action bar over its Properties (label, key, type, required, options). Edits are saved
     through `onUpdateField`; a move is offered only in a direction the field can go. */
 interface TemplateFieldActionMenuProps {
   field: FieldDefinition;

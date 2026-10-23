@@ -10,7 +10,7 @@ import type { ItemTemplate } from '@/types/template';
 
 /* ==========================================================================
    Editing an existing item: useItemForm('edit') loaded with the item, plus whether anything has changed,
-   Save and Revert. Shared by the Edit Item modal and an item flyout's Properties tab, so both load and
+   Save and Revert. Shared by the Edit Item modal and an item flyout's Properties, so both load and
    save an item the same way (the save is updateItem's all-or-nothing one, photo upload included).
 
    The item is loaded when the editor becomes `active` (the modal opening, an item menu opening) --

@@ -85,7 +85,7 @@ const FIELD_HINTS = {
 } satisfies Record<string, HintContent>;
 
 /** The flyout's one bubble per axis: the heading's `?` explains the main field and its Min / Max
- *  ends together (the Properties tab, which shows them as separate fields, uses FIELD_HINTS). */
+ *  ends together (the flyout's Properties, which show them as separate fields, uses FIELD_HINTS). */
 const AXIS_HINTS = {
   width: {
     title: 'Width',

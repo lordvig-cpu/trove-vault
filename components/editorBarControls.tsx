@@ -348,10 +348,9 @@ export function TreeGearButton({
       data-gear-trigger
       onClick={(e) => {
         onSelectNode?.(nodeId);
-        // Opens on the Properties tab from here (see lib/menuTabRequest.ts); floats just under this gear
-        // when the Layout tree isn't showing.
+        // Floats just under this gear when the Layout tree isn't showing.
         const gear = e.currentTarget.getBoundingClientRect();
-        openNodeMenu(nodeId, { how: 'toggle', tab: 'properties', isLayoutPanelOpen, at: { x: gear.left, y: gear.bottom + 6 } });
+        openNodeMenu(nodeId, { how: 'toggle', isLayoutPanelOpen, at: { x: gear.left, y: gear.bottom + 6 } });
       }}
       title={title}
       aria-label={title}

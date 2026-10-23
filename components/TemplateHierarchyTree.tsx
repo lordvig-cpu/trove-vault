@@ -792,8 +792,8 @@ export default function TemplateHierarchyTree({
   );
 
   const drag = useTreeDrag(root, onMoveNode);
-  // A flyout's Select Previous / Next: select that node and open its own row's flyout, on Actions so the
-  // next step is right there (the tree expands to show a collapsed node first; openNodeMenu waits for it)
+  // A flyout's Select Previous / Next: select that node and open its own row's flyout, so the next step is right
+  // there (the tree expands to show a collapsed node first; openNodeMenu waits for it)
   const navigation = useMemo(
     () =>
       root
@@ -802,7 +802,7 @@ export default function TemplateHierarchyTree({
             fields,
             goTo: (nodeId: string) => {
               onSelectNode(nodeId);
-              openNodeMenu(nodeId, { how: 'open', tab: 'actions', isLayoutPanelOpen: true, at: { x: 0, y: 0 } });
+              openNodeMenu(nodeId, { how: 'open', isLayoutPanelOpen: true, at: { x: 0, y: 0 } });
             },
           }
         : null,

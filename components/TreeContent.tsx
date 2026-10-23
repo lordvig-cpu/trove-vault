@@ -35,8 +35,8 @@ import { SearchGlassIcon } from '@/components/icons/TreeIcons';
  * @property onEditTemplate - Optional callback to open category schema editor
  * @property onEditCollection - Optional callback to open collection editing dialog
  * @property onDeleteCollection - Callback prompting collection deletion modal confirmation
- * @property onRenameCollection - Saves a collection's new name (its flyout's Properties tab)
- * @property onItemSaved - Refreshes the data after an item flyout's Properties tab saved the item
+ * @property onRenameCollection - Saves a collection's new name (its flyout's Properties)
+ * @property onItemSaved - Refreshes the data after an item flyout's Properties saved the item
  * @property onDeleteItem - Callback prompting item deletion modal confirmation
  * @property treeView - Current view mode ('items' | 'collections')
  */
