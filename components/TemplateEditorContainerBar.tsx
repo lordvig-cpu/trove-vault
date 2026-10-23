@@ -36,7 +36,7 @@ import {
   barDivider as divider,
 } from '@/components/editorBarControls';
 import { NEW_CONTAINER_OPTIONS } from '@/lib/layoutTree';
-import { measureContainerPx } from '@/lib/measureContainer';
+import { customSizingAtCurrentWidth, measureContainerPx } from '@/lib/measureContainer';
 import { PRESET_INFO, type PresetKind } from '@/lib/layoutPresets';
 import { openPresetDialog } from '@/lib/presetDialog';
 import { PRESET_ICONS } from '@/components/AddPresetDialog';
@@ -198,18 +198,7 @@ export default function TemplateEditorContainerBar({
           <button
             type="button"
             disabled={isRoot}
-            onClick={() => {
-              // Snapshot the on-screen width (unscaled layout px, not the zoomed CSS box) so
-              // switching to Custom only reveals the resize handles — nothing jumps. A stale
-              // remembered value from an earlier Custom session would otherwise pop back in.
-              const el = document.querySelector<HTMLElement>(`[data-container-id="${container.id}"]`);
-              const value = el?.offsetWidth
-                ? `${Math.round(el.offsetWidth)}px`
-                : container.sizing?.type === 'fixed'
-                ? container.sizing.value || '50%'
-                : '50%';
-              onUpdateContainer?.(container.id, { width: value, sizing: { type: 'fixed', value } });
-            }}
+            onClick={() => onUpdateContainer?.(container.id, customSizingAtCurrentWidth(container))}
             title={isRoot ? 'Custom sizing is not available for the Body' : 'Custom: set your own width/height (e.g. 50%, 300px)'}
             className={`${barToggleBtn} ${
               isRoot

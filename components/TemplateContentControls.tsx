@@ -24,7 +24,7 @@ import {
   mergeTextStyle,
   type TextPresetName,
 } from '@/lib/layoutContent';
-import { activeBtn, barControlHeight, barGhostBtn, barToggleBtn, barToggleGroup } from '@/components/editorBarStyles';
+import { barControlHeight, barToggleBtn, barToggleGroup, barToggleOption } from '@/components/editorBarStyles';
 import SubsectionHeading from '@/components/SubsectionHeading';
 import { ColorRow } from '@/components/TemplateAppearanceControls';
 import { type HintContent } from '@/components/HoverHint';
@@ -113,9 +113,7 @@ function Segmented<T extends string | number>({
             onClick={() => onChange(opt.value)}
             aria-pressed={value === opt.value}
             title={opt.title}
-            className={`${barToggleBtn} flex-1 justify-center text-[10.5px] font-semibold ${
-              value === opt.value ? `border cursor-default ${activeBtn}` : `${barGhostBtn} cursor-pointer`
-            }`}
+            className={`${barToggleBtn} flex-1 justify-center text-[10.5px] font-semibold ${barToggleOption(value === opt.value)}`}
           >
             {opt.label}
           </button>

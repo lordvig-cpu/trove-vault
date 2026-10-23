@@ -20,7 +20,7 @@ import TreeSubMenu, {
 } from '@/components/TreeSubMenu';
 import TemplateBodyDimensions from '@/components/TemplateBodyDimensions';
 import TemplateContainerSizing from '@/components/TemplateContainerSizing';
-import { activeBtn, barDisabledBtn, barGhostBtn, barToggleBtn, barToggleGroup } from '@/components/editorBarStyles';
+import { barToggleBtn, barToggleGroup, barToggleOption } from '@/components/editorBarStyles';
 import { NEW_CONTAINER_OPTIONS } from '@/lib/layoutTree';
 import { AlignItemsIcon, JustifyContentIcon } from '@/components/icons/AlignIcons';
 import {
@@ -36,7 +36,7 @@ import {
   SectionAddContentIcon,
   SectionSplitIcon,
 } from '@/components/icons/SectionIcons';
-import { measureContainerPx } from '@/lib/measureContainer';
+import { customSizingAtCurrentWidth, measureContainerPx } from '@/lib/measureContainer';
 import TemplateSpacingBox from '@/components/TemplateSpacingBox';
 import TemplateAppearanceControls from '@/components/TemplateAppearanceControls';
 import {
@@ -200,9 +200,7 @@ function AlignmentButtons<T extends string>({
             aria-pressed={value === opt.value}
             aria-label={opt.title}
             title={opt.title}
-            className={`${barToggleBtn} flex-1 justify-center ${
-              value === opt.value ? `border cursor-default ${activeBtn}` : `${barGhostBtn} cursor-pointer`
-            }`}
+            className={`${barToggleBtn} flex-1 justify-center ${barToggleOption(value === opt.value)}`}
           >
             {renderIcon(opt.value)}
           </button>
@@ -537,7 +535,7 @@ export function TemplateContainerActionMenu({
                       <button
                         type="button"
                         title="Auto: the Body stretches automatically with content"
-                        className={`${barToggleBtn} flex-1 justify-center border cursor-default ${activeBtn}`}
+                        className={`${barToggleBtn} flex-1 justify-center ${barToggleOption(true)}`}
                       >
                         <AutoSizingIcon className="w-3.5 h-3.5" />
                         Auto
@@ -546,7 +544,7 @@ export function TemplateContainerActionMenu({
                         type="button"
                         disabled
                         title="Custom sizing is not available for the Body"
-                        className={`${barToggleBtn} flex-1 justify-center border border-transparent ${barDisabledBtn}`}
+                        className={`${barToggleBtn} flex-1 justify-center ${barToggleOption(false, true)}`}
                       >
                         <CustomSizingIcon className="w-3.5 h-3.5" />
                         Custom
@@ -568,7 +566,7 @@ export function TemplateContainerActionMenu({
                         type="button"
                         disabled
                         title="The Body always flows top-to-bottom, like a page. To place items side-by-side, add a Row container and put them inside it."
-                        className={`${barToggleBtn} flex-1 justify-center border border-transparent ${barDisabledBtn}`}
+                        className={`${barToggleBtn} flex-1 justify-center ${barToggleOption(false, true)}`}
                       >
                         <FlexRowIcon className="w-3.5 h-3.5" />
                         Row
@@ -576,7 +574,7 @@ export function TemplateContainerActionMenu({
                       <button
                         type="button"
                         title="The Body always flows top-to-bottom, like a page."
-                        className={`${barToggleBtn} flex-1 justify-center border cursor-default ${activeBtn}`}
+                        className={`${barToggleBtn} flex-1 justify-center ${barToggleOption(true)}`}
                       >
                         <FlexColumnIcon className="w-3.5 h-3.5" />
                         Column
@@ -622,17 +620,7 @@ export function TemplateContainerActionMenu({
   const isFitSize = container.sizing?.type === 'auto';
   // Fit shrinks a container to its content, so it only means something once there is some.
   const hasContent = container.children.length > 0;
-  // Switching to Custom snapshots the on-screen width (unscaled layout px, not the zoomed CSS box)
-  // so nothing jumps -- it only reveals the resize handles. Same as the top toolbar's Custom.
-  const switchToCustomSize = () => {
-    const el = document.querySelector<HTMLElement>(`[data-container-id="${container.id}"]`);
-    const value = el?.offsetWidth
-      ? `${Math.round(el.offsetWidth)}px`
-      : isFixedSize
-      ? container.sizing.value || '50%'
-      : '50%';
-    onUpdateContainer?.(container.id, { width: value, sizing: { type: 'fixed', value } });
-  };
+  const switchToCustomSize = () => onUpdateContainer?.(container.id, customSizingAtCurrentWidth(container));
 
   // An action: run it, then close the flyout.
   const act = (fn?: () => void) => () => {
@@ -790,9 +778,7 @@ export function TemplateContainerActionMenu({
                     type="button"
                     onClick={() => onUpdateContainer?.(container.id, { width: undefined, sizing: { type: 'fill' } })}
                     title="Auto: fill the available parent space"
-                    className={`${barToggleBtn} flex-1 justify-center ${
-                      !isFixedSize && !isFitSize ? `border cursor-default ${activeBtn}` : `${barGhostBtn} cursor-pointer`
-                    }`}
+                    className={`${barToggleBtn} flex-1 justify-center ${barToggleOption(!isFixedSize && !isFitSize)}`}
                   >
                     <AutoSizingIcon className="w-3.5 h-3.5" />
                     Auto
@@ -807,13 +793,7 @@ export function TemplateContainerActionMenu({
                       })
                     }
                     title={hasContent ? 'Fit: shrink the container to fit its content' : 'Fit: add content to this container first'}
-                    className={`${barToggleBtn} flex-1 justify-center ${
-                      !hasContent
-                        ? `border border-transparent ${barDisabledBtn}`
-                        : isFitSize
-                        ? `border cursor-default ${activeBtn}`
-                        : `${barGhostBtn} cursor-pointer`
-                    }`}
+                    className={`${barToggleBtn} flex-1 justify-center ${barToggleOption(isFitSize, !hasContent)}`}
                   >
                     <FitContentIcon className="w-3.5 h-3.5" />
                     Fit
@@ -822,9 +802,7 @@ export function TemplateContainerActionMenu({
                     type="button"
                     onClick={switchToCustomSize}
                     title="Custom: set your own width/height (e.g. 50%, 300px)"
-                    className={`${barToggleBtn} flex-1 justify-center ${
-                      isFixedSize ? `border cursor-default ${activeBtn}` : `${barGhostBtn} cursor-pointer`
-                    }`}
+                    className={`${barToggleBtn} flex-1 justify-center ${barToggleOption(isFixedSize)}`}
                   >
                     <CustomSizingIcon className="w-3.5 h-3.5" />
                     Custom
@@ -852,9 +830,7 @@ export function TemplateContainerActionMenu({
                     type="button"
                     onClick={() => onUpdateContainer?.(container.id, { direction: 'row' })}
                     title="Row layout (horizontal flow)"
-                    className={`${barToggleBtn} flex-1 justify-center ${
-                      direction === 'row' ? `border cursor-default ${activeBtn}` : `${barGhostBtn} cursor-pointer`
-                    }`}
+                    className={`${barToggleBtn} flex-1 justify-center ${barToggleOption(direction === 'row')}`}
                   >
                     <FlexRowIcon className="w-3.5 h-3.5" />
                     Row
@@ -863,9 +839,7 @@ export function TemplateContainerActionMenu({
                     type="button"
                     onClick={() => onUpdateContainer?.(container.id, { direction: 'column' })}
                     title="Column layout (vertical flow)"
-                    className={`${barToggleBtn} flex-1 justify-center ${
-                      direction === 'column' ? `border cursor-default ${activeBtn}` : `${barGhostBtn} cursor-pointer`
-                    }`}
+                    className={`${barToggleBtn} flex-1 justify-center ${barToggleOption(direction === 'column')}`}
                   >
                     <FlexColumnIcon className="w-3.5 h-3.5" />
                     Column

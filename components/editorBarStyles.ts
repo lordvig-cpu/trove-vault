@@ -60,3 +60,11 @@ export const barToggleGroup =
   'flex items-stretch gap-0.5 bg-shade/40 px-0.5 h-[26px] rounded-md border border-[color-mix(in_oklch,var(--secondary-accent)_35%,transparent)] shrink-0 text-[10px] font-semibold';
 
 export const barToggleBtn = 'px-1.5 h-full flex items-center gap-1 rounded transition';
+
+/** One option of a flyout's toggle group (Auto / Fit / Custom, Row / Column, the alignment icons, the content
+    flyout's segmented choices): activeBtn while selected, barGhostBtn otherwise, barDisabledBtn when disabled.
+    Goes after barToggleBtn. */
+export function barToggleOption(selected: boolean, disabled = false): string {
+  if (disabled) return `border border-transparent ${barDisabledBtn}`;
+  return selected ? `border cursor-default ${activeBtn}` : `${barGhostBtn} cursor-pointer`;
+}
