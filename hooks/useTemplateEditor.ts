@@ -172,25 +172,33 @@ export function useTemplateEditor({
   const remoteSaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const remoteSavePending = useRef<{ id: number; layout: TemplateFlexLayoutConfig } | null>(null);
   const remoteSaveWarned = useRef(false);
+  // The write in flight, if any: each one waits for the one before it, so a slow earlier write can never
+  // land after a newer one and leave the database a step behind.
+  const remoteSaveChain = useRef<Promise<void>>(Promise.resolve());
 
-  const flushRemoteSave = useCallback(async () => {
+  const flushRemoteSave = useCallback(() => {
     if (remoteSaveTimer.current) {
       clearTimeout(remoteSaveTimer.current);
       remoteSaveTimer.current = null;
     }
     const pending = remoteSavePending.current;
-    if (!pending) return;
     remoteSavePending.current = null;
-    try {
-      await saveTemplateLayout(pending.id, pending.layout);
-    } catch (err) {
-      // Warn once per session so a missing layout_config column is visible, not silent.
-      // The browser copy is still saved, so this is not fatal.
-      if (!remoteSaveWarned.current) {
-        remoteSaveWarned.current = true;
-        console.warn('Template layout was not saved to the database (kept in this browser only):', errorMessage(err, 'unknown error'));
-      }
+    if (pending) {
+      remoteSaveChain.current = remoteSaveChain.current.then(async () => {
+        try {
+          await saveTemplateLayout(pending.id, pending.layout);
+        } catch (err) {
+          // Warn once per session so a missing layout_config column is visible, not silent.
+          // The browser copy is still saved, so this is not fatal.
+          if (!remoteSaveWarned.current) {
+            remoteSaveWarned.current = true;
+            console.warn('Template layout was not saved to the database (kept in this browser only):', errorMessage(err, 'unknown error'));
+          }
+        }
+      });
     }
+    // Resolves once every write so far has finished, including one already in flight
+    return remoteSaveChain.current;
   }, []);
 
   const persistLayout = useCallback(
