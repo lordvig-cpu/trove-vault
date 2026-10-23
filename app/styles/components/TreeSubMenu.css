@@ -1011,44 +1011,70 @@
   border-color: var(--secondary-tree-menu-divider);
 }
 
-.actionMenuItem {
+/* An action row is a button: a card-like row (8px corners, a thin edge over a faint fill, like a section card) with
+   its icon on a tinted tile, the rows a little apart. Delete (.actionMenuDangerItem, below) is the same button in
+   red. */
+.actionMenuItem,
+.actionMenuDangerItem {
   width: 100%;
   text-align: left;
-  padding: 0.375rem 0.625rem;
-  border-radius: 0.375rem;
+  padding: 0.5rem 0.625rem;
+  margin-bottom: 0.375rem;
+  border-radius: 0.5rem;
   display: flex;
   align-items: center;
   gap: 0.625rem;
-  transition: background-color 150ms ease, color 150ms ease;
+  transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease;
   cursor: pointer;
-  background: transparent;
-  border: none;
+  background: color-mix(in oklab, var(--flyout-white) 4%, transparent);
+  border: 1px solid color-mix(in oklab, var(--flyout-white) 14%, transparent);
 }
 
-/* A clear Secondary Accent hover: a light wash of it plus a full-brightness 1px edge (an inset shadow, so
-   the row's size never shifts), instead of the muddy brown a low-alpha mix of it over the dark menu gave. */
-/* Hover: a faint white tint and a white outline, the same white hover as the toolbars (menu white,
-   so it flips to ink in light mode). Delete keeps its own danger hover, .actionMenuDangerItem below. */
+.actionMenuItem:last-child,
+.actionMenuDangerItem:last-child {
+  margin-bottom: 0;
+}
+
+/* Hover: a faint white tint and a white edge, the same white hover as the toolbars (menu white, so it flips to
+   ink in light mode). Delete keeps its own danger hover, below. */
 .actionMenuItem:hover {
   background-color: color-mix(in oklab, var(--flyout-white) 10%, transparent);
-  box-shadow: inset 0 0 0 1px var(--flyout-white);
+  border-color: var(--flyout-white);
 }
 
-/* The icon reads as muted until the ROW is hovered, then turns the same color as the label. */
+/* The icon on a tile tinted with its own color, so the action reads at a glance; a little brighter on hover. */
+.actionMenuItemIcon,
+.actionMenuDangerIcon {
+  width: 1.75rem;
+  height: 1.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border-radius: 0.375rem;
+  transition: background-color 150ms ease, border-color 150ms ease;
+}
+
 .actionMenuItemIcon {
-  color: var(--text-muted);
-  transition: color 150ms ease;
+  color: var(--secondary-accent);
+  background: color-mix(in oklab, var(--secondary-accent) 16%, transparent);
+  border: 1px solid color-mix(in oklab, var(--secondary-accent) 32%, transparent);
 }
 
 .actionMenuItem:hover .actionMenuItemIcon {
-  color: var(--tree-menu-item-hover-text);
+  background: color-mix(in oklab, var(--secondary-accent) 26%, transparent);
+  border-color: color-mix(in oklab, var(--secondary-accent) 55%, transparent);
+}
+
+.actionMenuItemLabel,
+.actionMenuDangerLabel {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  transition: color 150ms ease;
 }
 
 .actionMenuItemLabel {
-  font-size: 0.75rem;
-  font-weight: 500;
   color: var(--tree-menu-item-text);
-  transition: color 150ms ease;
 }
 
 .actionMenuItem:hover .actionMenuItemLabel {
@@ -1060,10 +1086,14 @@
   color: var(--primary-accent-bright);
 }
 
-.actionMenuItemSubtext {
+.actionMenuItemSubtext,
+.actionMenuDangerSubtext {
   font-size: 0.6875rem;
-  color: var(--tree-menu-item-subtext);
   transition: color 150ms ease;
+}
+
+.actionMenuItemSubtext {
+  color: var(--tree-menu-item-subtext);
 }
 
 .actionMenuItem:hover .actionMenuItemSubtext {
@@ -1071,52 +1101,30 @@
 }
 
 /* --------------------------------------------------------------------------
-   Action Menu Danger / Destructive Item
+   Action Menu Danger / Destructive Item: the same button, in the destructive red
    -------------------------------------------------------------------------- */
-.actionMenuDangerItem {
-  width: 100%;
-  text-align: left;
-  padding: 0.375rem 0.625rem;
-  border-radius: 0.375rem;
-  display: flex;
-  align-items: center;
-  gap: 0.625rem;
-  transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease;
-  cursor: pointer;
-  background: transparent;
-  border: 1px solid transparent;
-}
-
 .actionMenuDangerItem:hover {
   background-color: var(--danger-vivid-soft);
   border-color: var(--danger-vivid);
 }
 
 .actionMenuDangerIcon {
-  width: 1rem;
-  height: 1rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
   color: var(--danger-vivid);
+  background: var(--danger-vivid-soft);
+  border: 1px solid color-mix(in oklab, var(--danger-vivid) 40%, transparent);
+}
+
+.actionMenuDangerItem:hover .actionMenuDangerIcon {
+  background: color-mix(in oklab, var(--danger-vivid) 30%, transparent);
+  border-color: color-mix(in oklab, var(--danger-vivid) 65%, transparent);
 }
 
 .actionMenuDangerLabel {
-  font-size: 0.75rem;
-  font-weight: 500;
-  color: var(--danger-vivid);
-  transition: color 150ms ease;
-}
-
-.actionMenuDangerItem:hover .actionMenuDangerLabel {
   color: var(--danger-vivid);
 }
 
 .actionMenuDangerSubtext {
-  font-size: 0.6875rem;
   color: color-mix(in oklab, var(--danger-vivid) 75%, transparent);
-  transition: color 150ms ease;
 }
 
 .actionMenuDangerItem:hover .actionMenuDangerSubtext {

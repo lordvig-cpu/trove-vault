@@ -281,6 +281,12 @@
   box-shadow: none;
 }
 
+/* Action rows are buttons in the section cards' own fill and edge (their hover is the shared white or red one). */
+[data-theme='theme-oklch-dark'] :is(.actionMenuItem, .actionMenuDangerItem):not(:hover) {
+  border-color: var(--ember-card-edge);
+  background: var(--oklch-primary);
+}
+
 [data-theme='theme-oklch-dark'] .menuSectionIconTile {
   border-color: transparent;
   background: var(--oklch-secondary);

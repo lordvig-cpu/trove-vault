@@ -283,7 +283,8 @@ need before changing the editor, the layout engine, the gear flyouts or the item
   own unconditional rule, or in giving `ActionMenuTabs` more to render, never a new special case.
   The title bar names the object itself ("Body", "Container", "Content"; a Blueprint field's flyout shows the
   field's own name), in the same boxed amber pill with the icon at the far right as every other flyout. The Actions tab is
-  plain full-width rows (`ActionMenuItem`, no borders).
+  buttons (`ActionMenuItem` / `ActionMenuDangerItem`): card-like rows a little apart, each icon on a tile tinted
+  with its color (amber, or red for Delete).
   Inputs, pulldowns and buttons in the Properties tab share the top toolbar's control height
   (`barControlHeight`, 26px) so rows of mixed controls line up.
   Both tabs always take `menuShellXWide` (17.5rem), so switching tabs never changes the flyout's

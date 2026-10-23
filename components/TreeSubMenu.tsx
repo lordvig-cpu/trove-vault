@@ -247,7 +247,7 @@ export function ActionMenuItem({
       onMouseEnter={(e) => showFullTextOr(e, title, labelDetail ? `${label} ${labelDetail}` : label, subtext)}
       className="actionMenuItem group"
     >
-      <span className="actionMenuItemIcon w-4 h-4 flex items-center justify-center shrink-0">
+      <span className="actionMenuItemIcon">
         {icon}
       </span>
       <div className="flex flex-col leading-tight min-w-0">
