@@ -224,8 +224,8 @@ need before changing the editor, the layout engine, the gear flyouts or the item
   shared by both, over `useItemForm`), so there is no Edit Item action; a collection's or template's is just
   its Name (`NameProperties`), so there are no Rename actions either. Unlike a template flyout (which applies
   every change at once, with undo), these write to the database with no undo, so they are saved together:
-  Revert / Save (`PropertiesSaveBar` in `TreeMenuProperties.tsx`, in the flyout button style -- Save the amber
-  primary, Revert the slate one) sit in the menu's footer: a strip on its bottom edge, edge to edge and outside
+  Revert / Save (`PropertiesSaveBar` in `TreeMenuProperties.tsx`, in the flyout button style -- both amber while
+  there are unsaved changes, flat and quiet otherwise) sit in the menu's footer: a strip on its bottom edge, edge to edge and outside
   the scrolling content (`TreeSubMenu`'s `.menuShellFooter`, which the bar portals into via `useMenuFooter`; Save
   reaches its form through the `form` attribute), and only act while there are unsaved changes; a save is one all-or-nothing write. An
   item's form loads only when its Properties tab is showing (each load fetches the template catalog), reloads

@@ -58,7 +58,7 @@ export function PropertiesSaveBar({
       )}
       <div className="actionMenuRenameActions">
         {isDirty && !saving && <span className="propertiesSaveHint">Unsaved changes</span>}
-        <button type="button" onClick={onRevert} disabled={!isDirty || saving} className={`${menuTextBtn} ${idleBtn} disabled:opacity-40`}>
+        <button type="button" onClick={onRevert} disabled={!isDirty || saving} className={`${menuTextBtn} menuBtnAction ${idleBtn} disabled:opacity-40`}>
           Revert
         </button>
         <button type="submit" form={formId} disabled={!isDirty || saving || !canSave} className={`${menuTextBtn} menuBtnAction ${idleBtn} disabled:opacity-40`}>
