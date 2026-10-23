@@ -4,13 +4,7 @@ import React, { useState } from 'react';
 import { FieldDefinition, FieldType } from '@/types/field';
 import { useTreeActionMenu } from '@/hooks/useTreeActionMenu';
 import { CloseIcon, ChevronDownIcon, TrashCanIcon } from '@/components/icons/PanelIcons';
-import TreeSubMenu, {
-  ActionMenuDangerItem,
-  ActionMenuDivider,
-  ActionMenuItem,
-  ActionMenuTabs,
-  ACTIONS_AND_PROPERTIES_TABS,
-} from '@/components/TreeSubMenu';
+import TreeSubMenu, { MenuActionBar } from '@/components/TreeSubMenu';
 import { ChevronUpIcon } from '@/components/icons/GlyphIcons';
 import { FieldTypeIcon } from '@/components/icons/ContentIcons';
 import { PlaceIntoIcon } from '@/components/icons/LayoutIcons';
@@ -58,7 +52,6 @@ export default function TemplateFieldActionMenu({
   const [fieldType, setFieldType] = useState<FieldType>(field.field_type);
   const [isRequired, setIsRequired] = useState(field.is_required);
   const [newOption, setNewOption] = useState('');
-  const [activeTab, setActiveTab] = useState<'actions' | 'properties'>('actions');
 
   // Sync state when field prop updates (adjusting state during render, not in an effect,
   // per https://react.dev/learn/you-might-not-need-an-effect#adjusting-some-state-when-a-prop-changes)
@@ -139,14 +132,44 @@ export default function TemplateFieldActionMenu({
       titleIcon={<FieldTypeIcon type={activeTypeMeta.type} className="w-3.5 h-3.5" />}
       className="menuShellWide"
       subheader={
-        <ActionMenuTabs
-          tabs={ACTIONS_AND_PROPERTIES_TABS}
-          active={activeTab}
-          onChange={setActiveTab}
+        <MenuActionBar
+          actions={[
+            ...(onPlace
+              ? [
+                  {
+                    id: 'place',
+                    label: `Place: ${placeTarget ?? 'Selected container'}`,
+                    description: 'Add it to the selected container',
+                    Icon: PlaceIntoIcon,
+                    onClick: () => {
+                      onPlace();
+                      menu.closeMenu();
+                    },
+                  },
+                ]
+              : []),
+            // Moves within its Blueprint group (the field order the item forms follow); the menu stays open
+            ...(onMoveField && canMoveUp
+              ? [{ id: 'move-up', label: 'Move up', description: 'Earlier in its group', Icon: ChevronUpIcon, onClick: () => onMoveField(field.id, 'up') }]
+              : []),
+            ...(onMoveField && canMoveDown
+              ? [{ id: 'move-down', label: 'Move down', description: 'Later in its group', Icon: ChevronDownIcon, onClick: () => onMoveField(field.id, 'down') }]
+              : []),
+            {
+              id: 'delete',
+              label: 'Delete',
+              description: 'Remove from template schema',
+              Icon: TrashCanIcon,
+              danger: true,
+              onClick: () => {
+                onDeleteField(field.id);
+                menu.closeMenu();
+              },
+            },
+          ]}
         />
       }
     >
-      {activeTab === 'properties' && (
       <div className="flex flex-col gap-2.5 p-2 text-xs">
         {/* Field Label Input */}
         <div className="flex flex-col gap-1">
@@ -271,54 +294,6 @@ export default function TemplateFieldActionMenu({
           </div>
         )}
       </div>
-      )}
-
-      {activeTab === 'actions' && (
-      <>
-      {onPlace && (
-        <ActionMenuItem
-          icon={<PlaceIntoIcon className="w-3.5 h-3.5" />}
-          label="Place:"
-          labelDetail={placeTarget ?? 'Selected container'}
-          subtext="Add it to the selected container"
-          onClick={() => {
-            onPlace();
-            menu.closeMenu();
-          }}
-        />
-      )}
-      {/* Moves within its Blueprint group (the field order the item forms follow) */}
-      {onMoveField && canMoveUp && (
-        <ActionMenuItem
-          icon={<ChevronUpIcon />}
-          label="Move up"
-          subtext="Earlier in its group"
-          onClick={() => onMoveField(field.id, 'up')}
-        />
-      )}
-      {onMoveField && canMoveDown && (
-        <ActionMenuItem
-          icon={<ChevronDownIcon className="w-3 h-3" />}
-          label="Move down"
-          subtext="Later in its group"
-          onClick={() => onMoveField(field.id, 'down')}
-        />
-      )}
-
-      <ActionMenuDivider />
-
-      {/* Delete Field */}
-      <ActionMenuDangerItem
-        icon={<TrashCanIcon />}
-        label="Delete"
-        subtext="Remove from template schema"
-        onClick={() => {
-          onDeleteField(field.id);
-          menu.closeMenu();
-        }}
-      />
-      </>
-      )}
     </TreeSubMenu>
   );
 }
