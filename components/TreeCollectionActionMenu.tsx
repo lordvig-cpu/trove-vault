@@ -5,12 +5,14 @@ import { UNCATEGORIZED_CATEGORY_ID } from '@/lib/treeUtils';
 import { CollectionRecord } from '@/types/collection';
 import { useTreeActions } from '@/context/TreeActionsContext';
 import { useTreeActionMenu } from '@/hooks/useTreeActionMenu';
-import { ActionIcon, PropertiesIcon } from '@/components/icons/LayoutIcons';
+import { ActionIcon } from '@/components/icons/LayoutIcons';
 import TreeSubMenu, {
   ActionMenuDangerItem,
   ActionMenuDivider,
   ActionMenuItem,
   ActionMenuTabs,
+  ACTIONS_ONLY_TABS,
+  ACTIONS_AND_PROPERTIES_TABS,
 } from '@/components/TreeSubMenu';
 import { NameProperties } from '@/components/TreeMenuProperties';
 import type { MenuTab } from '@/lib/menuTabRequest';
@@ -19,13 +21,8 @@ import { FileIcon, FolderIcon } from '@/components/icons/ContentIcons';
 import { GearIcon } from '@/components/icons/TreeIcons';
 import { TrashCanIcon } from '@/components/icons/PanelIcons';
 
-// A category (virtual, made from a template) has only Actions, so ActionMenuTabs renders its band as a
-// plain divider; a real collection has Actions and Properties.
-const ACTIONS_ONLY_TABS = [{ id: 'actions' as const, label: 'Actions', icon: <ActionIcon className="w-4 h-4" /> }];
-const TABS = [
-  ...ACTIONS_ONLY_TABS,
-  { id: 'properties' as const, label: 'Properties', icon: <PropertiesIcon className="w-4 h-4" /> },
-];
+// A category (virtual, made from a template) has only Actions; a real collection has Actions and Properties.
+const TABS = ACTIONS_AND_PROPERTIES_TABS;
 
 interface TreeCollectionActionMenuProps {
   collection: CollectionRecord;

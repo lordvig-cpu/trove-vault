@@ -17,6 +17,7 @@ import TreeSubMenu, {
   ActionMenuItem,
   ActionMenuSection,
   ActionMenuTabs,
+  ACTIONS_AND_PROPERTIES_TABS,
 } from '@/components/TreeSubMenu';
 import TemplateBodyDimensions from '@/components/TemplateBodyDimensions';
 import TemplateContainerSizing from '@/components/TemplateContainerSizing';
@@ -65,8 +66,6 @@ import {
   SplitRowsIcon,
   Split3ColumnsIcon,
   Split3RowsIcon,
-  ActionIcon,
-  PropertiesIcon,
   AutoSizingIcon,
   CustomSizingIcon,
   LinkIcon,
@@ -437,10 +436,7 @@ export function TemplateContainerActionMenu({
       titleIcon={titleIcon}
       subheader={
         <ActionMenuTabs
-          tabs={[
-            { id: 'actions', label: 'Actions', icon: <ActionIcon className="w-4 h-4" /> },
-            { id: 'properties', label: 'Properties', icon: <PropertiesIcon className="w-4 h-4" /> },
-          ]}
+          tabs={ACTIONS_AND_PROPERTIES_TABS}
           active={activeTab}
           onChange={setActiveTab}
         />
@@ -901,10 +897,7 @@ export function TemplateComponentActionMenu({
       titleIcon={compIcon}
       subheader={
         <ActionMenuTabs
-          tabs={[
-            { id: 'actions', label: 'Actions', icon: <ActionIcon className="w-4 h-4" /> },
-            { id: 'properties', label: 'Properties', icon: <PropertiesIcon className="w-4 h-4" /> },
-          ]}
+          tabs={ACTIONS_AND_PROPERTIES_TABS}
           active={activeTab}
           onChange={setActiveTab}
         />

@@ -5,12 +5,12 @@ import DeleteTemplateModal from '@/components/DeleteTemplateModal';
 import { CollectionRecord } from '@/types/collection';
 import { useTreeActions } from '@/context/TreeActionsContext';
 import { useTreeActionMenu } from '@/hooks/useTreeActionMenu';
-import { ActionIcon, PropertiesIcon } from '@/components/icons/LayoutIcons';
 import TreeSubMenu, {
   ActionMenuDangerItem,
   ActionMenuDivider,
   ActionMenuItem,
   ActionMenuTabs,
+  ACTIONS_AND_PROPERTIES_TABS,
 } from '@/components/TreeSubMenu';
 import { NameProperties } from '@/components/TreeMenuProperties';
 import type { MenuTab } from '@/lib/menuTabRequest';
@@ -19,10 +19,7 @@ import { FileIcon } from '@/components/icons/ContentIcons';
 import { GearIcon } from '@/components/icons/TreeIcons';
 import { TrashCanIcon } from '@/components/icons/PanelIcons';
 
-const TABS = [
-  { id: 'actions' as const, label: 'Actions', icon: <ActionIcon className="w-4 h-4" /> },
-  { id: 'properties' as const, label: 'Properties', icon: <PropertiesIcon className="w-4 h-4" /> },
-];
+const TABS = ACTIONS_AND_PROPERTIES_TABS;
 
 interface TreeTemplateActionMenuProps {
   template: CollectionRecord;

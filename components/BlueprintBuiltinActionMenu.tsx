@@ -2,10 +2,9 @@
 
 import React from 'react';
 import type { TreeActionMenuApi } from '@/hooks/useTreeActionMenu';
-import TreeSubMenu, { ActionMenuItem, ActionMenuTabs } from '@/components/TreeSubMenu';
+import TreeSubMenu, { ActionMenuItem, ActionMenuTabs, ACTIONS_ONLY_TABS } from '@/components/TreeSubMenu';
 import { ActionIcon, PlaceIntoIcon } from '@/components/icons/LayoutIcons';
 
-const ACTIONS_ONLY_TABS = [{ id: 'actions' as const, label: 'Actions', icon: <ActionIcon className="w-4 h-4" /> }];
 
 interface BlueprintBuiltinActionMenuProps {
   /** The built-in value's name ("Name", "Created", ...). */

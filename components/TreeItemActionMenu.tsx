@@ -2,13 +2,13 @@
 
 import React, { useState } from 'react';
 import { AddSubItemIcon } from '@/components/icons/TreeIcons';
-import { ActionIcon, PropertiesIcon } from '@/components/icons/LayoutIcons';
 import { FileIcon } from '@/components/icons/ContentIcons';
 import TreeSubMenu, {
   ActionMenuDangerItem,
   ActionMenuDivider,
   ActionMenuItem,
   ActionMenuTabs,
+  ACTIONS_AND_PROPERTIES_TABS,
 } from '@/components/TreeSubMenu';
 import TreeItemProperties, { type ItemPropertySection } from '@/components/TreeItemProperties';
 import { useTreeActions } from '@/context/TreeActionsContext';
@@ -25,10 +25,7 @@ interface TreeItemActionMenuProps {
   position?: 'left' | 'right';
 }
 
-const TABS = [
-  { id: 'actions' as const, label: 'Actions', icon: <ActionIcon className="w-4 h-4" /> },
-  { id: 'properties' as const, label: 'Properties', icon: <PropertiesIcon className="w-4 h-4" /> },
-];
+const TABS = ACTIONS_AND_PROPERTIES_TABS;
 
 /** Gear-icon flyout for an Item row in the tree. Actions: add a sub-item, delete. Properties: everything
     about the item (TreeItemProperties), saved with Save. Actions come from TreeActionsContext; open / close

@@ -3,13 +3,13 @@
 import React, { useState } from 'react';
 import { FieldDefinition, FieldType } from '@/types/field';
 import { useTreeActionMenu } from '@/hooks/useTreeActionMenu';
-import { ActionIcon, PropertiesIcon } from '@/components/icons/LayoutIcons';
 import { CloseIcon, ChevronDownIcon, TrashCanIcon } from '@/components/icons/PanelIcons';
 import TreeSubMenu, {
   ActionMenuDangerItem,
   ActionMenuDivider,
   ActionMenuItem,
   ActionMenuTabs,
+  ACTIONS_AND_PROPERTIES_TABS,
 } from '@/components/TreeSubMenu';
 import { ChevronUpIcon } from '@/components/icons/GlyphIcons';
 import { FieldTypeIcon } from '@/components/icons/ContentIcons';
@@ -140,10 +140,7 @@ export default function TemplateFieldActionMenu({
       className="menuShellWide"
       subheader={
         <ActionMenuTabs
-          tabs={[
-            { id: 'actions', label: 'Actions', icon: <ActionIcon className="w-4 h-4" /> },
-            { id: 'properties', label: 'Properties', icon: <PropertiesIcon className="w-4 h-4" /> },
-          ]}
+          tabs={ACTIONS_AND_PROPERTIES_TABS}
           active={activeTab}
           onChange={setActiveTab}
         />

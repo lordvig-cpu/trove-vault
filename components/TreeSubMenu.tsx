@@ -5,7 +5,7 @@ import { usePresence } from '@/hooks/usePresence';
 import { createPortal } from 'react-dom';
 import '@/app/styles/components/TreeSubMenu.css';
 import { ChevronDownIcon, PanelFolderTabSvg } from '@/components/icons/PanelIcons';
-import { HelpCircleIcon } from '@/components/icons/LayoutIcons';
+import { ActionIcon, HelpCircleIcon, PropertiesIcon } from '@/components/icons/LayoutIcons';
 import { HintGripIcon } from '@/components/icons/HintIcons';
 import { SearchClearIcon } from '@/components/icons/TreeIcons';
 import HoverHint, { type HintContent } from '@/components/HoverHint';
@@ -309,6 +309,15 @@ export function ActionMenuDivider() {
 // Real tabs are the side panels' paper-folder tabs (the same PanelFolderTabSvg and .tree-folder-tab
 // looks), with the icon and label inside, standing on the band's bottom edge; the active one opens into
 // the menu body below it (.menuFolderTab in TreeSubMenu.css).
+/** The Actions and Properties tabs every gear flyout uses, defined once so their icons are the side panels'
+    tab icon size (PanelViewTabs) in every menu. */
+export const ACTIONS_TAB = { id: 'actions' as const, label: 'Actions', icon: <ActionIcon className="w-[22.5px] h-[22.5px]" /> };
+export const PROPERTIES_TAB = { id: 'properties' as const, label: 'Properties', icon: <PropertiesIcon className="w-[22.5px] h-[22.5px]" /> };
+/** A menu with only Actions so far. */
+export const ACTIONS_ONLY_TABS = [ACTIONS_TAB];
+/** A menu with Actions and Properties. */
+export const ACTIONS_AND_PROPERTIES_TABS = [ACTIONS_TAB, PROPERTIES_TAB];
+
 export function ActionMenuTabs<T extends string>({
   tabs,
   active,
