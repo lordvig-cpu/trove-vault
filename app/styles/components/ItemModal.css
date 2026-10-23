@@ -67,10 +67,6 @@
   color: var(--template-text);
 }
 
-.item-modal-template-count {
-  color: var(--text-muted);
-}
-
 .item-modal-danger-text {
   color: var(--modal-badge-req-text);
 }

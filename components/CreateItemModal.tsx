@@ -137,8 +137,6 @@ export default function CreateItemModal({
         templates={form.availableTemplates}
         selectedTemplateId={form.selectedTemplateId}
         onSelect={form.selectTemplate}
-        fieldCount={form.activeTemplateFields.length}
-        fieldCountLabel="Template Fields"
       />
 
       {/* Item Name */}

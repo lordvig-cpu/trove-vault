@@ -8,30 +8,20 @@ interface ItemTemplatePickerProps {
   templates: ItemTemplate[];
   selectedTemplateId: number | null;
   onSelect: (value: string) => void;
-  fieldCount: number;
-  /** Caption after the field count, e.g. "Template Fields". */
-  fieldCountLabel: string;
 }
 
-/** The "Item Schema Template" panel: the template dropdown and how many fields the template has. */
+/** The "Item Schema Template" panel: its heading and the template dropdown. */
 export default function ItemTemplatePicker({
   templates,
   selectedTemplateId,
   onSelect,
-  fieldCount,
-  fieldCountLabel,
 }: ItemTemplatePickerProps) {
   return (
     <div className="item-modal-template-panel rounded-xl p-3.5 space-y-2">
-      <div className="flex items-center justify-between">
-        <label className="text-xs font-bold item-modal-template-heading flex items-center gap-1.5">
-          <FileIcon />
-          <span>Item Schema Template</span>
-        </label>
-        <span className="text-[10px] item-modal-template-count font-mono">
-          {fieldCount} {fieldCountLabel}
-        </span>
-      </div>
+      <label className="text-xs font-bold item-modal-template-heading flex items-center gap-1.5">
+        <FileIcon />
+        <span>Item Schema Template</span>
+      </label>
 
       <select
         value={selectedTemplateId || 'blank'}

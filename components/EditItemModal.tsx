@@ -66,8 +66,6 @@ export default function EditItemModal({
         templates={form.availableTemplates}
         selectedTemplateId={form.selectedTemplateId}
         onSelect={form.selectTemplate}
-        fieldCount={form.activeTemplateFields.length}
-        fieldCountLabel="Defined Fields"
       />
 
       {/* Item Name */}
