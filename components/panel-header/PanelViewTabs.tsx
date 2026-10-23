@@ -221,11 +221,14 @@ export default function PanelViewTabs({
                     isTarget={isThisTabTarget}
                     variant="curved"
                   />
-                  {/* The active tab names itself beside its icon; the others are just the icon (a tab with
-                      no icon always shows its name). */}
-                  <span className="relative z-10 flex items-center gap-1.5 px-0.5 select-none">
-                    {TabIcon && <TabIcon className="w-[22.5px] h-[22.5px]" />}
-                    {(isTabActive || !TabIcon) && <span className="whitespace-nowrap">{tabLabel}</span>}
+                  {/* The active tab shows its name; the others are just their icon (a tab with no icon always
+                      shows its name). */}
+                  <span className="relative z-10 flex items-center px-0.5 select-none">
+                    {TabIcon && !isTabActive ? (
+                      <TabIcon className="w-[22.5px] h-[22.5px]" />
+                    ) : (
+                      <span className="whitespace-nowrap">{tabLabel}</span>
+                    )}
                   </span>
                 </button>
                 {showInsertAfter && (
