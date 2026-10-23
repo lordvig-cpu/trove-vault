@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { errorMessage } from '@/lib/errors';
+import { idleBtn, menuTextBtn } from '@/components/editorBarStyles';
 
 /* ==========================================================================
    Pieces of the Items / Collections / Templates trees' Properties tabs, which edit something saved in the
@@ -50,10 +51,10 @@ export function PropertiesSaveBar({
       )}
       <div className="actionMenuRenameActions">
         {isDirty && !saving && <span className="propertiesSaveHint">Unsaved changes</span>}
-        <button type="button" onClick={onRevert} disabled={!isDirty || saving} className="actionMenuRenameCancelBtn">
+        <button type="button" onClick={onRevert} disabled={!isDirty || saving} className={`${menuTextBtn} ${idleBtn} disabled:opacity-40`}>
           Revert
         </button>
-        <button type="submit" disabled={!isDirty || saving || !canSave} className="actionMenuRenameSaveBtn">
+        <button type="submit" disabled={!isDirty || saving || !canSave} className={`${menuTextBtn} menuBtnAction ${idleBtn} disabled:opacity-40`}>
           {saving ? 'Saving...' : 'Save'}
         </button>
       </div>

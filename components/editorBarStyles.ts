@@ -69,3 +69,9 @@ export function barToggleOption(selected: boolean, disabled = false): string {
   if (disabled) return `border border-transparent ${barDisabledBtn}`;
   return selected ? `border cursor-default ${activeBtn}` : `${barGhostBtn} cursor-pointer`;
 }
+
+/** A flyout's text button (Fill, Revert, Save). `.menuBtn` is what the EmberSteel theme draws as its flyout button:
+    a slate one, or the amber primary one with `.menuBtnAction` added, flat and quiet while disabled. Other themes
+    add idleBtn / activeBtn for their look. */
+export const menuTextBtn =
+  'menuBtn flex items-center justify-center gap-1.5 px-2 h-[26px] rounded-lg border text-xs font-bold transition cursor-pointer disabled:cursor-default';

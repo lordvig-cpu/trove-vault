@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { FlexContainerNode } from '@/types/layout';
 import { useCanvasZoom } from '@/context/CanvasZoomContext';
 import { HelpCircleIcon, FillIcon } from '@/components/icons/LayoutIcons';
-import { activeBtn, barControlHeight, idleBtn } from '@/components/editorBarStyles';
+import { activeBtn, barControlHeight, idleBtn, menuTextBtn } from '@/components/editorBarStyles';
 import HoverHint, { HintRef, type HintContent } from '@/components/HoverHint';
 import UnitSelect from '@/components/UnitSelect';
 
@@ -144,9 +144,7 @@ export default function TemplateBodyDimensions({ root, onUpdate }: TemplateBodyD
           onClick={() => onUpdate({ maxWidth: undefined })}
           disabled={isFill}
           title={isFill ? 'The layout already fills the screen' : 'Stretch the layout to fill the screen'}
-          className={`menuBtn menuBtnAction flex items-center justify-center gap-1.5 px-2 ${barControlHeight} rounded-lg border text-xs font-bold transition cursor-pointer disabled:cursor-default ${
-            isFill ? activeBtn : idleBtn
-          }`}
+          className={`${menuTextBtn} menuBtnAction ${isFill ? activeBtn : idleBtn}`}
         >
           <FillIcon className="w-3.5 h-3.5" />
           <span>{isFill ? 'Filled' : 'Fill'}</span>
