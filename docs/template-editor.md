@@ -215,6 +215,11 @@ need before changing the editor, the layout engine, the gear flyouts or the item
   drag by the title bar, close button, Escape), until closed or another menu opens. A header pulldown with a pinned
   menu is held mounted (hidden once closed, even after it is docked) until that menu closes (`lib/flyoutHold.ts`),
   since the menu still lives in its tree.
+- **Prototype (Item menu only):** the Item menu has no tabs. Its actions are an icon bar on the band under the
+  title (`MenuActionBar` in `TreeSubMenu.tsx`: each icon's hover help, after a short rest, names it and says what
+  it does; Delete always sits apart at the far right) over its Properties, so actions and properties show together.
+  If it works out it replaces the Actions tab in every menu, with grouped actions opening a small pulldown like the
+  toolbar's Add / Split, and menus with no properties (Category, the Blueprint's built-ins) keep labelled rows.
 - The Items / Collections / Templates trees' menus are Actions | Properties flyouts titled "Item",
   "Collection", "Template" (wide shell, like the template flyouts; a title never repeats "Properties", since the
   tabs already say it). Properties edits what
@@ -228,7 +233,7 @@ need before changing the editor, the layout engine, the gear flyouts or the item
   there are unsaved changes, flat and quiet otherwise) sit in the menu's footer: a strip on its bottom edge, edge to edge and outside
   the scrolling content (`TreeSubMenu`'s `.menuShellFooter`, which the bar portals into via `useMenuFooter`; Save
   reaches its form through the `form` attribute), and only act while there are unsaved changes; a save is one all-or-nothing write. An
-  item's form loads only when its Properties tab is showing (each load fetches the template catalog), reloads
+  item's form loads only once its menu is open (each load fetches the template catalog), reloads
   when the saved item changes unless there are unsaved edits, and keeps those across the flyout closing (the
   state lives in the always-mounted menu component). Its required template fields are checked on Save (naming
   the missing ones and opening the Fields card), not by the browser, which can't check a field in a closed card.

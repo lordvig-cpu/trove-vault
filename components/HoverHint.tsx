@@ -62,6 +62,8 @@ export interface HintNote {
  */
 export interface HintContent {
   title: string;
+  /** A plain line or two under the title, before any sections (e.g. what an action does). */
+  description?: React.ReactNode;
   settings?: HintSetting[];
   notes?: HintNote[];
 }
@@ -150,6 +152,7 @@ export function HintBubble({
       <div className="menuShell menuShellBody">
         <div className="innerContent">
           <div className="childrenContainer">
+            {hint.description && <p className="hoverHintDescription">{hint.description}</p>}
             {hint.settings && hint.settings.length > 0 && (
               <>
                 <div className="properties-section-heading">
@@ -215,29 +218,41 @@ export default function HoverHint({
   hint,
   children,
   interactive = false,
+  showDelayMs = 0,
 }: {
   hint: HintContent;
   children: React.ReactNode;
   /** The child is itself a focusable control (a button): don't add a second tab stop. */
   interactive?: boolean;
+  /** Open only once the pointer has rested on the trigger this long (a row of them, swept across, then doesn't
+      set off a burst of bubbles). Keyboard focus still opens it at once. */
+  showDelayMs?: number;
 }) {
   const id = useId();
   const [rect, setRect] = useState<DOMRect | null>(null);
   const bubbleRef = useRef<HTMLDivElement>(null);
   const hideTimer = useRef<number | undefined>(undefined);
+  const showTimer = useRef<number | undefined>(undefined);
   const pointerInside = useRef(false); // over the `?` or its bubble
   const isWindowOpen = useIsHelpWindowOpen(hint.title);
 
   const show = (el: HTMLElement) => setRect(el.getBoundingClientRect());
   const hide = () => setRect(null);
   const cancelHide = () => window.clearTimeout(hideTimer.current);
+  const cancelShow = () => window.clearTimeout(showTimer.current);
   const hideSoon = () => {
     cancelHide();
     hideTimer.current = window.setTimeout(() => {
       if (!pointerInside.current) hide();
     }, HIDE_DELAY_MS);
   };
-  useEffect(() => cancelHide, []);
+  useEffect(
+    () => () => {
+      cancelHide();
+      cancelShow();
+    },
+    []
+  );
 
   const enter = () => {
     pointerInside.current = true;
@@ -245,6 +260,7 @@ export default function HoverHint({
   };
   const leave = () => {
     pointerInside.current = false;
+    cancelShow();
     hideSoon();
   };
 
@@ -278,7 +294,13 @@ export default function HoverHint({
         aria-describedby={rect ? id : undefined}
         onMouseEnter={(e) => {
           enter();
-          show(e.currentTarget);
+          const el = e.currentTarget;
+          if (showDelayMs > 0) {
+            cancelShow();
+            showTimer.current = window.setTimeout(() => show(el), showDelayMs);
+          } else {
+            show(el);
+          }
         }}
         onMouseLeave={leave}
         onFocus={(e) => {

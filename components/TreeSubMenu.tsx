@@ -306,6 +306,54 @@ export function ActionMenuDangerItem({
 }
 
 // Visual separator between groups of related menu actions.
+/** One action in a menu's action bar (MenuActionBar). */
+export interface MenuAction {
+  id: string;
+  label: string;
+  /** What it does, shown under the label in its hover help. */
+  description?: string;
+  Icon: React.ComponentType<{ className?: string }>;
+  onClick: () => void;
+  /** Destructive (Delete): drawn red, and always at the far right. */
+  danger?: boolean;
+}
+
+/** How long the pointer rests on an action before its help opens, so sweeping across the bar stays quiet. */
+const ACTION_HINT_DELAY_MS = 500;
+
+/**
+ * A menu's actions as a row of icon buttons on the band under its title, in place of an Actions tab, so actions
+ * and properties show together. Each icon's hover help (HoverHint, after a short rest) names it and says what it
+ * does; a destructive action sits apart at the far right.
+ */
+export function MenuActionBar({ actions }: { actions: MenuAction[] }) {
+  const renderAction = (action: MenuAction) => (
+    <HoverHint
+      key={action.id}
+      interactive
+      showDelayMs={ACTION_HINT_DELAY_MS}
+      hint={{ title: action.label, description: action.description }}
+    >
+      <button
+        type="button"
+        aria-label={action.label}
+        onClick={action.onClick}
+        className={action.danger ? 'menuActionBtn menuActionBtnDanger' : 'menuActionBtn'}
+      >
+        <action.Icon className="w-4 h-4" />
+      </button>
+    </HoverHint>
+  );
+  const danger = actions.filter((action) => action.danger);
+  return (
+    <div className="menuTabs menuActionBar" role="toolbar" aria-label="Actions">
+      {actions.filter((action) => !action.danger).map(renderAction)}
+      {danger.length > 0 && <span className="menuActionBarSpacer" aria-hidden="true" />}
+      {danger.map(renderAction)}
+    </div>
+  );
+}
+
 /** A line between groups of actions (before Delete). No top margin: the row above already ends in the 6px gap
     between action rows, so the same 6px below keeps the line centered between the two. */
 export function ActionMenuDivider() {

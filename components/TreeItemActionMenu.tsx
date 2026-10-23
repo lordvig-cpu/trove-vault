@@ -3,18 +3,11 @@
 import React, { useState } from 'react';
 import { AddSubItemIcon } from '@/components/icons/TreeIcons';
 import { FileIcon } from '@/components/icons/ContentIcons';
-import TreeSubMenu, {
-  ActionMenuDangerItem,
-  ActionMenuDivider,
-  ActionMenuItem,
-  ActionMenuTabs,
-  ACTIONS_AND_PROPERTIES_TABS,
-} from '@/components/TreeSubMenu';
+import TreeSubMenu, { MenuActionBar } from '@/components/TreeSubMenu';
 import TreeItemProperties, { type ItemPropertySection } from '@/components/TreeItemProperties';
 import { useTreeActions } from '@/context/TreeActionsContext';
 import { useItemEditor } from '@/hooks/useItemEditor';
 import { ItemRecord } from '@/types/item';
-import type { MenuTab } from '@/lib/menuTabRequest';
 import { useTreeActionMenu } from '@/hooks/useTreeActionMenu';
 import { TrashCanIcon } from '@/components/icons/PanelIcons';
 
@@ -25,11 +18,9 @@ interface TreeItemActionMenuProps {
   position?: 'left' | 'right';
 }
 
-const TABS = ACTIONS_AND_PROPERTIES_TABS;
-
-/** Gear-icon flyout for an Item row in the tree. Actions: add a sub-item, delete. Properties: everything
-    about the item (TreeItemProperties), saved with Save. Actions come from TreeActionsContext; open / close
-    / position state comes from the caller's useTreeActionMenu. */
+/** Gear-icon flyout for an Item row in the tree: its actions (add a sub-item, delete) as an icon bar under the title
+    (MenuActionBar), over everything about the item (TreeItemProperties), saved with Save -- one view, no tabs.
+    Actions come from TreeActionsContext; open / close / position state comes from the caller's useTreeActionMenu. */
 export default function TreeItemActionMenu({
   item,
   collectionId,
@@ -38,17 +29,16 @@ export default function TreeItemActionMenu({
 }: TreeItemActionMenuProps) {
   const { onAddSubItem, onDeleteItem, onItemSaved } = useTreeActions();
 
-  // Kept here (this component stays mounted with its row, unlike the menu's own contents) so the active
-  // tab, the open cards and any unsaved edits survive the flyout closing and reopening.
-  const [activeTab, setActiveTab] = useState<MenuTab>('actions');
+  // Kept here (this component stays mounted with its row, unlike the menu's own contents) so the open cards and
+  // any unsaved edits survive the flyout closing and reopening.
   const [openSections, setOpenSections] = useState<Record<ItemPropertySection, boolean>>({
     template: false,
     photo: true,
     fields: true,
     custom: false,
   });
-  // Loads the item only once Properties is actually showing (each load fetches the template catalog)
-  const editor = useItemEditor(item, menu.isMenuOpen && activeTab === 'properties');
+  // Loads the item once the menu is open (each load fetches the template catalog), not for every row up front
+  const editor = useItemEditor(item, menu.isMenuOpen);
 
   return (
     <TreeSubMenu
@@ -64,40 +54,40 @@ export default function TreeItemActionMenu({
       className="menuShellXWide"
       title="Item"
       titleIcon={<FileIcon className="w-4 h-4" />}
-      subheader={<ActionMenuTabs tabs={TABS} active={activeTab} onChange={setActiveTab} />}
-    >
-      {activeTab === 'actions' ? (
-        <>
-          <ActionMenuItem
-            icon={<AddSubItemIcon className="w-3.5 h-3.5" />}
-            label="Add child item"
-            subtext="Create a nested record"
-            onClick={() => {
-              onAddSubItem(collectionId, item.id);
-              menu.closeMenu();
-            }}
-          />
-
-          <ActionMenuDivider />
-
-          <ActionMenuDangerItem
-            icon={<TrashCanIcon />}
-            label="Delete"
-            subtext="Permanently remove"
-            onClick={() => {
-              onDeleteItem(item, collectionId);
-              menu.closeMenu();
-            }}
-          />
-        </>
-      ) : (
-        <TreeItemProperties
-          editor={editor}
-          openSections={openSections}
-          onToggleSection={(section) => setOpenSections((prev) => ({ ...prev, [section]: !prev[section] }))}
-          onSaved={() => onItemSaved?.(collectionId)}
+      subheader={
+        <MenuActionBar
+          actions={[
+            {
+              id: 'add-child',
+              label: 'Add child item',
+              description: 'Create a nested record',
+              Icon: AddSubItemIcon,
+              onClick: () => {
+                onAddSubItem(collectionId, item.id);
+                menu.closeMenu();
+              },
+            },
+            {
+              id: 'delete',
+              label: 'Delete',
+              description: 'Permanently remove',
+              Icon: TrashCanIcon,
+              danger: true,
+              onClick: () => {
+                onDeleteItem(item, collectionId);
+                menu.closeMenu();
+              },
+            },
+          ]}
         />
-      )}
+      }
+    >
+      <TreeItemProperties
+        editor={editor}
+        openSections={openSections}
+        onToggleSection={(section) => setOpenSections((prev) => ({ ...prev, [section]: !prev[section] }))}
+        onSaved={() => onItemSaved?.(collectionId)}
+      />
     </TreeSubMenu>
   );
 }

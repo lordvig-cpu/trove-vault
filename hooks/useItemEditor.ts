@@ -13,7 +13,7 @@ import type { ItemTemplate } from '@/types/template';
    Save and Revert. Shared by the Edit Item modal and an item flyout's Properties tab, so both load and
    save an item the same way (the save is updateItem's all-or-nothing one, photo upload included).
 
-   The item is loaded when the editor becomes `active` (the modal opening, the Properties tab showing) --
+   The item is loaded when the editor becomes `active` (the modal opening, an item menu opening) --
    not before, since every Items-tree row has an editor and each load fetches the template catalog -- and
    again whenever the saved item changes (after a save, or someone else's edit), unless there are unsaved
    changes, which are never thrown away behind the user's back.
