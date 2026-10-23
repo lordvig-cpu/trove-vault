@@ -59,7 +59,10 @@ export function useTreeActionMenu(
   rowId: string,
   defaultMenuHeight: number = 215,
   position: 'left' | 'right' = 'left',
-  menuWidth: number = 224
+  menuWidth: number = 224,
+  /** The menu's controls change the template canvas live (a Layout-tree node's), so it doesn't dim it while a
+      template is being edited (lib/treeMenuDim.ts). */
+  editsCanvas = false
 ) {
   /* ------------------------------------------------------------------------
      2.1 REFERENCES & TIMERS
@@ -147,9 +150,9 @@ export function useTreeActionMenu(
 
   // An open (hovered or pinned), docked (not floating) menu dims the canvas behind it (lib/treeMenuDim.ts).
   useEffect(() => {
-    setTreeMenuDim(id, isMenuOpen && !isFloating);
+    setTreeMenuDim(id, isMenuOpen && !isFloating, editsCanvas);
     return () => setTreeMenuDim(id, false);
-  }, [id, isMenuOpen, isFloating]);
+  }, [id, isMenuOpen, isFloating, editsCanvas]);
 
   /* ------------------------------------------------------------------------
      2.4 VIEWPORT GEOMETRY & CLAMPING

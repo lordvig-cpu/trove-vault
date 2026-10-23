@@ -405,7 +405,7 @@ function ContainerNodeRow({
   const isDimmed = ancestorHidden || hiddenIds.has(container.id);
   // Right-docked panels position the flyout by its real width: every container's flyout (Body or not) is the
   // two-tab menuShellXWide shell.
-  const menu = useTreeActionMenu(`tree-container-${container.id}`, 280, position, MENU_WIDTH_PX.xwide);
+  const menu = useTreeActionMenu(`tree-container-${container.id}`, 280, position, MENU_WIDTH_PX.xwide, true);
 
   // Semantic layout icon (a card frame is only a look, not a kind of container, so it shows its direction too)
   const containerIcon = isRoot ? (
@@ -663,7 +663,7 @@ function ComponentNodeRow({
   const isSelected = selectedNodeId === component.id;
   // Right-docked panels position the flyout by its real width: like a container's, a content flyout is the
   // two-tab menuShellXWide shell.
-  const menu = useTreeActionMenu(`tree-comp-${component.id}`, 280, position, MENU_WIDTH_PX.xwide);
+  const menu = useTreeActionMenu(`tree-comp-${component.id}`, 280, position, MENU_WIDTH_PX.xwide, true);
   const move = useNodeDrag(component.id, 'component');
   const { hiddenIds } = useContext(TreeVisibilityContext);
   const isDimmed = ancestorHidden || hiddenIds.has(component.id);

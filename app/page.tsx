@@ -201,7 +201,7 @@ export default function Home() {
     },
   });
 
-  const treeMenuDim = useTreeMenuDim();
+  const treeMenuDim = useTreeMenuDim(templateEditor.isEditing);
 
   // What the template editor's canvas and preview draw content with: the first real item of the template
   // being edited (so a Name shows an actual name), with its collections' names. None -> sample values.
@@ -635,9 +635,9 @@ export default function Home() {
                 isPrimaryFlyoutOpen ||
                 isCollectionsFlyoutOpen ||
                 isTemplatesFlyoutOpen ||
-                // A pinned tree submenu dims the canvas too -- but not while editing a template, where the canvas
-                // is what the menu's controls are changing.
-                (treeMenuDim && !templateEditor.isEditing)
+                // An open tree submenu dims the canvas too -- while editing a template, only one that doesn't edit
+                // the canvas (a Layout-tree node's menu changes it live, so it stays clear: lib/treeMenuDim.ts)
+                treeMenuDim
               }
               onAddSubItem={openCreateItem}
               onEditItem={handleTriggerEditItem}
