@@ -377,8 +377,8 @@
    content sits centered in its body whether it is plain action rows (no margin of their own) or section
    cards (whose last one gives up its usual gap below, which would otherwise add to this). */
 [data-theme='theme-oklch-dark'] .menuShellBody .childrenContainer {
-  padding-top: 0.75rem;
-  padding-bottom: 0.75rem;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
 }
 
 [data-theme='theme-oklch-dark'] .menuShellBody .childrenContainer > .menuSection:last-child {
