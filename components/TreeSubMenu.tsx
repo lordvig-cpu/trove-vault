@@ -329,7 +329,7 @@ export interface MenuActionGroup {
     id: string;
     /** The option's text, e.g. "Before", or "Next: General Information". */
     label: string;
-    /** What it does, shown as the option's tooltip. */
+    /** What it does, shown under the label in the option's hover help. */
     description?: string;
     /** Its icon, already sized (w-3.5 h-3.5, like the toolbar's options). */
     icon?: React.ReactNode;
@@ -423,17 +423,26 @@ function MenuActionGroupButton({ group }: { group: MenuActionGroup }) {
           <div ref={listRef} className="fixed z-[89] pt-1" style={{ top: at.top - 4, left: at.left }} role="menu">
             <div className="tmpl-edge-panel tmpl-edge-menu rounded-xl p-1 flex flex-col gap-0.5 min-w-[9rem] max-h-[60vh] overflow-y-auto">
               <GroupHeading label={group.label} />
+              {/* Each option's hover help opens beside the list, after the same rest, so it never covers the
+                  options under it */}
               {group.items.map((item) => (
-                <GroupOption
+                <HoverHint
                   key={item.id}
-                  icon={item.icon}
-                  label={item.label}
-                  title={item.description ?? item.label}
-                  onClick={() => {
-                    close();
-                    item.onClick();
-                  }}
-                />
+                  interactive
+                  showDelayMs={ACTION_HINT_DELAY_MS}
+                  placement="side"
+                  wrapperClassName="flex flex-col"
+                  hint={{ title: item.label, description: item.description }}
+                >
+                  <GroupOption
+                    icon={item.icon}
+                    label={item.label}
+                    onClick={() => {
+                      close();
+                      item.onClick();
+                    }}
+                  />
+                </HoverHint>
               ))}
             </div>
           </div>,

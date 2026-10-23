@@ -219,6 +219,8 @@ export default function HoverHint({
   children,
   interactive = false,
   showDelayMs = 0,
+  placement = 'below',
+  wrapperClassName,
 }: {
   hint: HintContent;
   children: React.ReactNode;
@@ -227,6 +229,11 @@ export default function HoverHint({
   /** Open only once the pointer has rested on the trigger this long (a row of them, swept across, then doesn't
       set off a burst of bubbles). Keyboard focus still opens it at once. */
   showDelayMs?: number;
+  /** Where the bubble opens: below the trigger (above when it is low on the screen), or beside it (to its right, or
+      its left when there's no room) for a trigger in a list, so the bubble doesn't cover the items under it. */
+  placement?: 'below' | 'side';
+  /** The trigger wrapper's classes, in place of its inline-flex (e.g. to fill a list row's width). */
+  wrapperClassName?: string;
 }) {
   const id = useId();
   const [rect, setRect] = useState<DOMRect | null>(null);
@@ -276,7 +283,13 @@ export default function HoverHint({
   };
 
   let style: React.CSSProperties | null = null;
-  if (rect && !isWindowOpen) {
+  if (rect && !isWindowOpen && placement === 'side') {
+    const fitsRight = rect.right + GAP_PX + HINT_WIDTH_PX + EDGE_PX <= window.innerWidth;
+    style = {
+      left: fitsRight ? rect.right + GAP_PX : Math.max(rect.left - GAP_PX - HINT_WIDTH_PX, EDGE_PX),
+      top: Math.max(rect.top, EDGE_PX),
+    };
+  } else if (rect && !isWindowOpen) {
     const left = Math.min(
       Math.max(rect.right - HINT_WIDTH_PX, EDGE_PX),
       Math.max(window.innerWidth - HINT_WIDTH_PX - EDGE_PX, EDGE_PX)
@@ -314,7 +327,7 @@ export default function HoverHint({
             popOut();
           }
         }}
-        className={interactive ? 'inline-flex' : 'inline-flex cursor-help'}
+        className={wrapperClassName ?? (interactive ? 'inline-flex' : 'inline-flex cursor-help')}
       >
         {children}
       </span>

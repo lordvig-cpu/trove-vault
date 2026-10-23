@@ -164,7 +164,8 @@ export function GroupOption({
 }: {
   icon?: React.ReactNode;
   label: React.ReactNode;
-  title: string;
+  /** A native tooltip; left out when the option has its own hover help (a menu action bar group's options). */
+  title?: string;
   active?: boolean;
   disabled?: boolean;
   onClick: () => void;
