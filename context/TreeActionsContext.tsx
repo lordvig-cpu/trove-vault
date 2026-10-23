@@ -11,7 +11,7 @@ export interface TreeActionsContextValue {
   onAddSubItem: (collectionId: number | null, parentItemId?: number | null) => void;
   onEditTemplate?: (categoryId: number) => void;
   onDeleteItem: (item: ItemRecord, collectionId: number | null) => void;
-  /** After an item flyout's Properties tab saved the item: refresh the workspace data. */
+  /** After an item flyout's Properties saved the item: refresh the workspace data. */
   onItemSaved?: (collectionId: number | null) => void;
   onRenameCollection?: (id: number, nextName: string) => Promise<void> | void;
   onRenameTemplate?: (id: number, nextName: string) => Promise<void> | void;
