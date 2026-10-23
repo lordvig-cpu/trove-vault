@@ -236,6 +236,11 @@
   background: var(--ember-menu-deep);
 }
 
+/* The line under a help bubble's header is the slate edge a menu draws above its action band. */
+[data-theme='theme-oklch-dark'] .hoverHint .menuShellHead .menuTabs {
+  border-bottom-color: var(--ember-menu-edge);
+}
+
 /* The band under a menu's title (its action bar, or tabs), which a help bubble's body shares. */
 [data-theme='theme-oklch-dark'] .menuShellHead .menuTabs,
 [data-theme='theme-oklch-dark'] .hoverHint .menuShellBody {

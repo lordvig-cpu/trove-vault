@@ -473,7 +473,7 @@
 }
 
 /* A help bubble's body is the band behind a menu's action icons (EmberSteel's own band color is in its theme file),
-   a step darker than its header, and nothing draws a line between the two: that change of shade is the divider. */
+   a step darker than its header, under the same single line a menu draws between its title and that band. */
 .hoverHint .menuShellBody {
   background: var(--flyout-tab-band);
 }
@@ -483,7 +483,7 @@
 }
 
 .hoverHint .menuShellHead .menuTabs {
-  border-bottom: 0;
+  border-bottom: 1px solid var(--flyout-card-border);
   box-shadow: none;
 }
 
@@ -526,6 +526,18 @@
   align-items: center;
   gap: 0.625rem;
   padding: 0 0.25rem;
+}
+
+/* The tile and icon are the menu action bar's size (.menuActionBtn), whatever size the icon was given. */
+.hoverHintAction :is(.actionMenuItemIcon, .actionMenuDangerIcon) {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 0.5rem;
+}
+
+.hoverHintAction :is(.actionMenuItemIcon, .actionMenuDangerIcon) svg {
+  width: 1rem;
+  height: 1rem;
 }
 
 .hoverHintAction + .hoverHintDescription {
