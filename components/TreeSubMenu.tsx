@@ -366,7 +366,7 @@ export function ActionMenuTabs<T extends string>({
               {isActive ? (
                 <>
                   <tab.Icon className="w-3.5 h-3.5" />
-                  <span>{tab.label}</span>
+                  <span className="tree-folder-tab-label">{tab.label}</span>
                 </>
               ) : (
                 <tab.Icon className="w-[17px] h-[17px]" />

@@ -294,6 +294,13 @@
   user-select: none;
 }
 
+/* A tab's name, trimmed to its capitals and baseline, so the box centered in the tab (and against the icon beside
+   it) is the letters themselves rather than the font's taller line box, which sat the icon visibly high. */
+.tree-folder-tab-label {
+  text-box: trim-both cap alphabetic;
+  white-space: nowrap;
+}
+
 .tree-folder-tab-idle {
   color: var(--primary-tree-tab-text-idle);
 }

@@ -228,7 +228,7 @@ export default function PanelViewTabs({
                     ) : (
                       <>
                         {TabIcon && <TabIcon className="w-3.5 h-3.5" />}
-                        <span className="whitespace-nowrap">{tabLabel}</span>
+                        <span className="tree-folder-tab-label">{tabLabel}</span>
                       </>
                     )}
                   </span>

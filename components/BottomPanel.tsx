@@ -261,7 +261,7 @@ export default function BottomPanel({
                 />
                 {/* Always the active tab, so it shows its name (no icon), like the side panels' active tab */}
                 <span className="relative z-10 flex items-center select-none">
-                  <span className="text-[12px] tracking-tight whitespace-nowrap">{tabLabel}</span>
+                  <span className="tree-folder-tab-label text-[12px] tracking-tight">{tabLabel}</span>
                 </span>
               </button>
             </div>
