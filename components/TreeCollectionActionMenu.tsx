@@ -65,8 +65,7 @@ export default function TreeCollectionActionMenu({
       >
         <ActionMenuItem
           icon={<FileIcon />}
-          label="New:"
-          labelDetail="Item"
+          label="New item"
           subtext="Add record to this category"
           onClick={() => {
             onAddSubItem(collection.id, null);
@@ -75,8 +74,7 @@ export default function TreeCollectionActionMenu({
         />
         <ActionMenuItem
           icon={<GearIcon className="w-3.5 h-3.5" />}
-          label="Edit:"
-          labelDetail="Item Template"
+          label="Edit item template"
           subtext="Manage attributes & schema"
           onClick={() => {
             if (collection.id !== UNCATEGORIZED_CATEGORY_ID) onEditTemplate?.(Math.abs(collection.id));
@@ -109,8 +107,7 @@ export default function TreeCollectionActionMenu({
       <>
       <ActionMenuItem
         icon={<FileIcon />}
-        label="New:"
-        labelDetail="Item"
+        label="New item"
         subtext="Create item in this collection"
         onClick={() => {
           onAddSubItem(collection.id, null);
@@ -120,8 +117,7 @@ export default function TreeCollectionActionMenu({
 
       <ActionMenuItem
         icon={<InboxIcon />}
-        label="Add:"
-        labelDetail="Existing Item"
+        label="Add existing item"
         subtext="Link catalog item here"
         onClick={() => {
           // Not implemented yet: linking an existing catalog item to a collection.
@@ -132,8 +128,7 @@ export default function TreeCollectionActionMenu({
       {onEditCollection && (
         <ActionMenuItem
           icon={<GearIcon className="w-3.5 h-3.5" />}
-          label="Edit:"
-          labelDetail="Collection Settings"
+          label="Edit collection settings"
           subtext="Manage collection metadata"
           onClick={() => {
             onEditCollection(collection);
@@ -145,8 +140,7 @@ export default function TreeCollectionActionMenu({
       {onAddSubCollection && (
         <ActionMenuItem
           icon={<FolderIcon />}
-          label="New:"
-          labelDetail="Sub-Collection"
+          label="New sub-collection"
           subtext="Create a nested collection"
           onClick={() => {
             onAddSubCollection(collection.id);

@@ -306,8 +306,10 @@ export function ActionMenuDangerItem({
 }
 
 // Visual separator between groups of related menu actions.
+/** A line between groups of actions (before Delete). No top margin: the row above already ends in the 6px gap
+    between action rows, so the same 6px below keeps the line centered between the two. */
 export function ActionMenuDivider() {
-  return <div className="my-1 mx-2 tree-menu-divider" />;
+  return <div className="mb-1.5 mx-2 tree-menu-divider" />;
 }
 
 // Two-or-more tab switcher for a menu that mixes kinds of content (e.g. Actions / Properties).

@@ -66,8 +66,7 @@ export default function TreeTemplateActionMenu({
       <>
       <ActionMenuItem
         icon={<FileIcon />}
-        label="New:"
-        labelDetail="Item"
+        label="New item"
         subtext="Create item with this template"
         onClick={() => {
           onAddSubItem(-rawTemplateId, null);
@@ -78,8 +77,7 @@ export default function TreeTemplateActionMenu({
       {onEditTemplate && (
         <ActionMenuItem
           icon={<GearIcon className="w-3.5 h-3.5" />}
-          label="Edit:"
-          labelDetail="Template"
+          label="Edit template"
           subtext="Configure blueprint & fields schema"
           onClick={() => {
             onEditTemplate(rawTemplateId);

@@ -70,8 +70,7 @@ export default function TreeItemActionMenu({
         <>
           <ActionMenuItem
             icon={<AddSubItemIcon className="w-3.5 h-3.5" />}
-            label="Add:"
-            labelDetail="Child Item"
+            label="Add child item"
             subtext="Create a nested record"
             onClick={() => {
               onAddSubItem(collectionId, item.id);

@@ -96,7 +96,7 @@ need before changing the editor, the layout engine, the gear flyouts or the item
   order, a group shown only once it holds something. The built-in values every item has (Name under Text, Created
   under Date, and Image, Collections, Sub-items) lead their groups, tagged "Built-in"; their gear is Actions only
   (`BlueprintBuiltinActionMenu`), since there is nothing to rename, retype, move or delete. The template's own
-  fields follow in field order; their gear is `TemplateFieldActionMenu` (Properties, plus Move: Up / Down within the
+  fields follow in field order; their gear is `TemplateFieldActionMenu` (Properties, plus Move up / Move down within the
   group -- `moveWithinGroup`, which swaps with the nearest same-group field, since the overall order still drives
   the item forms -- and Delete). Every row's Actions offers **Place: <container>** (the active container, named as
   `resolveContentTarget` resolves it), and every row drags onto the canvas or a Layout-tree container

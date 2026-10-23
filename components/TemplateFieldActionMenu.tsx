@@ -291,8 +291,7 @@ export default function TemplateFieldActionMenu({
       {onMoveField && canMoveUp && (
         <ActionMenuItem
           icon={<ChevronUpIcon />}
-          label="Move:"
-          labelDetail="Up"
+          label="Move up"
           subtext="Earlier in its group"
           onClick={() => onMoveField(field.id, 'up')}
         />
@@ -300,8 +299,7 @@ export default function TemplateFieldActionMenu({
       {onMoveField && canMoveDown && (
         <ActionMenuItem
           icon={<ChevronDownIcon className="w-3 h-3" />}
-          label="Move:"
-          labelDetail="Down"
+          label="Move down"
           subtext="Later in its group"
           onClick={() => onMoveField(field.id, 'down')}
         />
