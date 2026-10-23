@@ -337,11 +337,11 @@ export default function FlexContainerRenderer({
             ? 'rounded-2xl bg-[var(--content-card-bg)] border border-[var(--content-card-border)] shadow-md backdrop-blur-sm'
             : ''
           : isDragOver
-          ? 'rounded-2xl outline-2 outline-[var(--primary-accent)] -outline-offset-2 ring-2 ring-[var(--primary-accent)] ring-offset-2 ring-offset-[var(--surface-panel)] bg-[color-mix(in_oklch,var(--primary-accent)_16%,transparent)] shadow-2xl shadow-[color-mix(in_oklch,var(--primary-accent)_25%,transparent)]'
+          ? 'rounded-2xl outline-2 outline-accent-primary -outline-offset-2 ring-2 ring-accent-primary ring-offset-2 ring-offset-[var(--surface-panel)] bg-[color-mix(in_oklch,var(--primary-accent)_16%,transparent)] shadow-2xl shadow-[color-mix(in_oklch,var(--primary-accent)_25%,transparent)]'
           : isOverflowing
           ? 'rounded-2xl outline-2 outline-dashed outline-[var(--editor-invalid)] -outline-offset-2 bg-[color-mix(in_oklch,var(--editor-invalid)_10%,transparent)] shadow-lg shadow-[color-mix(in_oklch,var(--editor-invalid)_20%,transparent)]'
           : isSelected
-          ? 'rounded-2xl outline-2 outline-[var(--primary-accent)] -outline-offset-2 bg-[var(--editor-selected-fill)] shadow-xl shadow-[color-mix(in_oklch,var(--primary-accent)_10%,transparent)]'
+          ? 'rounded-2xl outline-2 outline-accent-primary -outline-offset-2 bg-[var(--editor-selected-fill)] shadow-xl shadow-[color-mix(in_oklch,var(--primary-accent)_10%,transparent)]'
           : isActive
           ? 'rounded-2xl outline outline-1 outline-[color-mix(in_oklch,var(--primary-accent)_50%,transparent)] -outline-offset-1 bg-[color-mix(in_oklch,var(--primary-accent)_6%,transparent)]'
           : isCard
@@ -375,7 +375,7 @@ export default function FlexContainerRenderer({
           container under the pointer, so a parent never shows its hint over a child's. */}
       {canvasMode === 'edit' && isDragOver && container.children.length > 0 && (
         <div className="pointer-events-none absolute inset-0 z-30 flex items-center justify-center p-4" aria-hidden="true">
-          <span className="text-xs font-bold text-[var(--primary-accent)] flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[var(--surface-panel)] border border-[color-mix(in_oklch,var(--primary-accent)_45%,transparent)] shadow-lg animate-pulse">
+          <span className="text-xs font-bold text-accent-primary flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[var(--surface-panel)] border border-[color-mix(in_oklch,var(--primary-accent)_45%,transparent)] shadow-lg animate-pulse">
             <InboxIcon className="inline w-3.5 h-3.5 align-text-bottom" /> {dropHint}
           </span>
         </div>
@@ -397,7 +397,7 @@ export default function FlexContainerRenderer({
               }`}
             >
               {isDragOver && (
-                <span className="text-xs font-bold text-[var(--primary-accent)] flex items-center gap-1.5 animate-pulse">
+                <span className="text-xs font-bold text-accent-primary flex items-center gap-1.5 animate-pulse">
                   <InboxIcon className="inline w-3.5 h-3.5 align-text-bottom" /> {dropHint}
                 </span>
               )}

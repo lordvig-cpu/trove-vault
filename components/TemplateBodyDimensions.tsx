@@ -135,7 +135,7 @@ export default function TemplateBodyDimensions({ root, onUpdate }: TemplateBodyD
               if (e.key === 'Enter') (e.target as HTMLInputElement).blur();
             }}
             aria-label="Maximum content width"
-            className={`min-w-0 flex-1 px-2 ${barControlHeight} text-xs font-mono text-strong text-right bg-surface-secondary border border-subtle rounded-l-lg rounded-r-none relative focus:z-10 focus:outline-none focus:border-[var(--secondary-accent)]`}
+            className={`min-w-0 flex-1 px-2 ${barControlHeight} text-xs font-mono text-strong text-right bg-surface-secondary border border-subtle rounded-l-lg rounded-r-none relative focus:z-10 focus:outline-none focus:border-accent-secondary`}
           />
           <UnitSelect value={unit} onChange={setUnit} label="Content width unit" />
         </div>

@@ -90,10 +90,6 @@ body {
   --color-border-subtle: var(--panel-border-subtle);
   --color-border-strong: var(--panel-border-strong);
 
-  --color-accent-primary: var(--brand-primary);
-  --color-accent-primary-hover: var(--brand-primary-hover);
-  --color-accent-secondary: var(--brand-secondary-amber);
-
   --color-content-primary: var(--text-primary);
   --color-content-secondary: var(--text-secondary);
   --color-content-muted: var(--text-muted);
@@ -102,6 +98,11 @@ body {
 /* Neutral poles (theme-oklch-dark.css / -light.css) as Tailwind colors: bg-shade/40, hover:border-glint,
    text-label. Inline so they resolve where used and follow the active light/dark mode. */
 @theme inline {
+  /* Accents resolve where used, the same as text-[var(--primary-accent)] did. */
+  --color-accent-primary: var(--brand-primary);
+  --color-accent-primary-hover: var(--brand-primary-hover);
+  --color-accent-secondary: var(--brand-secondary-amber);
+
   --color-shade: var(--pole-shade);
   --color-glint: var(--pole-glint);
   --color-sheen: var(--pole-sheen);

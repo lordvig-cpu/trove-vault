@@ -109,7 +109,7 @@ function PlaceholderComponent({
               <TableIcon />
               <span>{label}</span>
             </span>
-            <span className="text-[10px] font-mono text-[var(--primary-accent)]">
+            <span className="text-[10px] font-mono text-accent-primary">
               Specifications Table
             </span>
           </div>
@@ -159,7 +159,7 @@ function PlaceholderComponent({
           <span className="text-[10px] uppercase font-bold tracking-wider text-content-muted">
             {label}
           </span>
-          <span className="text-2xl font-extrabold text-[var(--primary-accent)] font-mono tracking-tight">
+          <span className="text-2xl font-extrabold text-accent-primary font-mono tracking-tight">
             98.5%
           </span>
           <span className="text-[9.5px] text-ok-text font-medium">
@@ -196,7 +196,7 @@ function PlaceholderComponent({
               {label}
             </span>
             {boundField && (
-              <span className="text-[9px] font-mono font-bold uppercase px-1 py-0.5 rounded bg-surface-hover text-[var(--primary-accent)] border border-border-subtle/60 shrink-0">
+              <span className="text-[9px] font-mono font-bold uppercase px-1 py-0.5 rounded bg-surface-hover text-accent-primary border border-border-subtle/60 shrink-0">
                 {boundField.field_type}
               </span>
             )}
@@ -265,12 +265,12 @@ export default function FlexComponentRenderer(props: {
         canvasMode === 'preview'
           ? ''
           : isSelected
-          ? 'outline-2 outline-[var(--primary-accent)] outline-offset-2 rounded-md cursor-pointer'
+          ? 'outline-2 outline-accent-primary outline-offset-2 rounded-md cursor-pointer'
           : 'outline outline-1 outline-dashed outline-[var(--primary-border-subtle)] outline-offset-2 rounded-md cursor-pointer hover:outline-[color-mix(in_oklch,var(--primary-accent)_50%,var(--primary-border-subtle))]'
       }`}
     >
       {canvasMode === 'edit' && isSelected && (
-        <div className="absolute -top-5 left-0 z-10 flex items-center gap-1 px-1.5 py-0.5 rounded bg-[var(--primary-accent)] text-[var(--pole-label)] text-[10px] font-semibold select-none">
+        <div className="absolute -top-5 left-0 z-10 flex items-center gap-1 px-1.5 py-0.5 rounded bg-accent-primary text-[var(--pole-label)] text-[10px] font-semibold select-none">
           <span className="truncate max-w-[16ch]">{contentNameOf(component, fields)}</span>
           <button
             type="button"

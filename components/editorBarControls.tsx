@@ -237,7 +237,7 @@ export function EditableName({
           if (e.key === 'Escape') finish(false);
         }}
         aria-label={ariaLabel}
-        className={`px-1.5 py-0.5 rounded-md bg-shade/40 border border-[var(--secondary-accent)] font-bold text-flyout-white focus:outline-none ${
+        className={`px-1.5 py-0.5 rounded-md bg-shade/40 border border-accent-secondary font-bold text-flyout-white focus:outline-none ${
           isTitle ? 'w-48 text-[13px] tracking-wide' : 'w-36 text-[11px]'
         }`}
       />

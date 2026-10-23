@@ -60,7 +60,7 @@ export default function ItemTemplatePicker({
           {filled.length > 0 && (
             <div className="flex items-center gap-1.5 item-modal-template-heading">
               <span className="font-mono text-[10px] px-1 py-0.2 rounded">
-                <DotIcon className="inline w-2 h-2 mr-1 text-[var(--primary-accent)]" />{filledLabel} ({filled.length})
+                <DotIcon className="inline w-2 h-2 mr-1 text-accent-primary" />{filledLabel} ({filled.length})
               </span>
               <span className="truncate">{filled.join(', ')}</span>
             </div>

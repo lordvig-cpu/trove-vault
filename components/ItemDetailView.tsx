@@ -119,7 +119,7 @@ export default function ItemDetailView({
     return (
       <div className="space-y-6 w-full">
         <div className="flex flex-col items-center justify-center text-center p-8 content-card">
-          <SearchGlassIcon className="w-9 h-9 mb-3 text-[var(--primary-accent)]" />
+          <SearchGlassIcon className="w-9 h-9 mb-3 text-accent-primary" />
           <h3 className="text-base font-semibold detail-heading">No Item Selected</h3>
           <p className="text-xs detail-muted mt-1 max-w-sm">
             Select an item from the tree or create a new one to view its attributes, hierarchy, and metadata.

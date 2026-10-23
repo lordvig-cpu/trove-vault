@@ -43,7 +43,7 @@ function Chip({ label, on, onClick }: { label: string; on: boolean; onClick: () 
       aria-pressed={on}
       className={`px-2 h-[24px] rounded-full border text-[11px] font-medium transition cursor-pointer flex items-center gap-1 shrink-0 ${
         on
-          ? 'bg-[color-mix(in_oklch,var(--primary-accent)_25%,transparent)] border-[var(--primary-accent)] text-content-strong'
+          ? 'bg-[color-mix(in_oklch,var(--primary-accent)_25%,transparent)] border-accent-primary text-content-strong'
           : 'bg-surface-secondary border-subtle text-muted hover:text-content-strong'
       }`}
     >
@@ -92,7 +92,7 @@ export default function AddPresetDialog({ kind, fields, targetName, onAdd, onCan
       <div role="dialog" aria-modal="true" aria-labelledby="add-preset-title" className="confirm-modal-dialog rounded-2xl w-full max-w-lg overflow-hidden">
         <div className="confirm-modal-header p-5 flex items-center justify-between">
           <div id="add-preset-title" className="flex items-center gap-2 font-bold text-base text-content-strong">
-            <span className="text-[var(--secondary-accent)] flex">{PRESET_ICONS[kind]}</span>
+            <span className="text-accent-secondary flex">{PRESET_ICONS[kind]}</span>
             <span>
               Add: <span className="text-[var(--primary-accent-bright)]">{info.label}</span>
             </span>

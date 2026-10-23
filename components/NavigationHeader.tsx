@@ -130,8 +130,8 @@ export default function NavigationHeader({
                   'border border-dashed border-[color-mix(in_oklch,var(--brand-primary)_45%,transparent)]',
                   'bg-[color-mix(in_oklch,var(--brand-primary)_10%,transparent)]',
                   'hover:bg-[color-mix(in_oklch,var(--brand-primary)_20%,transparent)]',
-                  'hover:border-[var(--brand-primary)]',
-                  'text-xs font-semibold text-[var(--brand-primary)]',
+                  'hover:border-accent-primary',
+                  'text-xs font-semibold text-accent-primary',
                   'cursor-grab active:cursor-grabbing transition-all duration-150',
                 ].join(' ')}
                 title="Drag and drop to dock into Primary, Secondary or Bottom Panel"

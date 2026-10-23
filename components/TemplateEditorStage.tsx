@@ -251,7 +251,7 @@ export default function TemplateEditorStage({
           <button
             type="button"
             onClick={onResetFlexLayout}
-            className="mt-2 px-4 py-2 text-xs font-semibold bg-[var(--primary-accent)] hover:bg-[var(--primary-accent-hover)] text-label rounded-xl transition cursor-pointer"
+            className="mt-2 px-4 py-2 text-xs font-semibold bg-accent-primary hover:bg-[var(--primary-accent-hover)] text-label rounded-xl transition cursor-pointer"
           >
             Auto-Generate Layout
           </button>

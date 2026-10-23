@@ -88,7 +88,7 @@ export const CONTENT_TEXT_HINT: HintContent = {
    -------------------------------------------------------------------------- */
 
 const LABEL_CLASS = 'menu-field-label text-[10px] font-semibold tracking-[0.04em] text-content-strong';
-const INPUT_CLASS = `w-full px-2 ${barControlHeight} text-xs text-strong bg-surface-secondary border border-subtle rounded-lg focus:outline-none focus:border-[var(--secondary-accent)] placeholder:text-muted/60`;
+const INPUT_CLASS = `w-full px-2 ${barControlHeight} text-xs text-strong bg-surface-secondary border border-subtle rounded-lg focus:outline-none focus:border-accent-secondary placeholder:text-muted/60`;
 
 /** A labeled row of mutually exclusive buttons (the same toggle group the container flyout uses). */
 function Segmented<T extends string | number>({
@@ -171,7 +171,7 @@ function NumberField({
             if (e.key === 'Enter') (e.target as HTMLInputElement).blur();
           }}
           aria-label={`${label} (${unit})`}
-          className={`min-w-0 flex-1 px-1.5 ${barControlHeight} text-xs font-mono text-strong text-right bg-surface-secondary border border-subtle rounded-l-lg rounded-r-none focus:outline-none focus:border-[var(--secondary-accent)] placeholder:text-muted/60`}
+          className={`min-w-0 flex-1 px-1.5 ${barControlHeight} text-xs font-mono text-strong text-right bg-surface-secondary border border-subtle rounded-l-lg rounded-r-none focus:outline-none focus:border-accent-secondary placeholder:text-muted/60`}
         />
         <span
           className={`px-1.5 ${barControlHeight} flex items-center text-[10px] font-semibold text-muted bg-surface-secondary border border-l-0 border-subtle rounded-r-lg`}
@@ -287,7 +287,7 @@ export function ContentSourceControls({ component, fields, onUpdate }: ControlsP
             onChange={(e) => setDraft(e.target.value)}
             onBlur={() => draft !== staticText && onUpdate({ binding: { kind: 'static', text: draft } })}
             aria-label="Static text"
-            className="w-full px-2 py-1.5 text-xs text-strong bg-surface-secondary border border-subtle rounded-lg focus:outline-none focus:border-[var(--secondary-accent)] resize-y"
+            className="w-full px-2 py-1.5 text-xs text-strong bg-surface-secondary border border-subtle rounded-lg focus:outline-none focus:border-accent-secondary resize-y"
           />
         </div>
       )}
@@ -451,7 +451,7 @@ function TextStyleControls({
       <button
         type="button"
         onClick={onReset}
-        className="self-start text-[10.5px] font-semibold text-[var(--secondary-accent)] hover:underline cursor-pointer"
+        className="self-start text-[10.5px] font-semibold text-accent-secondary hover:underline cursor-pointer"
         title="Remove this element's own text settings and return to its defaults"
       >
         Reset text style

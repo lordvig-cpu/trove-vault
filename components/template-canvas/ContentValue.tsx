@@ -42,7 +42,7 @@ function BooleanValue({ value, style }: { value: boolean | null; style: ContentD
         role="img"
         aria-label={value ? 'On' : 'Off'}
         className={`relative inline-block w-8 h-[18px] rounded-full border border-[var(--primary-border-strong)] ${
-          value ? 'bg-[var(--primary-accent)]' : 'bg-[color-mix(in_oklab,var(--text-muted)_25%,transparent)]'
+          value ? 'bg-accent-primary' : 'bg-[color-mix(in_oklab,var(--text-muted)_25%,transparent)]'
         }`}
       >
         <span
@@ -58,7 +58,7 @@ function BooleanValue({ value, style }: { value: boolean | null; style: ContentD
       role="img"
       aria-label={value ? 'Checked' : 'Unchecked'}
       className={`inline-flex items-center justify-center w-[18px] h-[18px] rounded border border-[var(--primary-border-strong)] ${
-        value ? 'bg-[var(--primary-accent)] text-[var(--pole-label)]' : ''
+        value ? 'bg-accent-primary text-[var(--pole-label)]' : ''
       }`}
     >
       {value && <CheckIcon className="w-3 h-3" />}

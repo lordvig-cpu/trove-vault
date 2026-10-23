@@ -81,7 +81,7 @@ function EndBox({
         if (e.key === 'Enter') (e.target as HTMLInputElement).blur();
       }}
       aria-label={label}
-      className={`w-14 min-w-0 px-1.5 ${barControlHeight} text-xs font-mono text-strong bg-surface-secondary border border-subtle rounded-lg focus:outline-none focus:border-[var(--secondary-accent)] placeholder:text-muted/60 ${
+      className={`w-14 min-w-0 px-1.5 ${barControlHeight} text-xs font-mono text-strong bg-surface-secondary border border-subtle rounded-lg focus:outline-none focus:border-accent-secondary placeholder:text-muted/60 ${
         align === 'right' ? 'text-right' : 'text-left'
       }`}
     />

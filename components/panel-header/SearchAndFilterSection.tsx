@@ -379,7 +379,7 @@ export default function SearchAndFilterSection({
                   isActive={showAdvancedSearch || isFilterActive}
                 />
                 {isFilterActive && !showAdvancedSearch && (
-                  <span className="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-[var(--brand-secondary-amber)] animate-pulse" />
+                  <span className="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-accent-secondary animate-pulse" />
                 )}
               </button>
 
@@ -435,7 +435,7 @@ export default function SearchAndFilterSection({
                   isActive={showAdvancedSearch || isFilterActive}
                 />
                 {isFilterActive && !showAdvancedSearch && (
-                  <span className="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-[var(--brand-secondary-amber)] animate-pulse" />
+                  <span className="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-accent-secondary animate-pulse" />
                 )}
               </button>
             </>

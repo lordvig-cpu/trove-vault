@@ -195,7 +195,7 @@ function SizeField({
             if (e.key === 'Enter') (e.target as HTMLInputElement).blur();
           }}
           aria-label={`${label || placeholder} (${unit})`}
-          className={`min-w-0 flex-1 px-1.5 ${barControlHeight} text-xs font-mono text-strong text-right bg-surface-secondary border border-subtle rounded-l-lg rounded-r-none relative focus:z-10 focus:outline-none focus:border-[var(--secondary-accent)] placeholder:text-muted/60`}
+          className={`min-w-0 flex-1 px-1.5 ${barControlHeight} text-xs font-mono text-strong text-right bg-surface-secondary border border-subtle rounded-l-lg rounded-r-none relative focus:z-10 focus:outline-none focus:border-accent-secondary placeholder:text-muted/60`}
         />
         <UnitSelect value={unit} onChange={changeUnit} label={`${label || 'Stack below'} unit`} disabled={pxOnly} />
       </div>
