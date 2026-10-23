@@ -241,7 +241,7 @@ need before changing the editor, the layout engine, the gear flyouts or the item
   `title`). A section's open / closed state is one setting shared by every flyout and remembered across sessions
   (`useActionSections`, localStorage `uc_action_sections`), all collapsed to start.
 - The Select Element section's rows are **Previous: <name>** and
-  **Next: <name>** (the name is in the Primary Accent, `ActionMenuItem`'s `labelDetail`): the element just above / below in the Layout tree's order
+  **Next: <name>** (the name is `ActionMenuItem`'s `labelDetail`; every action label is the Primary Accent): the element just above / below in the Layout tree's order
   (`lib/layoutNavigation.ts`: each container, then everything inside it; the Body first), each left out at
   either end. They exist so any element -- above all the Body, which a child usually covers completely on the
   canvas -- is reachable without the tree. Choosing one selects that element and opens *its* menu, on Actions,

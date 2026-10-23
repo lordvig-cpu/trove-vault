@@ -1073,16 +1073,9 @@
   transition: color 150ms ease;
 }
 
+/* The label ("Add: Child Item", "Next: Body") is the Primary Accent, brightened, hovered or not; the amber is left to
+   the icon tile. */
 .actionMenuItemLabel {
-  color: var(--tree-menu-item-text);
-}
-
-.actionMenuItem:hover .actionMenuItemLabel {
-  color: var(--tree-menu-item-hover-text);
-}
-
-/* The part after a label's colon (Select Next: <element>): the Primary Accent, brightened, hovered or not. */
-.actionMenuItemLabelDetail {
   color: var(--primary-accent-bright);
 }
 

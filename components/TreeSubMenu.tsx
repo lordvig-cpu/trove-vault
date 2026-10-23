@@ -233,7 +233,7 @@ export function ActionMenuItem({
 }: {
   icon: React.ReactNode;
   label: string;
-  /** Shown after the label in the Primary Accent, e.g. the element a "Next:" goes to. */
+  /** Shown after the label, e.g. the element a "Next:" goes to. */
   labelDetail?: string;
   subtext?: string;
   /** A description shown as the row's tooltip (a short row in an Actions section has no subtext). */
@@ -253,7 +253,7 @@ export function ActionMenuItem({
       <div className="flex flex-col leading-tight min-w-0">
         <span className="actionMenuItemLabel truncate">
           {label}
-          {labelDetail && <span className="actionMenuItemLabelDetail"> {labelDetail}</span>}
+          {labelDetail && <span> {labelDetail}</span>}
         </span>
         {subtext && (
           <span className="actionMenuItemSubtext truncate">
@@ -293,7 +293,7 @@ export function ActionMenuDangerItem({
       <div className="flex flex-col leading-tight min-w-0">
         <span className="actionMenuDangerLabel truncate">
           {label}
-          {labelDetail && <span className="actionMenuItemLabelDetail"> {labelDetail}</span>}
+          {labelDetail && <span> {labelDetail}</span>}
         </span>
         {subtext && (
           <span className="actionMenuDangerSubtext truncate">
