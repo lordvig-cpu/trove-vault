@@ -35,6 +35,9 @@ export function useTabGapLine(deps: ReadonlyArray<unknown>) {
     const observer = new ResizeObserver(measure);
     observer.observe(row);
     observer.observe(header);
+    // The active tab too: it names itself, so its width can change after this first measure (a late web font)
+    const activeTab = row.querySelector<HTMLElement>('.tree-folder-tab-active');
+    if (activeTab) observer.observe(activeTab);
     return () => observer.disconnect();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, deps);

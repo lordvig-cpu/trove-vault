@@ -26,8 +26,7 @@ interface BottomPanelProps {
   title?: string;
   tabLabel?: string;
   tabTitle?: string;
-  /** Shown in place of tabLabel's text when set (tabLabel still backs the tab's aria-label and
-      default title). */
+  /** Shown before tabLabel's text on the tab (tabLabel also backs its aria-label and default title). */
   tabIcon?: React.ReactNode;
   onClose: () => void;
   onTogglePin?: () => void;
@@ -264,10 +263,10 @@ export default function BottomPanel({
                   isActive={true}
                   variant="slanted"
                 />
-                <span className="relative z-10 flex items-center select-none">
-                  {tabIcon ?? (
-                    <span className="font-bold text-[12px] tracking-tight whitespace-nowrap">{tabLabel}</span>
-                  )}
+                {/* Always the active tab, so it names itself beside its icon, like the side panels' active tab */}
+                <span className="relative z-10 flex items-center gap-1.5 select-none">
+                  {tabIcon}
+                  <span className="font-bold text-[12px] tracking-tight whitespace-nowrap">{tabLabel}</span>
                 </span>
               </button>
             </div>
