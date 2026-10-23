@@ -679,11 +679,9 @@
   border-bottom-color: var(--secondary-tree-menu-rename-input-focus);
 }
 
-/* The name is the side panels' tab text (.tree-folder-tab's size, .tree-folder-tab-active's weight and shadow). */
+/* The same tab as the side panels': .tree-folder-tab's height and text size, .tree-folder-tab-active's weight and shadow. */
 .menuTabs .menuFolderTab {
   flex: 0 0 auto;
-  height: 1.875rem;
-  padding: 0 1.25rem;
 }
 
 .menuTabs .menuFolderTab.tree-folder-tab-active {
@@ -696,9 +694,9 @@
   margin-bottom: -1px;
 }
 
-/* Neighbors overlap a little, like the panel tabs (which overlap 18px at their larger size). */
+/* Neighbors overlap by the same 18px as the side panels' tabs (PanelViewTabs' -ml-[18px]). */
 .menuTabs .menuFolderTab + .menuFolderTab {
-  margin-left: -0.625rem;
+  margin-left: -18px;
 }
 
 .menuTabs .menuFolderTab.tree-folder-tab-active {
