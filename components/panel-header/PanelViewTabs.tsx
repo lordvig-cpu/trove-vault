@@ -207,7 +207,7 @@ export default function PanelViewTabs({
                   onPointerDown={(e) => {
                     if (tab !== 'empty') onStartTabDrag?.(tab, e);
                   }}
-                  className={`tree-folder-tab group/tab cursor-grab active:cursor-grabbing ${idx > 0 ? '-ml-[18px]' : ''} ${
+                  className={`tree-folder-tab group/tab cursor-grab active:cursor-grabbing ${idx > 0 ? 'ml-1' : ''} ${
                     isThisTabTarget
                       ? 'tree-folder-tab-reorder-target z-30'
                       : isTabActive
@@ -219,15 +219,17 @@ export default function PanelViewTabs({
                     gradientId={`${headerId}-${tab}`}
                     isActive={isTabActive}
                     isTarget={isThisTabTarget}
-                    variant="curved"
                   />
-                  {/* The active tab shows its name; the others are just their icon (a tab with no icon always
-                      shows its name). */}
-                  <span className="relative z-10 flex items-center px-0.5 select-none">
+                  {/* The active tab shows a small icon and its name; the others just their icon (a tab with no icon
+                      always shows its name). */}
+                  <span className="relative z-10 flex items-center gap-1.5 px-0.5 select-none">
                     {TabIcon && !isTabActive ? (
-                      <TabIcon className="w-[22.5px] h-[22.5px]" />
+                      <TabIcon className="w-[17px] h-[17px]" />
                     ) : (
-                      <span className="whitespace-nowrap">{tabLabel}</span>
+                      <>
+                        {TabIcon && <TabIcon className="w-3.5 h-3.5" />}
+                        <span className="whitespace-nowrap">{tabLabel}</span>
+                      </>
                     )}
                   </span>
                 </button>

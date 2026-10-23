@@ -342,12 +342,15 @@ export const BlueprintTabIcon = ({ className = 'w-3.5 h-3.5' }: { className?: st
 );
 
 
-/* PanelFolderTabSvg: Reusable paper folder tab shape for side and bottom panels */
+/* PanelFolderTabSvg: the shape every folder tab draws (side panels, pulldowns, the bottom panel, a flyout's tabs): a
+   rectangle with slightly rounded top corners (8px, like a flyout's section cards) and an open bottom, so the active
+   tab opens into the panel below. Drawn in real pixels, not a stretched viewBox, so the corners stay round at any
+   tab width: both rects run 8px past the bottom, where the svg clips them, which squares off the bottom corners and
+   drops the outline's bottom edge. */
 interface PanelFolderTabSvgProps {
   gradientId: string;
   isActive?: boolean;
   isTarget?: boolean;
-  variant?: 'curved' | 'slanted';
   className?: string;
 }
 
@@ -355,54 +358,38 @@ export const PanelFolderTabSvg = ({
   gradientId,
   isActive = false,
   isTarget = false,
-  variant = 'curved',
   className = 'absolute inset-0 w-full h-full pointer-events-none',
 }: PanelFolderTabSvgProps) => (
-  <svg
-    className={className}
-    viewBox="0 0 100 28"
-    preserveAspectRatio="none"
-    aria-hidden="true"
-  >
+  <svg className={className} aria-hidden="true">
     <defs>
-      <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
+      {/* Spans the visible tab (not the taller rect), so the bottom stop lands on the tab's foot */}
+      <linearGradient id={gradientId} gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="100%">
         <stop offset="0%" stopColor="var(--tree-tab-active-top)" className="tab-grad-top" />
         <stop offset="45%" stopColor="var(--tree-tab-active-mid)" className="tab-grad-mid" />
         <stop offset="100%" stopColor="var(--tree-tab-active-bottom)" className="tab-grad-bottom" />
       </linearGradient>
     </defs>
-
-    {variant === 'slanted' ? (
-      <>
-        <polygon
-          points="0,28 7,0 93,0 100,28"
-          fill={isActive || isTarget ? `url(#${gradientId})` : undefined}
-          className="tree-tab-svg-fill"
-        />
-        <polyline
-          points="0,28 7,0 93,0 100,28"
-          fill="none"
-          strokeWidth={isTarget ? '2' : '1.5'}
-          className="tree-tab-svg-stroke"
-          vectorEffect="non-scaling-stroke"
-        />
-      </>
-    ) : (
-      <>
-        <path
-          d="M 0,28 L 8,3 C 9,1 11,0 14,0 L 86,0 C 89,0 91,1 92,3 L 100,28 Z"
-          className="tree-tab-svg-fill"
-          style={isActive || isTarget ? { fill: `url(#${gradientId})` } : undefined}
-        />
-        <path
-          d="M 0,28 L 8,3 C 9,1 11,0 14,0 L 86,0 C 89,0 91,1 92,3 L 100,28"
-          className="tree-tab-svg-stroke"
-          fill="none"
-          strokeWidth={isTarget ? '2' : '1.5'}
-          vectorEffect="non-scaling-stroke"
-        />
-      </>
-    )}
+    <rect
+      x="0"
+      y="0"
+      rx="8"
+      className="tree-tab-svg-fill"
+      style={{
+        width: '100%',
+        height: 'calc(100% + 8px)',
+        ...(isActive || isTarget ? { fill: `url(#${gradientId})` } : {}),
+      }}
+    />
+    {/* The outline, inset by half its width so the svg doesn't clip its outer half */}
+    <rect
+      x="0.75"
+      y="0.75"
+      rx="7.25"
+      fill="none"
+      strokeWidth={isTarget ? '2' : '1.5'}
+      className="tree-tab-svg-stroke"
+      style={{ width: 'calc(100% - 1.5px)', height: 'calc(100% + 8px)' }}
+    />
   </svg>
 );
 

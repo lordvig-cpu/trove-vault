@@ -685,7 +685,7 @@
 }
 
 .menuTabs .menuFolderTab.tree-folder-tab-active {
-  min-width: 7rem;
+  min-width: 7.5rem;
 }
 
 /* Only the active tab sits down over the band's amber edge (and so hides it, opening into the body); an
@@ -694,9 +694,9 @@
   margin-bottom: -1px;
 }
 
-/* Neighbors overlap by the same 18px as the side panels' tabs (PanelViewTabs' -ml-[18px]). */
+/* Neighbors sit side by side with the same small gap as the side panels' tabs (PanelViewTabs' ml-1). */
 .menuTabs .menuFolderTab + .menuFolderTab {
-  margin-left: -18px;
+  margin-left: 0.25rem;
 }
 
 .menuTabs .menuFolderTab.tree-folder-tab-active {

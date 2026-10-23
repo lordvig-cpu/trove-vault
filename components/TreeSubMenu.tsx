@@ -320,10 +320,10 @@ export function ActionMenuDivider() {
 // Real tabs are the side panels' paper-folder tabs (the same PanelFolderTabSvg and .tree-folder-tab
 // looks), with the icon and label inside, standing on the band's bottom edge; the active one opens into
 // the menu body below it (.menuFolderTab in TreeSubMenu.css).
-/** The Actions and Properties tabs every gear flyout uses, defined once so their icons are the side panels'
-    tab icon size (PanelViewTabs) in every menu. */
-export const ACTIONS_TAB = { id: 'actions' as const, label: 'Actions', icon: <ActionIcon className="w-[22.5px] h-[22.5px]" /> };
-export const PROPERTIES_TAB = { id: 'properties' as const, label: 'Properties', icon: <PropertiesIcon className="w-[22.5px] h-[22.5px]" /> };
+/** The Actions and Properties tabs every gear flyout uses, defined once; ActionMenuTabs draws each Icon at the
+    side panels' tab icon sizes (PanelViewTabs). */
+export const ACTIONS_TAB = { id: 'actions' as const, label: 'Actions', Icon: ActionIcon };
+export const PROPERTIES_TAB = { id: 'properties' as const, label: 'Properties', Icon: PropertiesIcon };
 /** A menu with only Actions so far. */
 export const ACTIONS_ONLY_TABS = [ACTIONS_TAB];
 /** A menu with Actions and Properties. */
@@ -334,7 +334,7 @@ export function ActionMenuTabs<T extends string>({
   active,
   onChange,
 }: {
-  tabs: { id: T; label: string; icon: React.ReactNode }[];
+  tabs: { id: T; label: string; Icon: React.ComponentType<{ className?: string }> }[];
   active?: T;
   onChange?: (id: T) => void;
 }) {
@@ -360,10 +360,17 @@ export function ActionMenuTabs<T extends string>({
             onClick={() => onChange?.(tab.id)}
             className={`menuFolderTab tree-folder-tab ${isActive ? 'tree-folder-tab-active z-20' : 'tree-folder-tab-idle z-10'}`}
           >
-            <PanelFolderTabSvg gradientId={`${gradientId}-${tab.id}`} isActive={isActive} variant="curved" />
-            {/* Like the side panels' tabs: the active one shows its name, the others just their icon */}
-            <span className="relative z-10 flex items-center select-none">
-              {isActive ? <span>{tab.label}</span> : tab.icon}
+            <PanelFolderTabSvg gradientId={`${gradientId}-${tab.id}`} isActive={isActive} />
+            {/* Like the side panels' tabs: the active one shows a small icon and its name, the others just their icon */}
+            <span className="relative z-10 flex items-center gap-1.5 select-none">
+              {isActive ? (
+                <>
+                  <tab.Icon className="w-3.5 h-3.5" />
+                  <span>{tab.label}</span>
+                </>
+              ) : (
+                <tab.Icon className="w-[17px] h-[17px]" />
+              )}
             </span>
           </button>
         );

@@ -258,7 +258,6 @@ export default function BottomPanel({
                 <PanelFolderTabSvg
                   gradientId="bottom-panel-tab-grad"
                   isActive={true}
-                  variant="slanted"
                 />
                 {/* Always the active tab, so it shows its name (no icon), like the side panels' active tab */}
                 <span className="relative z-10 flex items-center select-none">

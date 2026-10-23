@@ -267,7 +267,8 @@ need before changing the editor, the layout engine, the gear flyouts or the item
   tabs (the Body / Container flyouts; `TemplateFieldActionMenu.tsx`'s Content field editor, which
   already had real properties -- label, key, type, required, options -- and real actions -- move
   up/down, delete -- so it kept both as genuine tabs) it renders real tabs: the side panels'
-  paper-folder tabs (`PanelFolderTabSvg` + `.tree-folder-tab`; like the panels' tabs, the active one shows its name and the others just their icon), standing on the
+  paper-folder tabs (`PanelFolderTabSvg` + `.tree-folder-tab`; like the panels' tabs, square with 8px top corners, the active one shows a small icon and its name and
+  the others just their icon), standing on the
   bottom edge of a full-width amber-tinted dark band, with the active one opening into the menu body
   below (`.menuTabs-folder` / `.menuFolderTab` in `TreeSubMenu.css`) -- the same tab look as a panel
   header, not a second button style. A menu with a single tab still shows it, as the same folder tab,
