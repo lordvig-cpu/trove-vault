@@ -62,7 +62,7 @@ export default function TreeItemProperties({ editor, openSections, onToggleSecti
       }}
       className="pt-1"
     >
-      <PropertyField label="Item Name" required>
+      <PropertyField label="Item Name" required flush>
         <input type="text" required value={form.name} onChange={(e) => form.setName(e.target.value)} className={INPUT} />
       </PropertyField>
 

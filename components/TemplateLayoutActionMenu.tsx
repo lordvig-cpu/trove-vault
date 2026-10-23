@@ -651,7 +651,7 @@ export function TemplateContainerActionMenu({
 
       {activeTab === 'properties' && (
         <>
-            <div className="flex flex-col gap-1 px-3 pb-2">
+            <div className="flex flex-col gap-1 pb-2">
               <span className="menu-field-label text-[10px] font-semibold tracking-[0.04em] text-content-strong">
                 Container Name
               </span>
@@ -940,7 +940,7 @@ export function TemplateComponentActionMenu({
               </ActionMenuSection>
             </>
           ) : (
-            <div className="flex flex-col gap-1 px-3 pb-2">
+            <div className="flex flex-col gap-1 pb-2">
               <span className="menu-field-label text-[10px] font-semibold tracking-[0.04em] text-content-strong">
                 Name
               </span>
