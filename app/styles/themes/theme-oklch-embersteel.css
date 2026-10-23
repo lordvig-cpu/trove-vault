@@ -272,11 +272,13 @@
   color: var(--flyout-white);
 }
 
-/* Section cards: Primary with a quiet slate edge and no corner glows; the icon tile is a flat Secondary
-   square with a soft white icon. */
+/* Section cards: Primary with a quiet slate edge, gently rounded, with no inner black line and no corner glows;
+   the icon tile is a flat Secondary square with a soft white icon. */
 [data-theme='theme-oklch-dark'] .menuSection {
   border-color: var(--ember-card-edge);
+  border-radius: 0.5rem;
   background: var(--oklch-primary);
+  box-shadow: none;
 }
 
 [data-theme='theme-oklch-dark'] .menuSectionIconTile {
