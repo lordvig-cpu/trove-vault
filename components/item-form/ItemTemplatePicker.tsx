@@ -2,7 +2,7 @@
 
 import React from 'react';
 import type { ItemTemplate } from '@/types/template';
-import { FileIcon, DotIcon } from '@/components/icons/ContentIcons';
+import { FileIcon } from '@/components/icons/ContentIcons';
 
 interface ItemTemplatePickerProps {
   templates: ItemTemplate[];
@@ -11,24 +11,15 @@ interface ItemTemplatePickerProps {
   fieldCount: number;
   /** Caption after the field count, e.g. "Template Fields". */
   fieldCountLabel: string;
-  filled: string[];
-  empty: string[];
-  /** Captions for the two field lists, e.g. FILLED / AVAILABLE. */
-  filledLabel: string;
-  emptyLabel: string;
 }
 
-/** The "Item Schema Template" panel: template dropdown plus which of its fields are filled. */
+/** The "Item Schema Template" panel: the template dropdown and how many fields the template has. */
 export default function ItemTemplatePicker({
   templates,
   selectedTemplateId,
   onSelect,
   fieldCount,
   fieldCountLabel,
-  filled,
-  empty,
-  filledLabel,
-  emptyLabel,
 }: ItemTemplatePickerProps) {
   return (
     <div className="item-modal-template-panel rounded-xl p-3.5 space-y-2">
@@ -54,27 +45,6 @@ export default function ItemTemplatePicker({
         ))}
         <option value="blank">Blank / Custom (No Template)</option>
       </select>
-
-      {fieldCount > 0 && (
-        <div className="pt-1 text-[11px] space-y-1 item-modal-muted">
-          {filled.length > 0 && (
-            <div className="flex items-center gap-1.5 item-modal-template-heading">
-              <span className="font-mono text-[10px] px-1 py-0.2 rounded">
-                <DotIcon className="inline w-2 h-2 mr-1 text-accent-primary" />{filledLabel} ({filled.length})
-              </span>
-              <span className="truncate">{filled.join(', ')}</span>
-            </div>
-          )}
-          {empty.length > 0 && (
-            <div className="flex items-center gap-1.5 item-modal-template-heading">
-              <span className="font-mono text-[10px] px-1 py-0.2 rounded">
-                <DotIcon className="inline w-2 h-2 mr-1 text-[var(--status-ok)]" />{emptyLabel} ({empty.length})
-              </span>
-              <span className="truncate">{empty.join(', ')}</span>
-            </div>
-          )}
-        </div>
-      )}
     </div>
   );
 }

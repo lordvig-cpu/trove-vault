@@ -139,10 +139,6 @@ export default function CreateItemModal({
         onSelect={form.selectTemplate}
         fieldCount={form.activeTemplateFields.length}
         fieldCountLabel="Template Fields"
-        filled={form.diffSummary.filled}
-        empty={form.diffSummary.empty}
-        filledLabel="FILLED"
-        emptyLabel="AVAILABLE"
       />
 
       {/* Item Name */}

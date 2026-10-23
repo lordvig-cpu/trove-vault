@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { validateImageFile } from '@/lib/storage';
 import { errorMessage } from '@/lib/errors';
 import { fetchTemplateCatalog } from '@/lib/data/templates';
@@ -112,18 +112,6 @@ export function useItemForm(mode: ItemFormMode) {
     },
     [availableTemplates, applyTemplate, clearTemplate, keepValuesOnTemplateChange]
   );
-
-  /** Which of the template's fields already have a value and which are still empty. */
-  const diffSummary = useMemo(() => {
-    const filled: string[] = [];
-    const empty: string[] = [];
-    for (const field of activeTemplateFields) {
-      const value = dynamicValues[field.name];
-      if (value !== undefined && value !== '') filled.push(field.label);
-      else empty.push(field.label);
-    }
-    return { filled, empty };
-  }, [activeTemplateFields, dynamicValues]);
 
   const changeDynamicValue = useCallback((fieldName: string, value: unknown) => {
     setDynamicValues((previous) => ({ ...previous, [fieldName]: value }));
@@ -240,7 +228,6 @@ export function useItemForm(mode: ItemFormMode) {
     setSelectedTemplateId,
     setActiveTemplateFields,
     selectTemplate,
-    diffSummary,
     changeDynamicValue,
     chooseFile,
     removeImage,

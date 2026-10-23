@@ -68,10 +68,6 @@ export default function EditItemModal({
         onSelect={form.selectTemplate}
         fieldCount={form.activeTemplateFields.length}
         fieldCountLabel="Defined Fields"
-        filled={form.diffSummary.filled}
-        empty={form.diffSummary.empty}
-        filledLabel="PRESERVED / MERGED"
-        emptyLabel="ADDED"
       />
 
       {/* Item Name */}
