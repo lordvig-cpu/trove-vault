@@ -113,6 +113,14 @@ body {
      colors that don't follow the theme, and this block no longer remaps them. */
   --color-accent-secondary-wash: color-mix(in oklab, var(--brand-secondary-amber) 20%, var(--pole-surface));
   --color-flyout-title: var(--flyout-title);
+  --color-flyout-white: var(--flyout-white);
+  --color-flyout-white-soft: var(--flyout-white-soft);
+  --color-flyout-white-faint: var(--flyout-white-faint);
+  --color-flyout-selected: var(--flyout-selected);
+  /* --text-strong is redefined inside flyouts and hint bubbles (theme-semantic.css), which is why this
+     lives in the inline block: it must resolve where it is used, not at :root. */
+  --color-content-strong: var(--text-strong);
+  --color-tree-action-icon: var(--tree-action-icon);
   --color-danger: var(--status-danger);
   --color-danger-text: var(--tree-menu-danger-text);
   --color-ok: var(--status-ok);

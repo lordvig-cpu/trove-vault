@@ -82,7 +82,7 @@ export default function TemplateIconPicker({ icon, onChange }: { icon?: string; 
                 }}
                 placeholder="Any emoji"
                 aria-label="Any emoji"
-                className="flex-1 min-w-0 px-1.5 py-0.5 rounded-md bg-shade/40 border border-[var(--secondary-accent)] text-[11px] text-[var(--flyout-white)] placeholder:text-[var(--flyout-white-faint)] focus:outline-none"
+                className="flex-1 min-w-0 px-1.5 py-0.5 rounded-md bg-shade/40 border border-[var(--secondary-accent)] text-[11px] text-flyout-white placeholder:text-flyout-white-faint focus:outline-none"
               />
               <button
                 type="button"

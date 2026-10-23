@@ -123,9 +123,9 @@ export function ToolGroup({
             : disabled
             ? `bg-shade/40 border-[color-mix(in_oklch,var(--secondary-accent)_35%,transparent)] ${barDisabledBtn}`
             : set
-            ? `${activeBtn} cursor-pointer hover:border-glint hover:text-[var(--flyout-white)]`
+            ? `${activeBtn} cursor-pointer hover:border-glint hover:text-flyout-white`
             : isOpen
-            ? `bg-shade/40 border-glint text-[var(--flyout-white)] cursor-pointer`
+            ? `bg-shade/40 border-glint text-flyout-white cursor-pointer`
             : `${barGroupBtn} cursor-pointer`
         }`}
       >
@@ -237,7 +237,7 @@ export function EditableName({
           if (e.key === 'Escape') finish(false);
         }}
         aria-label={ariaLabel}
-        className={`px-1.5 py-0.5 rounded-md bg-shade/40 border border-[var(--secondary-accent)] font-bold text-[var(--flyout-white)] focus:outline-none ${
+        className={`px-1.5 py-0.5 rounded-md bg-shade/40 border border-[var(--secondary-accent)] font-bold text-flyout-white focus:outline-none ${
           isTitle ? 'w-48 text-[13px] tracking-wide' : 'w-36 text-[11px]'
         }`}
       />
@@ -252,7 +252,7 @@ export function EditableName({
         setEditing(true);
       }}
       title="Click to rename"
-      className={`truncate px-1.5 py-0.5 rounded-md font-bold text-[var(--flyout-white)] tracking-wide cursor-text border border-transparent hover:border-glint hover:bg-glint/10 ${
+      className={`truncate px-1.5 py-0.5 rounded-md font-bold text-flyout-white tracking-wide cursor-text border border-transparent hover:border-glint hover:bg-glint/10 ${
         isTitle ? 'max-w-[30ch] text-[13px]' : 'max-w-[130px] text-[11px]'
       }`}
     >
@@ -386,7 +386,7 @@ export function DeleteButton({ title, onDelete, disabledTitle }: { title: string
     <button
       type="button"
       onClick={onDelete}
-      className={`${squareBtn} cursor-pointer border-transparent text-[var(--flyout-white-soft)] hover:bg-[var(--tree-menu-danger-hover-bg)] hover:border-glint hover:text-[var(--tree-menu-danger-hover-text)]`}
+      className={`${squareBtn} cursor-pointer border-transparent text-flyout-white-soft hover:bg-[var(--tree-menu-danger-hover-bg)] hover:border-glint hover:text-[var(--tree-menu-danger-hover-text)]`}
       title={title}
       aria-label={title}
     >

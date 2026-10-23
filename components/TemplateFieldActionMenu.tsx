@@ -200,7 +200,7 @@ export default function TemplateFieldActionMenu({
                 onClick={() => handleTypeChange(ft.type)}
                 className={`flex items-center gap-1.5 px-2 py-1 rounded-md text-[11px] border transition cursor-pointer text-left ${
                   fieldType === ft.type
-                    ? 'bg-[color-mix(in_oklch,var(--primary-accent)_20%,transparent)] border-[var(--primary-accent)] text-[var(--text-strong)] font-bold'
+                    ? 'bg-[color-mix(in_oklch,var(--primary-accent)_20%,transparent)] border-[var(--primary-accent)] text-content-strong font-bold'
                     : 'bg-surface-panel border-subtle text-muted hover:text-strong hover:bg-surface-hover'
                 }`}
               >

@@ -479,7 +479,7 @@ function ContainerNodeRow({
           'group flex items-center h-8 px-2 gap-1.5 cursor-pointer transition w-full min-w-0 tree-category-sticky-header tree-category-row-quiet',
           move.isDragging && 'opacity-40',
           showDropInside
-            ? 'ring-1 ring-[var(--primary-accent)] bg-[color-mix(in_oklch,var(--primary-accent)_25%,transparent)] text-[var(--text-strong)] font-semibold'
+            ? 'ring-1 ring-[var(--primary-accent)] bg-[color-mix(in_oklch,var(--primary-accent)_25%,transparent)] text-content-strong font-semibold'
             : isSelected
             ? 'tree-category-row-active font-medium'
             : 'tree-category-row',

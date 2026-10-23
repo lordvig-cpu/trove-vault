@@ -3,14 +3,14 @@
 
 /** Idle control: amber outline and text on the orange bar; white on hover. */
 export const idleBtn =
-  'bg-shade/40 border-[var(--secondary-accent)] text-[var(--secondary-accent)] hover:border-glint hover:text-[var(--text-strong)] hover:bg-glint/10';
+  'bg-shade/40 border-[var(--secondary-accent)] text-[var(--secondary-accent)] hover:border-glint hover:text-content-strong hover:bg-glint/10';
 
 /** Selected / open control: the flyout's active-tab gradient (--flyout-tab-active-top / -bottom, also a
     flyout section's chevron button) -- a solid warm-gold gradient, not a translucent mix of
     --flyout-selected over the dark bar, which read as yellow-green rather than gold. The border is
     the pure --flyout-selected yellow, not amber, to stay distinct from the idle amber border around it. Text stays --flyout-selected too. */
 export const activeBtn =
-  'bg-[linear-gradient(180deg,var(--flyout-tab-active-top),var(--flyout-tab-active-bottom))] border-[var(--flyout-selected)] text-[var(--flyout-selected)] shadow-[inset_0_1px_0_color-mix(in_oklch,var(--pole-sheen)_22%,transparent)]';
+  'bg-[linear-gradient(180deg,var(--flyout-tab-active-top),var(--flyout-tab-active-bottom))] border-flyout-selected text-flyout-selected shadow-[inset_0_1px_0_color-mix(in_oklch,var(--pole-sheen)_22%,transparent)]';
 
 /** The plain secondary OKLCH accent (not activeBtn's yellow), for icons elsewhere (e.g. the Layout
     tree's Body/Row/Column glyphs) that should read as "this is a selected-style control" without
@@ -20,31 +20,31 @@ export const activeIconColor = 'text-[var(--secondary-accent)]';
 
 /** Borderless menu row / icon button (zoom, sub-panel options). */
 export const ghostBtn =
-  'border border-transparent text-[var(--secondary-accent)] hover:border-glint hover:text-[var(--text-strong)] hover:bg-glint/10';
+  'border border-transparent text-[var(--secondary-accent)] hover:border-glint hover:text-content-strong hover:bg-glint/10';
 
 /** Every unselected control on the template editor toolbars (text and icon buttons alike): the same
     idle / ghost / disabled looks as idleBtn / ghostBtn above, but in a soft menu white instead of
     amber (full white on hover). Selected controls still use activeBtn's yellow. idleBtn / ghostBtn
     stay amber for the flyouts and other menus. */
 export const barGhostBtn =
-  'border border-transparent text-[var(--flyout-white-soft)] hover:border-glint hover:text-[var(--flyout-white)] hover:bg-glint/10';
+  'border border-transparent text-flyout-white-soft hover:border-glint hover:text-flyout-white hover:bg-glint/10';
 
 /** The toolbars' standalone icon buttons (eye, gear, delete, Bold / Italic / Underline, Undo / Redo /
     Reset / Save, the width Fit button): no border while inactive, a white border on hover, and an
     amber icon (no pill) while selected / on. Disabled ones drop the hover. */
 export const barIconBtn =
-  'border-transparent text-[var(--flyout-white-soft)] hover:border-glint hover:text-[var(--flyout-white)]';
+  'border-transparent text-flyout-white-soft hover:border-glint hover:text-flyout-white';
 export const barIconBtnOn =
   'border-transparent text-[var(--secondary-accent)] hover:border-glint';
-export const barIconBtnDisabled = 'border-transparent text-[var(--flyout-white-soft)] opacity-55 cursor-not-allowed';
+export const barIconBtnDisabled = 'border-transparent text-flyout-white-soft opacity-55 cursor-not-allowed';
 
 /** A toolbar pulldown button (Add, Split, Shows, Style...): the same darker amber border as the
     toggle-group tracks around Size and Layout (barToggleGroup), a white border on hover. */
 export const barGroupBtn =
-  'bg-shade/40 border-[color-mix(in_oklch,var(--secondary-accent)_35%,transparent)] text-[var(--flyout-white-soft)] hover:border-glint hover:text-[var(--flyout-white)]';
+  'bg-shade/40 border-[color-mix(in_oklch,var(--secondary-accent)_35%,transparent)] text-flyout-white-soft hover:border-glint hover:text-flyout-white';
 
 /** A disabled toolbar control inside a toggle group or pulldown: faint white. */
-export const barDisabledBtn = 'text-[var(--flyout-white-faint)] cursor-not-allowed';
+export const barDisabledBtn = 'text-flyout-white-faint cursor-not-allowed';
 
 /** Fixed height every bar control (pulldowns, toggle, icon buttons, Width/Zoom pills) shares, so
     text buttons and icon-only buttons — which naturally size differently — line up. The Fit

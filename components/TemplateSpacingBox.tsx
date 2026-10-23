@@ -209,7 +209,7 @@ export default function TemplateSpacingBox({ container, onUpdate, marginDisabled
       </div>
 
       <div className="flex items-center gap-1">
-        <span className="menu-field-label text-[10px] font-semibold tracking-[0.04em] text-[var(--text-strong)]">
+        <span className="menu-field-label text-[10px] font-semibold tracking-[0.04em] text-content-strong">
           {capitalize(selected.layer)} · {isLinked ? 'All sides' : capitalize(selected.side)}
         </span>
         <HoverHint hint={LAYER_HINTS[selected.layer]}>
@@ -226,7 +226,7 @@ export default function TemplateSpacingBox({ container, onUpdate, marginDisabled
           value={Math.min(current.num, sliderMax)}
           onChange={(e) => setSide(selected.layer, selected.side, parseInt(e.target.value, 10), current.unit)}
           aria-label={`${capitalize(selected.layer)} ${isLinked ? 'all sides' : selected.side}`}
-          className="min-w-0 flex-1 h-1.5 rounded-full cursor-pointer accent-[var(--flyout-selected)] bg-shade/40"
+          className="min-w-0 flex-1 h-1.5 rounded-full cursor-pointer accent-flyout-selected bg-shade/40"
         />
         <UnitSelect
           attached={false}

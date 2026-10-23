@@ -90,7 +90,7 @@ function PxField({
 
   return (
     <div className="flex flex-col gap-1 min-w-0">
-      <span className="menu-field-label text-[10px] font-semibold tracking-[0.04em] text-[var(--text-strong)]">
+      <span className="menu-field-label text-[10px] font-semibold tracking-[0.04em] text-content-strong">
         {label}
       </span>
       <div className="flex items-center min-w-0">
@@ -145,7 +145,7 @@ export function ColorRow({
 
   return (
     <div className="flex items-center gap-1.5">
-      <span className="menu-field-label text-[10px] font-semibold tracking-[0.04em] text-[var(--text-strong)] w-9 shrink-0">
+      <span className="menu-field-label text-[10px] font-semibold tracking-[0.04em] text-content-strong w-9 shrink-0">
         {label}
       </span>
       <SeedColorPicker

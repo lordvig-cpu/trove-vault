@@ -248,7 +248,7 @@ export default function PanelViewTabs({
                     className="tree-tab-action-btn group"
                     title="Add a field"
                   >
-                    <PlusIcon className="w-2.5 h-2.5 origin-center transition-transform duration-150 ease-out group-hover:scale-110 text-[var(--tree-action-icon)] group-hover:text-[var(--text-strong)]" />
+                    <PlusIcon className="w-2.5 h-2.5 origin-center transition-transform duration-150 ease-out group-hover:scale-110 text-tree-action-icon group-hover:text-content-strong" />
                   </button>
                   {/* The field types, each added into its own Blueprint group */}
                   {addFieldMenuAt && createPortal(
@@ -290,7 +290,7 @@ export default function PanelViewTabs({
                   className="tree-tab-action-btn group"
                   title="Create New Item Template"
                 >
-                  <PlusIcon className="w-2.5 h-2.5 origin-center transition-transform duration-150 ease-out group-hover:scale-110 text-[var(--tree-action-icon)] group-hover:text-[var(--text-strong)]" />
+                  <PlusIcon className="w-2.5 h-2.5 origin-center transition-transform duration-150 ease-out group-hover:scale-110 text-tree-action-icon group-hover:text-content-strong" />
                 </button>
               )
             ) : isCollections ? (
@@ -301,7 +301,7 @@ export default function PanelViewTabs({
                   className="tree-tab-action-btn group"
                   title="Create New Collection"
                 >
-                  <PlusIcon className="w-2.5 h-2.5 origin-center transition-transform duration-150 ease-out group-hover:scale-110 text-[var(--tree-action-icon)] group-hover:text-[var(--text-strong)]" />
+                  <PlusIcon className="w-2.5 h-2.5 origin-center transition-transform duration-150 ease-out group-hover:scale-110 text-tree-action-icon group-hover:text-content-strong" />
                 </button>
               )
             ) : isLayout ? (
@@ -314,7 +314,7 @@ export default function PanelViewTabs({
                   className="tree-tab-action-btn group"
                   title="Create New Item"
                 >
-                  <PlusIcon className="w-2.5 h-2.5 origin-center transition-transform duration-150 ease-out group-hover:scale-110 text-[var(--tree-action-icon)] group-hover:text-[var(--text-strong)]" />
+                  <PlusIcon className="w-2.5 h-2.5 origin-center transition-transform duration-150 ease-out group-hover:scale-110 text-tree-action-icon group-hover:text-content-strong" />
                 </button>
               )
             )}
@@ -332,8 +332,8 @@ export default function PanelViewTabs({
                 {/* Colored here, not on the button: .tree-tab-action-btn's own color would win there. */}
                 <span
                   className={`flex ${
-                    showAllEyes ? activeIconColor : 'text-[var(--tree-action-icon)]'
-                  } group-hover:text-[var(--text-strong)]`}
+                    showAllEyes ? activeIconColor : 'text-tree-action-icon'
+                  } group-hover:text-content-strong`}
                 >
                   <VisibilityEyeIcon hidden={!showAllEyes} className="w-3.5 h-3.5" />
                 </span>
@@ -349,7 +349,7 @@ export default function PanelViewTabs({
                 className="tree-tab-action-btn group"
                 title={showUnplacedOnly ? 'Showing only what is not placed yet: click to show everything' : 'Show only what is not placed in the layout yet'}
               >
-                <span className={`flex ${showUnplacedOnly ? activeIconColor : 'text-[var(--tree-action-icon)]'} group-hover:text-[var(--text-strong)]`}>
+                <span className={`flex ${showUnplacedOnly ? activeIconColor : 'text-tree-action-icon'} group-hover:text-content-strong`}>
                   <CheckIcon className="w-3 h-3" />
                 </span>
               </button>
@@ -370,9 +370,9 @@ export default function PanelViewTabs({
                 }
               >
                 {activeIsExpanded ? (
-                  <FolderCollapseIcon className="w-3 h-3 text-[var(--tree-action-icon)] group-hover:text-[var(--text-strong)]" />
+                  <FolderCollapseIcon className="w-3 h-3 text-tree-action-icon group-hover:text-content-strong" />
                 ) : (
-                  <FolderExpandIcon className="w-3 h-3 text-[var(--tree-action-icon)] group-hover:text-[var(--text-strong)]" />
+                  <FolderExpandIcon className="w-3 h-3 text-tree-action-icon group-hover:text-content-strong" />
                 )}
               </button>
             )}

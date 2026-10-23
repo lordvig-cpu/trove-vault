@@ -14,7 +14,7 @@ import { errorMessage } from '@/lib/errors';
 export function PropertyField({ label, required = false, children }: { label: string; required?: boolean; children: React.ReactNode }) {
   return (
     <label className="flex flex-col gap-1 px-3 pb-2">
-      <span className="menu-field-label text-[10px] font-semibold tracking-[0.04em] text-[var(--text-strong)]">
+      <span className="menu-field-label text-[10px] font-semibold tracking-[0.04em] text-content-strong">
         {label}
         {required && <span className="text-danger-text"> *</span>}
       </span>

@@ -104,9 +104,9 @@ export default function PanelToolbarRow({
             }
           >
             {position === 'left' ? (
-              <DockRightPanelIcon className="w-3.5 h-3.5 text-[var(--tree-action-icon)] group-hover:text-[var(--text-strong)]" isOpen={true} />
+              <DockRightPanelIcon className="w-3.5 h-3.5 text-tree-action-icon group-hover:text-content-strong" isOpen={true} />
             ) : (
-              <DockLeftPanelIcon className="w-3.5 h-3.5 text-[var(--tree-action-icon)] group-hover:text-[var(--text-strong)]" isOpen={true} />
+              <DockLeftPanelIcon className="w-3.5 h-3.5 text-tree-action-icon group-hover:text-content-strong" isOpen={true} />
             )}
           </button>
         )}
@@ -131,7 +131,7 @@ export default function PanelToolbarRow({
                   title={hint}
                   aria-label={hint}
                 >
-                  <Icon className="w-3.5 h-3.5 text-[var(--tree-action-icon)] group-enabled:group-hover:text-[var(--text-strong)]" isOpen={true} />
+                  <Icon className="w-3.5 h-3.5 text-tree-action-icon group-enabled:group-hover:text-content-strong" isOpen={true} />
                 </button>
               );
             })}
@@ -149,12 +149,12 @@ export default function PanelToolbarRow({
           {!isPinned ? (
             <PinOutlineIcon
               position={position}
-              className="w-3.5 h-3.5 text-[var(--tree-action-icon)] group-hover:text-[var(--text-strong)]"
+              className="w-3.5 h-3.5 text-tree-action-icon group-hover:text-content-strong"
             />
           ) : (
             <PinFilledIcon
               position={position}
-              className="w-3.5 h-3.5 text-[var(--tree-action-icon)] group-hover:text-[var(--text-strong)]"
+              className="w-3.5 h-3.5 text-tree-action-icon group-hover:text-content-strong"
             />
           )}
         </button>
@@ -168,7 +168,7 @@ export default function PanelToolbarRow({
             className="primary-side-panel-pin-btn group"
             title={`Close ${panelName}`}
           >
-            <span className="inline-block origin-center transition-all duration-200 ease-out group-hover:scale-115 text-xs text-[var(--tree-action-icon)] group-hover:text-[var(--text-strong)] px-1 select-none">
+            <span className="inline-block origin-center transition-all duration-200 ease-out group-hover:scale-115 text-xs text-tree-action-icon group-hover:text-content-strong px-1 select-none">
               <CloseIcon />
             </span>
           </button>

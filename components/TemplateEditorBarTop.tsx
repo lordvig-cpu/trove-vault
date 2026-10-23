@@ -96,7 +96,7 @@ export default function TemplateEditorBarTop({
         {onRename ? (
           <EditableName name={name} onCommit={onRename} ariaLabel="Template name" size="title" />
         ) : (
-          <h1 className="text-[13px] font-bold text-[var(--flyout-white)] tracking-wide truncate max-w-[30ch]" title={name}>
+          <h1 className="text-[13px] font-bold text-flyout-white tracking-wide truncate max-w-[30ch]" title={name}>
             {name}
           </h1>
         )}

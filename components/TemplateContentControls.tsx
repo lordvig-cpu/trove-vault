@@ -87,7 +87,7 @@ export const CONTENT_TEXT_HINT: HintContent = {
    Small controls
    -------------------------------------------------------------------------- */
 
-const LABEL_CLASS = 'menu-field-label text-[10px] font-semibold tracking-[0.04em] text-[var(--text-strong)]';
+const LABEL_CLASS = 'menu-field-label text-[10px] font-semibold tracking-[0.04em] text-content-strong';
 const INPUT_CLASS = `w-full px-2 ${barControlHeight} text-xs text-strong bg-surface-secondary border border-subtle rounded-lg focus:outline-none focus:border-[var(--secondary-accent)] placeholder:text-muted/60`;
 
 /** A labeled row of mutually exclusive buttons (the same toggle group the container flyout uses). */

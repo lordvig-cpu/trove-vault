@@ -176,7 +176,7 @@ function SizeField({
     <div className="flex flex-col gap-1 min-w-0">
       {label && heading && <SubsectionHeading label={label} hint={hint} />}
       {label && !heading && (
-        <label className="menu-field-label text-[10px] font-semibold tracking-[0.04em] text-[var(--text-strong)] flex items-center gap-1">
+        <label className="menu-field-label text-[10px] font-semibold tracking-[0.04em] text-content-strong flex items-center gap-1">
           {label}
           <HoverHint hint={hint}>
             <HelpCircleIcon className="w-3 h-3 text-[var(--secondary-tree-menu-header-title)]" />
@@ -238,7 +238,7 @@ export default function TemplateContainerSizing({ container, onUpdate, bare = fa
 
   return (
     <div className={bare ? 'flex flex-col gap-2 px-3 pt-0 pb-2' : 'flex flex-col gap-2.5 p-2.5 rounded-xl bg-surface/50 border border-subtle'}>
-      {!bare && <span className="text-[11px] font-bold text-[var(--text-strong)]">Sizing</span>}
+      {!bare && <span className="text-[11px] font-bold text-content-strong">Sizing</span>}
       {bare ? (
         <>
           <SizeField heading label="Width" value={width} placeholder="fill" hint={AXIS_HINTS.width} onCommit={setWidth} />
@@ -277,7 +277,7 @@ export default function TemplateContainerSizing({ container, onUpdate, bare = fa
             <SubsectionHeading label="Stack when narrower than" hint={FIELD_HINTS.stackBelow} />
           ) : (
             <label
-              className="menu-field-label text-[10px] font-semibold tracking-[0.04em] text-[var(--text-strong)] flex items-center gap-1"
+              className="menu-field-label text-[10px] font-semibold tracking-[0.04em] text-content-strong flex items-center gap-1"
             >
               Stack when narrower than
               <HoverHint hint={FIELD_HINTS.stackBelow}>

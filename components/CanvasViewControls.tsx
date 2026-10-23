@@ -102,7 +102,7 @@ export function PreviewWidthPicker() {
           aria-label={isFit ? 'Preview width (uncheck Fit to choose one)' : 'Preview width'}
           aria-haspopup="listbox"
           aria-expanded={menuOpen}
-          className={`min-w-[4.5rem] px-2 ${barControlHeight} rounded-md border text-[11px] font-mono font-semibold flex items-center justify-between gap-1 cursor-pointer disabled:cursor-default disabled:text-[var(--flyout-white-faint)] disabled:hover:text-[var(--flyout-white-faint)] disabled:hover:bg-transparent ${barGroupBtn}`}
+          className={`min-w-[4.5rem] px-2 ${barControlHeight} rounded-md border text-[11px] font-mono font-semibold flex items-center justify-between gap-1 cursor-pointer disabled:cursor-default disabled:text-flyout-white-faint disabled:hover:text-flyout-white-faint disabled:hover:bg-transparent ${barGroupBtn}`}
         >
           <span>{shownWidth ? `${shownWidth}px` : '—'}</span>
           <ChevronUpIcon className="w-2.5 h-2.5" />
@@ -185,7 +185,7 @@ export function ZoomControls() {
 
   return (
     <div className="flex items-center gap-1.5" role="group" aria-label="Zoom">
-      <SearchGlassIcon className="w-3.5 h-3.5 text-[var(--flyout-white-soft)] shrink-0" />
+      <SearchGlassIcon className="w-3.5 h-3.5 text-flyout-white-soft shrink-0" />
       <div className="relative flex items-center w-20 h-4 shrink-0">
         <div
           aria-hidden="true"
@@ -203,7 +203,7 @@ export function ZoomControls() {
           aria-label="Zoom level"
           aria-valuetext={`${Math.round(zoom * 100)}%`}
           title="Drag to zoom; double-click to reset to 100%"
-          className="w-full h-1.5 rounded-full cursor-pointer accent-[var(--flyout-selected)] bg-shade/40"
+          className="w-full h-1.5 rounded-full cursor-pointer accent-flyout-selected bg-shade/40"
         />
       </div>
       <button

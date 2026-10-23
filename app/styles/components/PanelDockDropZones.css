@@ -1,9 +1,9 @@
 /* ==========================================================================
    PANEL DOCK DROP ZONES
-   Interactive drop zone overlays with constant color semantics:
-   - Green / Emerald: Compatible dock targets (constant green)
-   - Red / Rose: Trash / Remove content target (constant red)
-   - Amber / Yellow: Incompatible / Blocked dock target (constant warning yellow)
+   Interactive drop zone overlays, colored by role from the theme:
+   - --status-ok: a compatible dock target
+   - --status-danger: the trash / remove-content target
+   - --secondary-accent: an incompatible / blocked dock target
    ========================================================================== */
 
 .dock-drop-overlay {
