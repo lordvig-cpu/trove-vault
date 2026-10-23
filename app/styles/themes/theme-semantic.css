@@ -135,9 +135,11 @@
   --editor-invalid: var(--tree-menu-danger-text);
   /* Fill of the selected container on the edit canvas (its outline is separate). Sunset Tide has none. */
   --editor-selected-fill: color-mix(in oklab, var(--oklch-secondary) 70%, transparent);
-  /* A vivid destructive red: the theme's own red hue (the slate seed leaves --tree-menu-danger-* too
-     desaturated to read) at a fixed lightness and chroma. */
-  --danger-vivid: oklch(from var(--oklch-blue-244-63-94) 0.68 0.21 h);
+  /* A vivid destructive red (Delete rows), fixed rather than derived from the seed: a derived red takes its hue
+     from the seed's (-241.6deg, calibrated on #0077FF), so a slate seed like EmberSteel's landed on pink (hue 0)
+     and an orange one on teal. Red stays red in every theme; L 0.63 keeps it inside sRGB (#f13936). Aquaglass
+     sets its own. */
+  --danger-vivid: oklch(0.63 0.22 27);
   --danger-vivid-soft: color-mix(in oklab, var(--danger-vivid) 20%, transparent);
   --editor-surface: var(--primary-tree-search-input-bg);
   --editor-swatch-border: var(--primary-accent);
