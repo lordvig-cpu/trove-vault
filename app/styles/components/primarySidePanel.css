@@ -299,6 +299,21 @@
 .tree-folder-tab-label {
   text-box: trim-both cap alphabetic;
   white-space: nowrap;
+  /* One weight whether the tab is active or not (an idle tab shows its name too while every tab fits). */
+  font-weight: 400;
+}
+
+/* The hidden copy of a row of tabs, every name showing, that useTabsFit measures: laid out like the real tabs but
+   out of the flow, invisible and unclickable, as wide as its contents. */
+.tree-tabs-measure {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  width: max-content;
+  visibility: hidden;
+  pointer-events: none;
 }
 
 .tree-folder-tab-idle {

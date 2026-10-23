@@ -216,6 +216,8 @@ its display style, with label and typography).
   remove container or component, place a field, reset to default).
 - `useTabGapLine.ts` — measures the active paper-folder tab so a panel header's amber divider line has a
   gap exactly under it (side/pulldown panels via `PanelViewTabs`, and the bottom panel).
+- `useTabsFit.ts` — whether a row of folder tabs has room for every tab's name (else only the active one shows it):
+  measures a hidden copy of the tabs against the space they have (`PanelViewTabs`, a flyout's `ActionMenuTabs`).
 - `useTreeActionMenu.ts` — a tree-gear popup's open/close/position state; broadcasts a window event
   so only one popup is open at a time.
 - `useTreeCategories.ts` — a tree's category expand/collapse state and search query.

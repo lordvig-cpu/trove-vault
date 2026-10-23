@@ -267,8 +267,8 @@ need before changing the editor, the layout engine, the gear flyouts or the item
   tabs (the Body / Container flyouts; `TemplateFieldActionMenu.tsx`'s Content field editor, which
   already had real properties -- label, key, type, required, options -- and real actions -- move
   up/down, delete -- so it kept both as genuine tabs) it renders real tabs: the side panels'
-  paper-folder tabs (`PanelFolderTabSvg` + `.tree-folder-tab`; like the panels' tabs, square with 8px top corners, the active one shows a small icon and its name and
-  the others just their icon), standing on the
+  paper-folder tabs (`PanelFolderTabSvg` + `.tree-folder-tab`; like the panels' tabs, square with 8px top corners: every tab shows a small icon and its name while they
+  all fit, otherwise only the active one does and the others just their icon -- `useTabsFit`), standing on the
   bottom edge of a full-width amber-tinted dark band, with the active one opening into the menu body
   below (`.menuTabs-folder` / `.menuFolderTab` in `TreeSubMenu.css`) -- the same tab look as a panel
   header, not a second button style. A menu with a single tab still shows it, as the same folder tab,
@@ -287,8 +287,8 @@ need before changing the editor, the layout engine, the gear flyouts or the item
   Inputs, pulldowns and buttons in the Properties tab share the top toolbar's control height
   (`barControlHeight`, 26px) so rows of mixed controls line up.
   Both tabs always take `menuShellXWide` (17.5rem), so switching tabs never changes the flyout's
-  width; the tabs are centered within that wider head, and since the active one has a fixed minimum width and an
-  idle one hugs its icon, the pair keeps the same total width and never shifts. The
+  width; the tabs are centered within that wider head and keep one total width whichever is active (while they are
+  icons, the active one has a fixed minimum width), so they never shift. The
   Properties body is one column of collapsible `ActionMenuSection` cards: an icon tile
   (`icons/SectionIcons.tsx`), the title with a one-line subtitle (shown open or closed, so the header never changes height), a `?` bubble and
   an up/down chevron, in an amber-bordered card over a dark fill. Inside a split flyout's body,

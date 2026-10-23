@@ -17,6 +17,7 @@ import {
 } from '@/components/icons/PanelIcons';
 import { DockContent, TabReorderInfo } from '@/hooks/usePanelDockDrag';
 import { useTabGapLine } from '@/hooks/useTabGapLine';
+import { useTabsFit } from '@/hooks/useTabsFit';
 import { PrimarySidebarPosition } from '@/types/layout';
 import VisibilityEyeIcon from '@/components/VisibilityEyeIcon';
 import { activeIconColor } from '@/components/editorBarStyles';
@@ -63,6 +64,47 @@ interface PanelViewTabsProps {
 }
 
 /** The panel header's view-mode paper folder tabs, section heading, and add/expand-all actions. */
+/** A view tab's name, icon (none for Grabbed Content) and tooltip. */
+function tabInfo(tab: string) {
+  const tabLabel =
+    tab === 'items'
+      ? 'Items'
+      : tab === 'collections'
+      ? 'Collections'
+      : tab === 'templates'
+      ? 'Templates'
+      : tab === 'template_editor'
+      ? 'Blueprint'
+      : tab === 'template_hierarchy'
+      ? 'Layout'
+      : 'Grabbed Content';
+  const TabIcon =
+    tab === 'items'
+      ? ItemsTabIcon
+      : tab === 'collections'
+      ? CollectionsTabIcon
+      : tab === 'templates'
+      ? TemplatesTabIcon
+      : tab === 'template_hierarchy'
+      ? LayoutTabIcon
+      : tab === 'template_editor'
+      ? BlueprintTabIcon
+      : null;
+  const tabTitle =
+    tab === 'items'
+      ? 'Show Items organized by Category (drag to move tab)'
+      : tab === 'collections'
+      ? 'Show Collections hierarchy (drag to move tab)'
+      : tab === 'templates'
+      ? 'Show Templates blueprint tree (drag to move tab)'
+      : tab === 'template_editor'
+      ? 'Show Blueprint: the template’s fields (drag to move tab)'
+      : tab === 'template_hierarchy'
+      ? 'Show Layout (drag to move tab)'
+      : 'Show Grabbed Content (drag to move tab)';
+  return { tabLabel, TabIcon, tabTitle };
+}
+
 export default function PanelViewTabs({
   headerId,
   position,
@@ -119,8 +161,11 @@ export default function PanelViewTabs({
     if (rect) setAddFieldMenuAt({ top: Math.round(rect.bottom + 4), right: Math.round(window.innerWidth - rect.right) });
   };
 
+  // Every tab shows its name while they all fit, else only the active one does (useTabsFit).
+  const { setSpaceEl: setTabSpaceEl, setMeasureEl: setTabMeasureEl, fits: tabsFit } = useTabsFit();
+
   // The header's divider line gets a gap under the active tab (see useTabGapLine).
-  const tabsRowRef = useTabGapLine([activeTab, displayedTabs.join(',')]);
+  const tabsRowRef = useTabGapLine([activeTab, displayedTabs.join(','), tabsFit]);
 
   if (displayedTabs.length === 0) return null;
 
@@ -144,45 +189,29 @@ export default function PanelViewTabs({
       </div>
       <div ref={tabsRowRef} className="flex items-end justify-between gap-1 w-full shrink-0 -mb-[1px]">
         {/* Left: View Mode Paper Folder Tabs */}
-        <div role="tablist" aria-label={`${panelName} views`} className="flex items-center relative">
+        <div
+          ref={setTabSpaceEl}
+          role="tablist"
+          aria-label={`${panelName} views`}
+          className="flex items-center relative flex-1 min-w-0"
+        >
+          {/* Hidden: every tab with its name, to measure whether they all fit (useTabsFit) */}
+          <div ref={setTabMeasureEl} className="tree-tabs-measure" aria-hidden="true">
+            {displayedTabs.map((tab, idx) => {
+              const { tabLabel, TabIcon } = tabInfo(tab);
+              return (
+                <span key={tab} className={`tree-folder-tab ${idx > 0 ? 'ml-1' : ''}`}>
+                  <span className="flex items-center gap-1.5 px-0.5">
+                    {TabIcon && <TabIcon className="w-3.5 h-3.5" />}
+                    <span className="tree-folder-tab-label">{tabLabel}</span>
+                  </span>
+                </span>
+              );
+            })}
+          </div>
           {displayedTabs.map((tab, idx) => {
             const isTabActive = activeTab === tab;
-            const tabLabel =
-              tab === 'items'
-                ? 'Items'
-                : tab === 'collections'
-                ? 'Collections'
-                : tab === 'templates'
-                ? 'Templates'
-                : tab === 'template_editor'
-                ? 'Blueprint'
-                : tab === 'template_hierarchy'
-                ? 'Layout'
-                : 'Grabbed Content';
-            const TabIcon =
-              tab === 'items'
-                ? ItemsTabIcon
-                : tab === 'collections'
-                ? CollectionsTabIcon
-                : tab === 'templates'
-                ? TemplatesTabIcon
-                : tab === 'template_hierarchy'
-                ? LayoutTabIcon
-                : tab === 'template_editor'
-                ? BlueprintTabIcon
-                : null;
-            const tabTitle =
-              tab === 'items'
-                ? 'Show Items organized by Category (drag to move tab)'
-                : tab === 'collections'
-                ? 'Show Collections hierarchy (drag to move tab)'
-                : tab === 'templates'
-                ? 'Show Templates blueprint tree (drag to move tab)'
-                : tab === 'template_editor'
-                ? 'Show Blueprint: the template’s fields (drag to move tab)'
-                : tab === 'template_hierarchy'
-                ? 'Show Layout (drag to move tab)'
-                : 'Show Grabbed Content (drag to move tab)';
+            const { tabLabel, TabIcon, tabTitle } = tabInfo(tab);
 
             const isThisTabDragging = isDragging && reorderInfo?.draggingTab === tab && reorderInfo?.side === position;
             const isThisTabTarget = isDragging && reorderInfo?.side === position && reorderInfo?.targetIndex === idx;
@@ -220,10 +249,10 @@ export default function PanelViewTabs({
                     isActive={isTabActive}
                     isTarget={isThisTabTarget}
                   />
-                  {/* The active tab shows a small icon and its name; the others just their icon (a tab with no icon
-                      always shows its name). */}
+                  {/* A small icon and the name while every tab fits (useTabsFit); otherwise only the active tab
+                      names itself and the others are just their icon (a tab with no icon always shows its name). */}
                   <span className="relative z-10 flex items-center gap-1.5 px-0.5 select-none">
-                    {TabIcon && !isTabActive ? (
+                    {TabIcon && !isTabActive && !tabsFit ? (
                       <TabIcon className="w-[17px] h-[17px]" />
                     ) : (
                       <>

@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useState, useRef, useEffect, useId } from 'react';
 import { usePresence } from '@/hooks/usePresence';
+import { useTabsFit } from '@/hooks/useTabsFit';
 import { createPortal } from 'react-dom';
 import '@/app/styles/components/TreeSubMenu.css';
 import { ChevronDownIcon, PanelFolderTabSvg } from '@/components/icons/PanelIcons';
@@ -339,6 +340,8 @@ export function ActionMenuTabs<T extends string>({
   onChange?: (id: T) => void;
 }) {
   const gradientId = useId();
+  // Every tab shows its name while they all fit, else only the active one does (useTabsFit)
+  const { setSpaceEl: setTabSpaceEl, setMeasureEl: setTabMeasureEl, fits: tabsFit } = useTabsFit();
   if (tabs.length === 0) {
     return <div className="menuTabs" aria-hidden="true" />;
   }
@@ -346,7 +349,22 @@ export function ActionMenuTabs<T extends string>({
   // menu's head reads the same way.
   const current = active ?? tabs[0].id;
   return (
-    <div className="menuTabs menuTabs-folder" role="tablist">
+    <div
+      ref={setTabSpaceEl}
+      className={`menuTabs menuTabs-folder relative ${tabsFit ? '' : 'menuTabs-collapsed'}`}
+      role="tablist"
+    >
+      {/* Hidden: every tab with its name, to measure whether they all fit (useTabsFit) */}
+      <div ref={setTabMeasureEl} className="tree-tabs-measure" aria-hidden="true">
+        {tabs.map((tab) => (
+          <span key={tab.id} className="menuFolderTab tree-folder-tab">
+            <span className="flex items-center gap-1.5">
+              <tab.Icon className="w-3.5 h-3.5" />
+              <span className="tree-folder-tab-label">{tab.label}</span>
+            </span>
+          </span>
+        ))}
+      </div>
       {tabs.map((tab) => {
         const isActive = current === tab.id;
         return (
@@ -356,14 +374,15 @@ export function ActionMenuTabs<T extends string>({
             role="tab"
             aria-selected={isActive}
             aria-label={tab.label}
-            title={isActive ? undefined : tab.label}
+            title={isActive || tabsFit ? undefined : tab.label}
             onClick={() => onChange?.(tab.id)}
             className={`menuFolderTab tree-folder-tab ${isActive ? 'tree-folder-tab-active z-20' : 'tree-folder-tab-idle z-10'}`}
           >
             <PanelFolderTabSvg gradientId={`${gradientId}-${tab.id}`} isActive={isActive} />
-            {/* Like the side panels' tabs: the active one shows a small icon and its name, the others just their icon */}
+            {/* Like the side panels' tabs: a small icon and the name while every tab fits, otherwise only the active
+                tab names itself and the others are just their icon */}
             <span className="relative z-10 flex items-center gap-1.5 select-none">
-              {isActive ? (
+              {isActive || tabsFit ? (
                 <>
                   <tab.Icon className="w-3.5 h-3.5" />
                   <span className="tree-folder-tab-label">{tab.label}</span>
