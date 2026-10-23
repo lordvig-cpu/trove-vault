@@ -31,7 +31,7 @@ export default function BlueprintBuiltinActionMenu({ label, menu, position, onPl
       left={menu.menuCoords.left}
       position={position}
       splitBody
-      title={`${label}: Actions`}
+      title={label}
       titleIcon={<ActionIcon className="w-4 h-4" />}
       subheader={<ActionMenuTabs tabs={ACTIONS_ONLY_TABS} />}
     >

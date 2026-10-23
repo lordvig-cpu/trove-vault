@@ -268,11 +268,12 @@ need before changing the editor, the layout engine, the gear flyouts or the item
   paper-folder tabs (`PanelFolderTabSvg` + `.tree-folder-tab`, icon and label inside), standing on the
   bottom edge of a full-width amber-tinted dark band, with the active one opening into the menu body
   below (`.menuTabs-folder` / `.menuFolderTab` in `TreeSubMenu.css`) -- the same tab look as a panel
-  header, not a second button style. With fewer than two tabs, `ActionMenuTabs` itself renders that same `.menuTabs`
-  element with no buttons inside it at all -- a plain divider band, not a single oversized "tab" to
-  click. A Category row's menu (`TreeCollectionActionMenu.tsx`'s virtual-category branch) is the one that still
-  passes a single-entry tabs array, titled "Category: Actions" ("Actions" folds into the title since there's no
-  tab label to say it); Item, Collection and Template menus have real Actions / Properties tabs (see below).
+  header, not a second button style. A menu with a single tab still shows it, as the same folder tab,
+  selected: a Category row's menu (`TreeCollectionActionMenu.tsx`'s virtual-category branch, titled "Category")
+  and a Blueprint built-in's (`BlueprintBuiltinActionMenu`, titled with the value's name) have just Actions until
+  they get Properties, and read the same as every other menu meanwhile. Only with no tabs at all does
+  `ActionMenuTabs` render that same `.menuTabs` element with no buttons inside it -- a plain divider band.
+  Item, Collection and Template menus have real Actions / Properties tabs (see below).
   The one-CSS-definition rule this preserves:
   never add a second shell, a bespoke header class, or a per-menu override for a card that happens
   to be shorter -- if a head card ever looks wrong again, the fix is either in `.menuShellHead`'s

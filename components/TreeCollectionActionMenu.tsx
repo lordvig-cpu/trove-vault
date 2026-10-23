@@ -62,7 +62,7 @@ export default function TreeCollectionActionMenu({
         left={menu.menuCoords.left}
         position={position}
         splitBody
-        title="Category: Actions"
+        title="Category"
         titleIcon={<ActionIcon className="w-4 h-4" />}
         subheader={<ActionMenuTabs tabs={ACTIONS_ONLY_TABS} />}
       >

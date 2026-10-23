@@ -319,13 +319,16 @@ export function ActionMenuTabs<T extends string>({
   onChange?: (id: T) => void;
 }) {
   const gradientId = useId();
-  if (tabs.length < 2) {
+  if (tabs.length === 0) {
     return <div className="menuTabs" aria-hidden="true" />;
   }
+  // A menu with just one tab (Actions, with no Properties yet) still shows it, selected, so every
+  // menu's head reads the same way.
+  const current = active ?? tabs[0].id;
   return (
     <div className="menuTabs menuTabs-folder" role="tablist">
       {tabs.map((tab) => {
-        const isActive = active === tab.id;
+        const isActive = current === tab.id;
         return (
           <button
             key={tab.id}
