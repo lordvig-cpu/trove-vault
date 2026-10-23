@@ -838,19 +838,22 @@
   box-shadow: inset 0 1px 0 var(--shadow-black-35);
 }
 
+/* Every typed-in field (text, number, date, a multi-line box) shares these rules, through :is() so the rules
+   stay as specific as a plain input[type='text'] one; listing only text inputs left date and number fields on
+   another, lighter border. */
 /* Dark inputs and segmented buttons inside a split flyout's body: a dark navy fill (a little blue
    in black) with a thin light border (white on hover, light blue when focused), so they contrast
    with the all-amber cards around them instead of adding more amber. Inputs that opt out (the
    Spacing box's borderless side inputs) keep their own look. UnitSelect (the px / % pulldown) is
    white on black instead, defined in unitSelect.css. */
-.menuShellBody input[type='text']:not(.spacingInput):not(.colorHexInput) {
+.menuShellBody :is(input[type='text'], input[type='number'], input[type='date'], input[type='search'], input:not([type]), textarea):not(.spacingInput):not(.colorHexInput) {
   background: color-mix(in oklab, var(--primary-accent) 16%, var(--pole-surface));
   border: 1px solid color-mix(in oklab, var(--primary-accent) 60%, var(--pole-surface));
   /* White at 80%, not --text-strong: inside a flyout that variable is re-pointed to the amber menu ink. */
   color: color-mix(in oklab, var(--flyout-white) 80%, transparent);
 }
 
-.menuShellBody input[type='text']:not(.spacingInput):not(.colorHexInput):hover {
+.menuShellBody :is(input[type='text'], input[type='number'], input[type='date'], input[type='search'], input:not([type]), textarea):not(.spacingInput):not(.colorHexInput):hover {
   border-color: color-mix(in oklab, var(--flyout-white) 55%, transparent);
 }
 
@@ -963,7 +966,7 @@
   border-color: color-mix(in oklab, var(--flyout-white) 55%, transparent);
 }
 
-.menuShellBody input[type='text']:not(.spacingInput):not(.colorHexInput):focus {
+.menuShellBody :is(input[type='text'], input[type='number'], input[type='date'], input[type='search'], input:not([type]), textarea):not(.spacingInput):not(.colorHexInput):focus {
   color: var(--flyout-white); /* full bright white while typing */
   outline: none;
   border-color: var(--secondary-accent);

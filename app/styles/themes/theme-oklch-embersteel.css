@@ -302,7 +302,7 @@
 }
 
 /* Inputs and pulldown fields inside a flyout body: the Background well with the slate edge (amber when focused). */
-[data-theme='theme-oklch-dark'] .menuShellBody input[type='text']:not(.spacingInput):not(.colorHexInput),
+[data-theme='theme-oklch-dark'] .menuShellBody :is(input[type='text'], input[type='number'], input[type='date'], input[type='search'], input:not([type]), textarea):not(.spacingInput):not(.colorHexInput),
 [data-theme='theme-oklch-dark'] .colorHexField {
   background: var(--oklch-bg);
   border-color: var(--ember-menu-edge);
