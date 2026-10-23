@@ -241,6 +241,9 @@ its display style, with label and typography).
   and the forest search/filter logic.
 - `hierarchyFilterMetas.ts` — the Layout tree's three node categories (Layout/Content/Pre-defined
   Content) for its filter menu: display metadata and `hierarchyNodeCategory()`.
+- `itemAttributes.ts` — pure rules for how the item forms show an item's stored values: the template's fields, and
+  every other value as an editable custom-field row that saves its original type while unchanged
+  (`splitItemAttributes`, `rowValue`); covered by `tests/pure-helpers.spec.ts`.
 - `helpWindows.ts` — module-level store of the help windows (open/toggle, move, raise, close; at most 4) plus the `useHelpWindows` / `useIsHelpWindowOpen` hooks; rendered by `HelpWindowHost.tsx`.
 - `layoutHistory.ts` — pure undo/redo snapshot logic for the layout (coalesces drag bursts, caps depth);
   covered by `tests/layout-history.spec.ts`.

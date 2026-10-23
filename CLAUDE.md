@@ -66,6 +66,11 @@ commit whenever you add, remove, split or rename a file — it goes stale otherw
   `lib/data/mappers.ts`, never with casts.
 - **Item forms:** the Create and Edit item modals share `hooks/useItemForm.ts` and the
   `components/item-form/*` pieces (`ItemModalShell` keeps the error and buttons in view).
+  Editing an item is the main way users manage its values, so the edit form (the modal and the item
+  flyout's Properties alike) shows everything the item holds and hides nothing: the built-ins (name,
+  template, photo), the template's fields, and every other stored value as an editable Custom Fields
+  row (`splitItemAttributes` in `lib/itemAttributes.ts`). Removing a row deletes that value; changing
+  the template moves values between its fields and the rows rather than dropping or hiding any.
 - **Tailwind:** class names must appear as full literal strings; never build them with `${}`
   interpolation (Tailwind cannot see them). Shared editor-bar styles are in
   `components/editorBarStyles.ts`.

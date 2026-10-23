@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { updateItem } from '@/lib/data/items';
 import { useItemForm } from '@/hooks/useItemForm';
+import { splitItemAttributes } from '@/lib/itemAttributes';
 import { errorMessage } from '@/lib/errors';
 import type { ItemRecord } from '@/types/item';
 import type { ItemTemplate } from '@/types/template';
@@ -34,7 +35,7 @@ export function useItemEditor(item: ItemRecord | null, active: boolean) {
     setSelectedTemplateId,
     setActiveTemplateFields,
   } = form;
-  const clearAdHocRows = form.clearAdHocRows;
+  const setAdHocAttributes = form.setAdHocAttributes;
 
   // The saved item the form was last loaded from, and the form's state right after that load
   const [loadedKey, setLoadedKey] = useState<string | null>(null);
@@ -66,29 +67,33 @@ export function useItemEditor(item: ItemRecord | null, active: boolean) {
     setSelectedFile(null);
     setPreviewUrl(null);
     setError(null);
-    clearAdHocRows();
 
     // Existing attributes, excluding the photo URL (it has its own control)
-    const values: Record<string, unknown> = {};
+    const attributes: Record<string, unknown> = {};
     for (const [key, val] of Object.entries(rawAttrs)) {
       if (key === 'image_url') continue;
-      values[key] = val;
+      attributes[key] = val;
     }
-    setDynamicValues(values);
 
     // Match template by template_id first, then fallback to attribute key match
     let matchedTemplate: ItemTemplate | undefined;
     if (item.template_id) matchedTemplate = fullTemplates.find((t) => t.id === item.template_id);
     if (!matchedTemplate) {
       matchedTemplate = fullTemplates.find((tmpl) =>
-        tmpl.fields?.some((f) => Object.prototype.hasOwnProperty.call(values, f.name))
+        tmpl.fields?.some((f) => Object.prototype.hasOwnProperty.call(attributes, f.name))
       );
     }
     const templateId = matchedTemplate ? matchedTemplate.id : null;
+    const fields = matchedTemplate?.fields || [];
     setSelectedTemplateId(templateId);
-    setActiveTemplateFields(matchedTemplate?.fields || []);
+    setActiveTemplateFields(fields);
 
-    setBaseline(JSON.stringify({ name, templateId, values, adHoc: [], image: imageUrl, newPhoto: false }));
+    // The template's fields get their values; every other value is a custom-field row
+    const { values, rows } = splitItemAttributes(attributes, fields);
+    setDynamicValues(values);
+    setAdHocAttributes(rows);
+
+    setBaseline(JSON.stringify({ name, templateId, values, adHoc: rows, image: imageUrl, newPhoto: false }));
     setLoadedKey(savedKeyOf(item));
   }, [
     item,
@@ -100,7 +105,7 @@ export function useItemEditor(item: ItemRecord | null, active: boolean) {
     setError,
     setSelectedTemplateId,
     setActiveTemplateFields,
-    clearAdHocRows,
+    setAdHocAttributes,
   ]);
 
   const itemKey = item ? savedKeyOf(item) : null;

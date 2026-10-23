@@ -6,6 +6,9 @@ import { CloseIcon } from '@/components/icons/PanelIcons';
 export interface AdHocAttribute {
   key: string;
   value: string;
+  /** The value as stored, for a row loaded from the item: saved back as is while `value` still shows it
+      unchanged, so a stored number or yes/no doesn't turn into text just by being shown here. */
+  original?: unknown;
 }
 
 interface AdHocAttributesEditorProps {

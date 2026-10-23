@@ -16,6 +16,8 @@ import { toFieldDefinition, toItemRecord, toItemTemplate, toRecord } from '../li
 import { detectItemCategory, itemMatchesQuery, UNCATEGORIZED_CATEGORY_ID } from '../lib/treeUtils';
 import { DEFAULT_TEMPLATE_ICON, type ItemTemplate } from '../types/template';
 import type { ItemRecord } from '../types/item';
+import type { FieldDefinition } from '../types/field';
+import { rowValue, splitItemAttributes } from '../lib/itemAttributes';
 
 /* Small pure helpers that the editor, the data layer and the trees all lean on. */
 
@@ -205,4 +207,34 @@ test('layout navigation walks the Layout tree order: each container, then what i
   expect(layoutNeighbors(root, 'missing')).toEqual({ prev: null, next: null });
   expect(layoutNodeName(root, [], true)).toBe('Body');
   expect(layoutNodeName({ ...root, label: 'Header' }, [], false)).toBe('Header');
+});
+
+test.describe('item values in the item forms (lib/itemAttributes.ts)', () => {
+  const field = (name: string): FieldDefinition => ({
+    id: 1, name, label: name, field_type: 'text', options: null, is_required: false, display_order: 0,
+  });
+
+  test("a template's fields get their values and every other stored value becomes a custom row", () => {
+    const { values, rows } = splitItemAttributes(
+      { publisher: 'Marvel', signature: 'Stan Lee', grade: 9.8, signed: true, notes: '' },
+      [field('publisher'), field('notes')]
+    );
+    expect(values).toEqual({ publisher: 'Marvel', notes: '' });
+    // blank values are not shown as rows; the rest are, as text
+    expect(rows.map((r) => [r.key, r.value])).toEqual([['signature', 'Stan Lee'], ['grade', '9.8'], ['signed', 'true']]);
+  });
+
+  test('a row saves its stored value (number, yes/no) while unchanged, and the typed text once edited', () => {
+    const [grade, signed] = splitItemAttributes({ grade: 9.8, signed: true }, []).rows;
+    expect(rowValue(grade)).toBe(9.8);
+    expect(rowValue(signed)).toBe(true);
+    expect(rowValue({ ...grade, value: ' 9.6 ' })).toBe('9.6');
+    expect(rowValue({ key: 'new', value: ' typed ' })).toBe('typed');
+  });
+
+  test('with no template, every non-blank value is a row', () => {
+    const { values, rows } = splitItemAttributes({ a: 'x', b: null }, []);
+    expect(values).toEqual({});
+    expect(rows.map((r) => r.key)).toEqual(['a']);
+  });
 });

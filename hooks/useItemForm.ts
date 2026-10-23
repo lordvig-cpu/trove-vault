@@ -5,6 +5,7 @@ import { validateImageFile } from '@/lib/storage';
 import { errorMessage } from '@/lib/errors';
 import { fetchTemplateCatalog } from '@/lib/data/templates';
 import type { AdHocAttribute } from '@/components/item-form/AdHocAttributesEditor';
+import { rowValue, splitItemAttributes } from '@/lib/itemAttributes';
 import type { FieldDefinition } from '@/types/field';
 import type { ItemTemplate } from '@/types/template';
 
@@ -14,7 +15,9 @@ import type { ItemTemplate } from '@/types/template';
    form is initialized and what saving does.
 
    'create' starts every template switch from fresh defaults and stores only the values that were
-   filled in. 'edit' keeps the item's existing values when the template changes and stores them all.
+   filled in. 'edit' shows everything the item holds -- the template's fields, and every other stored
+   value as a custom-field row (splitItemAttributes) -- keeps it all when the template changes, and
+   stores it all, so removing a custom row is what deletes a value.
    ========================================================================== */
 
 export type ItemFormMode = 'create' | 'edit';
@@ -50,26 +53,52 @@ export function useItemForm(mode: ItemFormMode) {
     return templates;
   }, []);
 
-  /** Make a template the active one and give its fields values. */
-  const applyTemplate = useCallback((template: ItemTemplate, keepValues: boolean) => {
-    const fields = template.fields || [];
-    setSelectedTemplateId(template.id);
-    setActiveTemplateFields(fields);
-    setDynamicValues((previous) => {
-      const next: Record<string, unknown> = keepValues ? { ...previous } : {};
-      for (const field of fields) {
-        if (keepValues && next[field.name] !== undefined) continue;
-        next[field.name] = defaultFieldValue(field);
+  /**
+   * Keeping the item's values across a template change: everything the item holds (field values and custom
+   * rows alike) is split again for the new fields, so a custom row named like one of them fills it and a
+   * value of a field the new template doesn't have becomes a custom row rather than being hidden.
+   */
+  const resplitValues = useCallback(
+    (fields: FieldDefinition[]) => {
+      const all: Record<string, unknown> = { ...dynamicValues };
+      const typedRows: AdHocAttribute[] = [];
+      for (const row of adHocAttributes) {
+        const key = row.key.trim();
+        if (key) all[key] = rowValue(row);
+        else typedRows.push(row); // a row still being filled in stays as it is
       }
-      return next;
-    });
-  }, []);
+      const { values, rows } = splitItemAttributes(all, fields);
+      for (const field of fields) if (values[field.name] === undefined) values[field.name] = defaultFieldValue(field);
+      setDynamicValues(values);
+      setAdHocAttributes([...rows, ...typedRows]);
+    },
+    [dynamicValues, adHocAttributes]
+  );
 
-  const clearTemplate = useCallback((keepValues: boolean) => {
-    setSelectedTemplateId(null);
-    setActiveTemplateFields([]);
-    if (!keepValues) setDynamicValues({});
-  }, []);
+  /** Make a template the active one and give its fields values. */
+  const applyTemplate = useCallback(
+    (template: ItemTemplate, keepValues: boolean) => {
+      const fields = template.fields || [];
+      setSelectedTemplateId(template.id);
+      setActiveTemplateFields(fields);
+      if (keepValues) {
+        resplitValues(fields);
+        return;
+      }
+      setDynamicValues(Object.fromEntries(fields.map((field) => [field.name, defaultFieldValue(field)])));
+    },
+    [resplitValues]
+  );
+
+  const clearTemplate = useCallback(
+    (keepValues: boolean) => {
+      setSelectedTemplateId(null);
+      setActiveTemplateFields([]);
+      if (keepValues) resplitValues([]);
+      else setDynamicValues({});
+    },
+    [resplitValues]
+  );
 
   /** Handler for the template dropdown ('blank' or a template id). */
   const selectTemplate = useCallback(
@@ -140,7 +169,6 @@ export function useItemForm(mode: ItemFormMode) {
     setAdHocAttributes((previous) => previous.filter((_, i) => i !== index));
   }, []);
 
-  const clearAdHocRows = useCallback(() => setAdHocAttributes([]), []);
 
   /* ---- saving ----------------------------------------------------------- */
 
@@ -157,7 +185,7 @@ export function useItemForm(mode: ItemFormMode) {
     }
     for (const attribute of adHocAttributes) {
       const key = attribute.key.trim();
-      if (key) attributes[key] = attribute.value.trim();
+      if (key) attributes[key] = rowValue(attribute);
     }
     return attributes;
   }, [mode, dynamicValues, activeTemplateFields, adHocAttributes]);
@@ -196,6 +224,7 @@ export function useItemForm(mode: ItemFormMode) {
     dynamicValues,
     setDynamicValues,
     adHocAttributes,
+    setAdHocAttributes,
     existingImageUrl,
     setExistingImageUrl,
     selectedFile,
@@ -218,7 +247,6 @@ export function useItemForm(mode: ItemFormMode) {
     addAdHocRow,
     changeAdHocRow,
     removeAdHocRow,
-    clearAdHocRows,
     buildAttributes,
     submit,
     resetForm,
