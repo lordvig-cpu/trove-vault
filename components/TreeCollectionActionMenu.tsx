@@ -101,7 +101,7 @@ export default function TreeCollectionActionMenu({
             {
               id: 'new-item',
               label: 'New item',
-              description: 'Create item in this collection',
+              caption: 'Create item in this collection',
               Icon: FileIcon,
               onClick: () => {
                 onAddSubItem(collection.id, null);
@@ -111,7 +111,7 @@ export default function TreeCollectionActionMenu({
             {
               id: 'add-existing',
               label: 'Add existing item',
-              description: 'Link catalog item here',
+              caption: 'Link catalog item here',
               Icon: InboxIcon,
               onClick: () => {
                 // Not implemented yet: linking an existing catalog item to a collection.
@@ -123,7 +123,7 @@ export default function TreeCollectionActionMenu({
                   {
                     id: 'edit-settings',
                     label: 'Edit collection settings',
-                    description: 'Manage collection metadata',
+                    caption: 'Manage collection metadata',
                     Icon: GearIcon,
                     onClick: () => {
                       onEditCollection(collection);
@@ -137,7 +137,7 @@ export default function TreeCollectionActionMenu({
                   {
                     id: 'new-sub-collection',
                     label: 'New sub-collection',
-                    description: 'Create a nested collection',
+                    caption: 'Create a nested collection',
                     Icon: FolderIcon,
                     onClick: () => {
                       onAddSubCollection(collection.id);
@@ -151,7 +151,7 @@ export default function TreeCollectionActionMenu({
                   {
                     id: 'delete',
                     label: 'Delete',
-                    description: 'Permanently remove',
+                    caption: 'Permanently remove',
                     Icon: TrashCanIcon,
                     danger: true,
                     onClick: () => {

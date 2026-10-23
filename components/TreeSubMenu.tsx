@@ -311,7 +311,9 @@ export function ActionMenuDangerItem({
 export interface MenuAction {
   id: string;
   label: string;
-  /** What it does, shown under the label in its hover help. */
+  /** A short line beside its name in its hover help, like an action row's subtext. */
+  caption?: string;
+  /** What it does in full, under that in its hover help. */
   description?: string;
   Icon: React.ComponentType<{ className?: string }>;
   onClick: () => void;
@@ -329,7 +331,7 @@ export interface MenuActionGroup {
     id: string;
     /** The option's text, e.g. "Before", or "Next: General Information". */
     label: string;
-    /** What it does, shown under the label in the option's hover help. */
+    /** What it does, under its name in the option's hover help. */
     description?: string;
     /** Its icon, already sized (w-3.5 h-3.5, like the toolbar's options). */
     icon?: React.ReactNode;
@@ -432,7 +434,7 @@ function MenuActionGroupButton({ group }: { group: MenuActionGroup }) {
                   showDelayMs={ACTION_HINT_DELAY_MS}
                   placement="side"
                   wrapperClassName="flex flex-col"
-                  hint={{ title: item.label, description: item.description, icon: item.icon }}
+                  hint={{ title: item.label, description: item.description, action: { icon: item.icon } }}
                 >
                   <GroupOption
                     icon={item.icon}
@@ -467,7 +469,11 @@ export function MenuActionBar({ actions }: { actions: (MenuAction | MenuActionGr
         key={entry.id}
         interactive
         showDelayMs={ACTION_HINT_DELAY_MS}
-        hint={{ title: entry.label, description: entry.description, icon: <entry.Icon className="w-3.5 h-3.5" /> }}
+        hint={{
+          title: entry.label,
+          description: entry.description,
+          action: { icon: <entry.Icon className="w-3.5 h-3.5" />, caption: entry.caption, danger: entry.danger },
+        }}
       >
         <button
           type="button"

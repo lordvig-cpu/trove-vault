@@ -54,7 +54,7 @@ export default function TreeTemplateActionMenu({
             {
               id: 'new-item',
               label: 'New item',
-              description: 'Create item with this template',
+              caption: 'Create item with this template',
               Icon: FileIcon,
               onClick: () => {
                 onAddSubItem(-rawTemplateId, null);
@@ -66,7 +66,7 @@ export default function TreeTemplateActionMenu({
                   {
                     id: 'edit-template',
                     label: 'Edit template',
-                    description: 'Configure blueprint & fields schema',
+                    caption: 'Configure blueprint & fields schema',
                     Icon: GearIcon,
                     onClick: () => {
                       onEditTemplate(rawTemplateId);
@@ -80,7 +80,7 @@ export default function TreeTemplateActionMenu({
                   {
                     id: 'delete',
                     label: 'Delete',
-                    description: 'Permanently remove',
+                    caption: 'Permanently remove',
                     Icon: TrashCanIcon,
                     danger: true,
                     onClick: () => {

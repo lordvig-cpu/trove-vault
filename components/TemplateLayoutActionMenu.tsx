@@ -422,7 +422,7 @@ export function TemplateContainerActionMenu({
         {
           id: 'add-inside',
           label: 'Add container inside',
-          description: 'Nest a new container in the Body',
+          caption: 'Nest a new container in the Body',
           Icon: AddChildContainerIcon,
           onClick: act(() => onAddContainer?.(container.id, { ...NEW_CONTAINER_OPTIONS })),
         },
@@ -593,7 +593,7 @@ export function TemplateContainerActionMenu({
         ? {
             id: 'delete',
             label: 'Delete',
-            description: 'Permanently remove container and all contents',
+            caption: 'Permanently remove container and all contents',
             Icon: TrashCanIcon,
             danger: true,
             onClick: act(() => onRemoveContainer(container.id)),
@@ -848,7 +848,7 @@ export function TemplateComponentActionMenu({
               ? [{
                   id: 'delete',
                   label: 'Delete',
-                  description: 'Remove this from its container',
+                  caption: 'Remove this from its container',
                   Icon: TrashCanIcon,
                   danger: true,
                   onClick: () => {

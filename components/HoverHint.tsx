@@ -62,10 +62,12 @@ export interface HintNote {
  */
 export interface HintContent {
   title: string;
-  /** A line or two under the title, before any sections (e.g. what an action does), laid out like a Settings row:
-      `icon` (the action's own) in a mini button chip on the left, the text on the right. */
+  /** For an action's help: a row like the action buttons' -- its icon on the tinted tile, its name in the action
+      blue and a short caption beside it (red for a destructive one) -- above the description. */
+  action?: { icon: React.ReactNode; caption?: string; danger?: boolean };
+  /** A line or two of what it does, under the title (and under the action row, if there is one), before any
+      sections. */
   description?: React.ReactNode;
-  icon?: React.ReactNode;
   settings?: HintSetting[];
   notes?: HintNote[];
 }
@@ -154,12 +156,18 @@ export function HintBubble({
       <div className="menuShell menuShellBody">
         <div className="innerContent">
           <div className="childrenContainer">
-            {hint.description && (
-              <div className="hoverHintDescription">
-                {hint.icon && <span className="hintRefIcon">{hint.icon}</span>}
-                <span>{hint.description}</span>
+            {hint.action && (
+              <div className="hoverHintAction">
+                <span className={hint.action.danger ? 'actionMenuDangerIcon' : 'actionMenuItemIcon'}>{hint.action.icon}</span>
+                <span className="flex flex-col leading-tight min-w-0">
+                  <span className={hint.action.danger ? 'actionMenuDangerLabel' : 'actionMenuItemLabel'}>{hint.title}</span>
+                  {hint.action.caption && (
+                    <span className={hint.action.danger ? 'actionMenuDangerSubtext' : 'actionMenuItemSubtext'}>{hint.action.caption}</span>
+                  )}
+                </span>
               </div>
             )}
+            {hint.description && <p className="hoverHintDescription">{hint.description}</p>}
             {hint.settings && hint.settings.length > 0 && (
               <>
                 <div className="properties-section-heading">

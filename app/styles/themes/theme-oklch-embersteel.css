@@ -236,7 +236,9 @@
   background: var(--ember-menu-deep);
 }
 
-[data-theme='theme-oklch-dark'] .menuShellHead .menuTabs {
+/* The band under a menu's title (its action bar, or tabs), which a help bubble's body shares. */
+[data-theme='theme-oklch-dark'] .menuShellHead .menuTabs,
+[data-theme='theme-oklch-dark'] .hoverHint .menuShellBody {
   border-top-color: var(--ember-menu-edge);
   background: var(--ember-panel);
 }
@@ -279,11 +281,6 @@
   border-radius: 0.5rem;
   background: var(--oklch-primary);
   box-shadow: none;
-}
-
-/* A help bubble's body is the section cards' fill too (see .hoverHint .menuShellBody in TreeSubMenu.css). */
-[data-theme='theme-oklch-dark'] .hoverHint .menuShellBody {
-  background: var(--oklch-primary);
 }
 
 /* Action rows are buttons in the section cards' own fill and edge (their hover is the shared white or red one). */

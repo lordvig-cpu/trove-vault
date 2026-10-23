@@ -60,7 +60,7 @@ export default function TreeItemActionMenu({
             {
               id: 'add-child',
               label: 'Add child item',
-              description: 'Create a nested record',
+              caption: 'Create a nested record',
               Icon: AddSubItemIcon,
               onClick: () => {
                 onAddSubItem(collectionId, item.id);
@@ -70,7 +70,7 @@ export default function TreeItemActionMenu({
             {
               id: 'delete',
               label: 'Delete',
-              description: 'Permanently remove',
+              caption: 'Permanently remove',
               Icon: TrashCanIcon,
               danger: true,
               onClick: () => {

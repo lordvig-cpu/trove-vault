@@ -472,6 +472,21 @@
   color: var(--flyout-white);
 }
 
+/* A help bubble's body is the band behind a menu's action icons (EmberSteel's own band color is in its theme file),
+   a step darker than its header, and nothing draws a line between the two: that change of shade is the divider. */
+.hoverHint .menuShellBody {
+  background: var(--flyout-tab-band);
+}
+
+.hoverHint .menuShellHead {
+  border-bottom-width: 0;
+}
+
+.hoverHint .menuShellHead .menuTabs {
+  border-bottom: 0;
+  box-shadow: none;
+}
+
 .hoverHint .menuShellBody {
   max-height: none;
   /* Body text is the toolbar label color (the "SIZE:" / "LAYOUT:" labels), smaller than a flyout's
@@ -504,20 +519,22 @@
   border-top-color: color-mix(in oklab, var(--primary-accent) 45%, transparent);
 }
 
-/* A bubble's description under its title (HintContent.description), e.g. what an action does: laid out like a
-   Settings row, the action's icon in the same mini button chip (HintContent.icon) on the left, the text on the right. */
-.hoverHintDescription {
+/* An action's help (HintContent.action): a row like the action buttons' -- the tinted icon tile, the name in the
+   action blue and its short caption (the action row classes themselves) -- then the description under it. */
+.hoverHintAction {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  margin: 0;
+  gap: 0.625rem;
   padding: 0 0.25rem;
 }
 
-.hoverHintDescription .hintRefIcon {
-  width: 1.5rem;
-  height: 1.5rem;
-  flex-shrink: 0;
+.hoverHintAction + .hoverHintDescription {
+  margin-top: 0.625rem;
+}
+
+.hoverHintDescription {
+  margin: 0;
+  padding: 0 0.25rem;
 }
 
 /* Settings as a borderless two-column table: option names on the left, what they do on the right,
@@ -754,11 +771,9 @@
   box-shadow: inset 0 0 0 1px var(--pole-shade);
 }
 
-/* A section card's fill, which a help bubble's body (under its header) shares, so the header stands apart from the
-   help text: two soft Secondary Accent glows, off the top-left and bottom-right corners like the flyout body's, then
+/* A section card's fill: two soft Secondary Accent glows, off the top-left and bottom-right corners like the flyout body's, then
    the card's own top-edge glow (--section-card-glow, currently clear), over a dark base. */
-.menuSection,
-.hoverHint .menuShellBody {
+.menuSection {
   background:
     radial-gradient(ellipse 90% 60% at 0% 0%, color-mix(in oklab, var(--secondary-accent) 5%, transparent), transparent),
     radial-gradient(ellipse 90% 60% at 100% 100%, color-mix(in oklab, var(--secondary-accent) 5%, transparent), transparent),

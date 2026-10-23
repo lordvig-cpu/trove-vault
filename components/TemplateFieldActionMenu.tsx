@@ -139,7 +139,7 @@ export default function TemplateFieldActionMenu({
                   {
                     id: 'place',
                     label: `Place: ${placeTarget ?? 'Selected container'}`,
-                    description: 'Add it to the selected container',
+                    caption: 'Add it to the selected container',
                     Icon: PlaceIntoIcon,
                     onClick: () => {
                       onPlace();
@@ -150,15 +150,15 @@ export default function TemplateFieldActionMenu({
               : []),
             // Moves within its Blueprint group (the field order the item forms follow); the menu stays open
             ...(onMoveField && canMoveUp
-              ? [{ id: 'move-up', label: 'Move up', description: 'Earlier in its group', Icon: ChevronUpIcon, onClick: () => onMoveField(field.id, 'up') }]
+              ? [{ id: 'move-up', label: 'Move up', caption: 'Earlier in its group', Icon: ChevronUpIcon, onClick: () => onMoveField(field.id, 'up') }]
               : []),
             ...(onMoveField && canMoveDown
-              ? [{ id: 'move-down', label: 'Move down', description: 'Later in its group', Icon: ChevronDownIcon, onClick: () => onMoveField(field.id, 'down') }]
+              ? [{ id: 'move-down', label: 'Move down', caption: 'Later in its group', Icon: ChevronDownIcon, onClick: () => onMoveField(field.id, 'down') }]
               : []),
             {
               id: 'delete',
               label: 'Delete',
-              description: 'Remove from template schema',
+              caption: 'Remove from template schema',
               Icon: TrashCanIcon,
               danger: true,
               onClick: () => {
