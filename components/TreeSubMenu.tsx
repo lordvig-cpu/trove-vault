@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useState, useRef, useEffect, useId } from 'react';
+import React, { createContext, useCallback, useContext, useState, useRef, useEffect, useId } from 'react';
 import { usePresence } from '@/hooks/usePresence';
 import { useTabsFit } from '@/hooks/useTabsFit';
 import { createPortal } from 'react-dom';
@@ -10,6 +10,7 @@ import { ActionIcon, HelpCircleIcon, PropertiesIcon } from '@/components/icons/L
 import { HintGripIcon } from '@/components/icons/HintIcons';
 import { SearchClearIcon } from '@/components/icons/TreeIcons';
 import HoverHint, { type HintContent } from '@/components/HoverHint';
+import { GroupHeading, GroupOption } from '@/components/editorBarControls';
 import { useUIPreferences } from '@/context/UIPreferencesContext';
 import { useTreePanel } from '@/context/TreePanelContext';
 
@@ -318,38 +319,163 @@ export interface MenuAction {
   danger?: boolean;
 }
 
-/** How long the pointer rests on an action before its help opens, so sweeping across the bar stays quiet. */
+/** Several related actions behind one icon in the action bar (Add container: Before / Inside / After), listed in a
+    small pulldown like the toolbar's Add / Split. */
+export interface MenuActionGroup {
+  id: string;
+  label: string;
+  Icon: React.ComponentType<{ className?: string }>;
+  items: {
+    id: string;
+    /** The option's text, e.g. "Before", or "Next: General Information". */
+    label: string;
+    /** What it does, shown as the option's tooltip. */
+    description?: string;
+    Icon?: React.ComponentType<{ className?: string }>;
+    onClick: () => void;
+  }[];
+}
+
+const isGroup = (entry: MenuAction | MenuActionGroup): entry is MenuActionGroup => 'items' in entry;
+
+/** How long the pointer rests on an action before its help (or a group's options) opens, so sweeping across the bar
+    stays quiet. */
 const ACTION_HINT_DELAY_MS = 500;
+/** How long a hover-opened group's options stay after the pointer leaves, to cross the gap to them. */
+const GROUP_CLOSE_DELAY_MS = 180;
+
+/** One group's icon and its pulldown. The options are portaled to the body (the menu shell clips what overflows it),
+    on the pulldown layer above flyouts (89, Z_INDEX.md). Resting on the icon opens them; a click opens them at once
+    and pins them; a click elsewhere, Escape (which then leaves the menu itself open) or choosing one closes them. */
+function MenuActionGroupButton({ group }: { group: MenuActionGroup }) {
+  const [at, setAt] = useState<{ top: number; left: number } | null>(null);
+  const [pinned, setPinned] = useState(false);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const listRef = useRef<HTMLDivElement>(null);
+  const timer = useRef<number | undefined>(undefined);
+  const clearTimer = () => window.clearTimeout(timer.current);
+  useEffect(() => clearTimer, []);
+
+  const open = () => {
+    const rect = buttonRef.current?.getBoundingClientRect();
+    if (rect) setAt({ top: Math.round(rect.bottom + 4), left: Math.round(rect.left) });
+  };
+  const close = useCallback(() => {
+    window.clearTimeout(timer.current);
+    setAt(null);
+    setPinned(false);
+  }, []);
+
+  useEffect(() => {
+    if (!at) return;
+    const onDown = (e: PointerEvent) => {
+      const target = e.target as Node;
+      if (!buttonRef.current?.contains(target) && !listRef.current?.contains(target)) close();
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== 'Escape') return;
+      e.stopPropagation(); // capture phase: close just these options, not the menu
+      close();
+    };
+    window.addEventListener('pointerdown', onDown);
+    window.addEventListener('keydown', onKey, true);
+    return () => {
+      window.removeEventListener('pointerdown', onDown);
+      window.removeEventListener('keydown', onKey, true);
+    };
+  }, [at, close]);
+
+  return (
+    <span
+      className="inline-flex"
+      onMouseEnter={() => {
+        clearTimer();
+        if (!at) timer.current = window.setTimeout(open, ACTION_HINT_DELAY_MS);
+      }}
+      onMouseLeave={() => {
+        clearTimer();
+        if (!pinned) timer.current = window.setTimeout(() => setAt(null), GROUP_CLOSE_DELAY_MS);
+      }}
+    >
+      <button
+        ref={buttonRef}
+        type="button"
+        aria-label={group.label}
+        aria-haspopup="menu"
+        aria-expanded={Boolean(at)}
+        onClick={() => {
+          clearTimer();
+          if (pinned) {
+            close();
+          } else {
+            open();
+            setPinned(true);
+          }
+        }}
+        className={at ? 'menuActionBtn menuActionBtnOpen' : 'menuActionBtn'}
+      >
+        <group.Icon className="w-4 h-4" />
+        <ChevronDownIcon className="menuActionBtnChevron" />
+      </button>
+      {at &&
+        createPortal(
+          <div ref={listRef} className="fixed z-[89] pt-1" style={{ top: at.top - 4, left: at.left }} role="menu">
+            <div className="tmpl-edge-panel tmpl-edge-menu rounded-xl p-1 flex flex-col gap-0.5 min-w-[9rem] max-h-[60vh] overflow-y-auto">
+              <GroupHeading label={group.label} />
+              {group.items.map((item) => (
+                <GroupOption
+                  key={item.id}
+                  icon={item.Icon ? <item.Icon className="w-3.5 h-3.5" /> : undefined}
+                  label={item.label}
+                  title={item.description ?? item.label}
+                  onClick={() => {
+                    close();
+                    item.onClick();
+                  }}
+                />
+              ))}
+            </div>
+          </div>,
+          document.body
+        )}
+    </span>
+  );
+}
 
 /**
  * A menu's actions as a row of icon buttons on the band under its title, in place of an Actions tab, so actions
  * and properties show together. Each icon's hover help (HoverHint, after a short rest) names it and says what it
- * does; a destructive action sits apart at the far right.
+ * does; a group of related actions is one icon with a pulldown (MenuActionGroupButton); a destructive action sits
+ * apart at the far right.
  */
-export function MenuActionBar({ actions }: { actions: MenuAction[] }) {
-  const renderAction = (action: MenuAction) => (
-    <HoverHint
-      key={action.id}
-      interactive
-      showDelayMs={ACTION_HINT_DELAY_MS}
-      hint={{ title: action.label, description: action.description }}
-    >
-      <button
-        type="button"
-        aria-label={action.label}
-        onClick={action.onClick}
-        className={action.danger ? 'menuActionBtn menuActionBtnDanger' : 'menuActionBtn'}
+export function MenuActionBar({ actions }: { actions: (MenuAction | MenuActionGroup)[] }) {
+  const renderEntry = (entry: MenuAction | MenuActionGroup) =>
+    isGroup(entry) ? (
+      <MenuActionGroupButton key={entry.id} group={entry} />
+    ) : (
+      <HoverHint
+        key={entry.id}
+        interactive
+        showDelayMs={ACTION_HINT_DELAY_MS}
+        hint={{ title: entry.label, description: entry.description }}
       >
-        <action.Icon className="w-4 h-4" />
-      </button>
-    </HoverHint>
-  );
-  const danger = actions.filter((action) => action.danger);
+        <button
+          type="button"
+          aria-label={entry.label}
+          onClick={entry.onClick}
+          className={entry.danger ? 'menuActionBtn menuActionBtnDanger' : 'menuActionBtn'}
+        >
+          <entry.Icon className="w-4 h-4" />
+        </button>
+      </HoverHint>
+    );
+  const isDanger = (entry: MenuAction | MenuActionGroup) => !isGroup(entry) && entry.danger;
+  const danger = actions.filter(isDanger);
   return (
     <div className="menuTabs menuActionBar" role="toolbar" aria-label="Actions">
-      {actions.filter((action) => !action.danger).map(renderAction)}
+      {actions.filter((entry) => !isDanger(entry)).map(renderEntry)}
       {danger.length > 0 && <span className="menuActionBarSpacer" aria-hidden="true" />}
-      {danger.map(renderAction)}
+      {danger.map(renderEntry)}
     </div>
   );
 }
