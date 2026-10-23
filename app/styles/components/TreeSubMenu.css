@@ -679,15 +679,15 @@
   border-bottom-color: var(--secondary-tree-menu-rename-input-focus);
 }
 
+/* The name is the side panels' tab text (.tree-folder-tab's size, .tree-folder-tab-active's weight and shadow). */
 .menuTabs .menuFolderTab {
   flex: 0 0 auto;
   height: 1.875rem;
   padding: 0 1.25rem;
-  font-size: 0.6875rem;
 }
 
 .menuTabs .menuFolderTab.tree-folder-tab-active {
-  min-width: 6.75rem;
+  min-width: 7rem;
 }
 
 /* Only the active tab sits down over the band's amber edge (and so hides it, opening into the body); an

@@ -302,9 +302,11 @@
   color: var(--primary-tree-tab-text-hover);
 }
 
+/* An active tab's name, the same on a side panel and in a flyout: normal weight, lifted by a slight dark text shadow. */
 .tree-folder-tab-active {
   color: var(--secondary-tree-menu-rename-save-text);
-  font-weight: 700;
+  font-weight: 400;
+  text-shadow: 0 1px 2px var(--pole-shade);
 }
 
 .tree-tab-svg-fill {
@@ -351,13 +353,10 @@
   stroke: var(--secondary-tree-menu-rename-input-focus);
 }
 
-/* The active panel tab's name is the strong text color (white in the dark themes) at normal weight, lifted
-   by a slight dark text shadow, and the tab casts a slight drop shadow rather than a glow. A flyout's tabs
-   (.menuFolderTab) keep their own look, bold included. */
+/* The active panel tab's name is the strong text color (white in the dark themes), and the tab casts a slight
+   drop shadow rather than a glow. A flyout's tabs (.menuFolderTab) keep their own color. */
 .tree-folder-tab-active:not(.menuFolderTab) {
   color: var(--text-strong);
-  font-weight: 400;
-  text-shadow: 0 1px 2px var(--pole-shade);
 }
 
 .tree-folder-tab-active:not(.menuFolderTab) svg {
