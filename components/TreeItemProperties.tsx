@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useId } from 'react';
 import Image from 'next/image';
 import { ActionMenuSection } from '@/components/TreeSubMenu';
 import { PropertiesSaveBar, PropertyField } from '@/components/TreeMenuProperties';
@@ -32,6 +32,7 @@ const INPUT = 'actionMenuRenameInput w-full';
  */
 export default function TreeItemProperties({ editor, openSections, onToggleSection, onSaved }: TreeItemPropertiesProps) {
   const { form, isLoaded, isDirty, save, revert } = editor;
+  const formId = useId();
   if (!isLoaded) {
     return <p className="px-3 py-3 text-[11px] text-content-muted">{form.error ?? 'Loading...'}</p>;
   }
@@ -42,6 +43,7 @@ export default function TreeItemProperties({ editor, openSections, onToggleSecti
 
   return (
     <form
+      id={formId}
       // noValidate: a required field inside a closed card isn't rendered, so the browser couldn't check it --
       // they are checked here instead, whichever cards are open
       noValidate
@@ -172,6 +174,7 @@ export default function TreeItemProperties({ editor, openSections, onToggleSecti
       </ActionMenuSection>
 
       <PropertiesSaveBar
+        formId={formId}
         isDirty={isDirty}
         saving={form.submitting}
         error={form.error}

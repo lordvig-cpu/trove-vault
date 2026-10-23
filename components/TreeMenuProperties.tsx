@@ -1,6 +1,8 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useId, useState } from 'react';
+import { createPortal } from 'react-dom';
+import { useMenuFooter } from '@/components/TreeSubMenu';
 import { errorMessage } from '@/lib/errors';
 import { idleBtn, menuTextBtn } from '@/components/editorBarStyles';
 
@@ -30,19 +32,24 @@ export function PropertyField({ label, required = false, children }: { label: st
  * validation (required fields) runs first. It stays in view at the bottom while the tab scrolls.
  */
 export function PropertiesSaveBar({
+  formId,
   isDirty,
   saving,
   error,
   canSave = true,
   onRevert,
 }: {
+  /** The id of the form Save submits: the bar is drawn in the menu's footer, outside that form. */
+  formId: string;
   isDirty: boolean;
   saving: boolean;
   error?: string | null;
   canSave?: boolean;
   onRevert: () => void;
 }) {
-  return (
+  // Drawn in the menu's footer, on its bottom edge outside the scrolling content, when there is one
+  const footer = useMenuFooter();
+  const bar = (
     <div className="propertiesSaveBar">
       {error && (
         <p className="text-[11px] leading-snug text-danger-text" role="alert">
@@ -54,16 +61,18 @@ export function PropertiesSaveBar({
         <button type="button" onClick={onRevert} disabled={!isDirty || saving} className={`${menuTextBtn} ${idleBtn} disabled:opacity-40`}>
           Revert
         </button>
-        <button type="submit" disabled={!isDirty || saving || !canSave} className={`${menuTextBtn} menuBtnAction ${idleBtn} disabled:opacity-40`}>
+        <button type="submit" form={formId} disabled={!isDirty || saving || !canSave} className={`${menuTextBtn} menuBtnAction ${idleBtn} disabled:opacity-40`}>
           {saving ? 'Saving...' : 'Save'}
         </button>
       </div>
     </div>
   );
+  return footer ? createPortal(bar, footer) : bar;
 }
 
 /** The Properties tab of something whose only property today is its name (a collection, a template). */
 export function NameProperties({ name, onSave }: { name: string; onSave: (nextName: string) => Promise<void> | void }) {
+  const formId = useId();
   const [draft, setDraft] = useState(name);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -85,6 +94,7 @@ export function NameProperties({ name, onSave }: { name: string; onSave: (nextNa
 
   return (
     <form
+      id={formId}
       onSubmit={async (e) => {
         e.preventDefault();
         if (!trimmed) return;
@@ -120,7 +130,7 @@ export function NameProperties({ name, onSave }: { name: string; onSave: (nextNa
           className="actionMenuRenameInput"
         />
       </PropertyField>
-      <PropertiesSaveBar isDirty={isDirty} saving={saving} error={error} canSave={Boolean(trimmed)} onRevert={revert} />
+      <PropertiesSaveBar formId={formId} isDirty={isDirty} saving={saving} error={error} canSave={Boolean(trimmed)} onRevert={revert} />
     </form>
   );
 }

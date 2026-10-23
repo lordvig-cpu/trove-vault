@@ -1195,19 +1195,38 @@
   background-color: var(--secondary-tree-menu-rename-save-bg);
 }
 
-/* The bottom of such a tab: the save error and the buttons, kept in view while the tab scrolls (sticky
-   inside .childrenContainer, the flyout body's scroller), over the body's own color. */
+/* A split menu's footer (TreeSubMenu's .menuShellFooter): a strip on the body's bottom edge, outside the
+   scrolling content (.childrenContainer), that a Properties tab draws its Revert / Save bar into. It cancels the
+   body's bottom padding so it reaches the edge (the body's rounded corners clip it), never shrinks, and takes no
+   room while empty (no Properties tab showing). */
+.menuShellFooter {
+  flex-shrink: 0;
+  margin-bottom: -0.375rem;
+}
+
+.menuShellFooter:empty {
+  display: none;
+}
+
+/* The bottom of such a tab: the save error and the buttons, edge to edge across the footer, over the body's own
+   color, its content inset to line up with the tab's. */
 .propertiesSaveBar {
-  position: sticky;
-  bottom: 0;
-  z-index: 1;
   display: flex;
   flex-direction: column;
   gap: 0.375rem;
-  margin-top: 0.25rem;
-  padding: 0.5rem 0.75rem 0.375rem;
+  padding: 0.5rem 0.75rem;
   border-top: 1px solid var(--flyout-divider);
   background: var(--flyout-body-bottom);
+}
+
+/* A menu tucked under its panel's edge (see .innerContent's matching rules) insets the bar's content by the same
+   hidden amount, so it lines up with the content above. */
+.menuShellSplit:not(.menuShellFloating):not(.menuShellSplit-right):not(.hoverHint) .propertiesSaveBar {
+  padding-left: calc(0.75rem + 14px);
+}
+
+.menuShellSplit-right:not(.hoverHint) .propertiesSaveBar {
+  padding-right: calc(0.75rem + 11px);
 }
 
 .propertiesSaveHint {

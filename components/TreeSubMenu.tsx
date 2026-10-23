@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useRef, useEffect, useId } from 'react';
+import React, { createContext, useContext, useState, useRef, useEffect, useId } from 'react';
 import { usePresence } from '@/hooks/usePresence';
 import { createPortal } from 'react-dom';
 import '@/app/styles/components/TreeSubMenu.css';
@@ -51,6 +51,13 @@ interface TreeSubMenuProps {
   children: React.ReactNode;
 }
 
+/** The split body's footer: a strip on the menu's bottom edge, outside the scrolling content, that a Properties tab
+    renders its Revert / Save bar into (useMenuFooter, PropertiesSaveBar). Null outside a split menu. */
+const MenuFooterContext = createContext<HTMLDivElement | null>(null);
+
+/** The menu footer to portal into, or null when there isn't one (then render in place). */
+export const useMenuFooter = () => useContext(MenuFooterContext);
+
 export default function TreeSubMenu({
   isOpen,
   closeInstantly = false,
@@ -74,6 +81,7 @@ export default function TreeSubMenu({
 
   const { mounted, renderMenu, isClosing } = usePresence(isOpen, 340, animationsEnabled && !closeInstantly);
   const menuRef = useRef<HTMLDivElement>(null);
+  const [footerEl, setFooterEl] = useState<HTMLDivElement | null>(null);
   const [adjustedTop, setAdjustedTop] = useState(top);
   // Adjust state during render rather than in an effect, per
   // https://react.dev/learn/you-might-not-need-an-effect#adjusting-some-state-when-a-prop-changes
@@ -176,8 +184,11 @@ export default function TreeSubMenu({
           </div>
           <div className={`menuShell menuShellBody ${className || ''}`}>
             <div className="innerContent">
-              <div className="childrenContainer">{children}</div>
+              <div className="childrenContainer">
+                <MenuFooterContext.Provider value={footerEl}>{children}</MenuFooterContext.Provider>
+              </div>
             </div>
+            <div className="menuShellFooter" ref={setFooterEl} />
           </div>
         </>
       ) : (
