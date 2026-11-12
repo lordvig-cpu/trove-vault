@@ -2,10 +2,11 @@ import { supabase } from './supabase';
 
 const IMAGE_BUCKET = 'item-images';
 
-/** Largest image accepted for upload. */
+/** Largest image accepted for upload. The item-images bucket enforces the same limit (.supabase/schema.sql). */
 export const IMAGE_UPLOAD_MAX_BYTES = 10 * 1024 * 1024;
 
-/** Accepted image types and the file extension used for each (never trust the user's filename). */
+/** Accepted image types and the file extension used for each (never trust the user's filename). The
+ *  item-images bucket accepts only these types (.supabase/schema.sql), so keep the two lists in step. */
 const IMAGE_EXTENSIONS: Record<string, string> = {
   'image/jpeg': 'jpg',
   'image/png': 'png',

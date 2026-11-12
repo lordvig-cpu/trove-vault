@@ -239,9 +239,15 @@ SELECT setval(pg_get_serial_sequence('items', 'id'), COALESCE((SELECT MAX(id) FR
 -- 16. ITEM PHOTO STORAGE (bucket `item-images`, used by lib/storage.ts)
 -- Public bucket: photos are shown by their public URL. Like the table policies above, these are open
 -- development policies to replace once accounts exist.
-INSERT INTO storage.buckets (id, name, public)
-VALUES ('item-images', 'item-images', true)
-ON CONFLICT (id) DO NOTHING;
+-- The size and type limits match lib/storage.ts (IMAGE_UPLOAD_MAX_BYTES, IMAGE_EXTENSIONS). Storage enforces
+-- them itself, so a client that skips the app's own check still cannot store a huge file or a non-image
+-- (an HTML or SVG file in a public bucket could run script when opened).
+INSERT INTO storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+VALUES ('item-images', 'item-images', true, 10485760,
+        ARRAY['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/avif'])
+ON CONFLICT (id) DO UPDATE SET
+  file_size_limit = EXCLUDED.file_size_limit,
+  allowed_mime_types = EXCLUDED.allowed_mime_types;
 
 CREATE POLICY "Public item image access" ON storage.objects FOR SELECT USING (bucket_id = 'item-images');
 CREATE POLICY "Public item image upload" ON storage.objects FOR INSERT WITH CHECK (bucket_id = 'item-images');
