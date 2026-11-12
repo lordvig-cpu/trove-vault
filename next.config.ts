@@ -15,8 +15,30 @@ const nextConfig: NextConfig = {
   //    localhost and the raw 127.0.0.1 IP address."
   allowedDevOrigins: ["localhost:3000", "127.0.0.1:3000", "127.0.0.1"],
 
+  // 4. Security headers sent with every page and file.
+  //    - X-Frame-Options / frame-ancestors: no other site may show the app inside a frame
+  //      (stops "clickjacking", where a hidden frame tricks you into clicking its buttons).
+  //    - X-Content-Type-Options: the browser must trust the declared file type, never guess it.
+  //    - Referrer-Policy: other sites only learn the app's origin, not the page path, when you leave.
+  //    - Permissions-Policy: the app never uses the camera, microphone or location, so turn them off.
+  //    A full Content-Security-Policy would go here too; it has to list the Supabase and font
+  //    origins, so add it only alongside a check in the browser.
+  async headers() {
+    return [
+      {
+        source: "/(.*)",
+        headers: [
+          { key: "X-Frame-Options", value: "DENY" },
+          { key: "Content-Security-Policy", value: "frame-ancestors 'none'" },
+          { key: "X-Content-Type-Options", value: "nosniff" },
+          { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+          { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=()" },
+        ],
+      },
+    ];
+  },
 };
 
-// 4. Export the configuration object so Next.js can read it on startup.
+// 5. Export the configuration object so Next.js can read it on startup.
 //    (Similar to a PHP config file doing 'return $config;' at the end.)
 export default nextConfig;
