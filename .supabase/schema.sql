@@ -236,3 +236,14 @@ SELECT setval(pg_get_serial_sequence('collections', 'id'), COALESCE((SELECT MAX(
 SELECT setval(pg_get_serial_sequence('item_templates', 'id'), COALESCE((SELECT MAX(id) FROM item_templates), 0) + 1, false);
 SELECT setval(pg_get_serial_sequence('item_template_fields', 'id'), COALESCE((SELECT MAX(id) FROM item_template_fields), 0) + 1, false);
 SELECT setval(pg_get_serial_sequence('items', 'id'), COALESCE((SELECT MAX(id) FROM items), 0) + 1, false);
+-- 16. ITEM PHOTO STORAGE (bucket `item-images`, used by lib/storage.ts)
+-- Public bucket: photos are shown by their public URL. Like the table policies above, these are open
+-- development policies to replace once accounts exist.
+INSERT INTO storage.buckets (id, name, public)
+VALUES ('item-images', 'item-images', true)
+ON CONFLICT (id) DO NOTHING;
+
+CREATE POLICY "Public item image access" ON storage.objects FOR SELECT USING (bucket_id = 'item-images');
+CREATE POLICY "Public item image upload" ON storage.objects FOR INSERT WITH CHECK (bucket_id = 'item-images');
+CREATE POLICY "Public item image modify" ON storage.objects FOR UPDATE USING (bucket_id = 'item-images');
+CREATE POLICY "Public item image delete" ON storage.objects FOR DELETE USING (bucket_id = 'item-images');
