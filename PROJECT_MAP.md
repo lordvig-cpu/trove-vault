@@ -61,12 +61,8 @@ Conventions and architecture (data access, theming, template editor internals, b
 - `PrimarySidePanelHeader.tsx` — composes a panel's header from `components/panel-header/*`
   (toolbar row, search/filter section, view tabs).
 - `TemplateBodyDimensions.tsx` — Body-only sizing controls (Content Width: input, px/% pulldown,
-  slider, Fill) in the Body flyout and the template properties inspector.
+  slider, Fill) in the Body flyout.
 - `HoverHint.tsx` — the help bubble for an inline `?` icon or a button: action-menu-styled popup with a title bar, a Settings list and a Notes paragraph (portaled, opens on hover/focus).
-- `icons/SectionIcons.tsx` — the large Size / Spacing / Layout / Appearance icons on a flyout section's header tile.
-- `icons/HintIcons.tsx` — the how-to-use / tip / caution icons that lead each note in a help bubble.
-- `icons/AlignIcons.tsx` — Align Items / Justify Content icons, drawn for a Row (rotated for a Column).
-- `lib/measureContainer.ts` — measures a container's rendered width/height from the canvas DOM (what a split halves).
 - `FloatingNodeMenuHost.tsx` — draws the floating node menu (`lib/floatingNodeMenu.ts`) in the template editor: a node's container /
   content flyout as a draggable, closable window when the Layout tree isn't showing.
 - `HelpWindowHost.tsx` — renders the help windows (a `?` bubble popped out by its title bar's pop-out button: draggable, closable) once, from the root layout, so they outlive the flyout that opened them.
@@ -140,6 +136,10 @@ SVG icon components, grouped by area: `LayoutIcons.tsx` (template editor), `Navi
 glyph replacements), `ContentIcons.tsx` (field types, layout components, files/folders, and the
 `FieldTypeIcon` / `ComponentTypeIcon` / `HierarchyCategoryIcon` lookups),
 `TextIcons.tsx` (bold / italic / underline and text alignment, for the content toolbar). Import each from its own file (there is no barrel).
+
+- `SectionIcons.tsx` — the large Size / Spacing / Layout / Appearance icons on a flyout section's header tile.
+- `HintIcons.tsx` — the how-to-use / tip / caution icons that lead each note in a help bubble.
+- `AlignIcons.tsx` — Align Items / Justify Content icons, drawn for a Row (rotated for a Column).
 
 ## components/item-form/
 
@@ -266,6 +266,7 @@ its display style, with label and typography).
 - `flyoutHold.ts` — keeps a header pulldown (Items / Collections / Templates) mounted, hidden, while a gear menu
   pinned in it floats after it closed or was docked.
 - `floatingNodeMenu.ts` — the store for that floating menu (which node, where, which tab; open / move / close).
+- `measureContainer.ts` — measures a container's rendered width/height from the canvas DOM (what a split halves).
 - `panelTitles.ts` — `getPanelTitle()`: the header title for a panel's docked tab(s).
 - `storage.ts` — item photo upload/remove/validate against Supabase Storage.
 - `templateIcons.ts` — the template icon picker's quick choices and `firstGrapheme` (a typed icon keeps one character).
@@ -288,7 +289,7 @@ direction/sizing helpers), `database.ts` (the Supabase-shaped `Database` type, h
 Playwright specs, run against a production build on port 3100: `workspace.spec.ts` (docking,
 preferences, keyboard shortcuts), `collections-panel.spec.ts`, `template-layout.spec.ts` (the
 template editor), `template-drag-highlight.spec.ts`, `layout-tree.spec.ts` (the pure functions in
-`lib/layoutTree.ts`), `layout-content.spec.ts` (content bindings, display styles, values, styles), `layout-presets.spec.ts` (pre-defined content builders), `layout-recipes.spec.ts` (simple-template recipes and saved-layout resolution), `layout-history.spec.ts` (undo/redo history), `stacking.spec.ts` (responsive row-to-column stacking), `floating-menu.spec.ts` (gear menus floating when the Layout tree is hidden), `data.spec.ts`, `item-images.spec.ts` (photo cleanup on item edit / delete, against a fake fetch), `pure-helpers.spec.ts` (colors, box / alignment / direction values, row mappers, tree categories and item search).
+`lib/layoutTree.ts`), `layout-content.spec.ts` (content bindings, display styles, values, styles), `layout-presets.spec.ts` (pre-defined content builders), `layout-recipes.spec.ts` (simple-template recipes and saved-layout resolution), `layout-history.spec.ts` (undo/redo history), `stacking.spec.ts` (responsive row-to-column stacking), `floating-menu.spec.ts` (gear menus floating when the Layout tree is hidden), `blueprint-groups.spec.ts` (the pure Blueprint grouping in `lib/blueprintGroups.ts`), `dock-buttons.spec.ts` (a header flyout's Dock to Left / Right), `delete-container-confirm.spec.ts` and `leave-template-editor.spec.ts` (the two caution dialogs; need a real template, writes blocked), `data.spec.ts`, `item-images.spec.ts` (photo cleanup on item edit / delete, against a fake fetch), `pure-helpers.spec.ts` (colors, box / alignment / direction values, row mappers, tree categories and item search).
 
 ## Root & config
 
