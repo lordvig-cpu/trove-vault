@@ -110,9 +110,10 @@ changing the editor, the layout engine, the gear flyouts or the item view.
   (`--project-ref`), with the docs / database / debugging / development / functions tools (no account or branching
   tools). Its token is the `SUPABASE_ACCESS_TOKEN` environment variable, never stored in the repo. (The hosted
   server's sign-in rejects a URL carrying `project_ref` / `read_only`, which is why it isn't used.)
-- A schema or data change is proposed and approved first, then made with read-only switched off for that job
-  (remove `--read-only`, restart the session) and switched back on after; the change also goes into
-  `.supabase/schema.sql` in the same commit.
+- Claude never writes to the database. A schema or data change is proposed as a ready-to-run SQL script; the
+  user runs it in the Supabase dashboard's SQL editor and says when it's done, then Claude checks the result
+  with a read-only query. Don't turn off `--read-only` or ask for a token with write access (the token is
+  deliberately read-only). The change also goes into `.supabase/schema.sql` in the same commit.
 - The live database also has Supabase's own `rls_auto_enable()` / `ensure_rls` event trigger (from the
   project setting that turns RLS on for every new `public` table). It is not part of `schema.sql`.
 
