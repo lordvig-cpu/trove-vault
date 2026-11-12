@@ -266,47 +266,6 @@ export function ActionMenuItem({
   );
 }
 
-// Destructive action variant used for delete operations.
-export function ActionMenuDangerItem({
-  icon,
-  label,
-  labelDetail,
-  subtext,
-  onClick,
-}: {
-  icon: React.ReactNode;
-  label: string;
-  /** As ActionMenuItem's: shown after the label in the brightened Primary Accent. */
-  labelDetail?: string;
-  subtext?: string;
-  onClick: () => void;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      onMouseEnter={(e) => showFullTextIfCut(e, labelDetail ? `${label} ${labelDetail}` : label, subtext)}
-      className="actionMenuDangerItem group"
-    >
-      <span className="actionMenuDangerIcon">
-        {icon}
-      </span>
-      <div className="flex flex-col leading-tight min-w-0">
-        <span className="actionMenuDangerLabel truncate">
-          {label}
-          {labelDetail && <span> {labelDetail}</span>}
-        </span>
-        {subtext && (
-          <span className="actionMenuDangerSubtext truncate">
-            {subtext}
-          </span>
-        )}
-      </div>
-    </button>
-  );
-}
-
-// Visual separator between groups of related menu actions.
 /** One action in a menu's action bar (MenuActionBar). */
 export interface MenuAction {
   id: string;
@@ -494,12 +453,6 @@ export function MenuActionBar({ actions }: { actions: (MenuAction | MenuActionGr
       {danger.map(renderEntry)}
     </div>
   );
-}
-
-/** A line between groups of actions (before Delete). No top margin: the row above already ends in the 6px gap
-    between action rows, so the same 6px below keeps the line centered between the two. */
-export function ActionMenuDivider() {
-  return <div className="mb-1.5 mx-2 tree-menu-divider" />;
 }
 
 // Two-or-more tab switcher for a menu that mixes kinds of content (e.g. Actions / Properties).

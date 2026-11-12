@@ -386,31 +386,6 @@ export const ActionIcon = ({ className = 'w-4 h-4', strokeWidth = 1.8 }: LayoutI
 );
 
 /**
- * PropertiesIcon:
- * Three rows with a dot on each at a different position, like a set of sliders -- for a menu
- * section grouping property/setting controls.
- */
-export const PropertiesIcon = ({ className = 'w-4 h-4', strokeWidth = 1.8 }: LayoutIconProps) => (
-  <svg
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth={strokeWidth}
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    className={`origin-center shrink-0 ${className}`}
-    aria-hidden="true"
-  >
-    <path d="M4 7h16" />
-    <path d="M4 12h16" />
-    <path d="M4 17h16" />
-    <circle cx="9" cy="7" r="1.7" />
-    <circle cx="15" cy="12" r="1.7" />
-    <circle cx="11" cy="17" r="1.7" />
-  </svg>
-);
-
-/**
  * FillIcon:
  * Two vertical bars (the available width) with a horizontal line and outward-pointing arrows
  * spanning between them, for "Fill" sizing (stretches to fill the available space).

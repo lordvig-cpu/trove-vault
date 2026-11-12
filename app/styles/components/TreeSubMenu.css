@@ -1050,20 +1050,10 @@
   padding-right: 0.25rem;
 }
 
-/* Action Rows & Dividers */
-.tree-menu-divider {
-  height: 1px;
-  background-color: var(--secondary-tree-menu-divider);
-  /* Preflight's solid border style makes this draw a 1px line in the divider color */
-  border-top-width: 1px;
-  border-color: var(--secondary-tree-menu-divider);
-}
-
+/* Action Rows */
 /* An action row is a button: a card-like row (8px corners, a thin edge over a faint fill, like a section card) with
-   its icon on a tinted tile, the rows a little apart. Delete (.actionMenuDangerItem, below) is the same button in
-   red. */
-.actionMenuItem,
-.actionMenuDangerItem {
+   its icon on a tinted tile, the rows a little apart. */
+.actionMenuItem {
   width: 100%;
   text-align: left;
   padding: 0.5rem 0.625rem;
@@ -1078,13 +1068,12 @@
   border: 1px solid color-mix(in oklab, var(--flyout-white) 14%, transparent);
 }
 
-.actionMenuItem:last-child,
-.actionMenuDangerItem:last-child {
+.actionMenuItem:last-child {
   margin-bottom: 0;
 }
 
 /* Hover: a faint white tint and a white edge, the same white hover as the toolbars (menu white, so it flips to
-   ink in light mode). Delete keeps its own danger hover, below. */
+   ink in light mode). */
 .actionMenuItem:hover {
   background-color: color-mix(in oklab, var(--flyout-white) 10%, transparent);
   border-color: var(--flyout-white);
@@ -1142,22 +1131,13 @@
 }
 
 /* --------------------------------------------------------------------------
-   Action Menu Danger / Destructive Item: the same button, in the destructive red
+   Destructive action look: icon tile, label and caption in the destructive red. Used by an action's help
+   bubble (HoverHint) when the action deletes something.
    -------------------------------------------------------------------------- */
-.actionMenuDangerItem:hover {
-  background-color: var(--danger-vivid-soft);
-  border-color: var(--danger-vivid);
-}
-
 .actionMenuDangerIcon {
   color: var(--danger-vivid);
   background: var(--danger-vivid-soft);
   border: 1px solid color-mix(in oklab, var(--danger-vivid) 40%, transparent);
-}
-
-.actionMenuDangerItem:hover .actionMenuDangerIcon {
-  background: color-mix(in oklab, var(--danger-vivid) 30%, transparent);
-  border-color: color-mix(in oklab, var(--danger-vivid) 65%, transparent);
 }
 
 .actionMenuDangerLabel {
@@ -1166,10 +1146,6 @@
 
 .actionMenuDangerSubtext {
   color: color-mix(in oklab, var(--danger-vivid) 75%, transparent);
-}
-
-.actionMenuDangerItem:hover .actionMenuDangerSubtext {
-  color: color-mix(in oklab, var(--danger-vivid) 90%, transparent);
 }
 
 /* --------------------------------------------------------------------------

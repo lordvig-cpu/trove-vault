@@ -117,13 +117,6 @@ export const SparkleIcon = (p: ContentIconProps) => (
   <Svg {...p}><path d="M12 3l2.2 6.8L21 12l-6.8 2.2L12 21l-2.2-6.8L3 12l6.8-2.2L12 3z" /></Svg>
 );
 
-/** DotIcon: a filled status dot; color it with text-* classes or a theme variable. */
-export const DotIcon = ({ className = 'w-2 h-2' }: ContentIconProps) => (
-  <svg className={`shrink-0 ${className}`} viewBox="0 0 8 8" fill="currentColor" aria-hidden="true" focusable="false">
-    <circle cx="4" cy="4" r="4" />
-  </svg>
-);
-
 /** The icon for a layout component's `componentType`: field, table, media, stat, callout; anything
     else (note, divider, ...) falls back to `fallback` (the note icon unless a caller asks otherwise). */
 export function ComponentTypeIcon({

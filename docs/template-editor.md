@@ -283,8 +283,8 @@ need before changing the editor, the layout engine, the gear flyouts or the item
   own unconditional rule, or in what the band holds, never a new special case.
   The title bar names the object itself ("Body", "Container", "Content"; a Blueprint field's flyout shows the
   field's own name), in the same boxed amber pill with the icon at the far right as every other flyout. Labelled
-  action rows (a menu with no properties) are buttons (`ActionMenuItem` / `ActionMenuDangerItem`): card-like rows a
-  little apart, each icon on a tile tinted with its color (amber, or red for Delete).
+  action rows (a menu with no properties) are buttons (`ActionMenuItem`): card-like rows a
+  little apart, each icon on an amber-tinted tile.
   Inputs, pulldowns and buttons in the Properties share the top toolbar's control height
   (`barControlHeight`, 26px) so rows of mixed controls line up.
   Menus with properties take `menuShellXWide` (17.5rem) (a Blueprint field's, `menuShellWide`). The
